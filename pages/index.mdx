@@ -1,0 +1,30 @@
+import {
+  FontAwesomeIcon,
+  faCoffee,
+  faChevronRight,
+  faLungs,
+} from '@/src/components/Icon';
+
+# Home
+
+Foo bar baz qux.
+
+Here are some icons:
+- <FontAwesomeIcon icon={faChevronRight} size="1x" />
+- <FontAwesomeIcon icon={faCoffee} size="1x" />
+- <FontAwesomeIcon icon={faLungs} size="1x" />
+
+
+import Root from '@/src/components/Root';
+
+export default function MDXPage({ children }) {
+  return <Root meta={{
+    key: 'index',
+    date: '2024-01-30',
+    info: 'Home page',
+    giscusTerm: '/home',
+    label: 'home',
+    path: '/',
+    tags: ['cli', 'web dev', 'behaviour', 'video games']
+  }}>{children}</Root>
+}
