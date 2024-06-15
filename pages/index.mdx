@@ -1,3 +1,16 @@
+import { WrapMdxWithRoot } from '@/src/components';
+
+export default WrapMdxWithRoot({
+  key: 'index',
+  date: '2024-06-15',
+  info: 'Home page',
+  giscusTerm: '/home',
+  label: 'home',
+  path: '/',
+  tags: ['cli', 'web dev', 'behaviour', 'video games'],
+});
+
+
 import {
   FontAwesomeIcon,
   faCoffee,
@@ -13,15 +26,3 @@ Here are some icons:
 - <FontAwesomeIcon icon={faChevronRight} size="1x" />
 - <FontAwesomeIcon icon={faCoffee} size="1x" />
 - <FontAwesomeIcon icon={faLungs} size="1x" />
-
-export { default } from '@/src/components/Root';
-
-export const metadata = {
-  key: 'index',
-  date: '2024-01-30',
-  info: 'Home page',
-  giscusTerm: '/home',
-  label: 'home',
-  path: '/',
-  tags: ['cli', 'web dev', 'behaviour', 'video games'],
-}

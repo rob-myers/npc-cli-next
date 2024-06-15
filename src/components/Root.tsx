@@ -25,3 +25,8 @@ interface PageMeta {
   tags: string[];
 }
 
+export function WrapMdxWithRoot(meta: PageMeta) {
+  return function RootWithMeta(props: React.PropsWithChildren) {
+    return <Root meta={meta}>{props.children}</Root>;
+  }
+}
