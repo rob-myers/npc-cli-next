@@ -6,9 +6,10 @@ import { menuClasses, sidebarClasses } from "react-pro-sidebar";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { queryClient } from '@/src/npc-cli/service/query-client';
-import { breakpoint, view } from "../const";
+import { afterBreakpoint, breakpoint, view } from "../const";
 import useSite from "./site.store";
 import Main from "./Main";
+import Nav from "./Nav";
 import Comments from "./Comments";
 
 export default function Root({ children, meta }: Props) {
@@ -22,16 +23,19 @@ export default function Root({ children, meta }: Props) {
       </Head>
       <QueryClientProvider client={queryClient} >
         <div className={rootCss} data-testid="root">
-          <Main>
-            <article>
-              {children}
-            </article>
-            <Comments
-              id="comments"
-              term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
-            />
-          </Main>
-          {/* 🚧 Viewer */}
+          <Nav />
+          <div className={rootContentCss} data-testid="root-content">
+            <Main>
+              <article>
+                {children}
+              </article>
+              <Comments
+                id="comments"
+                term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
+              />
+            </Main>
+            {/* 🚧 Viewer */}
+          </div>
         </div>
         <ReactQueryDevtools
           initialIsOpen={false}
@@ -90,6 +94,20 @@ const rootCss = css`
         }
       }
     }
+  }
+`;
+
+const rootContentCss = css`
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  
+  @media (max-width: ${breakpoint}) {
+    flex-direction: column;
+  }
+  @media (min-width: ${afterBreakpoint}) {
+    background-color: #ccc;
   }
 `;
 
