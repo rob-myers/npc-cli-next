@@ -1,9 +1,10 @@
 # TODO
 
-- 🚧 migrate root component
+- ✅ migrate root component
   - ✅ Nav
   - ✅ Main
-  - 🚧 Viewer
+  - ✅ Viewer
+
 - ❌ try add frontmatter to @next/mdx
   - https://vstollen.me/blog/advanced-mdx-layouts
   - decided to e.g.
@@ -20,4 +21,8 @@
     tags: ['cli', 'web dev', 'behaviour', 'video games'],
   });
   ```
-- ...
+
+- ✅ Can see World
+- ✅ Can see Terminal
+- Get tty connected to World
+- Can run assets script
