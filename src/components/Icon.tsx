@@ -10,7 +10,7 @@ export {
   faCircleQuestion,
   faCircleInfo,
   faGrip,
-  // faCirclePause,
+  faCirclePlay,
   // faRefresh,
   // faExpand,
   // faPause,
