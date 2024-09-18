@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently 'next dev' 'npm run ws-server'",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "types": "tsc --noEmit"
+    "types": "tsc --noEmit",
+    "ws-server": "sucrase-node src/scripts/ws-server.js"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.14.0",
@@ -38,7 +39,7 @@
     "getopts": "^2.3.0",
     "htmlparser2": "^9.1.0",
     "javascript-stringify": "^2.1.0",
-    "json-stringify-pretty-compact": "^4.0.0",
+    "json-stringify-pretty-compact": "^3.0.0",
     "lodash.clonedeep": "^4.5.0",
     "maxrects-packer": "^2.7.3",
     "mvdan-sh": "^0.5.0",
@@ -61,8 +62,12 @@
   "devDependencies": {
     "@giscus/react": "^3.0.0",
     "@tanstack/react-query-devtools": "^5.56.2",
+    "@types/body-parser": "^1.19.5",
     "@types/braces": "^3.0.4",
+    "@types/cors": "^2.8.17",
     "@types/earcut": "^2.1.4",
+    "@types/express": "^4.17.21",
+    "@types/express-ws": "^3.0.5",
     "@types/loadable__component": "^5.13.9",
     "@types/node": "^20",
     "@types/react": "^18",
@@ -71,10 +76,16 @@
     "@types/svg-path-parser": "^1.1.6",
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.5",
+    "body-parser": "^1.20.3",
+    "concurrently": "^9.0.1",
+    "cors": "^2.8.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
+    "express": "^4.21.0",
+    "express-ws": "^5.0.2",
     "postcss": "^8",
     "raw-loader": "^4.0.2",
+    "sucrase": "^3.35.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

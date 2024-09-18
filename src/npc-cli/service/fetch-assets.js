@@ -1,11 +1,8 @@
 import { queryClient } from "./query-client";
 import { info, isDevelopment } from "./generic";
 
-/** See `npm run develop` */
-export const DEV_GATSBY_PORT = 8011;
-
 /** See `npm run ws-server` */
-export const DEV_EXPRESS_WEBSOCKET_PORT = 8012;
+export const DEV_EXPRESS_WEBSOCKET_PORT = 8013;
 
 /**
  * 🔔🔔🔔

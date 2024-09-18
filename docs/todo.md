@@ -24,5 +24,9 @@
 
 - ✅ Can see World
 - ✅ Can see Terminal
+- ✅ `yarn ws-server`
+- ✅ Provide created sprite-sheets
+- ✅ `yarn dev` starts next and ws-server
 - Get tty connected to World
 - Can run assets script
+- `yarn dev` runs and watches assets
