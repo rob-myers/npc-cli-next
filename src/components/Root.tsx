@@ -11,6 +11,7 @@ import useSite from "./site.store";
 import Main from "./Main";
 import Nav from "./Nav";
 import Comments from "./Comments";
+import Viewer from "./Viewer";
 
 export default function Root({ children, meta }: Props) {
 
@@ -34,7 +35,7 @@ export default function Root({ children, meta }: Props) {
                 term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
               />
             </Main>
-            {/* 🚧 Viewer */}
+            <Viewer />
           </div>
         </div>
         <ReactQueryDevtools
