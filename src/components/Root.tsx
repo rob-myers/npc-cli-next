@@ -1,4 +1,5 @@
 import Head from "next/head";
+import React from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { css } from "@emotion/css";
 import { menuClasses, sidebarClasses } from "react-pro-sidebar";
@@ -6,11 +7,14 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { queryClient } from '@/src/npc-cli/service/query-client';
 import { breakpoint, view } from "../const";
+import useSite from "./site.store";
 import Main from "./Main";
 import Comments from "./Comments";
 
-export default function Root({ children, ...rest }: Props) {
-  console.log({rest})
+export default function Root({ children, meta }: Props) {
+
+  React.useMemo(() => useSite.api.setArticleKey(meta.key), [meta.key]);
+
   return (
     <>
       <Head>
@@ -22,10 +26,10 @@ export default function Root({ children, ...rest }: Props) {
             <article>
               {children}
             </article>
-            {/* <Comments
+            <Comments
               id="comments"
-              term={articleMeta?.giscusTerm || articleMeta?.path || "fallback-discussion"}
-            /> */}
+              term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
+            />
           </Main>
           {/* 🚧 Viewer */}
         </div>
@@ -39,7 +43,7 @@ export default function Root({ children, ...rest }: Props) {
 }
 
 interface Props extends React.PropsWithChildren {
-  // ...
+  meta: PageMeta;
 }
 
 interface PageMeta {
@@ -88,3 +92,9 @@ const rootCss = css`
     }
   }
 `;
+
+export function WrapMdxWithRoot(meta: PageMeta) {
+  return function RootWithMeta(props: React.PropsWithChildren) {
+    return <Root meta={meta}>{props.children}</Root>;
+  }
+}
