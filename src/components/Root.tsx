@@ -1,0 +1,113 @@
+import React from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { css } from "@emotion/css";
+import { menuClasses, sidebarClasses } from "react-pro-sidebar";
+
+import { queryClient } from '@/npc-cli/service/query-client';
+import { afterBreakpoint, breakpoint, view } from "../const";
+import useSite from "./site.store";
+// import Main from "./Main";
+// import Nav from "./Nav";
+// import Comments from "./Comments";
+// import Viewer from "./Viewer";
+
+export default function Root({ children, meta }: Props) {
+
+  React.useMemo(() => useSite.api.setArticleKey(meta.key), [meta.key]);
+
+  return (
+    <QueryClientProvider client={queryClient} >
+      <div className={rootCss} data-testid="root">
+        {/* <Nav />
+        <div className={rootContentCss} data-testid="root-content">
+          <Main>
+            <article>
+              {children}
+            </article>
+            <Comments
+              id="comments"
+              term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
+            />
+          </Main>
+          <Viewer />
+        </div> */}
+      </div>
+      <ReactQueryDevtools
+        initialIsOpen={false}
+        buttonPosition="bottom-left"
+      />
+    </QueryClientProvider>
+  );
+}
+
+interface Props extends React.PropsWithChildren {
+  meta: PageMeta;
+}
+
+interface PageMeta {
+  key: string;
+  date: string;
+  info: string;
+  giscusTerm: string;
+  label: string;
+  path: string;
+  tags: string[];
+}
+
+const rootCss = css`
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  height: 100dvh;
+
+  @media (max-width: ${breakpoint}) {
+    // cannot move to Nav due to react-pro-sidebar api
+    > aside {
+      position: fixed;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 7;
+
+      &.${sidebarClasses.collapsed} {
+        pointer-events: none;
+
+        border: none !important;
+        > div {
+          background-color: transparent;
+          overflow: hidden;
+          .${menuClasses.root} {
+            display: none;
+          }
+        }
+        button.toggle {
+          top: calc(0.5 * (${view.barSize} - 2rem));
+          width: 2rem;
+          height: 2rem;
+          margin-top: 0;
+          pointer-events: all;
+        }
+      }
+    }
+  }
+`;
+
+const rootContentCss = css`
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  
+  @media (max-width: ${breakpoint}) {
+    flex-direction: column;
+  }
+  @media (min-width: ${afterBreakpoint}) {
+    background-color: #ccc;
+  }
+`;
+
+export function WrapMdxWithRoot(meta: PageMeta) {
+  return function RootWithMeta(props: React.PropsWithChildren) {
+    return <Root meta={meta}>{props.children}</Root>;
+  }
+}
