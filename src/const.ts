@@ -40,7 +40,7 @@ export const allArticlesMeta: Record<ArticleKey, ArticleMeta> = {
     tags: ['cli', 'web dev', 'behaviour', 'video games'],
     
   },
-  'strategy-1': {
+  "strategy-1": {
     key: 'strategy-1',
     date: '2024-02-18',
     info: 'Introduction',
@@ -50,3 +50,11 @@ export const allArticlesMeta: Record<ArticleKey, ArticleMeta> = {
     tags: ['cli', 'web dev', 'behaviour', 'video games'],
   },
 };
+
+export const zIndexSite = /** @type {const} */ ({
+  mainHeader: 40,
+  mainOverlay: 50,
+  nav: 60,
+
+  aboveViewerFocusOutline: 1,
+});

@@ -3,10 +3,12 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { css } from "@emotion/css";
 import { menuClasses, sidebarClasses } from "react-pro-sidebar";
+import { useBeforeunload } from "react-beforeunload";
 
 import { queryClient } from '@/npc-cli/service/query-client';
-import { afterBreakpoint, breakpoint, view } from "../const";
+import { afterBreakpoint, breakpoint, view, zIndexSite } from "../const";
 import useSite from "./site.store";
+import useOnResize from "@/npc-cli/hooks/use-on-resize";
 // import Main from "./Main";
 // import Nav from "./Nav";
 // import Comments from "./Comments";
@@ -15,6 +17,13 @@ import useSite from "./site.store";
 export default function Root({ children, meta }: Props) {
 
   React.useMemo(() => useSite.api.setArticleKey(meta.key), [meta.key]);
+
+  // Update matchMedia computations
+  useOnResize();
+
+  React.useEffect(() => useSite.api.initiateBrowser(), []);
+
+  useBeforeunload(() => void useSite.api.onTerminate());
 
   return (
     <QueryClientProvider client={queryClient} >
@@ -67,7 +76,7 @@ const rootCss = css`
       position: fixed;
       height: 100vh;
       height: 100dvh;
-      z-index: 7;
+      z-index: ${zIndexSite.nav};
 
       &.${sidebarClasses.collapsed} {
         pointer-events: none;
