@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -114,9 +116,3 @@ const rootContentCss = css`
     background-color: #ccc;
   }
 `;
-
-export function WrapMdxWithRoot(meta: PageMeta) {
-  return function RootWithMeta(props: React.PropsWithChildren) {
-    return <Root meta={meta}>{props.children}</Root>;
-  }
-}
