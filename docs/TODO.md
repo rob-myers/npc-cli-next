@@ -32,3 +32,7 @@
 - ✅ deploy to netlify
 
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
+
+- 🚧 fix "initial stress test" for useEffect in `<BaseTty>`
+  - https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
+  - ✅ fix: set next.config.ts `reactStrictMode` as `false`
