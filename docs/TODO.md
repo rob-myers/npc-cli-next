@@ -23,9 +23,9 @@
   - ✅ migrate Viewer
     - ✅ finish migrating Tabs
     - ✅ migrate ViewerControls
-  - migrate world/*
+  - 🚧 migrate world/*
+    - ✅ uncomment npc-cli/sh/src/game-generators.js
     - also npc-cli/tabs/tab-factory.ts
-    - uncomment npc-cli/sh/src/game-generators.js
   - maybe need `@emotion/css` for `<Html3d>`
 
 - ✅ src/app -> app etc.
