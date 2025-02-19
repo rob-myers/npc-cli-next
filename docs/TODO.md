@@ -30,3 +30,5 @@
 
 - ✅ src/app -> app etc.
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
+
+- 🚧 deploy to netlify
