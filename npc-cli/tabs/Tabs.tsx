@@ -12,7 +12,7 @@ import { useBeforeunload } from "react-beforeunload";
 import { css } from "@emotion/react";
 import cx from "classnames";
 
-import { afterBreakpoint, breakpoint } from "@/const";
+import { afterBreakpoint, breakpoint } from "../../components/const";
 import { detectTabPrevNextShortcut } from "../service/generic";
 import {
   TabDef,

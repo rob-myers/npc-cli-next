@@ -4,7 +4,7 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 
 import useSite from "./site.store";
-import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "../const";
+import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import { getNavWidth, isSmallView } from "./layout";
 
 import { State } from "./Viewer";

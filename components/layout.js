@@ -2,7 +2,7 @@
  * - This file avoids unnecessary HMR of site.store onchange view-related constants.
  * - site.store should not import from this file.
  */
-import { breakpoint, nav } from '../const';
+import { breakpoint, nav } from './const';
 import useSite from "./site.store";
 
 /** Navigation bar width in pixels */
