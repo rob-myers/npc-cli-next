@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   compiler: {
     emotion: true,
   },
+  // 🔔 dev only, where turbo runs via `next dev --turbopack
   experimental: {
     turbo: {
       rules: {
@@ -15,6 +16,14 @@ const nextConfig: NextConfig = {
         },
       },
     },
+  },
+  // 🔔 build only, because turbopack does not run during build
+  webpack(config: import("webpack").Configuration) {
+    config.module?.rules?.push({
+      test: /\.sh$/,
+      use: "raw-loader",
+    });
+    return config;
   },
 };
 
