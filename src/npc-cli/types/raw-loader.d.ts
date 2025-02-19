@@ -1,4 +1,4 @@
-declare module "!!raw-loader!*" {
+declare module "*.sh" {
   const contents: string;
   export = contents;
 }

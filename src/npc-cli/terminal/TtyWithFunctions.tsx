@@ -1,7 +1,7 @@
 import React from "react";
 
-import utilFunctionsSh from "!!raw-loader!../sh/src/util-functions.sh";
-import gameFunctionsSh from "!!raw-loader!../sh/src/game-functions.sh";
+import utilFunctionsSh from "../sh/src/util-functions.sh";
+import gameFunctionsSh from "../sh/src/game-functions.sh";
 
 import * as utilGeneratorsJs from '../sh/src/util-generators';
 import * as gameGeneratorsJs from '../sh/src/game-generators';
