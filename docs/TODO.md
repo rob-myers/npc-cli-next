@@ -28,5 +28,5 @@
     - uncomment src/npc-cli/sh/src/game-generators.js
   - maybe need `@emotion/css` for `<Html3d>`
 
-- src/app -> app etc.
+- ✅ src/app -> app etc.
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
