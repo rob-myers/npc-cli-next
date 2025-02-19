@@ -3,7 +3,7 @@
 import { css } from '@emotion/react';
 import React from 'react';
 
-import { breakpoint } from '../const';
+import { breakpoint } from './const';
 
 /** @param {Props} props */
 export default function Card(props) {

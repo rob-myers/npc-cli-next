@@ -1,4 +1,4 @@
-import type { ArticleKey, ArticleMeta } from "./components/site.store";
+import type { ArticleKey, ArticleMeta } from "./site.store";
 
 export const afterBreakpoint = "1201px";
 export const breakpoint = "1200px";

@@ -8,7 +8,7 @@ import {
   defaultSiteTopLevelState,
   siteTopLevelKey,
   allArticlesMeta,
-} from "../const";
+} from "./const";
 
 import {
   safeJsonParse,

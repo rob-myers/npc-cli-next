@@ -20,11 +20,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/npc-cli/*": ["./src/npc-cli/*"]
+      "@/*": ["./*"],
+      "@/npc-cli/*": ["./npc-cli/*"]
     },
     "types": ["@emotion/react/types/css-prop", "webpack-env"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/example/page.mdx", "src/app/page.msx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

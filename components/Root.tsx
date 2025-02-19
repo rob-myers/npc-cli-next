@@ -8,7 +8,7 @@ import { menuClasses, sidebarClasses } from "react-pro-sidebar";
 import { useBeforeunload } from "react-beforeunload";
 
 import { queryClient } from '@/npc-cli/service/query-client';
-import { afterBreakpoint, breakpoint, view, zIndexSite } from "../const";
+import { afterBreakpoint, breakpoint, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useOnResize from "@/npc-cli/hooks/use-on-resize";
 import Nav from "./Nav";

@@ -4,8 +4,8 @@ import cx from "classnames";
 import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 
-import { view } from "../const";
-import { afterBreakpoint, breakpoint } from "../const";
+import { view } from "./const";
+import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 
 import { profile } from "@/npc-cli/sh/src";
