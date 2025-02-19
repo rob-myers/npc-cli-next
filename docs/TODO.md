@@ -8,7 +8,7 @@
   - ℹ️ https://spacejelly.dev/posts/mdx-in-nextjs
   - ✅ frontmatter
   - ✅ use some components: Card, SideNote
-  - 🚧 apply emotion styles
+  - ✅ sync tailwind config
 
 - emotion ssr
   - https://emotion.sh/docs/ssr
