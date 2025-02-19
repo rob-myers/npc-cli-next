@@ -1,7 +1,10 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { compileMDX } from 'next-mdx-remote/rsc'
+
 import Root, { Frontmatter } from "@/components/Root";
+import Card from "@/components/Card";
+import SideNote from "@/components/SideNote";
 
 export default async function BlogPage(props: {
   params: Promise<Slug>;
@@ -16,6 +19,8 @@ export default async function BlogPage(props: {
       parseFrontmatter: true,
     },
     components: {
+      Card,
+      SideNote,
       // 🚧
     }
   });

@@ -5,8 +5,10 @@
 - 🚧 next-mdx-remote
   - https://github.com/hashicorp/next-mdx-remote?tab=readme-ov-file
   - https://github.com/etuong/next-mdx/blob/main/pages/post/%5Bslug%5D.js
-  - https://spacejelly.dev/posts/mdx-in-nextjs
-  - e.g. for frontmatter
+  - ℹ️ https://spacejelly.dev/posts/mdx-in-nextjs
+  - ✅ frontmatter
+  - ✅ use some components: Card, SideNote
+  - 🚧 apply emotion styles
 
 - emotion ssr
   - https://emotion.sh/docs/ssr
