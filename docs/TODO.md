@@ -20,4 +20,13 @@
 
 - 🚧 sync Root.tsx with `npc-cli` (not `npc-cli-next-old`)
   - ✅ migrate Nav, Main, Comments
-  - migrate Viewer
+  - ✅ migrate Viewer
+    - ✅ finish migrating Tabs
+    - ✅ migrate ViewerControls
+  - migrate world/*
+    - also src/npc-cli/tabs/tab-factory.ts
+    - uncomment src/npc-cli/sh/src/game-generators.js
+  - maybe need `@emotion/css` for `<Html3d>`
+
+- src/app -> app etc.
+- maybe move flexlayout-react/style/light.css "back" into layout.tsx

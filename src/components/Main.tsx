@@ -15,7 +15,8 @@ export default function Main(props: React.PropsWithChildren) {
 
   return (
     <section
-      className={cx(sectionMainCss, "prose max-w-screen-lg prose-headings:font-light")}
+      className="prose max-w-screen-lg prose-headings:font-light"
+      css={sectionMainCss}
       data-testid="main"
       {...{ [sideNoteRootDataAttribute]: true }}
     >

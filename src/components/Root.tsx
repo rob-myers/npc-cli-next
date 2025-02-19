@@ -14,7 +14,7 @@ import useOnResize from "@/npc-cli/hooks/use-on-resize";
 import Nav from "./Nav";
 import Main from "./Main";
 import Comments from "./Comments";
-// import Viewer from "./Viewer";
+import Viewer from "./Viewer";
 
 export default function Root({ children, meta }: Props) {
 
@@ -44,7 +44,7 @@ export default function Root({ children, meta }: Props) {
               term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
             />
           </Main>
-          {/* <Viewer /> */}
+          <Viewer />
         </div>
       </div>
       <ReactQueryDevtools
