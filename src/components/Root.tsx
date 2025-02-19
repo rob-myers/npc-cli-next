@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { css } from "@emotion/css";
+import { css } from "@emotion/react";
 import { menuClasses, sidebarClasses } from "react-pro-sidebar";
 import { useBeforeunload } from "react-beforeunload";
 
@@ -10,8 +12,8 @@ import { afterBreakpoint, breakpoint, view, zIndexSite } from "../const";
 import useSite from "./site.store";
 import useOnResize from "@/npc-cli/hooks/use-on-resize";
 import Nav from "./Nav";
-// import Main from "./Main";
-// import Comments from "./Comments";
+import Main from "./Main";
+import Comments from "./Comments";
 // import Viewer from "./Viewer";
 
 export default function Root({ children, meta }: Props) {
@@ -27,9 +29,12 @@ export default function Root({ children, meta }: Props) {
 
   return (
     <QueryClientProvider client={queryClient} >
-      <div className={rootCss} data-testid="root">
+      <div
+        css={rootCss}
+        data-testid="root"
+      >
         <Nav />
-        {/* <div className={rootContentCss} data-testid="root-content">
+        <div css={rootContentCss} data-testid="root-content">
           <Main>
             <article>
               {children}
@@ -39,8 +44,8 @@ export default function Root({ children, meta }: Props) {
               term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
             />
           </Main>
-          <Viewer />
-        </div> */}
+          {/* <Viewer /> */}
+        </div>
       </div>
       <ReactQueryDevtools
         initialIsOpen={false}
@@ -51,10 +56,10 @@ export default function Root({ children, meta }: Props) {
 }
 
 interface Props extends React.PropsWithChildren {
-  meta: PageMeta;
+  meta: Frontmatter;
 }
 
-interface PageMeta {
+export interface Frontmatter {
   key: string;
   date: string;
   info: string;
@@ -114,9 +119,3 @@ const rootContentCss = css`
     background-color: #ccc;
   }
 `;
-
-export function WrapMdxWithRoot(meta: PageMeta) {
-  return function RootWithMeta(props: React.PropsWithChildren) {
-    return <Root meta={meta}>{props.children}</Root>;
-  }
-}
