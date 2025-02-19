@@ -11,7 +11,8 @@ export default async function BlogPage(props: {
 }) {
 
   const { slug } = await props.params;
-  const content = await fs.readFile(path.join(repoRoot, 'src/posts', `${slug[0]}.mdx`), 'utf-8');
+  const mdxFilename = `${slug[0]}.mdx` as const;
+  const content = await fs.readFile(path.join(repoRoot, 'src/posts', mdxFilename), 'utf-8');
 
   const data = await compileMDX<Frontmatter>({
     source: content,
@@ -22,7 +23,7 @@ export default async function BlogPage(props: {
       Card,
       SideNote,
       // 🚧
-    }
+    },
   });
 
   return (

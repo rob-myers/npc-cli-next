@@ -9,6 +9,7 @@
   - ✅ frontmatter
   - ✅ use some components: Card, SideNote
   - ✅ sync tailwind config
+  - migrate Root
 
 - emotion ssr
   - https://emotion.sh/docs/ssr

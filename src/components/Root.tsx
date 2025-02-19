@@ -13,7 +13,7 @@ import useSite from "./site.store";
 import useOnResize from "@/npc-cli/hooks/use-on-resize";
 import Nav from "./Nav";
 import Main from "./Main";
-// import Comments from "./Comments";
+import Comments from "./Comments";
 // import Viewer from "./Viewer";
 
 export default function Root({ children, meta }: Props) {
@@ -36,10 +36,10 @@ export default function Root({ children, meta }: Props) {
             <article>
               {children}
             </article>
-            {/* <Comments
+            <Comments
               id="comments"
               term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
-            /> */}
+            />
           </Main>
           {/* <Viewer /> */}
         </div>
