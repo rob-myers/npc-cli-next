@@ -12,7 +12,7 @@ import { afterBreakpoint, breakpoint, view, zIndexSite } from "../const";
 import useSite from "./site.store";
 import useOnResize from "@/npc-cli/hooks/use-on-resize";
 import Nav from "./Nav";
-// import Main from "./Main";
+import Main from "./Main";
 // import Comments from "./Comments";
 // import Viewer from "./Viewer";
 
@@ -31,18 +31,18 @@ export default function Root({ children, meta }: Props) {
     <QueryClientProvider client={queryClient} >
       <div className={rootCss} data-testid="root">
         <Nav />
-        {/* <div className={rootContentCss} data-testid="root-content">
+        <div className={rootContentCss} data-testid="root-content">
           <Main>
             <article>
               {children}
             </article>
-            <Comments
+            {/* <Comments
               id="comments"
               term={meta?.giscusTerm || meta?.path || "fallback-discussion"}
-            />
+            /> */}
           </Main>
-          <Viewer />
-        </div> */}
+          {/* <Viewer /> */}
+        </div>
       </div>
       <ReactQueryDevtools
         initialIsOpen={false}

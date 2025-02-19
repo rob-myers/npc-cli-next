@@ -8,7 +8,6 @@ export default async function BlogPage(props: {
 }) {
 
   const { slug } = await props.params;
-  const repoRoot = process.cwd();
   const content = await fs.readFile(path.join(repoRoot, 'src/posts', `${slug[0]}.mdx`), 'utf-8');
 
   const data = await compileMDX<Frontmatter>({
@@ -40,3 +39,5 @@ export async function generateStaticParams(): Promise<Slug[]> {
 interface Slug {
   slug: string[];
 }
+
+const repoRoot = process.cwd();
