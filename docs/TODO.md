@@ -10,12 +10,13 @@
   - ✅ use some components: Card, SideNote
   - ✅ sync tailwind config
 
-- 🚧 emotion ssr
+- ✅ emotion ssr
   - https://emotion.sh/docs/ssr
   - https://github.com/emotion-js/emotion/issues/2978#issuecomment-2393603295
   - https://github.com/emotion-js/emotion/issues/2928#issuecomment-1293012737
   - ✅ compiler emotion: true in next.config.ts
   - ✅ emotion/css -> emotion/react
+  - ✅ fix fontawesome css flash
 
 - 🚧 sync Root.tsx with `npc-cli` (not `npc-cli-next-old`)
   - ✅ migrate Nav, Main, Comments
