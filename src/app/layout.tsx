@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
 
@@ -14,6 +15,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          // 🔔 avoid HMR issues (flash + small clientHeight) when import 'flexlayout-react/style/light.css'
+          rel="stylesheet"
+          type="text/css"
+          href="/css/flexlayout-react__style__light.css"
+          as="style"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
