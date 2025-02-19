@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   compiler: {
     emotion: true,
   },
-  // 🔔 dev only, where turbo runs via `next dev --turbopack
+  // 🔔 dev only, where turbo runs via `next dev --turbopack`
   experimental: {
     turbo: {
       rules: {
