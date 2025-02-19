@@ -25,14 +25,18 @@
     - ✅ migrate ViewerControls
   - 🚧 migrate world/*
     - ✅ uncomment npc-cli/sh/src/game-generators.js
-    - also npc-cli/tabs/tab-factory.ts
-  - maybe need `@emotion/css` for `<Html3d>`
+    - ✅ also npc-cli/tabs/tab-factory.ts
+    - 🚧 try fix assets e.g. app/api/dev-web-sockets.js
+      - https://blog.logrocket.com/implementing-websocket-communication-next-js/
 
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify
 
+- maybe need `@emotion/css` for `<Html3d>`
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
 
 - 🚧 fix "initial stress test" for useEffect in `<BaseTty>`
   - https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
-  - ✅ fix: set next.config.ts `reactStrictMode` as `false`
+  - ✅ set next.config.ts `reactStrictMode` as `false`
+
+- migrate assets.js script

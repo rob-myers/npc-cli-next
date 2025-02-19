@@ -24,6 +24,7 @@ export const DEV_ORIGIN = 'localhost';
 export const ASSETS_JSON_FILENAME = "assets.json";
 
 /**
+ * 🚧
  * Gatsby serves `static/assets/*` in development as `/assets/*`.
  * However, it can be slow to update.
  * In development we serve assets directly to overcome this.

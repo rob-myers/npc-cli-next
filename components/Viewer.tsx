@@ -76,14 +76,13 @@ export default function Viewer() {
           isTouchDevice() ? [tabsetDefs.flatMap(x => x)] : tabsetDefs
         )([
           [
-            // 🚧
-            // {
-            //   type: "component",
-            //   class: "World",
-            //   filepath: "test-world-1",
-            //   // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-            //   props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-            // },
+            {
+              type: "component",
+              class: "World",
+              filepath: "test-world-1",
+              props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+              // props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+            },
             // {
             //   type: "component",
             //   class: "TestCharacterDemo",
