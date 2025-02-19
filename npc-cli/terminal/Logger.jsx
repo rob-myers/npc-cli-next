@@ -1,6 +1,6 @@
 import React from "react";
 import useMeasure from 'react-use-measure';
-import { css } from "@emotion/css";
+import { css } from "@emotion/react";
 
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
@@ -153,7 +153,7 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
   return (
     <div
       ref={state.containerRef}
-      className={loggerCss}
+      css={loggerCss}
     />
   );
 });

@@ -1,5 +1,6 @@
 import React from 'react';
-import { css, cx } from '@emotion/css';
+import { css } from '@emotion/react';
+import cx from 'classnames';
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
 
@@ -84,7 +85,10 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
   React.useImperativeHandle(ref, () => state, []);
 
   return (
-    <div className={cx("pop-up", rootPopupCss, props.className, { open: state.opened })}>
+    <div
+      css={rootPopupCss}
+      className={cx("pop-up", props.className, { open: state.opened })}
+    >
       <button
         ref={state.ref('icon')}
         className={popUpButtonClassName}
