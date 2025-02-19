@@ -1,17 +1,29 @@
-import Root from "@/components/Root";
+import { promises as fs } from 'fs'
+import path from 'path'
+import { compileMDX } from 'next-mdx-remote/rsc'
+import Root, { Frontmatter } from "@/components/Root";
 
 export default async function BlogPage(props: {
   params: Promise<Slug>;
 }) {
 
   const { slug } = await props.params;
+  const repoRoot = process.cwd();
+  const content = await fs.readFile(path.join(repoRoot, 'src/posts', `${slug[0]}.mdx`), 'utf-8');
+
+  const data = await compileMDX<Frontmatter>({
+    source: content,
+    options: {
+      parseFrontmatter: true,
+    },
+    components: {
+      // 🚧
+    }
+  });
 
   return (
-    // <div>
-    //   {JSON.stringify(slug)}
-    // </div>
-    <Root meta={{} as any}>
-      Hello, World
+    <Root meta={data.frontmatter}>
+      {data.content}
     </Root>
   )
 }

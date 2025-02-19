@@ -53,10 +53,10 @@ export default function Root({ children, meta }: Props) {
 }
 
 interface Props extends React.PropsWithChildren {
-  meta: PageMeta;
+  meta: Frontmatter;
 }
 
-interface PageMeta {
+export interface Frontmatter {
   key: string;
   date: string;
   info: string;
