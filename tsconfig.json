@@ -20,7 +20,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/npc-cli/*": ["./src/npc-cli/*"]
     },
     "types": ["@emotion/react/types/css-prop", "webpack-env"]
   },
