@@ -1,4 +1,6 @@
-import { css } from '@emotion/css';
+"use client";
+
+import { css } from '@emotion/react';
 import React from 'react';
 
 import { breakpoint } from '../const';
@@ -6,7 +8,7 @@ import { breakpoint } from '../const';
 /** @param {Props} props */
 export default function Card(props) {
   return (
-    <div className={rootCss}>
+    <div css={rootCss}>
       {props.id && <div id={props.id} className="card-anchor" />}
       {props.children}
     </div>

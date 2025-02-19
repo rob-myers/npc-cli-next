@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { css, cx } from "@emotion/css";
+import { css } from "@emotion/react";
 import React from "react";
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "react-pro-sidebar";
 
@@ -44,14 +44,14 @@ export default function Nav() {
   return (
     <Sidebar
       backgroundColor="black"
-      className={cx(navCss, navTitleCss)}
+      css={navCss}
       collapsed={collapsed}
       collapsedWidth={nav.collapsedWidth}
       data-testid="nav"
       onClick={state.onClickSidebar}
       width={nav.expandedWidth}
     >
-      <button onClick={(e) => { state.toggleCollapsed(); e.stopPropagation() }} className={cx("toggle", toggleCss)}>
+      <button onClick={(e) => { state.toggleCollapsed(); e.stopPropagation() }} css={toggleCss} className="toggle">
         <FontAwesomeIcon icon={faChevronRight} size="1x" beat={false} flip={collapsed ? undefined : "horizontal"} />
       </button>
 
@@ -81,7 +81,8 @@ export default function Nav() {
   );
 }
 
-// See parent component for more CSS
+
+// 🔔 See parent component for more CSS
 const navCss = css`
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
@@ -132,9 +133,7 @@ const navCss = css`
       padding-right: 0.5rem;
     }
   }
-`;
 
-const navTitleCss = css`
   .${menuClasses.menuItemRoot}.title {
     opacity: 1;
     transition: opacity 500ms;

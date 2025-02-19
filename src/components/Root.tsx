@@ -1,11 +1,9 @@
-/** @jsxImportSource @emotion/react */
 "use client";
 
 import React from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { css } from "@emotion/css";
-import { css as cssReact } from "@emotion/react";
+import { css } from "@emotion/react";
 import { menuClasses, sidebarClasses } from "react-pro-sidebar";
 import { useBeforeunload } from "react-beforeunload";
 
@@ -31,9 +29,12 @@ export default function Root({ children, meta }: Props) {
 
   return (
     <QueryClientProvider client={queryClient} >
-      <div css={cssReact`background: red`} className={rootCss} data-testid="root">
+      <div
+        css={rootCss}
+        data-testid="root"
+      >
         <Nav />
-        <div className={rootContentCss} data-testid="root-content">
+        <div css={rootContentCss} data-testid="root-content">
           <Main>
             <article>
               {children}

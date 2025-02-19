@@ -1,5 +1,5 @@
 import React from "react";
-import { css, cx } from "@emotion/css";
+import { css } from "@emotion/react";
 import Giscus from "@giscus/react";
 import useSite from "./site.store";
 import { afterBreakpoint, discussionsUrl } from "../const";
@@ -14,7 +14,7 @@ export default function Comments(props: Props) {
   );
 
   return (
-    <section className={cx("comments", rootCss)}>
+    <section css={rootCss} className="comments">
       <header>
         {commentMeta ? (
           <a href={commentMeta.url} target="_blank">

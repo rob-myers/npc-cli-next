@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import { css, cx } from '@emotion/css';
+import { css } from '@emotion/react';
 
 /**
  * - Direction is `right` unless < 200 pixels to the right of
@@ -12,7 +12,8 @@ export default function SideNote(props: React.PropsWithChildren<{ width?: number
 
   return <>
     <span
-      className={cx("side-note", iconTriggerCss)}
+      css={iconTriggerCss}
+      className="side-note"
       onClick={e => 
         open({
           bubble: e.currentTarget.nextSibling as HTMLElement,
@@ -34,7 +35,8 @@ export default function SideNote(props: React.PropsWithChildren<{ width?: number
       ⋯
     </span>
     <span
-      className={cx("side-note-bubble", speechBubbleCss)}
+      css={speechBubbleCss}
+      className="side-note-bubble"
       onMouseEnter={_ => window.clearTimeout(timeoutId.current)}
       onMouseLeave={e => (timeoutId.current = close(e, 'bubble'))} // Triggered on mobile click outside
     >

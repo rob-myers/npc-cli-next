@@ -1,5 +1,6 @@
 import React from "react";
-import { css, cx } from "@emotion/css";
+import { css } from "@emotion/react";
+import cx from "classnames";
 import { shallow } from "zustand/shallow";
 
 import { afterBreakpoint, breakpoint, zIndexSite } from "../const";
@@ -18,7 +19,7 @@ export default function Main(props: React.PropsWithChildren) {
       data-testid="main"
       {...{ [sideNoteRootDataAttribute]: true }}
     >
-      <header className={mainHeaderCss} data-testid="main-title">
+      <header css={mainHeaderCss} data-testid="main-title">
         NPC CLI
       </header>
 
@@ -27,7 +28,8 @@ export default function Main(props: React.PropsWithChildren) {
       </main>
 
       <div
-        className={cx(overlayCss, { overlayOpen })}
+        css={overlayCss}
+        className={cx({overlayOpen})}
         onClick={() => useSite.api.toggleNav()}
       />
     </section>
