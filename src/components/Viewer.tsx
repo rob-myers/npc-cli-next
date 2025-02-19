@@ -14,8 +14,7 @@ import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
 import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
-// 🚧
-// import ViewerControls from "./ViewerControls";
+import ViewerControls from "./ViewerControls";
 import { tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 
@@ -55,13 +54,14 @@ export default function Viewer() {
 
   return (
     <aside
-      className={cx(viewerCss, { collapsed: !site.viewOpen })}
+      css={viewerCss}
+      className={cx({ collapsed: !site.viewOpen })}
       data-testid="viewer"
       ref={(el) => void (el && (state.rootEl = el))}
       tabIndex={0}
       onKeyDown={state.onKeyDown}
     >
-      {/* <ViewerControls api={state} /> */}
+      <ViewerControls api={state} />
       <Tabs
         ref={x => void (state.tabs = x ?? state.tabs)}
         id="viewer-tabs"
@@ -76,6 +76,7 @@ export default function Viewer() {
           isTouchDevice() ? [tabsetDefs.flatMap(x => x)] : tabsetDefs
         )([
           [
+            // 🚧
             // {
             //   type: "component",
             //   class: "World",

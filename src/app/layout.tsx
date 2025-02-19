@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import "@xterm/xterm/css/xterm.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
