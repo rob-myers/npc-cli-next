@@ -27,10 +27,16 @@
     - ✅ uncomment npc-cli/sh/src/game-generators.js
     - ✅ also npc-cli/tabs/tab-factory.ts
     - 🚧 try fix assets e.g. app/api/dev-web-sockets.js
-      - https://blog.logrocket.com/implementing-websocket-communication-next-js/
+      - ℹ️ https://blog.logrocket.com/implementing-websocket-communication-next-js/
+      - ℹ️ `GET http://localhost:8012/dev-assets/geomorphs.json?v=1740052354192`
+      - ✅ `/geomorphs.json?v=1740052354192` resolves to `/public/geomorphs.json`
+      - check build works
+    - 🚧 get Decor mounting
 
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify
+- websocket server for `asset.js` script -> `World` communication
+- cleanup fetch-assets
 
 - maybe need `@emotion/css` for `<Html3d>`
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
@@ -39,4 +45,6 @@
   - https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
   - ✅ set next.config.ts `reactStrictMode` as `false`
 
-- migrate assets.js script
+- 🚧 migrate assets.js script
+  - 🚧 generate decor
+- tty: option-arrows not working
