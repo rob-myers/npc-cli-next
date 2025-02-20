@@ -32,6 +32,7 @@
       - ✅ `/geomorphs.json?v=1740052354192` resolves to `/public/geomorphs.json`
       - check build works
     - 🚧 get Decor mounting
+    - Web Worker syntax
 
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify
@@ -46,5 +47,23 @@
   - ✅ set next.config.ts `reactStrictMode` as `false`
 
 - 🚧 migrate assets.js script
+  - 🚧 store geomorphs.json in public
+  - npm scripts
+    ```json
+    "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
+    "assets": "npm run ts-script src/scripts/assets -- --all",
+    "assets-fast": "sucrase-node src/scripts/assets",
+    "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
+    "cwebp": "npm run ts-script src/scripts/cwebp",
+    "cwebp-fast": "sucrase-node src/scripts/cwebp",
+    "get-pngs": "npm run ts-script src/scripts/get-pngs",
+    "get-pngs-fast": "sucrase-node src/scripts/get-pngs",
+    "watch-assets": "source src/scripts/watch-assets.sh",
+    "watch-assets-nodemon": "sucrase-node src/scripts/assets-nodemon.js",
+    "ws-server": "sucrase-node src/scripts/ws-server.js",
+    "pre-push": "npm run assets-fast -- --prePush"
+    ```
   - 🚧 generate decor
+
 - tty: option-arrows not working
+- patch-package + patches

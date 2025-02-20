@@ -16,7 +16,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Development dependencies
 
 ```sh
-# cweb
+# cwebp
 brew install webp
 ```
-
