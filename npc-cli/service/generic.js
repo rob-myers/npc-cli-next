@@ -301,6 +301,11 @@ export function isDevelopment() {
   return process.env.NODE_ENV !== "production";
 }
 
+/** https://stackoverflow.com/a/11979803/2917822 */
+export function isInsideWebWorker() {
+  return typeof self !== 'undefined' && self.document === undefined;
+}
+
 /**
  * Outputs JS expressions.
  * @param {*} input 
