@@ -26,13 +26,13 @@
   - 🚧 migrate world/*
     - ✅ uncomment npc-cli/sh/src/game-generators.js
     - ✅ also npc-cli/tabs/tab-factory.ts
-    - 🚧 try fix assets e.g. app/api/dev-web-sockets.js
+    - ✅ try fix assets e.g. app/api/dev-web-sockets.js
       - ℹ️ https://blog.logrocket.com/implementing-websocket-communication-next-js/
       - ℹ️ `GET http://localhost:8012/dev-assets/geomorphs.json?v=1740052354192`
       - ✅ `/geomorphs.json?v=1740052354192` resolves to `/public/geomorphs.json`
-      - check build works
     - 🚧 get Decor mounting
-    - Web Worker syntax
+    - 🚧 Web Worker syntax
+    - check build works
 
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify

@@ -326,10 +326,13 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
   "extra--020--table-2x0.66": true,
 };
 
-/** @type {Record<NPC.ClassKey, NPC.ClassDef>} */
+/**
+ * The `*.glb` files must be exported from Blender using respective `media/npc/*.blend`
+ * @type {Record<NPC.ClassKey, NPC.ClassDef>}
+ */
 export const npcClassToMeta = {
   'cuboid-man': {
-    url: '/assets/3d/cuboid-man.glb',
+    url: '/3d/cuboid-man.glb',
     scale: 0.65,
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',
@@ -342,7 +345,7 @@ export const npcClassToMeta = {
     runSpeed: 4,
   },
   'cuboid-pet': {
-    url: '/assets/3d/cuboid-pet.glb',
+    url: '/3d/cuboid-pet.glb',
     // scale: 1,
     scale: 0.6,
     materialName: 'cuboid-pet-material',
