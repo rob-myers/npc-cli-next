@@ -1,3 +1,6 @@
+/**
+ * 🚧 clean
+ */
 import { queryClient } from "./query-client";
 import { info, isDevelopment } from "./generic";
 
@@ -23,25 +26,25 @@ export const DEV_ORIGIN = 'localhost';
  */
 export const ASSETS_JSON_FILENAME = "assets.json";
 
-/**
- * Gatsby serves `static/assets/*` in development as `/assets/*`.
- * However, it can be slow to update.
- * In development we serve assets directly to overcome this.
- */
-export const assetsEndpoint = process.env.NODE_ENV === 'development'
-  ? `http://${DEV_ORIGIN}:${DEV_EXPRESS_WEBSOCKET_PORT}/dev-assets`
-  : '/assets'
-;
+export const assetsEndpoint = '';
+// export const assetsEndpoint = 'http://localhost:3000';
 
 export const GEOMORPHS_JSON_FILENAME = "geomorphs.json";
 
 export const imgExt = isDevelopment() ? 'png' : 'png.webp';
 
 
-/** @returns {Promise<Geomorph.GeomorphsJson>} */
-export async function fetchGeomorphsJson() {
+/**
+ * Requires @see {baseUrl} because also runs in webworker.
+ * @param {string} baseUrl 
+ * @returns {Promise<Geomorph.GeomorphsJson>}
+ */
+export async function fetchGeomorphsJson(baseUrl) {
   return await fetch(
-    `${assetsEndpoint}/${GEOMORPHS_JSON_FILENAME}${getDevCacheBustQueryParam()}`
+    new URL(
+      `${assetsEndpoint}/${GEOMORPHS_JSON_FILENAME}${getDevCacheBustQueryParam()}`,
+      baseUrl,
+    )
   ).then((x) => x.json());
 }
 

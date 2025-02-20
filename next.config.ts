@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   experimental: {
     turbo: {
       rules: {
-        "*.sh": {
+        "**/sh/src/*.sh": {
           loaders: ["raw-loader"],
           as: "*.js",
         },
@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
   // 🔔 build only, because turbopack does not run during build
   webpack(config: import("webpack").Configuration) {
     config.module?.rules?.push({
-      test: /\.sh$/,
+      test: /\/sh\/src\/.*\.sh$/,
       use: "raw-loader",
     });
     return config;

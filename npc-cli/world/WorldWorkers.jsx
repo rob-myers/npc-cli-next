@@ -144,10 +144,10 @@ export default function WorldWorkers() {
 
   React.useEffect(() => {// restart workers
     if (w.threeReady && w.hash.full) {
-      w.nav.worker = new Worker(new URL("./nav.worker", import.meta.url), { type: "module" });
+      w.nav.worker = new Worker(new URL("./nav.worker", import.meta.url));
       w.nav.worker.addEventListener("message", state.handleNavWorkerMessage);
 
-      w.physics.worker = new Worker(new URL("./physics.worker", import.meta.url), { type: "module" });
+      w.physics.worker = new Worker(new URL("./physics.worker", import.meta.url));
       w.physics.worker.addEventListener("message", state.handlePhysicsWorkerMessage);
 
       return () => {
@@ -170,7 +170,12 @@ export default function WorldWorkers() {
       w.nav.offMeshDefs = computeOffMeshConnectionsParams(w);
       w.events.next({ key: 'pre-request-nav', changedGmIds });
       w.menu.measure('request-nav');
-      w.nav.worker.postMessage({ type: "request-nav", mapKey: w.mapKey, offMeshDefs: w.nav.offMeshDefs });
+      w.nav.worker.postMessage({
+        type: "request-nav",
+        mapKey: w.mapKey,
+        offMeshDefs: w.nav.offMeshDefs,
+        baseUrl: location.href,
+      });
 
       w.events.next({ key: 'pre-setup-physics' });
       w.menu.measure('setup-physics');
@@ -181,6 +186,7 @@ export default function WorldWorkers() {
           npcKey: npc.key,
           position: npc.position,
         })),
+        baseUrl: location.href,
       });
 
       state.seenHash = next;
@@ -190,6 +196,7 @@ export default function WorldWorkers() {
   return null;
 }
 
+// 🚧
 if (isDevelopment()) {// propagate HMR to this file onchange worker files
   import('./physics.worker');
   import('./nav.worker');

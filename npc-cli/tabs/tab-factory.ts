@@ -68,14 +68,13 @@ const classToComponent = {
       (props: React.ComponentProps<(typeof module)["default"]>) =>
         React.createElement(module.default, { disabled: true, ...props }),
   },
-  // 🚧
-  // World: {
-  //   loadable: loadable(() => import("../world/World")),
-  //   get:
-  //     (module: typeof import("../world/World")) =>
-  //     (props: React.ComponentProps<(typeof module)["default"]>) =>
-  //       React.createElement(module.default, { disabled: true, ...props }),
-  // },
+  World: {
+    loadable: loadable(() => import("../world/World")),
+    get:
+      (module: typeof import("../world/World")) =>
+      (props: React.ComponentProps<(typeof module)["default"]>) =>
+        React.createElement(module.default, { disabled: true, ...props }),
+  },
 };
 
 export async function getComponent(componentClassKey: ComponentClassKey, errorIdentifier?: string) {

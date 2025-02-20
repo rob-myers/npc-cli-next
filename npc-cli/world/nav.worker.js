@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { init as initRecastNav, exportTileCache } from "@recast-navigation/core";
 
-import { error, info, debug, range } from "../service/generic";
+import { error, info, debug, range, isInsideWebWorker } from "../service/generic";
 import { geomorph } from "../service/geomorph";
 import { customThreeToTileCache, getTileCacheGeneratorConfig, getTileCacheMeshProcess, computeGmInstanceMesh } from "../service/recast-detour";
 import { fetchGeomorphsJson } from "../service/fetch-assets";
@@ -9,7 +9,7 @@ import { fetchGeomorphsJson } from "../service/fetch-assets";
 /** @type {WW.WorkerGeneric<WW.MsgFromNavWorker, WW.MsgToNavWorker>} */
 const worker = (/** @type {*} */ (self));
 
-if (typeof window === 'undefined') {
+if (isInsideWebWorker() === true) {
   info("🤖 nav.worker started", import.meta.url);
   worker.addEventListener("message", handleMessages);
 }
@@ -28,7 +28,7 @@ async function handleMessages(e) {
 /** @param {WW.RequestNavMesh} msg  */
 async function onRequestNav(msg) {
 
-  const geomorphs = geomorph.deserializeGeomorphs(await fetchGeomorphsJson());
+  const geomorphs = geomorph.deserializeGeomorphs(await fetchGeomorphsJson(msg.baseUrl));
   const map = geomorphs.map[msg.mapKey ?? "demo-map-1"];
   const gms = map.gms.map(({ gmKey, transform }, gmId) =>
     geomorph.computeLayoutInstance(geomorphs.layout[gmKey], gmId, transform)

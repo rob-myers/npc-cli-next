@@ -317,7 +317,7 @@ export default function Npcs(props) {
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
       const { skinBaseName } = npcClassToMeta[classKey];
-      const tex = await textureLoader.loadAsync(`/assets/3d/${skinBaseName}?v=${w.hash.sheets}`);
+      const tex = await textureLoader.loadAsync(`/3d/${skinBaseName}?v=${w.hash.sheets}`);
       tex.flipY = false;
       state.tex[classKey] = tex;
     })).then(() => Object.values(state.npc).forEach(npc => npc.forceUpdate()));

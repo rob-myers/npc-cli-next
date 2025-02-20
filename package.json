@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev-webpack": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
+    "assets": "npm run ts-script scripts/assets -- --all",
+    "clean-assets": "rm public/{assets.json,geomorphs.json} public/2d/{obstacles,decor}.png{,.webp}",
+    "cwebp-fast": "sucrase-node scripts/cwebp",
     "types": "tsc --noEmit"
   },
   "dependencies": {
@@ -32,7 +37,7 @@
     "@xterm/addon-webgl": "^0.18.0",
     "@xterm/xterm": "^5.5.0",
     "braces": "^3.0.3",
-    "canvas": "^3.1.0",
+    "canvas": "^2.11.2",
     "chalk": "^4.1.2",
     "classnames": "^2.5.1",
     "cli-columns": "^4.0.0",
@@ -71,6 +76,7 @@
     "@types/earcut": "^2.1.4",
     "@types/loadable__component": "^5.13.9",
     "@types/node": "^20.17.19",
+    "@types/nodemon": "^1.19.6",
     "@types/react": "^19",
     "@types/react-beforeunload": "^2.1.5",
     "@types/react-dom": "^19",
@@ -78,9 +84,14 @@
     "@types/three": "^0.172.0",
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.8",
+    "nodemon": "^3.1.9",
+    "p-queue-compat": "^1.0.225",
     "postcss": "^8",
     "raw-loader": "^4.0.2",
+    "sucrase": "^3.35.0",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   },
   "overrides": {

@@ -155,7 +155,7 @@ export default function World(props) {
       }
 
       const prevGeomorphs = state.geomorphs;
-      const geomorphsJson = await fetchGeomorphsJson();
+      const geomorphsJson = await fetchGeomorphsJson(location.href);
 
       /**
        * Used to apply changes synchronously.
