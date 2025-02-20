@@ -50,8 +50,8 @@
   - 🚧 store geomorphs.json in public
   - npm scripts
     ```json
-    "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
-    "assets": "npm run ts-script src/scripts/assets -- --all",
+    ✅ "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
+    ✅ "assets": "npm run ts-script src/scripts/assets -- --all",
     "assets-fast": "sucrase-node src/scripts/assets",
     "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
     "cwebp": "npm run ts-script src/scripts/cwebp",
@@ -63,6 +63,7 @@
     "ws-server": "sucrase-node src/scripts/ws-server.js",
     "pre-push": "npm run assets-fast -- --prePush"
     ```
+  - 🚧 migrate some media/*
   - 🚧 generate decor
 
 - tty: option-arrows not working
