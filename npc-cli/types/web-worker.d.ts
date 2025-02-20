@@ -16,6 +16,8 @@ declare namespace WW {
     type: "request-nav";
     mapKey: string;
     offMeshDefs: import('recast-navigation').OffMeshConnectionParams[];
+    /** Used to fetch public assets from worker */
+    baseUrl: string;
   }
 
   interface NavMeshResponse {
@@ -101,6 +103,8 @@ declare namespace WW {
     type: 'setup-physics';
     mapKey: string;
     npcs: NpcDef[];
+    /** Used to fetch public assets from worker */
+    baseUrl: string;
   }
   //#endregion
 

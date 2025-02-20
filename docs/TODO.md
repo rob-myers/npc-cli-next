@@ -23,19 +23,23 @@
   - ✅ migrate Viewer
     - ✅ finish migrating Tabs
     - ✅ migrate ViewerControls
-  - 🚧 migrate world/*
+  - ✅ migrate world/*
     - ✅ uncomment npc-cli/sh/src/game-generators.js
     - ✅ also npc-cli/tabs/tab-factory.ts
     - ✅ try fix assets e.g. app/api/dev-web-sockets.js
       - ℹ️ https://blog.logrocket.com/implementing-websocket-communication-next-js/
       - ℹ️ `GET http://localhost:8012/dev-assets/geomorphs.json?v=1740052354192`
       - ✅ `/geomorphs.json?v=1740052354192` resolves to `/public/geomorphs.json`
-    - 🚧 get Decor mounting
-    - 🚧 Web Worker syntax
-    - check build works
+    - ✅ get Decor mounting
+    - ✅ Web Worker working in webpack
+    - ✅ Web Worker working in turbopack
+    - ✅ Web Worker working in build
+  - fix Floor/Ceiling colours
 
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify
+- avoid crash on switch between tty-1 and tty-2
+
 - websocket server for `asset.js` script -> `World` communication
   - support POST http://localhost:8012/send-dev-event (or e.g. port 3012)
 - clean fetch-assets file

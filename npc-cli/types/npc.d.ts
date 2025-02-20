@@ -34,7 +34,7 @@ declare namespace NPC {
   }
 
   interface ClassDef {
-    /** e.g. '/assets/3d/cuboid-man.glb' */
+    /** e.g. '/3d/cuboid-man.glb' */
     url: string;
     /** e.g. `1` */
     scale :number;

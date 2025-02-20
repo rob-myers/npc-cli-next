@@ -3,7 +3,7 @@
  */
 import RAPIER, { ColliderDesc, RigidBodyType } from '@dimforge/rapier3d-compat';
 import { physicsConfig, wallHeight, wallOutset } from '../service/const';
-import { info, warn, debug, testNever } from "../service/generic";
+import { info, warn, debug, testNever, isInsideWebWorker } from "../service/generic";
 import { fetchGeomorphsJson } from '../service/fetch-assets';
 import { geomorph } from '../service/geomorph';
 import { addBodyKeyUidRelation, npcToBodyKey, parsePhysicsBodyKey } from '../service/rapier';
@@ -136,7 +136,7 @@ async function handleMessages(e) {
       break;
     }
     case "setup-physics":
-      await setupOrRebuildWorld(msg.mapKey, msg.npcs);
+      await setupOrRebuildWorld(msg);
       selfTyped.postMessage({ type: 'physics-is-setup' });
       break;
     default:
@@ -175,10 +175,9 @@ function stepWorld() {
 }
 
 /**
- * @param {string} mapKey 
- * @param {WW.NpcDef[]} npcs
+ * @param {WW.SetupPhysicsWorld} msg
  */
-async function setupOrRebuildWorld(mapKey, npcs) {
+async function setupOrRebuildWorld(msg) {
 
   if (!state.world) {
     await RAPIER.init();
@@ -195,8 +194,8 @@ async function setupOrRebuildWorld(mapKey, npcs) {
     // state.world.colliders.free();
   }
 
-  const geomorphs = geomorph.deserializeGeomorphs(await fetchGeomorphsJson());
-  const mapDef = geomorphs.map[mapKey];
+  const geomorphs = geomorph.deserializeGeomorphs(await fetchGeomorphsJson(msg.baseUrl));
+  const mapDef = geomorphs.map[msg.mapKey];
   state.gms = mapDef.gms.map(({ gmKey, transform }, gmId) =>
     geomorph.computeLayoutInstance(geomorphs.layout[gmKey], gmId, transform)
   );
@@ -205,7 +204,7 @@ async function setupOrRebuildWorld(mapKey, npcs) {
 
   createGmColliders();
 
-  restoreNpcs(npcs);
+  restoreNpcs(msg.npcs);
 
   // fire initial collisions
   stepWorld();
@@ -418,7 +417,7 @@ function sendDebugData() {
   })
 }
 
-if (typeof window === 'undefined') {
+if (isInsideWebWorker() === true) {
   info("🤖 physics.worker started", import.meta.url);
   selfTyped.addEventListener("message", handleMessages);
 }
