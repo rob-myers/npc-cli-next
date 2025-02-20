@@ -17,7 +17,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@giscus/react": "^3.1.0",
     "@loadable/component": "^5.16.4",
-    "@react-three/drei": "^9.122.0",
+    "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.0.2",
     "@recast-navigation/core": "npm:@rob-myers/recast-navigation__core@0.39.1",
     "@recast-navigation/generators": "npm:@rob-myers/recast-navigation__generators@0.39.1",
