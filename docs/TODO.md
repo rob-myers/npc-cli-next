@@ -44,6 +44,10 @@
 - ✅ avoid crash on multiple terminals tty-1 and tty-2
   - turn off zustand/devtool on session.store
 
+- 🚧 avoid build minification of e.g. game-generators.js
+  - ✅ turned off minification in next.config.ts
+  - 🚧 could try import as text then apply eval
+  - could try patch node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
 - tty: option-arrows not working
 - patch-package + patches
 
