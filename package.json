@@ -9,6 +9,8 @@
     "lint": "next lint",
     "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
     "assets": "npm run ts-script scripts/assets -- --all",
+    "clean-assets": "rm public/{assets.json,geomorphs.json} public/2d/{obstacles,decor}.png{,.webp}",
+    "cwebp-fast": "sucrase-node scripts/cwebp",
     "types": "tsc --noEmit"
   },
   "dependencies": {
@@ -34,7 +36,7 @@
     "@xterm/addon-webgl": "^0.18.0",
     "@xterm/xterm": "^5.5.0",
     "braces": "^3.0.3",
-    "canvas": "^3.1.0",
+    "canvas": "^2.11.2",
     "chalk": "^4.1.2",
     "classnames": "^2.5.1",
     "cli-columns": "^4.0.0",

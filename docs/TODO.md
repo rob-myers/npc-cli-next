@@ -37,7 +37,8 @@
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify
 - websocket server for `asset.js` script -> `World` communication
-- cleanup fetch-assets
+  - support POST http://localhost:8012/send-dev-event (or e.g. port 3012)
+- clean fetch-assets file
 
 - maybe need `@emotion/css` for `<Html3d>`
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
@@ -46,25 +47,26 @@
   - https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
   - ✅ set next.config.ts `reactStrictMode` as `false`
 
-- 🚧 migrate assets.js script
-  - 🚧 store geomorphs.json in public
+- ✅ migrate assets.js script
+  - ✅ store geomorphs.json in public
   - npm scripts
     ```json
     ✅ "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
-    ✅ "assets": "npm run ts-script src/scripts/assets -- --all",
-    "assets-fast": "sucrase-node src/scripts/assets",
-    "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
-    "cwebp": "npm run ts-script src/scripts/cwebp",
-    "cwebp-fast": "sucrase-node src/scripts/cwebp",
-    "get-pngs": "npm run ts-script src/scripts/get-pngs",
-    "get-pngs-fast": "sucrase-node src/scripts/get-pngs",
-    "watch-assets": "source src/scripts/watch-assets.sh",
-    "watch-assets-nodemon": "sucrase-node src/scripts/assets-nodemon.js",
-    "ws-server": "sucrase-node src/scripts/ws-server.js",
+    ✅ "assets": "npm run ts-script scripts/assets -- --all",
+    "assets-fast": "sucrase-node scripts/assets",
+    ✅ "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
+    "cwebp": "npm run ts-script scripts/cwebp",
+    ✅ "cwebp-fast": "sucrase-node scripts/cwebp",
+    "get-pngs": "npm run ts-script scripts/get-pngs",
+    "get-pngs-fast": "sucrase-node scripts/get-pngs",
+    "watch-assets": "source scripts/watch-assets.sh",
+    "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js",
+    "ws-server": "sucrase-node scripts/ws-server.js",
     "pre-push": "npm run assets-fast -- --prePush"
     ```
-  - 🚧 migrate some media/*
-  - 🚧 generate decor
+  - ✅ migrate enough media/* to get assets.js working
+  - ✅ generate decor
+  - ✅ cwebp-fast
 
 - tty: option-arrows not working
 - patch-package + patches
