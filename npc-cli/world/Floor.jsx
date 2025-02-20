@@ -132,7 +132,7 @@ export default function Floor(props) {
         diffuse={[1, 1, 1]}
         objectPickRed={2}
         alphaTest={0.5}
-        colorSpace
+        // colorSpace
       />
     </instancedMesh>
   );

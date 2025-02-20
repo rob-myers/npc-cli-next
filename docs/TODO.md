@@ -34,20 +34,23 @@
     - ✅ Web Worker working in webpack
     - ✅ Web Worker working in turbopack
     - ✅ Web Worker working in build
-  - fix Floor/Ceiling colours
+  - ✅ fix Floor/Ceiling colours
+  - websocket server for `asset.js` script -> `World` communication
+    - support POST http://localhost:8012/send-dev-event (or e.g. port 3012)
+  - clean fetch-assets file
+  - fix ContextMenu
+    - maybe need `@emotion/css` for `<Html3d>`
+
+- avoid crash on switch between tty-1 and tty-2
+- tty: option-arrows not working
+- patch-package + patches
 
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify
-- avoid crash on switch between tty-1 and tty-2
 
-- websocket server for `asset.js` script -> `World` communication
-  - support POST http://localhost:8012/send-dev-event (or e.g. port 3012)
-- clean fetch-assets file
-
-- maybe need `@emotion/css` for `<Html3d>`
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
 
-- 🚧 fix "initial stress test" for useEffect in `<BaseTty>`
+- ✅ fix "initial stress test" for useEffect in `<BaseTty>`
   - https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
   - ✅ set next.config.ts `reactStrictMode` as `false`
 
@@ -72,5 +75,3 @@
   - ✅ generate decor
   - ✅ cwebp-fast
 
-- tty: option-arrows not working
-- patch-package + patches

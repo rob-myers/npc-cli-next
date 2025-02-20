@@ -112,8 +112,8 @@ export default function Ceiling(props) {
         atlas={tex}
         alphaTest={0.5} opacity={state.opacity} depthWrite={false}
         diffuse={[1, 1, 1]}
-        colorSpace
         objectPickRed={3}
+        // colorSpace
       />
     </instancedMesh>
   );
