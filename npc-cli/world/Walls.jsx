@@ -130,7 +130,8 @@ export default function Walls(props) {
       {/* <meshBasicMaterial side={THREE.DoubleSide} color="#866" wireframe /> */}
       <instancedMonochromeShader
         key={InstancedMonochromeShader.key}
-        diffuse={transparent ? [.4, .4, .5] : [0, 0, 0]}
+        diffuse={[0, 0, 0]}
+        // diffuse={transparent ? [.4, .4, .5] : [0, 0, 0]}
         // ℹ️ for transparency
         depthWrite={!transparent}
         transparent={transparent}
