@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently 'npm run dev-turbopack' 'npm run assets' 'npm run watch-assets'",
+    "dev-turbopack": "next dev --turbopack",
     "dev-webpack": "next dev",
     "build": "next build",
     "start": "next start",
@@ -88,6 +89,7 @@
     "@types/three": "^0.172.0",
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.8",
+    "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
     "p-queue-compat": "^1.0.225",
     "postcss": "^8",
