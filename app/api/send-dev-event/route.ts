@@ -1,16 +1,17 @@
-// 🔔 Dev only endpoint
-export async function POST(request: Request) {
-  console.log(`[${__dirname}] received`, await request.json());
+import { client } from "../sse-clients";
 
-  // 🚧 send message to connected browsers
+/**
+ * Send message to all connected clients (browsers).
+ * 🔔 Dev only endpoint
+ */
+export async function POST(_request: Request) {
+  // console.log(`[${__dirname}] received`, await request.json());
 
-  return Response.json({ hello: 'world '});
-}
+  client.sendMessage(JSON.stringify({
+    key: 'reload-world',
+  }));
 
-// Also accessible in build at /api/send-dev-event
-export async function GET(request: Request) {
-  console.log(__dirname, 'GET');
-  return Response.json({ hello: 'world '});
+  return Response.json({ sentMessageToClients: true });
 }
 
 export const dynamic = 'force-static';

@@ -1,8 +1,10 @@
 /**
  * 🚧 clean
  */
+import { uid } from "uid";
 import { queryClient } from "./query-client";
-import { info, isDevelopment } from "./generic";
+import { ensureEventSource } from "./server-sent-events";
+import { info, isDevelopment, parseJsonArg, warn } from "./generic";
 
 export const DEV_ENV_PORT = 3000;
 
@@ -79,17 +81,23 @@ export const WORLD_QUERY_FIRST_KEY = 'world';
  * > trigger component refresh on file change
  */
 export function connectDevEventsWebsocket() {
-  eventSource?.close();
 
-  eventSource = new EventSource(`/api/connect-dev-events`);
+  const eventSource = ensureEventSource();
+  // eventSource = new EventSource(`/api/connect-dev-events`);
 
   eventSource.onmessage = event => {
-    console.log('🔔', 'received event', event);
-  };
+    const message = parseJsonArg(event.data);
 
-  eventSource.onerror = () => {
-    eventSource.close()
-  }
+    if (typeof message === 'string') {
+      warn(`dev-events: unexpected message: "${message}"`);
+      return;
+    }
+
+    console.log('🔔', 'received event', message);
+    if (message.key === 'initial-message') {
+      clientId = message.clientId;
+    }
+  };
 
   // const url = `ws://${DEV_ORIGIN}:${DEV_EXPRESS_WEBSOCKET_PORT}/dev-events`;
   // const wsClient = new WebSocket(url);
@@ -121,3 +129,5 @@ let wsAttempts = 0;
 
 /** @type {EventSource} */
 let eventSource;
+
+let clientId = -1;

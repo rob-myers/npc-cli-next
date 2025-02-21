@@ -25,5 +25,7 @@ brew install webp
 These are removed in production by temporarily moving `app/api` into `public`.
 
 ```sh
-curl -XPOST localhost:3000/api/send-dev-event -d'{ "are": "you out there" }'
+curl --silent localhost:3000/api/connect/myFunUid/dev-events
+curl --silent -XPOST localhost:3000/api/send-dev-event
+
 ```

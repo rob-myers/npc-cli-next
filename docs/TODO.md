@@ -10,10 +10,17 @@
     - had to move `app/api` temporarily during build
   - ✅ can POST /send-dev-event in dev without moving files
     - use `export const dynamic = 'force-static';` in route.ts
-  - 🚧 POST http://localhost:3000/send-dev-event can send event to browser
+  - ✅ POST http://localhost:3000/send-dev-event can send event to browser
     - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-9791770
     - ✅ can connect SSE via /api/connect-dev-events and send initial message to browser
-  - implement POST http://localhost:3000/send-dev-event
+  - ✅ implement POST http://localhost:3000/send-dev-event
+  - 🚧 can clean up connections
+    - on hmr
+    - on reload page
+    - need some way to tell server we're finished
+      - "static export" prevents /foo/[uid]/bar and query params,
+      - however, maybe can send POST with JSON?
+  - 🚧 browser reacts to server-sent event
 
 - ❌ try fix `yarn build` breaking `yarn dev`
   - https://github.com/vercel/next.js/issues/61228
