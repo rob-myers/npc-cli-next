@@ -13,7 +13,7 @@
   - 🚧 POST http://localhost:3000/send-dev-event can send event to browser
   - implement POST http://localhost:3000/send-dev-event
 
-- try fix `yarn build` breaking `yarn dev`
+- ❌ try fix `yarn build` breaking `yarn dev`
   - https://github.com/vercel/next.js/issues/61228
 - clean fetch-assets file
 - try `bun` https://bun.sh/
