@@ -96,8 +96,20 @@ export function connectDevEventsWebsocket() {
     console.log('🔔', 'received event', message);
     if (message.key === 'initial-message') {
       clientId = message.clientId;
+      console.log('🔔', 'clientId is', clientId);
     }
   };
+
+  window.addEventListener('beforeunload', () => {
+    eventSource.close();
+    fetch('/api/close-dev-events', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ clientId }),
+    });
+  });
 
   // const url = `ws://${DEV_ORIGIN}:${DEV_EXPRESS_WEBSOCKET_PORT}/dev-events`;
   // const wsClient = new WebSocket(url);

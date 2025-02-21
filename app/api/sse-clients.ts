@@ -14,6 +14,9 @@ export const client = {
     const index = clients.findIndex(client => client.id === id);
     if (index !== -1) {
       clients.splice(index, 1);
+      return true;
+    } else {
+      return false;
     }
   },
   sendMessage(message: string, id?: number) {

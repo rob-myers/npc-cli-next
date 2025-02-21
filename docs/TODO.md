@@ -15,11 +15,12 @@
     - ✅ can connect SSE via /api/connect-dev-events and send initial message to browser
   - ✅ implement POST http://localhost:3000/send-dev-event
   - 🚧 can clean up connections
-    - on hmr
-    - on reload page
-    - need some way to tell server we're finished
+    - ✅ need some way to tell server we're finished
       - "static export" prevents /foo/[uid]/bar and query params,
       - however, maybe can send POST with JSON?
+    - ✅ on reload page
+    - 🚧 on hmr
+      - maybe no need because we won't edit npc-cli/service/server-sent-events.js
   - 🚧 browser reacts to server-sent event
 
 - ❌ try fix `yarn build` breaking `yarn dev`

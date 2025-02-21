@@ -27,5 +27,5 @@ These are removed in production by temporarily moving `app/api` into `public`.
 ```sh
 curl --silent localhost:3000/api/connect/myFunUid/dev-events
 curl --silent -XPOST localhost:3000/api/send-dev-event
-
+curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 }'
 ```
