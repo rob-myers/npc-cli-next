@@ -8,9 +8,13 @@
   - ✅ can POST http://localhost:3000/send-dev-event in dev
     - next.config `output` cannot be `export` in dev
     - had to move `app/api` temporarily during build
+  - ✅ can POST /send-dev-event in dev without moving files
+    - use `export const dynamic = 'force-static';` in route.ts
   - 🚧 POST http://localhost:3000/send-dev-event can send event to browser
   - implement POST http://localhost:3000/send-dev-event
 
+- try fix `yarn build` breaking `yarn dev`
+  - https://github.com/vercel/next.js/issues/61228
 - clean fetch-assets file
 - try `bun` https://bun.sh/
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx

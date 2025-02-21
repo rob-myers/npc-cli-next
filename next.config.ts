@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
   output: process.env.NODE_ENV === 'production' ? "export" : "standalone",
+  // distDir: `.next/${process.env.NODE_ENV}`,
   reactStrictMode: false,
   compiler: {
     emotion: true,
