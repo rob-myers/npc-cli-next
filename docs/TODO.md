@@ -46,7 +46,7 @@
 
 - 🚧 avoid build minification of e.g. game-generators.js
   - ✅ turned off minification in next.config.ts
-  - 🚧 could try import as text then apply eval
+  - 🚧 could try import at runtime from public
   - could try patch node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
 - tty: option-arrows not working
 - patch-package + patches
@@ -60,9 +60,9 @@
   - https://react.dev/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development
   - ✅ set next.config.ts `reactStrictMode` as `false`
 
-- ✅ migrate assets.js script
+- 🚧 migrate assets.js script
   - ✅ store geomorphs.json in public
-  - npm scripts
+  - 🚧 npm scripts
     ```json
     ✅ "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
     ✅ "assets": "npm run ts-script scripts/assets -- --all",
