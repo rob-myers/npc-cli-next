@@ -30,7 +30,7 @@ export function ContextMenu() {
     
     docked: false,
     open: false,
-    pinned: tryLocalStorageGetParsed(`context-menu:pinned@${w.key}`) ?? w.smallViewport,
+    pinned: tryLocalStorageGetParsed(`context-menu:pinned@${w.key}`) ?? true,
     scaled: false,
     showKvs: true,
   
