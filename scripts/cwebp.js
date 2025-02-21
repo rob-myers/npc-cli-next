@@ -6,6 +6,8 @@
  * Paths are relative to repo root.
  * Depends on `cwebp` e.g. `brew install cwebp`.
  */
+/// <reference path="./deps.d.ts"/>
+
 import path from "path";
 import childProcess from "child_process";
 import getopts from 'getopts';

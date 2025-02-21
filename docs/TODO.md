@@ -37,7 +37,7 @@
     ✅ "assets": "npm run ts-script scripts/assets -- --all",
     ✅ "assets-fast": "sucrase-node scripts/assets",
     ✅ "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
-    "cwebp": "npm run ts-script scripts/cwebp",
+    ✅ "cwebp": "npm run ts-script scripts/cwebp",
     ✅ "cwebp-fast": "sucrase-node scripts/cwebp",
     "get-pngs": "npm run ts-script scripts/get-pngs",
     "get-pngs-fast": "sucrase-node scripts/get-pngs",
