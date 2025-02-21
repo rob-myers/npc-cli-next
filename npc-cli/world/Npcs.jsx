@@ -422,7 +422,7 @@ function NPC({ npc }) {
         {/* <meshPhysicalMaterial transparent color="red" /> */}
         <cuboidManMaterial
           key={CuboidManMaterial.key}
-          diffuse={[.8, .8, .8]}
+          diffuse={[.6, .6, .6]}
           transparent
           opacity={npc.s.opacity}
           uNpcUid={npc.def.pickUid}

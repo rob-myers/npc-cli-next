@@ -93,7 +93,7 @@ export const specialWallMetaKeys = /** @type {const} */ ([
   'hollow',
 ]);
 
-export const wallHeight = 2;
+export const wallHeight = 2.2;
 
 export const doorHeight = 1.6;
 
@@ -333,7 +333,7 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
 export const npcClassToMeta = {
   'cuboid-man': {
     url: '/3d/cuboid-man.glb',
-    scale: 0.65,
+    scale: 0.6,
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',
     groupName: 'Scene',
