@@ -8,13 +8,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
     "assets": "npm run ts-script scripts/assets -- --all",
     "assets-fast": "sucrase-node scripts/assets",
     "clean-assets": "rm public/{assets.json,geomorphs.json} public/2d/{obstacles,decor}.png{,.webp}",
     "cwebp": "npm run ts-script scripts/cwebp",
     "cwebp-fast": "sucrase-node scripts/cwebp",
-    "types": "tsc --noEmit"
+    "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
+    "types": "tsc --noEmit",
+    "watch-assets": "source scripts/watch-assets.sh",
+    "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.14.0",

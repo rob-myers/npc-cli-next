@@ -41,9 +41,8 @@
     ✅ "cwebp-fast": "sucrase-node scripts/cwebp",
     "get-pngs": "npm run ts-script scripts/get-pngs",
     "get-pngs-fast": "sucrase-node scripts/get-pngs",
-    "watch-assets": "source scripts/watch-assets.sh",
-    "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js",
-    "ws-server": "sucrase-node scripts/ws-server.js",
+    ✅ "watch-assets": "source scripts/watch-assets.sh",
+    ✅ "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js",
     "pre-push": "npm run assets-fast -- --prePush"
     ```
   - ✅ migrate enough media/* to get assets.js working
