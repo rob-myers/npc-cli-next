@@ -37,6 +37,7 @@
   - ✅ fix Floor/Ceiling colours
   - websocket server for `asset.js` script -> `World` communication
     - support POST http://localhost:8012/send-dev-event (or e.g. port 3012)
+    - instead of websockets could try https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
   - clean fetch-assets file
   - fix ContextMenu
     - maybe need `@emotion/css` for `<Html3d>`
