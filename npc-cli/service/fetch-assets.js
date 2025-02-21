@@ -73,34 +73,51 @@ function getDevCacheBustQueryParam() {
 export const WORLD_QUERY_FIRST_KEY = 'world';
 
 /**
+ * 🚧 try use server-sent events (SSE)
+ * 
  * Dev-only event handling:
  * > trigger component refresh on file change
  */
 export function connectDevEventsWebsocket() {
-  const url = `ws://${DEV_ORIGIN}:${DEV_EXPRESS_WEBSOCKET_PORT}/dev-events`;
-  const wsClient = new WebSocket(url);
-  wsClient.onmessage = async (e) => {
-    info(`received websocket message:`, { url, data: e.data });
+  eventSource?.close();
 
-    queryClient.refetchQueries({
-      predicate({ queryKey: [queryKey] }) {
-        return WORLD_QUERY_FIRST_KEY === queryKey;
-      },
-    });
+  eventSource = new EventSource(`/api/connect-dev-events`);
+
+  eventSource.onmessage = event => {
+    console.log('🔔', 'received event', event);
   };
 
-  wsClient.onopen = (_e) => {
-    info(`${url} connected`);
-    wsAttempts = 0;
-  };
-  wsClient.onclose = (_e) => {
-    info(`${url} closed: reconnecting...`);
-    if (++wsAttempts <= 5) {
-      setTimeout(connectDevEventsWebsocket, (2 ** wsAttempts) * 300);
-    } else {
-      info(`${url} closed: gave up reconnecting`);
-    }
-  };
+  eventSource.onerror = () => {
+    eventSource.close()
+  }
+
+  // const url = `ws://${DEV_ORIGIN}:${DEV_EXPRESS_WEBSOCKET_PORT}/dev-events`;
+  // const wsClient = new WebSocket(url);
+  // wsClient.onmessage = async (e) => {
+  //   info(`received websocket message:`, { url, data: e.data });
+
+  //   queryClient.refetchQueries({
+  //     predicate({ queryKey: [queryKey] }) {
+  //       return WORLD_QUERY_FIRST_KEY === queryKey;
+  //     },
+  //   });
+  // };
+
+  // wsClient.onopen = (_e) => {
+  //   info(`${url} connected`);
+  //   wsAttempts = 0;
+  // };
+  // wsClient.onclose = (_e) => {
+  //   info(`${url} closed: reconnecting...`);
+  //   if (++wsAttempts <= 5) {
+  //     setTimeout(connectDevEventsWebsocket, (2 ** wsAttempts) * 300);
+  //   } else {
+  //     info(`${url} closed: gave up reconnecting`);
+  //   }
+  // };
 }
 
 let wsAttempts = 0;
+
+/** @type {EventSource} */
+let eventSource;

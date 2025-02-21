@@ -11,6 +11,8 @@
   - ✅ can POST /send-dev-event in dev without moving files
     - use `export const dynamic = 'force-static';` in route.ts
   - 🚧 POST http://localhost:3000/send-dev-event can send event to browser
+    - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-9791770
+    - ✅ can connect SSE via /api/connect-dev-events and send initial message to browser
   - implement POST http://localhost:3000/send-dev-event
 
 - ❌ try fix `yarn build` breaking `yarn dev`

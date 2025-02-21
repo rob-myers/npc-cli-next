@@ -1,6 +1,9 @@
 // 🔔 Dev only endpoint
 export async function POST(request: Request) {
-  console.log(__dirname, 'received', await request.json());
+  console.log(`[${__dirname}] received`, await request.json());
+
+  // 🚧 send message to connected browsers
+
   return Response.json({ hello: 'world '});
 }
 
@@ -10,5 +13,4 @@ export async function GET(request: Request) {
   return Response.json({ hello: 'world '});
 }
 
-// 🔔 Otherwise `next build` will fail because output is `export`
 export const dynamic = 'force-static';
