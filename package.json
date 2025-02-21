@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev-webpack": "next dev",
-    "build": "next build",
+    "build-original": "next build",
+    "build": "mv app/api public; next build; mv public/api app",
     "start": "next start",
     "lint": "next lint",
     "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",

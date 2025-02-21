@@ -4,6 +4,8 @@
 import { queryClient } from "./query-client";
 import { info, isDevelopment } from "./generic";
 
+export const DEV_ENV_PORT = 3000;
+
 /** See `npm run develop` */
 export const DEV_GATSBY_PORT = 8011;
 

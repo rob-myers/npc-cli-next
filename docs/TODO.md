@@ -3,9 +3,13 @@
 ## Migrate from Gatsby
 
 - 🚧 asset.js script -> World communication
-  - support POST http://localhost:8012/send-dev-event (or e.g. port 3012)
-  - instead of websockets could try https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
-  - https://github.com/vercel/next.js/discussions/48427#discussioncomment-5624604
+  - ℹ️ https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
+  - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-5624604
+  - ✅ can POST http://localhost:3000/send-dev-event in dev
+    - next.config `output` cannot be `export` in dev
+    - had to move `app/api` temporarily during build
+  - 🚧 POST http://localhost:3000/send-dev-event can send event to browser
+  - implement POST http://localhost:3000/send-dev-event
 
 - clean fetch-assets file
 - try `bun` https://bun.sh/

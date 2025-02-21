@@ -35,7 +35,7 @@ import { spriteSheetSymbolExtraScale, worldToSguScale, spriteSheetDecorExtraScal
 import { hashText, info, keyedItemsToLookup, warn, debug, error, assertNonNull, hashJson, toPrecision, mapValues, range, keys } from "../npc-cli/service/generic";
 import { drawPolygons } from "../npc-cli/service/dom";
 import { geomorph } from "../npc-cli/service/geomorph";
-import { DEV_EXPRESS_WEBSOCKET_PORT, DEV_ORIGIN, ASSETS_JSON_FILENAME, GEOMORPHS_JSON_FILENAME } from "../npc-cli/service/fetch-assets";
+import { DEV_ENV_PORT, DEV_ORIGIN, ASSETS_JSON_FILENAME, GEOMORPHS_JSON_FILENAME } from "../npc-cli/service/fetch-assets";
 import packRectangles from "../npc-cli/service/rects-packer";
 import { SymbolGraphClass } from "../npc-cli/graph/symbol-graph";
 import { helper } from "../npc-cli/service/helper";
@@ -137,7 +137,7 @@ const baseDecorPath = path.resolve(assets2dDir, 'decor');
 /** Extended as `${baseObstaclePath}.${sheetId}.{png,webp}` */
 const baseObstaclePath = path.resolve(assets2dDir, 'obstacles');
 const symbolGraphVizPath = path.resolve(graphDir, 'symbols-graph.dot');
-const sendDevEventUrl = `http://${DEV_ORIGIN}:${DEV_EXPRESS_WEBSOCKET_PORT}/send-dev-event`;
+const sendDevEventUrl = `http://${DEV_ORIGIN}:${DEV_ENV_PORT}/api/send-dev-event`;
 const dataUrlRegEx = /"data:image\/png(.*)"/;
 const gitStaticAssetsRegex = new RegExp('^public/');
 const emptyStringHash = hashText('');
@@ -334,8 +334,10 @@ info({ opts });
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ key: "update-browser" }),
+  }).then(e => e.json()).then(resp => {
+    info(`POST ${sendDevEventUrl} received: ${JSON.stringify(resp)}`);
   }).catch((e) => {
-    warn(`POST ${sendDevEventUrl} failed: ${e.cause.code}`);
+    warn(`POST ${sendDevEventUrl} failed: ${e}`);
   });
 
   //#region ℹ️ png -> webp for production

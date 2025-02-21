@@ -19,3 +19,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 # cwebp
 brew install webp
 ```
+
+## Development only routes
+
+These are removed in production by temporarily moving `app/api` into `public`.
+
+```sh
+curl -XPOST localhost:3000/api/send-dev-event -d'{ "are": "you out there" }'
+```
