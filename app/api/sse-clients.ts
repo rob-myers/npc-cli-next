@@ -7,13 +7,14 @@ export const client = {
   add(res: any) {
     const id = nextClientId++;
     clients.push({ id, res });
-    console.log('added sse-client', id);
+    console.log('sse-clients: added clientId', id);
     return id;
   },
   remove(id: number) {
     const index = clients.findIndex(client => client.id === id);
     if (index !== -1) {
       clients.splice(index, 1);
+      console.log('sse-clients removed clientId', id);
       return true;
     } else {
       return false;

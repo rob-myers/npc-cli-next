@@ -1,4 +1,5 @@
-// Source https://github.com/vercel/next.js/discussions/48427#discussioncomment-9791770
+// 🚧 remove if eventSource.close() in client triggers cleanup via our
+//    request.signal 'abort' listener
 
 import { client } from "../sse-clients";
 
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
     clientId,
     success: client.remove(clientId),
   };
-  console.log('close-dev-events', result);
+  // console.log('/api/close-dev-events', result);
   return Response.json(result);
 }
 

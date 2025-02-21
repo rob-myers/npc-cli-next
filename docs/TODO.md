@@ -21,7 +21,7 @@
     - ✅ on reload page
     - 🚧 on hmr
       - maybe no need because we won't edit npc-cli/service/server-sent-events.js
-  - 🚧 browser reacts to server-sent event
+  - ✅ browser reacts to server-sent event
 
 - ❌ try fix `yarn build` breaking `yarn dev`
   - https://github.com/vercel/next.js/issues/61228
