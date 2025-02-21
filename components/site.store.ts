@@ -1,4 +1,5 @@
-import { type StateCreator, create } from "zustand";
+import type { StateCreator } from "zustand";
+import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { focusManager } from "@tanstack/react-query";
 
@@ -120,7 +121,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   },
 }));
 
-const useStore = create<State>()(initializer);
+const useStore = createWithEqualityFn<State>()(initializer);
 
 export type State = {
   /** Key of currently viewed article */
