@@ -47,10 +47,12 @@
 - ✅ avoid crash on multiple terminals tty-1 and tty-2
   - turn off zustand/devtool on session.store
 
-- 🚧 avoid build minification of e.g. game-generators.js
+- ✅ avoid build minification of e.g. game-generators.js
   - ✅ turned off minification in next.config.ts
-  - 🚧 could try import at runtime from public
-  - could try patch node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
+  - ✅ does import from public still minify? yes
+  - ❌ try import at runtime from public
+  - ❌ try patch node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
+  - ✅ refine arrow function detection
 - tty: option-arrows not working
 - patch-package + patches
 

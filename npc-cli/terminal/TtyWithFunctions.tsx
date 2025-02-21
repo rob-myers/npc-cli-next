@@ -31,6 +31,10 @@ const functionFiles = {
   ).join('\n\n'),
 };
 
+/**
+ * 🔔 SWC is minifying the inner JavaScript functions in production,
+ * and we don't seem to be able to exclude e.g. game-generators.js
+ */
 function jsFunctionToShellFunction(
   functionName: string,
   fn: (
@@ -41,7 +45,8 @@ function jsFunctionToShellFunction(
   return `${functionName}() ${
     generatorConstructorNames.includes(fn.constructor.name)
       ? wrapWithRun(fn as AsyncGeneratorFunction)
-      : fn.constructor.name === 'Function' && fn.toString().startsWith('(')
+      // : fn.constructor.name === 'Function' && fn.toString().startsWith('(')
+      : fn.constructor.name === 'Function' && !fn.toString().startsWith('function')
         // const foo = (..args) => bar
         ? wrapWithCall(fn as ((arg: gameGeneratorsJs.RunArg) => any))
         // assume 'AsyncFunction' or 'Function'
