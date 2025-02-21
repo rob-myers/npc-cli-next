@@ -20,7 +20,7 @@ export default function Ceiling(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-ceiling-xz`),
-    opacity: 0.7,
+    opacity: 0.3,
 
     async draw() {
       w.menu.measure('ceil.draw');
@@ -86,7 +86,7 @@ export default function Ceiling(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-  }));
+  }), { reset: { opacity: true } });
 
   w.ceil = state;
   const { tex } = w.texCeil;
@@ -110,8 +110,8 @@ export default function Ceiling(props) {
         side={THREE.DoubleSide}
         transparent
         atlas={tex}
-        alphaTest={0.5} opacity={state.opacity} depthWrite={false}
-        diffuse={[1, 1, 1]}
+        alphaTest={0.3} opacity={state.opacity} depthWrite={false}
+        diffuse={[0.8, 0.8, 1]}
         objectPickRed={3}
         // colorSpace
       />
