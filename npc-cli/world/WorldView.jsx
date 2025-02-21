@@ -4,7 +4,6 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp } from "maath/easing";
-import { EffectComposer, Noise, Vignette, DotScreen } from '@react-three/postprocessing'
 
 import { debug } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -482,12 +481,6 @@ export default function WorldView(props) {
       <ContextMenu/>
 
       <NpcSpeechBubbles/>
-
-      <EffectComposer>
-        <Noise opacity={0.2} />
-        <DotScreen opacity={0.05} />
-        <Vignette eskil={false} offset={0.1} darkness={1.2} />
-      </EffectComposer>
     </Canvas>
   );
 }
