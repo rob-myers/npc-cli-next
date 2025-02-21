@@ -29,3 +29,13 @@ curl --silent localhost:3000/api/connect/myFunUid/dev-events
 curl --silent -XPOST localhost:3000/api/send-dev-event
 curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 }'
 ```
+
+## Example shell commands
+
+  ```sh
+  c=0
+  while true; do
+    spawn "rob_${c}" $( click 1 )
+    call 'x => x.home.c++'
+  done
+  ```

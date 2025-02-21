@@ -23,11 +23,14 @@
       - maybe no need because we won't edit npc-cli/service/server-sent-events.js
   - ✅ browser reacts to server-sent event
 
+- can change map via Viewer Tabs props without breaking component?
+  - _fiber.refCleanup is not a function
+
 - ❌ try fix `yarn build` breaking `yarn dev`
   - https://github.com/vercel/next.js/issues/61228
-- clean fetch-assets file
-- try `bun` https://bun.sh/
+- ✅ clean fetch-assets file
 - maybe move flexlayout-react/style/light.css "back" into layout.tsx
+- try `bun` https://bun.sh/
 
 - 🚧 migrate assets.js script
   - ✅ store geomorphs.json in public
