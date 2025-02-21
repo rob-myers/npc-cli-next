@@ -42,6 +42,8 @@
   - fix ContextMenu
     - maybe need `@emotion/css` for `<Html3d>`
 
+- try `bun` https://bun.sh/
+
 - ✅ avoid crash on multiple terminals tty-1 and tty-2
   - turn off zustand/devtool on session.store
 
