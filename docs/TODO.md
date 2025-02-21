@@ -35,7 +35,7 @@
     ```json
     ✅ "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
     ✅ "assets": "npm run ts-script scripts/assets -- --all",
-    "assets-fast": "sucrase-node scripts/assets",
+    ✅ "assets-fast": "sucrase-node scripts/assets",
     ✅ "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
     "cwebp": "npm run ts-script scripts/cwebp",
     ✅ "cwebp-fast": "sucrase-node scripts/cwebp",
