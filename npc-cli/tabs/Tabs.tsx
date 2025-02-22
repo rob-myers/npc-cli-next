@@ -316,12 +316,12 @@ const tabsCss = css`
   }
   .flexlayout__tab_toolbar_button-max svg {
     border: 1px solid white;
-    path:nth-child(2) {
+    path:nth-of-type(2) {
       fill: white;
     }
   }
   .flexlayout__tab_toolbar_button-max:hover {
-    path:nth-child(2) {
+    path:nth-of-type(2) {
       fill: black;
     }
   }

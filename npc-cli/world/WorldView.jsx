@@ -549,7 +549,7 @@ export default function WorldView(props) {
 const rootCss = css`
   user-select: none;
 
-  > div:first-child {
+  > div:first-of-type(div) {
     display: flex;
     align-items: center;
     justify-content: center;

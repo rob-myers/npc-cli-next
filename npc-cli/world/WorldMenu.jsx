@@ -281,7 +281,7 @@ const loggerContainerCss = css`
   max-width: 100%;
   z-index: ${zIndexWorld.logger};
   
-  > div:nth-child(2) {
+  > div:nth-of-type(2) {
     /* height: ${defaultLoggerHeightPx}px; */
     /* width: ${defaultLoggerWidthPx}px; */
     width: 0px;

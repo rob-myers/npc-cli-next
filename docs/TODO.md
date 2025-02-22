@@ -21,6 +21,7 @@
     - ✅ on reload page
     - 🚧 on hmr
       - maybe no need because we won't edit npc-cli/service/server-sent-events.js
+  - clean up our approach
   - ✅ browser reacts to server-sent event
 
 - can change map via Viewer Tabs props without breaking component?
@@ -46,11 +47,11 @@
     ✅ "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
     ✅ "cwebp": "npm run ts-script scripts/cwebp",
     ✅ "cwebp-fast": "sucrase-node scripts/cwebp",
-    "get-pngs": "npm run ts-script scripts/get-pngs",
-    "get-pngs-fast": "sucrase-node scripts/get-pngs",
+    🚧 "get-pngs": "npm run ts-script scripts/get-pngs",
+    🚧 "get-pngs-fast": "sucrase-node scripts/get-pngs",
     ✅ "watch-assets": "source scripts/watch-assets.sh",
     ✅ "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js",
-    🚧 "pre-push": "npm run assets-fast -- --prePush"
+    ✅ "pre-push": "npm run assets-fast -- --prePush"
     ```
   - ✅ migrate enough media/* to get assets.js working
   - ✅ generate decor
