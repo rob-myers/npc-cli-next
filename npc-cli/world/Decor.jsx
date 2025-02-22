@@ -544,7 +544,7 @@ export default function Decor(props) {
     <instancedMesh // cuboids
       name={instancedMeshName.decorCuboids}
       key={`${state.cuboids.length} cuboids`}
-      ref={instances => instances && (state.cuboidInst = instances)}
+      ref={state.ref('cuboidInst')}
       args={[state.cuboidGeom, undefined, state.cuboids.length]}
       frustumCulled={false}
       renderOrder={-1}
@@ -564,7 +564,7 @@ export default function Decor(props) {
     <instancedMesh //quads
       name={instancedMeshName.decorQuads}
       key={`${state.quads.length} quads`}
-      ref={instances => instances && (state.quadInst = instances)}
+      ref={state.ref('quadInst')}
       args={[state.quad, undefined, state.quads.length]}
       frustumCulled={false}
       renderOrder={-1}
@@ -586,7 +586,7 @@ export default function Decor(props) {
     <instancedMesh // labels
       name={instancedMeshName.decorLabels}
       key={`${labels.length} labels`}
-      ref={instances => void (instances && (state.labelInst = instances))}
+      ref={state.ref('labelInst')}
       args={[state.labelQuad, undefined, labels.length]}
       frustumCulled={false}
       renderOrder={2}

@@ -118,7 +118,7 @@ export default function Floor(props) {
   return (
     <instancedMesh
       name={instancedMeshName.floor}
-      ref={instances => void (instances && (state.inst = instances))}
+      ref={state.ref('inst')}
       args={[state.quad, undefined, w.gms.length]}
       renderOrder={-3} // 🔔 must render before other transparent e.g. npc drop shadow
     >

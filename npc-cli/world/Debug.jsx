@@ -222,7 +222,7 @@ export default function Debug(props) {
       <group
         key={`${gm.key} ${gmId} ${gm.transform}`}
         onUpdate={(group) => group.applyMatrix4(gm.mat4)}
-        ref={(group) => group && state.ensureNavPoly(gm.key)}
+        ref={(group) => void (group && state.ensureNavPoly(gm.key))}
       >
         <mesh
           name="orig-nav-poly"

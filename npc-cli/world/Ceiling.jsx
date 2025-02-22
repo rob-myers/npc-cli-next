@@ -99,7 +99,7 @@ export default function Ceiling(props) {
   return (
     <instancedMesh
       name={instancedMeshName.ceiling}
-      ref={instances => void (instances && (state.inst = instances))}
+      ref={state.ref('inst')}
       args={[w.floor.quad, undefined, w.gms.length]} // 🔔 reuse floor quad
       position={[0, wallHeight, 0]}
       renderOrder={3}

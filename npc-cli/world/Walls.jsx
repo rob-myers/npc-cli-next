@@ -121,7 +121,7 @@ export default function Walls(props) {
     <instancedMesh
       name={instancedMeshName.walls}
       key={`${[w.mapKey, w.hash.full]}`}
-      ref={instances => instances && (state.inst = instances)}
+      ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.wallCount]}
       frustumCulled={false}
       // ℹ️ for transparency

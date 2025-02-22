@@ -305,8 +305,8 @@ export default function Doors(props) {
   return <>
     <instancedMesh
       name={instancedMeshName.doors}
-      key={`${w.hash} doors`}
-      ref={inst => inst && (state.inst = inst)}
+      key={`${w.hash.full} doors`}
+      ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.doorCount]}
       frustumCulled={false}
       renderOrder={1}
@@ -325,8 +325,8 @@ export default function Doors(props) {
 
     <instancedMesh
       name="lock-lights"
-      key={`${w.hash} lock-lights`}
-      ref={inst => inst && (state.lockSigInst = inst)}
+      key={`${w.hash.full} lock-lights`}
+      ref={state.ref('lockSigInst')}
       args={[state.lockSigGeom, undefined, w.gmsData.doorCount]}
       frustumCulled={false}
       visible={state.ready}

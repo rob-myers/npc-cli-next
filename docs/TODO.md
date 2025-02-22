@@ -20,12 +20,13 @@
       - however, maybe can send POST with JSON?
     - ✅ on reload page
     - 🚧 on hmr
-      - maybe no need because we won't edit npc-cli/service/server-sent-events.js
+      - try `window.__dev_events__EventSource__`
   - clean up our approach
   - ✅ browser reacts to server-sent event
 
-- can change map via Viewer Tabs props without breaking component?
+- ✅ BUG: can change map via Viewer Tabs props without breaking component?
   - _fiber.refCleanup is not a function
+  - need to fix various World subcomponent refs i.e. should be `ref={state.ref('foo')}`
 - ✅ fix three-stdlib patch i.e. change the file next.js is using
 
 - try 2-layered walls

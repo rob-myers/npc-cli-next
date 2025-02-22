@@ -107,7 +107,7 @@ export default function Obstacles(props) {
     <instancedMesh
       name={instancedMeshName.obstacles}
       key={`${[w.mapKey, w.hash.full]}`}
-      ref={instances => instances && (state.inst = instances)}
+      ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.obstaclesCount]}
       frustumCulled={false}
       position={[0, 0.001, 0]} // 🚧

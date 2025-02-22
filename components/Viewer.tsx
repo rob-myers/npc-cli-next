@@ -63,7 +63,8 @@ export default function Viewer() {
     >
       <ViewerControls api={state} />
       <Tabs
-        ref={x => void (state.tabs = x ?? state.tabs)}
+        // ref={x => void (state.tabs = x ?? state.tabs)}
+        ref={state.ref('tabs')}
         id="viewer-tabs"
         browserLoaded={site.browserLoaded}
         collapsed={!site.viewOpen}

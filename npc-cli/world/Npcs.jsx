@@ -326,7 +326,7 @@ export default function Npcs(props) {
   return (
     <group
       name="npcs"
-      ref={x => void (state.group = x ?? state.group)}
+      ref={state.ref('group')}
     >
       {Object.values(state.npc).map(npc =>
         // <NPC key={npc.key} npc={npc} />
