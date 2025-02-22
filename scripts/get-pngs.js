@@ -37,9 +37,9 @@ import {
  * yarn get-pngs-fast root Symbols symbol-root
  * yarn get-pngs-fast geomorph 'Geomorphs/100x50 Edge' geomorph-edge
  * yarn get-pngs-fast geomorph 'Geomorphs/100x100 Core' geomorph-core
- * 
  * yarn get-pngs-fast symbol Symbols/Bridge symbol-bridge
  * yarn get-pngs-fast small-craft 'Small Craft' symbol-small-craft
+ * 
  * yarn get-pngs-fast symbol 'Symbols/Furniture, Consoles, & Equipment' symbol-furniture-consoles-equipment
  * yarn get-pngs-fast symbol 'Symbols/Machinery' symbol-machinery
  * yarn get-pngs-fast symbol 'Symbols/Lab' symbol-lab
