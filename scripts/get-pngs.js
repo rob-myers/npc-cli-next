@@ -34,23 +34,23 @@ import {
  * 
  * Examples:
  * ```sh
- * yarn get-pngs root Symbols symbol-root
- * yarn get-pngs geomorph 'Geomorphs/100x50 Edge' geomorph-edge
- * yarn get-pngs symbol Symbols/Bridge symbol-bridge
- * yarn get-pngs small-craft 'Small Craft' symbol-small-craft
- * yarn get-pngs symbol 'Symbols/Furniture, Consoles, & Equipment' symbol-furniture-consoles-equipment
- * yarn get-pngs symbol 'Symbols/Machinery' symbol-machinery
- * yarn get-pngs symbol 'Symbols/Lab' symbol-lab
- * yarn get-pngs symbol 'Symbols/Battery' symbol-battery
- * yarn get-pngs symbol 'Symbols/Medical' symbol-medical
- * yarn get-pngs symbol 'Symbols/Misc' symbol-misc
- * yarn get-pngs symbol 'Symbols/Offices' symbol-offices
- * yarn get-pngs symbol 'Symbols/Shop & Repair Area' symbol-shop-repair-area
- * yarn get-pngs symbol Symbols/Fresher symbol-fresher
+ * yarn get-pngs-fast root Symbols symbol-root
+ * yarn get-pngs-fast geomorph 'Geomorphs/100x50 Edge' geomorph-edge
+ * yarn get-pngs-fast symbol Symbols/Bridge symbol-bridge
+ * yarn get-pngs-fast small-craft 'Small Craft' symbol-small-craft
+ * yarn get-pngs-fast symbol 'Symbols/Furniture, Consoles, & Equipment' symbol-furniture-consoles-equipment
+ * yarn get-pngs-fast symbol 'Symbols/Machinery' symbol-machinery
+ * yarn get-pngs-fast symbol 'Symbols/Lab' symbol-lab
+ * yarn get-pngs-fast symbol 'Symbols/Battery' symbol-battery
+ * yarn get-pngs-fast symbol 'Symbols/Medical' symbol-medical
+ * yarn get-pngs-fast symbol 'Symbols/Misc' symbol-misc
+ * yarn get-pngs-fast symbol 'Symbols/Offices' symbol-offices
+ * yarn get-pngs-fast symbol 'Symbols/Shop & Repair Area' symbol-shop-repair-area
+ * yarn get-pngs-fast symbol Symbols/Fresher symbol-fresher
  * ```
  */
 const [,, inputType, srcFolder, dstFolder] = process.argv;
-const mediaDir = path.resolve(__dirname, "../../media");
+const mediaDir = path.resolve(__dirname, "../media");
 const srcDir = path.resolve(mediaDir, srcFolder);
 const dstDir = path.resolve(mediaDir, 'extracted', dstFolder);
 const manifestPath = path.join(dstDir, 'manifest.json');

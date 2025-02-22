@@ -15,6 +15,8 @@
     "clean-assets": "rm public/{assets.json,geomorphs.json} public/2d/{obstacles,decor}.png{,.webp}",
     "cwebp": "npm run ts-script scripts/cwebp",
     "cwebp-fast": "sucrase-node scripts/cwebp",
+    "get-pngs": "npm run ts-script scripts/get-pngs",
+    "get-pngs-fast": "sucrase-node scripts/get-pngs",
     "pre-push": "npm run assets-fast -- --prePush",
     "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
     "types": "tsc --noEmit",

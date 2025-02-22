@@ -18,6 +18,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ```sh
 # cwebp
 brew install webp
+
+# ImageMagick
+brew install imagemagick
 ```
 
 ## Starship Symbols Source PNGs
