@@ -57,7 +57,7 @@ export const WORLD_QUERY_FIRST_KEY = 'world';
  */
 export function connectDevEventsWebsocket() {
   const eventSource = (
-    window.__DEV_EVENTS__ ??= new EventSource(`/api/connect-dev-events`)
+    window.__NPC_CLI_DEV_EVENTS__ ??= new EventSource(`/api/connect-dev-events`)
   );
 
   eventSource.onerror = () => {
@@ -83,14 +83,17 @@ export function connectDevEventsWebsocket() {
     }
   };
 
-  window.onbeforeunload = () => {
-    eventSource.close();
-    // fetch('/api/close-dev-events', {
-    //   method: 'POST',
-    //   headers: { 'content-type': 'application/json' },
-    //   body: JSON.stringify({ clientId }),
-    // });
-  };
+  window.addEventListener('beforeunload', () => {
+    if (window.__NPC_CLI_DEV_EVENTS__) {
+      window.__NPC_CLI_DEV_EVENTS__.close();
+      window.__NPC_CLI_DEV_EVENTS__ = undefined;
+      // fetch('/api/close-dev-events', {
+      //   method: 'POST',
+      //   headers: { 'content-type': 'application/json' },
+      //   body: JSON.stringify({ clientId }),
+      // });
+    }
+  });
 }
 
 let clientId = -1;

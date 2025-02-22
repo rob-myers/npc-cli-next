@@ -1,7 +1,7 @@
 
 declare global {
   interface Window {
-    __DEV_EVENTS__?: EventSource;
+    __NPC_CLI_DEV_EVENTS__?: EventSource;
   }
 }
 
