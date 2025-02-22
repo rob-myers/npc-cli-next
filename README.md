@@ -20,6 +20,20 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 brew install webp
 ```
 
+## Starship Symbols Source PNGs
+
+Symbol PNGs should be unzipped in /media
+- [SymbolsHighRes.zip](http://ericbsmith.no-ip.org/zip/Geomorphs/SymbolsHighRes.zip)
+- [SmallCraftHighRes.zip](http://ericbsmith.no-ip.org/zip/Geomorphs/SmallCraftHighRes.zip)
+
+Geomorph PNGs (background in hull symbols) should be unzipped in /media
+- [Geomorphs.zip](http://ericbsmith.no-ip.org/zip/Geomorphs/Geomorphs.zip)
+
+Related resources (less/more resolution)
+- [Symbols.zip](http://ericbsmith.no-ip.org/zip/Geomorphs/Symbols.zip)
+- [GeomorphsHighRes.zip](http://ericbsmith.no-ip.org/zip/Geomorphs/GeomorphsHighRes.zip)
+
+
 ## Development only routes
 
 These are removed in production by temporarily moving `app/api` into `public`.
