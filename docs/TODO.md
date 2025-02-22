@@ -100,8 +100,8 @@
   - ❌ try import at runtime from public
   - ❌ try patch node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
   - ✅ refine arrow function detection
-- tty: option-arrows not working
-- patch-package + patches
+- ✅ BUG: tty: option-arrow left/right not working
+- ✅ patch-package + patches
 
 - ✅ src/app -> app etc.
 - ✅ deploy to netlify

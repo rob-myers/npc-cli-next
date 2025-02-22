@@ -387,13 +387,15 @@ export class ttyXtermClass {
         case "[H": // Home (?)
           this.setCursor(0);
           break;
-        case "b": // Alt + Left
+        // case "b": // Alt + Left
+        case "[1;5D": // Alt + Left
           cursor = this.closestLeftBoundary(this.input, this.cursor);
           if (cursor != null) {
             this.setCursor(cursor);
           }
           break;
-        case "f": // Alt + Right
+        // case "f": // Alt + Right
+        case "[1;5C": // Alt + Right
           cursor = this.closestRightBoundary(this.input, this.cursor);
           if (cursor != null) {
             this.setCursor(cursor);
