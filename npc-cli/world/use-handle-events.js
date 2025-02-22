@@ -299,6 +299,7 @@ export default function useHandleEvents(w) {
           }
           break;
         case "enter-off-mesh": // enter init segment
+          npc.s.slowBegin = null;
           state.onEnterOffMeshConnection(e, npc);
           break;
         case "enter-off-mesh-main": // enter main segment
