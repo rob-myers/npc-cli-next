@@ -1,14 +1,8 @@
 // Source https://github.com/vercel/next.js/discussions/48427#discussioncomment-9791770
 
-import { client, clients } from "../sse-clients";
+import { client } from "../sse-clients";
 
-export async function GET(request: Request, context: {
-  params: Promise<{ uid: string }>
-}) {
-  // const { uid: clientUid } = await context.params;
-  // console.log(`[${__dirname}] received`);
-  // console.log('🔔', { uid });
-
+export async function GET(request: Request) {
   if (process.env.NODE_ENV === 'development') {
     const responseStream = new TransformStream();
     const writer = responseStream.writable.getWriter();
@@ -47,7 +41,3 @@ export async function GET(request: Request, context: {
 
 // Required for build to work
 export const dynamic = 'force-static';
-
-// export async function generateStaticParams(): Promise<{ slug: string }[]> {
-//   return [];
-// }

@@ -1,4 +1,4 @@
-export const clients: Client[] = process.env.NODE_ENV === "production" 
+const clients: Client[] = process.env.NODE_ENV === "production" 
   ? []
   : ((global as any).clients ??= [])
 ;

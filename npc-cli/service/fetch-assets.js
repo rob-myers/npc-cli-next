@@ -1,5 +1,4 @@
 import { queryClient } from "./query-client";
-import { ensureEventSource } from "./server-sent-events";
 import { info, isDevelopment, parseJsonArg, warn } from "./generic";
 
 export const DEV_ENV_PORT = 3000;
@@ -12,12 +11,9 @@ export const DEV_ORIGIN = 'localhost';
  */
 export const ASSETS_JSON_FILENAME = "assets.json";
 
-export const assetsEndpoint = '';
-
 export const GEOMORPHS_JSON_FILENAME = "geomorphs.json";
 
 export const imgExt = isDevelopment() ? 'png' : 'png.webp';
-
 
 /**
  * Requires @see {baseUrl} because also runs in webworker.
@@ -27,7 +23,7 @@ export const imgExt = isDevelopment() ? 'png' : 'png.webp';
 export async function fetchGeomorphsJson(baseUrl) {
   return await fetch(
     new URL(
-      `${assetsEndpoint}/${GEOMORPHS_JSON_FILENAME}${getDevCacheBustQueryParam()}`,
+      `/${GEOMORPHS_JSON_FILENAME}${getDevCacheBustQueryParam()}`,
       baseUrl,
     )
   ).then((x) => x.json());
@@ -35,17 +31,17 @@ export async function fetchGeomorphsJson(baseUrl) {
 
 /** @param {number} sheetId */
 export function getObstaclesSheetUrl(sheetId) {
-  return `${assetsEndpoint}/2d/obstacles.${sheetId}.${imgExt}${getDevCacheBustQueryParam()}`;
+  return `/2d/obstacles.${sheetId}.${imgExt}${getDevCacheBustQueryParam()}`;
 }
 
 /** @param {number} sheetId */
 export function getDecorSheetUrl(sheetId) {
-  return `${assetsEndpoint}/2d/decor.${sheetId}.${imgExt}${getDevCacheBustQueryParam()}`;
+  return `/2d/decor.${sheetId}.${imgExt}${getDevCacheBustQueryParam()}`;
 }
 
 /** @param {Geomorph.DecorImgKey} decorImgKey */
 export function getDecorIconUrl(decorImgKey) {
-  return `${assetsEndpoint}/2d/${decorImgKey}.${imgExt}${getDevCacheBustQueryParam()}`;
+  return `/2d/${decorImgKey}.${imgExt}${getDevCacheBustQueryParam()}`;
 }
 
 /** Override cache in development */
@@ -56,20 +52,27 @@ function getDevCacheBustQueryParam() {
 export const WORLD_QUERY_FIRST_KEY = 'world';
 
 /**
- * 🚧 use server-sent events (SSE)
- * Dev-only event handling, i.e. trigger component refresh onchange file
+ * Dev only event handling: trigger World refresh onchange file
+ * We use server-sent events (SSE).
  */
 export function connectDevEventsWebsocket() {
+  const eventSource = (
+    window.__DEV_EVENTS__ ??= new EventSource(`/api/connect-dev-events`)
+  );
 
-  const eventSource = ensureEventSource();
+  eventSource.onerror = () => {
+    eventSource.close();
+  };
 
   eventSource.onmessage = event => {
     const message = parseJsonArg(event.data);
-
-    info('🔔', 'received event', message);
+    
     if (typeof message === 'string') {
-      warn(`dev-events: unexpected message: "${message}"`);
-    } else if (message.key === 'initial-message') {
+      return warn(`dev-events: unexpected message: "${message}"`);
+    }
+    
+    info('🔔', 'received event', message);
+    if (message.key === 'initial-message') {
       clientId = message.clientId;
     } else if (message.key === 'reload-world') {
       queryClient.refetchQueries({
@@ -80,14 +83,14 @@ export function connectDevEventsWebsocket() {
     }
   };
 
-  window.addEventListener('beforeunload', () => {
+  window.onbeforeunload = () => {
     eventSource.close();
     // fetch('/api/close-dev-events', {
     //   method: 'POST',
     //   headers: { 'content-type': 'application/json' },
     //   body: JSON.stringify({ clientId }),
     // });
-  });
+  };
 }
 
 let clientId = -1;

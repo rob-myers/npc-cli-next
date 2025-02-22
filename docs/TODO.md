@@ -2,7 +2,7 @@
 
 ## Migrate from Gatsby
 
-- 🚧 asset.js script -> World communication
+- ✅ asset.js script -> World communication
   - ℹ️ https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
   - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-5624604
   - ✅ can POST http://localhost:3000/send-dev-event in dev
@@ -14,14 +14,13 @@
     - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-9791770
     - ✅ can connect SSE via /api/connect-dev-events and send initial message to browser
   - ✅ implement POST http://localhost:3000/send-dev-event
-  - 🚧 can clean up connections
+  - ✅ can clean up connections
     - ✅ need some way to tell server we're finished
       - "static export" prevents /foo/[uid]/bar and query params,
       - however, maybe can send POST with JSON?
     - ✅ on reload page
-    - 🚧 on hmr
-      - try `window.__dev_events__EventSource__`
-  - clean up our approach
+    - ✅ on hmr: avoid by storing as `window.__DEV_EVENTS__EventSource__`
+  - ✅ clean up our approach
   - ✅ browser reacts to server-sent event
 
 - ✅ BUG: can change map via Viewer Tabs props without breaking component?
