@@ -38,6 +38,8 @@
   },
   "include": [
     "**/*.ts",
+    "**/*.js",
+    "**/*.jsx",
     "**/*.tsx",
     "**/*.worker.js",
     "next-env.d.ts",

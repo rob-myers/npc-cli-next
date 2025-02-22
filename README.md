@@ -36,6 +36,8 @@ Related resources (less/more resolution)
 - [Symbols.zip](http://ericbsmith.no-ip.org/zip/Geomorphs/Symbols.zip)
 - [GeomorphsHighRes.zip](http://ericbsmith.no-ip.org/zip/Geomorphs/GeomorphsHighRes.zip)
 
+Then you can run the various scripts (as needed) found inside `scripts/get-pngs.js`.
+
 
 ## Development only routes
 

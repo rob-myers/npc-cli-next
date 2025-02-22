@@ -2,61 +2,18 @@
 
 ## Migrate from Gatsby
 
-- ✅ asset.js script -> World communication
-  - ℹ️ https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
-  - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-5624604
-  - ✅ can POST http://localhost:3000/send-dev-event in dev
-    - next.config `output` cannot be `export` in dev
-    - had to move `app/api` temporarily during build
-  - ✅ can POST /send-dev-event in dev without moving files
-    - use `export const dynamic = 'force-static';` in route.ts
-  - ✅ POST http://localhost:3000/send-dev-event can send event to browser
-    - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-9791770
-    - ✅ can connect SSE via /api/connect-dev-events and send initial message to browser
-  - ✅ implement POST http://localhost:3000/send-dev-event
-  - ✅ can clean up connections
-    - ✅ need some way to tell server we're finished
-      - "static export" prevents /foo/[uid]/bar and query params,
-      - however, maybe can send POST with JSON?
-    - ✅ on reload page
-    - ✅ on hmr: avoid by storing as `window.__DEV_EVENTS__EventSource__`
-  - ✅ clean up our approach
-  - ✅ browser reacts to server-sent event
-
-- ✅ BUG: can change map via Viewer Tabs props without breaking component?
-  - _fiber.refCleanup is not a function
-  - need to fix various World subcomponent refs i.e. should be `ref={state.ref('foo')}`
-- ✅ fix three-stdlib patch i.e. change the file next.js is using
-
-- try 2-layered walls
-  - 1m, then another 1m which is more transparent
 
 - ❌ try fix `yarn build` breaking `yarn dev`
   - https://github.com/vercel/next.js/issues/61228
 - ✅ clean fetch-assets file
-- maybe move flexlayout-react/style/light.css "back" into layout.tsx
-- try `bun` https://bun.sh/
+- ❌ maybe move flexlayout-react/style/light.css "back" into layout.tsx
+  - originally needed in Gatsby but we'll leave as iss
+- 🚧 try `bun` https://bun.sh/
+  - ℹ️ assets.js script is failing due to `canvas` (node-canvas)
+  - 🚧 try https://www.npmjs.com/package/skia-canvas
 
-- 🚧 migrate assets.js script
-  - ✅ store geomorphs.json in public
-  - 🚧 npm scripts
-    ```json
-    ✅ "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
-    ✅ "assets": "npm run ts-script scripts/assets -- --all",
-    ✅ "assets-fast": "sucrase-node scripts/assets",
-    ✅ "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
-    ✅ "cwebp": "npm run ts-script scripts/cwebp",
-    ✅ "cwebp-fast": "sucrase-node scripts/cwebp",
-    🚧 "get-pngs": "npm run ts-script scripts/get-pngs",
-    🚧 "get-pngs-fast": "sucrase-node scripts/get-pngs",
-    ✅ "watch-assets": "source scripts/watch-assets.sh",
-    ✅ "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js",
-    ✅ "pre-push": "npm run assets-fast -- --prePush"
-    ```
-  - ✅ migrate enough media/* to get assets.js working
-  - ✅ generate decor
-  - ✅ cwebp-fast
-
+- try 2-layered walls
+  - 1m, then another 1m which is more transparent
 
 # Done
 
@@ -114,3 +71,49 @@
 
 - ✅ fix ContextMenu
   - maybe need `@emotion/css` for `<Html3d>`
+
+- ✅ asset.js script -> World communication
+  - ℹ️ https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
+  - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-5624604
+  - ✅ can POST http://localhost:3000/send-dev-event in dev
+    - next.config `output` cannot be `export` in dev
+    - had to move `app/api` temporarily during build
+  - ✅ can POST /send-dev-event in dev without moving files
+    - use `export const dynamic = 'force-static';` in route.ts
+  - ✅ POST http://localhost:3000/send-dev-event can send event to browser
+    - ℹ️ https://github.com/vercel/next.js/discussions/48427#discussioncomment-9791770
+    - ✅ can connect SSE via /api/connect-dev-events and send initial message to browser
+  - ✅ implement POST http://localhost:3000/send-dev-event
+  - ✅ can clean up connections
+    - ✅ need some way to tell server we're finished
+      - "static export" prevents /foo/[uid]/bar and query params,
+      - however, maybe can send POST with JSON?
+    - ✅ on reload page
+    - ✅ on hmr: avoid by storing as `window.__DEV_EVENTS__EventSource__`
+  - ✅ clean up our approach
+  - ✅ browser reacts to server-sent event
+
+- ✅ BUG: can change map via Viewer Tabs props without breaking component?
+  - _fiber.refCleanup is not a function
+  - need to fix various World subcomponent refs i.e. should be `ref={state.ref('foo')}`
+- ✅ fix three-stdlib patch i.e. change the file next.js is using
+
+- ✅ migrate assets.js script
+  - ✅ store geomorphs.json in public
+  - ✅ npm scripts
+    ```json
+    ✅ "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false }'",
+    ✅ "assets": "npm run ts-script scripts/assets -- --all",
+    ✅ "assets-fast": "sucrase-node scripts/assets",
+    ✅ "clean-assets": "rm static/assets/{assets.json,geomorphs.json} static/assets/2d/{obstacles,decor}.png{,.webp}",
+    ✅ "cwebp": "npm run ts-script scripts/cwebp",
+    ✅ "cwebp-fast": "sucrase-node scripts/cwebp",
+    ✅ "get-pngs": "npm run ts-script scripts/get-pngs",
+    ✅ "get-pngs-fast": "sucrase-node scripts/get-pngs",
+    ✅ "watch-assets": "source scripts/watch-assets.sh",
+    ✅ "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js",
+    ✅ "pre-push": "npm run assets-fast -- --prePush"
+    ```
+  - ✅ migrate enough media/* to get assets.js working
+  - ✅ generate decor
+  - ✅ cwebp-fast

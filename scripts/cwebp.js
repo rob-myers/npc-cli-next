@@ -10,6 +10,7 @@
 
 import path from "path";
 import childProcess from "child_process";
+//@ts-ignore
 import getopts from 'getopts';
 
 import { error, safeJsonParse } from "../npc-cli/service/generic";

@@ -9,6 +9,7 @@ const delayMs = 300;
 /** Absolute path to `Date.now()` */
 const changed = /** @type {Map<string, number>} */ (new Map());
 
+// @ts-ignore
 nodemon({
   delay: 0.1,
   ext: 'svg,png',

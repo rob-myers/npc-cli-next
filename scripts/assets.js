@@ -653,10 +653,19 @@ async function createDecorSheetJson(assets, prev) {
 
   // Compute changed images in parallel
   const promQueue = new PQueue({ concurrency: 5 });
+  // const promQueue = new PQueue({ concurrency: 1 });
   await Promise.all(changedSvgBasenames.map(baseName => promQueue.add(async () => {
     const decorImgKey = /** @type {Geomorph.DecorImgKey} */ (baseName.slice(0, -'.svg'.length));
     // svg contents -> data url
-    const svgDataUrl = `data:image/svg+xml;utf8,${await tryReadString(path.resolve(decorDir, baseName))}`;
+    const svgPathName = path.resolve(decorDir, baseName);
+    const contents = await tryReadString(svgPathName);
+    if (contents === null) {
+      return warn(`createDecorSheetJson: could not read "${svgPathName}"`);
+    }
+    // 🚧 `bun` is failing on `loadImage`
+    // const svgDataUrl = `data:image/svg+xml;utf8,${contents}`;
+    // console.log({svgPathName});
+    const svgDataUrl = `data:image/svg+xml;base64,${btoa(contents)}`;
     imgKeyToImg[decorImgKey] = await loadImage(svgDataUrl);
   })));
 
