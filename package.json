@@ -15,6 +15,7 @@
     "clean-assets": "rm public/{assets.json,geomorphs.json} public/2d/{obstacles,decor}.png{,.webp}",
     "cwebp": "npm run ts-script scripts/cwebp",
     "cwebp-fast": "sucrase-node scripts/cwebp",
+    "pre-push": "npm run assets-fast -- --prePush",
     "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
     "types": "tsc --noEmit",
     "watch-assets": "source scripts/watch-assets.sh",
@@ -95,6 +96,7 @@
     "nodemon": "^3.1.9",
     "p-queue-compat": "^1.0.225",
     "postcss": "^8",
+    "pre-push": "^0.1.4",
     "raw-loader": "^4.0.2",
     "sucrase": "^3.35.0",
     "tailwindcss": "^3.4.1",
@@ -105,5 +107,8 @@
   "overrides": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
-  }
+  },
+  "pre-push": [
+    "pre-push"
+  ]
 }

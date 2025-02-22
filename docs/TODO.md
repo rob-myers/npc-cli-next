@@ -50,7 +50,7 @@
     "get-pngs-fast": "sucrase-node scripts/get-pngs",
     ✅ "watch-assets": "source scripts/watch-assets.sh",
     ✅ "watch-assets-nodemon": "sucrase-node scripts/assets-nodemon.js",
-    "pre-push": "npm run assets-fast -- --prePush"
+    🚧 "pre-push": "npm run assets-fast -- --prePush"
     ```
   - ✅ migrate enough media/* to get assets.js working
   - ✅ generate decor
