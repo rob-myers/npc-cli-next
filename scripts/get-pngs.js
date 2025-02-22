@@ -36,6 +36,8 @@ import {
  * ```sh
  * yarn get-pngs-fast root Symbols symbol-root
  * yarn get-pngs-fast geomorph 'Geomorphs/100x50 Edge' geomorph-edge
+ * yarn get-pngs-fast geomorph 'Geomorphs/100x100 Core' geomorph-core
+ * 
  * yarn get-pngs-fast symbol Symbols/Bridge symbol-bridge
  * yarn get-pngs-fast small-craft 'Small Craft' symbol-small-craft
  * yarn get-pngs-fast symbol 'Symbols/Furniture, Consoles, & Equipment' symbol-furniture-consoles-equipment
@@ -116,11 +118,13 @@ function computeFileMetas(srcFilenames) {
         else if (filename.match(/\.png$/)) warn('ignoring PNG:', filename);
       });
       break;
-    // Convert some fixed subfolder of `Geomorphs/`
+    // Convert some fixed subfolder of `Geomorphs/`, ignoring [Overlay]
     case 'geomorph':
       srcFilenames.forEach(filename => {
         const matched = filename.match(geomorphsFilenameRegex);
-        if (matched) fileMetas.push(metaFromGeomorphFilename(matched))
+        if (matched !== null && !filename.includes(' [Overlay] ')) {
+          fileMetas.push(metaFromGeomorphFilename(matched));
+        }
         else if (filename.match(/\.png$/)) warn('ignoring PNG:', filename);
       });
       break;
