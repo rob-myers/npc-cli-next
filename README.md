@@ -39,3 +39,10 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
     call 'x => x.home.c++'
   done
   ```
+
+## Bits and bobs
+
+We can also patch `package1/node_modules/package2`
+> https://www.npmjs.com/package/patch-package#nested-packages
+
+This permits us to patch `three-stdlib` inside `@react-three/drei`.

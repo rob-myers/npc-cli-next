@@ -25,7 +25,7 @@
 
 - can change map via Viewer Tabs props without breaking component?
   - _fiber.refCleanup is not a function
-- fix three-stdlib patch i.e. change the file next.js is using
+- ✅ fix three-stdlib patch i.e. change the file next.js is using
 
 - try 2-layered walls
   - 1m, then another 1m which is more transparent
