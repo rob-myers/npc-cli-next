@@ -994,7 +994,7 @@ const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
 const closeDist = helper.defaults.radius * 1.8;
-const closerDist = helper.defaults.radius * 1;
+const closerDist = helper.defaults.radius * 0.8;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
