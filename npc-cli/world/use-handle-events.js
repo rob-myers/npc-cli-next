@@ -522,9 +522,9 @@ export default function useHandleEvents(w) {
         npc.s.run === true && npc.startAnimation('Run');
       }
 
-      // 🚧 WIP i.e. prefer wait until nextCorner
+      // 🚧 WIP prefer extending dtAgentAnimation with e.g. exitUnitVector
       npc.s.justOffMesh = true;
-      setTimeout(() => npc.s.justOffMesh = false, 1000);
+      setTimeout(() => npc.s.justOffMesh = false, 300);
 
       w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.dstGrKey) });
     },
