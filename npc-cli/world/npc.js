@@ -692,7 +692,7 @@ export class Npc {
     const distance = this.s.target.distanceTo(pos);
 
     if (distance < 0.4) {
-      this.s.lookSecs = 0.8; // avoid final turn
+      this.s.lookSecs = 0.3; // avoid final turn
     }
 
     if (distance < 0.15) {// Reached target
