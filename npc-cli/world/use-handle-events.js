@@ -313,9 +313,6 @@ export default function useHandleEvents(w) {
           state.npcToRoom.set(npcKey, { gmId, roomId, grKey });
           (state.roomToNpcs[gmId][roomId] ??= new Set()).add(npcKey);
 
-          if (npc.s.target !== null && npc.position.distanceTo(npc.s.target) <= 1) {
-            npc.s.lookSecs = 0.3; // slower look if stopping soon
-          }
           break;
         }
         case "exit-room": {
@@ -467,10 +464,11 @@ export default function useHandleEvents(w) {
         dst: adjusted.dst,
         orig: offMesh,
 
+        initPos: adjusted.initPos,
         initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
         mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
         nextUnit: tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
-        tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed(), so:
+        tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
@@ -519,6 +517,10 @@ export default function useHandleEvents(w) {
         npc.agent.updateParameters({ maxSpeed: npc.getMaxSpeed() });
         npc.s.run === true && npc.startAnimation('Run');
       }
+
+      // 🚧 WIP i.e. prefer wait until nextCorner
+      npc.s.justOffMesh = true;
+      setTimeout(() => npc.s.justOffMesh = false, 1000);
 
       w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.dstGrKey) });
     },
@@ -610,6 +612,7 @@ export default function useHandleEvents(w) {
       anim.set_tmax(anim.tmid + (Vect.from(newSrc).distanceTo(newDst) / npc.getMaxSpeed()));
 
       return {
+        initPos: npcPoint.json,
         src: newSrc,
         dst: newDst,
         nextCorner,

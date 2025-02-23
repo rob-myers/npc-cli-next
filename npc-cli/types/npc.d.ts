@@ -231,6 +231,8 @@ declare namespace NPC {
      * - `2` is 2nd half of offMeshConnection
      */
     seg: 0 | 1 | 2;
+    /** Initial position of npc */
+    initPos: Geom.VectJson;
     /** Adjusted src */
     src: Geom.VectJson;
     /** Adjusted dst */
@@ -248,6 +250,7 @@ declare namespace NPC {
 
   /** Provided after `dtAgentAnimation` has been re-configured */
   interface OverrideOffMeshResult {
+    initPos: Geom.VectJson;
     /** Adjusted src */
     src: Geom.VectJson;
     /** Adjusted dst */

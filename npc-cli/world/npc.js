@@ -55,6 +55,7 @@ export class Npc {
     faceId: /** @type {null | NPC.UvQuadId} */ (null),
     fadeSecs: 0.3,
     iconId: /** @type {null | NPC.UvQuadId} */ (null),
+    justOffMesh: false, // 🚧 more generic e.g. lookFollowsVelocity: true
     label: /** @type {null | string} */ (null),
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
@@ -277,6 +278,39 @@ export class Npc {
     return Math.PI/2 + ccwEastAngle;
   }
 
+  /**
+   * An offMeshConnection actually amounts to three segments:
+   * - init from initial npc position to src
+   * - main from src to dst
+   * - next from dst to nextCorner
+   * 
+   * Given the npc is traversing an offMeshConnection @see {offMesh},
+   * we find a point further along these 3 segments by @see {extraDistance}.
+   * @param {NPC.OffMeshState} offMesh
+   * @param {number} extraDistance meters
+   * @returns {Geom.VectJson}
+   */
+  getFurtherAlongOffMesh(offMesh, extraDistance) {
+    const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (this.agentAnim);
+    const dstT = anim.t + (extraDistance / offMesh.tToDist);
+    if (dstT < anim.tmid) {// look at 'init' seg
+      return {
+        x: offMesh.initPos.x + offMesh.initUnit.x * (dstT * offMesh.tToDist),
+        y: offMesh.initPos.y + offMesh.initUnit.y * (dstT * offMesh.tToDist),
+      };
+    } else if (dstT < anim.tmax) {// look at 'main' seg
+      return {
+        x: offMesh.src.x + offMesh.mainUnit.x * ((dstT - anim.tmid) * offMesh.tToDist),
+        y: offMesh.src.y + offMesh.mainUnit.y * ((dstT - anim.tmid) * offMesh.tToDist),
+      };
+    } else {// look beyond 'main' seg
+      return {
+        x: offMesh.dst.x + offMesh.nextUnit.x * ((dstT - anim.tmax) * offMesh.tToDist),
+        y: offMesh.dst.y + offMesh.nextUnit.y * ((dstT - anim.tmax) * offMesh.tToDist),
+      };
+    }
+  }
+
   /** @param {Geom.VectJson | THREE.Vector3Like} input */
   getLookAngle(input) {
     const src = this.getPoint();
@@ -348,16 +382,10 @@ export class Npc {
       offMesh.seg = 2; // midway in main segment
     }
 
-    // 🚧 improve e.g. to avoid final quick turn 'just around corner'
-    // 🚧 get point further along path, relative to this.position provides dir
-    let dirX = 0, dirY = 0;
-    if (offMesh.seg === 0) {
-      dirX = offMesh.initUnit.x + (anim.t / anim.tmid)**2 * (offMesh.mainUnit.x - offMesh.initUnit.x);
-      dirY = offMesh.initUnit.y + (anim.t / anim.tmid)**2 * (offMesh.mainUnit.y - offMesh.initUnit.y);
-    } else {
-      dirX = offMesh.mainUnit.x;
-      dirY = offMesh.mainUnit.y;
-    }
+    // look further along the path
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
+    const dirX = lookAt.x - this.position.x;
+    const dirY = lookAt.y - this.position.z;
     this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-dirY, dirX));
   }
 
@@ -731,7 +759,8 @@ export class Npc {
     const vel = agent.velocity();
     const speedSqr = vel.x ** 2 + vel.z ** 2;
 
-    if (speedSqr > 0.2 ** 2) {
+    // 🚧 currently we delay a bit after offMeshConnection
+    if (this.s.justOffMesh === false && speedSqr > 0.2 ** 2) {
       this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-vel.z, vel.x));
     }
   }

@@ -15,9 +15,14 @@
 - ❌ do final strafe when final edge small and "angular"
 - 🚧 improve turning through door
   - ❌ turn npc using `dampLookAt` instead of `dampAngle`
-  - can "lookahead" along 3 segment path
+  - ✅ can "lookahead" along 3 segment path
+  - ✅ delay "look follows velocity" by hard-coded amount
+    - ℹ️ RecastDetour believes the velocity matches `main` segment,
+         meaning the npc may briefly turn in the wrong direction
+  - 🚧 delay "look follows velocity" until nextCorner
 - npc's shouldn't turn towards nearest neighbour as much
 - sometimes direction through door is wrong
+  - ℹ️ maybe fixed by new approach
 
 ## Dev env
 
