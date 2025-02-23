@@ -136,10 +136,11 @@ export default function Npcs(props) {
         delete state.npc[npcKey];
         state.freePickId.add(npc.def.pickUid);
         state.pickIdToKey.delete(npc.def.pickUid);
-
-        w.events.next({ key: 'removed-npc', npcKey });
       }
       update();
+      for (const npcKey of npcKeys) {
+        w.events.next({ key: 'removed-npc', npcKey });
+      }
     },
     removeAgent(npc) {
       if (npc.agent !== null) {

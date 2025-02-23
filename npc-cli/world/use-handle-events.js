@@ -348,6 +348,10 @@ export default function useHandleEvents(w) {
 
           w.cm.refreshOptsPopUp();
           w.bubble.delete(e.npcKey);
+
+          if (w.disabled === true) {
+            setTimeout(() => w.npc.tickOnceDebounced());
+          }
           break;
         }
         case "spawned": {
