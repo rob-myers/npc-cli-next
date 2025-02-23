@@ -8,6 +8,7 @@ const instancedMonochromeShader = {
   Vert: /*glsl*/`
 
   attribute uint instanceIds;
+  uniform float opacity;
   flat varying uint vInstanceId;
   varying float vOpacityScale;
 
@@ -24,8 +25,7 @@ const instancedMonochromeShader = {
     gl_Position = projectionMatrix * modelViewPosition;
     #include <logdepthbuf_vertex>
 
-    // 🚧 more transparent the closer the camera
-    vOpacityScale = opacity == 1 ? 1 : (modelViewPosition.z * -1.0) / 25.0f;
+    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 25.0f;
   }
 
   `,
