@@ -12,7 +12,10 @@
 ### Extras
 
 - ✅ fix npc hot reloading
-- ✅ do final strafe when final edge small and "angular"
+- ❌ do final strafe when final edge small and "angular"
+- 🚧 improve turning through door
+  - ❌ turn npc using `dampLookAt` instead of `dampAngle`
+  - can "lookahead" along 3 segment path
 - npc's shouldn't turn towards nearest neighbour as much
 - sometimes direction through door is wrong
 

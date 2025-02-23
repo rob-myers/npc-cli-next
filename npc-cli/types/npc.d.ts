@@ -235,11 +235,25 @@ declare namespace NPC {
     src: Geom.VectJson;
     /** Adjusted dst */
     dst: Geom.VectJson;
-    /** Vector from "initial npc position" to "adjusted src" */
-    init: Geom.VectJson;
-    /** Vector from "adjusted src" to "adjusted dst" */
-    main: Geom.VectJson;
+
+    /** Unit vector from "initial npc position" to "adjusted src" */
+    initUnit: Geom.VectJson;
+    /** Unit vector from "adjusted src" to "adjusted dst" */
+    mainUnit: Geom.VectJson;
+    /** Unit vector from "adjusted dst" to next corner after off-mesh-connection */
+    nextUnit: Geom.VectJson;
+    /** Scale factor converting `dtAgentAnimation.t` into total distance along 2 segs */
+    tToDist: number;
   };
+
+  /** Provided after `dtAgentAnimation` has been re-configured */
+  interface OverrideOffMeshResult {
+    /** Adjusted src */
+    src: Geom.VectJson;
+    /** Adjusted dst */
+    dst: Geom.VectJson;
+    nextCorner: Geom.VectJson
+  }
 
   type Obstacle = {
     id: number;

@@ -465,9 +465,12 @@ export default function useHandleEvents(w) {
         seg: 0,
         src: adjusted.src,
         dst: adjusted.dst,
-        init: { x: adjusted.src.x - npc.position.x, y: adjusted.src.y - npc.position.z },
-        main: { x: adjusted.dst.x - adjusted.src.x, y: adjusted.dst.y - adjusted.src.y },
         orig: offMesh,
+
+        initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
+        mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
+        nextUnit: tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
+        tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed(), so:
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
@@ -487,6 +490,7 @@ export default function useHandleEvents(w) {
         const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
         anim.set_tmax(anim.t + tmpVect1.copy(npc.getPoint()).distanceTo(offMesh.dst) / npc.getSlowSpeed());
         agent.updateParameters({ maxSpeed: npc.getSlowSpeed() });
+        tr.tToDist = npc.getSlowSpeed();
         npc.startAnimation('Walk');
         break;
       }
@@ -534,7 +538,7 @@ export default function useHandleEvents(w) {
 
       // agent.corners() not available because ag->ncorners is 0 on offMeshConnection
       const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
-      const corner = {
+      const nextCorner = {
         x: agent.raw.get_cornerVerts(6 + 0),
         y: agent.raw.get_cornerVerts(6 + 2),
       };
@@ -542,12 +546,12 @@ export default function useHandleEvents(w) {
       // 🔔 extend npcPoint --> corner in each direction, since
       // offMeshConnections are slightly away from doorway 
       const agSrc = {
-        x: npcPoint.x - (corner.x - npcPoint.x),
-        y: npcPoint.y - (corner.y - npcPoint.y),
+        x: npcPoint.x - (nextCorner.x - npcPoint.x),
+        y: npcPoint.y - (nextCorner.y - npcPoint.y),
       };
       const agDst = {
-        x: corner.x + (corner.x - npcPoint.x),
-        y: corner.y + (corner.y - npcPoint.y),
+        x: nextCorner.x + (nextCorner.x - npcPoint.x),
+        y: nextCorner.y + (nextCorner.y - npcPoint.y),
       };
 
       const enLambda = geom.getClosestOnSegToSeg(enSrc, enDst, agSrc, agDst);
@@ -559,7 +563,7 @@ export default function useHandleEvents(w) {
       let newDst;
       
       // if newSrc --> corner intersects exit segment, use it (avoid turn)
-      const exIota = geom.getLineSegsIntersection(exSrc, exDst, newSrc, corner);
+      const exIota = geom.getLineSegsIntersection(exSrc, exDst, newSrc, nextCorner);
       
       if (exIota === null) {
         const exLambda = geom.getClosestOnSegToSeg(exSrc, exDst, agSrc, agDst);
@@ -605,7 +609,11 @@ export default function useHandleEvents(w) {
       anim.set_tmid(npcPoint.distanceTo(newSrc) / npc.getMaxSpeed());
       anim.set_tmax(anim.tmid + (Vect.from(newSrc).distanceTo(newDst) / npc.getMaxSpeed()));
 
-      return { src: newSrc, dst: newDst };
+      return {
+        src: newSrc,
+        dst: newDst,
+        nextCorner,
+      };
     },
     removeFromSensors(npcKey) {
       const closeDoors = state.npcToDoors[npcKey];
@@ -759,7 +767,7 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcNearDoor
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
- * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => { src: Geom.VectJson; dst: Geom.VectJson }} overrideOffMeshConnectionAngle
+ * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.
  * @property {(npcKey: string) => void} removeFromSensors
  * @property {() => void} showDefaultContextMenu

@@ -348,14 +348,15 @@ export class Npc {
       offMesh.seg = 2; // midway in main segment
     }
 
+    // 🚧 improve e.g. to avoid final quick turn 'just around corner'
+    // 🚧 get point further along path, relative to this.position provides dir
     let dirX = 0, dirY = 0;
     if (offMesh.seg === 0) {
-      // 🤔 should init/main be unit vectors?
-      dirX = offMesh.init.x + (anim.t / anim.tmid)**2 * (offMesh.main.x - offMesh.init.x);
-      dirY = offMesh.init.y + (anim.t / anim.tmid)**2 * (offMesh.main.y - offMesh.init.y);
+      dirX = offMesh.initUnit.x + (anim.t / anim.tmid)**2 * (offMesh.mainUnit.x - offMesh.initUnit.x);
+      dirY = offMesh.initUnit.y + (anim.t / anim.tmid)**2 * (offMesh.mainUnit.y - offMesh.initUnit.y);
     } else {
-      dirX = offMesh.main.x;
-      dirY = offMesh.main.y;
+      dirX = offMesh.mainUnit.x;
+      dirY = offMesh.mainUnit.y;
     }
     this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-dirY, dirX));
   }
@@ -691,9 +692,9 @@ export class Npc {
 
     const distance = this.s.target.distanceTo(pos);
 
-    if (distance < 0.4) {
-      this.s.lookSecs = 0.3; // avoid final turn
-    }
+    // if (distance < 0.4) {
+    //   this.s.lookSecs = 0.4; // avoid final turn
+    // }
 
     if (distance < 0.15) {// Reached target
       this.stopMoving();
