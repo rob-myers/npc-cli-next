@@ -19,6 +19,8 @@
   - ✅ delay "look follows velocity" by hard-coded amount
     - ℹ️ RecastDetour believes the velocity matches `main` segment,
          meaning the npc may briefly turn in the wrong direction
+  - ✅ issue when nextCorner ~ dst (when traverse either side of doorway)
+    - nextUnit can be null
   - 🚧 delay "look follows velocity" until nextCorner
 - npc's shouldn't turn towards nearest neighbour as much
 - 🚧 sometimes direction through door is wrong

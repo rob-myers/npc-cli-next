@@ -242,8 +242,11 @@ declare namespace NPC {
     initUnit: Geom.VectJson;
     /** Unit vector from "adjusted src" to "adjusted dst" */
     mainUnit: Geom.VectJson;
-    /** Unit vector from "adjusted dst" to next corner after off-mesh-connection */
-    nextUnit: Geom.VectJson;
+    /**
+     * Unit vector from "adjusted dst" to next corner after off-mesh-connection.
+     * It can be null if these two points are too close.
+     */
+    nextUnit: null | Geom.VectJson;
     /** Scale factor converting `dtAgentAnimation.t` into total distance along 2 segs */
     tToDist: number;
   };

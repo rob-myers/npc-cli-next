@@ -38,7 +38,7 @@ export default function Npcs(props) {
     physicsPositions: [],
     tex: /** @type {*} */ ({}),
     pickIdToKey: new Map(),
-    showLastNavPath: false,
+    showLastNavPath: false, // 🔔 debug
 
     attachAgent(npc) {
       if (npc.agent === null) {

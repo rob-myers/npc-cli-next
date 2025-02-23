@@ -312,7 +312,9 @@ export default function useHandleEvents(w) {
           const { npcKey, gmId, roomId, grKey } = e;
           state.npcToRoom.set(npcKey, { gmId, roomId, grKey });
           (state.roomToNpcs[gmId][roomId] ??= new Set()).add(npcKey);
-
+          // if (npc.s.target !== null && npc.position.distanceTo(npc.s.target) <= 1) {
+          //   npc.s.lookSecs = 0.3; // slower look if stopping soon
+          // }
           break;
         }
         case "exit-room": {
@@ -455,7 +457,9 @@ export default function useHandleEvents(w) {
       }
       
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
-      
+      // avoid flicker      
+      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.05;
+
       // register adjusted traversal
       npc.s.offMesh = {
         npcKey: e.npcKey,
@@ -467,7 +471,7 @@ export default function useHandleEvents(w) {
         initPos: adjusted.initPos,
         initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
         mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
-        nextUnit: tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
+        nextUnit: nextCornerTooClose ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
         tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);

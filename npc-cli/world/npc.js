@@ -298,7 +298,7 @@ export class Npc {
         x: offMesh.initPos.x + offMesh.initUnit.x * (dstT * offMesh.tToDist),
         y: offMesh.initPos.y + offMesh.initUnit.y * (dstT * offMesh.tToDist),
       };
-    } else if (dstT < anim.tmax) {// look at 'main' seg
+    } else if (dstT < anim.tmax || offMesh.nextUnit === null) {// look at 'main' seg
       return {
         x: offMesh.src.x + offMesh.mainUnit.x * ((dstT - anim.tmid) * offMesh.tToDist),
         y: offMesh.src.y + offMesh.mainUnit.y * ((dstT - anim.tmid) * offMesh.tToDist),
