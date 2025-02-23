@@ -26,6 +26,8 @@
 - 🚧 sometimes direction through door is wrong
   - ℹ️ maybe fixed by new approach
 
+- `w.npc.remove` should trigger render while paused
+
 ## Dev env
 
 - 🚧 try `bun` https://bun.sh/
