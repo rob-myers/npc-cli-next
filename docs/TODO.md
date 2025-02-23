@@ -1,14 +1,17 @@
 # TODO
 
+## Branch `clean-npc-shaders`
+
 ## Dev env
 
 - 🚧 try `bun` https://bun.sh/
-  - ℹ️ assets.js script is failing due to `canvas` (node-canvas)
+  - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
   - 🚧 try https://www.npmjs.com/package/skia-canvas
 
-## Migrate from Gatsby ✅
 
 # Done
+
+## Migrate from Gatsby
 
 - ✅ next-mdx-remote
   - https://github.com/hashicorp/next-mdx-remote?tab=readme-ov-file
