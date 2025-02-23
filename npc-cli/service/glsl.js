@@ -9,6 +9,7 @@ const instancedMonochromeShader = {
 
   attribute uint instanceIds;
   flat varying uint vInstanceId;
+  varying float vOpacityScale;
 
   #include <common>
   #include <logdepthbuf_pars_vertex>
@@ -19,9 +20,12 @@ const instancedMonochromeShader = {
     vec4 modelViewPosition = vec4(position, 1.0);
     modelViewPosition = instanceMatrix * modelViewPosition;
     modelViewPosition = modelViewMatrix * modelViewPosition;
-    
+
     gl_Position = projectionMatrix * modelViewPosition;
     #include <logdepthbuf_vertex>
+
+    // 🚧 more transparent the closer the camera
+    vOpacityScale = opacity == 1 ? 1 : (modelViewPosition.z * -1.0) / 25.0f;
   }
 
   `,
@@ -31,8 +35,8 @@ const instancedMonochromeShader = {
   uniform vec3 diffuse;
   uniform bool objectPick;
   uniform float opacity;
-
   flat varying uint vInstanceId;
+  varying float vOpacityScale;
 
   #include <common>
   #include <logdepthbuf_pars_fragment>
@@ -58,7 +62,7 @@ const instancedMonochromeShader = {
       return;
     }
     
-    gl_FragColor = vec4(diffuse, opacity);
+    gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
     #include <logdepthbuf_fragment>
   }
   `,
