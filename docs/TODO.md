@@ -21,7 +21,7 @@
          meaning the npc may briefly turn in the wrong direction
   - 🚧 delay "look follows velocity" until nextCorner
 - npc's shouldn't turn towards nearest neighbour as much
-- sometimes direction through door is wrong
+- 🚧 sometimes direction through door is wrong
   - ℹ️ maybe fixed by new approach
 
 ## Dev env
