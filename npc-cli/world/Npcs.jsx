@@ -306,14 +306,16 @@ export default function Npcs(props) {
     process.env.NODE_ENV === 'development' && Object.values(state.npc).forEach(oldNpc => {
       // 🔔 HMR by overwriting newNpc's non-methods with oldNpc's
       const newNpc = state.npc[oldNpc.key] = Object.assign(new Npc(oldNpc.def, w), {...oldNpc});
+      newNpc.epochMs = Date.now();
       if (newNpc.agent !== null) {// avoid stale ref
         state.byAgId[newNpc.agent.agentIndex] = newNpc;
       }
       oldNpc.dispose();
+      update();
     });
   }, []);
 
-  React.useEffect(() => {// npc textures
+  React.useEffect(() => {// npc textures 🚧 use single DataTextureArray
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
       const { skinBaseName } = npcClassToMeta[classKey];

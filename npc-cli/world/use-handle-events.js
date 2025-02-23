@@ -449,7 +449,6 @@ export default function useHandleEvents(w) {
       )) {
         return npc.stopMoving();
       }
-      
 
       // try open closed door
       if (door.open === false &&

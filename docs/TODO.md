@@ -2,6 +2,20 @@
 
 ## Branch `clean-npc-shaders`
 
+- improve npc svg textures
+- two characters: `human-0` and `pet-0`
+- auto-extend geometry with label quad and selector quad
+- use single DataTextureArray for npc labels and their uvs
+- use single DataTextureArray for npc textures and their uvs
+- unified material `npcMaterial` (if possible)
+
+### Extras
+
+- ✅ fix npc hot reloading
+- ✅ do final strafe when final edge small and "angular"
+- npc's shouldn't turn towards nearest neighbour as much
+- sometimes direction through door is wrong
+
 ## Dev env
 
 - 🚧 try `bun` https://bun.sh/

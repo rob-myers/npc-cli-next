@@ -691,6 +691,10 @@ export class Npc {
 
     const distance = this.s.target.distanceTo(pos);
 
+    if (distance < 0.4) {
+      this.s.lookSecs = 0.8; // avoid final turn
+    }
+
     if (distance < 0.15) {// Reached target
       this.stopMoving();
       return;
@@ -931,7 +935,7 @@ export class Npc {
     // e.g. when npc without access is close to door
     if (this.agentAnim === null || this.agentAnim?.active === false) {
       return false;
-    } else if (this.agentAnim.t < this.agentAnim.tmid) {
+    } else if (this.agentAnim.t <= this.agentAnim.tmid) {
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
     } else {
