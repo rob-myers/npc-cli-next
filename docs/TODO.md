@@ -1,19 +1,12 @@
 # TODO
 
-## Migrate from Gatsby
+## Dev env
 
-
-- ❌ try fix `yarn build` breaking `yarn dev`
-  - https://github.com/vercel/next.js/issues/61228
-- ✅ clean fetch-assets file
-- ❌ maybe move flexlayout-react/style/light.css "back" into layout.tsx
-  - originally needed in Gatsby but we'll leave as iss
 - 🚧 try `bun` https://bun.sh/
   - ℹ️ assets.js script is failing due to `canvas` (node-canvas)
   - 🚧 try https://www.npmjs.com/package/skia-canvas
 
-- try 2-layered walls
-  - 1m, then another 1m which is more transparent
+## Migrate from Gatsby ✅
 
 # Done
 
@@ -117,3 +110,10 @@
   - ✅ migrate enough media/* to get assets.js working
   - ✅ generate decor
   - ✅ cwebp-fast
+
+- ✅ clean fetch-assets file
+
+- ❌ try fix `yarn build` breaking `yarn dev`
+  - https://github.com/vercel/next.js/issues/61228
+- ❌ maybe move flexlayout-react/style/light.css "back" into layout.tsx
+  - originally needed in Gatsby but we'll leave as is
