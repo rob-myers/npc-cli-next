@@ -383,7 +383,7 @@ export class Npc {
     }
 
     // look further along the path
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.2);
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
     this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-dirY, dirX));
