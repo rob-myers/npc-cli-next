@@ -32,15 +32,12 @@ export function Tab({ def, api, state: tabState }: TabProps) {
   }, []);
 
   if (def.type === "component") {
-    return (
-      (state.component &&
-        React.createElement(state.component as React.FunctionComponent<BaseTabProps>, {
-          disabled: tabState.disabled,
-          setTabsEnabled: state.setTabsEnabled,
-          ...def.props,
-        })) ||
-      null
-    );
+    return state.component !== null &&
+      React.createElement(state.component as React.FunctionComponent<BaseTabProps>, {
+        disabled: tabState.disabled,
+        setTabsEnabled: state.setTabsEnabled,
+        ...def.props,
+      }) || null;
   }
 
   if (def.type === "terminal") {
@@ -48,12 +45,8 @@ export function Tab({ def, api, state: tabState }: TabProps) {
       <Terminal
         disabled={tabState.disabled}
         setTabsEnabled={state.setTabsEnabled}
-
         sessionKey={def.filepath}
-        env={{
-          ...def.env,
-          CACHE_SHORTCUTS: { w: "WORLD_KEY" },
-        }}
+        env={{ ...def.env, CACHE_SHORTCUTS: { w: "WORLD_KEY" }}}
         onKey={state.onTerminalKey}
       />
     );

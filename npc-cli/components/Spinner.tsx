@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
 
-export default function Spinner(props: { size?: number }) {
+export default function Spinner(props: Props) {
   return (
     <span
       css={rootCss}
@@ -32,4 +32,21 @@ const rootCss = css`
       transform: rotate(360deg);
     }
   }
+`;
+
+type Props = { size?: number };
+
+export function CentredSpinner(props: Props) {
+  return (
+    <div css={centredCss}>
+      <Spinner {...props} />
+    </div>
+  );
+}
+
+const centredCss = css`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 `;

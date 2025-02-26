@@ -9,6 +9,7 @@ import {
   tryLocalStorageRemove,
   tryLocalStorageSet,
 } from "../service/generic";
+import { CentredSpinner } from "../components/Spinner";
 import { Props as TabsProps, State as TabsApi } from "./Tabs";
 import { TabMemo } from "./Tab";
 import { isTouchDevice } from "../service/dom";
@@ -132,6 +133,7 @@ function FallbackComponentFactory(componentKey: string) {
 
 export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   ssr: false,
+  fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
 
 //#region persist

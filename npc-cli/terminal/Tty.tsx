@@ -25,9 +25,7 @@ export default function Tty(props: Props) {
   const [rootRef, bounds] = useMeasure({ debounce: 0, scroll: false });
 
   const state = useStateRef(() => ({
-    // 🚧 use null
-    base: {} as BaseTtyState,
-    // base: null as any as BaseTtyState,
+    base: {} as BaseTtyState, // 🔔 hack to avoid excessive optional-chaining
     /**
      * Have we initiated the profile?
      * We don't want to re-run it on hmr.
