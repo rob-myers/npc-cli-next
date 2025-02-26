@@ -302,8 +302,8 @@ const loggerPopUpCss = css`
   
   .${popUpButtonClassName} {
     color: #8888ff;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    border-width: 1px 0 0 1px;
+    /* border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-width: 1px 0 0 1px; */
     background: black;
     padding: 2px 12px;
     text-decoration: underline;
