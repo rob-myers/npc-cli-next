@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { css } from "@emotion/react";
 import React from "react";
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "react-pro-sidebar";
@@ -11,28 +10,17 @@ import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChe
 
 export default function Nav() {
   const collapsed = useSite(({ navOpen }) => !navOpen);
-  const router = useRouter();
 
   const state = useStateRef(() => ({
-    onClickSidebar(e: React.MouseEvent) {
-      // console.log(e.target)
-      const el = e.target as HTMLElement;
-      if (
-        // outside buttons
-        el.classList.contains(sidebarClasses.container)
-        || el.nodeName === "UL"
-        // near title
-        || (collapsed && el.closest(".title") !== null)
-        || (!collapsed && el.classList.contains("title"))
-      ) {
-        state.toggleCollapsed();
-        return;
+    onClickMenu(e: React.MouseEvent) {
+      const li = (e.target as HTMLElement).closest('li');
+      if (li && li.previousSibling !== null) {
+        e.stopPropagation();
       }
-      const anchorEl = el.querySelectorAll("a");
-      if (anchorEl.length === 1) {
-        const { pathname, search, hash } = new URL(anchorEl[0].href, location.href);
-        router.push(`${pathname}${search}${hash}`);
-      }
+    },
+    onClickToggle(e: React.MouseEvent) {
+      state.toggleCollapsed();
+      e.stopPropagation();
     },
     toggleCollapsed() {
       useSite.api.toggleNav();
@@ -48,23 +36,33 @@ export default function Nav() {
       collapsed={collapsed}
       collapsedWidth={nav.collapsedWidth}
       data-testid="nav"
-      onClick={state.onClickSidebar}
+      onClick={state.toggleCollapsed}
       width={nav.expandedWidth}
     >
-      <button onClick={(e) => { state.toggleCollapsed(); e.stopPropagation() }} css={toggleCss} className="toggle">
-        <FontAwesomeIcon icon={faChevronRight} size="1x" beat={false} flip={collapsed ? undefined : "horizontal"} />
+      <button
+        onClick={state.onClickToggle}
+        css={toggleCss}
+        className="toggle"
+        style={{ zIndex: 10 }}
+      >
+         <FontAwesomeIcon
+          icon={faChevronRight}
+          size="1x"
+          beat={false}
+          flip={collapsed ? undefined : "horizontal"}
+        />
       </button>
 
-      <Menu>
+      <Menu onClick={state.onClickMenu}>
         <MenuItem className="title" component="span" tabIndex={-1}>
-          <Link href="/" tabIndex={-1}>NPC CLI</Link>
+          <Link href="/blog/index" tabIndex={-1}>NPC CLI</Link>
         </MenuItem>
         <SubMenu icon={icon.blog} label="Blog">
           <MenuItem component="span">
-            <Link href="/">Intent</Link>
+            <Link href="/blog/intent">Intent</Link>
           </MenuItem>
           <MenuItem component="span">
-            <Link href="/strategy-1">Strategy 1</Link>
+            <Link href="/blog/strategy-1">Strategy 1</Link>
           </MenuItem>
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
@@ -183,8 +181,6 @@ const toggleCss = css`
   position: absolute;
   top: 0.6rem;
   right: 1rem;
-  width: 1.5rem;
-  height: 1.5rem;
   transition: margin-top 300ms;
   margin-top: ${nav.titleMarginTop};
 
