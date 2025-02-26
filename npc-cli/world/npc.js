@@ -268,13 +268,15 @@ export class Npc {
   }
 
   /**
-   * @param {number} ccwEastAngle ccw from east (standard mathematical convention)
-   * @returns {number} respective value of `rotation.y` taking initial facing angle into account
-   * - euler y rotation has same sense/sign as "ccw from east"
+   * @param {number} cwEastAngle
+   * Angle going clockwise starting from east, assuming we look down at the agents from above.
+   * Equivalently, `Math.atan(v3.z, v3.x)` where `v3: Vector3` faces desired direction.
+   * @returns {number} `rotation.y` where:
+   * - euler y rotation has the opposite sense/sign i.e. "counter-clockwise from east"
    * - +pi/2 because character initially facing along +z
    */
-  getEulerAngle(ccwEastAngle) {
-    return Math.PI/2 + ccwEastAngle;
+  getEulerAngle(cwEastAngle) {
+    return Math.PI/2 - cwEastAngle;
   }
 
   /**
@@ -316,7 +318,7 @@ export class Npc {
     const dst = toXZ(input);
     return src.x === dst.x && src.y === dst.y
       ? this.getAngle()
-      : Math.atan2(-(dst.y - src.y), dst.x - src.x)
+      : Math.atan2((dst.y - src.y), dst.x - src.x)
     ;
   }
 
@@ -385,7 +387,7 @@ export class Npc {
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
     const radians = Math.atan2(dirY, dirX);
-    this.s.lookAngleDst = this.getEulerAngle(-radians);
+    this.s.lookAngleDst = this.getEulerAngle(radians);
 
     if (anim.t > anim.tmax - 0.1) {// exit in direction we're looking
       anim.set_unitExitVel(0, Math.cos(radians));
@@ -765,7 +767,7 @@ export class Npc {
     const speedSqr = vel.x ** 2 + vel.z ** 2;
 
     if (speedSqr > 0.2 ** 2) {
-      this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-vel.z, vel.x));
+      this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
     }
   }
 
@@ -785,7 +787,7 @@ export class Npc {
     }
     
     // turn towards "closest neighbour" if they have a target
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-(other.position.z - this.position.z), (other.position.x - this.position.x)));
+    this.s.lookAngleDst = this.getEulerAngle(Math.atan2((other.position.z - this.position.z), (other.position.x - this.position.x)));
   }
 
   setupMixer() {
