@@ -263,9 +263,13 @@ export default function WorldMenu(props) {
       css={cssTtyDisconnectedMessage}
       className={cx({ hidden: state.disconnected === false })}
     >
-      <h3>[disconnected] <Spinner size={16}/></h3>
-      
-      click or show a tty tab
+      <div>
+        <h3>[disconnected]</h3>
+        click or show a tty tab
+      </div>
+      <div className="spinner-container">
+        <Spinner size={24}/>
+      </div>
     </div>
 
   </>;
@@ -406,10 +410,10 @@ const cssTtyDisconnectedMessage = css`
   right: 0;
   z-index: ${zIndexWorld.disconnectedMessage};
 
-  h3 {
-    display: flex;
-    justify-content: space-between;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 
   pointer-events: none;
   padding: 16px;
@@ -419,6 +423,7 @@ const cssTtyDisconnectedMessage = css`
   }
 
   background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 0.9rem;
   
   color: #aaa;
@@ -426,6 +431,13 @@ const cssTtyDisconnectedMessage = css`
   h3 {
     font-family: 'Courier New', Courier, monospace;
     color: #8f8;
+  }
+
+  .spinner-container {
+    display: flex;
+    padding: 8px;
+    background-color: #222;
+    border-radius: 4px;
   }
 
   transition: opacity 600ms;
