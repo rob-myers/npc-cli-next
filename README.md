@@ -62,7 +62,43 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
 ## Bits and bobs
 
+### `patch-package`
+
 We can also patch `package1/node_modules/package2`
 > https://www.npmjs.com/package/patch-package#nested-packages
 
 This permits us to patch `three-stdlib` inside `@react-three/drei`.
+
+### Bump versions in our branch of recast-navigation-js
+
+Currently tsconfig.json paths only works in webpack (`yarn dev-webpack`) not turbopack (`yarn dev`),
+see https://github.com/vercel/next.js/issues/72346.
+This means that in dev we'll uncomment tsconfig paths and use webpack,
+but after publishing we should re-comment these paths and use turbopack.
+
+#### At `recast-navigation-js` repo root
+
+1. Manually bump versions
+  - search for current patch e.g. 0.39.1 and replace with next e.g. 0.39.2
+  - do not include yarn.lock, files should be:
+    > packages/recast-navigation{,-core,-generators,-playcanvas,-three,-wasm}
+
+1. Run `yarn`
+
+1. Commit and push e.g. to branch `feat/expose-off-mesh-anim`
+
+1. Run `yarn publish`
+    - 🔔 may have to wait a bit for registry to update
+
+#### At `npc-cli-next` repo root
+
+1. Bump package.json versions, e.g.
+
+```json
+  "@recast-navigation/core": "npm:@rob-myers/recast-navigation__core@0.39.2",
+  "@recast-navigation/generators": "npm:@rob-myers/recast-navigation__generators@0.39.2",
+  "@recast-navigation/three": "npm:@rob-myers/recast-navigation__three@0.39.2",
+  "@recast-navigation/wasm": "npm:@rob-myers/recast-navigation__wasm@0.39.2",
+```
+
+1. Run `npm install`
