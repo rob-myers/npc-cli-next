@@ -71,7 +71,7 @@ const classToComponent = {
   },
   World: {
     loadable: loadable(() => import("../world/World"), {
-      fallback: <CentredSpinner size={32} />,
+      // fallback: <CentredSpinner style={{ position: 'absolute', top: 0 }} />,
     }),
     get:
       (module: typeof import("../world/World")) =>

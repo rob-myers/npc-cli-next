@@ -34,19 +34,28 @@ const rootCss = css`
   }
 `;
 
-type Props = { size?: number };
+interface Props {
+  size?: number;
+}
 
-export function CentredSpinner(props: Props) {
+
+export function CentredSpinner(props: CenteredSpinnerProps) {
   return (
-    <div css={centredCss}>
+    <div css={centredCss} style={props.style}>
       <Spinner {...props} />
     </div>
   );
+}
+
+interface CenteredSpinnerProps extends Props {
+  style?: React.CSSProperties;
 }
 
 const centredCss = css`
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
   height: 100%;
+  pointer-events: none;
 `;

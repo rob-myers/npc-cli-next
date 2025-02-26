@@ -16,7 +16,7 @@ import { html3DOpacityCssVar } from "../components/Html3d";
 import { PopUp, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 import { globalLoggerLinksRegex, Logger } from "../terminal/Logger";
 import TouchIndicator from "./TouchIndicator";
-import Spinner from "../components/Spinner";
+import { CentredSpinner } from "../components/Spinner";
 
 /**
  * @param {Pick<import('./World').Props, 'setTabsEnabled'>} props 
@@ -259,17 +259,14 @@ export default function WorldMenu(props) {
 
     <TouchIndicator/>
 
+    {w.crowd === null && <CentredSpinner size={32} style={{ position: 'absolute', top: 0 }} />}
+
     <div
       css={cssTtyDisconnectedMessage}
       className={cx({ hidden: state.disconnected === false })}
     >
-      <div>
-        <h3>[disconnected]</h3>
-        click or show a tty tab
-      </div>
-      <div className="spinner-container">
-        <Spinner size={24}/>
-      </div>
+      <h3>[disconnected]</h3>
+      click or show a tty tab
     </div>
 
   </>;
@@ -410,11 +407,6 @@ const cssTtyDisconnectedMessage = css`
   right: 0;
   z-index: ${zIndexWorld.disconnectedMessage};
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-
   pointer-events: none;
   padding: 16px;
   margin: 0 16px 16px 0;
@@ -431,13 +423,6 @@ const cssTtyDisconnectedMessage = css`
   h3 {
     font-family: 'Courier New', Courier, monospace;
     color: #8f8;
-  }
-
-  .spinner-container {
-    display: flex;
-    padding: 8px;
-    background-color: #222;
-    border-radius: 4px;
   }
 
   transition: opacity 600ms;
