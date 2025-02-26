@@ -26,11 +26,15 @@ export default async function BlogPage(props: {
     },
   });
 
-  return (
-    <Root meta={data.frontmatter}>
-      {data.content}
-    </Root>
-  )
+  // 🚧 somehow pass data.frontmatter into Root,
+  // which now resides in app/layout.tsx,
+  // e.g. by passing `[data.content, data.frontmatter]`
+
+  return <>
+    {/* <Root meta={data.frontmatter}> */}
+    {data.content}
+    {/* </Root> */}
+  </>;
 }
 
 export async function generateStaticParams(): Promise<Slug[]> {

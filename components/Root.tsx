@@ -28,7 +28,7 @@ export default function Root({ children, meta }: Props) {
   useBeforeunload(() => void useSite.api.onTerminate());
 
   return (
-    <QueryClientProvider client={queryClient} >
+    <QueryClientProvider client={queryClient}>
       <div
         css={rootCss}
         data-testid="root"

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Root from "@/components/Root";
 
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "@xterm/xterm/css/xterm.css";
@@ -25,7 +26,12 @@ export default function RootLayout({
           as="style"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* 🚧 feed meta in somehow */}
+        <Root meta={{ key: 'page-1' } as any}>
+          {children}
+        </Root>
+      </body>
     </html>
   );
 }
