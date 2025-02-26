@@ -8,8 +8,7 @@
   - ✅ try adding Root to app/layout.tsx
     - ℹ️ this fixes the main issue!
   - 🚧 somehow pass `data.frontmatter` into Root
-    - ℹ️ to fix main issue we thard-coded
-
+    - ℹ️ to fix main issue we hard-coded Root's meta prop
 
 - improve npc svg textures
 - two characters: `human-0` and `pet-0`
