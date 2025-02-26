@@ -31,8 +31,8 @@
   - ✅ publish to scoped npm module
   - ✅ use scoped npm module
 
-- npc's shouldn't turn towards nearest neighbour as much
-- 🚧 sometimes direction through door is wrong
+- 🚧 npc's shouldn't turn towards nearest neighbour as much
+- ❌ sometimes direction through door is wrong
   - ℹ️ maybe fixed by new approach
 
 - `w.npc.remove` should trigger render while paused
