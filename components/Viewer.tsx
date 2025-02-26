@@ -25,7 +25,7 @@ export default function Viewer() {
     rootEl: null as any,
     tabs: {} as TabsState,
     onChangeIntersect: debounce((intersects: boolean) => {
-      !intersects && state.tabs.enabled && state.tabs.toggleEnabled();
+      !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
     }, 1000),
     onKeyDown(e) {
