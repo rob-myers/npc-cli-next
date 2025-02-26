@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import React from "react";
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "react-pro-sidebar";
 
-import { afterBreakpoint, breakpoint, nav, view } from "./const";
+import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useStateRef from "../npc-cli/hooks/use-state-ref";
 import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight } from "./Icon";
@@ -113,6 +113,10 @@ const navCss = css`
   span.${menuClasses.icon} {
     width: 1rem;
     min-width: 1rem;
+  }
+
+  .${sidebarClasses.container} {
+      z-index: ${zIndexSite.nav};
   }
 
   &.${sidebarClasses.collapsed} {
