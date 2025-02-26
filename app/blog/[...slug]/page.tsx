@@ -39,7 +39,7 @@ export async function generateStaticParams(): Promise<Slug[]> {
   // return posts.map((post) => ({
   //   slug: post.slug,
   // }))
-  return [{ slug: ['index'] }];
+  return [{ slug: ['index'] }, { slug: ['strategy-1'] }];
 }
 
 interface Slug {
