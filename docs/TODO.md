@@ -13,7 +13,8 @@
 
 - ✅ fix npc hot reloading
 - ❌ do final strafe when final edge small and "angular"
-- 🚧 improve turning through door
+
+- ✅ improve turning through door
   - ❌ turn npc using `dampLookAt` instead of `dampAngle`
   - ✅ can "lookahead" along 3 segment path
   - ✅ delay "look follows velocity" by hard-coded amount
@@ -21,7 +22,15 @@
          meaning the npc may briefly turn in the wrong direction
   - ✅ issue when nextCorner ~ dst (when traverse either side of doorway)
     - nextUnit can be null
-  - 🚧 extend dtAgentAnimation with exitUnitVelocity
+
+  - ✅ extend dtAgentAnimation with unitExitVel locally (recast-navigation-js)
+  - ✅ can see `agentAnim.unitExitVel` locally
+    - ℹ️ must use webpack i.e. `yarn dev-webpack`
+  - ✅ overrideOffMeshConnectionAngle overrides `agentAnim.unitExitVel`
+  - ✅ npc look overrides `agentAnim.unitExitVel`
+  - ✅ publish to scoped npm module
+  - ✅ use scoped npm module
+
 - npc's shouldn't turn towards nearest neighbour as much
 - 🚧 sometimes direction through door is wrong
   - ℹ️ maybe fixed by new approach

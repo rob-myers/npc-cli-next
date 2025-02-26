@@ -165,7 +165,7 @@
 
   normalize(newLength = 1) {
     const length = this.length;
-    if (length) {
+    if (length > 0) {
       return this.scale(newLength / length);
     } else {
       console.error(`Cannot normalize Vect '${this}' to length '${newLength}'`);

@@ -55,7 +55,6 @@ export class Npc {
     faceId: /** @type {null | NPC.UvQuadId} */ (null),
     fadeSecs: 0.3,
     iconId: /** @type {null | NPC.UvQuadId} */ (null),
-    justOffMesh: false, // 🚧 more generic e.g. lookFollowsVelocity: true
     label: /** @type {null | string} */ (null),
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
@@ -368,7 +367,6 @@ export class Npc {
    * @param {NPC.OffMeshState} offMesh
    */
   handleOffMeshConnection(agent, offMesh) {
-
     if (offMesh.seg === 0) {
       this.handlePreOffMeshCollision(agent);
     }
@@ -383,10 +381,17 @@ export class Npc {
     }
 
     // look further along the path
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4); // 🔔 why 0.4?
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-dirY, dirX));
+    const radians = Math.atan2(dirY, dirX);
+    this.s.lookAngleDst = this.getEulerAngle(-radians);
+
+    if (anim.t > anim.tmax - 0.1) {// exit in direction we're looking
+      anim.set_unitExitVel(0, Math.cos(radians));
+      anim.set_unitExitVel(1, 0);
+      anim.set_unitExitVel(2, Math.sin(radians));
+    }
   }
 
   /**
@@ -759,8 +764,7 @@ export class Npc {
     const vel = agent.velocity();
     const speedSqr = vel.x ** 2 + vel.z ** 2;
 
-    // 🚧 currently we delay a bit after offMeshConnection
-    if (this.s.justOffMesh === false && speedSqr > 0.2 ** 2) {
+    if (speedSqr > 0.2 ** 2) {
       this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-vel.z, vel.x));
     }
   }

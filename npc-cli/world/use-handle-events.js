@@ -526,9 +526,6 @@ export default function useHandleEvents(w) {
         npc.s.run === true && npc.startAnimation('Run');
       }
 
-      // 🚧 WIP prefer extending dtAgentAnimation with e.g. exitUnitVector
-      npc.s.justOffMesh = true;
-      setTimeout(() => npc.s.justOffMesh = false, 300);
 
       w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.dstGrKey) });
     },
@@ -599,14 +596,6 @@ export default function useHandleEvents(w) {
         };
       }
 
-      // console.log({
-      //   src: offMesh.src,
-      //   dst: offMesh.dst,
-      //   corner,
-      //   newSrc,
-      //   newDst,
-      // });
-
       // adjust RecastDetour dtCrowdAgentAnimation
       const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
       anim.set_initPos(0, npcPoint.x);
@@ -617,7 +606,12 @@ export default function useHandleEvents(w) {
       anim.set_endPos(2, newDst.y);
       anim.set_t(0);
       anim.set_tmid(npcPoint.distanceTo(newSrc) / npc.getMaxSpeed());
-      anim.set_tmax(anim.tmid + (Vect.from(newSrc).distanceTo(newDst) / npc.getMaxSpeed()));
+      const delta = tmpVect1.copy(newDst).sub(newSrc);
+      anim.set_tmax(anim.tmid + (delta.length / npc.getMaxSpeed()));
+      delta.normalize();
+      anim.set_unitExitVel(0, delta.x);
+      anim.set_unitExitVel(1, 0);
+      anim.set_unitExitVel(2, delta.y);
 
       return {
         initPos: npcPoint.json,
