@@ -70,7 +70,9 @@ const classToComponent = {
         React.createElement(module.default, { disabled: true, ...props }),
   },
   World: {
-    loadable: loadable(() => import("../world/World")),
+    loadable: loadable(() => import("../world/World"), {
+      fallback: <CentredSpinner size={32} />,
+    }),
     get:
       (module: typeof import("../world/World")) =>
       (props: React.ComponentProps<(typeof module)["default"]>) =>
