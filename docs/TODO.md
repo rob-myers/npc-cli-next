@@ -2,6 +2,11 @@
 
 ## Branch `clean-npc-shaders`
 
+- 🚧 changing blog page should not remount
+  - ℹ️ priority issue!
+  - try creating two test pages `app/page{1,2}/page.tsx` and try to Link between them without full-page-refresh
+
+
 - improve npc svg textures
 - two characters: `human-0` and `pet-0`
 - auto-extend geometry with label quad and selector quad
@@ -35,7 +40,8 @@
 - ❌ sometimes direction through door is wrong
   - ℹ️ maybe fixed by new approach
 
-- `w.npc.remove` should trigger render while paused
+- 🚧 `w.npc.remove` should trigger render while paused
+
 
 ## Dev env
 
