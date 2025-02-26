@@ -4,7 +4,9 @@
 
 - 🚧 changing blog page should not remount
   - ℹ️ priority issue!
-  - try creating two test pages `app/page{1,2}/page.tsx` and try to Link between them without full-page-refresh
+  - ✅ create two basic test pages `app/test/page{1,2}` Link between them without full-page-refresh
+  - 🚧 try adding Root
+  - 🚧 make them use mdx-remote
 
 
 - improve npc svg textures
