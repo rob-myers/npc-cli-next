@@ -5,8 +5,10 @@
 - 🚧 changing blog page should not remount
   - ℹ️ priority issue!
   - ✅ create two basic test pages `app/test/page{1,2}` Link between them without full-page-refresh
-  - 🚧 try adding Root
-  - 🚧 make them use mdx-remote
+  - ✅ try adding Root to app/layout.tsx
+    - ℹ️ this fixes the main issue!
+  - 🚧 somehow pass `data.frontmatter` into Root
+    - ℹ️ to fix main issue we thard-coded
 
 
 - improve npc svg textures
