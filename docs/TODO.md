@@ -1,14 +1,62 @@
 # TODO
 
+## Branch `clean-npc-shaders`
+
+- 🚧 changing blog page should not remount
+  - ℹ️ priority issue!
+  - ✅ create two basic test pages `app/test/page{1,2}` Link between them without full-page-refresh
+  - ✅ try adding Root to app/layout.tsx
+    - ℹ️ this fixes the main issue!
+  - ✅ somehow pass `data.frontmatter` into Root
+    - ℹ️ to fix main issue we hard-coded Root's meta prop
+    - ✅ use `<script id="frontmatter-json"/>` whose contents is stringified frontmatter
+
+- improve npc svg textures
+- two characters: `human-0` and `pet-0`
+- auto-extend geometry with label quad and selector quad
+- use single DataTextureArray for npc labels and their uvs
+- use single DataTextureArray for npc textures and their uvs
+- unified material `npcMaterial` (if possible)
+
+### Extras
+
+- ✅ fix npc hot reloading
+- ❌ do final strafe when final edge small and "angular"
+
+- ✅ improve turning through door
+  - ❌ turn npc using `dampLookAt` instead of `dampAngle`
+  - ✅ can "lookahead" along 3 segment path
+  - ✅ delay "look follows velocity" by hard-coded amount
+    - ℹ️ RecastDetour believes the velocity matches `main` segment,
+         meaning the npc may briefly turn in the wrong direction
+  - ✅ issue when nextCorner ~ dst (when traverse either side of doorway)
+    - nextUnit can be null
+
+  - ✅ extend dtAgentAnimation with unitExitVel locally (recast-navigation-js)
+  - ✅ can see `agentAnim.unitExitVel` locally
+    - ℹ️ must use webpack i.e. `yarn dev-webpack`
+  - ✅ overrideOffMeshConnectionAngle overrides `agentAnim.unitExitVel`
+  - ✅ npc look overrides `agentAnim.unitExitVel`
+  - ✅ publish to scoped npm module
+  - ✅ use scoped npm module
+
+- 🚧 npc's shouldn't turn towards nearest neighbour as much
+- ❌ sometimes direction through door is wrong
+  - ℹ️ maybe fixed by new approach
+
+- 🚧 `w.npc.remove` should trigger render while paused
+
+
 ## Dev env
 
 - 🚧 try `bun` https://bun.sh/
-  - ℹ️ assets.js script is failing due to `canvas` (node-canvas)
+  - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
   - 🚧 try https://www.npmjs.com/package/skia-canvas
 
-## Migrate from Gatsby ✅
 
 # Done
+
+## Migrate from Gatsby
 
 - ✅ next-mdx-remote
   - https://github.com/hashicorp/next-mdx-remote?tab=readme-ov-file

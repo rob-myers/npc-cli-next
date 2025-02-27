@@ -38,7 +38,7 @@ export default function Npcs(props) {
     physicsPositions: [],
     tex: /** @type {*} */ ({}),
     pickIdToKey: new Map(),
-    showLastNavPath: false,
+    showLastNavPath: false, // 🔔 debug
 
     attachAgent(npc) {
       if (npc.agent === null) {
@@ -136,10 +136,11 @@ export default function Npcs(props) {
         delete state.npc[npcKey];
         state.freePickId.add(npc.def.pickUid);
         state.pickIdToKey.delete(npc.def.pickUid);
-
-        w.events.next({ key: 'removed-npc', npcKey });
       }
       update();
+      for (const npcKey of npcKeys) {
+        w.events.next({ key: 'removed-npc', npcKey });
+      }
     },
     removeAgent(npc) {
       if (npc.agent !== null) {
@@ -306,14 +307,16 @@ export default function Npcs(props) {
     process.env.NODE_ENV === 'development' && Object.values(state.npc).forEach(oldNpc => {
       // 🔔 HMR by overwriting newNpc's non-methods with oldNpc's
       const newNpc = state.npc[oldNpc.key] = Object.assign(new Npc(oldNpc.def, w), {...oldNpc});
+      newNpc.epochMs = Date.now();
       if (newNpc.agent !== null) {// avoid stale ref
         state.byAgId[newNpc.agent.agentIndex] = newNpc;
       }
       oldNpc.dispose();
+      update();
     });
   }, []);
 
-  React.useEffect(() => {// npc textures
+  React.useEffect(() => {// npc textures 🚧 use single DataTextureArray
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
       const { skinBaseName } = npcClassToMeta[classKey];
@@ -422,7 +425,7 @@ function NPC({ npc }) {
         {/* <meshPhysicalMaterial transparent color="red" /> */}
         <cuboidManMaterial
           key={CuboidManMaterial.key}
-          diffuse={[.6, .6, .6]}
+          diffuse={[.8, .8, .8]}
           transparent
           opacity={npc.s.opacity}
           uNpcUid={npc.def.pickUid}

@@ -231,15 +231,35 @@ declare namespace NPC {
      * - `2` is 2nd half of offMeshConnection
      */
     seg: 0 | 1 | 2;
+    /** Initial position of npc */
+    initPos: Geom.VectJson;
     /** Adjusted src */
     src: Geom.VectJson;
     /** Adjusted dst */
     dst: Geom.VectJson;
-    /** Vector from "initial npc position" to "adjusted src" */
-    init: Geom.VectJson;
-    /** Vector from "adjusted src" to "adjusted dst" */
-    main: Geom.VectJson;
+
+    /** Unit vector from "initial npc position" to "adjusted src" */
+    initUnit: Geom.VectJson;
+    /** Unit vector from "adjusted src" to "adjusted dst" */
+    mainUnit: Geom.VectJson;
+    /**
+     * Unit vector from "adjusted dst" to next corner after off-mesh-connection.
+     * It can be null if these two points are too close.
+     */
+    nextUnit: null | Geom.VectJson;
+    /** Scale factor converting `dtAgentAnimation.t` into total distance along 2 segs */
+    tToDist: number;
   };
+
+  /** Provided after `dtAgentAnimation` has been re-configured */
+  interface OverrideOffMeshResult {
+    initPos: Geom.VectJson;
+    /** Adjusted src */
+    src: Geom.VectJson;
+    /** Adjusted dst */
+    dst: Geom.VectJson;
+    nextCorner: Geom.VectJson
+  }
 
   type Obstacle = {
     id: number;

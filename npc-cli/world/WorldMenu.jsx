@@ -16,6 +16,7 @@ import { html3DOpacityCssVar } from "../components/Html3d";
 import { PopUp, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 import { globalLoggerLinksRegex, Logger } from "../terminal/Logger";
 import TouchIndicator from "./TouchIndicator";
+import { CentredSpinner } from "../components/Spinner";
 
 /**
  * @param {Pick<import('./World').Props, 'setTabsEnabled'>} props 
@@ -258,9 +259,12 @@ export default function WorldMenu(props) {
 
     <TouchIndicator/>
 
-    <div className={cx(cssTtyDisconnectedMessage, {
-      hidden: state.disconnected === false
-    })}>
+    {w.crowd === null && <CentredSpinner size={32} style={{ position: 'absolute', top: 0 }} />}
+
+    <div
+      css={cssTtyDisconnectedMessage}
+      className={cx({ hidden: state.disconnected === false })}
+    >
       <h3>[disconnected]</h3>
       click or show a tty tab
     </div>
@@ -302,7 +306,7 @@ const loggerPopUpCss = css`
   
   .${popUpButtonClassName} {
     color: #8888ff;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-width: 1px 0 0 1px;
     background: black;
     padding: 2px 12px;
@@ -402,7 +406,7 @@ const cssTtyDisconnectedMessage = css`
   bottom: 0;
   right: 0;
   z-index: ${zIndexWorld.disconnectedMessage};
-  
+
   pointer-events: none;
   padding: 16px;
   margin: 0 16px 16px 0;
@@ -411,6 +415,7 @@ const cssTtyDisconnectedMessage = css`
   }
 
   background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 0.9rem;
   
   color: #aaa;
@@ -424,7 +429,8 @@ const cssTtyDisconnectedMessage = css`
   opacity: 100;
   &.hidden {
     opacity: 0;
-    display: initial; // override commons.css
+    /** override commons.css */
+    display: initial;
   }
 `;
 

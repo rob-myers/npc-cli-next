@@ -9,6 +9,7 @@ import {
   tryLocalStorageRemove,
   tryLocalStorageSet,
 } from "../service/generic";
+import { CentredSpinner } from "../components/Spinner";
 import { Props as TabsProps, State as TabsApi } from "./Tabs";
 import { TabMemo } from "./Tab";
 import { isTouchDevice } from "../service/dom";
@@ -69,7 +70,9 @@ const classToComponent = {
         React.createElement(module.default, { disabled: true, ...props }),
   },
   World: {
-    loadable: loadable(() => import("../world/World")),
+    loadable: loadable(() => import("../world/World"), {
+      // fallback: <CentredSpinner style={{ position: 'absolute', top: 0 }} />,
+    }),
     get:
       (module: typeof import("../world/World")) =>
       (props: React.ComponentProps<(typeof module)["default"]>) =>
@@ -132,6 +135,7 @@ function FallbackComponentFactory(componentKey: string) {
 
 export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   ssr: false,
+  fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
 
 //#region persist

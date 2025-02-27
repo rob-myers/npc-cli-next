@@ -88,7 +88,8 @@ export default function TtyMenu(props: Props) {
     />
 
     <div
-      className={cx(menuCss, { disabled: props.disabled && !state.debugWhilePaused, open: state.touchMenuOpen })}
+      css={menuCss}
+      className={cx({ disabled: props.disabled && !state.debugWhilePaused, open: state.touchMenuOpen })}
       onClick={state.onClickMenu}
     >
 

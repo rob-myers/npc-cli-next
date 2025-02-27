@@ -246,7 +246,7 @@ export class Npc {
 
       await this.w.npc.spawn({
         // -dy because "ccw east" relative to (+x,-z)
-        angle: opts.angle ?? (dx === 0 && dy === 0 ? undefined : Math.atan2(-dy, dx)),
+        angle: opts.angle ?? (dx === 0 && dy === 0 ? undefined : Math.atan2(dy, dx)),
         classKey: opts.classKey,
         npcKey: this.key,
       }, point);
@@ -261,20 +261,55 @@ export class Npc {
   }
 
   /**
-   * ccw from east convention
+   * cw from east convention
    */
   getAngle() {// Assume only rotated about y axis
     return geom.radRange(Math.PI/2 - this.m.group.rotation.y);
   }
 
   /**
-   * @param {number} ccwEastAngle ccw from east (standard mathematical convention)
-   * @returns {number} respective value of `rotation.y` taking initial facing angle into account
-   * - euler y rotation has same sense/sign as "ccw from east"
+   * @param {number} cwEastAngle
+   * Angle going clockwise starting from east, assuming we look down at the agents from above.
+   * Equivalently, `Math.atan(v3.z, v3.x)` where `v3: Vector3` faces desired direction.
+   * @returns {number} `rotation.y` where:
+   * - euler y rotation has the opposite sense/sign i.e. "counter-clockwise from east"
    * - +pi/2 because character initially facing along +z
    */
-  getEulerAngle(ccwEastAngle) {
-    return Math.PI/2 + ccwEastAngle;
+  getEulerAngle(cwEastAngle) {
+    return Math.PI/2 - cwEastAngle;
+  }
+
+  /**
+   * An offMeshConnection actually amounts to three segments:
+   * - init from initial npc position to src
+   * - main from src to dst
+   * - next from dst to nextCorner
+   * 
+   * Given the npc is traversing an offMeshConnection @see {offMesh},
+   * we find a point further along these 3 segments by @see {extraDistance}.
+   * @param {NPC.OffMeshState} offMesh
+   * @param {number} extraDistance meters
+   * @returns {Geom.VectJson}
+   */
+  getFurtherAlongOffMesh(offMesh, extraDistance) {
+    const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (this.agentAnim);
+    const dstT = anim.t + (extraDistance / offMesh.tToDist);
+    if (dstT < anim.tmid) {// look at 'init' seg
+      return {
+        x: offMesh.initPos.x + offMesh.initUnit.x * (dstT * offMesh.tToDist),
+        y: offMesh.initPos.y + offMesh.initUnit.y * (dstT * offMesh.tToDist),
+      };
+    } else if (dstT < anim.tmax || offMesh.nextUnit === null) {// look at 'main' seg
+      return {
+        x: offMesh.src.x + offMesh.mainUnit.x * ((dstT - anim.tmid) * offMesh.tToDist),
+        y: offMesh.src.y + offMesh.mainUnit.y * ((dstT - anim.tmid) * offMesh.tToDist),
+      };
+    } else {// look beyond 'main' seg
+      return {
+        x: offMesh.dst.x + offMesh.nextUnit.x * ((dstT - anim.tmax) * offMesh.tToDist),
+        y: offMesh.dst.y + offMesh.nextUnit.y * ((dstT - anim.tmax) * offMesh.tToDist),
+      };
+    }
   }
 
   /** @param {Geom.VectJson | THREE.Vector3Like} input */
@@ -283,7 +318,7 @@ export class Npc {
     const dst = toXZ(input);
     return src.x === dst.x && src.y === dst.y
       ? this.getAngle()
-      : Math.atan2(-(dst.y - src.y), dst.x - src.x)
+      : Math.atan2((dst.y - src.y), dst.x - src.x)
     ;
   }
 
@@ -334,7 +369,6 @@ export class Npc {
    * @param {NPC.OffMeshState} offMesh
    */
   handleOffMeshConnection(agent, offMesh) {
-
     if (offMesh.seg === 0) {
       this.handlePreOffMeshCollision(agent);
     }
@@ -348,16 +382,18 @@ export class Npc {
       offMesh.seg = 2; // midway in main segment
     }
 
-    let dirX = 0, dirY = 0;
-    if (offMesh.seg === 0) {
-      // 🤔 should init/main be unit vectors?
-      dirX = offMesh.init.x + (anim.t / anim.tmid)**2 * (offMesh.main.x - offMesh.init.x);
-      dirY = offMesh.init.y + (anim.t / anim.tmid)**2 * (offMesh.main.y - offMesh.init.y);
-    } else {
-      dirX = offMesh.main.x;
-      dirY = offMesh.main.y;
+    // look further along the path
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4); // 🔔 why 0.4?
+    const dirX = lookAt.x - this.position.x;
+    const dirY = lookAt.y - this.position.z;
+    const radians = Math.atan2(dirY, dirX);
+    this.s.lookAngleDst = this.getEulerAngle(radians);
+
+    if (anim.t > anim.tmax - 0.1) {// exit in direction we're looking
+      anim.set_unitExitVel(0, Math.cos(radians));
+      anim.set_unitExitVel(1, 0);
+      anim.set_unitExitVel(2, Math.sin(radians));
     }
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-dirY, dirX));
   }
 
   /**
@@ -517,7 +553,7 @@ export class Npc {
             : src.angleTo(point)
           // use meta.orient if staying off-mesh
           : typeof meta.orient === 'number'
-            ? Math.PI/2 - (meta.orient * (Math.PI / 180)) // convert to "ccw from east"
+            ? meta.orient * (Math.PI / 180) - Math.PI/2 // convert to "cw from east"
             : undefined,
         // fadeOutMs: opts.fadeOutMs,
         meta,
@@ -580,10 +616,10 @@ export class Npc {
 
     /**
      * `meta.orient` (degrees) uses "cw from north",
-     * so convert to more-standard "ccw from east"
+     * so convert to "cw from east"
      */
     const dstRadians = typeof meta.orient === 'number'
-      ? Math.PI/2 - (meta.orient * (Math.PI / 180))
+      ? (meta.orient * (Math.PI/180)) - Math.PI/2
       : undefined
     ;
     
@@ -691,6 +727,10 @@ export class Npc {
 
     const distance = this.s.target.distanceTo(pos);
 
+    // if (distance < 0.4) {
+    //   this.s.lookSecs = 0.4; // avoid final turn
+    // }
+
     if (distance < 0.15) {// Reached target
       this.stopMoving();
       return;
@@ -727,7 +767,7 @@ export class Npc {
     const speedSqr = vel.x ** 2 + vel.z ** 2;
 
     if (speedSqr > 0.2 ** 2) {
-      this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-vel.z, vel.x));
+      this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
     }
   }
 
@@ -742,12 +782,12 @@ export class Npc {
 
     const nei = agent.raw.get_neis(0); // 0th closest
     const other = this.w.npc.byAgId[nei.idx];
-    if (other.s.target === null) {
+    if (other.s.target === null || nei.dist > 0.5) {// 🔔
       return;
     }
     
     // turn towards "closest neighbour" if they have a target
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(-(other.position.z - this.position.z), (other.position.x - this.position.x)));
+    this.s.lookAngleDst = this.getEulerAngle(Math.atan2((other.position.z - this.position.z), (other.position.x - this.position.x)));
   }
 
   setupMixer() {
@@ -931,7 +971,7 @@ export class Npc {
     // e.g. when npc without access is close to door
     if (this.agentAnim === null || this.agentAnim?.active === false) {
       return false;
-    } else if (this.agentAnim.t < this.agentAnim.tmid) {
+    } else if (this.agentAnim.t <= this.agentAnim.tmid) {
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
     } else {
@@ -960,7 +1000,7 @@ const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
 const closeDist = helper.defaults.radius * 1.8;
-const closerDist = helper.defaults.radius * 1;
+const closerDist = helper.defaults.radius * 0.8;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {

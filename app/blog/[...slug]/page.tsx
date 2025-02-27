@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { compileMDX } from 'next-mdx-remote/rsc'
 
-import Root, { Frontmatter } from "@/components/Root";
+import type { FrontMatter } from '@/components/site.store';
 import Card from "@/components/Card";
 import SideNote from "@/components/SideNote";
 
@@ -14,7 +14,7 @@ export default async function BlogPage(props: {
   const mdxFilename = `${slug[0]}.mdx` as const;
   const content = await fs.readFile(path.join(repoRoot, 'posts', mdxFilename), 'utf-8');
 
-  const data = await compileMDX<Frontmatter>({
+  const data = await compileMDX<FrontMatter>({
     source: content,
     options: {
       parseFrontmatter: true,
@@ -26,11 +26,13 @@ export default async function BlogPage(props: {
     },
   });
 
-  return (
-    <Root meta={data.frontmatter}>
-      {data.content}
-    </Root>
-  )
+  return <>
+    <script
+      id="frontmatter-json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data.frontmatter) }}
+    />
+    {data.content}
+  </>;
 }
 
 export async function generateStaticParams(): Promise<Slug[]> {
@@ -39,7 +41,7 @@ export async function generateStaticParams(): Promise<Slug[]> {
   // return posts.map((post) => ({
   //   slug: post.slug,
   // }))
-  return [{ slug: ['index'] }];
+  return [{ slug: ['index'] }, { slug: ['strategy-1'] }];
 }
 
 interface Slug {

@@ -111,6 +111,8 @@ export class ttyXtermClass {
     const xtermDisposable = this.xterm.onData(this.handleXtermInput.bind(this));
     const unregisterWriters = this.session.io.handleWriters(this.onMessage.bind(this));
     this.cleanups.push(() => xtermDisposable.dispose(), unregisterWriters);
+    // user indication after xterm has loaded but session hasn't
+    this.xterm.writeln(`${ansi.Italic}${ansi.BrightWhite}Loading...${ansi.Reset}`);
   }
 
   /**
