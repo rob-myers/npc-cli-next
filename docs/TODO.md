@@ -1,8 +1,8 @@
 # TODO
 
-## Branch `clean-npc-shaders`
+## Branch `avoid-full-page-refresh`
 
-- 🚧 changing blog page should not remount
+- ✅ changing blog page should not remount
   - ℹ️ priority issue!
   - ✅ create two basic test pages `app/test/page{1,2}` Link between them without full-page-refresh
   - ✅ try adding Root to app/layout.tsx
@@ -10,13 +10,6 @@
   - ✅ somehow pass `data.frontmatter` into Root
     - ℹ️ to fix main issue we hard-coded Root's meta prop
     - ✅ use `<script id="frontmatter-json"/>` whose contents is stringified frontmatter
-
-- improve npc svg textures
-- two characters: `human-0` and `pet-0`
-- auto-extend geometry with label quad and selector quad
-- use single DataTextureArray for npc labels and their uvs
-- use single DataTextureArray for npc textures and their uvs
-- unified material `npcMaterial` (if possible)
 
 ### Extras
 
@@ -39,6 +32,16 @@
   - ✅ npc look overrides `agentAnim.unitExitVel`
   - ✅ publish to scoped npm module
   - ✅ use scoped npm module
+
+## Branch `clean-npc-shaders`
+
+- improve npc svg textures
+- two characters: `human-0` and `pet-0`
+- auto-extend geometry with label quad and selector quad
+- use single DataTextureArray for npc labels and their uvs
+- use single DataTextureArray for npc textures and their uvs
+- unified material `npcMaterial` (if possible)
+
 
 - 🚧 npc's shouldn't turn towards nearest neighbour as much
 - ❌ sometimes direction through door is wrong
