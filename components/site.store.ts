@@ -16,6 +16,7 @@ import {
   tryLocalStorageSet,
   info,
   isDevelopment,
+  error,
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 
@@ -24,11 +25,29 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   articlesMeta: allArticlesMeta,
   browserLoaded: false,
   discussMeta: {},
+  frontMatter: {} as FrontMatter,
   mainOverlay: false,
   navOpen: false,
   viewOpen: false,
 
   api: {
+    getFrontMatterFromScript() {
+      try {
+        // 🔔 read frontmatter from <script id="frontmatter-json">
+        const script = document.getElementById('frontmatter-json') as HTMLScriptElement;
+        const frontMatter = JSON.parse(script.innerHTML) as FrontMatter;
+        // console.log({frontMatter});
+        set({
+          articleKey: frontMatter.key ?? null,
+          frontMatter,
+        }, undefined, "set-article-key");
+        return frontMatter;
+      } catch (e) {
+        error(`frontMatter failed (script#frontmatter-json): using fallback frontMatter`);
+        console.error(e);
+        return { key: 'fallback-frontmatter' } as FrontMatter;
+      }
+    },
 
     initiateBrowser() {
       const cleanUps = [] as (() => void)[];
@@ -96,10 +115,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
-    setArticleKey(articleKey) {
-      set({ articleKey: articleKey ?? null }, undefined, "set-article-key");
-    },
-
     toggleNav(next) {
       if (next === undefined) {
         set(({ navOpen }) => ({ navOpen: !navOpen }), undefined, "toggle-nav");
@@ -130,6 +145,7 @@ export type State = {
   articlesMeta: typeof allArticlesMeta;
   browserLoaded: boolean;
   discussMeta: { [articleKey: string]: GiscusDiscussionMeta };
+  frontMatter: FrontMatter;
 
   mainOverlay: boolean;
   navOpen: boolean;
@@ -140,7 +156,7 @@ export type State = {
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
     onTerminate(): void;
-    setArticleKey(articleKey?: string): void;
+    getFrontMatterFromScript(): FrontMatter;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
@@ -162,9 +178,14 @@ export interface ArticleMeta {
   tags: string[];
 }
 
-/** 🔔 In next repo we won't use frontmatter */
 export interface FrontMatter {
-  key: ArticleKey;
+  key: string;
+  date: string;
+  info: string;
+  giscusTerm: string;
+  label: string;
+  path: string;
+  tags: string[];
 }
 
 interface GiscusDiscussionMeta {

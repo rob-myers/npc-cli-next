@@ -375,7 +375,9 @@ export function parseJsWithCt(input, names = [], values = []) {
 
 /**
  * JSON.parse with string fallback
+ * @template T
  * @param {string} input
+ * @returns {T | string}
  */
 export function parseJsonArg(input) {
   try {

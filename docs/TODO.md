@@ -7,8 +7,9 @@
   - ✅ create two basic test pages `app/test/page{1,2}` Link between them without full-page-refresh
   - ✅ try adding Root to app/layout.tsx
     - ℹ️ this fixes the main issue!
-  - 🚧 somehow pass `data.frontmatter` into Root
+  - ✅ somehow pass `data.frontmatter` into Root
     - ℹ️ to fix main issue we hard-coded Root's meta prop
+    - ✅ use `<script id="frontmatter-json"/>` whose contents is stringified frontmatter
 
 - improve npc svg textures
 - two characters: `human-0` and `pet-0`

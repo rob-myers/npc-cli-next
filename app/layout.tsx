@@ -27,8 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {/* 🚧 feed meta in somehow */}
-        <Root meta={{ key: 'page-1' } as any}>
+        <Root>
           {children}
         </Root>
       </body>
