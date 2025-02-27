@@ -246,7 +246,7 @@ export class Npc {
 
       await this.w.npc.spawn({
         // -dy because "ccw east" relative to (+x,-z)
-        angle: opts.angle ?? (dx === 0 && dy === 0 ? undefined : Math.atan2(-dy, dx)),
+        angle: opts.angle ?? (dx === 0 && dy === 0 ? undefined : Math.atan2(dy, dx)),
         classKey: opts.classKey,
         npcKey: this.key,
       }, point);
@@ -261,7 +261,7 @@ export class Npc {
   }
 
   /**
-   * ccw from east convention
+   * cw from east convention
    */
   getAngle() {// Assume only rotated about y axis
     return geom.radRange(Math.PI/2 - this.m.group.rotation.y);
@@ -553,7 +553,7 @@ export class Npc {
             : src.angleTo(point)
           // use meta.orient if staying off-mesh
           : typeof meta.orient === 'number'
-            ? Math.PI/2 - (meta.orient * (Math.PI / 180)) // convert to "ccw from east"
+            ? meta.orient * (Math.PI / 180) - Math.PI/2 // convert to "cw from east"
             : undefined,
         // fadeOutMs: opts.fadeOutMs,
         meta,
@@ -616,10 +616,10 @@ export class Npc {
 
     /**
      * `meta.orient` (degrees) uses "cw from north",
-     * so convert to more-standard "ccw from east"
+     * so convert to "cw from east"
      */
     const dstRadians = typeof meta.orient === 'number'
-      ? Math.PI/2 - (meta.orient * (Math.PI / 180))
+      ? (meta.orient * (Math.PI/180)) - Math.PI/2
       : undefined
     ;
     
