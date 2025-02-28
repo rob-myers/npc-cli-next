@@ -782,7 +782,7 @@ export class Npc {
 
     const nei = agent.raw.get_neis(0); // 0th closest
     const other = this.w.npc.byAgId[nei.idx];
-    if (other.s.target === null || nei.dist > 0.5) {// 🔔
+    if (other.s.target === null || nei.dist > 0.8) {// 🔔
       return;
     }
     
