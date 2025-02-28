@@ -15,8 +15,6 @@ export class Npc {
 
   /** @type {string} User specified e.g. `rob` */
   key;
-  /** @type {import('./World').State} World API */
-  w;
   /** @type {NPC.NPCDef} Initial definition */
   def;
   /** @type {number} When we (re)spawned */
@@ -104,6 +102,9 @@ export class Npc {
     // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
     turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
   };
+
+  /** @type {import('./World').State} World API */
+  w;
 
   /** Shortcut */
   get baseTexture() {
@@ -245,7 +246,6 @@ export class Npc {
       const dy = point.y - currPoint.y;
 
       await this.w.npc.spawn({
-        // -dy because "ccw east" relative to (+x,-z)
         angle: opts.angle ?? (dx === 0 && dy === 0 ? undefined : Math.atan2(dy, dx)),
         classKey: opts.classKey,
         npcKey: this.key,
@@ -261,9 +261,9 @@ export class Npc {
   }
 
   /**
-   * cw from east convention
+   * Convert rotation.y back into "clockwise from east, viewed from above".
    */
-  getAngle() {// Assume only rotated about y axis
+  getAngle() {
     return geom.radRange(Math.PI/2 - this.m.group.rotation.y);
   }
 
@@ -800,6 +800,9 @@ export class Npc {
   }
 
   /**
+   * Examples:
+   * - `w n.rob.setFace '{ uvMapKey: "cuboid-man", uvQuadKey: "front-face-angry" }'`
+   * - `w n.rob.setFace '{ uvMapKey: "cuboid-man", uvQuadKey: "head-front" }'`
    * @param {null | NPC.UvQuadId} faceId 
    */
   setFace(faceId) {
@@ -813,6 +816,8 @@ export class Npc {
   }
 
   /**
+   * Examples:
+   * - `w n.rob.setIcon '{ uvMapKey: "cuboid-man", uvQuadKey: "front-label-food" }'`
    * @param {null | NPC.UvQuadId} iconId 
    */
   setIcon(iconId) {

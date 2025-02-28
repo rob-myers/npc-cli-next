@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
+import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
 import { pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
@@ -304,14 +304,14 @@ export default function Npcs(props) {
   
   React.useEffect(() => {// init + hmr
     cmUvService.initialize(state.gltf);
-    process.env.NODE_ENV === 'development' && Object.values(state.npc).forEach(oldNpc => {
-      // 🔔 HMR by overwriting newNpc's non-methods with oldNpc's
-      const newNpc = state.npc[oldNpc.key] = Object.assign(new Npc(oldNpc.def, w), {...oldNpc});
-      newNpc.epochMs = Date.now();
-      if (newNpc.agent !== null) {// avoid stale ref
-        state.byAgId[newNpc.agent.agentIndex] = newNpc;
+    // 🔔 HMR by copying prevNpc non-methods into nextNpc
+    process.env.NODE_ENV === 'development' && Object.values(state.npc).forEach(prevNpc => {
+      const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
+      nextNpc.epochMs = Date.now();// invalidate React.Memo
+      if (nextNpc.agent !== null) {// avoid stale ref
+        state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
       }
-      oldNpc.dispose();
+      prevNpc.dispose();
       update();
     });
   }, []);
@@ -336,7 +336,7 @@ export default function Npcs(props) {
         <MemoizedNPC
           key={npc.key}
           npc={npc}
-          epochMs={npc.epochMs} // override memo
+          epochMs={npc.epochMs} // can invalidate memo
         />
       )}
     </group>
@@ -404,25 +404,27 @@ function NPC({ npc }) {
       scale={npc.m.scale}
       // dispose={null}
     >
-      {/* <mesh position={[0, physicsConfig.agentHeight / 2, 0]} scale={1/npc.m.scale} renderOrder={1}>
-        <cylinderGeometry args={[physicsConfig.agentRadius, physicsConfig.agentRadius, 1.5, 32]} />
+      {/* <mesh position={[0, (physicsConfig.agentHeight / 2) * 1/npc.m.scale, 0]} scale={1/npc.m.scale} renderOrder={1}>
+        <cylinderGeometry args={[physicsConfig.agentRadius, physicsConfig.agentRadius, physicsConfig.agentHeight, 32]} />
         <meshBasicMaterial color="red" transparent opacity={0.25} />
       </mesh> */}
 
       {bones.map((bone, i) => <primitive key={i} object={bone} />)}
+
       <skinnedMesh
         geometry={mesh.geometry}
         position={mesh.position}
         skeleton={mesh.skeleton}
         userData={mesh.userData}
+
         key={CuboidManMaterial.key} // 🔔 keep shader up-to-date
         onUpdate={(skinnedMesh) => {
           npc.m.mesh = skinnedMesh; 
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);
         }}
+
         renderOrder={0}
       >
-        {/* <meshPhysicalMaterial transparent color="red" /> */}
         <cuboidManMaterial
           key={CuboidManMaterial.key}
           diffuse={[.8, .8, .8]}
