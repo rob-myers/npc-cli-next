@@ -337,7 +337,7 @@ export default function WorldView(props) {
       if (state.targetFov !== null) {
         w.r3f.camera.fov = state.fov;
         w.r3f.camera.updateProjectionMatrix();
-        if (damp(state, 'fov', state.targetFov, 0.6, deltaMs, undefined, undefined, undefined) === false) {
+        if (damp(state, 'fov', state.targetFov, 0.4, deltaMs, undefined, undefined, undefined) === false) {
           state.targetFov = null;
           state.syncRenderMode();
         }
