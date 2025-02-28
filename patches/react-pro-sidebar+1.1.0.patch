@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-pro-sidebar/dist/index.es.js b/node_modules/react-pro-sidebar/dist/index.es.js
+index 0b7ce0f..973024e 100644
+--- a/node_modules/react-pro-sidebar/dist/index.es.js
++++ b/node_modules/react-pro-sidebar/dist/index.es.js
+@@ -5303,7 +5303,7 @@ var SubMenuFR = function (_a, ref) {
+     };
+     React__default.useEffect(function () {
+         setTimeout(function () { return popperInstance === null || popperInstance === void 0 ? void 0 : popperInstance.update(); }, sidebarTransitionDuration);
+-        if (collapsed && level === 0) {
++        if (!collapsed && level === 0) {
+             setOpenWhenCollapsed(false);
+             // ? if its useful to close first level submenus on collapse sidebar uncomment the code below
+             // setOpen(false);
