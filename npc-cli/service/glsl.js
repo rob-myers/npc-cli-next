@@ -4,7 +4,8 @@ import { shaderMaterial } from "@react-three/drei";
 import { wallHeight } from "./const";
 import { defaultQuadUvs, emptyDataArrayTexture } from "./three";
 
-const instancedMonochromeShader = {
+/** Monochrome */
+const instancedWallsShader = {
   Vert: /*glsl*/`
 
   attribute uint instanceIds;
@@ -25,6 +26,7 @@ const instancedMonochromeShader = {
     gl_Position = projectionMatrix * modelViewPosition;
     #include <logdepthbuf_vertex>
 
+    // 🚧 remove hard-coded 25.0f
     vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 25.0f;
   }
 
@@ -520,14 +522,14 @@ export const instancedMultiTextureShader = {
   `,
 };
 
-export const InstancedMonochromeShader = shaderMaterial(
+export const InstancedWallsShader = shaderMaterial(
   {
     diffuse: new THREE.Vector3(1, 0.5, 0.5),
     objectPick: false,
     opacity: 1,
   },
-  instancedMonochromeShader.Vert,
-  instancedMonochromeShader.Frag,
+  instancedWallsShader.Vert,
+  instancedWallsShader.Frag,
 );
 
 export const InstancedLabelsMaterial = shaderMaterial(
@@ -541,6 +543,13 @@ export const InstancedLabelsMaterial = shaderMaterial(
   instancedLabelsShader.Frag,
 );
 
+/**
+ * - Ceiling
+ * - Decor quads
+ * - Doors
+ * - Obstacles
+ * - Floor
+ */
 export const InstancedMultiTextureMaterial = shaderMaterial(
   {
     alphaTest: 0.5,
@@ -558,6 +567,10 @@ export const InstancedMultiTextureMaterial = shaderMaterial(
   instancedMultiTextureShader.Frag,
 );
 
+/**
+ * - Decor cuboids
+ * - Door lights
+ */
 export const CameraLightMaterial = shaderMaterial(
   {
     diffuse: new THREE.Vector3(1, 0.9, 0.6),
@@ -572,6 +585,7 @@ export const CameraLightMaterial = shaderMaterial(
   cameraLightShader.Frag,
 );
 
+// 🚧 replace
 export const CuboidManMaterial = shaderMaterial(
   {
     diffuse: new THREE.Vector3(1, 0.9, 0.6),
@@ -607,7 +621,7 @@ export const CuboidManMaterial = shaderMaterial(
  * @see glsl.d.ts
  */
 extend({
-  InstancedMonochromeShader,
+  InstancedMonochromeShader: InstancedWallsShader,
   // InstancedUvMappingMaterial,
   InstancedLabelsMaterial,
   InstancedMultiTextureMaterial,

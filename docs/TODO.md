@@ -3,10 +3,10 @@
 ## Branch `clean-npc-shaders`
 
 - 🚧 overall setup + plan
-  - ℹ️ Npcs.jsx `<Npcs>`
+  - Npcs.jsx `<Npcs>`
     - loads npc textures into lookup `state.tex`
     - loads npc gltfs into lookup `state.gltf`
-  - ℹ️ Npcs.jsx `<Npc>` `<cuboidManMaterial>`
+  - Npcs.jsx `<Npc>` `<cuboidManMaterial>`
     - keep uNpcUid (pick id)
     - keep labelHeight
     - keep showSelector
@@ -15,15 +15,22 @@
     - add uLabelsDataTex (pointer is uNpcUid)
     - add uSkin i.e. `vec4` (faceId / 255, iconId / 255, unused, unused)
       - support ≤ 256 faces/icons
-  - ℹ️ npc.js
+  - npc.js
     - remove forceUpdate
     - change setFace
     - change setIcon
     - support setFace/Icon whilst paused?
     - remove setLabel (must equal npc.key)
     - setSelectorRgb supports opacity
-  - 🚧 uv.js
+  - uv.js
+    - store npc label uvs inside DataTextureArray uNpcsDataTex
+    - store npc texture uvs inside DataTextureArray uLabelsDataTex
+    - maybe represent npc.def.pickId -> {uvData}
   - 🚧 glsl.js
+    - ✅ instancedMonochromeShader -> instancedWallsShader
+    - add HumanZeroMaterial
+    - add PetZeroMaterial
+    - remove CuboidManMaterial
 
 - improve npc svg textures
 - two characters: `human-0` and `pet-0`
