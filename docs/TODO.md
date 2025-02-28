@@ -2,6 +2,29 @@
 
 ## Branch `clean-npc-shaders`
 
+- 🚧 overall setup + plan
+  - ℹ️ Npcs.jsx `<Npcs>`
+    - loads npc textures into lookup `state.tex`
+    - loads npc gltfs into lookup `state.gltf`
+  - ℹ️ Npcs.jsx `<Npc>` `<cuboidManMaterial>`
+    - keep uNpcUid (pick id)
+    - keep labelHeight
+    - keep showSelector
+    - keep selectorColor + support opacity (`vec4`)
+    - add uNpcsDataTex
+    - add uLabelsDataTex (pointer is uNpcUid)
+    - add uSkin i.e. `vec4` (faceId / 255, iconId / 255, unused, unused)
+      - support ≤ 256 faces/icons
+  - ℹ️ npc.js
+    - remove forceUpdate
+    - change setFace
+    - change setIcon
+    - support setFace/Icon whilst paused?
+    - remove setLabel (must equal npc.key)
+    - setSelectorRgb supports opacity
+  - 🚧 uv.js
+  - 🚧 glsl.js
+
 - improve npc svg textures
 - two characters: `human-0` and `pet-0`
 - auto-extend geometry with label quad and selector quad
@@ -16,23 +39,25 @@
   - ℹ️ maybe fixed by new approach
 - ❌ `w.npc.remove` should trigger render while paused
 
-- 🚧 fix react-pro-sidebar
-```js
-// node_modules/react-pro-sidebar/dist/index.es.js
-    React__default.useEffect(function () {
-        setTimeout(function () { return popperInstance === null || popperInstance === void 0 ? void 0 : popperInstance.update(); }, sidebarTransitionDuration);
-        if (!collapsed && level === 0) {
-            setOpenWhenCollapsed(false);
-            // ? if its useful to close first level submenus on collapse sidebar uncomment the code below
-            // setOpen(false);
-        }
-    }, [collapsed, level, rtl, sidebarTransitionDuration, popperInstance]);
-```
+- ✅ fix react-pro-sidebar
+  - added patch
+  ```js
+  // node_modules/react-pro-sidebar/dist/index.es.js
+      React__default.useEffect(function () {
+          setTimeout(function () { return popperInstance === null || popperInstance === void 0 ? void 0 : popperInstance.update(); }, sidebarTransitionDuration);
+          if (!collapsed && level === 0) {
+              setOpenWhenCollapsed(false);
+              // ? if its useful to close first level submenus on collapse sidebar uncomment the code below
+              // setOpen(false);
+          }
+      }, [collapsed, level, rtl, sidebarTransitionDuration, popperInstance]);
+  ```
 
-- HMR of MDX subcomponents?
 
 ## Dev env
 
+- HMR of MDX subcomponents
+- HMR of npc models onchange const
 - 🚧 try `bun` https://bun.sh/
   - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
   - 🚧 try https://www.npmjs.com/package/skia-canvas
