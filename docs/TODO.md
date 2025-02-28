@@ -1,38 +1,5 @@
 # TODO
 
-## Branch `avoid-full-page-refresh`
-
-- ✅ changing blog page should not remount
-  - ℹ️ priority issue!
-  - ✅ create two basic test pages `app/test/page{1,2}` Link between them without full-page-refresh
-  - ✅ try adding Root to app/layout.tsx
-    - ℹ️ this fixes the main issue!
-  - ✅ somehow pass `data.frontmatter` into Root
-    - ℹ️ to fix main issue we hard-coded Root's meta prop
-    - ✅ use `<script id="frontmatter-json"/>` whose contents is stringified frontmatter
-
-### Extras
-
-- ✅ fix npc hot reloading
-- ❌ do final strafe when final edge small and "angular"
-
-- ✅ improve turning through door
-  - ❌ turn npc using `dampLookAt` instead of `dampAngle`
-  - ✅ can "lookahead" along 3 segment path
-  - ✅ delay "look follows velocity" by hard-coded amount
-    - ℹ️ RecastDetour believes the velocity matches `main` segment,
-         meaning the npc may briefly turn in the wrong direction
-  - ✅ issue when nextCorner ~ dst (when traverse either side of doorway)
-    - nextUnit can be null
-
-  - ✅ extend dtAgentAnimation with unitExitVel locally (recast-navigation-js)
-  - ✅ can see `agentAnim.unitExitVel` locally
-    - ℹ️ must use webpack i.e. `yarn dev-webpack`
-  - ✅ overrideOffMeshConnectionAngle overrides `agentAnim.unitExitVel`
-  - ✅ npc look overrides `agentAnim.unitExitVel`
-  - ✅ publish to scoped npm module
-  - ✅ use scoped npm module
-
 ## Branch `clean-npc-shaders`
 
 - improve npc svg textures
@@ -42,13 +9,27 @@
 - use single DataTextureArray for npc textures and their uvs
 - unified material `npcMaterial` (if possible)
 
+### Extras
 
-- 🚧 npc's shouldn't turn towards nearest neighbour as much
+- ✅ npc's shouldn't turn towards nearest neighbour as much
 - ❌ sometimes direction through door is wrong
   - ℹ️ maybe fixed by new approach
+- ❌ `w.npc.remove` should trigger render while paused
 
-- 🚧 `w.npc.remove` should trigger render while paused
+- 🚧 fix react-pro-sidebar
+```js
+// node_modules/react-pro-sidebar/dist/index.es.js
+    React__default.useEffect(function () {
+        setTimeout(function () { return popperInstance === null || popperInstance === void 0 ? void 0 : popperInstance.update(); }, sidebarTransitionDuration);
+        if (!collapsed && level === 0) {
+            setOpenWhenCollapsed(false);
+            // ? if its useful to close first level submenus on collapse sidebar uncomment the code below
+            // setOpen(false);
+        }
+    }, [collapsed, level, rtl, sidebarTransitionDuration, popperInstance]);
+```
 
+- HMR of MDX subcomponents?
 
 ## Dev env
 
@@ -168,3 +149,36 @@
   - https://github.com/vercel/next.js/issues/61228
 - ❌ maybe move flexlayout-react/style/light.css "back" into layout.tsx
   - originally needed in Gatsby but we'll leave as is
+
+## Branch `avoid-full-page-refresh`
+
+- ✅ changing blog page should not remount
+  - ℹ️ priority issue!
+  - ✅ create two basic test pages `app/test/page{1,2}` Link between them without full-page-refresh
+  - ✅ try adding Root to app/layout.tsx
+    - ℹ️ this fixes the main issue!
+  - ✅ somehow pass `data.frontmatter` into Root
+    - ℹ️ to fix main issue we hard-coded Root's meta prop
+    - ✅ use `<script id="frontmatter-json"/>` whose contents is stringified frontmatter
+
+### Extras
+
+- ✅ fix npc hot reloading
+- ❌ do final strafe when final edge small and "angular"
+
+- ✅ improve turning through door
+  - ❌ turn npc using `dampLookAt` instead of `dampAngle`
+  - ✅ can "lookahead" along 3 segment path
+  - ✅ delay "look follows velocity" by hard-coded amount
+    - ℹ️ RecastDetour believes the velocity matches `main` segment,
+         meaning the npc may briefly turn in the wrong direction
+  - ✅ issue when nextCorner ~ dst (when traverse either side of doorway)
+    - nextUnit can be null
+
+  - ✅ extend dtAgentAnimation with unitExitVel locally (recast-navigation-js)
+  - ✅ can see `agentAnim.unitExitVel` locally
+    - ℹ️ must use webpack i.e. `yarn dev-webpack`
+  - ✅ overrideOffMeshConnectionAngle overrides `agentAnim.unitExitVel`
+  - ✅ npc look overrides `agentAnim.unitExitVel`
+  - ✅ publish to scoped npm module
+  - ✅ use scoped npm module
