@@ -62,7 +62,10 @@ function open({ bubble, rect, width, timeoutId }: { bubble: HTMLElement; rect: D
   
   const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
   width = maxWidthAvailable < (width ?? defaultInfoWidthPx) ? maxWidthAvailable : width;
-  width && bubble.style.setProperty('--info-width', `${width}px`);
+  if (width !== undefined) {
+    width = Math.max(width, minInfoWidth);
+    bubble.style.setProperty('--info-width', `${width}px`);
+  }
 }
 
 function close(e: React.MouseEvent, source: 'icon' | 'bubble') {
@@ -185,3 +188,4 @@ const speechBubbleCss = css`
 export const sideNoteRootDataAttribute = 'data-side-note-root';
 
 const hoverShowMs = 500;
+const minInfoWidth = 200;
