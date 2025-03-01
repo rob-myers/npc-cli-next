@@ -22,6 +22,8 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       return props.disabled !== true && (
         props.dragClassName === undefined
         || /** @type {HTMLElement} */ (e.target).classList.contains(props.dragClassName)
+      ) && (
+        !(e instanceof TouchEvent) || e.touches.length === 1
       );
     },
     onMouseDown(e) {
