@@ -3,7 +3,7 @@ import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcClassToMetaNew } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObjectLookup, emptyAnimationMixer, emptyGroup, getParentBones, tmpVectThree1, toV3, toXZ } from '../service/three';
@@ -452,6 +452,30 @@ export class Npc {
     m.scale = npcClassToMeta[npcClassKey].scale;
     m.quad = cmUvService.getDefaultUvQuads(this.def.classKey);
     // ℹ️ see w.npc.spawn for more initialization
+  }
+
+  /**
+   * Initialization we can do before mounting
+   * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
+   */
+  initializeNew(gltf) {
+    const { m } = this;
+    const meta = npcClassToMetaNew['human-0'];
+    const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(gltf.scene));
+    const objectLookup = buildObjectLookup(clonedRoot);
+
+    m.animations = gltf.animations;
+    // cloned bones
+    m.bones = getParentBones(Object.values(objectLookup.nodes));
+    // cloned mesh (overridden on mount)
+    m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
+    // overridden on mount
+    m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
+    m.mesh.userData.npcKey = this.key; // To decode pointer events
+
+    m.mesh.updateMatrixWorld();
+    m.mesh.computeBoundingBox();
+    m.mesh.computeBoundingSphere();
   }
 
   /**

@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Rect } from "../geom";
 import { keys, warn } from "./generic";
 import { buildObjectLookup, getGeometryUvs } from "./three";
-import { npcClassKeys, npcClassToMeta } from "./const";
+import { npcClassKeys, npcClassToMeta, shaderMigrationNpcKey } from "./const";
 
 /**
  * For `'cuboid-man'` or `'cuboid-pet'` i.e. `NPC.ClassKey`.
@@ -193,6 +193,10 @@ class CuboidManUvService {
     const { s: { label }, m: { quad } } = npc;
     const quadMeta = this.toQuadMetas[npc.def.classKey];
     
+    if (npc.key === shaderMigrationNpcKey) {
+      return; // 🚧
+    }
+
     if (label === null) {// reset
       this.copyUvQuadInstance(quadMeta.label.default, quad.label);
       return;

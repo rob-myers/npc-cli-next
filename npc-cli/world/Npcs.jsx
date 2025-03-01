@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, npcClassToMetaNew, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
+import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, npcClassToMetaNew, physicsConfig, shaderMigrationNpcKey, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
 import { pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
@@ -27,7 +27,7 @@ export default function Npcs(props) {
     byAgId: {},
     freePickId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}), // 🚧 old
-    newGltf: /** @type {*} */ ({}),
+    gltfNew: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
     label: {
       count: 0,
@@ -220,7 +220,12 @@ export default function Npcs(props) {
         }, w);
         state.pickIdToKey.set(npc.def.pickUid, opts.npcKey);
 
-        npc.initialize(state.gltf[npc.def.classKey]);
+        if (npc.key === shaderMigrationNpcKey) {
+          // 🚧 WIP new npc geometry/shader
+          npc.initializeNew(state.gltfNew['human-0']);
+        } else {
+          npc.initialize(state.gltf[npc.def.classKey]);
+        }
       }
 
       if (npc.s.spawns === 0) {
@@ -302,7 +307,7 @@ export default function Npcs(props) {
 
   state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].url);
   // state.gltf["cuboid-pet"] = useGLTF(npcClassToMeta["cuboid-pet"].url);
-  state.newGltf["human-0"] = useGLTF(npcClassToMetaNew["human-0"].url);
+  state.gltfNew["human-0"] = useGLTF(npcClassToMetaNew["human-0"].url);
   
   React.useEffect(() => {// init + hmr
     cmUvService.initialize(state.gltf);
@@ -357,7 +362,7 @@ export default function Npcs(props) {
  * @property {THREE.Group} group
  * @property {import("../service/three").LabelsSheetAndTex} label
  * @property {Record<NPC.ClassKey, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
- * @property {Record<NPC.ClassKeyNew, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} newGltf
+ * @property {Record<NPC.ClassKeyNew, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltfNew
  * @property {{ [npcKey: string]: Npc }} npc
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * Custom callback to handle npc slow down.
@@ -428,7 +433,12 @@ function NPC({ npc }) {
 
         renderOrder={0}
       >
-        <cuboidManMaterial
+        {npc.key === shaderMigrationNpcKey && (
+          // <meshPhysicalMaterial
+          <meshBasicMaterial
+            color="red"
+          />
+        ) || <cuboidManMaterial
           key={CuboidManMaterial.key}
           diffuse={[.8, .8, .8]}
           transparent
@@ -454,7 +464,7 @@ function NPC({ npc }) {
           uLabelUv={quad.label.uvs}
           
           uLabelDim={quad.label.dim}
-        />
+        />}
       </skinnedMesh>
     </group>
   )

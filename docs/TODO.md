@@ -2,13 +2,15 @@
 
 ## Branch `clean-npc-shaders`
 
-- 🚧 create `human-0.blend`
+- ✅ create `human-0.blend`
   - ✅ move notes into docs/npc-shader-redo.md
   - ✅ copy `cuboid-man.blend` to `human-0.blend`
   - ✅ remove label-quad, selector-quad
-- 🚧 can import into World somehow
+- ✅ can see in World (profile-1)
   - ✅ export `public/3d/human-0.glb`
-  - rethink scale
+  - ✅ branch on specific npc key i.e. `temp-new-shader-npc`
+  - ℹ️ `selectedNpcKey=temp-new-shader-npc`
+- rethink human-0 scale
 - texture
   - part of DataTextureArray
   - visible via custom shader

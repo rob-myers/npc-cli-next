@@ -6,6 +6,8 @@ spawn rob '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 spawn will '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 spawn '{ npcKey: "kate", angle: -Math.PI/2 }' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
+spawn temp-new-shader-npc '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+
 w n.rob.showSelector true
 selectedNpcKey="rob"
 
