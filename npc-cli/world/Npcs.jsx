@@ -300,7 +300,7 @@ export default function Npcs(props) {
   w.n = state.npc;
 
   state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].url);
-  state.gltf["cuboid-pet"] = useGLTF(npcClassToMeta["cuboid-pet"].url);
+  // state.gltf["cuboid-pet"] = useGLTF(npcClassToMeta["cuboid-pet"].url);
   
   React.useEffect(() => {// init + hmr
     cmUvService.initialize(state.gltf);

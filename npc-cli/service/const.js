@@ -360,9 +360,12 @@ export const npcClassToMeta = {
   },
 };
 
-export const npcClassKeys = /** @type {NPC.ClassKey[]} */ (
-  Object.keys(npcClassToMeta)
-);
+// 🚧
+// export const npcClassKeys = /** @type {NPC.ClassKey[]} */ (
+//   Object.keys(npcClassToMeta)
+// );
+/** @type {NPC.ClassKey[]} */
+export const npcClassKeys = ['cuboid-man'];
 
 /**
  * Relates to `npc.def.uid` which is used for object-picking.
