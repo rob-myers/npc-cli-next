@@ -267,6 +267,14 @@ export class Npc {
     return geom.radRange(Math.PI/2 - this.m.group.rotation.y);
   }
 
+  getCornerAfterOffMesh() {
+    // cannot use agent.corners() because ag->ncorners is 0 on offMeshConnection
+    return {
+      x: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 0),
+      y: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 2),
+    };
+  }
+
   /**
    * @param {number} cwEastAngle
    * Angle going clockwise starting from east, assuming we look down at the agents from above.
@@ -765,6 +773,11 @@ export class Npc {
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
     const speedSqr = vel.x ** 2 + vel.z ** 2;
+
+    // if (this.position.distanceTo(this.lastTarget) < 0.5) {
+    //   this.s.lookAngleDst = null;
+    //   return;
+    // }
 
     if (speedSqr > 0.2 ** 2) {
       this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));

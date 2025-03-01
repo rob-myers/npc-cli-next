@@ -6,7 +6,7 @@ import { pause, warn, debug, testNever } from "../service/generic";
 import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
-import { getTempInstanceMesh } from "../service/three";
+import { getTempInstanceMesh, toXZ } from "../service/three";
 import useStateRef from "../hooks/use-state-ref";
 
 /**
@@ -459,7 +459,8 @@ export default function useHandleEvents(w) {
       ) {
         return npc.stopMoving();
       }
-      
+
+      // 🚧 don't override when entering small room (jerky collide with npc already inside)
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
       // avoid flicker      
       const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.05;
@@ -521,11 +522,14 @@ export default function useHandleEvents(w) {
     onExitOffMeshConnection(e, npc) {
       state.clearOffMesh(npc);
 
+      if (npc.position.distanceTo(npc.lastTarget) < 0.4) {// avoid short-sharp turns
+        npc.stopMoving();
+        npc.s.lookAngleDst = null;
+      }
       if (npc.agent?.maxSpeed === npc.getSlowSpeed()) {// resume original speed/anim
         npc.agent.updateParameters({ maxSpeed: npc.getMaxSpeed() });
         npc.s.run === true && npc.startAnimation('Run');
       }
-
 
       w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.dstGrKey) });
     },
@@ -535,22 +539,28 @@ export default function useHandleEvents(w) {
       }
     },
     overrideOffMeshConnectionAngle(npc, offMesh, door) {
+      const npcPoint = Vect.from(npc.getPoint());
+      const nextCorner = npc.getCornerAfterOffMesh();
+
+      if (offMesh.dstRoomMeta.small === true) {
+        // don't override onenter small room to avoid
+        // jerk when someone already in there
+        return {
+          initPos: npcPoint.json,
+          src: toXZ(offMesh.src),
+          dst: toXZ(offMesh.dst),
+          nextCorner,
+        };
+      }
+
       // Entrances are aligned to offMeshConnections
       // - entrance segment (enSrc, enDst)
       // - exit segment (exSrc, exDst)
       const { src: enSrc, dst: enDst } = door.entrances[offMesh.aligned === true ? 0 : 1];
       const { src: exSrc, dst: exDst } = door.entrances[offMesh.aligned === true ? 1 : 0];
 
-      const npcPoint = Vect.from(npc.getPoint());
 
-      // agent.corners() not available because ag->ncorners is 0 on offMeshConnection
-      const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
-      const nextCorner = {
-        x: agent.raw.get_cornerVerts(6 + 0),
-        y: agent.raw.get_cornerVerts(6 + 2),
-      };
-
-      // 🔔 extend npcPoint --> corner in each direction, since
+      // extend "npcPoint --> corner" in each direction, since
       // offMeshConnections are slightly away from doorway 
       const agSrc = {
         x: npcPoint.x - (nextCorner.x - npcPoint.x),
