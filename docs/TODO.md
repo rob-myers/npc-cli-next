@@ -6,7 +6,9 @@
   - ✅ move notes into docs/npc-shader-redo.md
   - ✅ copy `cuboid-man.blend` to `human-0.blend`
   - ✅ remove label-quad, selector-quad
-- can import into World somehow
+- 🚧 can import into World somehow
+  - ✅ export `public/3d/human-0.glb`
+  - rethink scale
 - texture
   - part of DataTextureArray
   - visible via custom shader
@@ -36,6 +38,7 @@
       }, [collapsed, level, rtl, sidebarTransitionDuration, popperInstance]);
   ```
 
+- mobile touch issues
 
 ## Dev env
 

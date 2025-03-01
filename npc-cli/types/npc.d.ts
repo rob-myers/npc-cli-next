@@ -17,9 +17,15 @@ declare namespace NPC {
     walkSpeed: number;
   }
 
+  /** 🚧 old */
   type ClassKey = (
     | 'cuboid-man'
     | 'cuboid-pet'
+  );
+
+  type ClassKeyNew = (
+    | 'human-0'
+    // ...
   );
   
   type TextureKey = (
