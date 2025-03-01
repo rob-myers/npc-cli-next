@@ -22,8 +22,6 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       return props.disabled !== true && (
         props.dragClassName === undefined
         || /** @type {HTMLElement} */ (e.target).classList.contains(props.dragClassName)
-      ) && (
-        !(e instanceof TouchEvent) || e.touches.length === 1
       );
     },
     onMouseDown(e) {
@@ -52,6 +50,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       state.updatePos(e.clientX - state.rel.x, e.clientY - state.rel.y);
     },
     onTouchStart(e) {
+      e.stopPropagation();
       if (!state.canDrag(e)) {
         return;
       }
