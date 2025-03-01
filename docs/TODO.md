@@ -5,11 +5,15 @@
 - 🚧 create `human-0.blend`
   - ✅ move notes into docs/npc-shader-redo.md
   - ✅ copy `cuboid-man.blend` to `human-0.blend`
-  - remove label-quad, selector-quad
-  - `human-0.tex.svg` should be 4096 * 4096
-    - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
-- extra "overlay" quad for face e.g. so can tint without tinting eyes
+  - ✅ remove label-quad, selector-quad
 - can import into World somehow
+- texture
+  - part of DataTextureArray
+  - visible via custom shader
+  - hot-reloaded
+- `human-0.tex.svg` should be 4096 * 4096
+  - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
+- extra "overlay" quad for face e.g. so can tint without tinting eyes
 
 ### Extras
 
