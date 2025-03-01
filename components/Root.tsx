@@ -39,10 +39,10 @@ export default function Root({ children }: React.PropsWithChildren) {
             <article>
               {children}
             </article>
-            {frontMatter?.key !== undefined && <Comments
+            <Comments
               id="comments"
               term={frontMatter.giscusTerm || frontMatter.path || "fallback-discussion"}
-            />}
+            />
           </Main>
           <Viewer />
         </div>
