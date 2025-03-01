@@ -47,7 +47,7 @@ export async function* click({ api, args, w }) {
     
     const e = await /** @type {Promise<NPC.PointerUpEvent>} */ (new Promise((resolve, reject) => {
       eventsSub = w.events.subscribe({ next(e) {
-        if (e.key !== "pointerup" || w.view.isPointerEventDrag(e) === true || api.isRunning() === false) {
+        if (e.key !== "pointerup" || e.pointers > 1 || w.view.isPointerEventDrag(e) === true || api.isRunning() === false) {
           return;
         } else if (e.clickId !== undefined && clickId === undefined) {
           return; // `click {n}` overrides `click`
