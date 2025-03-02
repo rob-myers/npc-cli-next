@@ -258,19 +258,11 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 export const setupOnSlowNpc = ({ w, args }) => {
 
   w.npc.onStuckCustom = (npc, agent) => {
-    // warn(`${npc.key}: going slow`);
-
+    // console.warn(`${npc.key}: going slow`);
     switch (args[0]) {
-      case 'closest-nei': {
-        const nei = agent.raw.get_neis(0); // 0th is closest
-        const other = w.npc.byAgId[nei.idx];
-        const target = /** @type {import('three').Vector3} */ (npc.s.target);
-        if (target.distanceTo(other.lastTarget) < 3 * w.lib.defaults.radius) {
-          npc.stopMoving();
-        }
+      case 'noop': // do nothing
         break;
-      }
-      default:
+      default: // both stop
         npc.stopMoving();
         break;
     }
