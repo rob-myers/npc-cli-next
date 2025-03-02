@@ -531,10 +531,8 @@ export default function useHandleEvents(w) {
       state.clearOffMesh(npc);
 
       if (npc.position.distanceTo(npc.lastTarget) < 0.4) {// avoid short-sharp turns
-        npc.stopMoving();
-        npc.s.lookAngleDst = null;
-      }
-      if (npc.agent?.maxSpeed === npc.getSlowSpeed()) {// resume original speed/anim
+        npc.s.permitTurn = false; // avoid sharp turn
+      } else if (npc.agent?.maxSpeed === npc.getSlowSpeed()) {// resume original speed/anim
         npc.agent.updateParameters({ maxSpeed: npc.getMaxSpeed() });
         npc.s.run === true && npc.startAnimation('Run');
       }

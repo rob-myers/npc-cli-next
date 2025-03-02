@@ -48,7 +48,7 @@ export class Npc {
   s = {
     act: /** @type {NPC.AnimKey} */ ('Idle'),
     agentState: /** @type {null | number} */ (null),
-    autoIdleLook: true,
+    permitTurn: true,
     doMeta: /** @type {null | Meta} */ (null),
     faceId: /** @type {null | NPC.UvQuadId} */ (null),
     fadeSecs: 0.3,
@@ -391,7 +391,7 @@ export class Npc {
     }
 
     // look further along the path
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4); // 🔔 why 0.4?
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.2); // 🔔 why 0.2?
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
     const radians = Math.atan2(dirY, dirX);
@@ -522,6 +522,7 @@ export class Npc {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(dst)}`);
     }
 
+    this.s.permitTurn = true;
     this.s.lookSecs = 0.15;
 
     this.agent.updateParameters({
@@ -702,7 +703,7 @@ export class Npc {
   onTick(deltaMs, positions) {
     this.mixer.update(deltaMs);
 
-    if (this.s.lookAngleDst !== null) {
+    if (this.s.lookAngleDst !== null && this.s.permitTurn === true) {
       if (dampAngle(this.m.group.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
@@ -810,7 +811,7 @@ export class Npc {
 
   /** @param {NPC.CrowdAgent} agent */
   onTickTurnNoTarget(agent) {
-    if (this.s.autoIdleLook === false || agent.raw.nneis === 0) {
+    if (agent.raw.nneis === 0) {
       return;
     }
     if (agent.raw.desiredSpeed < 0.5) {
@@ -979,6 +980,7 @@ export class Npc {
 
     this.s.target = null;
     this.s.slowBegin = null;
+    this.s.permitTurn = true;
 
     this.agent.updateParameters({
       maxSpeed: this.getMaxSpeed() * 0.75,
