@@ -495,18 +495,12 @@ export default function useHandleEvents(w) {
     },
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
-      const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
-      
       // 🔔 on enter main seg, if another is traversing main seg, go slowly
       // 🔔 we ignore intersections e.g. where two npcs go diagonally at same time
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
-        const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
-        anim.set_tmax(anim.t + tmpVect1.copy(npc.getPoint()).distanceTo(offMesh.dst) / npc.getSlowSpeed());
-        agent.updateParameters({ maxSpeed: npc.getSlowSpeed() });
-        tr.tToDist = npc.getSlowSpeed();
-        npc.startAnimation('Walk');
+        npc.goSlowOffMesh(tr);
         break;
       }
     },

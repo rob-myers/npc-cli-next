@@ -359,6 +359,18 @@ export class Npc {
     return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
   }
 
+  /** @param {NPC.OffMeshState} offMesh */
+  goSlowOffMesh(offMesh) {
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
+    anim.set_tmax(anim.t + tmpVect1.copy(this.getPoint()).distanceTo(offMesh.dst) / this.getSlowSpeed());
+    agent.updateParameters({ maxSpeed: this.getSlowSpeed() });
+    offMesh.tToDist = this.getSlowSpeed();
+    if (this.s.act === 'Run') {
+      this.startAnimation('Walk');
+    }
+  }
+
   /**
    * 1. Step `offMesh.seg` through `[0, 1, 2]`
    * 
@@ -1045,6 +1057,8 @@ const movingCollisionQueryRange = 1.5;
 
 const closeDist = helper.defaults.radius * 1.8;
 const closerDist = helper.defaults.radius * 0.8;
+
+const tmpVect1 = new Vect();
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
