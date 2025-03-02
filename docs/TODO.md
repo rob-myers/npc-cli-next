@@ -15,9 +15,17 @@
   - ℹ️ we're already using hard-coded vertex indices to define shader,
        so might as well visually represent them in Blender
 - 🚧 human-0 has:
+  - 🚧 vertex ordering:
+    -   head (8)
+      < body (8)
+      < head-overlay (8)
+      < body-overlay (8)
+      < breath-quad (4)
+      < selector-quad (4)
+      < label-quad (4)
   - label-quad as unit XY quad (three.js world coords)
   - selector-quad as unit XZ quad (three.js world coords)
-  - scale `1`
+  - ✅ scale, so can use scale `1`
   - overlay head (replaces/extends face)
   - overlay body (replaces/extends icon)
   - hands
