@@ -548,16 +548,16 @@ export default function useHandleEvents(w) {
       const npcPoint = Vect.from(npc.getPoint());
       const nextCorner = npc.getCornerAfterOffMesh();
 
-      if (offMesh.dstRoomMeta.small === true) {
-        // don't override onenter small room to avoid
-        // jerk when someone already in there
-        return {
-          initPos: npcPoint.json,
-          src: toXZ(offMesh.src),
-          dst: toXZ(offMesh.dst),
-          nextCorner,
-        };
-      }
+      // if (offMesh.dstRoomMeta.small === true) {
+      //   // don't override onenter small room to avoid
+      //   // jerk when someone already in there
+      //   return {
+      //     initPos: npcPoint.json,
+      //     src: toXZ(offMesh.src),
+      //     dst: toXZ(offMesh.dst),
+      //     nextCorner,
+      //   };
+      // }
 
       // Entrances are aligned to offMeshConnections
       // - entrance segment (enSrc, enDst)
