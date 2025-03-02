@@ -69,6 +69,7 @@ We can also patch `package1/node_modules/package2`
 
 This permits us to patch `three-stdlib` inside `@react-three/drei`.
 
+
 ### Bump versions in our branch of recast-navigation-js
 
 Currently tsconfig.json paths only works in webpack (`yarn dev-webpack`) not turbopack (`yarn dev`),
@@ -102,3 +103,15 @@ but after publishing we should re-comment these paths and use turbopack.
 ```
 
 1. Run `npm install`
+
+
+### Debug on mobile hotspot
+
+```sh
+yarn dev
+
+# get local ip address for mobile development
+ipconfig getifaddr en0
+
+# navigate to http://${ipAddress}:3000
+```
