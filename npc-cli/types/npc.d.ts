@@ -132,6 +132,8 @@ declare namespace NPC {
     | { key: 'exit-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
     | { key: 'logger-link'; npcKey: string; } & NPC.LoggerLinkEvent
     | { key: 'speech'; npcKey: string; speech: string }
+    | { key: 'controls-start' }
+    | { key: 'controls-end' }
     // ...
   );
 

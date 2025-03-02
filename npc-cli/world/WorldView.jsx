@@ -180,6 +180,12 @@ export default function WorldView(props) {
       zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
       state.zoomState = zoomState;
     },
+    onControlsEnd() {
+      w.events.next({ key: 'controls-end' });
+    },
+    onControlsStart() {
+      w.events.next({ key: 'controls-start' });
+    },
     onCreated(rootState) {
       w.threeReady = true;
       w.r3f = /** @type {typeof w['r3f']} */ (rootState);
@@ -473,6 +479,8 @@ export default function WorldView(props) {
         zoomToCursor
         onChange={state.onChangeControls}
         domElement={state.canvas}
+        onStart={state.onControlsStart}
+        onEnd={state.onControlsEnd}
         {...state.controlsViewportOpts}
         //@ts-ignore see three-stdlib patch
         minPanDistance={w.smallViewport ? 0.05 : 0}
@@ -533,6 +541,8 @@ export default function WorldView(props) {
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {(e?: THREE.Event) => void} onChangeControls
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
+ * @property {() => void} onControlsEnd
+ * @property {() => void} onControlsStart
  * @property {(e: React.PointerEvent<HTMLElement>) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerLeave
  * @property {(e: React.PointerEvent) => void} onPointerMove
