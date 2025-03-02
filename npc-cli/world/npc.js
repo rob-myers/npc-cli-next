@@ -330,6 +330,16 @@ export class Npc {
     ;
   }
 
+  getNextCorner() {
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const offset = agent.state() === 2 ? 6 : 0;
+    return {// agent.corners() empty while offMeshConnection
+      x: agent.raw.get_cornerVerts(offset + 0),
+      y: agent.raw.get_cornerVerts(offset + 1),
+      z: agent.raw.get_cornerVerts(offset + 2),
+    };
+  }
+
   /** @returns {Geom.VectJson} */
   getPoint() {
     const { x, z: y } = this.position;
@@ -978,21 +988,10 @@ export class Npc {
     }
 
     this.s.lookSecs = 0.3;
-    if (this.position.distanceTo(this.s.target) < 0.4) {
-      this.s.lookAngleDst = null; // e.g. after offMeshConnection
-    } else {
-      const offset = this.agent.state() === 2 ? 6 : 0;
-      const lookTarget = {// agent.corners() empty while offMeshConnection
-        x: this.agent.raw.get_cornerVerts(offset + 0),
-        y: this.agent.raw.get_cornerVerts(offset + 1),
-        z: this.agent.raw.get_cornerVerts(offset + 2),
-      };
-      this.s.lookAngleDst = this.getEulerAngle(this.getLookAngle(lookTarget));
-    }
-
-    this.s.target = null;
-    this.s.slowBegin = null;
+    this.s.lookAngleDst = null;
     this.s.permitTurn = true;
+    this.s.slowBegin = null;
+    this.s.target = null;
 
     this.agent.updateParameters({
       maxSpeed: this.getMaxSpeed() * 0.75,

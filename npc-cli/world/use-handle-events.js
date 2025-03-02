@@ -465,10 +465,11 @@ export default function useHandleEvents(w) {
       if (door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
-        return npc.stopMoving();
+        npc.stopMoving(); // look towards next corner:
+        npc.s.lookAngleDst = npc.getEulerAngle(npc.getLookAngle((npc.getNextCorner())));
+        return;
       }
 
-      // 🚧 don't override when entering small room (jerky collide with npc already inside)
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
       // avoid flicker      
       const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.05;
@@ -523,10 +524,12 @@ export default function useHandleEvents(w) {
     },
     onExitOffMeshConnection(e, npc) {
       state.clearOffMesh(npc);
-
-      if (npc.position.distanceTo(npc.lastTarget) < 0.4) {// avoid short-sharp turns
-        npc.s.permitTurn = false; // avoid sharp turn
-      } else if (npc.agent?.maxSpeed === npc.getSlowSpeed()) {// resume original speed/anim
+      
+      if (e.offMesh.dstRoomMeta.small === true) { 
+        npc.stopMoving(); // avoid jerk on try pass close neighbour
+      } else if (npc.position.distanceToSquared(npc.lastTarget) < 0.4 ** 2) {
+        npc.s.permitTurn = false; // avoid short-sharp turn
+      } else if (npc.agent?.maxSpeed === npc.getSlowSpeed()) {// resume speed
         npc.agent.updateParameters({ maxSpeed: npc.getMaxSpeed() });
         npc.s.run === true && npc.startAnimation('Run');
       }
