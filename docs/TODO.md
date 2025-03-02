@@ -10,14 +10,16 @@
   - ✅ export `public/3d/human-0.glb`
   - ✅ branch on specific npc key i.e. `temp-new-shader-npc`
   - ℹ️ `selectedNpcKey=temp-new-shader-npc`
-- rethink human-0 scale
-- texture
-  - part of DataTextureArray
-  - visible via custom shader
-  - hot-reloaded
+
+- 🚧 extend geometry at runtime with label-quad, selector-quad
 - `human-0.tex.svg` should be 4096 * 4096
   - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
+- rethink texture setup
+- texture should be visible via custom shader
+- texture should be DataTextureArray (one per skin)
+- texture should be hot-reloaded
 - extra "overlay" quad for face e.g. so can tint without tinting eyes
+- rethink human-0 scale
 
 ### Extras
 
@@ -41,6 +43,7 @@
   ```
 
 - mobile touch issues
+- try zero velocity exit from offMesh into small room
 
 ## Dev env
 
