@@ -11,15 +11,21 @@
   - ✅ branch on specific npc key i.e. `temp-new-shader-npc`
   - ℹ️ `selectedNpcKey=temp-new-shader-npc`
 
-- 🚧 extend geometry at runtime with label-quad, selector-quad
+- ❌ extend geometry at runtime with label-quad, selector-quad
+  - ℹ️ we're already using hard-coded vertex indices to define shader,
+       so might as well visually represent them in Blender
+- 🚧 human-0 has:
+  - label-quad as unit XY quad (three.js world coords)
+  - selector-quad as unit XZ quad (three.js world coords)
+  - scale `1`
+  - overlay head (replaces/extends face)
+  - overlay body (replaces/extends icon)
+  - hands
 - `human-0.tex.svg` should be 4096 * 4096
   - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
-- rethink texture setup
 - texture should be visible via custom shader
-- texture should be DataTextureArray (one per skin)
+- texture should be DataTextureArray (one layer per skin)
 - texture should be hot-reloaded
-- extra "overlay" quad for face e.g. so can tint without tinting eyes
-- rethink human-0 scale
 
 ### Extras
 
