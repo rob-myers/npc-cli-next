@@ -447,5 +447,5 @@ export const fromXrayInstancedMeshName = {
 /** @type {Geom.SixTuple} */
 export const switchDecorQuadScaleUp = [1, 0, 0, 1.5, 0, 0];
 
-/** 🚧 remove, see also profile-1 */
-export const shaderMigrationNpcKey = 'temp-new-shader-npc';
+/** 🚧 remove, see also profile-awaitWorld */
+export const shaderMigrationNpcKey = 'temp-npc';

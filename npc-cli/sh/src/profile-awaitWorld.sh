@@ -3,7 +3,7 @@ awaitWorld
 # 🚧 remove this and below
 # temp while we migrate npc shaders
 
-spawn temp-new-shader-npc '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+spawn temp-npc '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 
 w npc.updateLabels rob will kate # efficiency
 
