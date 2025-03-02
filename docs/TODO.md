@@ -14,8 +14,8 @@
 - ❌ extend geometry at runtime with label-quad, selector-quad
   - ℹ️ we're already using hard-coded vertex indices to define shader,
        so might as well visually represent them in Blender
-- 🚧 human-0 has:
-  - 🚧 vertex ordering:
+- ✅ human-0 has:
+  - ✅ vertex ordering:
     -   head (8)
       < body (8)
       < head-overlay (8)
@@ -23,12 +23,12 @@
       < breath-quad (4)
       < selector-quad (4)
       < label-quad (4)
-  - label-quad as unit XY quad (three.js world coords)
-  - selector-quad as unit XZ quad (three.js world coords)
+  - ✅ label-quad as unit XY quad (three.js world coords)
+  - ✅ selector-quad as unit XZ quad (three.js world coords)
   - ✅ scale, so can use scale `1`
-  - overlay head (replaces/extends face)
-  - overlay body (replaces/extends icon)
-  - hands
+  - ✅ overlay head (replaces/extends face)
+  - ✅ overlay body (replaces/extends icon)
+  - ❌ hands
 - `human-0.tex.svg` should be 4096 * 4096
   - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
 - texture should be visible via custom shader
