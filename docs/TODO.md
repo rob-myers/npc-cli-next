@@ -67,8 +67,10 @@
       }, [collapsed, level, rtl, sidebarTransitionDuration, popperInstance]);
   ```
 
-- mobile touch issues
-- try zero velocity exit from offMesh into small room
+- 🚧 mobile touch issues
+  - ContextMenu seems fixed
+  - Logger not so much
+- ✅ try zero velocity exit from offMesh into small room
 
 ## Dev env
 
