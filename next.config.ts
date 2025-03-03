@@ -8,9 +8,8 @@ const nextConfig: NextConfig = {
   compiler: {
     emotion: true,
   },
-  // httpAgentOptions: {
-  //   keepAlive: true,
-  // },
+  // 🔔 fixes https://github.com/vercel/next.js/issues/76395 after upgrade to next@^15.2.1
+  transpilePackages: ['next-mdx-remote'],
   // 🔔 dev only, where turbo runs via `next dev --turbopack`
   experimental: {
     turbo: {

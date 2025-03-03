@@ -78,7 +78,9 @@
 
 ## Dev env
 
-- Npc texture PNG -> WEBP
+- ✅ Npc texture PNG -> WEBP
+- 🚧 HMR breaking on close/open laptop
+  - works in Firefox but not in Chrome
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 - 🚧 try `bun` https://bun.sh/
