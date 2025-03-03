@@ -345,6 +345,7 @@ info({ opts });
   let pngPaths = [
     ...getObstaclePngPaths(assetsJson),
     ...getDecorPngPaths(assetsJson),
+    ...getSkinPngPaths(prev.npcTexMetas),
   ];
   if (!opts.prePush) {
     // Only convert PNG if (i) lacks a WEBP, or (ii) has an "older one"
@@ -833,6 +834,13 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
       await saveCanvasAsFile(canvas, pngPath);
     }
   }
+}
+
+/**
+ * @param {NPC.TexMeta[]} npcTexMetas
+ */
+function getSkinPngPaths(npcTexMetas) {
+  return npcTexMetas.map(({ pngPath }) => pngPath);
 }
 
 //#endregion

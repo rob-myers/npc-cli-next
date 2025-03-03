@@ -32,8 +32,11 @@
 - 🚧 `human-0.tex.svg` texture layout
   - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
   - ℹ️ head dimension 0.4m³, body dimension 0.48m * 0.48m * 1m
+  - ℹ️ head overlay scale: 1.1, body overlay scale: 1.05
   - ✅ return to using non-unital scale (0.7) in code
     - ℹ️ otherwise our head/body dimension are not as nice
+  - ✅ assets script generates WEBP skins
+  - 🚧 test WEBP in dev, use in prod
   - 🚧 should be 4096 * 4096
   - layout w.r.t to head, body, overlays etc.
 - skins texture should be 
@@ -74,6 +77,7 @@
 
 ## Dev env
 
+- Npc texture PNG -> WEBP
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 - 🚧 try `bun` https://bun.sh/
