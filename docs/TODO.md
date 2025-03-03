@@ -31,15 +31,16 @@
   - ❌ hands
 - 🚧 `human-0.tex.svg` texture layout
   - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
-  - ℹ️ head dimension 0.4m³, body dimension 0.5m * 0.5m * 1m
-  - ℹ️ head overlay scale: 1.05 (0.42m³)
+  - ℹ️ head dimension 0.375m³, body dimension 0.5m * 0.5m * 1m
+    - ℹ️ so 0.5 / 0.375 is 0.75, and 128 pixels -> 96 pixels
+  - ℹ️ head overlay scale: 1.05 (0.39375m³)
   - ℹ️ body overlay scale: 1.05 (0.525m * 0.525m * 1.05m)
   - ✅ return to using non-unital scale (0.7) in code
     - ℹ️ otherwise our head/body dimension are not as nice
   - ✅ assets script generates WEBP skins
-  - 🚧 test WEBP in dev, use in prod
-  - 🚧 should be 4096 * 4096
-  - layout w.r.t to head, body, overlays etc.
+  - 🚧 define skin texture layout w.r.t to head, body, overlays etc.
+  - 🚧 should be 2048 * 2048
+- skins: test WEBP in dev, use in prod
 - skins texture should be 
   - visible via custom shader
   - DataTextureArray (one layer per skin)

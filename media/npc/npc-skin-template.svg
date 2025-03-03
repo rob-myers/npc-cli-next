@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" xmlns:bx="https://boxy-svg.com">
+  <rect width="2048" height="2048" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+  <defs>
+    <bx:grid x="0" y="0" width="32" height="32"/>
+  </defs>
+</svg>
