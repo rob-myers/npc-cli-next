@@ -327,14 +327,14 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
 };
 
 /**
- * 🚧 old
  * The `*.glb` files must be exported from Blender using respective `media/npc/*.blend`
  * @type {Record<NPC.ClassKey, NPC.ClassDef>}
  */
 export const npcClassToMeta = {
+  // 🚧 remove
   'cuboid-man': {
     url: '/3d/cuboid-man.glb',
-    scale: 0.6,
+    scale: 0.7,
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',
     groupName: 'Scene',
@@ -345,6 +345,7 @@ export const npcClassToMeta = {
     walkSpeed: 2.5,
     runSpeed: 4,
   },
+  // 🚧 remove
   'cuboid-pet': {
     url: '/3d/cuboid-pet.glb',
     // scale: 1,
@@ -359,27 +360,21 @@ export const npcClassToMeta = {
     walkSpeed: 2,
     runSpeed: 4,
   },
-};
 
-/**
- * The `*.glb` files must be exported from Blender using respective `media/npc/*.blend`
- * @type {Record<NPC.ClassKeyNew, NPC.ClassDef>}
- */
-export const npcClassToMetaNew = {
   "human-0": {
     url: '/3d/human-0.glb',
-    scale: 1,
+    scale: 0.7,
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     groupName: 'Scene',
     skinBaseName: 'human-0.tex.png',
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
-    // 🚧
     radius: 0.5,
     walkSpeed: 2.5,
     runSpeed: 4,
   },
-}
+};
+
 
 // 🚧
 // export const npcClassKeys = /** @type {NPC.ClassKey[]} */ (
@@ -446,6 +441,3 @@ export const fromXrayInstancedMeshName = {
 
 /** @type {Geom.SixTuple} */
 export const switchDecorQuadScaleUp = [1, 0, 0, 1.5, 0, 0];
-
-/** 🚧 remove, see also profile-awaitWorld */
-export const shaderMigrationNpcKey = 'temp-npc';

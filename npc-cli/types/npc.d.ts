@@ -21,13 +21,9 @@ declare namespace NPC {
   type ClassKey = (
     | 'cuboid-man'
     | 'cuboid-pet'
+    | 'human-0'
   );
 
-  type ClassKeyNew = (
-    | 'human-0'
-    // ...
-  );
-  
   type TextureKey = (
     | ClassKey
     | 'labels'

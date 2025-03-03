@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, npcClassToMetaNew, physicsConfig, shaderMigrationNpcKey, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
+import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
 import { pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
@@ -26,8 +26,7 @@ export default function Npcs(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
     freePickId: new Set(range(maxNumberOfNpcs)),
-    gltf: /** @type {*} */ ({}), // 🚧 old
-    gltfNew: /** @type {*} */ ({}),
+    gltf: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
     label: {
       count: 0,
@@ -39,7 +38,7 @@ export default function Npcs(props) {
     physicsPositions: [],
     tex: /** @type {*} */ ({}),
     pickIdToKey: new Map(),
-    showLastNavPath: false, // 🔔 debug
+    showLastNavPath: false, // 🔔 for debug
 
     attachAgent(npc) {
       if (npc.agent === null) {
@@ -220,9 +219,9 @@ export default function Npcs(props) {
         }, w);
         state.pickIdToKey.set(npc.def.pickUid, opts.npcKey);
 
-        if (npc.key === shaderMigrationNpcKey) {
-          // 🚧 WIP new npc geometry/shader
-          npc.initializeNew(state.gltfNew['human-0']);
+        if (npc.def.classKey === 'human-0') {
+          // 🚧 npc shader migration
+          npc.initializeNew(state.gltf[npc.def.classKey]);
         } else {
           npc.initialize(state.gltf[npc.def.classKey]);
         }
@@ -307,17 +306,22 @@ export default function Npcs(props) {
 
   state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].url);
   // state.gltf["cuboid-pet"] = useGLTF(npcClassToMeta["cuboid-pet"].url);
-  state.gltfNew["human-0"] = useGLTF(npcClassToMetaNew["human-0"].url);
+  // 🤔 add query param in development in case of GLTF update?
+  state.gltf["human-0"] = useGLTF(npcClassToMeta["human-0"].url);
   
   React.useEffect(() => {// init + hmr
     cmUvService.initialize(state.gltf);
     // 🔔 HMR by copying prevNpc non-methods into nextNpc
     process.env.NODE_ENV === 'development' && Object.values(state.npc).forEach(prevNpc => {
       const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
-      nextNpc.epochMs = Date.now();// invalidate React.Memo
-      if (nextNpc.agent !== null) {// avoid stale ref
+      // invalidate React.Memo
+      nextNpc.epochMs = Date.now();
+      // avoid stale ref
+      if (nextNpc.agent !== null) {
         state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
       }
+      // 🚧 track npc class meta
+      nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
       prevNpc.dispose();
       update();
     });
@@ -362,7 +366,6 @@ export default function Npcs(props) {
  * @property {THREE.Group} group
  * @property {import("../service/three").LabelsSheetAndTex} label
  * @property {Record<NPC.ClassKey, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
- * @property {Record<NPC.ClassKeyNew, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltfNew
  * @property {{ [npcKey: string]: Npc }} npc
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * Custom callback to handle npc slow down.
@@ -433,7 +436,7 @@ function NPC({ npc }) {
 
         renderOrder={0}
       >
-        {npc.key === shaderMigrationNpcKey && (
+        {npc.def.classKey === 'human-0' && (
           // <meshPhysicalMaterial
           <meshBasicMaterial
             color="red"

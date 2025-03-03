@@ -29,11 +29,22 @@
   - ✅ overlay head (replaces/extends face)
   - ✅ overlay body (replaces/extends icon)
   - ❌ hands
-- `human-0.tex.svg` should be 4096 * 4096
+- 🚧 `human-0.tex.svg` texture layout
   - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
-- texture should be visible via custom shader
-- texture should be DataTextureArray (one layer per skin)
-- texture should be hot-reloaded
+  - ℹ️ head dimension 0.4m³, body dimension 0.48m * 0.48m * 1m
+  - ✅ return to using non-unital scale (0.7) in code
+    - ℹ️ otherwise our head/body dimension are not as nice
+  - 🚧 should be 4096 * 4096
+  - layout w.r.t to head, body, overlays etc.
+- skins texture should be 
+  - visible via custom shader
+  - DataTextureArray (one layer per skin)
+  - hot-reloaded
+- need "npc uvs" DataTextureArray
+  - one layer per pickId i.e. 256?
+  - small layers i.e. just enough to remap overlays
+- represent label images as 256-layer DataTextureArray
+  - requires bounds on max width/height of label
 
 ### Extras
 

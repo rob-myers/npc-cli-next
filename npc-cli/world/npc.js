@@ -3,7 +3,7 @@ import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcClassToMetaNew } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObjectLookup, emptyAnimationMixer, emptyGroup, getParentBones, tmpVectThree1, toV3, toXZ } from '../service/three';
@@ -482,7 +482,7 @@ export class Npc {
    */
   initializeNew(gltf) {
     const { m } = this;
-    const meta = npcClassToMetaNew['human-0'];
+    const meta = npcClassToMeta['human-0'];
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(gltf.scene));
     const objectLookup = buildObjectLookup(clonedRoot);
 
@@ -498,6 +498,9 @@ export class Npc {
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();
     m.mesh.computeBoundingSphere();
+
+    const npcClassKey = 'human-0';
+    m.scale = npcClassToMeta[npcClassKey].scale;
   }
 
   /**

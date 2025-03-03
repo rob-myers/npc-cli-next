@@ -18,6 +18,7 @@ export const helper = {
   fromNpcClassKey: {
     'cuboid-man': true,
     "cuboid-pet": true,
+    "human-0": true,
   },
 
   /** Global over all `queryFilter`s */

@@ -1,9 +1,8 @@
 awaitWorld
 
-# 🚧 remove this and below
+# 🚧 remove this line and below
 # temp while we migrate npc shaders
-
-spawn temp-npc '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+spawn '{ npcKey: "temp-npc", classKey: "human-0" }' '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 
 w npc.updateLabels rob will kate # efficiency
 
