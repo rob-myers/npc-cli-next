@@ -42,7 +42,8 @@
     },
     "types": [
       "@emotion/react/types/css-prop",
-      "webpack-env"
+      "webpack-env",
+      "webpack-dev-server"
     ]
   },
   "include": [

@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   compiler: {
     emotion: true,
   },
+  // httpAgentOptions: {
+  //   keepAlive: true,
+  // },
   // 🔔 dev only, where turbo runs via `next dev --turbopack`
   experimental: {
     turbo: {
@@ -17,6 +20,8 @@ const nextConfig: NextConfig = {
           as: "*.js",
         },
       },
+      // resolveAlias // 🚧 tsconfig paths here?
+      // unstablePersistentCaching: true,
     },
   },
   // 🔔 build only, because turbopack does not run during build
@@ -25,6 +30,10 @@ const nextConfig: NextConfig = {
       test: /\/sh\/src\/.*\.sh$/,
       use: "raw-loader",
     });
+    // if (typeof config.devServer?.client === 'object') {
+    //   console.log('🔔', config.devServer.client);
+    //   // config.devServer.client.reconnect = true;
+    // }
     // config.optimization!.minimizer = [];
     return config;
   },

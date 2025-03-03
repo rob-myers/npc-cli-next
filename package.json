@@ -94,6 +94,7 @@
     "@types/svg-path-parser": "^1.1.6",
     "@types/three": "^0.172.0",
     "@types/webpack": "^5.28.5",
+    "@types/webpack-dev-server": "^4.7.2",
     "@types/webpack-env": "^1.18.8",
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
