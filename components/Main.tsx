@@ -30,7 +30,7 @@ export default function Main(props: React.PropsWithChildren) {
 
       <div
         css={overlayCss}
-        className={cx({overlayOpen})}
+        className={cx({ overlayOpen, navOpen: site.navOpen })}
         onClick={() => useSite.api.toggleNav()}
       />
     </section>
@@ -111,7 +111,10 @@ const overlayCss = css`
 
   &.overlayOpen {
     cursor: pointer;
-    pointer-events: all;
     opacity: 1;
+  }
+  /* fix safari i.e. Viewer scroll was jerky when pointer-events: all */
+  &.overlayOpen.navOpen {
+    pointer-events: all;
   }
 `;
