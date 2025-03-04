@@ -31,12 +31,13 @@
   - ❌ hands
 - 🚧 `human-0.tex.svg` texture layout
   - ℹ️ https://web3dsurvey.com/webgl/parameters/MAX_TEXTURE_SIZE
-  - ℹ️ head dimension 0.25m³, body dimension 0.5m * 0.5m * 1m
-  - ℹ️ head overlay scale: 1.05 (0.2625 m³)
+  - ℹ️ head dimension 0.5m³, body dimension 0.5m * 0.5m * 1m
+  - ℹ️ head overlay scale: 1.05 (0.525m³)
   - ℹ️ body overlay scale: 1.05 (0.525m * 0.525m * 1.05m)
   - ✅ return to using non-unital scale (0.7) in code
     - ℹ️ otherwise our head/body dimension are not as nice
   - ✅ assets script generates WEBP skins
+  - ✅ head same dim as body XZ
   - 🚧 define skin texture layout w.r.t to head, body, overlays etc.
   - 🚧 should be 2048 * 2048
 - skins: test WEBP in dev, use in prod
@@ -80,7 +81,11 @@
 
 - ✅ Npc texture PNG -> WEBP
 - 🚧 HMR breaking on close/open laptop
-  - works in Firefox but not in Chrome
+  - ℹ️ works in Firefox but not in Chrome
+  - ℹ️ seems next.js is using a WebSocket
+    > https://github.com/vercel/next.js/blob/canary/packages/next/src/client/components/react-dev-overlay/utils/use-websocket.ts
+  - ℹ️ https://issues.chromium.org/issues/361372969
+  - 🚧 try handle websocket disconnect e.g. display message in patch
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 - 🚧 try `bun` https://bun.sh/
