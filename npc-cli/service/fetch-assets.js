@@ -60,8 +60,13 @@ export function connectDevEventsWebsocket() {
     window.__NPC_CLI_DEV_EVENTS__ ??= new EventSource(`/api/connect-dev-events`)
   );
 
-  eventSource.onerror = () => {
+  eventSource.onerror = (e) => {
+    console.error('connectDevEventsWebsocket', e);
     eventSource.close();
+    if (clientId !== -1) {// happens on sleep/resume device
+      window.__NPC_CLI_DEV_EVENTS__ = undefined;
+      connectDevEventsWebsocket();
+    }
   };
 
   eventSource.onmessage = event => {
@@ -94,6 +99,12 @@ export function connectDevEventsWebsocket() {
       // });
     }
   });
+
+  if ('chrome' in window) {
+    const keepAlive = () => setInterval(() => null, 20e3);
+    keepAlive();
+  }
+
 }
 
 let clientId = -1;
