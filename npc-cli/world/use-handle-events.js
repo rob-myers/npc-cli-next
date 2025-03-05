@@ -457,8 +457,9 @@ export default function useHandleEvents(w) {
       if (door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
-        npc.stopMoving(); // look towards next corner:
-        npc.s.lookAngleDst = npc.getEulerAngle(npc.getLookAngle((npc.getNextCorner())));
+        const nextCorner = npc.getNextCorner();
+        npc.stopMoving();
+        npc.s.lookAngleDst = npc.getEulerAngle(npc.getLookAngle(nextCorner));
         return;
       }
 
