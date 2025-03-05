@@ -413,7 +413,8 @@ export class Npc {
     }
 
     // look further along the path
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.2); // 🔔 why 0.2?
+    // 🔔 with 0.2 saw jerk when two agents through doorway
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
     const radians = Math.atan2(dirY, dirX);
@@ -845,7 +846,7 @@ export class Npc {
 
     const nei = agent.raw.get_neis(0); // 0th closest
     const other = this.w.npc.byAgId[nei.idx];
-    if (other.s.target === null || nei.dist > 0.8) {// 🔔
+    if (other.s.target === null || nei.dist > 0.5) {// 🔔
       return;
     }
     
