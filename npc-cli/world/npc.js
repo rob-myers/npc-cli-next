@@ -1057,7 +1057,7 @@ const movingSeparationWeight = 0.5;
 const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
-const closeDist = helper.defaults.radius * 1.8;
+const closeDist = helper.defaults.radius * 1.7;
 const closerDist = helper.defaults.radius * 0.8;
 
 const tmpVect1 = new Vect();
