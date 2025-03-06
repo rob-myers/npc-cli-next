@@ -3,22 +3,22 @@
   <defs>
     <bx:grid x="0" y="0" width="32" height="32"/>
   </defs>
-  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="640" y="128.003">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="512">
     <title>head-front</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003" x="512">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="512">
     <title>head-left</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="768" y="128.003">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="640" y="128">
     <title>head-right</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="512">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="640">
     <title>head-back</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="640">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="512" y="256">
     <title>head-top</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="768">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="640" y="256">
     <title>head-bottom</title>
   </rect>
   <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="128">
