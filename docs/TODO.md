@@ -43,7 +43,14 @@
     - ✅ example head layout
     - ℹ️ overlays are just particular body/head layout
     - ℹ️ 2048 * 2048
-    - 🚧 extract body/head sub-uv-map into geomorphs.json
+    - 🚧 connect to human-0
+    - uv-map "base" head (cuboid edge look)
+    - uv-map "base" body (cuboid edge look)
+    - uv-map "base" head-overlay (face)
+    - uv-map "base" body-overlay (jacket? icon?)
+  - 🚧 skins: supports non-nested group
+    - collapses to `{groupName}-{childName}
+    - ℹ️ e.g. `base-body-front`
 - skins: test WEBP in dev, use in prod
 - skins texture should be 
   - visible via custom shader
