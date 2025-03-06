@@ -39,7 +39,11 @@
   - ✅ assets script generates WEBP skins
   - ✅ head same dim as body XZ
   - 🚧 define skin texture layout w.r.t to head, body, overlays etc.
-  - 🚧 should be 2048 * 2048
+    - ✅ example body layout
+    - ✅ example head layout
+    - ℹ️ overlays are just particular body/head layout
+    - ℹ️ 2048 * 2048
+    - 🚧 extract body/head sub-uv-map into geomorphs.json
 - skins: test WEBP in dev, use in prod
 - skins texture should be 
   - visible via custom shader
