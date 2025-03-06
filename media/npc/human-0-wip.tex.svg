@@ -6,40 +6,40 @@
   <defs>
     <bx:grid x="0" y="0" width="32" height="32"/>
   </defs>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640" y="128">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="640" y="128.003">
     <title>head-front</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" y="128" x="512">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003" x="512">
     <title>head-left</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="768" y="128">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="768" y="128.003">
     <title>head-right</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="512">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="512">
     <title>head-back</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="640">
     <title>head-top</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="768">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="768">
     <title>head-bottom</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" x="128">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="128">
     <title>body-top</title>
   </rect>
-  <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" x="256">
+  <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="256">
     <title>body-bottom</title>
   </rect>
-  <rect width="128" height="256" style="stroke: rgb(0, 0, 0); transform-box: fill-box; transform-origin: 50% 50%; fill: rgb(170, 170, 170);" y="128" x="128">
+  <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px; transform-origin: 192px 256.003px;" y="128.003" x="128">
     <title>body-front</title>
   </rect>
-  <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128" x="256">
+  <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003" x="256">
     <title>body-right</title>
   </rect>
-  <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128">
+  <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003">
     <title>body-left</title>
   </rect>
-  <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128" x="384">
+  <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003" x="384">
     <title>body-back</title>
   </rect>
 </svg>

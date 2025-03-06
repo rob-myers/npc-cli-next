@@ -44,7 +44,10 @@
     - ✅ example head layout
     - ℹ️ overlays are just particular body/head layout
     - ℹ️ 2048 * 2048
-    - 🚧 connect to human-0
+    - ✅ use temp skin human-0-wip.tex.svg
+    - remap head and head overlay
+    - remap body and body overlay
+    - copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
     - uv-map "base" head (cuboid edge look)
     - uv-map "base" body (cuboid edge look)
     - uv-map "base" head-overlay (face)
