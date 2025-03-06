@@ -38,6 +38,7 @@
     - ℹ️ otherwise our head/body dimension are not as nice
   - ✅ assets script generates WEBP skins
   - ✅ head same dim as body XZ
+  - ✅ resize selector quad to "correct size" (1.2m side) i.e. not unit quad
   - 🚧 define skin texture layout w.r.t to head, body, overlays etc.
     - ✅ example body layout
     - ✅ example head layout
