@@ -1286,6 +1286,7 @@
       "svgHash": {
         "cuboid-man": -1087841574,
         "cuboid-pet": -1224685710,
+        "human-0-wip": -231841370,
         "human-0": -1087841574
       },
       "uvMap": {
@@ -1555,12 +1556,14 @@
             "width": 0.1563,
             "height": 0.1563
           }
-        }
+        },
+        "human-0-wip": {}
       },
       "uvMapDim": {
         "cuboid-man": {"width": 1024, "height": 1024},
         "cuboid-pet": {"width": 1024, "height": 1024},
-        "human-0": {"width": 1024, "height": 1024}
+        "human-0": {"width": 1024, "height": 1024},
+        "human-0-wip": {"width": 0, "height": 0}
       }
     }
   },
