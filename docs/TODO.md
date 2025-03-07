@@ -70,44 +70,27 @@
 
 ### Extras
 
-- ✅ npc's shouldn't turn towards nearest neighbour as much
-- ❌ sometimes direction through door is wrong
-  - ℹ️ maybe fixed by new approach
-- ❌ `w.npc.remove` should trigger render while paused
-
-- ✅ fix react-pro-sidebar
-  - added patch
-  ```js
-  // node_modules/react-pro-sidebar/dist/index.es.js
-      React__default.useEffect(function () {
-          setTimeout(function () { return popperInstance === null || popperInstance === void 0 ? void 0 : popperInstance.update(); }, sidebarTransitionDuration);
-          if (!collapsed && level === 0) {
-              setOpenWhenCollapsed(false);
-              // ? if its useful to close first level submenus on collapse sidebar uncomment the code below
-              // setOpen(false);
-          }
-      }, [collapsed, level, rtl, sidebarTransitionDuration, popperInstance]);
-  ```
-
 - 🚧 mobile touch issues
-  - ContextMenu seems fixed
-  - Logger not so much
-- ✅ try zero velocity exit from offMesh into small room
+  - ✅ ContextMenu fixed
+  - Logger PopUp?
+- prevent intersection when two npcs move diagonally through doorway
+  - forbid (src,dst)'s intersection
+  - forbid dst's close to each other
 
 ## Dev env
 
 - ✅ Npc texture PNG -> WEBP
-- 🚧 HMR breaking on close/open laptop
+- ✅ HMR breaking on close/open laptop
   - ℹ️ works in Firefox but not in Chrome
   - ℹ️ seems next.js is using a WebSocket
     > https://github.com/vercel/next.js/blob/canary/packages/next/src/client/components/react-dev-overlay/utils/use-websocket.ts
   - ℹ️ https://issues.chromium.org/issues/361372969
-  - 🚧 try handle websocket disconnect e.g. display message in patch
+  - ✅ reconnect websocket in patch
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
-- 🚧 try `bun` https://bun.sh/
+- try `bun` https://bun.sh/
   - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
-  - 🚧 try https://www.npmjs.com/package/skia-canvas
+  - try https://www.npmjs.com/package/skia-canvas
 
 
 # Done
@@ -254,3 +237,27 @@
   - ✅ npc look overrides `agentAnim.unitExitVel`
   - ✅ publish to scoped npm module
   - ✅ use scoped npm module
+
+## Branch `clean-npc-shaders`
+
+### Extras
+
+- ✅ npc's shouldn't turn towards nearest neighbour as much
+- ❌ sometimes direction through door is wrong
+  - ℹ️ maybe fixed by new approach
+- ❌ `w.npc.remove` should trigger render while paused
+
+- ✅ fix react-pro-sidebar
+  - added patch
+  ```js
+  // node_modules/react-pro-sidebar/dist/index.es.js
+      React__default.useEffect(function () {
+          setTimeout(function () { return popperInstance === null || popperInstance === void 0 ? void 0 : popperInstance.update(); }, sidebarTransitionDuration);
+          if (!collapsed && level === 0) {
+              setOpenWhenCollapsed(false);
+              // ? if its useful to close first level submenus on collapse sidebar uncomment the code below
+              // setOpen(false);
+          }
+      }, [collapsed, level, rtl, sidebarTransitionDuration, popperInstance]);
+  ```
+- ✅ try zero velocity exit from offMesh into small room
