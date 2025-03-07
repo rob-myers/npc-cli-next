@@ -16,3 +16,7 @@ Fix by selecting new face(s), press U (UV options), and Reset.
 ## Removing unused data
 
 FILE menu > Clean Up > Purge unused data.
+
+## Add Face to existing UV map
+
+*Maybe* just add the Face, turn off Sync mode, move the face in UV mode.

@@ -50,7 +50,7 @@
       - ℹ️ base head overlay could have face only
       - uv-map "base" head (cuboid edge look)
       - uv-map "base" head-overlay (face)
-    - 🚧 remap body 🚧 and body overlay 🚧
+    - ✅ remap body ✅ and body overlay ✅
       - uv-map "base" body (cuboid edge look)
       - uv-map "base" body-overlay (jacket? icon?)
     - copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
