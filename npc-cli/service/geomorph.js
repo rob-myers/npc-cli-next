@@ -517,12 +517,12 @@ class GeomorphService {
   }
 
   /**
-   * Extract polygon with meta from <rect>, <path>, <circle> or <image>
-   * - <rect> e.g. possibly rotated wall
-   * - <path> e.g. complex obstacle
-   * - <circle> i.e. decor circle
-   * - <image> i.e. background image in symbol
-   * - <polygon>
+   * Extract polygon with meta from `<rect>`, `<path>`, `<circle>`, `<image>` or `<polygon>`
+   * - `<rect>` e.g. possibly rotated wall
+   * - `<path>` e.g. complex obstacle
+   * - `<circle>` i.e. decor circle
+   * - `<image>` i.e. background image in symbol
+   * - `<polygon>`
    * @private
    * @param {{ tagName: string; attributes: Record<string, string>; title: string; }} tagMeta
    * @param {Meta} meta
@@ -1129,6 +1129,8 @@ class GeomorphService {
     const parser = new htmlparser2.Parser({
       onopentag(name, attributes) {
         if (tagStack.length === 0) {
+          // 🔔 must set width, height explicitly on <svg>
+          console.log('🔔', name, attributes);
           output.width = Number(attributes.width) || 0;
           output.height = Number(attributes.height) || 0;
         }
@@ -1150,9 +1152,9 @@ class GeomorphService {
         }
 
         // Blender UV SVG Export generates <polygon>'s
-        if (parent.tagName !== "polygon") {
+        if (!["polygon", "rect"].includes(parent.tagName)) {
           return void (
-            warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: ignored non <polygon>`)
+            warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: expected <polygon> or <rect>`)
           );
         }
 

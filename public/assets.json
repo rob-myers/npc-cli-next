@@ -1286,7 +1286,7 @@
       "svgHash": {
         "cuboid-man": -1087841574,
         "cuboid-pet": -1224685710,
-        "human-0-wip": 894304535,
+        "human-0-wip": -112406024,
         "human-0": -1087841574
       },
       "uvMap": {
@@ -1460,7 +1460,60 @@
             "height": 0.1563
           }
         },
-        "human-0-wip": {},
+        "human-0-wip": {
+          "head-front": {"x": 0.25, "y": 0, "width": 0.0625, "height": 0.0625},
+          "head-left": {
+            "x": 0.25,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "head-right": {
+            "x": 0.3125,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "head-back": {"x": 0.3125, "y": 0, "width": 0.0625, "height": 0.0625},
+          "head-top": {
+            "x": 0.25,
+            "y": 0.125,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "head-bottom": {
+            "x": 0.3125,
+            "y": 0.125,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "body-top": {"x": 0.0625, "y": 0, "width": 0.0625, "height": 0.0625},
+          "body-bottom": {
+            "x": 0.125,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "body-front": {
+            "x": 0.0625,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "body-right": {
+            "x": 0.125,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "body-left": {"x": 0, "y": 0.0625, "width": 0.0625, "height": 0.125},
+          "body-back": {
+            "x": 0.1875,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
+          }
+        },
         "human-0": {
           "ground-ring": {"x": 0.9, "y": 0, "width": 0.1, "height": 0.1},
           "ground-shadow": {"x": 0.7, "y": 0, "width": 0.1, "height": 0.1},
@@ -1562,7 +1615,7 @@
       "uvMapDim": {
         "cuboid-man": {"width": 1024, "height": 1024},
         "cuboid-pet": {"width": 1024, "height": 1024},
-        "human-0-wip": {"width": 0, "height": 0},
+        "human-0-wip": {"width": 2048, "height": 2048},
         "human-0": {"width": 1024, "height": 1024}
       }
     }
