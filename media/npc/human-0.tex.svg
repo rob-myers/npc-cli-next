@@ -55,10 +55,10 @@
       <g transform="matrix(1, 0, 0, 1, 350.829987, -569.599976)">
         <title>eyes</title>
         <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="16">
-          <title>eye</title>
+          <title>left</title>
         </circle>
         <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="16">
-          <title>eye</title>
+          <title>right</title>
         </circle>
       </g>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640">
@@ -103,6 +103,21 @@
       <path d="M 448 176 C 453.866 176 458.666 181.76 458.666 188.799 C 458.666 195.84 453.866 201.6 448 201.6 C 442.134 201.6 437.334 195.84 437.334 188.799 C 437.334 181.76 442.134 176 448 176 Z M 496 220.8 L 464 220.8 L 464 304 L 453.333 304 L 453.333 265.6 L 442.667 265.6 L 442.667 304 L 432.001 304 L 432.001 220.8 L 400 220.8 L 400 208 L 496 208 L 496 220.8 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 448px 203.226px;">
         <title>_demo-icon</title>
       </path>
+    </g>
+    <g transform="matrix(1.374617, 0, 0, 1.374617, -1145.720459, 826.112366)" style="">
+      <title>selector</title>
+      <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="973.158508" cy="50.841564" r="46.558437">
+        <title>default</title>
+      </circle>
+    </g>
+    <g style="" transform="matrix(1.374616, 0, 0, 1.374616, -607.923035, 826.112366)">
+      <title>breath</title>
+      <circle style="stroke-width: 2.79351px; fill-opacity: 0.2; stroke-opacity: 0.5; stroke: rgb(153, 255, 153);" cx="768.158508" cy="50.841564" r="46.558437">
+        <title>outer</title>
+      </circle>
+      <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="768.158657" cy="49.910404" r="16.761046">
+        <title>inner</title>
+      </circle>
     </g>
   </g>
 </svg>

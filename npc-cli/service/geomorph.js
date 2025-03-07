@@ -1150,20 +1150,14 @@ class GeomorphService {
           return; // only consider folder "uv-map"
         }
 
-        // Blender UV SVG Export generates <polygon>'s
-        if (!["polygon", "rect"].includes(parent.tagName)) {
-          warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: expected <polygon> or <rect>`);
-          return;
-        }
-
         const baseName = contents;
         if (baseName.startsWith('_')) {
-          return; // ignore underscore-prefixed items e.g. _eyes
+          return; // ignore underscore-prefixed items e.g. _demo-icon
         }
         
         const poly = geomorph.extractPoly({ ...parent, title: contents }, {}, 1);
         
-        if (!poly) {
+        if (poly === null) {
           warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: failed to parse polygon`);
           return;
         }
