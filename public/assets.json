@@ -1286,7 +1286,7 @@
       "svgHash": {
         "cuboid-man": -1087841574,
         "cuboid-pet": -1224685710,
-        "human-0-wip": -112406024,
+        "human-0-wip": -276755120,
         "human-0": -1087841574
       },
       "uvMap": {
@@ -1461,53 +1461,73 @@
           }
         },
         "human-0-wip": {
-          "head-front": {"x": 0.25, "y": 0, "width": 0.0625, "height": 0.0625},
-          "head-left": {
+          "base-head-front": {
+            "x": 0.25,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "base-head-left": {
             "x": 0.25,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.0625
           },
-          "head-right": {
+          "base-head-right": {
             "x": 0.3125,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.0625
           },
-          "head-back": {"x": 0.3125, "y": 0, "width": 0.0625, "height": 0.0625},
-          "head-top": {
+          "base-head-back": {
+            "x": 0.3125,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "base-head-top": {
             "x": 0.25,
             "y": 0.125,
             "width": 0.0625,
             "height": 0.0625
           },
-          "head-bottom": {
+          "base-head-bottom": {
             "x": 0.3125,
             "y": 0.125,
             "width": 0.0625,
             "height": 0.0625
           },
-          "body-top": {"x": 0.0625, "y": 0, "width": 0.0625, "height": 0.0625},
-          "body-bottom": {
+          "base-body-top": {
+            "x": 0.0625,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "base-body-bottom": {
             "x": 0.125,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
-          "body-front": {
+          "base-body-left": {
+            "x": 0,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "base-body-front": {
             "x": 0.0625,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.125
           },
-          "body-right": {
+          "base-body-right": {
             "x": 0.125,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.125
           },
-          "body-left": {"x": 0, "y": 0.0625, "width": 0.0625, "height": 0.125},
-          "body-back": {
+          "base-body-back": {
             "x": 0.1875,
             "y": 0.0625,
             "width": 0.0625,

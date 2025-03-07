@@ -46,7 +46,7 @@
     - ℹ️ 2048 * 2048
     - ✅ use temp skin human-0-wip.tex.svg
     - ✅ skin template has transparency
-    - 🚧 remap head ✅ and head overlay 🚧
+    - 🚧 remap head ✅ head overlay 🚧
       - ℹ️ base head overlay could have face only
     - remap body and body overlay
     - copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
@@ -54,8 +54,8 @@
     - uv-map "base" body (cuboid edge look)
     - uv-map "base" head-overlay (face)
     - uv-map "base" body-overlay (jacket? icon?)
-  - 🚧 skins: supports non-nested group
-    - collapses to `{groupName}-{childName}
+  - ✅ skins: supports non-nested group
+    - collapses to e.g. `{groupName}-{groupName}-{leafName}
     - ℹ️ e.g. `base-body-front`
 - skins: test WEBP in dev, use in prod
 - skins texture should be 

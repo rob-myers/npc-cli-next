@@ -1112,7 +1112,7 @@ class GeomorphService {
 
   /**
    * Given SVG contents with `<g><title>uv-map</title> {...} </g>`,
-   * parse name to UV Rect i.e. normalized to [0, 1] x [0, 1]
+   * build name to UV Rect i.e. normalized to [0, 1] x [0, 1]
    * @param {string} svgContents 
    * @param {string} logLabel 
    * @returns {{ width: number; height: number; uvMap: { [uvRectName: string]: Geom.RectJson }; }}
@@ -1130,7 +1130,6 @@ class GeomorphService {
       onopentag(name, attributes) {
         if (tagStack.length === 0) {
           // 🔔 must set width, height explicitly on <svg>
-          console.log('🔔', name, attributes);
           output.width = Number(attributes.width) || 0;
           output.height = Number(attributes.height) || 0;
         }
@@ -1147,7 +1146,7 @@ class GeomorphService {
           return folderStack.push(contents); // track folders
         }
         
-        if (folderStack.at(-1) !== 'uv-map') {
+        if (folderStack[0] !== 'uv-map') {
           return; // only consider top-level folder "uv-map"
         }
 
@@ -1159,17 +1158,21 @@ class GeomorphService {
         }
 
         const poly = geomorph.extractPoly({ ...parent, title: contents }, {}, 1);
-
+        
         if (poly) {// output sub-rect of [0, 1] x [0, 1]
-          const uvRectName = contents; // e.g. `head-right`
+          const extendedName = folderStack.slice(1).concat(contents).join('-');
+          const uvRectName = extendedName; // e.g. `base-head-right`
           output.uvMap[uvRectName] = poly.rect
             .scale(1 / output.width, 1 / output.height)
             .precision(4).json
           ;
         }
       },
-      onclosetag() {
+      onclosetag(tag) {
         tagStack.pop();
+        if (tag === "g") {
+          folderStack.pop();
+        } 
       },
     });
 
