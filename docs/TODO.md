@@ -48,12 +48,12 @@
     - ✅ skin template has transparency
     - ✅ remap head ✅ head overlay ✅
       - ℹ️ base head overlay could have face only
+      - uv-map "base" head (cuboid edge look)
+      - uv-map "base" head-overlay (face)
     - 🚧 remap body 🚧 and body overlay 🚧
+      - uv-map "base" body (cuboid edge look)
+      - uv-map "base" body-overlay (jacket? icon?)
     - copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
-    - uv-map "base" head (cuboid edge look)
-    - uv-map "base" body (cuboid edge look)
-    - uv-map "base" head-overlay (face)
-    - uv-map "base" body-overlay (jacket? icon?)
   - ✅ skins: supports non-nested group
     - collapses to e.g. `{groupName}-{groupName}-{leafName}
     - ℹ️ e.g. `base-body-front`

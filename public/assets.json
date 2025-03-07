@@ -1286,7 +1286,7 @@
       "svgHash": {
         "cuboid-man": -1087841574,
         "cuboid-pet": -1224685710,
-        "human-0-wip": -1993951117,
+        "human-0-wip": -1976205831,
         "human-0": -1087841574
       },
       "uvMap": {
@@ -1568,6 +1568,42 @@
             "y": 0.125,
             "width": 0.0625,
             "height": 0.0625
+          },
+          "base-body-overlay-top": {
+            "x": 0.0625,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "base-body-overlay-bottom": {
+            "x": 0.125,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "base-body-overlay-left": {
+            "x": 0,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "base-body-overlay-front": {
+            "x": 0.0625,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "base-body-overlay-right": {
+            "x": 0.125,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "base-body-overlay-back": {
+            "x": 0.1875,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.125
           }
         },
         "human-0": {
