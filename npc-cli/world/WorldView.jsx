@@ -248,7 +248,7 @@ export default function WorldView(props) {
         position,
       }));
 
-      if (state.epoch.pointerUp > state.epoch.pickStart) {
+      if (state.epoch.pointerUp >= state.epoch.pickStart) {
         // Native "pointerup" occurred before we finished this object-pick.
         // We can now trigger the world event:
         w.events.next(state.getWorldPointerEvent({
