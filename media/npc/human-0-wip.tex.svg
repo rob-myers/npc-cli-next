@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com" width="2048" height="2048" viewBox="0 0 2048 2048">
   <defs>
-    <bx:grid x="0" y="0" width="32" height="32"/>
+    <bx:grid x="0" y="0" width="16" height="16"/>
   </defs>
   <g>
     <title>uv-map</title>
@@ -45,6 +45,36 @@
       </rect>
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003" x="384">
         <title>back</title>
+      </rect>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 0, 416)">
+      <title>base-head-overlay</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512">
+        <title>front</title>
+      </rect>
+      <g transform="matrix(1, 0, 0, 1, 350.829987, -569.599976)">
+        <title>eyes</title>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="16">
+          <title>eye</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="16">
+          <title>eye</title>
+        </circle>
+      </g>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" y="128" x="512">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="128">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="256">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="256">
+        <title>bottom</title>
       </rect>
     </g>
   </g>

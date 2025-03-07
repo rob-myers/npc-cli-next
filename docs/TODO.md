@@ -46,9 +46,9 @@
     - ℹ️ 2048 * 2048
     - ✅ use temp skin human-0-wip.tex.svg
     - ✅ skin template has transparency
-    - 🚧 remap head ✅ head overlay 🚧
+    - ✅ remap head ✅ head overlay 🚧
       - ℹ️ base head overlay could have face only
-    - remap body and body overlay
+    - 🚧 remap body 🚧 and body overlay 🚧
     - copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
     - uv-map "base" head (cuboid edge look)
     - uv-map "base" body (cuboid edge look)

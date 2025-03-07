@@ -1147,26 +1147,34 @@ class GeomorphService {
         }
         
         if (folderStack[0] !== 'uv-map') {
-          return; // only consider top-level folder "uv-map"
+          return; // only consider folder "uv-map"
         }
 
         // Blender UV SVG Export generates <polygon>'s
         if (!["polygon", "rect"].includes(parent.tagName)) {
-          return void (
-            warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: expected <polygon> or <rect>`)
-          );
+          warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: expected <polygon> or <rect>`);
+          return;
         }
 
+        const baseName = contents;
+        if (baseName.startsWith('_')) {
+          return; // ignore underscore-prefixed items e.g. _eyes
+        }
+        
         const poly = geomorph.extractPoly({ ...parent, title: contents }, {}, 1);
         
-        if (poly) {// output sub-rect of [0, 1] x [0, 1]
-          const extendedName = folderStack.slice(1).concat(contents).join('-');
-          const uvRectName = extendedName; // e.g. `base-head-right`
-          output.uvMap[uvRectName] = poly.rect
-            .scale(1 / output.width, 1 / output.height)
-            .precision(4).json
-          ;
+        if (!poly) {
+          warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: failed to parse polygon`);
+          return;
         }
+
+        // output sub-rect of [0, 1] x [0, 1]
+        const extendedName = folderStack.slice(1).concat(baseName).join('-');
+        const uvRectName = extendedName; // e.g. `base-head-right`
+        output.uvMap[uvRectName] = poly.rect
+          .scale(1 / output.width, 1 / output.height)
+          .precision(4).json
+        ;
       },
       onclosetag(tag) {
         tagStack.pop();
