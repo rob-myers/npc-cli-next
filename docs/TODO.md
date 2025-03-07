@@ -53,7 +53,9 @@
     - ✅ remap body ✅ and body overlay ✅
       - uv-map "base" body (cuboid edge look)
       - uv-map "base" body-overlay (jacket? icon?)
-    - copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
+    - ✅ copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
+    - 🚧 remap breath quad
+    - 🚧 remap label quad
   - ✅ skins: supports non-nested group
     - collapses to e.g. `{groupName}-{groupName}-{leafName}
     - ℹ️ e.g. `base-body-front`
