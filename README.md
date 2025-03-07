@@ -115,3 +115,16 @@ ipconfig getifaddr en0
 
 # navigate to http://${ipAddress}:3000
 ```
+
+### Fix VSCode push button error
+
+> NPM module canvas was compiled against a different Node.js version
+
+Following [this answer](https://stackoverflow.com/a/67935178/2917822) we can start VSCode in a terminal whose node version matches the repo's node version.
+
+```sh
+cd $REPO_ROOT
+nvm use
+code .
+```
+
