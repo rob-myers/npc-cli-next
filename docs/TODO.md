@@ -54,12 +54,13 @@
       - uv-map "base" body (cuboid edge look)
       - uv-map "base" body-overlay (jacket? icon?)
     - ✅ copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
-    - 🚧 remap breath quad
     - 🚧 remap label quad
+    - 🚧 remap selector quad
+    - 🚧 remap breath quad
   - ✅ skins: supports non-nested group
     - collapses to e.g. `{groupName}-{groupName}-{leafName}
     - ℹ️ e.g. `base-body-front`
-- skins: test WEBP in dev, use in prod
+- ✅ skins: test WEBP in dev, use in prod
 - skins texture should be 
   - visible via custom shader
   - DataTextureArray (one layer per skin)

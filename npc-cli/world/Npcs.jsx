@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
-import { pause, range, takeFirst, warn } from "../service/generic";
+import { isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
@@ -331,7 +331,8 @@ export default function Npcs(props) {
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
       const { skinBaseName } = npcClassToMeta[classKey];
-      const tex = await textureLoader.loadAsync(`/3d/${skinBaseName}?v=${w.hash.sheets}`);
+      const webpExtInProd = isDevelopment() ? '' : '.webp';
+      const tex = await textureLoader.loadAsync(`/3d/${skinBaseName}${webpExtInProd}?v=${w.hash.sheets}`);
       tex.flipY = false;
       state.tex[classKey] = tex;
     })).then(() => Object.values(state.npc).forEach(npc => npc.forceUpdate()));
