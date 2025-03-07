@@ -40333,6 +40333,7 @@
             "height": 0.1563
           }
         },
+        "human-0-wip": {},
         "human-0": {
           "ground-ring": {"x": 0.9, "y": 0, "width": 0.1, "height": 0.1},
           "ground-shadow": {"x": 0.7, "y": 0, "width": 0.1, "height": 0.1},
@@ -40429,14 +40430,13 @@
             "width": 0.1563,
             "height": 0.1563
           }
-        },
-        "human-0-wip": {}
+        }
       },
       "uvMapDim": {
         "cuboid-man": {"width": 1024, "height": 1024},
         "cuboid-pet": {"width": 1024, "height": 1024},
-        "human-0": {"width": 1024, "height": 1024},
-        "human-0-wip": {"width": 0, "height": 0}
+        "human-0-wip": {"width": 0, "height": 0},
+        "human-0": {"width": 1024, "height": 1024}
       }
     }
   }
