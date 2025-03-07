@@ -10,14 +10,14 @@
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="512">
         <title>front</title>
       </rect>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="640">
+        <title>back</title>
+      </rect>
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="512">
         <title>left</title>
       </rect>
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="640" y="128">
         <title>right</title>
-      </rect>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="640">
-        <title>back</title>
       </rect>
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="512" y="256">
         <title>top</title>
