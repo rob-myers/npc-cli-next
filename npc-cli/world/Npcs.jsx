@@ -9,7 +9,7 @@ import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { cmUvService } from "../service/uv";
-import { CuboidManMaterial } from "../service/glsl";
+import { CuboidManMaterial, HumanZeroShader } from "../service/glsl";
 import { crowdAgentParams, Npc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -304,10 +304,10 @@ export default function Npcs(props) {
   w.npc = state;
   w.n = state.npc;
 
-  state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].url);
+  state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].modelUrl);
   // state.gltf["cuboid-pet"] = useGLTF(npcClassToMeta["cuboid-pet"].url);
   // 🤔 add query param in development in case of GLTF update?
-  state.gltf["human-0"] = useGLTF(npcClassToMeta["human-0"].url);
+  state.gltf["human-0"] = useGLTF(npcClassToMeta["human-0"].modelUrl);
   
   React.useEffect(() => {// init + hmr
     cmUvService.initialize(state.gltf);
@@ -439,9 +439,11 @@ function NPC({ npc }) {
         renderOrder={0}
       >
         {npc.def.classKey === 'human-0' && (
-          // <meshPhysicalMaterial
-          <meshBasicMaterial
-            color="red"
+          // <meshBasicMaterial color="red" />
+          <humanZeroShader
+            key={HumanZeroShader.key}
+            atlas={npc.w.texSkin.tex}
+            transparent
           />
         ) || <cuboidManMaterial
           key={CuboidManMaterial.key}

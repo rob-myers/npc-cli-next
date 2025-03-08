@@ -21,10 +21,6 @@ declare global {
         opacity?: number;
       } & SupportsObjectPick>;
 
-      // instancedUvMappingMaterial: BaseExtendedShaderMaterial<{
-      //   map: import('three').CanvasTexture;
-      // }>;
-
       instancedLabelsMaterial: BaseExtendedShaderMaterial<{
         map: import('three').CanvasTexture;
         // ...
@@ -68,6 +64,11 @@ declare global {
         uLabelUv?: Vector2Input[];
 
         uLabelDim?: Vector2Input;
+      } & SupportsObjectPick>;
+
+      humanZeroShader: BaseExtendedShaderMaterial<{
+        atlas: import('three').DataArrayTexture;
+        // 🚧
       } & SupportsObjectPick>;
     }
   }

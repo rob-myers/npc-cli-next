@@ -62,11 +62,10 @@
     - collapses to e.g. `{groupName}-{groupName}-{leafName}
     - ℹ️ e.g. `base-body-front`
 - ✅ skins: test WEBP in dev, use in prod
-- 🚧 human-0: "skins" DataTextureArray (one layer per skin)
+- ✅ human-0: "skins" DataTextureArray (one layer per skin)
   - ℹ️ temp include legacy skins e.g. cuboid-man
-  - 🚧 build texture array `w.texSkin`
-- 🚧 human-0: start custom shader
-  - 🚧 simply shades everything blue
+  - ✅ build texture array `w.texSkin`
+- ✅ human-0: start custom shader
   - uniform "atlas" is `w.texSkin`
 - human-0: "npc uvs" DataTextureArray
   - one layer per pickId i.e. 256?

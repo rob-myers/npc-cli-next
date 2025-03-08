@@ -333,7 +333,9 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
 export const npcClassToMeta = {
   // 🚧 remove
   'cuboid-man': {
-    url: '/3d/cuboid-man.glb',
+    modelUrl: '/3d/cuboid-man.glb',
+    texPngUrl: '/3d/cuboid-man.tex.png',
+    texWebpUrl: '/3d/cuboid-man.tex.png.webp',
     scale: 0.7,
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',
@@ -347,7 +349,9 @@ export const npcClassToMeta = {
   },
   // 🚧 remove
   'cuboid-pet': {
-    url: '/3d/cuboid-pet.glb',
+    modelUrl: '/3d/cuboid-pet.glb',
+    texPngUrl: '/3d/cuboid-pet.tex.png',
+    texWebpUrl: '/3d/cuboid-pet.tex.png.webp',
     // scale: 1,
     scale: 0.6,
     materialName: 'cuboid-pet-material',
@@ -362,7 +366,9 @@ export const npcClassToMeta = {
   },
 
   "human-0": {
-    url: '/3d/human-0.glb',
+    modelUrl: '/3d/human-0.glb',
+    texPngUrl: '/3d/human-0.tex.png',
+    texWebpUrl: '/3d/human-0.tex.png.webp',
     scale: 0.7,
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',

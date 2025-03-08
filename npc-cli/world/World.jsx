@@ -4,7 +4,6 @@ import { Subject, firstValueFrom } from "rxjs";
 import { filter } from "rxjs/operators";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
-import debounce from "debounce";
 
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
@@ -253,7 +252,7 @@ export default function World(props) {
       }
 
       // Update texture arrays: decor, obstacles, skins
-      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim, skins } = state.geomorphs.sheet;
+      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim } = state.geomorphs.sheet;
 
       for (const { src, dim, texArray, invert } of [
         {
@@ -270,7 +269,7 @@ export default function World(props) {
         },
         {
           // 🔔 texture order inherited from `npcClassToMeta`
-          src: Object.values(npcClassToMeta).map(({ url }) => url),
+          src: Object.values(npcClassToMeta).map(({ texPngUrl }) => texPngUrl),
           texArray: state.texSkin,
           dim: { width: skinsTextureDimension, height: skinsTextureDimension },
           invert: false,
@@ -279,12 +278,12 @@ export default function World(props) {
         texArray.resize({ width: dim.width, height: dim.height, numTextures: src.length });
         texArray.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
 
-        await Promise.all(src.map(async (url, sheetId) => {
+        await Promise.all(src.map(async (url, texId) => {
           const img = await imageLoader.loadAsync(url);
           texArray.ct.clearRect(0, 0, dim.width, dim.height);
           texArray.ct.drawImage(img, 0, 0);
           invert && invertCanvas(texArray.ct.canvas, getContext2d('invert-copy'), getContext2d('invert-mask'));
-          texArray.updateIndex(sheetId);
+          texArray.updateIndex(texId);
         }));
 
         texArray.update();

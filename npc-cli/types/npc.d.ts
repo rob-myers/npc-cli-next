@@ -36,10 +36,14 @@ declare namespace NPC {
   }
 
   interface ClassDef {
-    /** e.g. '/3d/cuboid-man.glb' */
-    url: string;
+    /** Format `/3d/{npcClassKey}.glb` */
+    modelUrl: `/3d/${string}.glb`;
+    /** Format `/3d/{npcClassKey}.tex.png` */
+    texPngUrl: `/3d/${string}.tex.png`;
+    /** Format `/3d/{npcClassKey}.tex.png.webp` */
+    texWebpUrl: `/3d/${string}.tex.png.webp`;
     /** e.g. `1` */
-    scale :number;
+    scale: number;
     /** e.g. 'cuboid-man-material' */
     materialName: string; 
     /** e.g. 'cuboid-man' */

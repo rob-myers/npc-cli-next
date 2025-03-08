@@ -441,6 +441,53 @@ export const cuboidManShader = {
   `,
 };
 
+// 🚧
+export const humanZeroShader = {
+  Vert: /*glsl*/`
+
+  varying vec2 vUv;
+
+  #include <common>
+  #include <uv_pars_vertex>
+  #include <skinning_pars_vertex>
+  #include <logdepthbuf_pars_vertex>
+
+  void main() {
+    #include <uv_vertex>
+    #include <skinbase_vertex>
+    #include <beginnormal_vertex>
+    #include <skinnormal_vertex>
+    vec3 transformed = vec3(position);
+    #include <skinning_vertex>
+    vUv = uv;
+
+    vec4 mvPosition = vec4(transformed, 1.0);
+    mvPosition = modelViewMatrix * mvPosition;
+    gl_Position = projectionMatrix * mvPosition;
+
+    #include <logdepthbuf_vertex>
+  }
+  `,
+  Frag: /*glsl*/`
+  
+  uniform sampler2DArray atlas;
+  uniform bool objectPick;
+  varying vec2 vUv;
+
+  #include <common>
+  #include <uv_pars_fragment>
+  #include <map_pars_fragment>
+  #include <logdepthbuf_pars_fragment>
+
+  void main() {
+    // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
+    // 🚧 vTextureId is 2 for human-0 which is 3rd entry in npcClassToMeta
+    gl_FragColor = texture(atlas, vec3(vUv, 2));
+    #include <logdepthbuf_fragment>
+  }
+  `,
+};
+
 export const instancedMultiTextureShader = {
   Vert: /* glsl */`
 
@@ -556,8 +603,8 @@ export const InstancedMultiTextureMaterial = shaderMaterial(
     atlas: emptyDataArrayTexture,
     diffuse: new THREE.Vector3(1, 0.9, 0.6),
     // 🔔 map, mapTransform required else can get weird texture
-    map: null,
-    mapTransform: new THREE.Matrix3(),
+    // map: null,
+    // mapTransform: new THREE.Matrix3(),
     colorSpace: false,
     objectPick: false,
     objectPickRed: 0,
@@ -617,14 +664,24 @@ export const CuboidManMaterial = shaderMaterial(
   cuboidManShader.Frag,
 );
 
+export const HumanZeroShader = shaderMaterial(
+  {
+    atlas: emptyDataArrayTexture,
+    objectPick: false,
+    // 🚧
+  },
+  humanZeroShader.Vert,
+  humanZeroShader.Frag,
+);
+
 /**
  * @see glsl.d.ts
  */
 extend({
   InstancedMonochromeShader: InstancedWallsShader,
-  // InstancedUvMappingMaterial,
   InstancedLabelsMaterial,
   InstancedMultiTextureMaterial,
   CameraLightMaterial,
   CuboidManMaterial,
+  HumanZeroShader,
 });
