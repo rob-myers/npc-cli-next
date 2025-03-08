@@ -62,13 +62,12 @@
     - collapses to e.g. `{groupName}-{groupName}-{leafName}
     - ℹ️ e.g. `base-body-front`
 - ✅ skins: test WEBP in dev, use in prod
-- skins texture should be 
-  - visible via custom shader
-  - DataTextureArray (one layer per skin)
-  - hot-reloaded
-- need "npc uvs" DataTextureArray
+- 🚧 human-0: "skins" DataTextureArray (one layer per skin)
+- 🚧 human-0: start custom shader
+- human-0: "npc uvs" DataTextureArray
   - one layer per pickId i.e. 256?
-  - small layers i.e. just enough to remap overlays
+  - can remap head, head overlay, body, body overlay, selector/breath quad
+- new shader is hot-reloaded
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
 
