@@ -63,7 +63,11 @@
     - ℹ️ e.g. `base-body-front`
 - ✅ skins: test WEBP in dev, use in prod
 - 🚧 human-0: "skins" DataTextureArray (one layer per skin)
+  - ℹ️ temp include legacy skins e.g. cuboid-man
+  - 🚧 build texture array `w.texSkin`
 - 🚧 human-0: start custom shader
+  - 🚧 simply shades everything blue
+  - uniform "atlas" is `w.texSkin`
 - human-0: "npc uvs" DataTextureArray
   - one layer per pickId i.e. 256?
   - can remap head, head overlay, body, body overlay, selector/breath quad

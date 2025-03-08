@@ -9,7 +9,7 @@ import debounce from "debounce";
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
-import { floorTextureDimension } from "../service/const";
+import { floorTextureDimension, npcClassToMeta, skinsTextureDimension } from "../service/const";
 import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { removeCached, setCached } from "../service/query-client";
@@ -70,6 +70,7 @@ export default function World(props) {
     texCeil: new TexArray({ ctKey: 'ceil-tex-array', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
+    texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
     texVs: { floor: 0, ceiling: 0 },
 
     crowd: /** @type {*} */ (null),
@@ -251,20 +252,30 @@ export default function World(props) {
         return true;
       }
 
-      // Update texture arrays
-      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim } = state.geomorphs.sheet;
+      // Update texture arrays: decor, obstacles, skins
+      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim, skins } = state.geomorphs.sheet;
 
-      for (const { src, dim, texArray, invert } of [{
-        src: decorDims.map((_, sheetId) => getDecorSheetUrl(sheetId)),
-        texArray: state.texDecor,
-        dim: maxDecorDim, 
-        invert: false,
-      }, {
-        src: obstacleDims.map((_, sheetId) => getObstaclesSheetUrl(sheetId)),
-        texArray: state.texObs,
-        dim: maxObstacleDim, 
-        invert: true,
-      }]) {
+      for (const { src, dim, texArray, invert } of [
+        {
+          src: decorDims.map((_, sheetId) => getDecorSheetUrl(sheetId)),
+          texArray: state.texDecor,
+          dim: maxDecorDim, 
+          invert: false,
+        },
+        {
+          src: obstacleDims.map((_, sheetId) => getObstaclesSheetUrl(sheetId)),
+          texArray: state.texObs,
+          dim: maxObstacleDim, 
+          invert: true,
+        },
+        {
+          // 🔔 texture order inherited from `npcClassToMeta`
+          src: Object.values(npcClassToMeta).map(({ url }) => url),
+          texArray: state.texSkin,
+          dim: { width: skinsTextureDimension, height: skinsTextureDimension },
+          invert: false,
+        },
+      ]) {
         texArray.resize({ width: dim.width, height: dim.height, numTextures: src.length });
         texArray.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
 
@@ -406,6 +417,7 @@ export default function World(props) {
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
  * @property {TexArray} texObs
+ * @property {TexArray} texSkin
  * @property {{ floor: number; ceiling: number; }} texVs
  * @property {Geomorph.LayoutInstance[]} gms
  * Aligned to `map.gms`.

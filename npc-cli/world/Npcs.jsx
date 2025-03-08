@@ -36,7 +36,7 @@ export default function Npcs(props) {
     npc: {},
     onStuckCustom: null,
     physicsPositions: [],
-    tex: /** @type {*} */ ({}),
+    tex: /** @type {*} */ ({}), // 🚧 old
     pickIdToKey: new Map(),
     showLastNavPath: false, // 🔔 for debug
 
@@ -327,7 +327,8 @@ export default function Npcs(props) {
     });
   }, []);
 
-  React.useEffect(() => {// npc textures 🚧 use single DataTextureArray
+  // 🚧 use single DataTextureArray w.texSkin
+  React.useEffect(() => {// npc textures
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
       const { skinBaseName } = npcClassToMeta[classKey];

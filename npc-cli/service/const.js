@@ -441,3 +441,6 @@ export const fromXrayInstancedMeshName = {
 
 /** @type {Geom.SixTuple} */
 export const switchDecorQuadScaleUp = [1, 0, 0, 1.5, 0, 0];
+
+/** `2048 * 2048` can contain main skins */
+export const skinsTextureDimension = 2048;
