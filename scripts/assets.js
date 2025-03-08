@@ -259,7 +259,7 @@ info({ opts });
   // 🚧 compute image hash faster?
   perf('sheet.imagesHash');
   assetsJson.sheet.imagesHash =
-    prev.skipObstacles && prev.skipDecor && assetsJson.sheet.imagesHash
+    prev.skipObstacles === true && prev.skipDecor === true && prev.skipNpcTex === true && assetsJson.sheet.imagesHash !== 0
       ? assetsJson.sheet.imagesHash
       : hashJson([
           ...getDecorPngPaths(assetsJson),
