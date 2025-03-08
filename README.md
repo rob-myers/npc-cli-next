@@ -41,7 +41,7 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 ## Development only routes
 
-These are removed in production by temporarily moving `app/api` into `public`.
+These are removed in production via next.config output `export`.
 
 ```sh
 curl --silent localhost:3000/api/connect/myFunUid/dev-events
@@ -49,7 +49,7 @@ curl --silent -XPOST localhost:3000/api/send-dev-event
 curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 }'
 ```
 
-## Example shell commands
+## Example NPC-CLI shell commands
 
   ```sh
   c=0
