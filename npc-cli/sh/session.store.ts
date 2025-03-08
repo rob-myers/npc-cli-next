@@ -261,7 +261,7 @@ const useStore = create<State>()(
               ttyLink: {},
               etc: {},
               var: {
-                PWD: "home",
+                PWD: "/home",
                 OLDPWD: "",
                 ...persisted.var,
                 ...deepClone(env),

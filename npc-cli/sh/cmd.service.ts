@@ -124,21 +124,21 @@ class cmdServiceClass {
 
         try {
           if (!args[0]) {
-            useSession.api.setVar(meta, "PWD", "home");
+            useSession.api.setVar(meta, "PWD", "/home");
           } else if (args[0] === "-") {
             useSession.api.setVar(meta, "PWD", prevPwd);
           } else if (args[0].startsWith("/")) {
             const parts = normalizeAbsParts(args[0].split("/"));
             if (resolveNormalized(parts, this.provideProcessCtxt(node.meta)) === undefined) {
-              throw Error;
+              throw Error();
             }
-            useSession.api.setVar(meta, "PWD", parts.join("/"));
+            useSession.api.setVar(meta, "PWD", ['', ...parts].join("/"));
           } else {
             const parts = normalizeAbsParts(currPwd.split("/").concat(args[0].split("/")));
             if (resolveNormalized(parts, this.provideProcessCtxt(node.meta)) === undefined) {
-              throw Error;
+              throw Error();
             }
-            useSession.api.setVar(meta, "PWD", parts.join("/"));
+            useSession.api.setVar(meta, "PWD", ['', ...parts].join("/"));
           }
         } catch {
           useSession.api.setVar(meta, "OLDPWD", prevPwd);
@@ -458,7 +458,7 @@ class cmdServiceClass {
         break;
       }
       case "pwd": {
-        yield "/" + useSession.api.getVar(meta, "PWD");
+        yield useSession.api.getVar(meta, "PWD");
         break;
       }
       case "return": {
