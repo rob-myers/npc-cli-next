@@ -115,7 +115,10 @@
     </g>
     <g style="" transform="matrix(1.374616, 0, 0, 1.374616, -607.923035, 826.112366)">
       <title>breath</title>
-      <circle style="stroke-width: 2.79351px; fill-opacity: 0.2; stroke-opacity: 0.5; stroke: rgb(153, 255, 153);" cx="768.158508" cy="50.841564" r="46.558437">
+      <rect width="93.117" height="93.117" style="fill: none;" x="721.6" y="4.283">
+        <title>bounds</title>
+      </rect>
+      <circle style="stroke-width: 2.79351px; fill-opacity: 0.2; stroke-opacity: 0.5; stroke: rgb(153, 255, 153);" cx="768.158" cy="50.841" r="45.103">
         <title>outer</title>
       </circle>
       <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="768.158657" cy="49.910404" r="16.761046">

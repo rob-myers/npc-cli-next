@@ -40159,7 +40159,7 @@
       "svgHash": {
         "cuboid-man": -1087841574,
         "cuboid-pet": -1224685710,
-        "human-0": 1583151808
+        "human-0": -1320088063
       },
       "uvMap": {
         "cuboid-man": {
@@ -40501,11 +40501,17 @@
             "width": 0.044,
             "height": 0.044
           },
-          "breath-outer": {
+          "breath-bounds": {
             "x": 0.3523,
             "y": 0.0021,
             "width": 0.0455,
             "height": 0.0455
+          },
+          "breath-outer": {
+            "x": 0.3531,
+            "y": 0.0028,
+            "width": 0.044,
+            "height": 0.044
           },
           "breath-inner": {
             "x": 0.3669,
