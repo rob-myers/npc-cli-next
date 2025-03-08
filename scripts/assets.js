@@ -254,7 +254,9 @@ info({ opts });
   );
   info({ changedKeys: changedSymbolAndMapKeys });
 
-  // hash sprite-sheet PNGs (including skins lastModified)
+  // hash sprite-sheet PNGs: decor, obstacles, skins
+  // 🚧 split for faster computation?
+  // 🚧 compute image hash faster?
   perf('sheet.imagesHash');
   assetsJson.sheet.imagesHash =
     prev.skipObstacles && prev.skipDecor && assetsJson.sheet.imagesHash
@@ -262,6 +264,7 @@ info({ opts });
       : hashJson([
           ...getDecorPngPaths(assetsJson),
           ...getObstaclePngPaths(assetsJson),
+          ...getSkinPngPaths(prev.npcTexMetas),
         ].map(x => fs.readFileSync(x).toString())
     )
   ;
