@@ -39,7 +39,7 @@
   - ✅ assets script generates WEBP skins
   - ✅ head same dim as body XZ
   - ✅ resize selector quad to "correct size" (1.2m side) i.e. not unit quad
-  - 🚧 define skin texture layout w.r.t to head, body, overlays etc.
+  - ✅ define skin texture layout w.r.t to head, body, overlays etc.
     - ✅ example body layout
     - ✅ example head layout
     - ℹ️ overlays are just particular body/head layout
@@ -57,7 +57,7 @@
     - ✅ remap label quad
       - transparent 64x64 at top left
     - ✅ remap selector quad
-    - 🚧 remap breath quad
+    - ✅ remap breath quad
   - ✅ skins: supports non-nested group
     - collapses to e.g. `{groupName}-{groupName}-{leafName}
     - ℹ️ e.g. `base-body-front`
