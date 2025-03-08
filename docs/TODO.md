@@ -56,7 +56,7 @@
     - ✅ copy temp skin to human-0.tex.svg and remove human-0-wip.tex.svg
     - ✅ remap label quad
       - transparent 64x64 at top left
-    - 🚧 remap selector quad
+    - ✅ remap selector quad
     - 🚧 remap breath quad
   - ✅ skins: supports non-nested group
     - collapses to e.g. `{groupName}-{groupName}-{leafName}

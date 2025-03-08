@@ -106,7 +106,10 @@
     </g>
     <g transform="matrix(1.374617, 0, 0, 1.374617, -1145.720459, 826.112366)" style="">
       <title>selector</title>
-      <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="973.158508" cy="50.841564" r="46.558437">
+      <rect width="93.117" height="93.117" style="fill: none;" x="926.6" y="4.283">
+        <title>bounds</title>
+      </rect>
+      <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="973.158" cy="50.841" r="45.103">
         <title>default</title>
       </circle>
     </g>
