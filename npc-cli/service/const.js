@@ -334,8 +334,8 @@ export const npcClassToMeta = {
   // 🚧 remove
   'cuboid-man': {
     modelUrl: '/3d/cuboid-man.glb',
-    texPngUrl: '/3d/cuboid-man.tex.png',
-    texWebpUrl: '/3d/cuboid-man.tex.png.webp',
+    texPngUrl: '/3d/cuboid-man.0.tex.png',
+    texWebpUrl: '/3d/cuboid-man.0.tex.png.webp',
     scale: 0.7,
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',

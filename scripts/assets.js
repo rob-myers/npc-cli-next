@@ -799,8 +799,8 @@ function getNpcTextureMetas() {
     const pngPath = path.resolve(assets3dDir, svgBaseName.slice(0, -'.svg'.length).concat('.png'));
     let pngMtimeMs = 0; try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
     return {
-      // 🔔 assume `{skinClassKey}.tex.svg`
-      skinClassKey: svgBaseName.split('.', 1)[0],
+      // 🔔 assume `{skinClassKey}.{sheetId}.tex.svg`
+      skinClassKey: /** @type {NPC.SkinClassKey} */ (svgBaseName.split('.', 1)[0]),
       svgBaseName,
       svgPath,
       pngPath,

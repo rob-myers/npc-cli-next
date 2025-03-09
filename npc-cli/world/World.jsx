@@ -268,7 +268,7 @@ export default function World(props) {
           invert: true,
         },
         {
-          // 🔔 texture order inherited from `npcClassToMeta`
+          // 🚧 iterate over (skinClassKey, sheetId)
           src: Object.values(npcClassToMeta).map(({ texPngUrl }) => texPngUrl),
           texArray: state.texSkin,
           dim: { width: skinsTextureDimension, height: skinsTextureDimension },

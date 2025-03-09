@@ -65,7 +65,7 @@ export const helper = {
     "g-303--passenger-deck": "303--hull",
   },
   
-  defaults: {
+  defaults: {// 🚧
     radius: npcClassToMeta["cuboid-man"].radius * npcClassToMeta["cuboid-man"].scale / 2,
     runSpeed: npcClassToMeta["cuboid-man"].runSpeed * npcClassToMeta["cuboid-man"].scale,
     walkSpeed: npcClassToMeta["cuboid-man"].walkSpeed * npcClassToMeta["cuboid-man"].scale,

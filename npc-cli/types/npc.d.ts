@@ -50,11 +50,17 @@ declare namespace NPC {
 
   interface ClassDef {
     /** Format `/3d/{npcClassKey}.glb` */
-    modelUrl: `/3d/${string}.glb`;
-    /** Format `/3d/{npcClassKey}.tex.png` */
-    texPngUrl: `/3d/${string}.tex.png`;
-    /** Format `/3d/{npcClassKey}.tex.png.webp` */
-    texWebpUrl: `/3d/${string}.tex.png.webp`;
+    modelUrl: `/3d/${NPC.ClassKey}.glb`;
+    /**
+     * Default skin sheet.
+     * Format `/3d/{skinClassKey}.{sheetId}.tex.png`.
+     */
+    texPngUrl: `/3d/${NPC.SkinClassKey}.${number}.tex.png`;
+    /**
+     * Default skin sheet.
+     * Format `/3d/{skinClassKey}.{sheetId}.tex.png.webp`.
+     */
+    texWebpUrl: `/3d/${NPC.SkinClassKey}.${number}.tex.png.webp`;
     /** e.g. `1` */
     scale: number;
     /** e.g. 'cuboid-man-material' */
@@ -72,12 +78,9 @@ declare namespace NPC {
   }
 
   interface TexMeta {
-    /**
-     * 🚧 refine type
-     * e.g. `human-skin-0`
-     */
-    skinClassKey: string;
-    /** e.g. `cuboid-man.tex.svg` */
+    /** e.g. `human-skin-0` */
+    skinClassKey: NPC.SkinClassKey;
+    /** e.g. `human-skin-0.0.tex.svg` */
     svgBaseName: string;
     svgPath: string;
     pngPath: string;
