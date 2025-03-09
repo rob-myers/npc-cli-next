@@ -78,18 +78,49 @@
   - ✅ can iterate over (skinClassKey, sheetId)
   - ✅ npcClassToMeta[npcClassKey] has `skinClassKey`
 - 🚧 clarify uv-remapping approach
-  - ℹ️ know part of body via vertex-order
-    - head (3 * 8) < body (3 * 8) < head-overlay (3 * 8) < body-overlay (3 * 8),
-      🚧 label/breath/selector quad
-    - head-front: (0, 3 * 1, 3 * 4, 3 * 5), head-top: 🚧
-    - body-front: 🚧 body-left: 🚧 body-right: 🚧
-  - ℹ️ know initial uv offset
+  - Blender GLTF export replaces each vertex with three copies (hence 3 * - is relevant)
+  - can import GLTF and export as OBJ to verify https://threejs.org/editor/
+  - WebGL2 provoking vertex is LAST by default
+    - https://forum.babylonjs.com/t/webgpu-flat-in-out-shader-variable/41171/10
+  - know part of body via vertex-order
+    - head (3 * 8)
+      < body (3 * 8)
+      < head-overlay (3 * 8)
+      < body-overlay (3 * 8)
+      < breath quad (1 * 4)
+      < selector quad (1 * 4)
+      < label quad (1 * 4)
+    - 108 vertices in total
+    - get npc "temp-npc" triangle indices
+      - `w n.temp-npc.m.mesh.geometry.index.array | map 'a => Array.from(a).reduce((agg,x,i) => (i % 3 === 0 ? agg.push([x]) : agg.at(-1).push(x), agg), [])'`
+    - de-duped triangle indices
+      - `w n.temp-npc.m.mesh.geometry.index.array | map 'a => Array.from(a).map(x => Math.floor(x/3)).reduce((agg,x,i) => (i % 3 === 0 ? agg.push([x]) : agg.at(-1).push(x), agg), [])'`
+    - head-front:
+      - (0, 1, 4, 5) in Blender
+      - de-duping `mesh.geometry.index` we see `[4, 0, 1]`, `[4, 1, 5]` (6th and 7th)
+      - looking up 6th and 7th in non-de-duped yields `[12,0,3]` `[12,3,15]`
+      - so need to check `3 * 1` and `3 * 5` ✅
+    - head-top:
+      - (0, 1, 2, 3) in Blender
+      - de-duped `[0, 2, 3]` (0th) and `[0, 3, 1]` (1th)
+      - non-de-duped `[1,7,10]` `[1,10,4]`
+      - so check `3 * 3 + 1` and `3 * 1 + 1` ✅
+    - body-front
+      - (8, 9, 12, 13) in Blender
+      - `[12, 8, 9]` (18th) `[12, 9, 13]` (19th)
+      - `[36, 25, 28]` and `[36, 28, 39]`
+      - so check `28` and `39` ✅
+    - body-left 🚧
+    - body-right 🚧
+    - head-overlay-front 🚧
+    - body-overlay-front 🚧
+  - know initial uv offset
     - read 'uv' attribute (aligned to 'position')
     - use vertex-ordering to infer e.g. face top-left (careful about uv coords y up)
-  - ℹ️ know desired uv offset
+  - know desired uv offset
     - specify via uvKeys
     - infer (u, v) and sheetIndex
-  - ℹ️ populate "uvs" DataTextureArray for specific npc
+  - populate "uvs" DataTextureArray for specific npc
     - so can offset vUv in fragment shader
 - "npc uvs" DataTextureArray
   - one layer per pickId and 256 layers

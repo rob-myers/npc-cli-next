@@ -489,7 +489,14 @@ export const humanZeroShader = {
     // if (vId > 3 * 8) {
     //   discard;
     // }
-    // if (!(vId == 0 || vId == 3 || vId == 12 || vId == 15)) discard;
+
+    // head-front
+    // if (!(vId == 3 * 1 || vId == 3 * 5)) discard;
+    // head-top
+    // if (!(vId == 3 * 1 + 1 || vId == 3 * 3 + 1)) discard;
+    // body-front
+    // if (!(vId == 28 || vId == 39)) discard;
+
 
     // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
     // 🚧 vTextureId 1 corresponds to human-skin-0.0 via lexicographic ordering on filenames
