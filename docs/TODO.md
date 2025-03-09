@@ -68,12 +68,24 @@
 - ✅ human-0: start custom shader
   - uniform "atlas" is `w.texSkin`
 - ✅ new shader is hot-reloaded
-- fix texture-naming convention
+- 🚧 fix texture-naming convention
   - skin class e.g. `human-skin-0`
   - texture sheet name e.g. `human-skin-0.sheet-0.tex.png`
   - multiple models support same skin e.g. `human-{0,1,2}`
-- clarify uv-remapping approach
-  - e.g. know part of body via vertex-order, know initial uv offset, know desired uv offset
+- 🚧 clarify uv-remapping approach
+  - ℹ️ know part of body via vertex-order
+    - head (3 * 8) < body (3 * 8) < head-overlay (3 * 8) < body-overlay (3 * 8),
+      🚧 label/breath/selector quad
+    - head-front: (0, 3 * 1, 3 * 4, 3 * 5), head-top: 🚧
+    - body-front: 🚧 body-left: 🚧 body-right: 🚧
+  - ℹ️ know initial uv offset
+    - read 'uv' attribute (aligned to 'position')
+    - use vertex-ordering to infer e.g. face top-left (careful about uv coords y up)
+  - ℹ️ know desired uv offset
+    - specify via uvKeys
+    - infer (u, v) and sheetIndex
+  - ℹ️ populate "uvs" DataTextureArray for specific npc
+    - so can offset vUv in fragment shader
 - "npc uvs" DataTextureArray
   - one layer per pickId and 256 layers
   - can remap head, head overlay, body, body overlay, selector/breath quad

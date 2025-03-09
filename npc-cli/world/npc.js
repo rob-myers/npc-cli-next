@@ -829,9 +829,7 @@ export class Npc {
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
     const speedSqr = vel.x ** 2 + vel.z ** 2;
-    
     this.s.lookSecs = speedSqr < 0.2 ** 2 ? 2 : 0.2; // 🔔 improve and justify
-    
     this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
   }
 
