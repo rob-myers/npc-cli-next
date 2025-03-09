@@ -799,8 +799,8 @@ function getNpcTextureMetas() {
     const pngPath = path.resolve(assets3dDir, svgBaseName.slice(0, -'.svg'.length).concat('.png'));
     let pngMtimeMs = 0; try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
     return {
-      // 🔔 assume `{npcClassKey}.tex.svg`
-      npcClassKey: svgBaseName.split('.', 1)[0],
+      // 🔔 assume `{skinClassKey}.tex.svg`
+      skinClassKey: svgBaseName.split('.', 1)[0],
       svgBaseName,
       svgPath,
       pngPath,
@@ -817,19 +817,19 @@ function getNpcTextureMetas() {
 async function createNpcTexturesAndUvMeta(assets, prev) {
   const { skins, skins: { svgHash } } = assets.sheet
   skins.svgHash = {};
-  for (const { npcClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
-    if (canSkip && svgHash[npcClassKey]) {
-      skins.svgHash[npcClassKey] = svgHash[npcClassKey];
+  for (const { skinClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
+    if (canSkip && svgHash[skinClassKey]) {
+      skins.svgHash[skinClassKey] = svgHash[skinClassKey];
     } else {
       const svgContents = fs.readFileSync(svgPath).toString();
 
       // extract uv-mapping from top-level folder "uv-map"
       const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, svgBaseName);
-      assets.sheet.skins.uvMap[npcClassKey] = uvMap;
-      assets.sheet.skins.uvMapDim[npcClassKey] = { width, height };
+      assets.sheet.skins.uvMap[skinClassKey] = uvMap;
+      assets.sheet.skins.uvMapDim[skinClassKey] = { width, height };
 
       // convert SVG to PNG
-      skins.svgHash[npcClassKey] = hashText(svgContents);
+      skins.svgHash[skinClassKey] = hashText(svgContents);
       const svgDataUrl = `data:image/svg+xml;utf8,${svgContents}`;
       const image = await loadImage(svgDataUrl);
       const canvas = createCanvas(image.width, image.height);

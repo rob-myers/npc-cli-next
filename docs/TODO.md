@@ -69,10 +69,11 @@
   - uniform "atlas" is `w.texSkin`
 - ✅ new shader is hot-reloaded
 - 🚧 fix texture-naming convention
+  - ✅ remove cuboid-pet
+  - ✅ human-0.tex.svg -> human-skin-0.0.tex.svg
   - 🚧 skin class e.g. `human-skin-0`
-  - 🚧 remove cuboid-pet
   - 🚧 change texture sheet names
-    - e.g. `human-skin-0.sheet-0.tex.png`
+    - e.g. `human-skin-0.0.tex.svg` (sheet 0)
   - multiple models support same skin e.g. `human-{0,1,2}`
 - 🚧 clarify uv-remapping approach
   - ℹ️ know part of body via vertex-order

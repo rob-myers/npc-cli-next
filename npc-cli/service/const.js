@@ -340,7 +340,6 @@ export const npcClassToMeta = {
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',
     groupName: 'Scene',
-    skinBaseName: 'cuboid-man.tex.png',
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
     radius: 0.5,
     walkSpeed: 2.5,
@@ -349,13 +348,12 @@ export const npcClassToMeta = {
 
   "human-0": {
     modelUrl: '/3d/human-0.glb',
-    texPngUrl: '/3d/human-0.tex.png',
-    texWebpUrl: '/3d/human-0.tex.png.webp',
+    texPngUrl: '/3d/human-skin-0.0.tex.png',
+    texWebpUrl: '/3d/human-skin-0.0.tex.png.webp',
     scale: 0.7,
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     groupName: 'Scene',
-    skinBaseName: 'human-0.tex.png',
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
     radius: 0.5,
     walkSpeed: 2.5,

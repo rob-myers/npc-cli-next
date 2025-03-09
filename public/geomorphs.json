@@ -40156,7 +40156,7 @@
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "imagesHash": -834996151,
     "skins": {
-      "svgHash": {"cuboid-man": -1087841574, "human-0": -1320088063},
+      "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -1320088063},
       "uvMap": {
         "cuboid-man": {
           "ground-ring": {"x": 0.9, "y": 0, "width": 0.1, "height": 0.1},
@@ -40255,80 +40255,7 @@
             "height": 0.1563
           }
         },
-        "cuboid-pet": {
-          "ground-ring": {"x": 0.9, "y": 0, "width": 0.1, "height": 0.1},
-          "ground-shadow": {"x": 0.7, "y": 0, "width": 0.1, "height": 0.1},
-          "head-top": {"x": 0, "y": 0.1563, "width": 0.1563, "height": 0.1563},
-          "head-bottom": {
-            "x": 0.1563,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.1563
-          },
-          "head-left": {"x": 0, "y": 0.3125, "width": 0.1563, "height": 0.1563},
-          "head-right": {
-            "x": 0.1563,
-            "y": 0.3125,
-            "width": 0.1563,
-            "height": 0.1563
-          },
-          "head-front": {
-            "x": 0,
-            "y": 0.4688,
-            "width": 0.1563,
-            "height": 0.1563
-          },
-          "head-back": {
-            "x": 0.1563,
-            "y": 0.4688,
-            "width": 0.1563,
-            "height": 0.1563
-          },
-          "body-front": {
-            "x": 0.5313,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
-          },
-          "body-back": {
-            "x": 0.8438,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
-          },
-          "body-right": {
-            "x": 0.6875,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
-          },
-          "body-left": {
-            "x": 0.375,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
-          },
-          "body-top": {
-            "x": 0.375,
-            "y": 0.5469,
-            "width": 0.1562,
-            "height": 0.1563
-          },
-          "body-bottom": {
-            "x": 0.5313,
-            "y": 0.5469,
-            "width": 0.1563,
-            "height": 0.1563
-          },
-          "ui-label": {"x": 0, "y": 0, "width": 0.25, "height": 0.125},
-          "front-label": {
-            "x": 0.8438,
-            "y": 0.7031,
-            "width": 0.1563,
-            "height": 0.1563
-          }
-        },
-        "human-0": {
+        "human-skin-0": {
           "base-head-front": {
             "x": 0.25,
             "y": 0,
@@ -40519,8 +40446,7 @@
       },
       "uvMapDim": {
         "cuboid-man": {"width": 1024, "height": 1024},
-        "cuboid-pet": {"width": 1024, "height": 1024},
-        "human-0": {"width": 2048, "height": 2048}
+        "human-skin-0": {"width": 2048, "height": 2048}
       }
     }
   }

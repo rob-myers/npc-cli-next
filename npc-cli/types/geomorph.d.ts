@@ -462,12 +462,9 @@ declare namespace Geomorph {
 
     imagesHash: number;
     skins: {
-      /** e.g. `npcClassKey` is a `uvMapKey` */
-      svgHash: { [uvMapKey: string]: number; };
-      /** e.g. `npcClassKey` is a `uvMapKey` */
-      uvMap: { [uvMapKey: string]: UvRectLookup; };
-      /** e.g. `npcClassKey` is a `uvMapKey` */
-      uvMapDim: { [uvMapKey: string]: { width: number; height: number; }; };
+      svgHash: { [skinClassKey: string]: number; };
+      uvMap: { [skinClassKey: string]: UvRectLookup; };
+      uvMapDim: { [skinClassKey: string]: { width: number; height: number; }; };
     };
   }
 

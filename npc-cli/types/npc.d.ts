@@ -28,12 +28,11 @@ declare namespace NPC {
   );
 
   /**
-   * 🚧 clean
-   * Corresponds to Blender model.
+   * Corresponds to Blender model and its exported GLTF.
    */
   type ClassKey = (
-    | 'cuboid-man'
     | 'human-0'
+    | 'cuboid-man' // 🚧 remove
   );
 
   /** 🚧 old */
@@ -64,8 +63,6 @@ declare namespace NPC {
     meshName: string;
     /** e.g. 'Scene' */
     groupName: string;
-    /** e.g. 'cuboid-man.tex.png' */
-    skinBaseName: string;
     /** Animation to timeScale, default 1 */
     timeScale: { [animName: string]: number };
     /** Pre-scale */
@@ -76,10 +73,10 @@ declare namespace NPC {
 
   interface TexMeta {
     /**
-     * e.g. `cuboid-man`
      * 🚧 refine type
+     * e.g. `human-skin-0`
      */
-    npcClassKey: string;
+    skinClassKey: string;
     /** e.g. `cuboid-man.tex.svg` */
     svgBaseName: string;
     svgPath: string;

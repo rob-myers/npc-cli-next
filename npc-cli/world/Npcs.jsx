@@ -326,13 +326,13 @@ export default function Npcs(props) {
     });
   }, []);
 
-  // 🚧 use single DataTextureArray w.texSkin
+  // 🚧 remove
   React.useEffect(() => {// npc textures
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
-      const { skinBaseName } = npcClassToMeta[classKey];
-      const webpExtInProd = isDevelopment() ? '' : '.webp';
-      const tex = await textureLoader.loadAsync(`/3d/${skinBaseName}${webpExtInProd}?v=${w.hash.sheets}`);
+      const { texPngUrl, texWebpUrl } = npcClassToMeta[classKey];
+      const texUrl = isDevelopment() ? texPngUrl : texWebpUrl;
+      const tex = await textureLoader.loadAsync(`${texUrl}?v=${w.hash.sheets}`);
       tex.flipY = false;
       state.tex[classKey] = tex;
     })).then(() => Object.values(state.npc).forEach(npc => npc.forceUpdate()));
