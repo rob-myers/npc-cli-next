@@ -305,7 +305,6 @@ export default function Npcs(props) {
   w.n = state.npc;
 
   state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].modelUrl);
-  // state.gltf["cuboid-pet"] = useGLTF(npcClassToMeta["cuboid-pet"].url);
   // 🤔 add query param in development in case of GLTF update?
   state.gltf["human-0"] = useGLTF(npcClassToMeta["human-0"].modelUrl);
   
@@ -374,7 +373,7 @@ export default function Npcs(props) {
  * We don't use an event because it can happen too often.
  * @property {number[]} physicsPositions
  * Format `[npc.bodyUid, npc.position.x, npc.position.y, npc.position.z, ...]`
- * @property {Record<NPC.TextureKey, THREE.Texture>} tex
+ * @property {Record<NPC.TextureKey, THREE.Texture>} tex 🚧 old
  * @property {Map<number, string>} pickIdToKey
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath

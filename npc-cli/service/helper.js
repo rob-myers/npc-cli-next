@@ -17,7 +17,6 @@ export const helper = {
   /** @type {Record<NPC.ClassKey, true>} */
   fromNpcClassKey: {
     'cuboid-man': true,
-    "cuboid-pet": true,
     "human-0": true,
   },
 

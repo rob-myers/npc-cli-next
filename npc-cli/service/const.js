@@ -342,26 +342,8 @@ export const npcClassToMeta = {
     groupName: 'Scene',
     skinBaseName: 'cuboid-man.tex.png',
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
-    // 🚧
     radius: 0.5,
     walkSpeed: 2.5,
-    runSpeed: 4,
-  },
-  // 🚧 remove
-  'cuboid-pet': {
-    modelUrl: '/3d/cuboid-pet.glb',
-    texPngUrl: '/3d/cuboid-pet.tex.png',
-    texWebpUrl: '/3d/cuboid-pet.tex.png.webp',
-    // scale: 1,
-    scale: 0.6,
-    materialName: 'cuboid-pet-material',
-    meshName: 'cuboid-pet-mesh',
-    groupName: 'Scene',
-    skinBaseName: 'cuboid-pet.tex.png',
-    timeScale: { 'Idle': 0.4, 'Walk': 0.5 },
-    // 🚧
-    radius: 0.5,
-    walkSpeed: 2,
     runSpeed: 4,
   },
 

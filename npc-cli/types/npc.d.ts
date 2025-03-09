@@ -17,18 +17,32 @@ declare namespace NPC {
     walkSpeed: number;
   }
 
-  /** 🚧 old */
+  /**
+   * Skin class
+   * - can have multiple respective sheets.
+   * - can be the skin class of multiple npc classes.
+   */
+  type SkinClassKey = (
+    | 'human-skin-0'
+    | 'cuboid-man' // 🚧 remove
+  );
+
+  /**
+   * 🚧 clean
+   * Corresponds to Blender model.
+   */
   type ClassKey = (
     | 'cuboid-man'
-    | 'cuboid-pet'
     | 'human-0'
   );
 
+  /** 🚧 old */
   type TextureKey = (
     | ClassKey
     | 'labels'
     // | 'cuboid-man-alt-1'
   );
+
 
   interface UvQuadId {
     uvMapKey: NPC.TextureKey;
