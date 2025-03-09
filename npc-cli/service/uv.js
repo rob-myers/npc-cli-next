@@ -149,6 +149,7 @@ class CuboidManUvService {
     }
 
     const { uvMap } = npc.w.geomorphs.sheet.skins;
+    //@ts-ignore 🚧 delete this file
     const srcRect = uvMap[faceId.uvMapKey]?.[faceId.uvQuadKey];
     if (!srcRect) {
       throw Error(`${npc.key}: face: uvMapKey, uvQuadKey not found: ${JSON.stringify(faceId)}`)
@@ -174,6 +175,7 @@ class CuboidManUvService {
     }
 
     const { uvMap } = npc.w.geomorphs.sheet.skins;
+    //@ts-ignore 🚧 delete this file
     const srcRect = uvMap[iconId.uvMapKey]?.[iconId.uvQuadKey];
     if (!srcRect) {
       throw Error(`${npc.key}: icon: uvMapKey, uvQuadKey not found: ${JSON.stringify(iconId)}`)

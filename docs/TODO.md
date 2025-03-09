@@ -74,8 +74,8 @@
   - ✅ human-0.tex.svg -> human-skin-0.0.tex.svg
   - ✅ change texture sheet names
     - e.g. `human-skin-0.0.tex.svg` (sheet 0)
-  - 🚧 skin class e.g. `human-skin-0`
-  - 🚧 can iterate over (skinClassKey, sheetId)
+  - ✅ skin class e.g. `human-skin-0`
+  - ✅ can iterate over (skinClassKey, sheetId)
   - 🚧 npcClassToMeta[npcClassKey] has `skinClassKey` and defaults to 0th sheet
 - 🚧 clarify uv-remapping approach
   - ℹ️ know part of body via vertex-order

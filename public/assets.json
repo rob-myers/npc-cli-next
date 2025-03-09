@@ -1283,6 +1283,7 @@
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "imagesHash": -834996151,
     "skins": {
+      "numSheets": {"cuboid-man": 1, "human-skin-0": 1},
       "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -1320088063},
       "uvMap": {
         "cuboid-man": {

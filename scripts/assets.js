@@ -179,9 +179,10 @@ info({ opts });
 
       imagesHash: 0,
       skins: {
-        svgHash: {},
-        uvMap: {},
-        uvMapDim: {},
+        numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
+        svgHash: /** @type {Geomorph.SpriteSheetSkins['svgHash']} */ ({}),
+        uvMap: /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({}),
+        uvMapDim: /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({}),
       },
     },
     symbols: /** @type {*} */ ({}), maps: {},
@@ -798,9 +799,12 @@ function getNpcTextureMetas() {
     const { mtimeMs: svgMtimeMs } = fs.statSync(svgPath);
     const pngPath = path.resolve(assets3dDir, svgBaseName.slice(0, -'.svg'.length).concat('.png'));
     let pngMtimeMs = 0; try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
+    // 🔔 assume `{skinClassKey}.{skinSheetId}.tex.svg`
+    const [skinClassKey, skinSheetId] = svgBaseName.split('.');
+
     return {
-      // 🔔 assume `{skinClassKey}.{sheetId}.tex.svg`
-      skinClassKey: /** @type {NPC.SkinClassKey} */ (svgBaseName.split('.', 1)[0]),
+      skinClassKey: /** @type {Geomorph.SkinClassKey} */ (skinClassKey),
+      skinSheetId: Number(skinSheetId),
       svgBaseName,
       svgPath,
       pngPath,
@@ -815,18 +819,24 @@ function getNpcTextureMetas() {
  * @param {Prev} prev
  */
 async function createNpcTexturesAndUvMeta(assets, prev) {
-  const { skins, skins: { svgHash } } = assets.sheet
-  skins.svgHash = {};
+  const { skins, skins: { svgHash: prevSvgHash } } = assets.sheet;
+  skins.svgHash = /** @type {Geomorph.SpriteSheetSkins['svgHash']} */ ({});
+
   for (const { skinClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
-    if (canSkip && svgHash[skinClassKey]) {
-      skins.svgHash[skinClassKey] = svgHash[skinClassKey];
+
+    if (canSkip && prevSvgHash[skinClassKey]) {
+      skins.svgHash[skinClassKey] = prevSvgHash[skinClassKey];
     } else {
       const svgContents = fs.readFileSync(svgPath).toString();
 
       // extract uv-mapping from top-level folder "uv-map"
       const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, svgBaseName);
-      assets.sheet.skins.uvMap[skinClassKey] = uvMap;
-      assets.sheet.skins.uvMapDim[skinClassKey] = { width, height };
+      skins.uvMap[skinClassKey] = uvMap;
+      skins.uvMapDim[skinClassKey] = { width, height };
+
+      // count sheets per class
+      skins.numSheets[skinClassKey] ??= 0;
+      skins.numSheets[skinClassKey]++;
 
       // convert SVG to PNG
       skins.svgHash[skinClassKey] = hashText(svgContents);

@@ -18,16 +18,6 @@ declare namespace NPC {
   }
 
   /**
-   * Skin class
-   * - can have multiple respective sheets.
-   * - can be the skin class of multiple npc classes.
-   */
-  type SkinClassKey = (
-    | 'human-skin-0'
-    | 'cuboid-man' // 🚧 remove
-  );
-
-  /**
    * Corresponds to Blender model and its exported GLTF.
    */
   type ClassKey = (
@@ -79,7 +69,12 @@ declare namespace NPC {
 
   interface TexMeta {
     /** e.g. `human-skin-0` */
-    skinClassKey: NPC.SkinClassKey;
+    skinClassKey: Geomorph.SkinClassKey;
+    /**
+     * e.g. `0`
+     * 🔔 assume no gaps and `0` exists
+     */
+    skinSheetId: number;
     /** e.g. `human-skin-0.0.tex.svg` */
     svgBaseName: string;
     svgPath: string;

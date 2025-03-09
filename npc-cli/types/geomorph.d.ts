@@ -461,11 +461,14 @@ declare namespace Geomorph {
     maxObstacleDim: { width: number; height: number; }
 
     imagesHash: number;
-    skins: {
-      svgHash: { [skinClassKey: string]: number; };
-      uvMap: { [skinClassKey: string]: UvRectLookup; };
-      uvMapDim: { [skinClassKey: string]: { width: number; height: number; }; };
-    };
+    skins: SpriteSheetSkins;
+  }
+
+  interface SpriteSheetSkins {
+    numSheets: { [skinClassKey in SkinClassKey]: number; };
+    svgHash: { [skinClassKey in SkinClassKey]: number; };
+    uvMap: { [skinClassKey in SkinClassKey]: UvRectLookup; };
+    uvMapDim: { [skinClassKey in SkinClassKey]: { width: number; height: number; }; };
   }
 
   type ObstacleKey = `${Geomorph.SymbolKey} ${number}`;
@@ -483,5 +486,15 @@ declare namespace Geomorph {
   }
 
   type GmsData = import('../service/create-gms-data').GmsData;
+
+  /**
+   * Skin class
+   * - can have multiple respective sheets.
+   * - can be the skin class of multiple npc classes.
+   */
+  type SkinClassKey = (
+    | 'human-skin-0'
+    | 'cuboid-man' // 🚧 remove
+  );
 
 }

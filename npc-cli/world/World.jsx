@@ -9,10 +9,10 @@ import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, npcClassToMeta, skinsTextureDimension } from "../service/const";
-import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues } from "../service/generic";
+import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { removeCached, setCached } from "../service/query-client";
-import { fetchGeomorphsJson, getDecorSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
+import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
 import { geomorph } from "../service/geomorph";
 import createGmsData from "../service/create-gms-data";
 import { imageLoader, toV3, toXZ } from "../service/three";
@@ -252,7 +252,7 @@ export default function World(props) {
       }
 
       // Update texture arrays: decor, obstacles, skins
-      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim } = state.geomorphs.sheet;
+      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim, skins } = state.geomorphs.sheet;
 
       for (const { src, dim, texArray, invert } of [
         {
@@ -269,7 +269,10 @@ export default function World(props) {
         },
         {
           // 🚧 iterate over (skinClassKey, sheetId)
-          src: Object.values(npcClassToMeta).map(({ texPngUrl }) => texPngUrl),
+          src: entries(skins.numSheets).flatMap(([skinClassKey, skinSheetCount]) =>
+            range(skinSheetCount).map(sheetId => getNpcSkinSheetUrl(skinClassKey, sheetId))
+          ),
+          // src: Object.values(npcClassToMeta).map(({ texPngUrl }) => texPngUrl),
           texArray: state.texSkin,
           dim: { width: skinsTextureDimension, height: skinsTextureDimension },
           invert: false,
