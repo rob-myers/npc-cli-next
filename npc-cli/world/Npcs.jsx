@@ -440,10 +440,12 @@ function NPC({ npc }) {
       >
         {npc.def.classKey === 'human-0' && (
           // <meshBasicMaterial color="red" />
+          // 🚧
           <humanZeroShader
             key={HumanZeroShader.key}
-            atlas={npc.w.texSkin.tex}
             transparent
+            atlas={npc.w.texSkin.tex}
+            uid={npc.def.pickUid}
           />
         ) || <cuboidManMaterial
           key={CuboidManMaterial.key}

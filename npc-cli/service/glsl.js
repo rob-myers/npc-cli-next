@@ -445,6 +445,8 @@ export const cuboidManShader = {
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
+  attribute int vertexId;
+  flat varying int vId;
   varying vec2 vUv;
 
   #include <common>
@@ -459,6 +461,8 @@ export const humanZeroShader = {
     #include <skinnormal_vertex>
     vec3 transformed = vec3(position);
     #include <skinning_vertex>
+
+    vId = vertexId;
     vUv = uv;
 
     vec4 mvPosition = vec4(transformed, 1.0);
@@ -472,6 +476,8 @@ export const humanZeroShader = {
   
   uniform sampler2DArray atlas;
   uniform bool objectPick;
+  uniform int uid;
+  flat varying int vId;
   varying vec2 vUv;
 
   #include <common>
@@ -480,6 +486,10 @@ export const humanZeroShader = {
   #include <logdepthbuf_pars_fragment>
 
   void main() {
+    // if (vId > 3 * 8) {
+    //   discard;
+    // }
+
     // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
     // 🚧 vTextureId is 2 for human-0 which is 3rd entry in npcClassToMeta
     gl_FragColor = texture(atlas, vec3(vUv, 2));
@@ -668,6 +678,7 @@ export const HumanZeroShader = shaderMaterial(
   {
     atlas: emptyDataArrayTexture,
     objectPick: false,
+    uid: 0,
     // 🚧
   },
   humanZeroShader.Vert,

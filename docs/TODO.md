@@ -67,10 +67,16 @@
   - ✅ build texture array `w.texSkin`
 - ✅ human-0: start custom shader
   - uniform "atlas" is `w.texSkin`
-- human-0: "npc uvs" DataTextureArray
-  - one layer per pickId i.e. 256?
+- ✅ new shader is hot-reloaded
+- fix texture-naming convention
+  - skin class e.g. `human-skin-0`
+  - texture sheet name e.g. `human-skin-0.sheet-0.tex.png`
+  - multiple models support same skin e.g. `human-{0,1,2}`
+- clarify uv-remapping approach
+  - e.g. know part of body via vertex-order, know initial uv offset, know desired uv offset
+- "npc uvs" DataTextureArray
+  - one layer per pickId and 256 layers
   - can remap head, head overlay, body, body overlay, selector/breath quad
-- new shader is hot-reloaded
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
 

@@ -421,7 +421,7 @@ export function getGeometryUvs(geometry) {
  * @param {THREE.Object3D[]} objs 
  * @returns {THREE.Bone[]}
  */
-export function getParentBones(objs) {
+export function getRootBones(objs) {
   return objs.filter(/** @returns {x is THREE.Bone} */ (x) =>
     x instanceof THREE.Bone && !(x.parent instanceof THREE.Bone)
   );

@@ -6,7 +6,7 @@ import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObjectLookup, emptyAnimationMixer, emptyGroup, getParentBones, tmpVectThree1, toV3, toXZ } from '../service/three';
+import { buildObjectLookup, emptyAnimationMixer, emptyGroup, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 import { cmUvService } from "../service/uv";
@@ -460,7 +460,7 @@ export class Npc {
 
     m.animations = animations;
     // cloned bones
-    m.bones = getParentBones(Object.values(objectLookup.nodes));
+    m.bones = getRootBones(Object.values(objectLookup.nodes));
     // cloned mesh (overridden on mount)
     m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
     // overridden on mount
@@ -483,25 +483,30 @@ export class Npc {
    */
   initializeNew(gltf) {
     const { m } = this;
-    const meta = npcClassToMeta['human-0'];
+    const meta = npcClassToMeta['human-0']; // 🚧
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(gltf.scene));
     const objectLookup = buildObjectLookup(clonedRoot);
 
     m.animations = gltf.animations;
     // cloned bones
-    m.bones = getParentBones(Object.values(objectLookup.nodes));
+    m.bones = getRootBones(Object.values(objectLookup.nodes));
     // cloned mesh (overridden on mount)
     m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
     // overridden on mount
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
-    m.mesh.userData.npcKey = this.key; // To decode pointer events
+    // m.mesh.userData.npcKey = this.key; // To decode pointer events
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();
     m.mesh.computeBoundingSphere();
 
-    const npcClassKey = 'human-0';
+    const npcClassKey = 'human-0'; // 🚧
     m.scale = npcClassToMeta[npcClassKey].scale;
+
+    // shader needs vertexId attribute
+    const numVertices = m.mesh.geometry.getAttribute('position').count;
+    const vertexIds = [...Array(numVertices)].map((_,i) => i);
+    m.mesh.geometry.setAttribute('vertexId', new THREE.BufferAttribute(new Int32Array(vertexIds), 1));
   }
 
   /**
@@ -824,15 +829,8 @@ export class Npc {
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
     const speedSqr = vel.x ** 2 + vel.z ** 2;
-
-    // if (this.position.distanceTo(this.lastTarget) < 0.5) {
-    //   this.s.lookAngleDst = null;
-    //   return;
-    // }
-
-    if (speedSqr > 0.2 ** 2) {
-      this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
-    }
+    this.s.lookSecs = 0.5 / speedSqr; // 🔔 improve and justify
+    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
   }
 
   /** @param {NPC.CrowdAgent} agent */
@@ -1055,7 +1053,7 @@ const movingMaxAcceleration = 8;
 const staticSeparationWeight = 1.5;
 const movingSeparationWeight = 1;
 // const movingSeparationWeight = 0.4;
-const staticCollisionQueryRange = 1;
+const staticCollisionQueryRange = 1.5;
 const movingCollisionQueryRange = 1.5;
 
 const closeDist = helper.defaults.radius * 1.7;
