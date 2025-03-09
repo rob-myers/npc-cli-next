@@ -40,11 +40,11 @@ export function getDecorSheetUrl(sheetId) {
 }
 
 /**
- * @param {Geomorph.SkinClassKey} npcClassKey
+ * @param {Geomorph.SkinClassKey} skinClassKey
  * @param {number} sheetId
  */
-export function getNpcSkinSheetUrl(npcClassKey, sheetId) {
-  return `/3d/${npcClassKey}.${sheetId}.tex.${imgExt}${getDevCacheBustQueryParam()}`;
+export function getNpcSkinSheetUrl(skinClassKey, sheetId) {
+  return `/3d/${skinClassKey}.${sheetId}.tex.${imgExt}${getDevCacheBustQueryParam()}`;
 }
 
 /** @param {Geomorph.DecorImgKey} decorImgKey */

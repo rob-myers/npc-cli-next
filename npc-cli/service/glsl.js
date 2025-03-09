@@ -492,8 +492,8 @@ export const humanZeroShader = {
     // if (!(vId == 0 || vId == 3 || vId == 12 || vId == 15)) discard;
 
     // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
-    // 🚧 vTextureId is 2 for human-0 which is 3rd entry in npcClassToMeta
-    gl_FragColor = texture(atlas, vec3(vUv, 2));
+    // 🚧 vTextureId 1 corresponds to human-skin-0.0 via lexicographic ordering on filenames
+    gl_FragColor = texture(atlas, vec3(vUv, 1));
     #include <logdepthbuf_fragment>
   }
   `,

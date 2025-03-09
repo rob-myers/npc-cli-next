@@ -41,16 +41,7 @@ declare namespace NPC {
   interface ClassDef {
     /** Format `/3d/{npcClassKey}.glb` */
     modelUrl: `/3d/${NPC.ClassKey}.glb`;
-    /**
-     * Default skin sheet.
-     * Format `/3d/{skinClassKey}.{sheetId}.tex.png`.
-     */
-    texPngUrl: `/3d/${NPC.SkinClassKey}.${number}.tex.png`;
-    /**
-     * Default skin sheet.
-     * Format `/3d/{skinClassKey}.{sheetId}.tex.png.webp`.
-     */
-    texWebpUrl: `/3d/${NPC.SkinClassKey}.${number}.tex.png.webp`;
+    skinClassKey: Geomorph.SkinClassKey;
     /** e.g. `1` */
     scale: number;
     /** e.g. 'cuboid-man-material' */

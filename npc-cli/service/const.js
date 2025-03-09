@@ -334,8 +334,7 @@ export const npcClassToMeta = {
   // 🚧 remove
   'cuboid-man': {
     modelUrl: '/3d/cuboid-man.glb',
-    texPngUrl: '/3d/cuboid-man.0.tex.png',
-    texWebpUrl: '/3d/cuboid-man.0.tex.png.webp',
+    skinClassKey: 'cuboid-man',
     scale: 0.7,
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',
@@ -348,8 +347,7 @@ export const npcClassToMeta = {
 
   "human-0": {
     modelUrl: '/3d/human-0.glb',
-    texPngUrl: '/3d/human-skin-0.0.tex.png',
-    texWebpUrl: '/3d/human-skin-0.0.tex.png.webp',
+    skinClassKey: 'human-skin-0',
     scale: 0.7,
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',

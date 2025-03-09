@@ -10,6 +10,7 @@ import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from 
 import { helper } from "../service/helper";
 import { cmUvService } from "../service/uv";
 import { CuboidManMaterial, HumanZeroShader } from "../service/glsl";
+import { getNpcSkinSheetUrl } from "../service/fetch-assets";
 import { crowdAgentParams, Npc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -330,9 +331,9 @@ export default function Npcs(props) {
   React.useEffect(() => {// npc textures
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
-      const { texPngUrl, texWebpUrl } = npcClassToMeta[classKey];
-      const texUrl = isDevelopment() ? texPngUrl : texWebpUrl;
-      const tex = await textureLoader.loadAsync(`${texUrl}?v=${w.hash.sheets}`);
+      const { skinClassKey } = npcClassToMeta[classKey];
+      const texUrl = getNpcSkinSheetUrl(skinClassKey, 0);
+      const tex = await textureLoader.loadAsync(texUrl);
       tex.flipY = false;
       state.tex[classKey] = tex;
     })).then(() => Object.values(state.npc).forEach(npc => npc.forceUpdate()));
