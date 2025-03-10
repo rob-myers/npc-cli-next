@@ -1281,295 +1281,455 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "imagesHash": 1592840667,
+    "imagesHash": -1374088553,
     "skins": {
-      "numSheets": {"cuboid-man": 1, "human-skin-0": 1},
-      "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -1320088063},
-      "texArrayId": {"cuboid-man": [0], "human-skin-0": [1]},
+      "numSheets": {"cuboid-man": 1, "human-skin-0": 2},
+      "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -2074204476},
+      "texArrayId": {"cuboid-man": [0], "human-skin-0": [1, 2]},
       "uvMap": {
         "cuboid-man": {
-          "ground-ring": {"x": 0.9, "y": 0, "width": 0.1, "height": 0.1},
-          "ground-shadow": {"x": 0.7, "y": 0, "width": 0.1, "height": 0.1},
-          "head-top": {"x": 0, "y": 0.1563, "width": 0.1563, "height": 0.1563},
-          "head-bottom": {
-            "x": 0.1563,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.1563
+          "ground-ring": {
+            "sheetId": 0,
+            "x": 0.9,
+            "y": 0,
+            "width": 0.1,
+            "height": 0.1
           },
-          "head-left": {"x": 0, "y": 0.3125, "width": 0.1563, "height": 0.1563},
-          "head-right": {
-            "x": 0.1563,
+          "ground-shadow": {
+            "sheetId": 0,
+            "x": 0.7,
+            "y": 0,
+            "width": 0.1,
+            "height": 0.1
+          },
+          "head-top": {
+            "sheetId": 0,
+            "x": 0,
+            "y": 0.15625,
+            "width": 0.15625,
+            "height": 0.15625
+          },
+          "head-bottom": {
+            "sheetId": 0,
+            "x": 0.15625,
+            "y": 0.15625,
+            "width": 0.15625,
+            "height": 0.15625
+          },
+          "head-left": {
+            "sheetId": 0,
+            "x": 0,
             "y": 0.3125,
-            "width": 0.1563,
-            "height": 0.1563
+            "width": 0.15625,
+            "height": 0.15625
+          },
+          "head-right": {
+            "sheetId": 0,
+            "x": 0.15625,
+            "y": 0.3125,
+            "width": 0.15625,
+            "height": 0.15625
           },
           "head-front": {
+            "sheetId": 0,
             "x": 0,
-            "y": 0.4688,
-            "width": 0.1563,
-            "height": 0.1563
+            "y": 0.46875,
+            "width": 0.15625,
+            "height": 0.15625
           },
           "head-back": {
-            "x": 0.1563,
-            "y": 0.4688,
-            "width": 0.1563,
-            "height": 0.1563
+            "sheetId": 0,
+            "x": 0.15625,
+            "y": 0.46875,
+            "width": 0.15625,
+            "height": 0.15625
           },
           "body-front": {
-            "x": 0.5313,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
+            "sheetId": 0,
+            "x": 0.53125,
+            "y": 0.15625,
+            "width": 0.15625,
+            "height": 0.390625
           },
           "body-back": {
-            "x": 0.8438,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
+            "sheetId": 0,
+            "x": 0.84375,
+            "y": 0.15625,
+            "width": 0.15625,
+            "height": 0.390625
           },
           "body-right": {
+            "sheetId": 0,
             "x": 0.6875,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
+            "y": 0.15625,
+            "width": 0.15625,
+            "height": 0.390625
           },
           "body-left": {
+            "sheetId": 0,
             "x": 0.375,
-            "y": 0.1563,
-            "width": 0.1563,
-            "height": 0.3906
+            "y": 0.15625,
+            "width": 0.15625,
+            "height": 0.390625
           },
           "body-top": {
+            "sheetId": 0,
             "x": 0.375,
-            "y": 0.5469,
-            "width": 0.1562,
-            "height": 0.1563
+            "y": 0.546875,
+            "width": 0.1562499,
+            "height": 0.15625
           },
           "body-bottom": {
-            "x": 0.5313,
-            "y": 0.5469,
-            "width": 0.1563,
-            "height": 0.1563
+            "sheetId": 0,
+            "x": 0.53125,
+            "y": 0.546875,
+            "width": 0.15625,
+            "height": 0.15625
           },
-          "ui-label": {"x": 0, "y": 0, "width": 0.25, "height": 0.125},
+          "ui-label": {
+            "sheetId": 0,
+            "x": 0,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.125
+          },
           "front-label-man": {
+            "sheetId": 0,
             "x": 0.6875,
-            "y": 0.5469,
-            "width": 0.1563,
-            "height": 0.1563
+            "y": 0.5468751,
+            "width": 0.15625,
+            "height": 0.1562501
           },
           "front-label-food": {
-            "x": 0.8438,
-            "y": 0.5469,
-            "width": 0.1563,
-            "height": 0.1563
+            "sheetId": 0,
+            "x": 0.8437501,
+            "y": 0.5468751,
+            "width": 0.15625,
+            "height": 0.15625
           },
           "front-label-mask": {
+            "sheetId": 0,
             "x": 0.375,
-            "y": 0.7031,
-            "width": 0.1562,
-            "height": 0.1563
+            "y": 0.7031252,
+            "width": 0.1562499,
+            "height": 0.15625
           },
           "front-face-angry": {
-            "x": 0.5313,
-            "y": 0.7031,
-            "width": 0.1563,
-            "height": 0.1563
+            "sheetId": 0,
+            "x": 0.53125,
+            "y": 0.7031252,
+            "width": 0.15625,
+            "height": 0.15625
           },
           "front-label": {
-            "x": 0.8438,
-            "y": 0.7031,
-            "width": 0.1563,
-            "height": 0.1563
+            "sheetId": 0,
+            "x": 0.8437501,
+            "y": 0.7031251,
+            "width": 0.15625,
+            "height": 0.15625
           }
         },
         "human-skin-0": {
           "base-head-front": {
+            "sheetId": 0,
             "x": 0.25,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-back": {
+            "sheetId": 0,
             "x": 0.3125,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-left": {
+            "sheetId": 0,
             "x": 0.25,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-right": {
+            "sheetId": 0,
             "x": 0.3125,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-top": {
+            "sheetId": 0,
             "x": 0.25,
             "y": 0.125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-bottom": {
+            "sheetId": 0,
             "x": 0.3125,
             "y": 0.125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-top": {
+            "sheetId": 0,
             "x": 0.0625,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-bottom": {
+            "sheetId": 0,
             "x": 0.125,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-left": {
+            "sheetId": 0,
             "x": 0,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-front": {
+            "sheetId": 0,
             "x": 0.0625,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-right": {
+            "sheetId": 0,
             "x": 0.125,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-back": {
+            "sheetId": 0,
             "x": 0.1875,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "base-head-overlay-front": {
+            "sheetId": 0,
             "x": 0.25,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-eyes-left": {
-            "x": 0.0865,
-            "y": 0.2938,
-            "width": 0.0156,
-            "height": 0.0156
+            "sheetId": 0,
+            "x": 0.08650879,
+            "y": 0.29375,
+            "width": 0.015625,
+            "height": 0.015625
           },
           "base-head-overlay-eyes-right": {
-            "x": 0.1178,
-            "y": 0.2938,
-            "width": 0.0156,
-            "height": 0.0156
+            "sheetId": 0,
+            "x": 0.11775879,
+            "y": 0.29375,
+            "width": 0.015625,
+            "height": 0.015625
           },
           "base-head-overlay-back": {
+            "sheetId": 0,
             "x": 0.3125,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-left": {
+            "sheetId": 0,
             "x": 0.25,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-right": {
+            "sheetId": 0,
             "x": 0.3125,
             "y": 0.0625,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-top": {
+            "sheetId": 0,
             "x": 0.25,
             "y": 0.125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-bottom": {
+            "sheetId": 0,
             "x": 0.3125,
             "y": 0.125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-overlay-top": {
+            "sheetId": 0,
             "x": 0.0625,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-overlay-bottom": {
+            "sheetId": 0,
             "x": 0.125,
             "y": 0,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-overlay-left": {
+            "sheetId": 0,
             "x": 0,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-overlay-front": {
+            "sheetId": 0,
             "x": 0.0625,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-overlay-right": {
+            "sheetId": 0,
             "x": 0.125,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-overlay-back": {
+            "sheetId": 0,
             "x": 0.1875,
-            "y": 0.0625,
+            "y": 0.06250146,
             "width": 0.0625,
             "height": 0.125
           },
           "selector-bounds": {
-            "x": 0.4524,
-            "y": 0.0021,
-            "width": 0.0455,
-            "height": 0.0455
+            "sheetId": 0,
+            "x": 0.45244141,
+            "y": 0.00209131,
+            "width": 0.04546729,
+            "height": 0.04546729
           },
           "selector-default": {
-            "x": 0.4532,
-            "y": 0.0028,
-            "width": 0.044,
-            "height": 0.044
+            "sheetId": 0,
+            "x": 0.45315186,
+            "y": 0.00280176,
+            "width": 0.0440459,
+            "height": 0.0440459
           },
           "breath-bounds": {
-            "x": 0.3523,
-            "y": 0.0021,
-            "width": 0.0455,
-            "height": 0.0455
+            "sheetId": 0,
+            "x": 0.35234375,
+            "y": 0.00209131,
+            "width": 0.04546729,
+            "height": 0.04546729
           },
           "breath-outer": {
-            "x": 0.3531,
-            "y": 0.0028,
-            "width": 0.044,
-            "height": 0.044
+            "sheetId": 0,
+            "x": 0.3530542,
+            "y": 0.00280176,
+            "width": 0.0440459,
+            "height": 0.0440459
           },
           "breath-inner": {
-            "x": 0.3669,
-            "y": 0.0162,
-            "width": 0.0164,
-            "height": 0.0164
+            "sheetId": 0,
+            "x": 0.36689336,
+            "y": 0.01618623,
+            "width": 0.01636821,
+            "height": 0.01636816
+          },
+          "test-head-front": {
+            "sheetId": 1,
+            "x": 0.25,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-head-back": {
+            "sheetId": 1,
+            "x": 0.3125,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-head-left": {
+            "sheetId": 1,
+            "x": 0.25,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-head-right": {
+            "sheetId": 1,
+            "x": 0.3125,
+            "y": 0.0625,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-head-top": {
+            "sheetId": 1,
+            "x": 0.25,
+            "y": 0.125,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-head-bottom": {
+            "sheetId": 1,
+            "x": 0.3125,
+            "y": 0.125,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-body-top": {
+            "sheetId": 1,
+            "x": 0.0625,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-body-bottom": {
+            "sheetId": 1,
+            "x": 0.125,
+            "y": 0,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "test-body-left": {
+            "sheetId": 1,
+            "x": 0,
+            "y": 0.06250146,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "test-body-front": {
+            "sheetId": 1,
+            "x": 0.0625,
+            "y": 0.06250146,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "test-body-right": {
+            "sheetId": 1,
+            "x": 0.125,
+            "y": 0.06250146,
+            "width": 0.0625,
+            "height": 0.125
+          },
+          "test-body-back": {
+            "sheetId": 1,
+            "x": 0.1875,
+            "y": 0.06250146,
+            "width": 0.0625,
+            "height": 0.125
           }
         }
       },

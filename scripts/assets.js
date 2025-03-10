@@ -829,14 +829,17 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
     } else {
       const svgContents = fs.readFileSync(svgPath).toString();
 
-      // extract uv-mapping from top-level folder "uv-map"
-      const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, svgBaseName);
-      skins.uvMap[skinClassKey] = uvMap;
-      skins.uvMapDim[skinClassKey] = { width, height };
-
       // count sheets per class
       skins.numSheets[skinClassKey] ??= 0;
       skins.numSheets[skinClassKey]++;
+
+      // extract uv-mapping from top-level folder "uv-map"
+      const sheetId = skins.numSheets[skinClassKey] - 1;
+      const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, sheetId, svgBaseName);
+      // 🔔 later sheets overwrite earlier, so use distinct names
+      Object.assign(skins.uvMap[skinClassKey] ??= {}, uvMap);
+      skins.uvMapDim[skinClassKey] = { width, height };
+
 
       // convert SVG to PNG
       skins.svgHash[skinClassKey] = hashText(svgContents);

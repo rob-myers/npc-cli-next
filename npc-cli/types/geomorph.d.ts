@@ -465,12 +465,12 @@ declare namespace Geomorph {
   }
 
   interface SpriteSheetSkins {
-    numSheets: { [skinClassKey in SkinClassKey]: number; };
-    svgHash: { [skinClassKey in SkinClassKey]: number; };
-    /** map from (skinClassKey, sheetId) -> index into skins DataTextureArray */
-    texArrayId: { [skinClassKey in SkinClassKey]: number[]; };
-    uvMap: { [skinClassKey in SkinClassKey]: UvRectLookup; };
-    uvMapDim: { [skinClassKey in SkinClassKey]: { width: number; height: number; }; };
+    numSheets: Record<SkinClassKey, number>;
+    svgHash: Record<SkinClassKey, number>;
+    /** From `(skinClassKey, sheetId)` to "index into skins DataTextureArray" */
+    texArrayId: Record<SkinClassKey, number[]>;
+    uvMap: Record<SkinClassKey, UvRectLookup>;
+    uvMapDim: Record<SkinClassKey, { width: number; height: number; }>;
   }
 
   type ObstacleKey = `${Geomorph.SymbolKey} ${number}`;
@@ -484,7 +484,10 @@ declare namespace Geomorph {
   }
 
   interface UvRectLookup {
-    [uvRectName: string]: Geom.RectJson
+    [uvRectName: string]: Geom.RectJson & {
+      /** Relative to parent skinClassKey */
+      sheetId: number;
+    }
   }
 
   type GmsData = import('../service/create-gms-data').GmsData;

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com" width="2048" height="2048" viewBox="0 0 2048 2048">
+        <defs>
+                <bx:grid x="0" y="0" width="16" height="16"/>
+        </defs>
+        <g>
+                <title>uv-map</title>
+                <g>
+                        <title>test-head</title>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="512">
+                                <title>front</title>
+                        </rect>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="640">
+                                <title>back</title>
+                        </rect>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="512">
+                                <title>left</title>
+                        </rect>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="640" y="128">
+                                <title>right</title>
+                        </rect>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px; fill: rgb(170, 170, 170);" x="512" y="256">
+                                <title>top</title>
+                        </rect>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="640" y="256">
+                                <title>bottom</title>
+                        </rect>
+                </g>
+                <g>
+                        <title>test-body</title>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="128">
+                                <title>top</title>
+                        </rect>
+                        <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="256">
+                                <title>bottom</title>
+                        </rect>
+                        <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003">
+                                <title>left</title>
+                        </rect>
+                        <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px; transform-origin: 192px 256.003px;" y="128.003" x="128">
+                                <title>front</title>
+                        </rect>
+                        <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003" x="256">
+                                <title>right</title>
+                        </rect>
+                        <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128.003" x="384">
+                                <title>back</title>
+                        </rect>
+                </g>
+        </g>
+</svg>

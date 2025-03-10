@@ -1113,11 +1113,12 @@ class GeomorphService {
   /**
    * Given SVG contents with `<g><title>uv-map</title> {...} </g>`,
    * build name to UV Rect i.e. normalized to [0, 1] x [0, 1]
-   * @param {string} svgContents 
-   * @param {string} logLabel 
-   * @returns {{ width: number; height: number; uvMap: { [uvRectName: string]: Geom.RectJson }; }}
+   * @param {string} svgContents
+   * @param {number} sheetId The index of this sheet relative to its skinClassKey.
+   * @param {string} logLabel
+   * @returns {Geom.RectJson & { uvMap: Geomorph.UvRectLookup }}
    */
-  parseUvMapRects(svgContents, logLabel) {
+  parseUvMapRects(svgContents, sheetId, logLabel) {
     const output = /** @type {ReturnType<GeomorphService['parseUvMapRects']>} */ ({
       width: 0,
       height: 0,
@@ -1164,11 +1165,11 @@ class GeomorphService {
 
         // output sub-rect of [0, 1] x [0, 1]
         const extendedName = folderStack.slice(1).concat(baseName).join('-');
-        const uvRectName = extendedName; // e.g. `base-head-right`
-        output.uvMap[uvRectName] = poly.rect
-          .scale(1 / output.width, 1 / output.height)
-          .precision(4).json
-        ;
+        const uvRectKey = extendedName; // e.g. `base-head-right`
+        output.uvMap[uvRectKey] = {
+          sheetId,
+          ...poly.rect.scale(1 / output.width, 1 / output.height).precision(8).json,
+        };
       },
       onclosetag(tag) {
         tagStack.pop();
