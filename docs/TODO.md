@@ -110,10 +110,16 @@
       - `[12, 8, 9]` (18th) `[12, 9, 13]` (19th)
       - `[36, 25, 28]` and `[36, 28, 39]`
       - so check `28` and `39` ✅
-    - body-left 🚧
-    - body-right 🚧
-    - head-overlay-front 🚧
-    - body-overlay-front 🚧
+    - body-left
+      - 9, 11, 13, 15
+      - 22th, 23th i.e. `[47, 41, 29]` and `[47, 29, 35]`
+      - so check `29` and `35` ✅
+    - body-right
+      - 8, 12, 14, 26
+    - head-overlay-front
+      - 16, 17, 20, 21
+    - body-overlay-front
+      - 24, 25, 28, 29 
   - know initial uv offset
     - read 'uv' attribute (aligned to 'position')
     - use vertex-ordering to infer e.g. face top-left (careful about uv coords y up)

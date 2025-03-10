@@ -496,6 +496,8 @@ export const humanZeroShader = {
     // if (!(vId == 3 * 1 + 1 || vId == 3 * 3 + 1)) discard;
     // body-front
     // if (!(vId == 28 || vId == 39)) discard;
+    // body-left
+    // if (!(vId == 29 || vId == 35)) discard;
 
 
     // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
