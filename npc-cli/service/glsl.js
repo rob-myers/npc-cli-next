@@ -476,7 +476,9 @@ export const humanZeroShader = {
   
   uniform sampler2DArray atlas;
   uniform bool objectPick;
+  uniform int texSkinId;
   uniform int uid;
+
   flat varying int vId;
   varying vec2 vUv;
 
@@ -502,7 +504,7 @@ export const humanZeroShader = {
 
     // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
     // 🚧 vTextureId 1 corresponds to human-skin-0.0 via lexicographic ordering on filenames
-    gl_FragColor = texture(atlas, vec3(vUv, 1));
+    gl_FragColor = texture(atlas, vec3(vUv, texSkinId));
     #include <logdepthbuf_fragment>
   }
   `,
@@ -688,6 +690,7 @@ export const HumanZeroShader = shaderMaterial(
   {
     atlas: emptyDataArrayTexture,
     objectPick: false,
+    texSkinId: 0,
     uid: 0,
     // 🚧
   },

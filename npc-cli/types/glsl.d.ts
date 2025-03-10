@@ -68,6 +68,8 @@ declare global {
 
       humanZeroShader: BaseExtendedShaderMaterial<{
         atlas: import('three').DataArrayTexture;
+        texSkinId: number;
+        uid: number;
         // 🚧
       } & SupportsObjectPick>;
     }

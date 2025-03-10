@@ -80,7 +80,7 @@
 
 - ✅ infer `texSkinId` from gltf texture filename
   - ℹ️ geomorphs.skins.texArrayId[skinClassKey][sheetId] where sheetId comes from texture filename
-- 🚧 pass `texSkinId` into shader
+- ✅ pass `texSkinId` into shader
 - 🚧 compute "triangle -> uvKey" mapping
   - test triangle centers against "uv-keyed rectangles"
 

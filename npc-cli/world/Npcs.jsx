@@ -443,8 +443,9 @@ function NPC({ npc }) {
           // 🚧
           <humanZeroShader
             key={HumanZeroShader.key}
-            transparent
             atlas={npc.w.texSkin.tex}
+            texSkinId={npc.m.texSkinId}
+            transparent
             uid={npc.def.pickUid}
           />
         ) || <cuboidManMaterial
