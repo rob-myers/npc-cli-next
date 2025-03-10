@@ -34,8 +34,10 @@ export class Npc {
     /** Mounted mesh */
     mesh: /** @type {THREE.SkinnedMesh} */ ({}),
     quad: /** @type {import('../service/uv').CuboidManQuads} */ ({}),
-    toAct: /** @type {Record<NPC.AnimKey, THREE.AnimationAction>} */ ({}),
     scale: 1,
+    /** Points into DataTextureArray `w.texSkin.tex` */
+    texSkinId: 0,
+    toAct: /** @type {Record<NPC.AnimKey, THREE.AnimationAction>} */ ({}),
   }
   
   mixer = emptyAnimationMixer;
@@ -452,7 +454,7 @@ export class Npc {
    * Initialization we can do before mounting
    * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
    */
-  initialize({ scene, animations }) {
+  initialize({ scene, animations }) {// 🚧 remove
     const { m } = this;
     const meta = npcClassToMeta[this.def.classKey];
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(scene));
@@ -495,6 +497,12 @@ export class Npc {
     // overridden on mount
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
     // m.mesh.userData.npcKey = this.key; // To decode pointer events
+
+    const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (m.mesh.material);
+    const matBaseName = origMaterial.map?.name ?? null; // e.g. human-skin-0.0.tex.png
+    const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
+    const { skinClassKey } = npcClassToMeta[this.def.classKey];
+    m.texSkinId = this.w.geomorphs.sheet.skins.texArrayId[skinClassKey][skinSheetId];
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();
