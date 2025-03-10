@@ -181,6 +181,7 @@ info({ opts });
       skins: {
         numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
         svgHash: /** @type {Geomorph.SpriteSheetSkins['svgHash']} */ ({}),
+        texArrayId: /** @type {Geomorph.SpriteSheetSkins['texArrayId']} */ ({}),
         uvMap: /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({}),
         uvMapDim: /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({}),
       },
@@ -823,7 +824,6 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
   skins.svgHash = /** @type {Geomorph.SpriteSheetSkins['svgHash']} */ ({});
 
   for (const { skinClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
-
     if (canSkip && prevSvgHash[skinClassKey]) {
       skins.svgHash[skinClassKey] = prevSvgHash[skinClassKey];
     } else {
@@ -847,6 +847,15 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
       await saveCanvasAsFile(canvas, pngPath);
     }
   }
+
+    // linearly order each (skinClassKey, sheetId)
+    let nextTexArrayId = 0;
+    skins.texArrayId = mapValues(skins.numSheets, (numSheets) => {
+      const output = range(numSheets).map(i => nextTexArrayId + i);
+      nextTexArrayId += output.length;
+      return output;
+    });
+
 }
 
 /**

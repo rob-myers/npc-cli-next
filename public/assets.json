@@ -1285,6 +1285,7 @@
     "skins": {
       "numSheets": {"cuboid-man": 1, "human-skin-0": 1},
       "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -1320088063},
+      "texArrayId": {"cuboid-man": [0], "human-skin-0": [1]},
       "uvMap": {
         "cuboid-man": {
           "ground-ring": {"x": 0.9, "y": 0, "width": 0.1, "height": 0.1},
