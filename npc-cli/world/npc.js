@@ -518,7 +518,12 @@ export class Npc {
     m.mesh.geometry.setAttribute('vertexId', new THREE.BufferAttribute(new Int32Array(vertexIds), 1));
 
     // ensure skin tri -> uvRect mapping for skinClassKey
-    this.w.npc.skinTriMap[skinClassKey] ??= computeSkinTriMap(m.mesh, skins.uvMap[skinClassKey]);
+    if (this.w.npc.skinTriMap[skinClassKey] === undefined) {
+      this.w.menu.measure(`npc.skinTriMap`);
+      this.w.npc.skinTriMap[skinClassKey] = computeSkinTriMap(m.mesh, skins.uvMap[skinClassKey]);
+      this.w.menu.measure(`npc.skinTriMap`);
+    }
+
   }
 
   /**

@@ -493,7 +493,17 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
  */
 export function computeSkinTriMap(skinnedMesh, uvMap) {
   const output = /** @type {NPC.SkinTriMap} */ ({});
-  // 🚧 arrange uvMap as sorted list of lists
-  console.log({uvMap});
+  
+  // arrange uvMap as sorted list of lists
+  const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, y }]) => {
+    (agg[x] ??= [x, []])[1].push([y, uvRectKey]);
+    return agg;
+  }, /** @type {Record<number, [number, [number, string][]]>} */ ([]));
+  const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
+
+  // 🚧
+  console.log({sorted});
+
   return output;
 }
