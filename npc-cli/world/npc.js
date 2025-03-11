@@ -520,7 +520,7 @@ export class Npc {
     // ensure skin tri -> uvRect mapping for skinClassKey
     if (this.w.npc.skinTriMap[skinClassKey] === undefined) {
       this.w.menu.measure(`npc.skinTriMap`);
-      this.w.npc.skinTriMap[skinClassKey] = computeSkinTriMap(m.mesh, skins.uvMap[skinClassKey]);
+      this.w.npc.skinTriMap[skinClassKey] = computeSkinTriMap(m.mesh, skins.uvMap[skinClassKey], skinSheetId);
       this.w.menu.measure(`npc.skinTriMap`);
     }
 

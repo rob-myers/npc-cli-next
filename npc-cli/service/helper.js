@@ -81,6 +81,9 @@ export const helper = {
     Walk: true,
   },
 
+  /** @type {Record<Geomorph.SkinClassKey, true>} */
+  fromSkinClassKey: { "cuboid-man": true, "human-skin-0": true },
+
   /**
    * Try construct degenerate "id" from partial.
    * @param {Partial<Geomorph.GmDoorId>} meta 

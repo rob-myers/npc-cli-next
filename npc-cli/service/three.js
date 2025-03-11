@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { LineMaterial } from "three-stdlib";
 import { damp } from "maath/easing";
 
+import { warn } from "./generic";
 import { Rect, Vect } from "../geom";
 import packRectangles from "./rects-packer";
 
@@ -407,14 +408,14 @@ export const defaultQuadUvs = [...Array(4)].map(_ => new THREE.Vector2());
 /**
  * - precision 6
  * @param {THREE.BufferGeometry} geometry 
- * @returns {Geom.VectJson[]}
+ * @returns {Geom.Vect[]}
  */
 export function getGeometryUvs(geometry) {
   return /** @type {THREE.BufferAttribute} */ (
     geometry.getAttribute('uv')
   ).toJSON().array.reduce((agg, x, i, xs) =>
     (i % 2 === 1 && agg.push(new Vect(xs[i - 1], x).precision(8)), agg)
-  , /** @type {Geom.VectJson[]} */ ([]));
+  , /** @type {Geom.Vect[]} */ ([]));
 }
 
 /**
@@ -489,21 +490,43 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
  * 🚧
  * @param {import('three').SkinnedMesh} skinnedMesh
  * @param {Geomorph.UvRectLookup} uvMap
+ * @param {number} skinSheetId Relative to skin
  * @returns {NPC.SkinTriMap}
  */
-export function computeSkinTriMap(skinnedMesh, uvMap) {
+export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
   const output = /** @type {NPC.SkinTriMap} */ ({});
   
   // arrange uvMap as sorted list of lists
-  const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, y }]) => {
-    (agg[x] ??= [x, []])[1].push([y, uvRectKey]);
+  const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
+    if (sheetId === skinSheetId) {
+      (agg[x] ??= [x + width, []])[1].push([y + height, uvRectKey]);
+    }
     return agg;
   }, /** @type {Record<number, [number, [number, string][]]>} */ ([]));
   const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
   sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
+  
+  const uvs = getGeometryUvs(skinnedMesh.geometry);
+  const trisFlat = /** @type {THREE.BufferAttribute} */ (skinnedMesh.geometry.index).toJSON().array;
+  const tris = trisFlat.reduce((agg, vId, i) =>
+    (i % 3 === 0 ? agg.push([vId]) : /** @type {number[]} */ (agg.at(-1)).push(vId), agg)
+  , /** @type {number[][]} */ ([]));
 
-  // 🚧
-  console.log({sorted});
+  /** Centre of mass of each UV-triangle */
+  const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
+  
+  // find uvRect fast via sorteed rects
+  for (const [triId, center] of centers.entries()) {
+    const inner = sorted.find(([x]) => center.x < x);
+    const found = inner === undefined ? undefined : inner[1].find(([y]) => center.y < y);
+    const vertexIds = tris[triId];
+    if (found !== undefined) {
+      output[triId] = { uvKey: found[1], vertexIds };
+    } else {
+      warn(`triangle not contained in any uv rect: ${JSON.stringify({ triId, vertexIds })}`);
+    }
+  }
 
+  // console.log({ sorted, centers, output });
   return output;
 }

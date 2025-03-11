@@ -67,7 +67,7 @@
   static average(vectors) {
     const sum = Vect.zero;
     vectors.forEach(v => sum.add(v));
-    vectors.length && sum.scale(1 / vectors.length);
+    vectors.length > 0 && sum.scale(1 / vectors.length);
     return sum;
   }
 

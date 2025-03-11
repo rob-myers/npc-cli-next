@@ -83,7 +83,7 @@
 - ✅ pass `texSkinId` into shader
 - 🚧 compute "triangle -> uvKey" mapping
   - ✅ provide geomorphs.skins.uvMap[uvKey].sheetId (relative to skinClassKey)
-  - test triangle centers against "uv-keyed rectangles"
+  - ✅ test triangle centers against "uv-keyed rectangles"
   - want lookup from provoking vertex id, but start with triangle id
 
 - "npc uvs" DataTextureArray
