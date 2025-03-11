@@ -100,6 +100,7 @@
   - ✅ ContextMenu fixed
   - Logger PopUp?
 - ❌ npc should not stop so suddenly near doorway
+- ✅ implement `+=` s.t. `c+=1` would increment if `c` numeric
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other

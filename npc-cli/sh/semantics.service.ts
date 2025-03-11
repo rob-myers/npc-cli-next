@@ -122,7 +122,7 @@ class semanticsServiceClass {
     return expanded;
   }
 
-  private async *Assign({ meta, Name, Value, Naked }: Sh.Assign) {
+  private async *Assign({ meta, Name, Value, Naked, Append }: Sh.Assign) {
     if (Name === null) {
       return; // e.g. `declare -F`
     }
@@ -134,15 +134,18 @@ class semanticsServiceClass {
       return; // used to tag process instead
     }
 
-    const expanded = await this.lastExpanded(sem.Expand(Value));
-    if (expanded.values.some(x => typeof x !== 'string')) {
-      // forward non-string values from command substitution `foo=$( bar )`
-      useSession.api.setVar(meta, Name.Value,
-        expanded.values.length === 1 ? expanded.values[0] : expanded.values,
+    const { value, values } = await this.lastExpanded(sem.Expand(Value));
+
+    if (values.some(x => typeof x !== 'string')) {
+      // e.g. forward non-string value from command substitution `foo=$( bar )`
+      useSession.api.setVar(meta, Name.Value, Append === true
+        ? useSession.api.getVar(meta, Name.Value) + (values.length === 1 ? values[0] : values)
+        : values.length === 1 ? values[0] : values
       );
-    } else {
-      useSession.api.setVar(meta, Name.Value,
-        parseJsArg(expanded.value) // could interpret as number, Set etc.
+    } else {// string could be interpreted as e.g. number, Set
+      useSession.api.setVar(meta, Name.Value, Append === true
+        ? useSession.api.getVar(meta, Name.Value) + parseJsArg(value)
+        : parseJsArg(value)
       );
     }
   }
@@ -618,14 +621,14 @@ class semanticsServiceClass {
    * 7. $? Exit code of last completed process
    */
   private async *ParamExp(node: Sh.ParamExp): AsyncGenerator<Expanded, void, unknown> {
-    const { meta, Param, Slice, Repl, Length, Excl, Exp } = node;
-    if (Repl) {
+    const { meta, Param, Slice, Repl, Length, Excl, Exp,  } = node;
+    if (Repl !== null) {
       // ${_/foo/bar/baz}
       const origParam = reconstructReplParamExp(Repl);
       yield expand(jsStringify(cmdService.get(node, [origParam])[0]));
     } else if (Excl || Length || Slice) {
       throw new ShError(`ParamExp: ${Param.Value}: unsupported operation`, 2);
-    } else if (Exp) {
+    } else if (Exp !== null) {
       switch (Exp.Op) {
         case ":-": {
           const value = this.expandParameter(meta, Param.Value);
