@@ -109,10 +109,10 @@ class CuboidManUvService {
     for (const quadKey of keys(toQuadMeta)) {
       const quad = toQuadMeta[quadKey];
       const quadUvs = quad.vertexIds.map(vId => uvs[vId]);
-      const uvRect = Rect.fromPoints(...quadUvs).precision(6);
+      const uvRect = Rect.fromPoints(...quadUvs).precision(8);
 
       quad.uvRect = uvRect;
-      quad.uvDeltas = quadUvs.map(p => ({ x: p.x === uvRect.x ? -0.5 : 0.5, y: p.y === uvRect.y ? -0.5 : 0.5 }));
+      quad.uvDeltas = quadUvs.map(p => ({ x: Math.abs(p.x - uvRect.x) < 0.0001 ? -0.5 : 0.5, y: p.y === uvRect.y ? -0.5 : 0.5 }));
 
       if (quadKey === 'label') {// initially empty
         quad.default = { texId: 1, uvs: [...Array(4)].map(_ => new THREE.Vector2()), dim: [0, 0] };
