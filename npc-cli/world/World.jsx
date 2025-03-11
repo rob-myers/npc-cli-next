@@ -9,9 +9,9 @@ import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, npcClassToMeta, skinsTextureDimension } from "../service/const";
-import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries } from "../service/generic";
+import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
-import { removeCached, setCached } from "../service/query-client";
+import { queryCache, removeCached, setCached } from "../service/query-client";
 import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
 import { geomorph } from "../service/geomorph";
 import createGmsData from "../service/create-gms-data";
@@ -187,8 +187,10 @@ export default function World(props) {
         );
       }
       
-      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged } = state.trackHmr(
-        { createGmsData, GmGraphClass },
+      // 🔔 if this function changes we'll run the whole query
+      const queryFnHash = hashText(queryCache.find({ queryKey: [WORLD_QUERY_FIRST_KEY], exact: false })?.options.queryFn?.toString() ?? '');
+      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr(
+        { createGmsData, GmGraphClass, queryFnHash },
       );
 
       if (mapChanged || gmsDataChanged) {
@@ -246,7 +248,7 @@ export default function World(props) {
         hash: state.hash,
       });
 
-      if (!dataChanged) {
+      if (!dataChanged && !queryFnHashChanged) {
         update();
         return true;
       }
@@ -268,11 +270,9 @@ export default function World(props) {
           invert: true,
         },
         {
-          // 🚧 iterate over (skinClassKey, sheetId)
           src: entries(skins.numSheets).flatMap(([skinClassKey, skinSheetCount]) =>
             range(skinSheetCount).map(sheetId => getNpcSkinSheetUrl(skinClassKey, sheetId))
           ),
-          // src: Object.values(npcClassToMeta).map(({ texPngUrl }) => texPngUrl),
           texArray: state.texSkin,
           dim: { width: skinsTextureDimension, height: skinsTextureDimension },
           invert: false,
@@ -292,6 +292,8 @@ export default function World(props) {
         texArray.update();
         update();
       }
+
+      state.npc?.forceUpdate(); // violate <MemoizedNPC>
 
       return true;
     },
@@ -375,7 +377,11 @@ export default function World(props) {
  * @property {Geomorph.GmsData} gmsData
  * Data determined by `w.gms` or a `Geomorph.GeomorphKey`.
  * - A geomorph key is "non-empty" iff `gmsData[gmKey].wallPolyCount` non-zero.
- * @property {{ createGmsData: typeof createGmsData; GmGraphClass: typeof GmGraphClass }} hmr
+ * @property {{
+ *   createGmsData: typeof createGmsData;
+ *   GmGraphClass: typeof GmGraphClass;
+ *   queryFnHash: number;
+ * }} hmr
  * Change-tracking for Hot Module Reloading (HMR) only
  * @property {Subject<NPC.Event>} events
  * @property {Geomorph.Geomorphs} geomorphs

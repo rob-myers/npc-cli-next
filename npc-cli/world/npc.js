@@ -257,11 +257,6 @@ export class Npc {
     }
   }
 
-  forceUpdate() {
-    this.epochMs = Date.now();
-    this.w.npc.update();
-  }
-
   /**
    * Convert rotation.y back into "clockwise from east, viewed from above".
    */

@@ -74,6 +74,11 @@ export default function Npcs(props) {
       }
       return success === false || path.length === 0 ? null : path;
     },
+    forceUpdate() {
+      const now = Date.now();
+      Object.values(state.npc).forEach(npc => npc.epochMs = now)
+      update();
+    },
     getClosestNavigable(p, maxDelta = 0.5) {
       const { success, point: closest } = w.crowd.navMeshQuery.findClosestPoint(p, {
         // 🔔 maxDelta "means" ~ (2 * maxDelta) * (2 * smallHalfExtent) * (2 * maxDelta) search space
@@ -336,7 +341,7 @@ export default function Npcs(props) {
       const tex = await textureLoader.loadAsync(texUrl);
       tex.flipY = false;
       state.tex[classKey] = tex;
-    })).then(() => Object.values(state.npc).forEach(npc => npc.forceUpdate()));
+    })).then(() => state.forceUpdate());
   }, [w.hash.sheets]);
 
   return (
@@ -383,6 +388,7 @@ export default function Npcs(props) {
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} clearLabels
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
+ * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
