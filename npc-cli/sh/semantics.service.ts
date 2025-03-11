@@ -139,12 +139,12 @@ class semanticsServiceClass {
     if (values.some(x => typeof x !== 'string')) {
       // e.g. forward non-string value from command substitution `foo=$( bar )`
       useSession.api.setVar(meta, Name.Value, Append === true
-        ? useSession.api.getVar(meta, Name.Value) + (values.length === 1 ? values[0] : values)
+        ? (useSession.api.getVar(meta, Name.Value) ?? 0) + (values.length === 1 ? values[0] : values)
         : values.length === 1 ? values[0] : values
       );
     } else {// string could be interpreted as e.g. number, Set
       useSession.api.setVar(meta, Name.Value, Append === true
-        ? useSession.api.getVar(meta, Name.Value) + parseJsArg(value)
+        ? (useSession.api.getVar(meta, Name.Value) ?? 0) + parseJsArg(value)
         : parseJsArg(value)
       );
     }
