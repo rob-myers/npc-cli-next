@@ -919,6 +919,7 @@ class GeomorphService {
 
   /**
    * Parse Starship Symbol
+   * 🔔 we do not support transforms on parent groups
    * @param {Geomorph.SymbolKey} symbolKey
    * @param {string} svgContents
    * @returns {Geomorph.Symbol}
@@ -1113,6 +1114,7 @@ class GeomorphService {
   /**
    * Given SVG contents with `<g><title>uv-map</title> {...} </g>`,
    * build name to UV Rect i.e. normalized to [0, 1] x [0, 1]
+   * 🔔 we do not support transforms on parent groups
    * @param {string} svgContents
    * @param {number} sheetId The index of this sheet relative to its skinClassKey.
    * @param {string} logLabel

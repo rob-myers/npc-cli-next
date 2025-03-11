@@ -1281,7 +1281,7 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "imagesHash": -1374088553,
+    "imagesHash": 588712820,
     "skins": {
       "numSheets": {"cuboid-man": 1, "human-skin-0": 2},
       "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -2074204476},
@@ -1517,7 +1517,7 @@
           "base-head-overlay-front": {
             "sheetId": 0,
             "x": 0.25,
-            "y": 0,
+            "y": 0.203125,
             "width": 0.0625,
             "height": 0.0625
           },
@@ -1538,114 +1538,114 @@
           "base-head-overlay-back": {
             "sheetId": 0,
             "x": 0.3125,
-            "y": 0,
+            "y": 0.203125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-left": {
             "sheetId": 0,
             "x": 0.25,
-            "y": 0.0625,
+            "y": 0.265625,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-right": {
             "sheetId": 0,
             "x": 0.3125,
-            "y": 0.0625,
+            "y": 0.265625,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-top": {
             "sheetId": 0,
             "x": 0.25,
-            "y": 0.125,
+            "y": 0.328125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-head-overlay-bottom": {
             "sheetId": 0,
             "x": 0.3125,
-            "y": 0.125,
+            "y": 0.328125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-overlay-top": {
             "sheetId": 0,
             "x": 0.0625,
-            "y": 0,
+            "y": 0.203125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-overlay-bottom": {
             "sheetId": 0,
             "x": 0.125,
-            "y": 0,
+            "y": 0.203125,
             "width": 0.0625,
             "height": 0.0625
           },
           "base-body-overlay-left": {
             "sheetId": 0,
             "x": 0,
-            "y": 0.06250146,
+            "y": 0.26562646,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-overlay-front": {
             "sheetId": 0,
             "x": 0.0625,
-            "y": 0.06250146,
+            "y": 0.26562646,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-overlay-right": {
             "sheetId": 0,
             "x": 0.125,
-            "y": 0.06250146,
+            "y": 0.26562646,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-overlay-back": {
             "sheetId": 0,
             "x": 0.1875,
-            "y": 0.06250146,
+            "y": 0.26562646,
             "width": 0.0625,
             "height": 0.125
           },
           "selector-bounds": {
             "sheetId": 0,
-            "x": 0.45244141,
-            "y": 0.00209131,
-            "width": 0.04546729,
-            "height": 0.04546729
+            "x": 0.0625,
+            "y": 0.40625,
+            "width": 0.0625,
+            "height": 0.0625
           },
           "selector-default": {
             "sheetId": 0,
-            "x": 0.45315186,
-            "y": 0.00280176,
-            "width": 0.0440459,
-            "height": 0.0440459
+            "x": 0.06347637,
+            "y": 0.40722637,
+            "width": 0.06054629,
+            "height": 0.06054629
           },
           "breath-bounds": {
             "sheetId": 0,
-            "x": 0.35234375,
-            "y": 0.00209131,
-            "width": 0.04546729,
-            "height": 0.04546729
+            "x": 0.1875,
+            "y": 0.40625,
+            "width": 0.0625,
+            "height": 0.0625
           },
           "breath-outer": {
             "sheetId": 0,
-            "x": 0.3530542,
-            "y": 0.00280176,
-            "width": 0.0440459,
-            "height": 0.0440459
+            "x": 0.18847642,
+            "y": 0.40722642,
+            "width": 0.06054619,
+            "height": 0.06054619
           },
           "breath-inner": {
             "sheetId": 0,
-            "x": 0.36689336,
-            "y": 0.01618623,
-            "width": 0.01636821,
-            "height": 0.01636816
+            "x": 0.2075,
+            "y": 0.425625,
+            "width": 0.0225,
+            "height": 0.0225
           },
           "test-head-front": {
             "sheetId": 1,

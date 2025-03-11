@@ -128,3 +128,11 @@ nvm use
 code .
 ```
 
+### Avoid nested transforms in SVGs
+
+We parse various SVGs ...
+
+There's a trick we can use in BoxySVG:
+- drag contents outside Group
+- remove transform from Group (e.g. via elements panel E)
+- drag contents back into Group
