@@ -125,9 +125,9 @@
         <title>_inner</title>
       </circle>
     </g>
-    <g style="" transform="matrix(1, 0, 0, 1, -128, -831.999938964844)">
+    <g style="">
       <title>label</title>
-      <rect width="128" height="128" style="fill: none; stroke: rgb(255, 255, 255); stroke-opacity: 0;" x="768" y="1664">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(255, 255, 255); stroke-opacity: 0;" x="640" y="832">
         <title>bounds</title>
       </rect>
     </g>
