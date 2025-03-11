@@ -803,7 +803,8 @@ function getNpcTextureMetas() {
     const svgPath = path.resolve(npcDir, svgBaseName);
     const { mtimeMs: svgMtimeMs } = fs.statSync(svgPath);
     const pngPath = path.resolve(assets3dDir, svgBaseName.slice(0, -'.svg'.length).concat('.png'));
-    let pngMtimeMs = 0; try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
+    let pngMtimeMs = 0;
+    try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
     // 🔔 assume `{skinClassKey}.{skinSheetId}.tex.svg`
     const [skinClassKey, skinSheetId] = svgBaseName.split('.');
 

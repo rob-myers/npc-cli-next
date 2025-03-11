@@ -40154,7 +40154,7 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "imagesHash": 588712820,
+    "imagesHash": -406048366,
     "skins": {
       "numSheets": {"cuboid-man": 1, "human-skin-0": 2},
       "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -2074204476},
@@ -40362,28 +40362,28 @@
           "base-body-left": {
             "sheetId": 0,
             "x": 0,
-            "y": 0.06250146,
+            "y": 0.0625,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-front": {
             "sheetId": 0,
             "x": 0.0625,
-            "y": 0.06250146,
+            "y": 0.0625,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-right": {
             "sheetId": 0,
             "x": 0.125,
-            "y": 0.06250146,
+            "y": 0.0625,
             "width": 0.0625,
             "height": 0.125
           },
           "base-body-back": {
             "sheetId": 0,
             "x": 0.1875,
-            "y": 0.06250146,
+            "y": 0.0625,
             "width": 0.0625,
             "height": 0.125
           },
@@ -40393,20 +40393,6 @@
             "y": 0.203125,
             "width": 0.0625,
             "height": 0.0625
-          },
-          "base-head-overlay-eyes-left": {
-            "sheetId": 0,
-            "x": 0.08650879,
-            "y": 0.29375,
-            "width": 0.015625,
-            "height": 0.015625
-          },
-          "base-head-overlay-eyes-right": {
-            "sheetId": 0,
-            "x": 0.11775879,
-            "y": 0.29375,
-            "width": 0.015625,
-            "height": 0.015625
           },
           "base-head-overlay-back": {
             "sheetId": 0,
@@ -40460,7 +40446,7 @@
           "base-body-overlay-left": {
             "sheetId": 0,
             "x": 0,
-            "y": 0.26562646,
+            "y": 0.265625,
             "width": 0.0625,
             "height": 0.125
           },
@@ -40474,7 +40460,7 @@
           "base-body-overlay-right": {
             "sheetId": 0,
             "x": 0.125,
-            "y": 0.26562646,
+            "y": 0.265625,
             "width": 0.0625,
             "height": 0.125
           },
@@ -40508,10 +40494,10 @@
           },
           "breath-outer": {
             "sheetId": 0,
-            "x": 0.18847642,
-            "y": 0.40722642,
-            "width": 0.06054619,
-            "height": 0.06054619
+            "x": 0.18847656,
+            "y": 0.40722656,
+            "width": 0.06054688,
+            "height": 0.06054688
           },
           "breath-inner": {
             "sheetId": 0,
@@ -40519,6 +40505,13 @@
             "y": 0.425625,
             "width": 0.0225,
             "height": 0.0225
+          },
+          "label-bounds": {
+            "sheetId": 0,
+            "x": 0.0625,
+            "y": 0.40625,
+            "width": 0.03125,
+            "height": 0.03125
           },
           "test-head-front": {
             "sheetId": 1,

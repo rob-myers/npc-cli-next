@@ -84,7 +84,9 @@
 - 🚧 compute "triangle -> uvKey" mapping
   - ✅ provide geomorphs.skins.uvMap[uvKey].sheetId (relative to skinClassKey)
   - ✅ test triangle centers against "uv-keyed rectangles"
-  - want lookup from provoking vertex id, but start with triangle id
+  - ✅ verify/fix lookup
+  - 🚧 is label uv-mapped?
+  - 🚧 lookup from provoking vertex id
 
 - "npc uvs" DataTextureArray
   - one layer per pickId and 256 layers
@@ -110,6 +112,7 @@
     > https://github.com/vercel/next.js/blob/canary/packages/next/src/client/components/react-dev-overlay/utils/use-websocket.ts
   - ℹ️ https://issues.chromium.org/issues/361372969
   - ✅ reconnect websocket in patch
+- Sometimes geomorphs.skins.uvMap is not being updated onchange file (?)
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 - try `bun` https://bun.sh/
