@@ -99,6 +99,7 @@
 - 🚧 mobile touch issues
   - ✅ ContextMenu fixed
   - Logger PopUp?
+- ❌ npc should not stop so suddenly near doorway
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
