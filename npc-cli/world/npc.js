@@ -6,7 +6,7 @@ import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObjectLookup, emptyAnimationMixer, emptyGroup, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
+import { buildObjectLookup, computeSkinTriMap, emptyAnimationMixer, emptyGroup, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 import { cmUvService } from "../service/uv";
@@ -502,7 +502,8 @@ export class Npc {
     const matBaseName = origMaterial.map?.name ?? null; // e.g. human-skin-0.0.tex.png
     const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
     const { skinClassKey } = npcClassToMeta[this.def.classKey];
-    m.texSkinId = this.w.geomorphs.sheet.skins.texArrayId[skinClassKey][skinSheetId];
+    const { skins } = this.w.geomorphs.sheet;
+    m.texSkinId = skins.texArrayId[skinClassKey][skinSheetId];
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();
@@ -515,6 +516,9 @@ export class Npc {
     const numVertices = m.mesh.geometry.getAttribute('position').count;
     const vertexIds = [...Array(numVertices)].map((_,i) => i);
     m.mesh.geometry.setAttribute('vertexId', new THREE.BufferAttribute(new Int32Array(vertexIds), 1));
+
+    // ensure skin tri -> uvRect mapping for skinClassKey
+    this.w.npc.skinTriMap[skinClassKey] ??= computeSkinTriMap(m.mesh, skins.uvMap[skinClassKey]);
   }
 
   /**

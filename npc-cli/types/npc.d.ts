@@ -351,4 +351,12 @@ declare namespace NPC {
     viewportRange: import("@xterm/xterm").IViewportRange;
   }
 
+  /**
+   * For a particular skin, the mapping from triangle id to
+   * the uvKey of the unique rectangle containing the triangle.
+   */
+  interface SkinTriMap {
+    [triId: number]: { uvKey: string; vertexIds: [number, number, number] };
+  }
+
 }

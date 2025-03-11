@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
-import { isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
+import { pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
@@ -26,9 +26,10 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
-    freePickId: new Set(range(maxNumberOfNpcs)),
+    freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
+    idToKey: new Map(),
     label: {
       count: 0,
       lookup: {},
@@ -38,8 +39,8 @@ export default function Npcs(props) {
     onStuckCustom: null,
     physicsPositions: [],
     tex: /** @type {*} */ ({}), // 🚧 old
-    pickIdToKey: new Map(),
     showLastNavPath: false, // 🔔 for debug
+    skinTriMap: /** @type {*} */ ({}),
 
     attachAgent(npc) {
       if (npc.agent === null) {
@@ -135,8 +136,8 @@ export default function Npcs(props) {
         state.removeAgent(npc);
         
         delete state.npc[npcKey];
-        state.freePickId.add(npc.def.pickUid);
-        state.pickIdToKey.delete(npc.def.pickUid);
+        state.freeId.add(npc.def.pickUid);
+        state.idToKey.delete(npc.def.pickUid);
       }
       update();
       for (const npcKey of npcKeys) {
@@ -212,13 +213,13 @@ export default function Npcs(props) {
         // Spawn
         npc = state.npc[opts.npcKey] = new Npc({
           key: opts.npcKey,
-          pickUid: takeFirst(state.freePickId),
+          pickUid: takeFirst(state.freeId),
           angle: opts.angle ?? 0,
           classKey: opts.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
         }, w);
-        state.pickIdToKey.set(npc.def.pickUid, opts.npcKey);
+        state.idToKey.set(npc.def.pickUid, opts.npcKey);
 
         if (npc.def.classKey === 'human-0') {
           // 🚧 npc shader migration
@@ -306,7 +307,6 @@ export default function Npcs(props) {
   w.n = state.npc;
 
   state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].modelUrl);
-  // 🤔 add query param in development in case of GLTF update?
   state.gltf["human-0"] = useGLTF(npcClassToMeta["human-0"].modelUrl);
   
   React.useEffect(() => {// init + hmr
@@ -364,7 +364,7 @@ export default function Npcs(props) {
 /**
  * @typedef State
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
- * @property {Set<number>} freePickId Those npc object-pick ids not-currently-used.
+ * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {import("../service/three").LabelsSheetAndTex} label
  * @property {Record<NPC.ClassKey, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
@@ -375,9 +375,10 @@ export default function Npcs(props) {
  * @property {number[]} physicsPositions
  * Format `[npc.bodyUid, npc.position.x, npc.position.y, npc.position.z, ...]`
  * @property {Record<NPC.TextureKey, THREE.Texture>} tex 🚧 old
- * @property {Map<number, string>} pickIdToKey
+ * @property {Map<number, string>} idToKey
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath
+ * @property {Record<Geomorph.SkinClassKey, NPC.SkinTriMap>} skinTriMap
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} clearLabels

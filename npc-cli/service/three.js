@@ -413,7 +413,7 @@ export function getGeometryUvs(geometry) {
   return /** @type {THREE.BufferAttribute} */ (
     geometry.getAttribute('uv')
   ).toJSON().array.reduce((agg, x, i, xs) =>
-    (i % 2 === 1 && agg.push(new Vect(xs[i - 1], x).precision(6)), agg)
+    (i % 2 === 1 && agg.push(new Vect(xs[i - 1], x).precision(8)), agg)
   , /** @type {Geom.VectJson[]} */ ([]));
 }
 
@@ -447,7 +447,6 @@ const tempInstanceLocalMatrix = new THREE.Matrix4();
 const tempInstanceWorldMatrix = new THREE.Matrix4();
 
 /**
- * 
  * @param {THREE.InstancedMesh} inst 
  * @param {number} instanceId 
  */
@@ -484,4 +483,17 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
   resY = damp(current, "y", y ?? v3d.y, smoothTime, deltaMs, maxSpeed, undefined, eps);
   resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaMs, maxSpeed * (dz / dMax), undefined, eps);
   return resX || resY || resZ;
+}
+
+/**
+ * 🚧
+ * @param {import('three').SkinnedMesh} skinnedMesh
+ * @param {Geomorph.UvRectLookup} uvMap
+ * @returns {NPC.SkinTriMap}
+ */
+export function computeSkinTriMap(skinnedMesh, uvMap) {
+  const output = /** @type {NPC.SkinTriMap} */ ({});
+  // 🚧 arrange uvMap as sorted list of lists
+  console.log({uvMap});
+  return output;
 }
