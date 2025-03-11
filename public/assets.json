@@ -1598,19 +1598,12 @@
             "width": 0.0625,
             "height": 0.125
           },
-          "selector-bounds": {
+          "selector-default": {
             "sheetId": 0,
             "x": 0.0625,
             "y": 0.40625,
             "width": 0.0625,
             "height": 0.0625
-          },
-          "selector-default": {
-            "sheetId": 0,
-            "x": 0.06347637,
-            "y": 0.40722637,
-            "width": 0.06054629,
-            "height": 0.06054629
           },
           "breath-bounds": {
             "sheetId": 0,
@@ -1618,20 +1611,6 @@
             "y": 0.40625,
             "width": 0.0625,
             "height": 0.0625
-          },
-          "breath-outer": {
-            "sheetId": 0,
-            "x": 0.18847656,
-            "y": 0.40722656,
-            "width": 0.06054688,
-            "height": 0.06054688
-          },
-          "breath-inner": {
-            "sheetId": 0,
-            "x": 0.2075,
-            "y": 0.425625,
-            "width": 0.0225,
-            "height": 0.0225
           },
           "label-bounds": {
             "sheetId": 0,

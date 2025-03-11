@@ -843,6 +843,7 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
 
   for (const { skinClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
     if (canSkip && prevSvgHash[skinClassKey]) {
+      console.log('🔔 skipping', canSkip, svgPath);
       skins.svgHash[skinClassKey] = prevSvgHash[skinClassKey];
       skins.numSheets[skinClassKey] = prevNumSheets[skinClassKey];
       skins.texArrayId[skinClassKey] = prevTexArrayId[skinClassKey];

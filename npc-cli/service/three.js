@@ -517,8 +517,8 @@ export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
   
   // find uvRect fast via sorteed rects
   for (const [triId, center] of centers.entries()) {
-    const inner = sorted.find(([x]) => center.x < x);
-    const found = inner === undefined ? undefined : inner[1].find(([y]) => center.y < y);
+    const inner = sorted.find(([maxX]) => center.x < maxX);
+    const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
     const vertexIds = tris[triId];
     if (found !== undefined) {
       output[triId] = { uvKey: found[1], vertexIds };

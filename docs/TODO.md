@@ -112,7 +112,10 @@
     > https://github.com/vercel/next.js/blob/canary/packages/next/src/client/components/react-dev-overlay/utils/use-websocket.ts
   - ℹ️ https://issues.chromium.org/issues/361372969
   - ✅ reconnect websocket in patch
+
 - Sometimes geomorphs.skins.uvMap is not being updated onchange file (?)
+  - just saw it again on edit media/npc/human-skin-0.0.tex.svg
+
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 - try `bun` https://bun.sh/

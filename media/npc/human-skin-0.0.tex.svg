@@ -3,7 +3,7 @@
         <defs>
                 <bx:grid x="0" y="0" width="16" height="16"/>
         </defs>
-        <g>
+        <g style="pointer-events: none;">
                 <title>uv-map</title>
                 <g>
                         <title>base-head</title>
@@ -107,10 +107,10 @@
                 <g style="">
                         <title>selector</title>
                         <rect width="128" height="128" style="fill: none;" x="128" y="832">
-                                <title>bounds</title>
+                                <title>default</title>
                         </rect>
                         <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="191.999" cy="895.999" r="61.9994">
-                                <title>default</title>
+                                <title>_default</title>
                         </circle>
                 </g>
                 <g style="">
@@ -119,10 +119,10 @@
                                 <title>bounds</title>
                         </rect>
                         <circle style="stroke-width: 2.79351px; fill-opacity: 0.2; stroke-opacity: 0.5; stroke: rgb(153, 255, 153);" cx="448" cy="896" r="62">
-                                <title>outer</title>
+                                <title>_outer</title>
                         </circle>
                         <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="448" cy="894.72" r="23.04">
-                                <title>inner</title>
+                                <title>_inner</title>
                         </circle>
                 </g>
                 <g style="" transform="matrix(1, 0, 0, 1, -128, -831.999938964844)">
