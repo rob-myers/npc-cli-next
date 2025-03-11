@@ -1614,10 +1614,10 @@
           },
           "label-bounds": {
             "sheetId": 0,
-            "x": 0.0625,
-            "y": 0.40625,
-            "width": 0.03125,
-            "height": 0.03125
+            "x": 0.375,
+            "y": 0.8125,
+            "width": 0.0625,
+            "height": 0.0625
           },
           "test-head-front": {
             "sheetId": 1,
