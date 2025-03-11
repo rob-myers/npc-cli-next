@@ -795,6 +795,10 @@ function getDecorPngPaths(assets) {
 function getNpcTextureMetas() {
   return fs.readdirSync(npcDir).filter(
     (baseName) => baseName.endsWith(".tex.svg")
+    // (baseName) => {
+    //   const matched = baseName.match(/^(\S+)\.\d+\.tex\.svg$/);
+    //   return matched !== null && matched[1] in helper.fromSkinClassKey;
+    // }
   ).sort().map((svgBaseName) => {
     const svgPath = path.resolve(npcDir, svgBaseName);
     const { mtimeMs: svgMtimeMs } = fs.statSync(svgPath);
@@ -820,12 +824,15 @@ function getNpcTextureMetas() {
  * @param {Prev} prev
  */
 async function createNpcTexturesAndUvMeta(assets, prev) {
-  const { skins, skins: { svgHash: prevSvgHash } } = assets.sheet;
+  const { skins, skins: { numSheets: prevNumSheets, svgHash: prevSvgHash } } = assets.sheet;
+  
+  skins.numSheets = /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({});
   skins.svgHash = /** @type {Geomorph.SpriteSheetSkins['svgHash']} */ ({});
 
   for (const { skinClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
     if (canSkip && prevSvgHash[skinClassKey]) {
       skins.svgHash[skinClassKey] = prevSvgHash[skinClassKey];
+      skins.numSheets[skinClassKey] = prevNumSheets[skinClassKey];
     } else {
       const svgContents = fs.readFileSync(svgPath).toString();
 
