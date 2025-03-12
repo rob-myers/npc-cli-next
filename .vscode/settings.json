@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": false,
+  "editor.tabSize": 2,
+  "[xml]": {
+    "editor.formatOnSave": false
+  },
+  "html.format.enable": false,
+  "[svg]": {
+      "editor.formatOnSave": false
+  }
+}
