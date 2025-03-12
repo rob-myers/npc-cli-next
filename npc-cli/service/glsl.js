@@ -501,7 +501,14 @@ export const humanZeroShader = {
     // if (!(vId == 28 || vId == 39)) discard;
     // body-left
     // if (!(vId == 29 || vId == 35)) discard;
-
+    // base-head-overlay-front
+    // if (!(vId == 51 || vId == 63)) discard;
+    // 🚧 manual remap base-head-overlay-front -> confused-head-overlay-front
+    if (vId == 51 || vId == 63) {
+      gl_FragColor = texture(atlas, vec3(vUv.x + 0.125, vUv.y, texSkinId));
+      #include <logdepthbuf_fragment>
+      return;
+    }
 
     // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
     gl_FragColor = texture(atlas, vec3(vUv, texSkinId));
