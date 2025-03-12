@@ -466,7 +466,8 @@ declare namespace Geomorph {
 
   interface SpriteSheetSkins {
     numSheets: Record<SkinClassKey, number>;
-    svgHash: Record<SkinClassKey, number>;
+    /** One per sheet for skin class */
+    svgHashes: Record<SkinClassKey, number[]>;
     /** From `(skinClassKey, sheetId)` to "index into skins DataTextureArray" */
     texArrayId: Record<SkinClassKey, number[]>;
     uvMap: Record<SkinClassKey, UvRectLookup>;

@@ -40157,7 +40157,10 @@
     "imagesHash": -406048366,
     "skins": {
       "numSheets": {"cuboid-man": 1, "human-skin-0": 2},
-      "svgHash": {"cuboid-man": -1087841574, "human-skin-0": -2074204476},
+      "svgHashes": {
+        "cuboid-man": [-1087841574],
+        "human-skin-0": [265880118, -2074204476]
+      },
       "texArrayId": {"cuboid-man": [0], "human-skin-0": [1, 2]},
       "uvMap": {
         "cuboid-man": {

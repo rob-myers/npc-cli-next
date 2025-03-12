@@ -180,7 +180,7 @@ info({ opts });
       imagesHash: 0,
       skins: {
         numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
-        svgHash: /** @type {Geomorph.SpriteSheetSkins['svgHash']} */ ({}),
+        svgHashes: /** @type {Geomorph.SpriteSheetSkins['svgHashes']} */ ({}),
         texArrayId: /** @type {Geomorph.SpriteSheetSkins['texArrayId']} */ ({}),
         uvMap: /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({}),
         uvMapDim: /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({}),
@@ -790,6 +790,8 @@ function getDecorPngPaths(assets) {
 //#region npcs
 
 /**
+ * lexicographically sorted, so that e.g.
+ * `{npcClassKey}.0.tex.svg` is before `{npcClassKey}.1.tex.svg`
  * @returns {NPC.TexMeta[]}
  */
 function getNpcTextureMetas() {
@@ -826,45 +828,44 @@ function getNpcTextureMetas() {
  */
 async function createNpcTexturesAndUvMeta(assets, prev) {
   const { skins } = assets.sheet;
-  const {
-    numSheets: prevNumSheets,
-    svgHash: prevSvgHash,
-    texArrayId: prevTexArrayId,
-    uvMap: prevUvMap,
-    uvMapDim: prevUvMapDim,
-  } = skins;
+  const prevSvgHash = skins.svgHashes;
   
-  // 🚧 prefer skins[skinClassKey] = { numSheets, ..., uvMapDim }
-  skins.numSheets = /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({});
-  skins.svgHash = /** @type {Geomorph.SpriteSheetSkins['svgHash']} */ ({});
-  skins.texArrayId = /** @type {Geomorph.SpriteSheetSkins['texArrayId']} */ ({});
-  skins.uvMap = /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({});
-  skins.uvMapDim = /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({});
+  // group by skinClassKey
+  const bySkinClass = mapValues(helper.fromSkinClassKey, (_, skinClassKey) => {
+    const npcTexMetas = prev.npcTexMetas.filter(x => x.skinClassKey === skinClassKey);
+    return {
+      skinClassKey,
+      npcTexMetas,
+      canSkip: skinClassKey in prevSvgHash && npcTexMetas.every(x => x.canSkip === true),
+    };
+  });
 
-  for (const { skinClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
-    if (canSkip && prevSvgHash[skinClassKey]) {
-      console.log('🔔 skipping', canSkip, svgPath);
-      skins.svgHash[skinClassKey] = prevSvgHash[skinClassKey];
-      skins.numSheets[skinClassKey] = prevNumSheets[skinClassKey];
-      skins.texArrayId[skinClassKey] = prevTexArrayId[skinClassKey];
-      skins.uvMap[skinClassKey] = prevUvMap[skinClassKey];
-      skins.uvMapDim[skinClassKey] = prevUvMapDim[skinClassKey];
-    } else {
+  for (const { skinClassKey, canSkip, npcTexMetas } of Object.values(bySkinClass)) {
+    if (canSkip) {
+      // console.log('🔔 skipping', skinClassKey);
+      continue; // reuse e.g. skins.uvMap[skinClassKey]
+    }
+
+    // reset things we don't overwrite
+    skins.numSheets[skinClassKey] = 0;
+    skins.svgHashes[skinClassKey] = [];
+    skins.uvMap[skinClassKey] = {};
+
+    for (const { svgBaseName, svgPath, pngPath, skinSheetId } of npcTexMetas) {
       const svgContents = fs.readFileSync(svgPath).toString();
 
       // count sheets per class
-      skins.numSheets[skinClassKey] ??= 0;
       skins.numSheets[skinClassKey]++;
-
+      
       // extract uv-mapping from top-level folder "uv-map"
-      const sheetId = skins.numSheets[skinClassKey] - 1;
-      const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, sheetId, svgBaseName);
-      // 🔔 later sheets overwrite earlier, so use distinct names
+      // merge sheets (must use distinct names in different SVGs for same skin)
+      const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, skinSheetId, svgBaseName);
       Object.assign(skins.uvMap[skinClassKey] ??= {}, uvMap);
       skins.uvMapDim[skinClassKey] = { width, height };
 
+      skins.svgHashes[skinClassKey].push(hashText(svgContents));
+      
       // convert SVG to PNG
-      skins.svgHash[skinClassKey] = hashText(svgContents);
       const svgDataUrl = `data:image/svg+xml;utf8,${svgContents}`;
       const image = await loadImage(svgDataUrl);
       const canvas = createCanvas(image.width, image.height);
@@ -873,13 +874,13 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
     }
   }
 
-    // linearly order each (skinClassKey, sheetId)
-    let nextTexArrayId = 0;
-    skins.texArrayId = mapValues(skins.numSheets, (numSheets) => {
-      const output = range(numSheets).map(i => nextTexArrayId + i);
-      nextTexArrayId += output.length;
-      return output;
-    });
+  // recompute skins.texArrayId (linearly order all sheets)
+  let nextTexArrayId = 0;
+  skins.texArrayId = mapValues(skins.numSheets, (numSheets) => {
+    const output = range(numSheets).map(i => nextTexArrayId + i);
+    nextTexArrayId += output.length;
+    return output;
+  });
 
 }
 

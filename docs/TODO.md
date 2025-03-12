@@ -116,8 +116,8 @@
   - ℹ️ https://issues.chromium.org/issues/361372969
   - ✅ reconnect websocket in patch
 
-- 🚧 Sometimes geomorphs.skins.uvMap is not being updated onchange file (?)
-  - just saw it again on edit media/npc/human-skin-0.0.tex.svg
+- ✅ BUG: geomorphs.skins.uvMap not being updated onchange file
+  - ℹ️ needed to define canSkip over all sheets, not per sheet
 - generated decor/obstacles/skin png,webp distinct on different laptops
   - try migrating `canvas` to https://www.npmjs.com/package/skia-canvas
 
