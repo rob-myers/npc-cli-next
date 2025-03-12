@@ -40154,12 +40154,12 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "imagesHash": -406048366,
+    "imagesHash": -1918524967,
     "skins": {
       "numSheets": {"cuboid-man": 1, "human-skin-0": 2},
       "svgHashes": {
         "cuboid-man": [-1087841574],
-        "human-skin-0": [265880118, -2074204476]
+        "human-skin-0": [76382993, -2074204476]
       },
       "texArrayId": {"cuboid-man": [0], "human-skin-0": [1, 2]},
       "uvMap": {
@@ -40492,6 +40492,13 @@
             "sheetId": 0,
             "x": 0.3125,
             "y": 0.40625,
+            "width": 0.0625,
+            "height": 0.0625
+          },
+          "confused-head-overlay-front": {
+            "sheetId": 0,
+            "x": 0.375,
+            "y": 0.203125,
             "width": 0.0625,
             "height": 0.0625
           },
