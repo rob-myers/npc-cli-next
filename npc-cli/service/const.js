@@ -428,3 +428,6 @@ export const switchDecorQuadScaleUp = [1, 0, 0, 1.5, 0, 0];
 
 /** `2048 * 2048` can contain main skins */
 export const skinsTextureDimension = 2048;
+
+/** @type {Record<Geomorph.SkinClassKey, true>} */
+export const fromSkinClassKey = { "cuboid-man": true, "human-skin-0": true };

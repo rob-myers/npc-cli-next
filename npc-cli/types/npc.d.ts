@@ -61,10 +61,7 @@ declare namespace NPC {
   interface TexMeta {
     /** e.g. `human-skin-0` */
     skinClassKey: Geomorph.SkinClassKey;
-    /**
-     * e.g. `0`
-     * 🔔 assume no gaps and `0` exists
-     */
+    /** e.g. `0` 🔔 (assume no gaps and `0` exists) */
     skinSheetId: number;
     /** e.g. `human-skin-0.0.tex.svg` */
     svgBaseName: string;

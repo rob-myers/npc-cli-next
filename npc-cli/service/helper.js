@@ -1,4 +1,4 @@
-import { fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
+import { fromDecorImgKey, fromSymbolKey, npcClassToMeta, fromSkinClassKey } from "./const";
 
 /**
  * 🚧 try singleton instance instead, including other methods
@@ -81,8 +81,7 @@ export const helper = {
     Walk: true,
   },
 
-  /** @type {Record<Geomorph.SkinClassKey, true>} */
-  fromSkinClassKey: { "cuboid-man": true, "human-skin-0": true },
+  fromSkinClassKey,
 
   /**
    * Try construct degenerate "id" from partial.
