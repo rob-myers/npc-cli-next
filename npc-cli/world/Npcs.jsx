@@ -454,6 +454,7 @@ function NPC({ npc }) {
             texSkinId={npc.m.texSkinId}
             transparent
             uid={npc.def.pickUid}
+            uvReMap={npc.w.texSkinUvs.tex}
           />
         ) || <cuboidManMaterial
           key={CuboidManMaterial.key}

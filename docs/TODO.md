@@ -87,10 +87,12 @@
   - ✅ test triangle centers against "uv-keyed rectangles"
   - ✅ verify/fix lookup
   - ✅ label uv-mapped properly
-- shader maps "provoking vertex id" to "uv offset"
-  - w.npc has map from "provoking vertex id" to "uvRectKey"
-  - uvReMap DataTextureArray has 256 layers (one per npc)
-  - hard-coded example re-map e.g. head -> head
+- 🚧 shader maps "provoking vertex id" to "uv offset"
+  - ℹ️ "provoking vertex id" is last id in `w.npc.skinTriMap[triId].vertexIds`
+  - ✅ `w.texSkinUvs` DataTextureArray has 256 layers (one per npc)
+  - ✅ shader receives uvReMap
+  - 🚧 clarify re-map format
+  - 🚧 hard-coded example re-map e.g. head -> head
   - general approach
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label

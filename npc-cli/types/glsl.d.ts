@@ -1,79 +1,72 @@
-declare global {
-  namespace React.JSX {
+import { type ThreeElement } from '@react-three/fiber'
+declare module '@react-three/fiber' {
+  
+  interface SupportsObjectPick {
+    objectPick?: boolean;
+  }
+  type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
+  type Vector2Input = import('three').Vector2Tuple | import('three').Vector2;
 
-    type BaseExtendedShaderMaterial<T = {}> = import('@react-three/fiber').Object3DNode<
-      import('three').ShaderMaterial,
-      typeof THREE.ShaderMaterial
-    > & T;
+  interface ThreeElements {
 
-    type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
-    type Vector2Input = import('three').Vector2Tuple | import('three').Vector2;
-    
-    type Texture = import('three').Texture;
+    cameraLightMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+      diffuse?: Vector3Input;
+      opacity?: number;
+      objectPickRed?: number;
+    };
 
-    interface SupportsObjectPick {
-      objectPick?: boolean;
-    }
+    // 🚧 remove
+    cuboidManMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+      uNpcUid?: number;
+      diffuse?: Vector3Input;
+      opacity?: number;
 
-    interface IntrinsicElements {
-      instancedMonochromeShader: BaseExtendedShaderMaterial<{
-        diffuse?: Vector3Input;
-        opacity?: number;
-      } & SupportsObjectPick>;
+      showLabel?: boolean;
+      labelHeight?: number;
+      showSelector?: boolean;
+      selectorColor?: Vector3Input;
 
-      instancedLabelsMaterial: BaseExtendedShaderMaterial<{
-        map: import('three').CanvasTexture;
-        // ...
-      }>;
+      uBaseTexture: import('three').Texture;
+      uLabelTexture: import('three').Texture;
+      uAlt1Texture: import('three').Texture;
 
-      instancedMultiTextureMaterial: BaseExtendedShaderMaterial<{
-        alphaTest?: number;
-        colorSpace?: boolean;
-        diffuse?: Vector3Input;
-        atlas: import('three').DataArrayTexture;
-        /** Red component in [0..255] used by objectPick rgba */
-        objectPickRed?: number;
-        opacity?: number;
-      } & SupportsObjectPick>;
+      uFaceTexId?: number;
+      uIconTexId?: number;
+      uLabelTexId?: number;
 
-      cameraLightMaterial: BaseExtendedShaderMaterial<{
-        diffuse?: Vector3Input;
-        opacity?: number;
-      }>;
+      uFaceUv?: Vector2Input[];
+      uIconUv?: Vector2Input[];
+      uLabelUv?: Vector2Input[];
 
-      cuboidManMaterial: BaseExtendedShaderMaterial<{
-        uNpcUid?: number;
-        diffuse?: Vector3Input;
-        opacity?: number;
+      uLabelDim?: Vector2Input;
+    } & SupportsObjectPick;
 
-        showLabel?: boolean;
-        labelHeight?: number;
-        showSelector?: boolean;
-        selectorColor?: Vector3Input;
+    humanZeroShader: ThreeElement<typeof import('three').ShaderMaterial> & {
+      atlas: import('three').DataArrayTexture;
+      texSkinId: number;
+      uid: number;
+      uvReMap: import('three').DataArrayTexture;
+    };
 
-        uBaseTexture: Texture;
-        uLabelTexture: Texture;
-        uAlt1Texture: Texture;
+    instancedLabelsMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+      map: import('three').CanvasTexture;
+      diffuse?: Vector3Input;
+    };
 
-        uFaceTexId?: number;
-        uIconTexId?: number;
-        uLabelTexId?: number;
+    instancedMonochromeShader: ThreeElement<typeof import('three').ShaderMaterial> & {
+      diffuse?: Vector3Input;
+      opacity?: number;
+    } & SupportsObjectPick;
 
-        uFaceUv?: Vector2Input[];
-        uIconUv?: Vector2Input[];
-        uLabelUv?: Vector2Input[];
+    instancedMultiTextureMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+      alphaTest?: number;
+      colorSpace?: boolean;
+      diffuse?: Vector3Input;
+      atlas: import('three').DataArrayTexture;
+      /** Red component in [0..255] used by objectPick rgba */
+      objectPickRed?: number;
+      opacity?: number;
+    } & SupportsObjectPick;
 
-        uLabelDim?: Vector2Input;
-      } & SupportsObjectPick>;
-
-      humanZeroShader: BaseExtendedShaderMaterial<{
-        atlas: import('three').DataArrayTexture;
-        texSkinId: number;
-        uid: number;
-        // 🚧
-      } & SupportsObjectPick>;
-    }
   }
 }
-
-export {}; // Required
