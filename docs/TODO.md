@@ -81,16 +81,17 @@
 - ✅ infer `texSkinId` from gltf texture filename
   - ℹ️ geomorphs.skins.texArrayId[skinClassKey][sheetId] where sheetId comes from texture filename
 - ✅ pass `texSkinId` into shader
-- 🚧 compute "triangle -> uvKey" mapping
+- ✅ compute "triangle -> uvKey" mapping
+  - ℹ️ `w npc.skinTriMap | json`
   - ✅ provide geomorphs.skins.uvMap[uvKey].sheetId (relative to skinClassKey)
   - ✅ test triangle centers against "uv-keyed rectangles"
   - ✅ verify/fix lookup
-  - 🚧 is label uv-mapped?
-  - 🚧 lookup from provoking vertex id
-
-- "npc uvs" DataTextureArray
-  - one layer per pickId and 256 layers
-  - can remap head, head overlay, body, body overlay, selector/breath quad
+  - ✅ label uv-mapped properly
+- shader maps "provoking vertex id" to "uv offset"
+  - w.npc has map from "provoking vertex id" to "uvRectKey"
+  - uvReMap DataTextureArray has 256 layers (one per npc)
+  - hard-coded example re-map e.g. head -> head
+  - general approach
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
 
@@ -115,8 +116,10 @@
   - ℹ️ https://issues.chromium.org/issues/361372969
   - ✅ reconnect websocket in patch
 
-- Sometimes geomorphs.skins.uvMap is not being updated onchange file (?)
+- 🚧 Sometimes geomorphs.skins.uvMap is not being updated onchange file (?)
   - just saw it again on edit media/npc/human-skin-0.0.tex.svg
+- generated decor/obstacles/skin png,webp distinct on different laptops
+  - try migrating `canvas` to https://www.npmjs.com/package/skia-canvas
 
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
