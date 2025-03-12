@@ -130,9 +130,14 @@ code .
 
 ### Avoid nested transforms in SVGs
 
-We parse various SVGs ...
+We don't support transforms applied to `<g>`s, for example in skin SVGs.
+> 🔔 maybe we should...
 
-There's a trick we can use in BoxySVG:
-- drag contents outside Group
-- remove transform from Group (e.g. via elements panel E)
-- drag contents back into Group
+In BoxySVG, you can avoid introducing transforms on `<g>`s by
+- selecting all of its children (rather than the Group)
+- e.g. Geometry > change Y.
+
+In BoxySVG, if your `<g>` already has a transform you can use this trick:
+> - drag contents outside Group
+> - remove transform from Group (e.g. via elements panel E)
+> - drag contents back into Group
