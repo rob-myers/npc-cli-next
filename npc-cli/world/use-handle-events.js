@@ -530,7 +530,7 @@ export default function useHandleEvents(w) {
       if (e.offMesh.dstRoomMeta.small === true) { 
         npc.stopMoving(); // avoid jerk on try pass close neighbour
       } else if (npc.position.distanceToSquared(npc.lastTarget) < 0.4 ** 2) {
-        npc.s.permitTurn = false; // avoid short-sharp turn
+        // npc.s.permitTurn = false; // avoid short-sharp turn
       } else if (npc.agent?.maxSpeed === npc.getSlowSpeed()) {// resume speed
         npc.agent.updateParameters({ maxSpeed: npc.getMaxSpeed() });
         npc.s.run === true && npc.startAnimation('Run');

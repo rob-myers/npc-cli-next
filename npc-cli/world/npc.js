@@ -1002,7 +1002,8 @@ export class Npc {
     }
 
     this.s.lookSecs = 0.3;
-    this.s.lookAngleDst = null;
+    // 🔔 smoother...
+    // this.s.lookAngleDst = null;
     this.s.permitTurn = true;
     this.s.slowBegin = null;
     this.s.target = null;
