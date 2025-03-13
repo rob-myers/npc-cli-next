@@ -109,8 +109,13 @@
   - Logger PopUp?
 - ❌ npc should not stop so suddenly near doorway
 - ✅ implement `+=` s.t. `c+=1` would increment if `c` numeric
+
 - if lookAt while walking, eventually lookAt once stopMoving
 - more abrupt walk -> idle when collide
+- 🚧 less abrupt turn just after doorway
+  - ✅ slow down turn during main offMesh seg
+  - try initially turning before start moving (generally)
+
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other

@@ -443,6 +443,7 @@ export default function useHandleEvents(w) {
       }
     },
     onEnterOffMeshConnection(e, npc) {
+      npc.s.lookSecs = 0.2;
       const { offMesh } = e;
       const door = w.door.byKey[offMesh.gdKey];
 
@@ -488,6 +489,7 @@ export default function useHandleEvents(w) {
       w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.srcGrKey) });
     },
     onEnterOffMeshConnectionMain(e, npc) {
+      npc.s.lookSecs = 0.5; // slow down look
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
       // 🔔 on enter main seg
       // - if another traverses main seg in opposite direction, stop
@@ -525,6 +527,7 @@ export default function useHandleEvents(w) {
       }
     },
     onExitOffMeshConnection(e, npc) {
+      npc.s.lookSecs = 0.2;
       state.clearOffMesh(npc);
       
       if (e.offMesh.dstRoomMeta.small === true) { 
@@ -546,17 +549,6 @@ export default function useHandleEvents(w) {
     overrideOffMeshConnectionAngle(npc, offMesh, door) {
       const npcPoint = Vect.from(npc.getPoint());
       const nextCorner = npc.getCornerAfterOffMesh();
-
-      // if (offMesh.dstRoomMeta.small === true) {
-      //   // don't override onenter small room to avoid
-      //   // jerk when someone already in there
-      //   return {
-      //     initPos: npcPoint.json,
-      //     src: toXZ(offMesh.src),
-      //     dst: toXZ(offMesh.dst),
-      //     nextCorner,
-      //   };
-      // }
 
       // Entrances are aligned to offMeshConnections
       // - entrance segment (enSrc, enDst)
