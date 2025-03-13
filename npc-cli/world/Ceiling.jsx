@@ -86,6 +86,9 @@ export default function Ceiling(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
+    setOpacity(opacity) {
+      state.opacity = Math.min(Math.max(0, opacity), 1);
+    },
   }), { reset: { opacity: true } });
 
   w.ceil = state;
@@ -133,4 +136,5 @@ export default function Ceiling(props) {
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Geomorph.GeomorphKey) => void} drawGm
  * @property {() => void} positionInstances
+ * @property {(opacity: number) => void} setOpacity
  */

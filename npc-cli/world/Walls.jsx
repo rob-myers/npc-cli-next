@@ -8,15 +8,12 @@ import { InstancedWallsShader } from "../service/glsl";
 import { geomorph } from "../service/geomorph";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
-import useUpdate from "../hooks/use-update";
 
 /**
  * @param {Props} props
  */
 export default function Walls(props) {
   const w = React.useContext(WorldContext);
-
-  const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
@@ -105,7 +102,6 @@ export default function Walls(props) {
     },
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
-      update();
     },
   }));
 

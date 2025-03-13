@@ -68,7 +68,8 @@ export default function WorldMenu(props) {
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
       w.wall.setOpacity(state.xRayOpacity / 10);
-      w.disabled && update(); // Paused menu Toggle
+      w.ceil.setOpacity(state.xRayOpacity / 10)
+      w.update();
     },
     onClickLoggerLink(e) {
       const [npcKey] = e.fullLine.slice('['.length).split('] ', 1);
@@ -115,12 +116,13 @@ export default function WorldMenu(props) {
     toggleXRay() {
       state.xRayOpacity = state.xRayOpacity < 10 ? 10 : 5;
       w.wall.setOpacity(state.xRayOpacity / 10);
-      
+      w.ceil.setOpacity(state.xRayOpacity / 10);
+
       /** @type {HTMLInputElement} */ (// reflect in range
         state.draggable.el.querySelector('input.change-x-ray')
       ).value = `${state.xRayOpacity}`;
       
-      update();
+      w.update();
     },
   }));
 
