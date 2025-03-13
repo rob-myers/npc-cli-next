@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
+import { deltaAngle } from "maath/misc";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
@@ -1008,7 +1009,9 @@ export class Npc {
     }
 
     this.s.lookSecs = 0.3;
-    // 🔔 smoother...
+    if (this.s.lookAngleDst !== null) {// turn a bit more e.g. just after doorway
+      this.s.lookAngleDst = this.m.group.rotation.y + deltaAngle(this.m.group.rotation.y, this.s.lookAngleDst) / 3;
+    }
     // this.s.lookAngleDst = null;
     this.s.permitTurn = true;
     this.s.slowBegin = null;
