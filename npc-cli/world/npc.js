@@ -828,7 +828,7 @@ export class Npc {
    * @returns 
    */
   onTickDetectStuck(deltaMs, agent) {
-    const smallDist = 0.25 * agent.raw.desiredSpeed * deltaMs;
+    const smallDist = 0.4 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
       this.s.slowBegin = null; // reset
@@ -1075,7 +1075,7 @@ const movingMaxAcceleration = 8;
 const staticSeparationWeight = 1.5;
 const movingSeparationWeight = 1;
 // const movingSeparationWeight = 0.4;
-const staticCollisionQueryRange = 1.5;
+const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
 const closeDist = helper.defaults.radius * 1.7;
