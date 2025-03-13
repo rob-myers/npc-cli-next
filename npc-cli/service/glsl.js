@@ -445,8 +445,9 @@ export const cuboidManShader = {
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
+  flat varying int triangleId;
   attribute int vertexId;
-  flat varying int vId;
+  flat varying int vId; // 🚧 remove?
   varying vec2 vUv;
 
   #include <common>
@@ -462,6 +463,7 @@ export const humanZeroShader = {
     vec3 transformed = vec3(position);
     #include <skinning_vertex>
 
+    triangleId = int(vertexId / 3); // since geometry.toNonIndexed()
     vId = vertexId;
     vUv = uv;
 
@@ -480,6 +482,7 @@ export const humanZeroShader = {
   uniform int uid;
   uniform sampler2DArray uvReMap;
 
+  flat varying int triangleId;
   flat varying int vId;
   varying vec2 vUv;
 
@@ -504,7 +507,8 @@ export const humanZeroShader = {
     // base-head-overlay-front
     // if (!(vId == 51 || vId == 63)) discard;
     // 🚧 manual remap base-head-overlay-front -> confused-head-overlay-front
-    if (vId == 51 || vId == 63) {
+    // if (vId == 92 || vId == 95) {
+    if (triangleId == 30 || triangleId == 31) {
       gl_FragColor = texture(atlas, vec3(vUv.x + 0.125, vUv.y, texSkinId));
       #include <logdepthbuf_fragment>
       return;

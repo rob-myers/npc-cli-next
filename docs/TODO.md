@@ -87,11 +87,13 @@
   - ✅ test triangle centers against "uv-keyed rectangles"
   - ✅ verify/fix lookup
   - ✅ label uv-mapped properly
-- 🚧 shader maps "provoking vertex id" to "uv offset"
+- 🚧 shader maps "triangle id" to "uv offset"
   - ℹ️ "provoking vertex id" is last id in `w.npc.skinTriMap[triId].vertexIds`
   - ✅ `w.texSkinUvs` DataTextureArray has 256 layers (one per npc)
   - ✅ shader receives uvReMap
   - ✅ hard-coded example re-map in shader overlay-head -> overlay-head
+  - ✅ use triangle id instead of "provoking vertex id" because cannot assume (v0,v1,v2) -> v2 injective
+    > https://discourse.threejs.org/t/blender-gltf-export-do-distinct-triangles-always-have-distinct-final-vertex/79507
   - 🚧 same hard-coded example but encoded in uvReMap
   - 🚧 clarify re-map format
   - general approach

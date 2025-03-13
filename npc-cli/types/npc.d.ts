@@ -353,7 +353,9 @@ declare namespace NPC {
    * the uvKey of the unique rectangle containing the triangle.
    */
   interface SkinTriMap {
-    [triId: number]: { uvKey: string; vertexIds: number[] };
+    [triId: number]: {
+      uvKey: string;
+    };
   }
 
 }

@@ -493,6 +493,10 @@ export class Npc {
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
     // m.mesh.userData.npcKey = this.key; // To decode pointer events
 
+    // 🔔 un-weld vertices so we can determine triangleId from vertexId
+    // https://discourse.threejs.org/t/blender-gltf-export-do-distinct-triangles-always-have-distinct-final-vertex/79507/2
+    m.mesh.geometry = m.mesh.geometry.toNonIndexed();
+
     const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (m.mesh.material);
     const matBaseName = origMaterial.map?.name ?? null; // e.g. human-skin-0.0.tex.png
     const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
@@ -512,10 +516,12 @@ export class Npc {
     const vertexIds = [...Array(numVertices)].map((_,i) => i);
     m.mesh.geometry.setAttribute('vertexId', new THREE.BufferAttribute(new Int32Array(vertexIds), 1));
 
-    // ensure skin tri -> uvRect mapping for skinClassKey
+    // ensure w.texSkin i.e. skin tri -> uvRect mapping 
+    // ensure w.texSkinUvs i.e. uv-re-mapping per npc
     if (this.w.npc.skinTriMap[skinClassKey] === undefined) {
       this.w.menu.measure(`npc.skinTriMap`);
       this.w.npc.skinTriMap[skinClassKey] = computeSkinTriMap(m.mesh, skins.uvMap[skinClassKey], skinSheetId);
+      this.w.npc.drawUvReMap(this);
       this.w.menu.measure(`npc.skinTriMap`);
     }
 

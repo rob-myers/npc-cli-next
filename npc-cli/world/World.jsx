@@ -8,7 +8,7 @@ import { Timer } from "three-stdlib";
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
-import { floorTextureDimension, maxNumberOfNpcs, npcClassToMeta, skinsTextureDimension, skinsUvsTextureWidth } from "../service/const";
+import { floorTextureDimension, maxNumberOfNpcs, skinsTextureDimension, skinsUvsTextureWidth } from "../service/const";
 import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { queryCache, removeCached, setCached } from "../service/query-client";

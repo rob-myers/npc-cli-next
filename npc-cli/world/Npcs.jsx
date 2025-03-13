@@ -64,7 +64,11 @@ export default function Npcs(props) {
       Object.values(state.npc).forEach(npc => cmUvService.updateLabelQuad(npc));
       w.menu.measure('npc.clearLabels');
     },
-    findPath(src, dst) {// 🔔 agent may follow different path
+    drawUvReMap(npc, opts) {
+      // 🚧 one pixel per triangle
+      // 🚧 hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
+    },
+    findPath(src, dst) {// 🔔 agent only use path as a guide
       const query = w.crowd.navMeshQuery;
       const { path, success } = query.computePath(src, dst, {
         filter: w.crowd.getFilter(0),
@@ -387,6 +391,7 @@ export default function Npcs(props) {
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} clearLabels
+ * @property {(npc: NPC.NPC, opts?: any) => void} drawUvReMap
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc

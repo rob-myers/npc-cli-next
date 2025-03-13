@@ -430,8 +430,8 @@ export const switchDecorQuadScaleUp = [1, 0, 0, 1.5, 0, 0];
 export const skinsTextureDimension = 2048;
 
 /**
- * One pixel per triangle in model,
- * each representing (du, dv, sheetId) for uv-remapping
+ * One pixel per triangle in model (currently assume ≤ 128).
+ * Each pixel represents (du, dv, sheetId) for uv-remapping
  */
 export const skinsUvsTextureWidth = 128;
 
