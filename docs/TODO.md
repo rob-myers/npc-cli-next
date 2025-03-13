@@ -95,7 +95,7 @@
   - 🚧 same hard-coded example but encoded in uvReMap
   - 🚧 clarify re-map format
   - general approach
-  - move selector/breath/label quad up i.e. no 32-pixel-gap
+  - ✅ move selector/breath/label quad up i.e. no 32-pixel-gap
     - requires changing UV map in Blender too
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
