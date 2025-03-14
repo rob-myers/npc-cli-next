@@ -494,6 +494,9 @@ export class Npc {
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
     // m.mesh.userData.npcKey = this.key; // To decode pointer events
 
+    // 🚧 move earlier
+    // 🚧 compute skinTriMap earlier
+    // 🚧 recompute on GLTF change
     // 🔔 un-weld vertices so we can determine triangleId from vertexId
     // https://discourse.threejs.org/t/blender-gltf-export-do-distinct-triangles-always-have-distinct-final-vertex/79507/2
     m.mesh.geometry = m.mesh.geometry.toNonIndexed();

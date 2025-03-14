@@ -12,7 +12,7 @@ const changed = /** @type {Map<string, number>} */ (new Map());
 // @ts-ignore
 nodemon({
   delay: 0.1,
-  ext: 'svg,png',
+  ext: 'svg,png,glb',
   runOnChangeOnly: true,
   script: 'scripts/noop.js', // 🔔 must override default behaviour 
   watch: [
@@ -23,6 +23,7 @@ nodemon({
     'media/map/',
     'media/decor/',
     'media/npc/',
+    'public/3d/*.glb',
   ],
   exitcrash: true,
 }).on('restart', onRestart).on('quit', onQuit);

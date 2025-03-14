@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
-import { pause, range, takeFirst, warn } from "../service/generic";
+import { mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
@@ -107,6 +107,19 @@ export default function Npcs(props) {
       } else {
         return npc;
       }
+    },
+    hotReloadNpc(prevNpc) {
+      // 🔔 HMR by copying prevNpc non-methods into nextNpc
+      const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
+      // invalidate React.Memo
+      nextNpc.epochMs = Date.now();
+      // avoid stale ref
+      if (nextNpc.agent !== null) {
+        state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
+      }
+      // track npc class meta 🚧 other properties?
+      nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
+      prevNpc.dispose();
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
@@ -320,21 +333,17 @@ export default function Npcs(props) {
   
   React.useEffect(() => {// init + hmr
     cmUvService.initialize(state.gltf);
-    // 🔔 HMR by copying prevNpc non-methods into nextNpc
-    process.env.NODE_ENV === 'development' && Object.values(state.npc).forEach(prevNpc => {
-      const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
-      // invalidate React.Memo
-      nextNpc.epochMs = Date.now();
-      // avoid stale ref
-      if (nextNpc.agent !== null) {
-        state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
-      }
-      // 🚧 track npc class meta
-      nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
-      prevNpc.dispose();
-      update();
-    });
+    if (process.env.NODE_ENV === 'development') {
+      Object.values(state.npc).forEach(state.hotReloadNpc);
+    }
   }, []);
+  
+  // 🚧 detect gltf change via geomorphs.sheet.glbHash
+  // 🚧 apply mesh normalization i.e. un-weld
+  // 🚧 recompute "triangleId -> { uvRectKey, bodyPartKey }"
+  React.useEffect(() => {
+    console.log('🚧', w.geomorphs.sheet.glbHash);
+  }, Object.values(w.geomorphs.sheet.glbHash));
 
   // 🚧 remove
   React.useEffect(() => {// npc textures
@@ -395,6 +404,7 @@ export default function Npcs(props) {
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
+ * @property {(prevNpc: NPC.NPC) => void} hotReloadNpc
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore

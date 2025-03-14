@@ -67,7 +67,18 @@ declare namespace NPC {
     svgBaseName: string;
     svgPath: string;
     pngPath: string;
+    /** Can determine by comparing modified time of SVG vs PNG */
     canSkip: boolean;
+  }
+
+  interface GltfMeta {
+    /** e.g. `human-0` */
+    npcClassKey: NPC.ClassKey;
+    /** e.g. `human-0.glb` */
+    glbBaseName: string;
+    /** e.g. `.../public/3d/human-0.glb` */
+    glbPath: string;
+    glbHash: number;
   }
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {

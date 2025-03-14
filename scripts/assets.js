@@ -109,6 +109,8 @@ async function computePrev() {
     skipObstacles: skipPossible && obstaclePngs.every(Boolean) && !opts.changedFiles.some(x => x.startsWith(symbolsDir)),
     skipDecor: skipPossible && decorPngs.every(Boolean) && !opts.changedFiles.some(x => x.startsWith(decorDir)),
     skipNpcTex: skipPossible && npcTexMetas.every(x => x.canSkip) && !opts.changedFiles.some(x => x.startsWith(npcDir)),
+    // 🔔 only recompute when forced to or some glb changed
+    skipGltfs: skipPossible && !opts.changedFiles.some(x => x.endsWith('.glb')),
   };
 }
 
@@ -177,6 +179,7 @@ info({ opts });
       obstacleDims: [],
       maxObstacleDim: { width: 0, height: 0 },
 
+      glbHash: /** @type {Geomorph.SpriteSheet['glbHash']} */ ({}),
       imagesHash: 0,
       skins: {
         numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
@@ -256,20 +259,27 @@ info({ opts });
   );
   info({ changedKeys: changedSymbolAndMapKeys });
 
+  // construct sheet.gltfHash
+  if (!prev.skipGltfs) {
+    assetsJson.sheet.glbHash = computeGlbMetas();
+  }
+
   // hash sprite-sheet PNGs: decor, obstacles, skins
   // 🚧 split for faster computation?
   // 🚧 compute image hash faster?
   perf('sheet.imagesHash');
-  assetsJson.sheet.imagesHash =
-    prev.skipObstacles === true && prev.skipDecor === true && prev.skipNpcTex === true && assetsJson.sheet.imagesHash !== 0
-      ? assetsJson.sheet.imagesHash
-      : hashJson([
-          ...getDecorPngPaths(assetsJson),
-          ...getObstaclePngPaths(assetsJson),
-          ...getSkinPngPaths(prev.npcTexMetas),
-        ].map(x => fs.readFileSync(x).toString())
-    )
-  ;
+  if (!(
+    prev.skipObstacles === true
+    && prev.skipDecor === true
+    && prev.skipNpcTex === true
+    && assetsJson.sheet.imagesHash !== 0
+  )) {
+    assetsJson.sheet.imagesHash = hashJson([
+      ...getDecorPngPaths(assetsJson),
+      ...getObstaclePngPaths(assetsJson),
+      ...getSkinPngPaths(prev.npcTexMetas),
+    ].map(x => fs.readFileSync(x).toString()));
+  }
   perf('sheet.imagesHash');
 
   fs.writeFileSync(assetsFilepath, stringify(assetsJson));
@@ -790,6 +800,24 @@ function getDecorPngPaths(assets) {
 //#region npcs
 
 /**
+ * 🔔 filename extension is 'glb' rather than 'gltf'
+ * @returns {Geomorph.SpriteSheet['glbHash']}
+ */
+function computeGlbMetas() {
+  const output = /** @type {Geomorph.SpriteSheet['glbHash']} */ ({});
+  fs.readdirSync(assets3dDir).filter(
+    (baseName) => baseName.endsWith(".glb")
+  ).forEach((glbBaseName) => {
+    const glbPath = path.resolve(assets3dDir, glbBaseName);
+    const glbHash = hashText(fs.readFileSync(glbPath).toString());
+    // 🔔 assume `{npcClassKey}.glb`
+    const npcClassKey = /** @type {NPC.ClassKey} */ (glbBaseName.split('.')[0]);
+    output[npcClassKey] = glbHash;
+  });
+  return output;
+}
+
+/**
  * lexicographically sorted, so that e.g.
  * `{npcClassKey}.0.tex.svg` is before `{npcClassKey}.1.tex.svg`
  * @returns {NPC.TexMeta[]}
@@ -903,6 +931,7 @@ function getSkinPngPaths(npcTexMetas) {
  * @property {boolean} skipObstacles
  * @property {boolean} skipDecor
  * @property {boolean} skipNpcTex
+ * @property {boolean} skipGltfs
  */
 
 /**
