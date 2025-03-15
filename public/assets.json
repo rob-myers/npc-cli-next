@@ -1282,13 +1282,13 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"cuboid-man": -1925566159, "human-0": -675048165},
-    "imagesHash": 497505328
+    "imagesHash": -1962984693
   },
   "skin": {
     "numSheets": {"cuboid-man": 1, "human-skin-0": 2},
     "svgHashes": {
       "cuboid-man": [-1087841574],
-      "human-skin-0": [-1795244287, -2074204476]
+      "human-skin-0": [1733007324, -1636056572]
     },
     "texArrayId": {"cuboid-man": [0], "human-skin-0": [1, 2]},
     "uvMap": {
@@ -1585,7 +1585,7 @@
         "base-body-overlay-front": {
           "sheetId": 0,
           "x": 0.0625,
-          "y": 0.26562646,
+          "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
@@ -1599,7 +1599,7 @@
         "base-body-overlay-back": {
           "sheetId": 0,
           "x": 0.1875,
-          "y": 0.26562646,
+          "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
@@ -1690,28 +1690,28 @@
         "test-body-left": {
           "sheetId": 1,
           "x": 0,
-          "y": 0.06250146,
+          "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
         "test-body-front": {
           "sheetId": 1,
           "x": 0.0625,
-          "y": 0.06250146,
+          "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
         "test-body-right": {
           "sheetId": 1,
           "x": 0.125,
-          "y": 0.06250146,
+          "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
         "test-body-back": {
           "sheetId": 1,
           "x": 0.1875,
-          "y": 0.06250146,
+          "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         }

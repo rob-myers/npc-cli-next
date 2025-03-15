@@ -88,7 +88,7 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544">
         <title>left</title>
       </rect>
-      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672.003px;" y="544.003" x="128">
+      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
         <title>front</title>
       </rect>
       <path d="M 192 592 C 197.866 592 202.666 597.76 202.666 604.799 C 202.666 611.84 197.866 617.6 192 617.6 C 186.134 617.6 181.334 611.84 181.334 604.799 C 181.334 597.76 186.134 592 192 592 Z M 240 636.8 L 208 636.8 L 208 720 L 197.333 720 L 197.333 681.6 L 186.667 681.6 L 186.667 720 L 176.001 720 L 176.001 636.8 L 144 636.8 L 144 624 L 240 624 L 240 636.8 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 192px 619.226px;">
@@ -97,7 +97,7 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="256">
         <title>right</title>
       </rect>
-      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544.003" x="384">
+      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
         <title>back</title>
       </rect>
       <path d="M 448 592 C 453.866 592 458.666 597.76 458.666 604.799 C 458.666 611.84 453.866 617.6 448 617.6 C 442.134 617.6 437.334 611.84 437.334 604.799 C 437.334 597.76 442.134 592 448 592 Z M 496 636.8 L 464 636.8 L 464 720 L 453.333 720 L 453.333 681.6 L 442.667 681.6 L 442.667 720 L 432.001 720 L 432.001 636.8 L 400 636.8 L 400 624 L 496 624 L 496 636.8 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 448px 619.226px;">
