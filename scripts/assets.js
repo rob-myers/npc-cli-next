@@ -195,7 +195,7 @@ info({ opts });
   if (prev.assets) {// use previous (may overwrite later)
     const { symbols, meta } = prev.assets;
     symbolBaseNames.forEach(baseName => {
-      const symbolKey = /** @type {Geomorph.SymbolKey} */ (baseName.slice(0, -".svg".length));
+      const symbolKey = /** @type {Key.Symbol} */ (baseName.slice(0, -".svg".length));
       assetsJson.symbols[symbolKey] = symbols[symbolKey];
       assetsJson.meta[symbolKey] = meta[symbolKey];
     });
@@ -295,7 +295,7 @@ info({ opts });
 
   /** Compute flat symbols i.e. recursively unfold "symbols" folder. */
   // 🚧 reuse unchanged i.e. `changedSymbolAndMapKeys` unreachable
-  const flattened = /** @type {Record<Geomorph.SymbolKey, Geomorph.FlatSymbol>} */ ({});
+  const flattened = /** @type {Record<Key.Symbol, Geomorph.FlatSymbol>} */ ({});
   perf('stratified symbolGraph');
   const symbolGraph = SymbolGraphClass.from(assetsJson.symbols);
   const symbolsStratified = symbolGraph.stratify();
@@ -321,7 +321,7 @@ info({ opts });
   info({ changedGmKeys });
 
   perf('createLayouts');
-  /** @type {Record<Geomorph.GeomorphKey, Geomorph.Layout>} */
+  /** @type {Record<Key.Geomorph, Geomorph.Layout>} */
   const layout = keyedItemsToLookup(geomorph.gmKeys.map(gmKey => {
     const hullKey = helper.toHullKey[gmKey];
     const flatSymbol = flattened[hullKey];
@@ -420,7 +420,7 @@ function parseSymbols({ symbols, meta }, symbolBasenames) {
   for (const baseName of symbolBasenames) {
     const filePath = path.resolve(symbolsDir, baseName);
     const contents = fs.readFileSync(filePath).toString();
-    const symbolKey = /** @type {Geomorph.SymbolKey} */ (baseName.slice(0, -".svg".length));
+    const symbolKey = /** @type {Key.Symbol} */ (baseName.slice(0, -".svg".length));
 
     const parsed = geomorph.parseSymbol(symbolKey, contents);
     const serialized = geomorph.serializeSymbol(parsed);
@@ -644,7 +644,7 @@ function getObstaclePngPaths(assets) {
  * 
  * @param {Geomorph.AssetsJson} assets
  * @param {Prev} prev
- * @returns {Promise<{ [key in Geomorph.DecorImgKey]?: import('canvas').Image }>}
+ * @returns {Promise<{ [key in Key.DecorImg]?: import('canvas').Image }>}
  */
 async function createDecorSheetJson(assets, prev) {
 
@@ -666,14 +666,14 @@ async function createDecorSheetJson(assets, prev) {
     : svgBasenames
   ;
 
-  const imgKeyToRect = /** @type {Record<Geomorph.DecorImgKey, { width: number; height: Number; data: Geomorph.DecorSheetRectCtxt }>} */ ({});
-  const imgKeyToImg = /** @type {{ [key in Geomorph.DecorImgKey]?: import('canvas').Image }} */ ({});
+  const imgKeyToRect = /** @type {Record<Key.DecorImg, { width: number; height: Number; data: Geomorph.DecorSheetRectCtxt }>} */ ({});
+  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('canvas').Image }} */ ({});
 
   // Compute changed images in parallel
   const promQueue = new PQueue({ concurrency: 5 });
   // const promQueue = new PQueue({ concurrency: 1 });
   await Promise.all(changedSvgBasenames.map(baseName => promQueue.add(async () => {
-    const decorImgKey = /** @type {Geomorph.DecorImgKey} */ (baseName.slice(0, -'.svg'.length));
+    const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
     // svg contents -> data url
     const svgPathName = path.resolve(decorDir, baseName);
     const contents = await tryReadString(svgPathName);
@@ -694,7 +694,7 @@ async function createDecorSheetJson(assets, prev) {
   const scale = sguSymbolScaleDown * spriteSheetDecorExtraScale;
 
   for (const baseName of svgBasenames) {
-    const decorImgKey = /** @type {Geomorph.DecorImgKey} */ (baseName.slice(0, -'.svg'.length));
+    const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
     const img = imgKeyToImg[decorImgKey];
 
     if (img) {// changedSvgBasenames.includes(baseName)
@@ -750,7 +750,7 @@ async function createDecorSheetJson(assets, prev) {
  * Create the actual sprite-sheet PNG(s).
  * 
  * @param {Geomorph.AssetsJson} assets
- * @param {Partial<Record<Geomorph.DecorImgKey, import('canvas').Image>>} decorImgKeyToImage
+ * @param {Partial<Record<Key.DecorImg, import('canvas').Image>>} decorImgKeyToImage
  * @param {Prev} prev
  */
 async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
@@ -813,7 +813,7 @@ function computeGlbMetas() {
     const glbPath = path.resolve(assets3dDir, glbBaseName);
     const glbHash = hashText(fs.readFileSync(glbPath).toString());
     // 🔔 assume `{npcClassKey}.glb`
-    const npcClassKey = /** @type {NPC.ClassKey} */ (glbBaseName.split('.')[0]);
+    const npcClassKey = /** @type {Key.NpcClass} */ (glbBaseName.split('.')[0]);
     output[npcClassKey] = glbHash;
   });
   return output;
@@ -841,7 +841,7 @@ function getNpcTextureMetas() {
     const [skinClassKey, skinSheetId] = svgBaseName.split('.');
 
     return {
-      skinClassKey: /** @type {Geomorph.SkinClassKey} */ (skinClassKey),
+      skinClassKey: /** @type {Key.SkinClass} */ (skinClassKey),
       skinSheetId: Number(skinSheetId),
       svgBaseName,
       svgPath,

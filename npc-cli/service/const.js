@@ -107,12 +107,12 @@ export const doorLockedColor = 'rgb(255, 230, 230)';
 
 export const doorUnlockedColor = 'rgb(230, 255, 230)';
 
-/** @type {NPC.ClassKey} */
+/** @type {Key.NpcClass} */
 export const defaultClassKey = 'cuboid-man';
 
 /**
  * Fade out previous animation (seconds)
- * @type {Record<NPC.AnimKey, Record<NPC.AnimKey, number>>}
+ * @type {Record<Key.Anim, Record<Key.Anim, number>>}
  */
 export const glbFadeOut = {
     Idle: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0.2, Lie: 0 },
@@ -124,7 +124,7 @@ export const glbFadeOut = {
 
 /**
  * Fade in next animation (seconds).
- * @type {Record<NPC.AnimKey, Record<NPC.AnimKey, number>>}
+ * @type {Record<Key.Anim, Record<Key.Anim, number>>}
  */
  export const glbFadeIn = {
     Idle: { Idle: 0, Run: 0.2, Walk: 0.1, Sit: 0.1, Lie: 0 },
@@ -158,9 +158,9 @@ export const decorGridSize = geomorphGridMeters * 2;
 export const decorIconRadius = 5 * sguToWorldScale;
 
 export const fallbackDecorImgKey = {
-  /** @type {Geomorph.DecorImgKey} */
+  /** @type {Key.DecorImg} */
   point: 'icon--info',
-  /** @type {Geomorph.DecorImgKey} */
+  /** @type {Key.DecorImg} */
   quad: 'icon--warn',
 };
 
@@ -328,7 +328,7 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
 
 /**
  * The `*.glb` files must be exported from Blender using respective `media/npc/*.blend`
- * @type {Record<NPC.ClassKey, NPC.ClassDef>}
+ * @type {Record<Key.NpcClass, NPC.ClassDef>}
  */
 export const npcClassToMeta = {
   // 🚧 remove
@@ -361,10 +361,10 @@ export const npcClassToMeta = {
 
 
 // 🚧
-// export const npcClassKeys = /** @type {NPC.ClassKey[]} */ (
+// export const npcClassKeys = /** @type {Key.NpcClass[]} */ (
 //   Object.keys(npcClassToMeta)
 // );
-/** @type {NPC.ClassKey[]} */
+/** @type {Key.NpcClass[]} */
 export const npcClassKeys = ['cuboid-man'];
 
 /**
@@ -382,7 +382,7 @@ export const physicsConfig = {
 };
 
 /**
- * @type {Record<NPC.ObjectPickedType, boolean>}
+ * @type {Record<Key.ObjectPickedType, boolean>}
  */
 export const pickedTypesInSomeRoom = {
     wall: true,
@@ -435,5 +435,5 @@ export const skinsTextureDimension = 2048;
  */
 export const skinsUvsTextureWidth = 128;
 
-/** @type {Record<Geomorph.SkinClassKey, true>} */
+/** @type {Record<Key.SkinClass, true>} */
 export const fromSkinClassKey = { "cuboid-man": true, "human-skin-0": true };

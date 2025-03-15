@@ -416,7 +416,7 @@ export default function Npcs(props) {
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {import("../service/three").LabelsSheetAndTex} label
- * @property {Record<NPC.ClassKey, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
+ * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
  * @property {{ [npcKey: string]: Npc }} npc
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * Custom callback to handle npc slow down.
@@ -428,7 +428,7 @@ export default function Npcs(props) {
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath
  *
- * @property {Record<NPC.ClassKey, { map: NPC.SkinTriMap; sheetId: number }>} initSkinMeta
+ * @property {Record<Key.NpcClass, { map: NPC.SkinTriMap; sheetId: number }>} initSkinMeta
  * For each npc class, its initial mapping from triangleId to uv-rects.
  * Distinct npc classes can have the same skinClassKey, yet initially point into different sheets for that skin.
  *

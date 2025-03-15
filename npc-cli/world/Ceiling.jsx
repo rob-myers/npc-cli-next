@@ -134,7 +134,7 @@ export default function Ceiling(props) {
  * @property {number} opacity
  *
  * @property {() => Promise<void>} draw
- * @property {(gmKey: Geomorph.GeomorphKey) => void} drawGm
+ * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {() => void} positionInstances
  * @property {(opacity: number) => void} setOpacity
  */

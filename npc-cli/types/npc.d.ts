@@ -8,7 +8,7 @@ declare namespace NPC {
     /** Numeric id used in object-picking */
     pickUid: number;
     /** Specifies the underlying 3D model */
-    classKey: ClassKey;
+    classKey: Key.NpcClass;
     /** Radians */
     angle: number;
     /** World units per second */
@@ -17,17 +17,9 @@ declare namespace NPC {
     walkSpeed: number;
   }
 
-  /**
-   * Corresponds to Blender model and its exported GLTF.
-   */
-  type ClassKey = (
-    | 'human-0'
-    | 'cuboid-man' // 🚧 remove
-  );
-
-  /** 🚧 old */
+  /** 🚧 remove */
   type TextureKey = (
-    | ClassKey
+    | Key.NpcClass
     | 'labels'
     // | 'cuboid-man-alt-1'
   );
@@ -46,7 +38,7 @@ declare namespace NPC {
     scale: number;
     /** Points into DataTextureArray `w.texSkin.tex` */
     globalSkinId: number;
-    toAct: Record<NPC.AnimKey, import('three').AnimationAction>;
+    toAct: Record<Key.Anim, import('three').AnimationAction>;
   }
 
   interface UvQuadId {
@@ -56,8 +48,8 @@ declare namespace NPC {
 
   interface ClassDef {
     /** Format `/3d/{npcClassKey}.glb` */
-    modelUrl: `/3d/${NPC.ClassKey}.glb`;
-    skinClassKey: Geomorph.SkinClassKey;
+    modelUrl: `/3d/${Key.NpcClass}.glb`;
+    skinClassKey: Key.SkinClass;
     /** e.g. `1` */
     scale: number;
     /** e.g. 'cuboid-man-material' */
@@ -76,7 +68,7 @@ declare namespace NPC {
 
   interface TexMeta {
     /** e.g. `human-skin-0` */
-    skinClassKey: Geomorph.SkinClassKey;
+    skinClassKey: Key.SkinClass;
     /** e.g. `0` 🔔 (assume no gaps and `0` exists) */
     skinSheetId: number;
     /** e.g. `human-skin-0.0.tex.svg` */
@@ -89,7 +81,7 @@ declare namespace NPC {
 
   interface GltfMeta {
     /** e.g. `human-0` */
-    npcClassKey: NPC.ClassKey;
+    npcClassKey: Key.NpcClass;
     /** e.g. `human-0.glb` */
     glbBaseName: string;
     /** e.g. `.../public/3d/human-0.glb` */
@@ -100,8 +92,6 @@ declare namespace NPC {
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
   }
-
-  type AnimKey = keyof import('../service/helper').Helper['fromAnimKey'];
 
   type Event = (
     | PointerUpEvent
@@ -302,21 +292,9 @@ declare namespace NPC {
   type ObstacleRef = import("@recast-navigation/core").ObstacleRef;
 
   type DecodedObjectPick = Meta<{
-    picked: ObjectPickedType;
+    picked: Key.ObjectPickedType;
     instanceId: number;
   }>;
-
-  type ObjectPickedType = (
-    | 'wall'
-    | 'floor'
-    | 'ceiling'
-    | 'door'
-    | 'quad'
-    | 'obstacle'
-    | 'cuboid'
-    | 'npc'
-    | 'lock-light'
-  );
 
   type MetaActDef = (
     | { key: 'open' | 'close' | 'lock' | 'unlock'; gdKey: Geomorph.GmDoorKey; }
@@ -329,7 +307,7 @@ declare namespace NPC {
     /** Label of button */
     label: string;
     /** `icon--*` key */
-    icon: Geomorph.DecorImgKey;
+    icon: Key.DecorImg;
     /** The meta of ContextMenu (from prior click) when button was clicked */
     meta: Meta<T>;
   }

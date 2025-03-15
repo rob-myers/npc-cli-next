@@ -7,7 +7,7 @@ import { buildObject3DLookup, getGeometryUvs } from "./three";
 import { npcClassKeys, npcClassToMeta } from "./const";
 
 /**
- * For `'cuboid-man'` or `'cuboid-pet'` i.e. `NPC.ClassKey`.
+ * For `'cuboid-man'` or `'cuboid-pet'` i.e. `Key.NpcClass`.
  * - ℹ️ additional models may need separate uv service
  * 
  * Their Blender Mesh has 32 vertices, whereas
@@ -25,12 +25,12 @@ import { npcClassKeys, npcClassToMeta } from "./const";
  */
 class CuboidManUvService {
 
-  toQuadMetas = /** @type {Record<NPC.ClassKey, CuboidManQuadMetas>} */ ({});
+  toQuadMetas = /** @type {Record<Key.NpcClass, CuboidManQuadMetas>} */ ({});
 
-  toTexId = /** @type {Record<NPC.ClassKey, { [uvMapKey: string]: number }>} */ ({});
+  toTexId = /** @type {Record<Key.NpcClass, { [uvMapKey: string]: number }>} */ ({});
   
   /**
-   * @param {Record<NPC.ClassKey, import("three-stdlib").GLTF>} gltf 
+   * @param {Record<Key.NpcClass, import("three-stdlib").GLTF>} gltf 
    */
   initialize(gltf) {
     for (const npcClassKey of npcClassKeys) {
@@ -78,7 +78,7 @@ class CuboidManUvService {
   }
 
   /**
-   * @param {NPC.ClassKey} npcClassKey 
+   * @param {Key.NpcClass} npcClassKey 
    * @returns {CuboidManQuads}
    */
   getDefaultUvQuads(npcClassKey) {

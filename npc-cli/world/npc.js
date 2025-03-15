@@ -45,7 +45,7 @@ export class Npc {
 
   /** State */
   s = {
-    act: /** @type {NPC.AnimKey} */ ('Idle'),
+    act: /** @type {Key.Anim} */ ('Idle'),
     agentState: /** @type {null | number} */ (null),
     permitTurn: true,
     doMeta: /** @type {null | Meta} */ (null),
@@ -239,7 +239,7 @@ export class Npc {
    * @param {object} opts
    * @param {Meta} [opts.meta]
    * @param {number} [opts.angle]
-   * @param {NPC.ClassKey} [opts.classKey]
+   * @param {Key.NpcClass} [opts.classKey]
    * @param {boolean} [opts.requireNav]
    */
   async fadeSpawn(point, opts = {}) {
@@ -971,7 +971,7 @@ export class Npc {
   /**
    * Start specific animation, or animation induced by meta.
    * Returns height to raise off ground e.g. for beds. 
-   * @param {NPC.AnimKey | Meta} input
+   * @param {Key.Anim | Meta} input
    * @returns {number}
    */
   startAnimation(input) {

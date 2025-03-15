@@ -379,7 +379,7 @@ export default function World(props) {
  * @property {string} mapKey
  * @property {Geomorph.GeomorphsHash} hash
  * @property {Geomorph.GmsData} gmsData
- * Data determined by `w.gms` or a `Geomorph.GeomorphKey`.
+ * Data determined by `w.gms` or a `Key.Geomorph`.
  * - A geomorph key is "non-empty" iff `gmsData[gmKey].wallPolyCount` non-zero.
  * @property {{
  *   createGmsData: typeof createGmsData;

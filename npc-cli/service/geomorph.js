@@ -22,19 +22,19 @@ import { helper } from "./helper";
 
 class GeomorphService {
 
-  /** @type {Geomorph.GeomorphKey[]} */
+  /** @type {Key.Geomorph[]} */
   get gmKeys() {
     return keys(helper.toGmNum);
   }
 
-  /** @type {Geomorph.SymbolKey[]} */
+  /** @type {Key.Symbol[]} */
   get hullKeys() {
     return keys(helper.fromSymbolKey).filter(this.isHullKey);
   }
 
   /**
    * 🔔 computed in assets script
-   * @param {Geomorph.GeomorphKey} gmKey 
+   * @param {Key.Geomorph} gmKey 
    * @param {Geomorph.FlatSymbol} symbol Flat hull symbol
    * @param {Geomorph.Assets} assets
    * @returns {Geomorph.Layout}
@@ -138,7 +138,7 @@ class GeomorphService {
       labels,
       obstacles: symbol.obstacles.map(/** @returns {Geomorph.LayoutObstacle} */ o => {
         const obstacleId = /** @type {number} */ (o.meta.obsId);
-        const symbolKey = /** @type {Geomorph.SymbolKey} */ (o.meta.symKey);
+        const symbolKey = /** @type {Key.Symbol} */ (o.meta.symKey);
         const origPoly = assets.symbols[symbolKey].obstacles[o.meta.obsId];
         const transform = /** @type {Geom.SixTuple} */ (o.meta.transform ?? [1, 0, 0, 1, 0, 0]);
         tmpMat1.feedFromArray(transform);
@@ -682,7 +682,7 @@ class GeomorphService {
    * Mutates `flattened`, using pre-existing entries.
    * Expects dependent flattened symbols to be in `flattened`.
    * @param {Geomorph.Symbol} symbol 
-   * @param {Record<Geomorph.SymbolKey, Geomorph.FlatSymbol>} flattened 
+   * @param {Record<Key.Symbol, Geomorph.FlatSymbol>} flattened 
    * This lookup only needs to contain sub-symbols of `symbol`.
    * @returns {void}
    */
@@ -792,7 +792,7 @@ class GeomorphService {
 
   /**
    * @param {string | undefined} input
-   * @returns {input is Geomorph.DecorImgKey}
+   * @returns {input is Key.DecorImg}
    */
   isDecorImgKey(input) {
     return input !== undefined && input in helper.fromDecorImgKey;
@@ -823,7 +823,7 @@ class GeomorphService {
   }
 
   /**
-   * @param {Geomorph.GeomorphKey | Geomorph.GeomorphNumber} input
+   * @param {Key.Geomorph | Key.GeomorphNumber} input
    */
   isEdgeGm(input) {
     input = typeof input === "string" ? helper.toGmNum[input] : input;
@@ -832,7 +832,7 @@ class GeomorphService {
 
   /**
    * @param {number} input
-   * @returns {input is Geomorph.GeomorphNumber}
+   * @returns {input is Key.GeomorphNumber}
    */
   isGmNumber(input) {
     return input in helper.toGmKey;
@@ -844,7 +844,7 @@ class GeomorphService {
   }
 
   /**
-   * @param {Geomorph.SymbolKey} symbolKey
+   * @param {Key.Symbol} symbolKey
    */
   isHullKey(symbolKey) {
     return symbolKey.endsWith("--hull");
@@ -852,7 +852,7 @@ class GeomorphService {
 
   /**
    * @param {string} input
-   * @returns {input is Geomorph.SymbolKey}
+   * @returns {input is Key.Symbol}
    */
   isSymbolKey(input) {
     return input in helper.fromSymbolKey;
@@ -922,7 +922,7 @@ class GeomorphService {
   /**
    * Parse Starship Symbol
    * 🔔 we do not support transforms on parent groups
-   * @param {Geomorph.SymbolKey} symbolKey
+   * @param {Key.Symbol} symbolKey
    * @param {string} svgContents
    * @returns {Geomorph.Symbol}
    */

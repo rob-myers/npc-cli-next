@@ -152,7 +152,7 @@ export default function Floor(props) {
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
- * @property {(gmKey: Geomorph.GeomorphKey) => void} drawGm
+ * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {() => void} positionInstances
  */
 

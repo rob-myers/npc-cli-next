@@ -135,7 +135,7 @@
 - generated decor/obstacles/skin png,webp distinct on different laptops
   - try migrating `canvas` to https://www.npmjs.com/package/skia-canvas
 
-- 🚧 HMR of GLTF i.e. GLB
+- ✅ HMR of GLTF i.e. GLB
   - ✅ detect glb change and trigger code
   - ✅ provide npcClassKey -> glb hash in `geomorphs.json`
   - ✅ `<NPCs>` useGLTF hook refetches via url query param
@@ -147,7 +147,9 @@
     - ✅ can see new mesh on export GLB from Blender
     - ✅ fix animations
     - ✅ dispose previous
-  - 🚧 avoid reference `NPC` namespace in `Geomorph` namespace
+
+- ✅ avoid reference `NPC` namespace in `Geomorph` namespace
+  - migrate to new namespace `Key.*`
 
 - HMR of MDX subcomponents
 - HMR of npc models onchange const

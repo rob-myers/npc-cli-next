@@ -76,7 +76,7 @@ export class GmGraphClass extends BaseGraph {
    * @param {Geomorph.Connector} hullDoor
    * @param {number} hullDoorId
    * @param {[number, number, number, number, number, number]} transform
-   * @param {Geomorph.GeomorphKey} gmKey
+   * @param {Key.Geomorph} gmKey
    * @returns {null | Geom.DirectionString}
    */
   static computeHullDoorDirection(hullDoor, hullDoorId, transform, gmKey) {
@@ -555,7 +555,7 @@ export class GmGraphClass extends BaseGraph {
 }
 
 /**
- * @param {Geomorph.GeomorphNumber} gmNumber 
+ * @param {Key.GeomorphNumber} gmNumber 
  * @param {[number, number, number, number, number, number]} transform 
  * @param {number} navRectId
  */
@@ -564,7 +564,7 @@ function getGmNodeId(gmNumber, transform, navRectId) {
 }
 
 /**
- * @param {Geomorph.GeomorphNumber} gmNumber 
+ * @param {Key.GeomorphNumber} gmNumber 
  * @param {[number, number, number, number, number, number]} transform 
  * @param {number} hullDoorId 
  */
