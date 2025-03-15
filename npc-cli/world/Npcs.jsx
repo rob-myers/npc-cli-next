@@ -494,7 +494,7 @@ function NPC({ npc }) {
           <humanZeroShader
             key={HumanZeroShader.key}
             atlas={npc.w.texSkin.tex}
-            texSkinId={npc.m.texSkinId}
+            texSkinId={npc.m.globalSkinId}
             transparent
             uid={npc.def.pickUid}
             uvReMap={npc.w.texSkinUvs.tex}

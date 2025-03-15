@@ -7,7 +7,7 @@ import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObjectLookup, computeSkinTriMap, emptyAnimationMixer, emptyGroup, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
+import { buildObject3DLookup, computeSkinTriMap, emptyAnimationMixer, emptyGroup, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 import { cmUvService } from "../service/uv";
@@ -37,7 +37,7 @@ export class Npc {
     quad: /** @type {import('../service/uv').CuboidManQuads} */ ({}),
     scale: 1,
     /** Points into DataTextureArray `w.texSkin.tex` */
-    texSkinId: 0,
+    globalSkinId: 0,
     toAct: /** @type {Record<NPC.AnimKey, THREE.AnimationAction>} */ ({}),
   }
   
@@ -454,7 +454,7 @@ export class Npc {
     const { m } = this;
     const meta = npcClassToMeta[this.def.classKey];
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(scene));
-    const objectLookup = buildObjectLookup(clonedRoot);
+    const objectLookup = buildObject3DLookup(clonedRoot);
 
     m.animations = animations;
     // cloned bones
@@ -480,11 +480,12 @@ export class Npc {
    * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
    */
   initializeNew(gltf) {
-    const { m } = this;
-    const meta = npcClassToMeta['human-0']; // 🚧
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(gltf.scene));
-    const objectLookup = buildObjectLookup(clonedRoot);
-
+    const objectLookup = buildObject3DLookup(clonedRoot);
+    
+    const meta = npcClassToMeta[this.def.classKey];
+    const { m } = this;
+    
     m.animations = gltf.animations;
     // cloned bones
     m.bones = getRootBones(Object.values(objectLookup.nodes));
@@ -492,21 +493,15 @@ export class Npc {
     m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
     // overridden on mount
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
-    // m.mesh.userData.npcKey = this.key; // To decode pointer events
 
-    const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (m.mesh.material);
-    const matBaseName = origMaterial.map?.name ?? null; // e.g. human-skin-0.0.tex.png
-    const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
-    const { skinClassKey } = npcClassToMeta[this.def.classKey];
-    const { skin } = this.w.geomorphs;
-    m.texSkinId = skin.texArrayId[skinClassKey][skinSheetId];
+    const skinSheetId = this.w.npc.initSkinMeta[this.def.classKey].sheetId;
+    m.globalSkinId = this.w.geomorphs.skin.texArrayId[meta.skinClassKey][skinSheetId];
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();
     m.mesh.computeBoundingSphere();
 
-    const npcClassKey = 'human-0'; // 🚧
-    m.scale = npcClassToMeta[npcClassKey].scale;
+    m.scale = meta.scale;
 
     // shader needs vertexId attribute
     const numVertices = m.mesh.geometry.getAttribute('position').count;

@@ -210,14 +210,16 @@ export const navMeta = {
  * @param {THREE.Object3D} object 
  * @returns {import("@react-three/fiber").ObjectMap}
  */
-export function buildObjectLookup(object) {
+export function buildObject3DLookup(object) {
   /** @type {import("@react-three/fiber").ObjectMap} */
   const data = { nodes: {}, materials: {}};
   if (object) {
     object.traverse(/** @param {THREE.Object3D & { material?: THREE.Material }} obj */ obj => {
-      if (obj.name) data.nodes[obj.name] = obj;
-      if (obj.material && !data.materials[obj.material.name]) {
-        data.materials[obj.material.name] = obj.material;
+      if (typeof obj.name == 'string') {
+        data.nodes[obj.name] = obj;
+      }
+      if (typeof obj.material?.name === 'string' && !data.materials[obj.material.name]) {
+        data.materials[obj.material.name] = obj.material; // 1st with name
       }
     });
   }

@@ -3,7 +3,7 @@ import * as THREE from "three";
 
 import { Rect } from "../geom";
 import { keys, warn } from "./generic";
-import { buildObjectLookup, getGeometryUvs } from "./three";
+import { buildObject3DLookup, getGeometryUvs } from "./three";
 import { npcClassKeys, npcClassToMeta } from "./const";
 
 /**
@@ -35,7 +35,7 @@ class CuboidManUvService {
   initialize(gltf) {
     for (const npcClassKey of npcClassKeys) {
       const meta = npcClassToMeta[npcClassKey];
-      const { nodes } = buildObjectLookup(gltf[npcClassKey].scene);
+      const { nodes } = buildObject3DLookup(gltf[npcClassKey].scene);
       const mesh = /** @type {THREE.SkinnedMesh} */ (nodes[meta.meshName]);
       
       // each npc class has a corresponding constant "quad meta"
