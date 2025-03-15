@@ -29,7 +29,8 @@ export default async function BlogPage(props: {
   return <>
     <script
       id="frontmatter-json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data.frontmatter) }}
+      // stringify twice avoids "SyntaxError: Unexpected token ':' (at blog/:1:16614)"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(data.frontmatter)) }}
     />
     {data.content}
   </>;
