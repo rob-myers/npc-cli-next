@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
-import { mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
 import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
@@ -327,9 +327,12 @@ export default function Npcs(props) {
 
   w.npc = state;
   w.n = state.npc;
-
-  state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].modelUrl);
-  state.gltf["human-0"] = useGLTF(npcClassToMeta["human-0"].modelUrl);
+  
+  const { glbHash } = w.geomorphs.sheet;
+  entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {
+    const cacheBustingQuery = isDevelopment() ? `?hash=${glbHash[npcClassKey]}` : '';
+    state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
+  });
   
   React.useEffect(() => {// init + hmr
     cmUvService.initialize(state.gltf);
@@ -338,12 +341,19 @@ export default function Npcs(props) {
     }
   }, []);
   
-  // 🚧 detect gltf change via geomorphs.sheet.glbHash
-  // 🚧 apply mesh normalization i.e. un-weld
-  // 🚧 recompute "triangleId -> { uvRectKey, bodyPartKey }"
   React.useEffect(() => {
-    console.log('🚧', w.geomorphs.sheet.glbHash);
-  }, Object.values(w.geomorphs.sheet.glbHash));
+    // 🔔 un-weld vertices so triangleId follows from vertexId
+    for (const [npcClassKey, gltf] of entries(state.gltf)) {
+      if (npcClassKey === 'cuboid-man') return; // 🚧 remove with cuboid-man
+      const meta = npcClassToMeta[npcClassKey];
+      const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
+      if (mesh.geometry.index !== null) {
+        mesh.geometry = mesh.geometry.toNonIndexed();
+      }
+    }
+    // 🚧 recompute triangle mappings
+    // 🚧 re-initialize npcs
+  }, Object.values(glbHash));
 
   // 🚧 remove
   React.useEffect(() => {// npc textures
@@ -511,6 +521,6 @@ function NPC({ npc }) {
 /** @type {React.MemoExoticComponent<(props: NPCProps & { epochMs: number }) => React.JSX.Element>} */
 const MemoizedNPC = React.memo(NPC);
 
-// useGLTF.preload(Object.values(npcClassToMeta).map(x => x.url));
+useGLTF.preload(Object.values(npcClassToMeta).map(x => x.modelUrl));
 
 const smallHalfExtent = 0.001;

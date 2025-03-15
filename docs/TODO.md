@@ -138,8 +138,11 @@
 - 🚧 HMR of GLTF i.e. GLB
   - ✅ detect glb change and trigger code
   - ✅ provide npcClassKey -> glb hash in `geomorphs.json`
-  - 🚧 `<NPCs>` useGLTF hook refetches via url query param (?)
-  - 🚧 avoid reference `NPC` namespace in `Geomorph` namespace
+  - ✅ `<NPCs>` useGLTF hook refetches via url query param
+  - ✅ for each npcClassKey do mesh normalization i.e. un-weld (for all)
+  - 🚧 for each skinClassKey recompute "triangleId -> { uvRectKey, bodyPartKey }"
+  - 🚧 re-initialize npcs
+  - avoid reference `NPC` namespace in `Geomorph` namespace
 
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
