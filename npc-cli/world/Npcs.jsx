@@ -360,9 +360,9 @@ export default function Npcs(props) {
       const matBaseName = origMaterial.map?.name ?? null;
       const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
 
-      const uvMap = w.geomorphs.sheet.skins.uvMap[meta.skinClassKey];
+      const { uvMap } = w.geomorphs.skin;
       state.initSkinMeta[npcClassKey] = {
-        map: computeSkinTriMap(mesh, uvMap, skinSheetId),
+        map: computeSkinTriMap(mesh, uvMap[meta.skinClassKey], skinSheetId),
         sheetId: skinSheetId,
       };
     }

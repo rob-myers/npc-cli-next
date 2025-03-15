@@ -149,7 +149,7 @@ class CuboidManUvService {
       return;
     }
 
-    const { uvMap } = npc.w.geomorphs.sheet.skins;
+    const { uvMap } = npc.w.geomorphs.skin;
     //@ts-ignore 🚧 delete this file
     const srcRect = uvMap[faceId.uvMapKey]?.[faceId.uvQuadKey];
     if (!srcRect) {
@@ -175,7 +175,7 @@ class CuboidManUvService {
       return;
     }
 
-    const { uvMap } = npc.w.geomorphs.sheet.skins;
+    const { uvMap } = npc.w.geomorphs.skin;
     //@ts-ignore 🚧 delete this file
     const srcRect = uvMap[iconId.uvMapKey]?.[iconId.uvQuadKey];
     if (!srcRect) {

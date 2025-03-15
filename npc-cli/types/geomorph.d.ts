@@ -7,6 +7,7 @@ declare namespace Geomorph {
     symbols: Record<Geomorph.SymbolKey, Geomorph.SymbolGeneric<T, P, R>>;
     maps: Record<string, Geomorph.MapDef>;
     sheet: SpriteSheet;
+    skin: SpriteSheetSkins;
     /**
      * `metaKey` is either
      * - a `Geomorph.SymbolKey`
@@ -145,6 +146,7 @@ declare namespace Geomorph {
     map: Record<string, Geomorph.MapDef>;
     layout: Record<Geomorph.GeomorphKey, Geomorph.LayoutGeneric<T, P, R, C>>;
     sheet: SpriteSheet;
+    skin: SpriteSheetSkins;
   }
 
   type Geomorphs = GeomorphsGeneric<Geom.Poly, Geom.Vect, Geom.Rect, Connector>;
@@ -463,7 +465,6 @@ declare namespace Geomorph {
     // 🚧 avoid referencing NPC namespace
     glbHash: Record<NPC.ClassKey, number>;
     imagesHash: number;
-    skins: SpriteSheetSkins;
   }
 
   interface SpriteSheetSkins {

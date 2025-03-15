@@ -255,7 +255,10 @@ export default function World(props) {
       }
 
       // Update texture arrays: decor, obstacles, skins
-      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim, skins } = state.geomorphs.sheet;
+      const {
+        sheet: { decorDims, maxDecorDim, obstacleDims, maxObstacleDim },
+        skin,
+      } = state.geomorphs;
 
       for (const { src, dim, texArray, invert } of [
         {
@@ -271,7 +274,7 @@ export default function World(props) {
           invert: true,
         },
         {
-          src: entries(skins.numSheets).flatMap(([skinClassKey, skinSheetCount]) =>
+          src: entries(skin.numSheets).flatMap(([skinClassKey, skinSheetCount]) =>
             range(skinSheetCount).map(sheetId => getNpcSkinSheetUrl(skinClassKey, sheetId))
           ),
           texArray: state.texSkin,

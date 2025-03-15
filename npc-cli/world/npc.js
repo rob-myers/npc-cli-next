@@ -498,8 +498,8 @@ export class Npc {
     const matBaseName = origMaterial.map?.name ?? null; // e.g. human-skin-0.0.tex.png
     const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
     const { skinClassKey } = npcClassToMeta[this.def.classKey];
-    const { skins } = this.w.geomorphs.sheet;
-    m.texSkinId = skins.texArrayId[skinClassKey][skinSheetId];
+    const { skin } = this.w.geomorphs;
+    m.texSkinId = skin.texArrayId[skinClassKey][skinSheetId];
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();

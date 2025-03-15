@@ -181,13 +181,13 @@ info({ opts });
 
       glbHash: /** @type {Geomorph.SpriteSheet['glbHash']} */ ({}),
       imagesHash: 0,
-      skins: {
-        numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
-        svgHashes: /** @type {Geomorph.SpriteSheetSkins['svgHashes']} */ ({}),
-        texArrayId: /** @type {Geomorph.SpriteSheetSkins['texArrayId']} */ ({}),
-        uvMap: /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({}),
-        uvMapDim: /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({}),
-      },
+    },
+    skin: {
+      numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
+      svgHashes: /** @type {Geomorph.SpriteSheetSkins['svgHashes']} */ ({}),
+      texArrayId: /** @type {Geomorph.SpriteSheetSkins['texArrayId']} */ ({}),
+      uvMap: /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({}),
+      uvMapDim: /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({}),
     },
     symbols: /** @type {*} */ ({}), maps: {},
   };
@@ -334,6 +334,7 @@ info({ opts });
     map: assetsJson.maps,
     layout: layoutJson,
     sheet: assetsJson.sheet,
+    skin: assetsJson.skin,
   };
 
   fs.writeFileSync(geomorphsFilepath, stringify(geomorphs));
@@ -855,8 +856,8 @@ function getNpcTextureMetas() {
  * @param {Prev} prev
  */
 async function createNpcTexturesAndUvMeta(assets, prev) {
-  const { skins } = assets.sheet;
-  const prevSvgHash = skins.svgHashes;
+  const { skin } = assets;
+  const prevSvgHash = skin.svgHashes;
   
   // group by skinClassKey
   const bySkinClass = mapValues(helper.fromSkinClassKey, (_, skinClassKey) => {
@@ -875,23 +876,23 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
     }
 
     // reset things we don't overwrite
-    skins.numSheets[skinClassKey] = 0;
-    skins.svgHashes[skinClassKey] = [];
-    skins.uvMap[skinClassKey] = {};
+    skin.numSheets[skinClassKey] = 0;
+    skin.svgHashes[skinClassKey] = [];
+    skin.uvMap[skinClassKey] = {};
 
     for (const { svgBaseName, svgPath, pngPath, skinSheetId } of npcTexMetas) {
       const svgContents = fs.readFileSync(svgPath).toString();
 
       // count sheets per class
-      skins.numSheets[skinClassKey]++;
+      skin.numSheets[skinClassKey]++;
       
       // extract uv-mapping from top-level folder "uv-map"
       // merge sheets (must use distinct names in different SVGs for same skin)
       const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, skinSheetId, svgBaseName);
-      Object.assign(skins.uvMap[skinClassKey] ??= {}, uvMap);
-      skins.uvMapDim[skinClassKey] = { width, height };
+      Object.assign(skin.uvMap[skinClassKey] ??= {}, uvMap);
+      skin.uvMapDim[skinClassKey] = { width, height };
 
-      skins.svgHashes[skinClassKey].push(hashText(svgContents));
+      skin.svgHashes[skinClassKey].push(hashText(svgContents));
       
       // convert SVG to PNG
       const svgDataUrl = `data:image/svg+xml;utf8,${svgContents}`;
@@ -904,7 +905,7 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
 
   // recompute skins.texArrayId (linearly order all sheets)
   let nextTexArrayId = 0;
-  skins.texArrayId = mapValues(skins.numSheets, (numSheets) => {
+  skin.texArrayId = mapValues(skin.numSheets, (numSheets) => {
     const output = range(numSheets).map(i => nextTexArrayId + i);
     nextTexArrayId += output.length;
     return output;

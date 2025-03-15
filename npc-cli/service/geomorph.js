@@ -368,11 +368,12 @@ class GeomorphService {
    * @param {Geomorph.AssetsJson} assetsJson
    * @return {Geomorph.Assets}
    */
-  deserializeAssets({ maps, meta, symbols, sheet }) {
+  deserializeAssets({ maps, meta, symbols, sheet, skin }) {
     return {
       meta,
       symbols: mapValues(symbols, (x) => this.deserializeSymbol(x)),
       sheet,
+      skin,
       maps,
     };
   }
@@ -381,11 +382,12 @@ class GeomorphService {
    * @param {Geomorph.GeomorphsJson} geomorphsJson
    * @return {Geomorph.Geomorphs}
    */
-  deserializeGeomorphs({ map, layout, sheet }) {
+  deserializeGeomorphs({ map, layout, sheet, skin }) {
     return {
       map,
       layout: mapValues(layout, (x) => this.deserializeLayout(x)),
       sheet,
+      skin,
     };
   }
 
@@ -1213,11 +1215,12 @@ class GeomorphService {
    * @param {Geomorph.Geomorphs} geomorphs
    * @returns {Geomorph.GeomorphsJson}
    */
-  serializeGeomorphs({ map, layout, sheet }) {
+  serializeGeomorphs({ map, layout, sheet, skin }) {
     return {
       map,
       layout: mapValues(layout, (x) => geomorph.serializeLayout(x)),
       sheet,
+      skin,
     };
   }
 
