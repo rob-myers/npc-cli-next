@@ -20,3 +20,11 @@ FILE menu > Clean Up > Purge unused data.
 ## Add Face to existing UV map
 
 *Maybe* just add the Face, turn off Sync mode, move the face in UV mode.
+
+## Shortcuts
+
+Can right-click on menu item and assign shortcut.
+
+For example, Shift+E for export GLTF.
+First time export you select the folder and hit Return.
+Subsequent times can just Shift+E then Return.
