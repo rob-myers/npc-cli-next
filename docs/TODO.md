@@ -145,7 +145,8 @@
   - ✅ geomorphs.sheet.skins -> geomorphs.skin
   - 🚧 re-initialize npcs
     - ✅ can see new mesh on export GLB from Blender
-    - 🚧 fix animations
+    - ✅ fix animations
+    - 🚧 dispose previous
   - avoid reference `NPC` namespace in `Geomorph` namespace
 
 - HMR of MDX subcomponents

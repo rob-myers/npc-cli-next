@@ -723,6 +723,8 @@ export class Npc {
       this.position = group.position;
       // Resume `w.npc.spawn`
       this.resolve.spawn?.();
+      // Ensure non-empty animation mixer
+      this.setupMixer();
     } else {
       this.m.group = emptyGroup;
       this.position = tmpVectThree1;
@@ -856,6 +858,10 @@ export class Npc {
   }
 
   setupMixer() {
+    if (this.mixer !== emptyAnimationMixer) {
+      return;
+    }
+
     this.mixer = new THREE.AnimationMixer(this.m.group);
 
     this.m.toAct = this.m.animations.reduce((agg, a) => helper.isAnimKey(a.name)

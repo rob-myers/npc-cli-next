@@ -4,9 +4,9 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
-import { entries, isDevelopment, mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
-import { computeSkinTriMap, createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
+import { computeSkinTriMap, createLabelSpriteSheet, emptyAnimationMixer, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { cmUvService } from "../service/uv";
 import { CuboidManMaterial, HumanZeroShader } from "../service/glsl";
@@ -251,7 +251,6 @@ export default function Npcs(props) {
           npc.resolve.spawn = resolve;
           update();
         });
-        npc.setupMixer();
       }
 
       // npc.startAnimation('Idle');
@@ -365,9 +364,10 @@ export default function Npcs(props) {
 
     // 🚧 re-initialize npcs
     // 🚧 dispose previous?
-    Object.values(state.npc).forEach(npc =>
-      npc.initialize(state.gltf[npc.def.classKey])
-    );
+    Object.values(state.npc).forEach(npc => {
+      npc.initialize(state.gltf[npc.def.classKey]);
+      npc.mixer = emptyAnimationMixer; // overwritten on mount
+    });
 
     w.menu.measure(`npc.initSkinMeta`);
   }, Object.values(glbHash));
