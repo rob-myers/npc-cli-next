@@ -144,6 +144,8 @@
     - ℹ️ `w npc.initSkinMeta | json`
   - ✅ geomorphs.sheet.skins -> geomorphs.skin
   - 🚧 re-initialize npcs
+    - ✅ can see new mesh on export GLB from Blender
+    - 🚧 fix animations
   - avoid reference `NPC` namespace in `Geomorph` namespace
 
 - HMR of MDX subcomponents

@@ -450,7 +450,7 @@ export class Npc {
    * Initialization we can do before mounting
    * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
    */
-  initialize({ scene, animations }) {// 🚧 remove
+  initializeOld({ scene, animations }) {// 🚧 remove
     const { m } = this;
     const meta = npcClassToMeta[this.def.classKey];
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(scene));
@@ -479,7 +479,12 @@ export class Npc {
    * Initialization we can do before mounting
    * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
    */
-  initializeNew(gltf) {
+  initialize(gltf) {
+    if (gltf === this.w.npc.gltf['cuboid-man']) {
+      this.initializeOld(gltf); // 🚧 npc shader migration
+      return;
+    }
+
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(gltf.scene));
     const objectLookup = buildObject3DLookup(clonedRoot);
     
@@ -494,7 +499,7 @@ export class Npc {
     // overridden on mount
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
 
-    const skinSheetId = this.w.npc.initSkinMeta[this.def.classKey].sheetId;
+    const { sheetId: skinSheetId } = this.w.npc.initSkinMeta[this.def.classKey];
     m.globalSkinId = this.w.geomorphs.skin.texArrayId[meta.skinClassKey][skinSheetId];
 
     m.mesh.updateMatrixWorld();

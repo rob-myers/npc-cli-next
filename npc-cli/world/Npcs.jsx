@@ -243,12 +243,7 @@ export default function Npcs(props) {
         }, w);
         state.idToKey.set(npc.def.pickUid, opts.npcKey);
 
-        if (npc.def.classKey === 'human-0') {
-          // 🚧 npc shader migration
-          npc.initializeNew(state.gltf[npc.def.classKey]);
-        } else {
-          npc.initialize(state.gltf[npc.def.classKey]);
-        }
+        npc.initialize(state.gltf[npc.def.classKey]);
       }
 
       if (npc.s.spawns === 0) {
@@ -335,7 +330,7 @@ export default function Npcs(props) {
   });
   
   React.useEffect(() => {// init + hmr
-    cmUvService.initialize(state.gltf);
+    cmUvService.initialize(state.gltf); // 🚧 remove
     if (process.env.NODE_ENV === 'development') {
       Object.values(state.npc).forEach(state.hotReloadNpc);
     }
@@ -343,6 +338,7 @@ export default function Npcs(props) {
   
   React.useEffect(() => {
     w.menu.measure(`npc.initSkinMeta`);
+
     // 🔔 compute mappings from triangleId to uvRectKey
     // 🔔 un-weld vertices so triangleId follows from vertexId
     state.initSkinMeta = /** @type {*} */ ({});
@@ -366,7 +362,13 @@ export default function Npcs(props) {
         sheetId: skinSheetId,
       };
     }
+
     // 🚧 re-initialize npcs
+    // 🚧 dispose previous?
+    Object.values(state.npc).forEach(npc =>
+      npc.initialize(state.gltf[npc.def.classKey])
+    );
+
     w.menu.measure(`npc.initSkinMeta`);
   }, Object.values(glbHash));
 
