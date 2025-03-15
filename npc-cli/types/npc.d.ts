@@ -360,12 +360,15 @@ declare namespace NPC {
   }
 
   /**
-   * For a particular skin, the mapping from triangle id to
-   * the uvKey of the unique rectangle containing the triangle.
+   * For a given skin of a given mesh, a mapping from
+   * triangle id to its parent uv-rectangle's key.
+   * The latter arises from the original SVG used to generate
+   * the uv-map see e.g. media/npc/human-skin-0.svg.
    */
   interface SkinTriMap {
     [triId: number]: {
-      uvKey: string;
+      uvRectKey: string;
+      // partKey: string; // 🚧
     };
   }
 

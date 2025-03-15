@@ -513,15 +513,8 @@ export class Npc {
     const vertexIds = [...Array(numVertices)].map((_,i) => i);
     m.mesh.geometry.setAttribute('vertexId', new THREE.BufferAttribute(new Int32Array(vertexIds), 1));
 
-    // ensure w.texSkin i.e. skin tri -> uvRect mapping 
-    // ensure w.texSkinUvs i.e. uv-re-mapping per npc
-    if (this.w.npc.skinTriMap[skinClassKey] === undefined) {
-      this.w.menu.measure(`npc.skinTriMap`);
-      this.w.npc.skinTriMap[skinClassKey] = computeSkinTriMap(m.mesh, skins.uvMap[skinClassKey], skinSheetId);
-      this.w.npc.drawUvReMap(this);
-      this.w.menu.measure(`npc.skinTriMap`);
-    }
-
+    // 🚧 ensure w.texSkinUvs i.e. uv-re-mapping per npc
+    this.w.npc.drawUvReMap(this);
   }
 
   /**

@@ -4,9 +4,9 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
-import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
+import { entries, isDevelopment, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
-import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
+import { computeSkinTriMap, createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { cmUvService } from "../service/uv";
 import { CuboidManMaterial, HumanZeroShader } from "../service/glsl";
@@ -30,6 +30,7 @@ export default function Npcs(props) {
     gltf: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
     idToKey: new Map(),
+    initSkinMeta: /** @type {*} */ ({}),
     label: {
       count: 0,
       lookup: {},
@@ -40,7 +41,6 @@ export default function Npcs(props) {
     physicsPositions: [],
     tex: /** @type {*} */ ({}), // 🚧 old
     showLastNavPath: false, // 🔔 for debug
-    skinTriMap: /** @type {*} */ ({}),
 
     attachAgent(npc) {
       if (npc.agent === null) {
@@ -117,7 +117,7 @@ export default function Npcs(props) {
       if (nextNpc.agent !== null) {
         state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
       }
-      // track npc class meta 🚧 other properties?
+      // track npc class meta 🚧 others?
       nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
       prevNpc.dispose();
     },
@@ -342,17 +342,32 @@ export default function Npcs(props) {
   }, []);
   
   React.useEffect(() => {
+    w.menu.measure(`npc.initSkinMeta`);
+    // 🔔 compute mappings from triangleId to uvRectKey
     // 🔔 un-weld vertices so triangleId follows from vertexId
+    state.initSkinMeta = /** @type {*} */ ({});
     for (const [npcClassKey, gltf] of entries(state.gltf)) {
-      if (npcClassKey === 'cuboid-man') return; // 🚧 remove with cuboid-man
+      if (npcClassKey === 'cuboid-man') continue; // 🚧 remove cuboid-man
+      
       const meta = npcClassToMeta[npcClassKey];
       const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
       if (mesh.geometry.index !== null) {
         mesh.geometry = mesh.geometry.toNonIndexed();
       }
+      
+      // get sheetId from orig material name e.g. human-skin-0.0.tex.png
+      const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (mesh.material);
+      const matBaseName = origMaterial.map?.name ?? null;
+      const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
+
+      const uvMap = w.geomorphs.sheet.skins.uvMap[meta.skinClassKey];
+      state.initSkinMeta[npcClassKey] = {
+        map: computeSkinTriMap(mesh, uvMap, skinSheetId),
+        sheetId: skinSheetId,
+      };
     }
-    // 🚧 recompute triangle mappings
     // 🚧 re-initialize npcs
+    w.menu.measure(`npc.initSkinMeta`);
   }, Object.values(glbHash));
 
   // 🚧 remove
@@ -406,7 +421,10 @@ export default function Npcs(props) {
  * @property {Map<number, string>} idToKey
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath
- * @property {Record<Geomorph.SkinClassKey, NPC.SkinTriMap>} skinTriMap
+ *
+ * @property {Record<NPC.ClassKey, { map: NPC.SkinTriMap; sheetId: number }>} initSkinMeta
+ * For each npc class, its initial mapping from triangleId to uv-rects.
+ * Distinct npc classes can have the same skinClassKey, yet initially point into different sheets for that skin.
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} clearLabels

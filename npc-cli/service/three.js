@@ -487,23 +487,23 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
 }
 
 /**
- * 🚧
  * @param {import('three').SkinnedMesh} skinnedMesh
  * @param {Geomorph.UvRectLookup} uvMap
- * @param {number} skinSheetId Relative to skin
+ * @param {number} skinSheetId
  * @returns {NPC.SkinTriMap}
  */
 export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
   const output = /** @type {NPC.SkinTriMap} */ ({});
   
   // arrange uvMap as sorted list of lists for fast querying
-  // 🔔 assume it defines a grid (where rows/cols can have different widths/heights)
+  // 🔔 assume it defines a grid, where rows/cols can have different widths/heights
   const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
     if (sheetId === skinSheetId) {
       (agg[x] ??= [x + width, []])[1].push([y + height, uvRectKey]);
     }
     return agg;
-  }, /** @type {Record<number, [number, [number, string][]]>} */ ([]));
+  }, /** @type {Record<number, [maxX: number, [maxY: number, uvRectKey: string][]]>} */ ([]));
+  
   const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
   sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
   
@@ -527,9 +527,9 @@ export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
     const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
     const vertexIds = tris[triId];
     if (found !== undefined) {
-      output[triId] = { uvKey: found[1] };
+      output[triId] = { uvRectKey: found[1] };
     } else {
-      warn(`triangle not contained in any uv rect: ${JSON.stringify({ triId, vertexIds })}`);
+      warn(`triangle not contained in any uv-rect: ${JSON.stringify({ triId, vertexIds })}`);
     }
   }
 
