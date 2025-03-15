@@ -205,6 +205,7 @@ info({ opts });
     });
     assetsJson.maps = prev.assets.maps;
     assetsJson.sheet = prev.assets.sheet;
+    assetsJson.skin = prev.assets.skin;
   }
 
   //#region ℹ️ Compute assets.json and sprite-sheets
