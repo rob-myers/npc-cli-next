@@ -119,7 +119,6 @@ export default function Npcs(props) {
       }
       // track npc class meta 🚧 others?
       nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
-      prevNpc.dispose();
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
@@ -362,15 +361,20 @@ export default function Npcs(props) {
       };
     }
 
-    // 🚧 re-initialize npcs
-    // 🚧 dispose previous?
-    Object.values(state.npc).forEach(npc => {
+    // re-initialize npcs
+    for (const npc of Object.values(state.npc)) {
+      if (npc.m.animations === state.gltf[npc.def.classKey].animations) {
+        continue; // skip unchanged gltf
+      }
       npc.initialize(state.gltf[npc.def.classKey]);
       npc.mixer = emptyAnimationMixer; // overwritten on mount
-    });
-
+      npc.epochMs = Date.now(); // invalidate cache
+    }
+    
     w.menu.measure(`npc.initSkinMeta`);
-  }, Object.values(glbHash));
+    // 🔔 recompute skin onchange glbHash
+    // 🔔 reinitialize npc onchange gltf
+  }, [...Object.values(glbHash), ...Object.values(state.gltf)]);
 
   // 🚧 remove
   React.useEffect(() => {// npc textures
@@ -482,7 +486,9 @@ function NPC({ npc }) {
         skeleton={mesh.skeleton}
         userData={mesh.userData}
 
-        key={CuboidManMaterial.key} // 🔔 keep shader up-to-date
+        // 🔔 keep shader up-to-date
+        // 🔔 update onchange gltf
+        key={`${CuboidManMaterial.key} ${mesh.uuid}`}
         onUpdate={(skinnedMesh) => {
           npc.m.mesh = skinnedMesh; 
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);

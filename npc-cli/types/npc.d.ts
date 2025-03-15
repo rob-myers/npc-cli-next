@@ -32,6 +32,22 @@ declare namespace NPC {
     // | 'cuboid-man-alt-1'
   );
 
+  interface Model {
+    animations: import('three').AnimationClip[];
+    /** Root bones */
+    bones: import('three').Bone[];
+    /** Root group available on mount */
+    group: import('three').Group;
+    /** Mounted material (initially import('three').MeshPhysicalMaterial via GLTF) */
+    material: import('three').ShaderMaterial;
+    /** Mounted mesh */
+    mesh: import('three').SkinnedMesh;
+    quad: import('../service/uv').CuboidManQuads; // 🚧 remove
+    scale: number;
+    /** Points into DataTextureArray `w.texSkin.tex` */
+    globalSkinId: number;
+    toAct: Record<NPC.AnimKey, import('three').AnimationAction>;
+  }
 
   interface UvQuadId {
     uvMapKey: NPC.TextureKey;

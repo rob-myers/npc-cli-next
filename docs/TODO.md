@@ -143,11 +143,11 @@
   - ✅ for each skinClassKey recompute "triangleId -> [{ uvRectKey }, ...]"
     - ℹ️ `w npc.initSkinMeta | json`
   - ✅ geomorphs.sheet.skins -> geomorphs.skin
-  - 🚧 re-initialize npcs
+  - ✅ re-initialize npcs
     - ✅ can see new mesh on export GLB from Blender
     - ✅ fix animations
-    - 🚧 dispose previous
-  - avoid reference `NPC` namespace in `Geomorph` namespace
+    - ✅ dispose previous
+  - 🚧 avoid reference `NPC` namespace in `Geomorph` namespace
 
 - HMR of MDX subcomponents
 - HMR of npc models onchange const

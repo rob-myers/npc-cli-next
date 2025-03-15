@@ -327,6 +327,10 @@ export const emptyGroup = new THREE.Group();
 
 export const emptyAnimationMixer = new THREE.AnimationMixer(emptyGroup);
 
+export const emptyShaderMaterial = new THREE.ShaderMaterial();
+
+export const emptySkinnedMesh = new THREE.SkinnedMesh();
+
 /**
  * @typedef CanvasTexMetaDef
  * @property {number} width 

@@ -7,7 +7,7 @@ import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObject3DLookup, computeSkinTriMap, emptyAnimationMixer, emptyGroup, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
+import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 import { cmUvService } from "../service/uv";
@@ -23,22 +23,18 @@ export class Npc {
   /** @type {number} Physics body identifier i.e. `hashText(key)` */
   bodyUid;
   
-  /** Model */
+  /** @type {NPC.Model} Model */
   m = {
-    animations: /** @type {THREE.AnimationClip[]} */ ([]),
-    /** Root bones */
-    bones: /** @type {THREE.Bone[]} */ ([]),
-    /** Root group available on mount */
-    group: emptyGroup,
-    /** Mounted material (initially THREE.MeshPhysicalMaterial via GLTF) */
-    material: /** @type {THREE.ShaderMaterial} */ ({}),
-    /** Mounted mesh */
-    mesh: /** @type {THREE.SkinnedMesh} */ ({}),
-    quad: /** @type {import('../service/uv').CuboidManQuads} */ ({}),
-    scale: 1,
-    /** Points into DataTextureArray `w.texSkin.tex` */
+    animations: [],
+    bones: [],
+    group: /** @type {*} */ (null),
+    // group: /** @type {*} */ (emptyGroup),
     globalSkinId: 0,
-    toAct: /** @type {Record<NPC.AnimKey, THREE.AnimationAction>} */ ({}),
+    material: /** @type {*} */ ({}),
+    mesh: /** @type {*} */ ({}),
+    quad: /** @type {*} */ ({}), // 🚧 remove
+    scale: 1,
+    toAct: /** @type {*} */ ({}),
   }
   
   mixer = emptyAnimationMixer;
@@ -140,8 +136,17 @@ export class Npc {
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
   }
 
-  dispose() {
-    // 🚧
+  disposeModel() {
+    this.m.animations = [];
+    this.m.bones = [];
+    // @ts-ignore
+    this.m['group'] = null;
+    this.m.material.dispose?.();
+    this.m.material = emptyShaderMaterial;
+    this.m.mesh.visible = false;
+    this.m.mesh = emptySkinnedMesh;
+    Object.values(this.m.toAct).forEach(act => act.stop());
+    this.m.toAct = /** @type {*} */ ({});
   }
 
   /**
@@ -484,6 +489,9 @@ export class Npc {
       this.initializeOld(gltf); // 🚧 npc shader migration
       return;
     }
+    if (this.m.group !== null) {// onchange glb
+      this.disposeModel();
+    }
 
     const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(gltf.scene));
     const objectLookup = buildObject3DLookup(clonedRoot);
@@ -509,7 +517,7 @@ export class Npc {
     m.scale = meta.scale;
 
     // 🚧 ensure w.texSkinUvs i.e. uv-re-mapping per npc
-    this.w.npc.drawUvReMap(this);
+    this.w.npc.drawUvReMap(this);  
   }
 
   /**
