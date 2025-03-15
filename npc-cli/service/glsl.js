@@ -446,8 +446,7 @@ export const humanZeroShader = {
   Vert: /*glsl*/`
 
   flat varying int triangleId;
-  attribute int vertexId;
-  flat varying int vId; // 🚧 remove?
+  flat varying int vId; // 🚧 unused
   varying vec2 vUv;
 
   #include <common>
@@ -463,8 +462,8 @@ export const humanZeroShader = {
     vec3 transformed = vec3(position);
     #include <skinning_vertex>
 
-    triangleId = int(vertexId / 3); // since geometry.toNonIndexed()
-    vId = vertexId;
+    triangleId = int(gl_VertexID / 3); // since geometry.toNonIndexed()
+    vId = gl_VertexID;
     vUv = uv;
 
     vec4 mvPosition = vec4(transformed, 1.0);

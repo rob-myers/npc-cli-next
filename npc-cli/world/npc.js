@@ -503,11 +503,6 @@ export class Npc {
 
     m.scale = meta.scale;
 
-    // shader needs vertexId attribute
-    const numVertices = m.mesh.geometry.getAttribute('position').count;
-    const vertexIds = [...Array(numVertices)].map((_,i) => i);
-    m.mesh.geometry.setAttribute('vertexId', new THREE.BufferAttribute(new Int32Array(vertexIds), 1));
-
     // 🚧 ensure w.texSkinUvs i.e. uv-re-mapping per npc
     this.w.npc.drawUvReMap(this);
   }

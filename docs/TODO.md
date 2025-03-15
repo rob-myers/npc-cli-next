@@ -142,7 +142,7 @@
   - ✅ for each npcClassKey do mesh normalization i.e. un-weld (for all)
   - ✅ for each skinClassKey recompute "triangleId -> [{ uvRectKey }, ...]"
     - ℹ️ `w npc.initSkinMeta | json`
-  - 🚧 geomorphs.sheet.skins -> geomorphs.skin
+  - ✅ geomorphs.sheet.skins -> geomorphs.skin
   - 🚧 re-initialize npcs
   - avoid reference `NPC` namespace in `Geomorph` namespace
 
