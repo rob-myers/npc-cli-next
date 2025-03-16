@@ -446,7 +446,6 @@ export const humanZeroShader = {
   Vert: /*glsl*/`
 
   flat varying int triangleId;
-  flat varying int vId; // 🚧 unused
   varying vec2 vUv;
 
   #include <common>
@@ -459,11 +458,11 @@ export const humanZeroShader = {
     #include <skinbase_vertex>
     #include <beginnormal_vertex>
     #include <skinnormal_vertex>
+
     vec3 transformed = vec3(position);
     #include <skinning_vertex>
 
     triangleId = int(gl_VertexID / 3); // since geometry.toNonIndexed()
-    vId = gl_VertexID;
     vUv = uv;
 
     vec4 mvPosition = vec4(transformed, 1.0);
@@ -477,12 +476,11 @@ export const humanZeroShader = {
   
   uniform sampler2DArray atlas;
   uniform bool objectPick;
-  uniform int texSkinId;
+  // uniform int texSkinId;
   uniform int uid;
   uniform sampler2DArray uvReMap;
 
   flat varying int triangleId;
-  flat varying int vId;
   varying vec2 vUv;
 
   #include <common>
@@ -490,30 +488,28 @@ export const humanZeroShader = {
   #include <map_pars_fragment>
   #include <logdepthbuf_pars_fragment>
 
+  /**
+   * uid in 0..65535 (msByte, lsByte),
+   * although probably in 0..255
+   */
+  vec4 encodeNpcObjectPick() {
+    return vec4(
+      8.0, // object-pick identifier
+      float((uid >> 8) & 255),
+      float(uid & 255),
+      255.0
+    ) / 255.0;
+  }
+
   void main() {
-    // if (vId > 3 * 8) {
-    //   discard;
-    // }
 
-    // head-front
-    // if (!(vId == 3 * 1 || vId == 3 * 5)) discard;
-    // head-top
-    // if (!(vId == 3 * 1 + 1 || vId == 3 * 3 + 1)) discard;
-    // body-front
-    // if (!(vId == 28 || vId == 39)) discard;
-    // body-left
-    // if (!(vId == 29 || vId == 35)) discard;
-    // base-head-overlay-front
-    // if (!(vId == 51 || vId == 63)) discard;
-    // 🚧 manual remap base-head-overlay-front -> confused-head-overlay-front
-    // if (vId == 92 || vId == 95) {
-    // if (triangleId == 30 || triangleId == 31) {
-    //   gl_FragColor = texture(atlas, vec3(vUv.x + 0.125, vUv.y, texSkinId));
-    //   #include <logdepthbuf_fragment>
-    //   return;
-    // }
+    if (objectPick == true) {
+      // 54 triangles, last 2 are label
+      // 🚧 instead provide the 2 triangle ids as a uniform
+      if (triangleId < 52) gl_FragColor = encodeNpcObjectPick();
+      return;
+    }
 
-    
     // 🔔 128 is width of uv offset DataTextureArray
     vec4 uvOffset = texture(uvReMap, vec3(float(triangleId) / 128.0, 0.0, uid));
     float atlasIndex = uvOffset.z * 255.0;
