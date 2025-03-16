@@ -354,16 +354,21 @@ declare namespace NPC {
   }
 
   /**
-   * For a given skin of a given mesh, a mapping from
+   * For a skin of a given mesh, a mapping from
    * triangle id to its parent uv-rectangle's key.
    * The latter arises from the original SVG used to generate
    * the uv-map see e.g. media/npc/human-skin-0.svg.
    */
-  type SkinTriMap = {
-      /** Never begins with `_`. */
-      uvRectKey: string;
-      /** This is just `uvRectKey.split('_')[1]` */
-      skinPartKey: string;
+  type TriToUvKeys = {
+    /**
+     * Key of a uv-rect defined in skin SVG.
+     * Never begins with `_`.
+     */
+    uvRectKey: string;
+    /** This is just `uvRectKey.split('_')[1]` */
+    skinPartKey: string;
   }[];
+
+  type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
 
 }

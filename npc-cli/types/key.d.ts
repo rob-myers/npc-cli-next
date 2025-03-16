@@ -5,12 +5,12 @@ namespace Key {
   type DecorImg = import('../service/const.js').DecorImgKey;
 
   type Geomorph =(
-    | "g-101--multipurpose"
-    | "g-102--research-deck"
-    | "g-103--cargo-bay"
-    | "g-301--bridge"
-    | "g-302--xboat-repair-bay"
-    | "g-303--passenger-deck"
+    | 'g-101--multipurpose'
+    | 'g-102--research-deck'
+    | 'g-103--cargo-bay'
+    | 'g-301--bridge'
+    | 'g-302--xboat-repair-bay'
+    | 'g-303--passenger-deck'
   );
 
   type GeomorphNumber = (
@@ -48,8 +48,43 @@ namespace Key {
    * - can be the skin class of multiple npc classes.
    */
   type SkinClass = (
-    | "human-skin-0"
-    | "cuboid-man" // 🚧 remove
+    | 'human-skin-0'
+    | 'cuboid-man' // 🚧 remove
+  );
+
+  type SkinPart = (
+    | 'head-front'
+    | 'head-back'
+    | 'head-left'
+    | 'head-right'
+    | 'head-top'
+    | 'head-bottom'
+
+    | 'body-top'
+    | 'body-bottom'
+    | 'body-left'
+    | 'body-front'
+    | 'body-right'
+    | 'body-back'
+
+    | 'head-overlay-front'
+    | 'head-overlay-back'
+    | 'head-overlay-left'
+    | 'head-overlay-right'
+    | 'head-overlay-top'
+    | 'head-overlay-bottom'
+
+    | 'body-overlay-top'
+    | 'body-overlay-bottom'
+    | 'body-overlay-left'
+    | 'body-overlay-front'
+    | 'body-overlay-right'
+    | 'body-overlay-back'
+    
+    | 'selector'
+    | 'breath'
+    | 'label'
+
   );
 
   /**

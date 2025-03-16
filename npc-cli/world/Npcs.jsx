@@ -6,7 +6,7 @@ import debounce from "debounce";
 import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
 import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
-import { computeSkinTriMap, createLabelSpriteSheet, emptyAnimationMixer, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
+import { computeMeshUvMappings, createLabelSpriteSheet, emptyAnimationMixer, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { cmUvService } from "../service/uv";
 import { CuboidManMaterial, HumanZeroShader } from "../service/glsl";
@@ -67,7 +67,7 @@ export default function Npcs(props) {
     drawUvReMap(npc, opts) {
       const uvTexArray = w.texSkinUvs;
       
-      const { uvByTri: triMap, sheetId } = state.initSkinMeta[npc.def.classKey];
+      const { triToKey, sheetId } = state.initSkinMeta[npc.def.classKey];
       const { skinClassKey } = npcClassToMeta[npc.def.classKey];
       const {
         uvMap: {[skinClassKey]: uvMap},
@@ -76,7 +76,7 @@ export default function Npcs(props) {
       
       // one pixel per triangle
       const data = new Uint8Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
-      for (const [triangleId, { uvRectKey }] of triMap.entries()) {
+      for (const [triangleId, { uvRectKey }] of triToKey.entries()) {
         const offset = 4 * triangleId;
         // ✅ hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
         // 🚧 what about negative offsets?
@@ -386,10 +386,13 @@ export default function Npcs(props) {
       const matBaseName = origMaterial.map?.name ?? null;
       const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
 
-      const { uvMap } = w.geomorphs.skin;
+      const { [meta.skinClassKey]: uvMap } = w.geomorphs.skin.uvMap;
+      const { triToUvKeys, partToUvRect } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
+
       state.initSkinMeta[npcClassKey] = {
-        uvByTri: computeSkinTriMap(mesh, uvMap[meta.skinClassKey], skinSheetId),
+        triToKey: triToUvKeys,
         sheetId: skinSheetId,
+        partToUv: partToUvRect,
       };
     }
     w.menu.measure(`npc.initSkinMeta`);
@@ -457,9 +460,14 @@ export default function Npcs(props) {
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath
  *
- * @property {Record<Key.NpcClass, { uvByTri: NPC.SkinTriMap; sheetId: number }>} initSkinMeta
- * For each npc class, its initial mapping from triangleId to uv-rects.
- * Distinct npc classes can have the same skinClassKey, yet initially point into different sheets for that skin.
+ * @property {Record<Key.NpcClass, {
+ *   triToKey: NPC.TriToUvKeys;
+ *   sheetId: number;
+ *   partToUv: NPC.SkinPartToUvRect;
+ * }>} initSkinMeta
+ * For each npc class, its initial:
+ * - mapping from triangleId to { uvRectKey, skinPartKey }.
+ * -  
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} clearLabels

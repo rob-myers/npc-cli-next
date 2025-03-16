@@ -101,8 +101,8 @@
   - 🚧 clarify re-map format
     - ✅ every uvRectKey has a skinPartKey
     - ℹ️ an atomic remapping amounts to `{ skinPartKey, dst: [uvRectKey: string, texArrayId: number] }`
-    - ✅ `w.npc.initSkinMeta.map` -> `w.npc.initSkinMeta.uvByTri`
-    - 🚧 `w.npc.initSkinMeta.partToUv` i.e. skinPartKey -> initial uvRectKey -> uvRect
+    - ✅ `w.npc.initSkinMeta.map` -> `w.npc.initSkinMeta.triToKey`
+    - ✅ `w.npc.initSkinMeta.partToUv` i.e. skinPartKey -> initial uvRectKey -> uvRect
   - general approach
   - ✅ move selector/breath/label quad up i.e. no 32-pixel-gap
     - requires changing UV map in Blender too

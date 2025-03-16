@@ -496,11 +496,18 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
  * @param {import('three').SkinnedMesh} skinnedMesh
  * @param {Geomorph.UvRectLookup} uvMap
  * @param {number} skinSheetId
- * @returns {NPC.SkinTriMap}
+ * @returns {{ triToUvKeys: NPC.TriToUvKeys; partToUvRect: NPC.SkinPartToUvRect; }}
  */
-export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
-  const output = /** @type {NPC.SkinTriMap} */ ([]);
+export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
+  const triToUvKeys = /** @type {NPC.TriToUvKeys} */ ([]);
+  const partToUvRect = /** @type {NPC.SkinPartToUvRect} */ ({});
   
+  if (skinnedMesh.geometry.index !== null) {
+    // 🔔 geometry must be un-welded i.e. triangles pairwise disjoint,
+    // so we can detect current triangleId in fragment shader
+    throw Error(`skinnedMesh "${skinnedMesh.name}" must satisfy \`geometry.index === null\`: use geometry.toNonIndexed()`);
+  }
+
   // arrange uvMap as sorted list of lists for fast querying
   // 🔔 assume it defines a grid, where rows/cols can have different widths/heights
   const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
@@ -509,21 +516,12 @@ export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
     }
     return agg;
   }, /** @type {Record<number, [maxX: number, [maxY: number, uvRectKey: string][]]>} */ ([]));
-  
   const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
   sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
-  
-  if (skinnedMesh.geometry.index !== null) {
-    // 🔔 geometry must be un-welded i.e. triangles pairwise disjoint,
-    // so we can detect current triangleId in fragment shader
-    throw Error(`skinnedMesh "${skinnedMesh.name}" must satisfy \`geometry.index === null\`: use geometry.toNonIndexed()`);
-  }
 
   const uvs = getGeometryUvs(skinnedMesh.geometry);
-
   const numVerts = skinnedMesh.geometry.getAttribute('position').count;
   const tris = range(numVerts / 3).map(i => [3 * i, 3 * i + 1, 3 * i + 2])
-
   /** Centre of mass of each UV-triangle (inside triangle) */
   const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
   
@@ -533,15 +531,15 @@ export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
     const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
     const vertexIds = tris[triId];
     if (found !== undefined) {
-      output[triId] = {
-        uvRectKey: found[1],
-        skinPartKey: found[1].split('_')[1]
-      };
+      const uvRectKey = found[1];
+      const skinPartKey = /** @type {Key.SkinPart} */ (uvRectKey.split('_')[1]);
+      triToUvKeys[triId] = { uvRectKey, skinPartKey };
+      partToUvRect[skinPartKey] = uvMap[uvRectKey];
     } else {
       warn(`triangle not contained in any uv-rect: ${JSON.stringify({ triId, vertexIds })}`);
     }
   }
 
   // console.log({ sorted, centers, output });
-  return output;
+  return { triToUvKeys, partToUvRect };
 }

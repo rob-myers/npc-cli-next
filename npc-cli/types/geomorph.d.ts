@@ -472,10 +472,12 @@ declare namespace Geomorph {
   }
 
   interface UvRectLookup {
-    [uvRectName: string]: Geom.RectJson & {
-      /** Relative to parent skinClassKey */
-      sheetId: number;
-    }
+    [uvRectName: string]: UvRect;
+  }
+
+  interface UvRect extends Geom.RectJson {
+    /** Relative to parent skinClassKey */
+    sheetId: number;
   }
 
   type GmsData = import('../service/create-gms-data').GmsData;
