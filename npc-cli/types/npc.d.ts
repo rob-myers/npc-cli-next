@@ -360,8 +360,10 @@ declare namespace NPC {
    * the uv-map see e.g. media/npc/human-skin-0.svg.
    */
   type SkinTriMap = {
+      /** Never begins with `_`. */
       uvRectKey: string;
-      // partKey: string; // 🚧
+      /** This is just `uvRectKey.split('_')[1]` */
+      skinPartKey: string;
   }[];
 
 }

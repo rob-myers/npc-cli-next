@@ -513,15 +513,11 @@ export const humanZeroShader = {
     //   return;
     // }
 
-    // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
-    // gl_FragColor = texture(atlas, vec3(vUv, texSkinId));
-    // vec4 offset = texture(uvReMap, vec3(0.0, 0.0, uid));
-
+    
     // 🔔 128 is width of DataTextureArray
     vec4 offset = texture(uvReMap, vec3(float(triangleId) / 128.0, 0.0, uid));
+    // gl_FragColor = texture(atlas, vec3(vUv, texSkinId));
     gl_FragColor = texture(atlas, vec3(vUv.x + offset.x, vUv.y + offset.y, texSkinId));
-    // gl_FragColor = texture(atlas, vec3(vUv.x + offset.x, vUv.y + 0.0, texSkinId)) * vec4(1.0, 1.0, 1.0, 1.0);
-    // gl_FragColor = texture(atlas, vec3(vUv.x + offset.x, vUv.x + offset.y, texSkinId));
     #include <logdepthbuf_fragment>
   }
   `,

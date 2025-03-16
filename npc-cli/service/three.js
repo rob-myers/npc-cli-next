@@ -533,7 +533,10 @@ export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
     const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
     const vertexIds = tris[triId];
     if (found !== undefined) {
-      output[triId] = { uvRectKey: found[1] };
+      output[triId] = {
+        uvRectKey: found[1],
+        skinPartKey: found[1].split('_')[1]
+      };
     } else {
       warn(`triangle not contained in any uv-rect: ${JSON.stringify({ triId, vertexIds })}`);
     }

@@ -67,7 +67,7 @@ export default function Npcs(props) {
     drawUvReMap(npc, opts) {
       const uvTexArray = w.texSkinUvs;
       
-      const { map: triMap, sheetId } = state.initSkinMeta[npc.def.classKey];
+      const { uvByTri: triMap, sheetId } = state.initSkinMeta[npc.def.classKey];
       const { skinClassKey } = npcClassToMeta[npc.def.classKey];
       const {
         uvMap: {[skinClassKey]: uvMap},
@@ -80,10 +80,10 @@ export default function Npcs(props) {
         const offset = 4 * triangleId;
         // ✅ hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
         // 🚧 what about negative offsets?
-        if (uvRectKey === 'base-head-overlay-front') {
+        if (uvRectKey === 'base_head-overlay-front') {
           // uv rects already in uv coordinates
           const src = uvMap[uvRectKey];
-          const dst = uvMap['confused-head-overlay-front'];
+          const dst = uvMap['confused_head-overlay-front'];
           data[offset + 0] = Math.floor((dst.x - src.x) * 256);
           data[offset + 1] = Math.floor((dst.y - src.y) * 256);
           data[offset + 2] = texArrayIds[sheetId]; // confused-head-overlay-front in "initial sheet"
@@ -388,7 +388,7 @@ export default function Npcs(props) {
 
       const { uvMap } = w.geomorphs.skin;
       state.initSkinMeta[npcClassKey] = {
-        map: computeSkinTriMap(mesh, uvMap[meta.skinClassKey], skinSheetId),
+        uvByTri: computeSkinTriMap(mesh, uvMap[meta.skinClassKey], skinSheetId),
         sheetId: skinSheetId,
       };
     }
@@ -457,7 +457,7 @@ export default function Npcs(props) {
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath
  *
- * @property {Record<Key.NpcClass, { map: NPC.SkinTriMap; sheetId: number }>} initSkinMeta
+ * @property {Record<Key.NpcClass, { uvByTri: NPC.SkinTriMap; sheetId: number }>} initSkinMeta
  * For each npc class, its initial mapping from triangleId to uv-rects.
  * Distinct npc classes can have the same skinClassKey, yet initially point into different sheets for that skin.
  *
