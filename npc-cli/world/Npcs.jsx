@@ -95,8 +95,8 @@ export default function Npcs(props) {
         //   data[offset + 2] = texArrayIds[sheetId];
         //   data[offset + 3] = 0;
         // }
-        data[offset + 0] = 128;
-        data[offset + 1] = 128;
+        data[offset + 0] = 1;
+        data[offset + 1] = 0;
         data[offset + 2] = texArrayIds[sheetId];
         data[offset + 3] = 0;
       }
