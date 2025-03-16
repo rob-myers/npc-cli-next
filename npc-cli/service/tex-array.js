@@ -73,8 +73,7 @@ export class TexArray {
   updateIndex(index, data) {
     const offset = index * (4 * this.opts.width * this.opts.height);
     const imageData = data ?? this.ct.getImageData(0, 0, this.opts.width, this.opts.height).data;
-    //@ts-ignore 🔔 @types/three@^0.172.0
-    this.tex.image.data.set(imageData, offset);
+    /** @type {Uint8Array} */ (this.tex.image.data).set(imageData, offset);
     // this.tex.needsUpdate = true; // call this.update() instead
   }
 }
