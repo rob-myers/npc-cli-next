@@ -71,39 +71,34 @@ export default function Npcs(props) {
       const { skinClassKey } = npcClassToMeta[npc.def.classKey];
       const {
         uvMap: {[skinClassKey]: uvMap},
-        uvMapDim: {[skinClassKey]: uvMapDim},
         texArrayId: {[skinClassKey]: texArrayIds}, // indexes into w.texSkin
       } = w.geomorphs.skin;
       
-      // 🚧 one pixel per triangle
+      // one pixel per triangle
       const data = new Uint8Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
       for (const [triangleId, { uvRectKey }] of triMap.entries()) {
         const offset = 4 * triangleId;
-        // 🚧 hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
+        // ✅ hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
         // 🚧 what about negative offsets?
-        // if (uvRectKey === 'base-head-overlay-front') {
-        //   const src = uvMap[uvRectKey];
-        //   const dst = uvMap['confused-head-overlay-front'];
-        //   data[offset + 0] = (dst.x - src.x) / uvMapDim.width;
-        //   data[offset + 1] = (dst.y - src.y) / uvMapDim.height;
-        //   data[offset + 2] = texArrayIds[sheetId]; // confused-head-overlay-front in "initial sheet"
-        //   data[offset + 3] = 0;
-        //   console.log('🔔');
-        // } else {// 🚧
-        //   data[offset + 0] = 0;
-        //   data[offset + 1] = 0;
-        //   data[offset + 2] = texArrayIds[sheetId];
-        //   data[offset + 3] = 0;
-        // }
-        data[offset + 0] = 1;
-        data[offset + 1] = 0;
-        data[offset + 2] = texArrayIds[sheetId];
-        data[offset + 3] = 0;
+        if (uvRectKey === 'base-head-overlay-front') {
+          // uv rects already in uv coordinates
+          const src = uvMap[uvRectKey];
+          const dst = uvMap['confused-head-overlay-front'];
+          data[offset + 0] = Math.floor((dst.x - src.x) * 256);
+          data[offset + 1] = Math.floor((dst.y - src.y) * 256);
+          data[offset + 2] = texArrayIds[sheetId]; // confused-head-overlay-front in "initial sheet"
+          data[offset + 3] = 0;
+        } else {
+          data[offset + 0] = 0;
+          data[offset + 1] = 0;
+          data[offset + 2] = texArrayIds[sheetId];
+          data[offset + 3] = 0;
+        }
       }
 
       // update this npc's sheet
       uvTexArray.updateIndex(npc.def.uid, data);
-      uvTexArray.update();
+      uvTexArray.update(); // 🚧 move elsewhere?
     },
     findPath(src, dst) {// 🔔 agent only use path as a guide
       const query = w.crowd.navMeshQuery;

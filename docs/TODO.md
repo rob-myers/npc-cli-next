@@ -96,9 +96,10 @@
     > https://discourse.threejs.org/t/blender-gltf-export-do-distinct-triangles-always-have-distinct-final-vertex/79507
   - ✅ HMR onchange npc.drawUvReMap
     - ℹ️ we always invoke on hot-reload npc
-  - 🚧 same hard-coded example but encoded in uvReMap
+  - ✅ same hard-coded example but encoded in uvReMap
     - ✅ ensure uvReMap is being updated
   - 🚧 clarify re-map format
+    - 🚧 every uvRectKey has a skinPartKey
   - general approach
   - ✅ move selector/breath/label quad up i.e. no 32-pixel-gap
     - requires changing UV map in Blender too
