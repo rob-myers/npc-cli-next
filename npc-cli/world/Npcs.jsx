@@ -335,10 +335,8 @@ export default function Npcs(props) {
   }, []);
   
   React.useEffect(() => {
+    // 🔔 compute triangleId -> uvRectKey onchange glbHash
     w.menu.measure(`npc.initSkinMeta`);
-
-    // 🔔 compute mappings from triangleId to uvRectKey
-    // 🔔 un-weld vertices so triangleId follows from vertexId
     state.initSkinMeta = /** @type {*} */ ({});
     for (const [npcClassKey, gltf] of entries(state.gltf)) {
       if (npcClassKey === 'cuboid-man') continue; // 🚧 remove cuboid-man
@@ -346,6 +344,7 @@ export default function Npcs(props) {
       const meta = npcClassToMeta[npcClassKey];
       const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
       if (mesh.geometry.index !== null) {
+        // 🔔 un-weld vertices so triangleId follows from vertexId
         mesh.geometry = mesh.geometry.toNonIndexed();
       }
       
@@ -360,20 +359,17 @@ export default function Npcs(props) {
         sheetId: skinSheetId,
       };
     }
-
-    // re-initialize npcs
-    for (const npc of Object.values(state.npc)) {
-      if (npc.m.animations === state.gltf[npc.def.classKey].animations) {
-        continue; // skip unchanged gltf
-      }
-      npc.initialize(state.gltf[npc.def.classKey]);
-      npc.mixer = emptyAnimationMixer; // overwritten on mount
-      npc.epochMs = Date.now(); // invalidate cache
-    }
-    
     w.menu.measure(`npc.initSkinMeta`);
-    // 🔔 recompute skin onchange glbHash
-    // 🔔 reinitialize npc onchange gltf
+
+    // 🔔 reinitialize npcs onchange gltf
+    Object.values(state.npc).filter(
+      npc => npc.m.animations !== state.gltf[npc.def.classKey].animations
+    ).forEach(npc => {
+      npc.initialize(state.gltf[npc.def.classKey]);
+      npc.mixer = emptyAnimationMixer; // overwritten on remount
+      npc.epochMs = Date.now(); // invalidate cache
+    });
+    
   }, [...Object.values(glbHash), ...Object.values(state.gltf)]);
 
   // 🚧 remove
