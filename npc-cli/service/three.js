@@ -499,7 +499,7 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
  * @returns {NPC.SkinTriMap}
  */
 export function computeSkinTriMap(skinnedMesh, uvMap, skinSheetId) {
-  const output = /** @type {NPC.SkinTriMap} */ ({});
+  const output = /** @type {NPC.SkinTriMap} */ ([]);
   
   // arrange uvMap as sorted list of lists for fast querying
   // 🔔 assume it defines a grid, where rows/cols can have different widths/heights

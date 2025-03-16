@@ -516,7 +516,6 @@ export class Npc {
 
     m.scale = meta.scale;
 
-    // 🚧 ensure w.texSkinUvs i.e. uv-re-mapping per npc
     this.w.npc.drawUvReMap(this);  
   }
 

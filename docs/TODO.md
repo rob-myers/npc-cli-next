@@ -94,11 +94,17 @@
   - ✅ hard-coded example re-map in shader overlay-head -> overlay-head
   - ✅ use triangle id instead of "provoking vertex id" because cannot assume (v0,v1,v2) -> v2 injective
     > https://discourse.threejs.org/t/blender-gltf-export-do-distinct-triangles-always-have-distinct-final-vertex/79507
+  - ✅ HMR onchange npc.drawUvReMap
+    - ℹ️ we always invoke on hot-reload npc
   - 🚧 same hard-coded example but encoded in uvReMap
+    - ✅ ensure uvReMap is being updated
   - 🚧 clarify re-map format
   - general approach
   - ✅ move selector/breath/label quad up i.e. no 32-pixel-gap
     - requires changing UV map in Blender too
+- maybe each `Key.NpcClass` needs its own `Key.SkinClass`
+  - ℹ️ only uniform scales (e.g. of head) will preserve uv-map
+  - in which case we can drop `Key.SkinClass` and e.g. rename skins by class
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
 

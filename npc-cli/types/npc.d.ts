@@ -5,8 +5,8 @@ declare namespace NPC {
   interface NPCDef {
     /** User specified e.g. `rob` */
     key: string;
-    /** Numeric id used in object-picking */
-    pickUid: number;
+    /** Numeric id used e.g. for object-picking */
+    uid: number;
     /** Specifies the underlying 3D model */
     classKey: Key.NpcClass;
     /** Radians */
@@ -359,11 +359,9 @@ declare namespace NPC {
    * The latter arises from the original SVG used to generate
    * the uv-map see e.g. media/npc/human-skin-0.svg.
    */
-  interface SkinTriMap {
-    [triId: number]: {
+  type SkinTriMap = {
       uvRectKey: string;
       // partKey: string; // 🚧
-    };
-  }
+  }[];
 
 }

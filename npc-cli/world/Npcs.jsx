@@ -65,8 +65,45 @@ export default function Npcs(props) {
       w.menu.measure('npc.clearLabels');
     },
     drawUvReMap(npc, opts) {
+      const uvTexArray = w.texSkinUvs;
+      
+      const { map: triMap, sheetId } = state.initSkinMeta[npc.def.classKey];
+      const { skinClassKey } = npcClassToMeta[npc.def.classKey];
+      const {
+        uvMap: {[skinClassKey]: uvMap},
+        uvMapDim: {[skinClassKey]: uvMapDim},
+        texArrayId: {[skinClassKey]: texArrayIds}, // indexes into w.texSkin
+      } = w.geomorphs.skin;
+      
       // 🚧 one pixel per triangle
-      // 🚧 hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
+      const data = new Uint8Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
+      for (const [triangleId, { uvRectKey }] of triMap.entries()) {
+        const offset = 4 * triangleId;
+        // 🚧 hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
+        // 🚧 what about negative offsets?
+        // if (uvRectKey === 'base-head-overlay-front') {
+        //   const src = uvMap[uvRectKey];
+        //   const dst = uvMap['confused-head-overlay-front'];
+        //   data[offset + 0] = (dst.x - src.x) / uvMapDim.width;
+        //   data[offset + 1] = (dst.y - src.y) / uvMapDim.height;
+        //   data[offset + 2] = texArrayIds[sheetId]; // confused-head-overlay-front in "initial sheet"
+        //   data[offset + 3] = 0;
+        //   console.log('🔔');
+        // } else {// 🚧
+        //   data[offset + 0] = 0;
+        //   data[offset + 1] = 0;
+        //   data[offset + 2] = texArrayIds[sheetId];
+        //   data[offset + 3] = 0;
+        // }
+        data[offset + 0] = 128;
+        data[offset + 1] = 128;
+        data[offset + 2] = texArrayIds[sheetId];
+        data[offset + 3] = 0;
+      }
+
+      // update this npc's sheet
+      uvTexArray.updateIndex(npc.def.uid, data);
+      uvTexArray.update();
     },
     findPath(src, dst) {// 🔔 agent only use path as a guide
       const query = w.crowd.navMeshQuery;
@@ -111,14 +148,15 @@ export default function Npcs(props) {
     hotReloadNpc(prevNpc) {
       // 🔔 HMR by copying prevNpc non-methods into nextNpc
       const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
-      // invalidate React.Memo
-      nextNpc.epochMs = Date.now();
-      // avoid stale ref
-      if (nextNpc.agent !== null) {
+      
+      nextNpc.epochMs = Date.now(); // invalidate React.Memo
+      if (nextNpc.agent !== null) {// avoid stale ref
         state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
       }
-      // track npc class meta 🚧 others?
+      // track npc class meta
       nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
+
+      nextNpc.def.classKey !== 'cuboid-man' && state.drawUvReMap(nextNpc); // 🚧
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
@@ -157,8 +195,8 @@ export default function Npcs(props) {
         state.removeAgent(npc);
         
         delete state.npc[npcKey];
-        state.freeId.add(npc.def.pickUid);
-        state.idToKey.delete(npc.def.pickUid);
+        state.freeId.add(npc.def.uid);
+        state.idToKey.delete(npc.def.uid);
       }
       update();
       for (const npcKey of npcKeys) {
@@ -219,7 +257,7 @@ export default function Npcs(props) {
 
         npc.def = {
           key: opts.npcKey,
-          pickUid: npc.def.pickUid,
+          uid: npc.def.uid,
           angle: opts.angle ?? npc.getAngle() ?? 0, // prev angle fallback
           classKey: opts.classKey ?? npc.def.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
@@ -234,13 +272,13 @@ export default function Npcs(props) {
         // Spawn
         npc = state.npc[opts.npcKey] = new Npc({
           key: opts.npcKey,
-          pickUid: takeFirst(state.freeId),
+          uid: takeFirst(state.freeId),
           angle: opts.angle ?? 0,
           classKey: opts.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
         }, w);
-        state.idToKey.set(npc.def.pickUid, opts.npcKey);
+        state.idToKey.set(npc.def.uid, opts.npcKey);
 
         npc.initialize(state.gltf[npc.def.classKey]);
       }
@@ -390,12 +428,12 @@ export default function Npcs(props) {
       ref={state.ref('group')}
     >
       {Object.values(state.npc).map(npc =>
-        // <NPC key={npc.key} npc={npc} />
-        <MemoizedNPC
-          key={npc.key}
-          npc={npc}
-          epochMs={npc.epochMs} // can invalidate memo
-        />
+        <NPC key={npc.key} npc={npc} />
+        // <MemoizedNPC
+        //   key={npc.key}
+        //   npc={npc}
+        //   epochMs={npc.epochMs} // can invalidate memo
+        // />
       )}
     </group>
   );
@@ -500,7 +538,7 @@ function NPC({ npc }) {
             atlas={npc.w.texSkin.tex}
             texSkinId={npc.m.globalSkinId}
             transparent
-            uid={npc.def.pickUid}
+            uid={npc.def.uid}
             uvReMap={npc.w.texSkinUvs.tex}
           />
         ) || <cuboidManMaterial
@@ -508,7 +546,7 @@ function NPC({ npc }) {
           diffuse={[.8, .8, .8]}
           transparent
           opacity={npc.s.opacity}
-          uNpcUid={npc.def.pickUid}
+          uNpcUid={npc.def.uid}
           // objectPick={true}
 
           labelHeight={wallHeight * (1 / 0.65)}

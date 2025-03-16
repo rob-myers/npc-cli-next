@@ -507,14 +507,19 @@ export const humanZeroShader = {
     // if (!(vId == 51 || vId == 63)) discard;
     // 🚧 manual remap base-head-overlay-front -> confused-head-overlay-front
     // if (vId == 92 || vId == 95) {
-    if (triangleId == 30 || triangleId == 31) {
-      gl_FragColor = texture(atlas, vec3(vUv.x + 0.125, vUv.y, texSkinId));
-      #include <logdepthbuf_fragment>
-      return;
-    }
+    // if (triangleId == 30 || triangleId == 31) {
+    //   gl_FragColor = texture(atlas, vec3(vUv.x + 0.125, vUv.y, texSkinId));
+    //   #include <logdepthbuf_fragment>
+    //   return;
+    // }
 
     // gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
-    gl_FragColor = texture(atlas, vec3(vUv, texSkinId));
+    // gl_FragColor = texture(atlas, vec3(vUv, texSkinId));
+    // vec4 offset = texture(uvReMap, vec3(0.0, 0.0, uid));
+    vec4 offset = texture(uvReMap, vec3(triangleId, 0.0, uid));
+    gl_FragColor = texture(atlas, vec3(vUv.x + offset.x/ 64.0, vUv.y + 0.0, texSkinId));
+    // gl_FragColor = texture(atlas, vec3(vUv.x + offset.x, vUv.y + 0.0, texSkinId)) * vec4(1.0, 1.0, 1.0, 1.0 - (offset.x * 1000.0));
+    // gl_FragColor = texture(atlas, vec3(vUv.x + offset.x, vUv.x + offset.y, texSkinId));
     #include <logdepthbuf_fragment>
   }
   `,
