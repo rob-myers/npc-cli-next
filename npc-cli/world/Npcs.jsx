@@ -321,9 +321,9 @@ export default function Npcs(props) {
   w.npc = state;
   w.n = state.npc;
   
-  const { glbHash } = w.geomorphs.sheet;
   entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {
-    const cacheBustingQuery = isDevelopment() ? `?hash=${glbHash[npcClassKey]}` : '';
+    const { [npcClassKey]: hash } = w.geomorphs.sheet.glbHash;
+    const cacheBustingQuery = isDevelopment() ? `?hash=${hash}` : '';
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
   
@@ -334,8 +334,8 @@ export default function Npcs(props) {
     }
   }, []);
   
-  React.useEffect(() => {
-    // 🔔 compute triangleId -> uvRectKey onchange glbHash
+  React.useEffect(() => {// onchange gltf
+    // 🔔 compute triangleId -> uvRectKey
     w.menu.measure(`npc.initSkinMeta`);
     state.initSkinMeta = /** @type {*} */ ({});
     for (const [npcClassKey, gltf] of entries(state.gltf)) {
@@ -361,7 +361,7 @@ export default function Npcs(props) {
     }
     w.menu.measure(`npc.initSkinMeta`);
 
-    // 🔔 reinitialize npcs onchange gltf
+    // 🔔 reinitialize respective npcs
     Object.values(state.npc).filter(
       npc => npc.m.animations !== state.gltf[npc.def.classKey].animations
     ).forEach(npc => {
@@ -370,7 +370,7 @@ export default function Npcs(props) {
       npc.epochMs = Date.now(); // invalidate cache
     });
     
-  }, [...Object.values(glbHash), ...Object.values(state.gltf)]);
+  }, Object.values(state.gltf));
 
   // 🚧 remove
   React.useEffect(() => {// npc textures
