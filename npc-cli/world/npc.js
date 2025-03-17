@@ -135,6 +135,48 @@ export class Npc {
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
   }
 
+  /**
+   * @param {any} opts 
+   */
+  changeUvMap(opts) {// 🚧
+
+    const uvTexArray = this.w.texSkinUvs;
+    const classKey = this.def.classKey;
+    const { skinClassKey } = npcClassToMeta[classKey];
+    const { triToKey, sheetId } = this.w.npc.skinInit[classKey];
+    const {
+      uvMap: {[skinClassKey]: uvMap},
+      texArrayId: {[skinClassKey]: texArrayIds}, // indexes into w.texSkin
+    } = this.w.geomorphs.skin;
+    
+    // one pixel per triangle
+    // 🔔 texture.type THREE.FloatType to handle negative uv offsets
+    const data = new Float32Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
+    for (const [triangleId, { uvRectKey }] of triToKey.entries()) {
+      const offset = 4 * triangleId;
+      // hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
+      if (uvRectKey === 'base_head-overlay-front') {
+        // uv rects already in uv coordinates
+        const src = uvMap[uvRectKey];
+        const dst = uvMap['confused_head-overlay-front'];
+        // const dst = uvMap['small-eyes_head-overlay-front'];
+        data[offset + 0] = dst.x - src.x;
+        data[offset + 1] = dst.y - src.y;
+        data[offset + 2] = texArrayIds[sheetId]; // confused-head-overlay-front in "initial sheet"
+        data[offset + 3] = 0;
+      } else {
+        data[offset + 0] = 0;
+        data[offset + 1] = 0;
+        data[offset + 2] = texArrayIds[sheetId];
+        data[offset + 3] = 0;
+      }
+    }
+
+    // update this npc's sheet
+    uvTexArray.updateIndex(this.def.uid, data);
+    uvTexArray.update(); // 🚧 move elsewhere?
+  }
+
   disposeModel() {
     this.m.animations = [];
     this.m.bones = [];
@@ -512,7 +554,7 @@ export class Npc {
 
     m.scale = meta.scale;
 
-    this.w.npc.drawUvReMap(this);  
+    this.changeUvMap({});  
   }
 
   /**

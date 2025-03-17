@@ -109,9 +109,9 @@
   - ✅ can handle negative uv offsets
     - ℹ️ TexArray supports type `THREE.FloatType` (default `THREE.UnsignedByteType`)
   - 🚧 general approach
-- maybe each `Key.NpcClass` needs its own `Key.SkinClass`
-  - ℹ️ only uniform scales (e.g. of head) will preserve uv-map
-  - in which case we can drop `Key.SkinClass` and e.g. rename skins by class
+  - precompute shared object per npcClassKey so `changeUvMap` is cleaner
+- maybe keep `skinClassKey` e.g. two models could share same skin via different body ratios yet same head ratios?
+
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
 
