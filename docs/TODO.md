@@ -108,8 +108,9 @@
     - ✅ `w.npc.initSkinMeta` -> `w.npc.skinInit`
   - ✅ can handle negative uv offsets
     - ℹ️ TexArray supports type `THREE.FloatType` (default `THREE.UnsignedByteType`)
-  - 🚧 general approach
-  - precompute shared object per npcClassKey so `changeUvMap` is cleaner
+  - ✅ precompute shared object per npcClassKey so `changeUvMap` is cleaner
+  - ✅ general approach
+  - 🚧 multiple example uv re-mappings
 - maybe keep `skinClassKey` e.g. two models could share same skin via different body ratios yet same head ratios?
 
 - represent label images as 256-layer DataTextureArray

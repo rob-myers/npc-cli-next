@@ -115,7 +115,7 @@ export default function Npcs(props) {
       // track npc class meta
       nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
 
-      nextNpc.def.classKey !== 'cuboid-man' && nextNpc.changeUvMap({}); // 🚧
+      nextNpc.def.classKey !== 'cuboid-man' && nextNpc.updateUvs(); // 🚧
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
