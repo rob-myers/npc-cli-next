@@ -162,6 +162,8 @@
 - ✅ avoid reference `NPC` namespace in `Geomorph` namespace
   - migrate to new namespace `Key.*`
 
+- BUG: unmount `<Floor>` empties npcs
+
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 - try `bun` https://bun.sh/

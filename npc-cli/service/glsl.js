@@ -506,9 +506,7 @@ export const humanZeroShader = {
   void main() {
 
     if (objectPick == true) {
-      // 54 triangles last 2 are label
-      // 🚧 instead provide the 2 triangle ids as a uniform
-      if (triangleId < 52) gl_FragColor = encodeNpcObjectPick();
+      // 🚧 label should be left in "original position" under ground
       return;
     }
 
