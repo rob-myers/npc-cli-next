@@ -137,5 +137,20 @@
         </circle>
       </g>
     </g>
+    <g>
+      <title>small-eyes_head-overlay</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="768" y="544">
+        <title>front</title>
+      </rect>
+      <g transform="matrix(1, 0, 0, 1, 606.83, -25.6)">
+        <title>eyes</title>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="8">
+          <title>_left</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="8">
+          <title>_right</title>
+        </circle>
+      </g>
+    </g>
   </g>
 </svg>

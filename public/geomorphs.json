@@ -40155,13 +40155,13 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"cuboid-man": -1925566159, "human-0": 1700397335},
-    "imagesHash": 1372092310
+    "imagesHash": 300542546
   },
   "skin": {
     "numSheets": {"cuboid-man": 1, "human-skin-0": 2},
     "svgHashes": {
       "cuboid-man": [-1087841574],
-      "human-skin-0": [870265136, -1636056572]
+      "human-skin-0": [-1704042196, -1636056572]
     },
     "texArrayId": {"cuboid-man": [0], "human-skin-0": [1, 2]},
     "uvMap": {
@@ -40501,6 +40501,13 @@
           "sheetId": 0,
           "x": 0.375,
           "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "small-eyes_head-overlay-front": {
+          "sheetId": 0,
+          "x": 0.375,
+          "y": 0.265625,
           "width": 0.0625,
           "height": 0.0625
         },
