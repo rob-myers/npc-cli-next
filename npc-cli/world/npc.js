@@ -140,14 +140,9 @@ export class Npc {
    */
   changeUvMap(opts) {// 🚧
 
-    const uvTexArray = this.w.texSkinUvs;
+    const uvTexArray = this.w.texUvReMap;
     const classKey = this.def.classKey;
-    const { skinClassKey } = npcClassToMeta[classKey];
-    const { triToKey, sheetId } = this.w.npc.skinInit[classKey];
-    const {
-      uvMap: {[skinClassKey]: uvMap},
-      texArrayId: {[skinClassKey]: texArrayIds}, // indexes into w.texSkin
-    } = this.w.geomorphs.skin;
+    const { triToKey, sheetId, uvMap, texArrayIds } = this.w.npc.skinAux[classKey];
     
     // one pixel per triangle
     // 🔔 texture.type THREE.FloatType to handle negative uv offsets

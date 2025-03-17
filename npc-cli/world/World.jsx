@@ -70,7 +70,7 @@ export default function World(props) {
     texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
     texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
-    texSkinUvs: new TexArray({ ctKey: 'skins-uvs-tex-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 1 }),
+    texUvReMap: new TexArray({ ctKey: 'skins-uvs-tex-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 1 }),
     texVs: { floor: 0, ceiling: 0 }, // versions
 
     crowd: /** @type {*} */ (null),
@@ -425,12 +425,12 @@ export default function World(props) {
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm
  *
- * @property {TexArray} texFloor
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
+ * @property {TexArray} texFloor
  * @property {TexArray} texObs
  * @property {TexArray} texSkin
- * @property {TexArray} texSkinUvs
+ * @property {TexArray} texUvReMap
  * @property {{ floor: number; ceiling: number; }} texVs
  * @property {Geomorph.LayoutInstance[]} gms
  * Aligned to `map.gms`.
