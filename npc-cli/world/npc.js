@@ -169,10 +169,7 @@ export class Npc {
       }
     }
 
-    // update this npc's sheet
     texNpcAux.updateIndex(this.def.uid, data);
-    
-    texNpcAux.update(); // 🚧 remove
   }
 
   applyTint() {
@@ -197,10 +194,7 @@ export class Npc {
       }
     }
 
-    // update this npc's sheet
     texNpcAux.updateIndex(this.def.uid, data, 1);
-
-    texNpcAux.update(); // 🚧 remove
   }
 
   async cancel() {

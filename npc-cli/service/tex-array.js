@@ -79,7 +79,11 @@ export class TexArray {
     const offset = index * (4 * this.opts.width * this.opts.height) + rowOffset * 4 * this.opts.width;
     const imageData = data ?? this.ct.getImageData(0, 0, this.opts.width, this.opts.height).data;
     /** @type {Uint8Array | Float32Array} */ (this.tex.image.data).set(imageData, offset);
-    // this.tex.needsUpdate = true; // 🔔 call this.update() instead
+    
+    // ℹ️ three.js clears these layers after next render
+    this.tex.addLayerUpdate(index);
+    this.tex.needsUpdate = true; // 🚧
+
   }
 }
 

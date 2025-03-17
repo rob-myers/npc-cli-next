@@ -121,6 +121,9 @@
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
 
+- ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
+  - https://threejs.org/examples/webgl_materials_texture_partialupdate.html
+
 ### Extras
 
 - 🚧 mobile touch issues
