@@ -133,6 +133,39 @@ export class Npc {
     this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
   }
 
+  /** Apply uv re-mapping @see {Npc.uvReMap} */
+  applyUvReMap() {
+    const uvTexArray = this.w.texUvReMap;
+    const classKey = this.def.classKey;
+    const { triToKey, sheetId: initSheetId, uvMap, texArrayIds } = this.w.npc.skinAux[classKey];
+    
+    // one pixel per triangle
+    // 🔔 texture.type THREE.FloatType to handle negative uv offsets
+    const data = new Float32Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
+    for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
+      const offset = 4 * triangleId;
+      if (skinPartKey in this.uvReMap) {
+        const dstUvRectKey = /** @type {const} */ (`${this.uvReMap[skinPartKey]}_${skinPartKey}`);
+        const src = uvMap[uvRectKey];
+        const dst = uvMap[dstUvRectKey];
+        data[offset + 0] = dst.x - src.x;
+        data[offset + 1] = dst.y - src.y;
+        data[offset + 2] = texArrayIds[dst.sheetId];
+        data[offset + 3] = 0;
+      } else {
+        data[offset + 0] = 0;
+        data[offset + 1] = 0;
+        data[offset + 2] = texArrayIds[initSheetId];
+        data[offset + 3] = 0;
+      }
+    }
+
+    // update this npc's sheet
+    uvTexArray.updateIndex(this.def.uid, data);
+    
+    uvTexArray.update(); // 🚧 remove
+  }
+
   async cancel() {
     info(`${'cancel'}: cancelling ${this.key}`);
 
@@ -520,7 +553,7 @@ export class Npc {
 
     m.scale = meta.scale;
 
-    this.updateUvs();  
+    this.applyUvReMap();  
   }
 
   /**
@@ -1061,39 +1094,6 @@ export class Npc {
 
   updateUniforms() {
     this.m.material.uniformsNeedUpdate = true;
-  }
-
-  /** Apply uv re-mapping @see {Npc.uvReMap} */
-  updateUvs() {
-    const uvTexArray = this.w.texUvReMap;
-    const classKey = this.def.classKey;
-    const { triToKey, sheetId: initSheetId, uvMap, texArrayIds } = this.w.npc.skinAux[classKey];
-    
-    // one pixel per triangle
-    // 🔔 texture.type THREE.FloatType to handle negative uv offsets
-    const data = new Float32Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
-    for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
-      const offset = 4 * triangleId;
-      if (skinPartKey in this.uvReMap) {
-        const dstUvRectKey = /** @type {const} */ (`${this.uvReMap[skinPartKey]}_${skinPartKey}`);
-        const src = uvMap[uvRectKey];
-        const dst = uvMap[dstUvRectKey];
-        data[offset + 0] = dst.x - src.x;
-        data[offset + 1] = dst.y - src.y;
-        data[offset + 2] = texArrayIds[dst.sheetId];
-        data[offset + 3] = 0;
-      } else {
-        data[offset + 0] = 0;
-        data[offset + 1] = 0;
-        data[offset + 2] = texArrayIds[initSheetId];
-        data[offset + 3] = 0;
-      }
-    }
-
-    // update this npc's sheet
-    uvTexArray.updateIndex(this.def.uid, data);
-    
-    uvTexArray.update(); // 🚧 remove
   }
 
   async waitUntilStopped() {

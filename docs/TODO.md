@@ -110,7 +110,10 @@
     - ℹ️ TexArray supports type `THREE.FloatType` (default `THREE.UnsignedByteType`)
   - ✅ precompute shared object per npcClassKey so `changeUvMap` is cleaner
   - ✅ general approach
-  - 🚧 multiple example uv re-mappings
+  - 🚧 remove hard-coded `npc.uvReMap` and apply in profile-1 instead
+- 🚧 multiple example uv re-mappings
+- 🚧 can colour skinParts via "second row" of `w.texUvReMap`
+  - so maybe call it `w.npcAuxTex` i.e. auxiliary DataTextureArray for npcs
 - maybe keep `skinClassKey` e.g. two models could share same skin via different body ratios yet same head ratios?
 
 - represent label images as 256-layer DataTextureArray
