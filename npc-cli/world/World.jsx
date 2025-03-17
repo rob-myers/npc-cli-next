@@ -338,7 +338,6 @@ export default function World(props) {
       <WorldView disabled={props.disabled} stats>
         {state.geomorphs && (
           <group>
-            <Floor />
             <group visible={state.crowd !== null}>
               <Ceiling />
               <Walls />
@@ -356,6 +355,7 @@ export default function World(props) {
                 />
               </>}
             </React.Suspense>
+            <Floor />
           </group>
         )}
       </WorldView>
