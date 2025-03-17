@@ -106,6 +106,8 @@
     - ✅ `w.npc.initSkinMeta.map` -> `w.npc.initSkinMeta.triToKey`
     - ✅ `w.npc.initSkinMeta.partToUv` i.e. skinPartKey -> initial uvRectKey -> uvRect
     - ✅ `w.npc.initSkinMeta` -> `w.npc.skinInit`
+  - ✅ can handle negative uv offsets
+    - ℹ️ TexArray supports type `THREE.FloatType` (default `THREE.UnsignedByteType`)
   - 🚧 general approach
 - maybe each `Key.NpcClass` needs its own `Key.SkinClass`
   - ℹ️ only uniform scales (e.g. of head) will preserve uv-map

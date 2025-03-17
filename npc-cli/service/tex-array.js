@@ -27,11 +27,13 @@ export class TexArray {
     this.ct.canvas.width = opts.width;
     this.ct.canvas.height = opts.height;
     
-    const data = new Uint8Array(opts.numTextures * 4 * opts.width * opts.height);
-
+    const data = opts.type === THREE.FloatType
+      ? new Float32Array(opts.numTextures * 4 * opts.width * opts.height)
+      : new Uint8Array(opts.numTextures * 4 * opts.width * opts.height)
+    ;
     this.tex = new THREE.DataArrayTexture(data, opts.width, opts.height, opts.numTextures);
     this.tex.format = THREE.RGBAFormat;
-    this.tex.type = THREE.UnsignedByteType;
+    this.tex.type = opts.type ?? THREE.UnsignedByteType;
   }
 
   dispose() {
@@ -55,11 +57,14 @@ export class TexArray {
     this.ct.canvas.height = opts.height;
     
     this.tex.dispose();
-    const data = new Uint8Array(opts.numTextures * 4 * opts.width * opts.height);
 
+    const data = opts.type === THREE.FloatType
+      ? new Float32Array(opts.numTextures * 4 * opts.width * opts.height)
+      : new Uint8Array(opts.numTextures * 4 * opts.width * opts.height)
+    ;
     this.tex = new THREE.DataArrayTexture(data, opts.width, opts.height, opts.numTextures);
     this.tex.format = THREE.RGBAFormat;
-    this.tex.type = THREE.UnsignedByteType;
+    this.tex.type = opts.type ?? THREE.UnsignedByteType;
   }
 
   update() {
@@ -68,13 +73,13 @@ export class TexArray {
 
   /**
    * @param {number} index
-   * @param {Uint8Array} [data]
+   * @param {Uint8Array | Float32Array} [data]
    */
   updateIndex(index, data) {
     const offset = index * (4 * this.opts.width * this.opts.height);
     const imageData = data ?? this.ct.getImageData(0, 0, this.opts.width, this.opts.height).data;
-    /** @type {Uint8Array} */ (this.tex.image.data).set(imageData, offset);
-    // this.tex.needsUpdate = true; // call this.update() instead
+    /** @type {Uint8Array | Float32Array} */ (this.tex.image.data).set(imageData, offset);
+    // this.tex.needsUpdate = true; // 🔔 call this.update() instead
   }
 }
 
@@ -88,6 +93,7 @@ export class TexArray {
  * @property {number} opts.width
  * @property {number} opts.height
  * @property {string} opts.ctKey key for cached canvas context
+ * @property {THREE.UnsignedByteType | THREE.FloatType} [opts.type]
  */
 
 export const emptyTexArray = new TexArray({ ctKey: 'empty', width: 0, height: 0, numTextures: 1 });

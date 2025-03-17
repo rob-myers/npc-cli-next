@@ -64,7 +64,7 @@ export default function Npcs(props) {
       Object.values(state.npc).forEach(npc => cmUvService.updateLabelQuad(npc));
       w.menu.measure('npc.clearLabels');
     },
-    drawUvReMap(npc, opts) {
+    drawUvReMap(npc, opts) {// 🚧
       const uvTexArray = w.texSkinUvs;
       
       const { triToKey, sheetId } = state.skinInit[npc.def.classKey];
@@ -75,17 +75,18 @@ export default function Npcs(props) {
       } = w.geomorphs.skin;
       
       // one pixel per triangle
-      const data = new Uint8Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
+      // 🔔 texture.type THREE.FloatType to handle negative uv offsets
+      const data = new Float32Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
       for (const [triangleId, { uvRectKey }] of triToKey.entries()) {
         const offset = 4 * triangleId;
         // ✅ hard-coded swap i.e. remap base-head-overlay-front -> confused-head-overlay-front
-        // 🚧 what about negative offsets?
         if (uvRectKey === 'base_head-overlay-front') {
           // uv rects already in uv coordinates
           const src = uvMap[uvRectKey];
           const dst = uvMap['confused_head-overlay-front'];
-          data[offset + 0] = Math.floor((dst.x - src.x) * 256);
-          data[offset + 1] = Math.floor((dst.y - src.y) * 256);
+          // const dst = uvMap['small-eyes_head-overlay-front'];
+          data[offset + 0] = dst.x - src.x;
+          data[offset + 1] = dst.y - src.y;
           data[offset + 2] = texArrayIds[sheetId]; // confused-head-overlay-front in "initial sheet"
           data[offset + 3] = 0;
         } else {

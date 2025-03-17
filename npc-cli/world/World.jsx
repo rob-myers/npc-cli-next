@@ -70,7 +70,7 @@ export default function World(props) {
     texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
     texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
-    texSkinUvs: new TexArray({ ctKey: 'skins-uvs-tex-array', numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 1 }),
+    texSkinUvs: new TexArray({ ctKey: 'skins-uvs-tex-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 1 }),
     texVs: { floor: 0, ceiling: 0 }, // versions
 
     crowd: /** @type {*} */ (null),
