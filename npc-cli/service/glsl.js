@@ -481,9 +481,11 @@ export const humanZeroShader = {
   Frag: /*glsl*/`
   
   uniform sampler2DArray atlas;
+  // uv re-mapping (1st row) and skin colouring (2nd row),
+  // where depth is number of npcs
+  uniform sampler2DArray aux;
   uniform bool objectPick;
   uniform int uid;
-  uniform sampler2DArray uvReMap;
 
   flat varying float dotProduct;
   flat varying int triangleId;
@@ -506,15 +508,16 @@ export const humanZeroShader = {
   void main() {
 
     if (objectPick == true) {
-      // 🚧 label should be left in "original position" under ground
-      return;
+      return; // 🚧 label should be left in "original position" under ground
     }
 
-    // 🔔 128 is width of DataArrayTexture uvReMap
-    vec4 uvOffset = texture(uvReMap, vec3(float(triangleId) / 128.0, 0.0, uid));
+    // 🔔 128 is width of DataArrayTexture aux
+    vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
     float atlasId = uvOffset.z;
     vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
-    gl_FragColor = texel * vec4(vec3(0.1 + 0.7 * dotProduct), 1.0);
+    vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
+    // gl_FragColor = texel * vec4(vec3(0.1 + 0.7 * dotProduct), 1.0);
+    gl_FragColor = texel * vec4((0.1 + 0.7 * dotProduct) * vec3(diffuse), 1.0);
     #include <logdepthbuf_fragment>
   }
   `,
@@ -699,10 +702,10 @@ export const CuboidManMaterial = shaderMaterial(
 export const HumanZeroShader = shaderMaterial(
   {
     atlas: emptyDataArrayTexture,
+    aux: emptyDataArrayTexture,
     objectPick: false,
     texSkinId: 0,
     uid: 0,
-    uvReMap: emptyDataArrayTexture,
   },
   humanZeroShader.Vert,
   humanZeroShader.Frag,

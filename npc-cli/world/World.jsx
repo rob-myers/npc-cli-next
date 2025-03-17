@@ -70,7 +70,7 @@ export default function World(props) {
     texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
     texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
-    texUvReMap: new TexArray({ ctKey: 'skins-uvs-tex-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 1 }),
+    texNpcAux: new TexArray({ ctKey: 'skins-npc-aux-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
     texVs: { floor: 0, ceiling: 0 }, // versions
 
     crowd: /** @type {*} */ (null),
@@ -430,7 +430,7 @@ export default function World(props) {
  * @property {TexArray} texFloor
  * @property {TexArray} texObs
  * @property {TexArray} texSkin
- * @property {TexArray} texUvReMap
+ * @property {TexArray} texNpcAux uv re-mapping and skin tinting
  * @property {{ floor: number; ceiling: number; }} texVs
  * @property {Geomorph.LayoutInstance[]} gms
  * Aligned to `map.gms`.

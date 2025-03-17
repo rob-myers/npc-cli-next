@@ -43,11 +43,18 @@ export class Npc {
   delta = new THREE.Vector3();
 
   /**
-   * e.g. `{ 'head-overlay-front': 'confused' }` where `'confused_head-overlay-front'` must exist in the uvMap
+   * This defines a "uv re-mapping".
+   * Given `skinPartKey` e.g. `"head-overlay-front"` we provide e.g. `"confused"`,
+   * where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
    */
-  uvReMap = /** @type {NPC.SkinPartToUvPrefix} */ ({
+  skin = /** @type {Partial<Record<Key.SkinPart, string>>} */ ({
     // 🚧 hard-coded
     'head-overlay-front': 'confused'
+  });
+
+  tint = /** @type {Partial<Record<Key.SkinPart, [number, number, number, number]>>} */ ({
+    // 🚧 hard-coded
+    'head-overlay-front': [1, 0, 0, 1],
   });
 
   /** State */
@@ -133,19 +140,21 @@ export class Npc {
     this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
   }
 
-  /** Apply uv re-mapping @see {Npc.uvReMap} */
-  applyUvReMap() {
-    const uvTexArray = this.w.texUvReMap;
+  /**
+   * Apply uv re-mapping @see {Npc.skin}
+   */
+  applySkin() {
+    const texNpcAux = this.w.texNpcAux;
     const classKey = this.def.classKey;
     const { triToKey, sheetId: initSheetId, uvMap, texArrayIds } = this.w.npc.skinAux[classKey];
     
     // one pixel per triangle
     // 🔔 texture.type THREE.FloatType to handle negative uv offsets
-    const data = new Float32Array(4 * uvTexArray.opts.width * uvTexArray.opts.height);
+    const data = new Float32Array(4 * texNpcAux.opts.width * 1);
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
-      if (skinPartKey in this.uvReMap) {
-        const dstUvRectKey = /** @type {const} */ (`${this.uvReMap[skinPartKey]}_${skinPartKey}`);
+      if (skinPartKey in this.skin) {
+        const dstUvRectKey = /** @type {const} */ (`${this.skin[skinPartKey]}_${skinPartKey}`);
         const src = uvMap[uvRectKey];
         const dst = uvMap[dstUvRectKey];
         data[offset + 0] = dst.x - src.x;
@@ -161,9 +170,37 @@ export class Npc {
     }
 
     // update this npc's sheet
-    uvTexArray.updateIndex(this.def.uid, data);
+    texNpcAux.updateIndex(this.def.uid, data);
     
-    uvTexArray.update(); // 🚧 remove
+    texNpcAux.update(); // 🚧 remove
+  }
+
+  applyTint() {
+    // 🚧
+    const texNpcAux = this.w.texNpcAux;
+    const classKey = this.def.classKey;
+    const { triToKey } = this.w.npc.skinAux[classKey];
+
+    // one pixel per triangle
+    // 🔔 texture.type THREE.FloatType to handle negative uv offsets
+    const data = new Float32Array(4 * texNpcAux.opts.width * 1);
+    for (const [triangleId, { skinPartKey }] of triToKey.entries()) {
+      const offset = 4 * triangleId;
+      if (skinPartKey in this.tint) {
+        data.set(/** @type {number[]} */ (this.tint[skinPartKey]), offset);
+      } else {
+        // 🚧
+        data[offset + 0] = 0;
+        data[offset + 1] = 1;
+        data[offset + 2] = 0;
+        data[offset + 3] = 1;
+      }
+    }
+
+    // update this npc's sheet
+    texNpcAux.updateIndex(this.def.uid, data, 1);
+
+    texNpcAux.update(); // 🚧 remove
   }
 
   async cancel() {
@@ -553,7 +590,8 @@ export class Npc {
 
     m.scale = meta.scale;
 
-    this.applyUvReMap();  
+    this.applySkin();
+    this.applyTint();
   }
 
   /**

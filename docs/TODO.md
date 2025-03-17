@@ -111,9 +111,11 @@
   - ✅ precompute shared object per npcClassKey so `changeUvMap` is cleaner
   - ✅ general approach
   - 🚧 remove hard-coded `npc.uvReMap` and apply in profile-1 instead
-- 🚧 multiple example uv re-mappings
-- 🚧 can colour skinParts via "second row" of `w.texUvReMap`
-  - so maybe call it `w.npcAuxTex` i.e. auxiliary DataTextureArray for npcs
+- 🚧 can tint skinParts via "second row" of `w.texUvReMap`
+  - ✅ call it `w.npcAuxTex` i.e. auxiliary DataTextureArray for npcs
+  - 🚧 permit prefixes of Key.SkinPart
+- examples of uv re-mappings in profile-1
+- examples of tintings in profile-1
 - maybe keep `skinClassKey` e.g. two models could share same skin via different body ratios yet same head ratios?
 
 - represent label images as 256-layer DataTextureArray

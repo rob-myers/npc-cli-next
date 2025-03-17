@@ -368,11 +368,4 @@ declare namespace NPC {
 
   type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
 
-  /**
-   * This defines a "uv re-mapping".
-   * Given `skinPartKey` e.g. `"head-front"` we provide e.g. `"confused"`,
-   * where `"confused_head-front"` exists in the respective skin's uvMap.
-   */
-  type SkinPartToUvPrefix = Partial<Record<Key.SkinPart, string>>;
-
 }
