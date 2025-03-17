@@ -470,10 +470,9 @@ export const humanZeroShader = {
     mvPosition = modelViewMatrix * mvPosition;
 
     // dot product for flat shading
-    // vec3 transformedNormal = normalize(normalMatrix * vec3(normal));
     vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
-    vec3 lightDir = normalize(mvPosition.xyz);
-    dotProduct = -min(dot(transformedNormal, lightDir), 0.0);
+    vec3 lightDir = -normalize(mvPosition.xyz);
+    dotProduct = dot(transformedNormal, lightDir);
 
     gl_Position = projectionMatrix * mvPosition;
     #include <logdepthbuf_vertex>
@@ -517,7 +516,7 @@ export const humanZeroShader = {
     vec4 uvOffset = texture(uvReMap, vec3(float(triangleId) / 128.0, 0.0, uid));
     float atlasId = uvOffset.z * 255.0;
     vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
-    gl_FragColor = texel * vec4(vec3(0.1 + 0.8 * dotProduct), 1.0);
+    gl_FragColor = texel * vec4(vec3(0.1 + 0.7 * dotProduct), 1.0);
     #include <logdepthbuf_fragment>
   }
   `,
