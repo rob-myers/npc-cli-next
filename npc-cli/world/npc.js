@@ -29,7 +29,6 @@ export class Npc {
     bones: [],
     group: /** @type {*} */ (null),
     // group: /** @type {*} */ (emptyGroup),
-    globalSkinId: 0,
     material: /** @type {*} */ ({}),
     mesh: /** @type {*} */ ({}),
     quad: /** @type {*} */ ({}), // 🚧 remove
@@ -506,9 +505,6 @@ export class Npc {
     m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
     // overridden on mount
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
-
-    const { sheetId: skinSheetId } = this.w.npc.initSkinMeta[this.def.classKey];
-    m.globalSkinId = this.w.geomorphs.skin.texArrayId[meta.skinClassKey][skinSheetId];
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();

@@ -30,7 +30,7 @@ export default function Npcs(props) {
     gltf: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
     idToKey: new Map(),
-    initSkinMeta: /** @type {*} */ ({}),
+    skinInit: /** @type {*} */ ({}),
     label: {
       count: 0,
       lookup: {},
@@ -67,7 +67,7 @@ export default function Npcs(props) {
     drawUvReMap(npc, opts) {
       const uvTexArray = w.texSkinUvs;
       
-      const { triToKey, sheetId } = state.initSkinMeta[npc.def.classKey];
+      const { triToKey, sheetId } = state.skinInit[npc.def.classKey];
       const { skinClassKey } = npcClassToMeta[npc.def.classKey];
       const {
         uvMap: {[skinClassKey]: uvMap},
@@ -370,7 +370,7 @@ export default function Npcs(props) {
   React.useEffect(() => {// onchange gltf
     // 🔔 compute triangleId -> uvRectKey
     w.menu.measure(`npc.initSkinMeta`);
-    state.initSkinMeta = /** @type {*} */ ({});
+    state.skinInit = /** @type {*} */ ({});
     for (const [npcClassKey, gltf] of entries(state.gltf)) {
       if (npcClassKey === 'cuboid-man') continue; // 🚧 remove cuboid-man
       
@@ -389,7 +389,7 @@ export default function Npcs(props) {
       const { [meta.skinClassKey]: uvMap } = w.geomorphs.skin.uvMap;
       const { triToUvKeys, partToUvRect } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
 
-      state.initSkinMeta[npcClassKey] = {
+      state.skinInit[npcClassKey] = {
         triToKey: triToUvKeys,
         sheetId: skinSheetId,
         partToUv: partToUvRect,
@@ -461,13 +461,14 @@ export default function Npcs(props) {
  * @property {boolean} showLastNavPath
  *
  * @property {Record<Key.NpcClass, {
- *   triToKey: NPC.TriToUvKeys;
  *   sheetId: number;
+ *   triToKey: NPC.TriToUvKeys;
  *   partToUv: NPC.SkinPartToUvRect;
- * }>} initSkinMeta
- * For each npc class, its initial:
- * - mapping from triangleId to { uvRectKey, skinPartKey }.
- * -  
+ * }>} skinInit
+ * For each npcClassKey (a.k.a 3d model), its initial:
+ * - sheetId relative to npcClassKey
+ * - mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
+ * - mapping `partToUv` from skinPartKey to uvRect
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} clearLabels
@@ -539,7 +540,6 @@ function NPC({ npc }) {
           <humanZeroShader
             key={HumanZeroShader.key}
             atlas={npc.w.texSkin.tex}
-            texSkinId={npc.m.globalSkinId}
             transparent
             uid={npc.def.uid}
             uvReMap={npc.w.texSkinUvs.tex}

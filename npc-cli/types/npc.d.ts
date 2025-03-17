@@ -36,8 +36,6 @@ declare namespace NPC {
     mesh: import('three').SkinnedMesh;
     quad: import('../service/uv').CuboidManQuads; // 🚧 remove
     scale: number;
-    /** Points into DataTextureArray `w.texSkin.tex` */
-    globalSkinId: number;
     toAct: Record<Key.Anim, import('three').AnimationAction>;
   }
 
