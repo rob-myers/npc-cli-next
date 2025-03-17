@@ -445,6 +445,7 @@ export const cuboidManShader = {
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
+  flat varying float dotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
 
@@ -467,8 +468,14 @@ export const humanZeroShader = {
 
     vec4 mvPosition = vec4(transformed, 1.0);
     mvPosition = modelViewMatrix * mvPosition;
-    gl_Position = projectionMatrix * mvPosition;
 
+    // dot product for flat shading
+    // vec3 transformedNormal = normalize(normalMatrix * vec3(normal));
+    vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
+    vec3 lightDir = normalize(mvPosition.xyz);
+    dotProduct = -min(dot(transformedNormal, lightDir), 0.0);
+
+    gl_Position = projectionMatrix * mvPosition;
     #include <logdepthbuf_vertex>
   }
   `,
@@ -476,10 +483,10 @@ export const humanZeroShader = {
   
   uniform sampler2DArray atlas;
   uniform bool objectPick;
-  // uniform int texSkinId;
   uniform int uid;
   uniform sampler2DArray uvReMap;
 
+  flat varying float dotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
 
@@ -488,10 +495,6 @@ export const humanZeroShader = {
   #include <map_pars_fragment>
   #include <logdepthbuf_pars_fragment>
 
-  /**
-   * uid in 0..65535 (msByte, lsByte),
-   * although probably in 0..255
-   */
   vec4 encodeNpcObjectPick() {
     return vec4(
       8.0, // object-pick identifier
@@ -504,7 +507,7 @@ export const humanZeroShader = {
   void main() {
 
     if (objectPick == true) {
-      // 54 triangles, last 2 are label
+      // 54 triangles last 2 are label
       // 🚧 instead provide the 2 triangle ids as a uniform
       if (triangleId < 52) gl_FragColor = encodeNpcObjectPick();
       return;
@@ -512,10 +515,9 @@ export const humanZeroShader = {
 
     // 🔔 128 is width of uv offset DataTextureArray
     vec4 uvOffset = texture(uvReMap, vec3(float(triangleId) / 128.0, 0.0, uid));
-    float atlasIndex = uvOffset.z * 255.0;
-    // gl_FragColor = texture(atlas, vec3(vUv, texSkinId));
-    // gl_FragColor = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, texSkinId));
-    gl_FragColor = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasIndex));
+    float atlasId = uvOffset.z * 255.0;
+    vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
+    gl_FragColor = texel * vec4(vec3(0.1 + 0.8 * dotProduct), 1.0);
     #include <logdepthbuf_fragment>
   }
   `,
