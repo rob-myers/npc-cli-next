@@ -23,6 +23,12 @@ brew install webp
 brew install imagemagick
 ```
 
+```sh
+# fix `npm install` of npm module `canvas`
+# https://github.com/Automattic/node-canvas/issues/1825#issuecomment-1090125736
+brew install pkg-config cairo pango libpng jpeg giflib librsvg
+```
+
 ## Starship Symbols Source PNGs
 
 Symbol PNGs should be unzipped in /media
