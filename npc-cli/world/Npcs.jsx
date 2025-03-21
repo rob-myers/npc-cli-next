@@ -64,6 +64,47 @@ export default function Npcs(props) {
       Object.values(state.npc).forEach(npc => cmUvService.updateLabelQuad(npc));
       w.menu.measure('npc.clearLabels');
     },
+    computeUvMappings() {
+      w.menu.measure(`npc.computeUvMappings`);
+    
+      // compute triangleId -> uvRectKey
+      // skinAux also has various shortcuts
+      state.skinAux = /** @type {*} */ ({});
+      
+      for (const [npcClassKey, gltf] of entries(state.gltf)) {
+        if (npcClassKey === 'cuboid-man') continue; // 🚧 remove cuboid-man
+        
+        const meta = npcClassToMeta[npcClassKey];
+        const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
+        if (mesh.geometry.index !== null) {
+          // 🔔 un-weld vertices so triangleId follows from vertexId
+          mesh.geometry = mesh.geometry.toNonIndexed();
+        }
+        
+        // get sheetId from orig material name e.g. human-0.0.tex.png
+        const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (mesh.material);
+        const matBaseName = origMaterial.map?.name ?? null;
+        const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
+  
+        const {
+          uvMap: {[meta.npcClassKey]: uvMap},
+          sheetTexId: {[meta.npcClassKey]: sheetTexIds},
+        } = w.geomorphs.skin;
+  
+        const { triToUvKeys, partToUvRect } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
+  
+        state.skinAux[npcClassKey] = {
+          npcClassKey: meta.npcClassKey,
+          triToKey: triToUvKeys,
+          sheetId: skinSheetId,
+          partToUv: partToUvRect,
+          uvMap,
+          sheetTexIds,
+        };
+      }
+
+      w.menu.measure(`npc.computeUvMappings`);
+    },
     findPath(src, dst) {// 🔔 agent only use path as a guide
       const query = w.crowd.navMeshQuery;
       const { path, success } = query.computePath(src, dst, {
@@ -334,42 +375,8 @@ export default function Npcs(props) {
     }
   }, []);
   
-  React.useEffect(() => {// onchange gltf
-    // 🔔 compute triangleId -> uvRectKey
-    w.menu.measure(`npc.initSkinMeta`);
-    state.skinAux = /** @type {*} */ ({});
-    for (const [npcClassKey, gltf] of entries(state.gltf)) {
-      if (npcClassKey === 'cuboid-man') continue; // 🚧 remove cuboid-man
-      
-      const meta = npcClassToMeta[npcClassKey];
-      const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
-      if (mesh.geometry.index !== null) {
-        // 🔔 un-weld vertices so triangleId follows from vertexId
-        mesh.geometry = mesh.geometry.toNonIndexed();
-      }
-      
-      // get sheetId from orig material name e.g. human-0.0.tex.png
-      const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (mesh.material);
-      const matBaseName = origMaterial.map?.name ?? null;
-      const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
-
-      const {
-        uvMap: {[meta.npcClassKey]: uvMap},
-        texArrayId: {[meta.npcClassKey]: texArrayIds},
-      } = w.geomorphs.skin;
-
-      const { triToUvKeys, partToUvRect } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
-
-      state.skinAux[npcClassKey] = {
-        npcClassKey: meta.npcClassKey,
-        triToKey: triToUvKeys,
-        sheetId: skinSheetId,
-        partToUv: partToUvRect,
-        uvMap,
-        texArrayIds,
-      };
-    }
-    w.menu.measure(`npc.initSkinMeta`);
+  React.useEffect(() => {// onchange gltf or sheets
+    state.computeUvMappings();
 
     // 🔔 reinitialize respective npcs
     Object.values(state.npc).filter(
@@ -380,7 +387,7 @@ export default function Npcs(props) {
       npc.epochMs = Date.now(); // invalidate cache
     });
     
-  }, Object.values(state.gltf));
+  }, [...Object.values(state.gltf), w.hash.sheets]);
 
   // 🚧 remove
   React.useEffect(() => {// npc textures
@@ -440,7 +447,7 @@ export default function Npcs(props) {
  *   triToKey: NPC.TriToUvKeys;
  *   partToUv: NPC.SkinPartToUvRect;
  *   uvMap: Geomorph.UvRectLookup;
- *   texArrayIds: number[];
+ *   sheetTexIds: number[];
  * }>} skinAux
  * For each npcClassKey (a.k.a 3d model), its:
  * - npcClassKey
@@ -448,10 +455,11 @@ export default function Npcs(props) {
  * - initial mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
  * - initial mapping `partToUv` from skinPartKey to uvRect
  * - uv map (over all sheets)
- * - texArrayIds (mapping from sheetId to DataTextureArray index)
+ * - sheetTexIds (mapping from sheetId to DataTextureArray index)
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} clearLabels
+ * @property {() => void} computeUvMappings
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc

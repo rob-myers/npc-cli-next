@@ -456,7 +456,7 @@ declare namespace Geomorph {
     /** One per sheet for skin class */
     svgHashes: Record<Key.NpcClass, number[]>;
     /** From `(npcClassKey, sheetId)` to "index into skins DataTextureArray" */
-    texArrayId: Record<Key.NpcClass, number[]>;
+    sheetTexId: Record<Key.NpcClass, number[]>;
     uvMap: Record<Key.NpcClass, UvRectLookup>;
     uvMapDim: Record<Key.NpcClass, { width: number; height: number; }>;
   }

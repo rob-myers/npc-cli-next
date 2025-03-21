@@ -185,7 +185,7 @@ info({ opts });
     skin: {
       numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
       svgHashes: /** @type {Geomorph.SpriteSheetSkins['svgHashes']} */ ({}),
-      texArrayId: /** @type {Geomorph.SpriteSheetSkins['texArrayId']} */ ({}),
+      sheetTexId: /** @type {Geomorph.SpriteSheetSkins['sheetTexId']} */ ({}),
       uvMap: /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({}),
       uvMapDim: /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({}),
     },
@@ -278,7 +278,9 @@ info({ opts });
     assetsJson.sheet.imagesHash = hashJson([
       ...getDecorPngPaths(assetsJson),
       ...getObstaclePngPaths(assetsJson),
-      ...getSkinPngPaths(prev.npcTexMetas),
+      // ...getSkinPngPaths(prev.npcTexMetas),
+      // 🔔 on remove g.transform we trigger change
+      ...getSkinSvgPaths(prev.npcTexMetas),
     ].map(x => fs.readFileSync(x).toString()));
   }
   perf('sheet.imagesHash');
@@ -906,7 +908,7 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
 
   // recompute skins.texArrayId (linearly order all sheets)
   let nextTexArrayId = 0;
-  skin.texArrayId = mapValues(skin.numSheets, (numSheets) => {
+  skin.sheetTexId = mapValues(skin.numSheets, (numSheets) => {
     const output = range(numSheets).map(i => nextTexArrayId + i);
     nextTexArrayId += output.length;
     return output;
@@ -919,6 +921,13 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
  */
 function getSkinPngPaths(npcTexMetas) {
   return npcTexMetas.map(({ pngPath }) => pngPath);
+}
+
+/**
+ * @param {NPC.TexMeta[]} npcTexMetas
+ */
+function getSkinSvgPaths(npcTexMetas) {
+  return npcTexMetas.map(({ svgPath }) => svgPath);
 }
 
 //#endregion

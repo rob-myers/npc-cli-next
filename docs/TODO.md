@@ -106,7 +106,7 @@
     - ✅ `w.npc.initSkinMeta.map` -> `w.npc.initSkinMeta.triToKey`
     - ✅ `w.npc.initSkinMeta.partToUv` i.e. skinPartKey -> initial uvRectKey -> uvRect
     - ✅ `w.npc.initSkinMeta` -> `w.npc.skinInit`
-    - support skin from other npcClass
+    - ✅ support skin from other npcClass
       - `skinPartKey -> { prefix: string; npcClassKey?: string; }`
   - 🚧 remove skinClassKey i.e. npcClassKey determines unique skin
     - ✅ `Key.SkinClass` -> `Key.NpcClass`
@@ -138,6 +138,7 @@
 - ❌ npc should not stop so suddenly near doorway
 - ✅ implement `+=` s.t. `c+=1` would increment if `c` numeric
 
+- could overload `+=` to work on JS objects
 - if lookAt while walking, eventually lookAt once stopMoving
 - more abrupt walk -> idle when collide
 - 🚧 less abrupt turn just after doorway
@@ -182,6 +183,7 @@
 - ✅ BUG: unmount `<Floor>` empties npcs
   - ℹ️ previously `<Floor>` was an earlier sibling, but no issue when later sibling
 
+- ✅ images hash should be based on SVGs in case of skins
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 - try `bun` https://bun.sh/

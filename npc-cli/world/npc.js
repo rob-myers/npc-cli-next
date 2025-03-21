@@ -43,16 +43,17 @@ export class Npc {
   delta = new THREE.Vector3();
 
   /**
-   * This defines a "uv re-mapping".
-   * Given `skinPartKey` e.g. `"head-overlay-front"` we provide e.g. `"confused"`,
+   * `skin` amounts to a "uv re-mapping".
+   * 
+   * Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
    * where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
    */
-  skin = /** @type {Partial<Record<Key.SkinPart, string>>} */ ({
+  skin = /** @type {NPC.SkinReMap} */ ({
     // 🚧 hard-coded
-    'head-overlay-front': 'confused'
+    'head-overlay-front': { prefix: 'confused' },
   });
 
-  tint = /** @type {Partial<Record<Key.SkinPart, [number, number, number, number]>>} */ ({
+  tint = /** @type {NPC.SkinTint} */ ({
     // 🚧 hard-coded
     'head-overlay-front': [1, 0, 0, 1],
   });
@@ -142,29 +143,40 @@ export class Npc {
 
   /**
    * Apply uv re-mapping @see {Npc.skin}
+   * - 1st row of pixels
+   * - one pixel per triangle
    */
   applySkin() {
     const texNpcAux = this.w.texNpcAux;
-    const classKey = this.def.classKey;
-    const { triToKey, sheetId: initSheetId, uvMap, texArrayIds } = this.w.npc.skinAux[classKey];
-    
-    // one pixel per triangle
+    const { classKey } = this.def;
+    const { skinAux } = this.w.npc;
+    const { triToKey, sheetId: initSheetId, uvMap, sheetTexIds } = skinAux[classKey];
+
+    /** Index in DataTextureArray of this model's `initSheetId` sheet */
+    const initSheetTexId = sheetTexIds[initSheetId];
+
     // 🔔 texture.type THREE.FloatType to handle negative uv offsets
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
-      if (skinPartKey in this.skin) {
-        const dstUvRectKey = /** @type {const} */ (`${this.skin[skinPartKey]}_${skinPartKey}`);
+      const target = this.skin[skinPartKey];
+      
+      if (target !== undefined) {
+        const dstUvRectKey = /** @type {const} */ (`${target.prefix}_${skinPartKey}`);
         const src = uvMap[uvRectKey];
         const dst = uvMap[dstUvRectKey];
+        // can remap skinPartKey to another model's skin
+        const dstSheetTexId = (target.classKey === undefined
+          ? sheetTexIds : skinAux[target.classKey].sheetTexIds
+        )[dst.sheetId];
         data[offset + 0] = dst.x - src.x;
         data[offset + 1] = dst.y - src.y;
-        data[offset + 2] = texArrayIds[dst.sheetId];
+        data[offset + 2] = dstSheetTexId;
         data[offset + 3] = 0;
       } else {
         data[offset + 0] = 0;
         data[offset + 1] = 0;
-        data[offset + 2] = texArrayIds[initSheetId];
+        data[offset + 2] = initSheetTexId;
         data[offset + 3] = 0;
       }
     }

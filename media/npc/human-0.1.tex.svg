@@ -2,8 +2,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com" width="2048" height="2048" viewBox="0 0 2048 2048">
   <defs>
     <bx:grid x="0" y="0" width="16" height="16"/>
+    <pattern x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse" viewBox="0 0 100 100" id="pattern-0">
+      <rect width="100" height="100" style=""/>
+      <rect width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);"/>
+      <rect x="20" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);"/>
+      <rect x="40" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);"/>
+      <rect x="60" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);"/>
+      <rect x="80" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);"/>
+      <rect width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);" y="60"/>
+      <rect x="20" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);" y="60"/>
+      <rect x="40" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);" y="60"/>
+      <rect x="60" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);" y="60"/>
+      <rect x="80" width="20" height="40" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);" y="60"/>
+    </pattern>
+    <pattern id="pattern-0-0" href="#pattern-0" patternTransform="matrix(1.5, 0, 0, 1, 206.420001, 653.1)"/>
+    <pattern id="pattern-1" href="#pattern-0" patternTransform="matrix(1.5, 0, 0, 1.499998, 206.42, 642.850035)"/>
   </defs>
-  <g>
+  <g style="pointer-events: none;">
     <title>uv-map</title>
     <g>
       <title>test-head</title>
@@ -46,6 +61,54 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="384">
         <title>back</title>
       </rect>
+    </g>
+    <g>
+      <title>shitty-face_head-overlay</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" y="416">
+        <title>front</title>
+      </rect>
+      <g transform="matrix(1, 0, 0, 1, -161.17, -153.6)">
+        <title>eyes</title>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
+          <title>_left</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="12">
+          <title>_right</title>
+        </circle>
+        <rect x="201.17" y="657.6" width="48" height="16" style="fill: url(&quot;#pattern-0-0&quot;); stroke: rgb(0, 0, 0); stroke-width: 3px;">
+          <title>_mouth</title>
+        </rect>
+        <circle style="stroke: rgb(0, 0, 0);" cx="193.17" cy="617.6" r="6">
+          <title>_left</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0);" cx="257.17" cy="617.6" r="6">
+          <title>_left</title>
+        </circle>
+      </g>
+    </g>
+    <g>
+      <title>another-shitty-face_head-overlay</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" y="416" x="128">
+        <title>front</title>
+      </rect>
+      <g transform="matrix(1, 0, 0, 1, -33.17, -153.6)">
+        <title>eyes</title>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="195.171" cy="615.603" r="14">
+          <title>_left</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="255.172" cy="615.602" r="13.998">
+          <title>_right</title>
+        </circle>
+        <rect x="201.17" y="649.601" width="48" height="24" style="stroke: rgb(0, 0, 0); stroke-width: 3px; fill: url(&quot;#pattern-1&quot;);">
+          <title>_mouth</title>
+        </rect>
+        <circle style="stroke: rgb(0, 0, 0);" cx="193.17" cy="617.6" r="6">
+          <title>_left</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0);" cx="253.17" cy="617.6" r="6">
+          <title>_left</title>
+        </circle>
+      </g>
     </g>
   </g>
 </svg>

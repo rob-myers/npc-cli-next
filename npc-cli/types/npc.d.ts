@@ -366,6 +366,18 @@ declare namespace NPC {
     skinPartKey: Key.SkinPart;
   }[];
 
+  // 🚧 remove
   type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
+  
+  type SkinReMap = Partial<Record<Key.SkinPart, {
+    /** Given key `skinPart` this is `foo` such that `foo_${skinPart}` is in npcClassKey's UV map */
+    prefix: string;
+    /** Optionally remap to another model's skins */
+    classKey?: Key.NpcClass;
+  }>>;
 
+  /**
+   * Values are `[r, g, b, a]` where `r`, `g`, `b`, `a` in `[0, 1]`
+   */
+  type SkinTint = Partial<Record<Key.SkinPart, [number, number, number, number]>>
 }
