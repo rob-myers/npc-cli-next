@@ -307,7 +307,7 @@ class cmdServiceClass {
           ],
         });
         const pwd = useSession.api.getVar(meta, "PWD");
-        const queries = operands.length ? operands.slice() : [""];
+        const queries = operands.length > 0 ? operands.slice() : [""];
         const root = this.provideProcessCtxt(meta);
         const roots = queries.map((path) => resolvePath(path, root, pwd));
 
@@ -321,32 +321,28 @@ class cmdServiceClass {
           if (roots.length > 1) yield `${ansi.Blue}${queries[i]}:`;
           let keys = (opts.r ? keysDeep(obj) : Object.keys(obj)).sort();
           let items = [] as string[];
-          if (pwd === "home" && !opts.a)
+          if (pwd === "/home" && !opts.a) {
             keys = keys.filter((x) => x.toUpperCase() !== x || /^[0-9]/.test(x));
+          }
 
-          if (opts.l) {
-            if (typeof obj === "function")
+          if (opts.l === true) {
+            if (typeof obj === "function") {
               keys = keys.filter((x) => !["caller", "callee", "arguments"].includes(x));
-            const metas = opts.r
-              ? keys.map(
-                  (x) =>
-                    deepGet(obj, x.split("/"))?.constructor?.name ||
-                    (obj[x] === null ? "null" : "undefined")
-                )
-              : keys.map(
-                  (x) => obj[x]?.constructor?.name || (obj[x] === null ? "null" : "undefined")
-                );
+            }
+            const metas = opts.r !== undefined
+              ? keys.map((x) => deepGet(obj, x.split("/"))?.constructor?.name || (obj[x] === null ? "null" : "undefined"))
+              : keys.map((x) => obj[x]?.constructor?.name || (obj[x] === null ? "null" : "undefined"))
+            ;
             const metasWidth = Math.max(...metas.map((x) => x.length));
-            items = keys.map(
-              (x, i) =>
-                `${ansi.BrightYellow}${metas[i].padEnd(metasWidth)}${ansi.White} ${x}${ansi.Reset}`
-            );
+            items = keys.map((x, i) => `${ansi.BrightYellow}${metas[i].padEnd(metasWidth)}${ansi.White} ${x}${ansi.Reset}`);
           } else if (opts[1]) {
             items = keys;
           } else {
             items = cliColumns(keys, { width: ttyShell.xterm.xterm.cols }).split(/\r?\n/);
           }
-          for (const item of items) yield item;
+          for (const item of items) {
+            yield item;
+          }
         }
         break;
       }
