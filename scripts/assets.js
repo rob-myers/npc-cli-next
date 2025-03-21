@@ -829,7 +829,7 @@ function getNpcTextureMetas() {
     (baseName) => baseName.endsWith(".tex.svg")
     // (baseName) => {
     //   const matched = baseName.match(/^(\S+)\.\d+\.tex\.svg$/);
-    //   return matched !== null && matched[1] in helper.fromSkinClassKey;
+    //   return matched !== null && matched[1] in helper.fromNpcClassKey;
     // }
   ).sort().map((svgBaseName) => {
     const svgPath = path.resolve(npcDir, svgBaseName);
@@ -837,11 +837,11 @@ function getNpcTextureMetas() {
     const pngPath = path.resolve(assets3dDir, svgBaseName.slice(0, -'.svg'.length).concat('.png'));
     let pngMtimeMs = 0;
     try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
-    // 🔔 assume `{skinClassKey}.{skinSheetId}.tex.svg`
-    const [skinClassKey, skinSheetId] = svgBaseName.split('.');
+    // 🔔 assume `{npcClassKey}.{skinSheetId}.tex.svg`
+    const [npcClassKey, skinSheetId] = svgBaseName.split('.');
 
     return {
-      skinClassKey: /** @type {Key.SkinClass} */ (skinClassKey),
+      npcClassKey: /** @type {Key.NpcClass} */ (npcClassKey),
       skinSheetId: Number(skinSheetId),
       svgBaseName,
       svgPath,
@@ -860,40 +860,40 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
   const { skin } = assets;
   const prevSvgHash = skin.svgHashes;
   
-  // group by skinClassKey
-  const bySkinClass = mapValues(helper.fromSkinClassKey, (_, skinClassKey) => {
-    const npcTexMetas = prev.npcTexMetas.filter(x => x.skinClassKey === skinClassKey);
+  // group by npcClassKey
+  const bySkinClass = mapValues(helper.fromNpcClassKey, (_, npcClassKey) => {
+    const npcTexMetas = prev.npcTexMetas.filter(x => x.npcClassKey === npcClassKey);
     return {
-      skinClassKey,
+      npcClassKey,
       npcTexMetas,
-      canSkip: skinClassKey in prevSvgHash && npcTexMetas.every(x => x.canSkip === true),
+      canSkip: npcClassKey in prevSvgHash && npcTexMetas.every(x => x.canSkip === true),
     };
   });
 
-  for (const { skinClassKey, canSkip, npcTexMetas } of Object.values(bySkinClass)) {
+  for (const { npcClassKey, canSkip, npcTexMetas } of Object.values(bySkinClass)) {
     if (canSkip) {
-      // console.log('🔔 skipping', skinClassKey);
-      continue; // reuse e.g. skins.uvMap[skinClassKey]
+      // console.log('🔔 skipping', npcClassKey);
+      continue; // reuse e.g. skins.uvMap[npcClassKey]
     }
 
     // reset things we don't overwrite
-    skin.numSheets[skinClassKey] = 0;
-    skin.svgHashes[skinClassKey] = [];
-    skin.uvMap[skinClassKey] = {};
+    skin.numSheets[npcClassKey] = 0;
+    skin.svgHashes[npcClassKey] = [];
+    skin.uvMap[npcClassKey] = {};
 
     for (const { svgBaseName, svgPath, pngPath, skinSheetId } of npcTexMetas) {
       const svgContents = fs.readFileSync(svgPath).toString();
 
       // count sheets per class
-      skin.numSheets[skinClassKey]++;
+      skin.numSheets[npcClassKey]++;
       
       // extract uv-mapping from top-level folder "uv-map"
       // merge sheets (must use distinct names in different SVGs for same skin)
       const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, skinSheetId, svgBaseName);
-      Object.assign(skin.uvMap[skinClassKey] ??= {}, uvMap);
-      skin.uvMapDim[skinClassKey] = { width, height };
+      Object.assign(skin.uvMap[npcClassKey] ??= {}, uvMap);
+      skin.uvMapDim[npcClassKey] = { width, height };
 
-      skin.svgHashes[skinClassKey].push(hashText(svgContents));
+      skin.svgHashes[npcClassKey].push(hashText(svgContents));
       
       // convert SVG to PNG
       const svgDataUrl = `data:image/svg+xml;utf8,${svgContents}`;

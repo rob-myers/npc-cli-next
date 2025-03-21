@@ -348,20 +348,20 @@ export default function Npcs(props) {
         mesh.geometry = mesh.geometry.toNonIndexed();
       }
       
-      // get sheetId from orig material name e.g. human-skin-0.0.tex.png
+      // get sheetId from orig material name e.g. human-0.0.tex.png
       const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (mesh.material);
       const matBaseName = origMaterial.map?.name ?? null;
       const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
 
       const {
-        uvMap: {[meta.skinClassKey]: uvMap},
-        texArrayId: {[meta.skinClassKey]: texArrayIds},
+        uvMap: {[meta.npcClassKey]: uvMap},
+        texArrayId: {[meta.npcClassKey]: texArrayIds},
       } = w.geomorphs.skin;
 
       const { triToUvKeys, partToUvRect } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
 
       state.skinAux[npcClassKey] = {
-        skinClassKey: meta.skinClassKey,
+        npcClassKey: meta.npcClassKey,
         triToKey: triToUvKeys,
         sheetId: skinSheetId,
         partToUv: partToUvRect,
@@ -386,8 +386,8 @@ export default function Npcs(props) {
   React.useEffect(() => {// npc textures
     Promise.all(npcClassKeys.map(async classKey => {
       state.tex[classKey] = emptyTexture;
-      const { skinClassKey } = npcClassToMeta[classKey];
-      const texUrl = getNpcSkinSheetUrl(skinClassKey, 0);
+      const { npcClassKey } = npcClassToMeta[classKey];
+      const texUrl = getNpcSkinSheetUrl(npcClassKey, 0);
       const tex = await textureLoader.loadAsync(texUrl);
       tex.flipY = false;
       state.tex[classKey] = tex;
@@ -435,7 +435,7 @@ export default function Npcs(props) {
  * @property {boolean} showLastNavPath
  *
  * @property {Record<Key.NpcClass, {
- *   skinClassKey: Key.SkinClass;
+ *   npcClassKey: Key.NpcClass;
  *   sheetId: number;
  *   triToKey: NPC.TriToUvKeys;
  *   partToUv: NPC.SkinPartToUvRect;
@@ -443,7 +443,7 @@ export default function Npcs(props) {
  *   texArrayIds: number[];
  * }>} skinAux
  * For each npcClassKey (a.k.a 3d model), its:
- * - skinClassKey
+ * - npcClassKey
  * - initial sheetId relative to npcClassKey
  * - initial mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
  * - initial mapping `partToUv` from skinPartKey to uvRect

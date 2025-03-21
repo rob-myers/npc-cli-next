@@ -1,4 +1,4 @@
-import { fromDecorImgKey, fromSymbolKey, npcClassToMeta, fromSkinClassKey } from "./const";
+import { fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
 
 /**
  * 🚧 try singleton instance instead, including other methods
@@ -80,8 +80,6 @@ export const helper = {
     Sit: true,
     Walk: true,
   },
-
-  fromSkinClassKey,
 
   /**
    * Try construct degenerate "id" from partial.

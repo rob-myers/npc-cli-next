@@ -42,16 +42,6 @@ namespace Key {
     | 'lock-light'
   );
 
-  /**
-   * Skin class
-   * - can have multiple respective sheets.
-   * - can be the skin class of multiple npc classes.
-   */
-  type SkinClass = (
-    | 'human-skin-0'
-    | 'cuboid-man' // 🚧 remove
-  );
-
   type SkinPart = (
     | 'head-front'
     | 'head-back'

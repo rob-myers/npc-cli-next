@@ -47,7 +47,7 @@ declare namespace NPC {
   interface ClassDef {
     /** Format `/3d/{npcClassKey}.glb` */
     modelUrl: `/3d/${Key.NpcClass}.glb`;
-    skinClassKey: Key.SkinClass;
+    npcClassKey: Key.NpcClass;
     /** e.g. `1` */
     scale: number;
     /** e.g. 'cuboid-man-material' */
@@ -65,11 +65,11 @@ declare namespace NPC {
   }
 
   interface TexMeta {
-    /** e.g. `human-skin-0` */
-    skinClassKey: Key.SkinClass;
+    /** e.g. `human-0` */
+    npcClassKey: Key.NpcClass;
     /** e.g. `0` 🔔 (assume no gaps and `0` exists) */
     skinSheetId: number;
-    /** e.g. `human-skin-0.0.tex.svg` */
+    /** e.g. `human-0.0.tex.svg` */
     svgBaseName: string;
     svgPath: string;
     pngPath: string;
@@ -354,7 +354,7 @@ declare namespace NPC {
   /**
    * For a given mesh, a mapping from triangle id to its parent uv-rectangle's key.
    * The latter arises from the original SVG used to generate the uv-map, see
-   * e.g. media/npc/human-skin-0.svg.
+   * e.g. media/npc/human-0.svg.
    */
   type TriToUvKeys = {
     /**

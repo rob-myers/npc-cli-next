@@ -40,11 +40,11 @@ export function getDecorSheetUrl(sheetId) {
 }
 
 /**
- * @param {Key.SkinClass} skinClassKey
+ * @param {Key.NpcClass} npcClassKey
  * @param {number} sheetId
  */
-export function getNpcSkinSheetUrl(skinClassKey, sheetId) {
-  return `/3d/${skinClassKey}.${sheetId}.tex.${imgExt}${getDevCacheBustQueryParam()}`;
+export function getNpcSkinSheetUrl(npcClassKey, sheetId) {
+  return `/3d/${npcClassKey}.${sheetId}.tex.${imgExt}${getDevCacheBustQueryParam()}`;
 }
 
 /** @param {Key.DecorImg} decorImgKey */

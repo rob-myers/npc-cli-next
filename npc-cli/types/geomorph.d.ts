@@ -452,13 +452,13 @@ declare namespace Geomorph {
   }
 
   interface SpriteSheetSkins {
-    numSheets: Record<Key.SkinClass, number>;
+    numSheets: Record<Key.NpcClass, number>;
     /** One per sheet for skin class */
-    svgHashes: Record<Key.SkinClass, number[]>;
-    /** From `(skinClassKey, sheetId)` to "index into skins DataTextureArray" */
-    texArrayId: Record<Key.SkinClass, number[]>;
-    uvMap: Record<Key.SkinClass, UvRectLookup>;
-    uvMapDim: Record<Key.SkinClass, { width: number; height: number; }>;
+    svgHashes: Record<Key.NpcClass, number[]>;
+    /** From `(npcClassKey, sheetId)` to "index into skins DataTextureArray" */
+    texArrayId: Record<Key.NpcClass, number[]>;
+    uvMap: Record<Key.NpcClass, UvRectLookup>;
+    uvMapDim: Record<Key.NpcClass, { width: number; height: number; }>;
   }
 
   type ObstacleKey = `${Key.Symbol} ${number}`;
@@ -476,7 +476,7 @@ declare namespace Geomorph {
   }
 
   interface UvRect extends Geom.RectJson {
-    /** Relative to parent skinClassKey */
+    /** Relative to parent npcClassKey */
     sheetId: number;
   }
 

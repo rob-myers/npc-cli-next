@@ -334,7 +334,7 @@ export const npcClassToMeta = {
   // 🚧 remove
   'cuboid-man': {
     modelUrl: '/3d/cuboid-man.glb',
-    skinClassKey: 'cuboid-man',
+    npcClassKey: 'cuboid-man',
     scale: 0.7,
     materialName: 'cuboid-man-material',
     meshName: 'cuboid-man-mesh',
@@ -347,7 +347,7 @@ export const npcClassToMeta = {
 
   "human-0": {
     modelUrl: '/3d/human-0.glb',
-    skinClassKey: 'human-skin-0',
+    npcClassKey: 'human-0',
     scale: 0.7,
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
@@ -434,6 +434,3 @@ export const skinsTextureDimension = 2048;
  * Each pixel represents (du, dv, sheetId) for uv-remapping
  */
 export const skinsUvsTextureWidth = 128;
-
-/** @type {Record<Key.SkinClass, true>} */
-export const fromSkinClassKey = { "cuboid-man": true, "human-skin-0": true };

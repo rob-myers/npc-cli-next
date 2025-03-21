@@ -106,6 +106,13 @@
     - ✅ `w.npc.initSkinMeta.map` -> `w.npc.initSkinMeta.triToKey`
     - ✅ `w.npc.initSkinMeta.partToUv` i.e. skinPartKey -> initial uvRectKey -> uvRect
     - ✅ `w.npc.initSkinMeta` -> `w.npc.skinInit`
+    - support skin from other npcClass
+      - `skinPartKey -> { prefix: string; npcClassKey?: string; }`
+  - 🚧 remove skinClassKey i.e. npcClassKey determines unique skin
+    - ✅ `Key.SkinClass` -> `Key.NpcClass`
+    - ✅ update SVG assets
+    - ✅ regenerate PNG/WEBP
+    - 🚧 update in Blender
   - ✅ can handle negative uv offsets
     - ℹ️ TexArray supports type `THREE.FloatType` (default `THREE.UnsignedByteType`)
   - ✅ precompute shared object per npcClassKey so `changeUvMap` is cleaner
@@ -116,7 +123,6 @@
   - 🚧 permit prefixes of Key.SkinPart
 - examples of uv re-mappings in profile-1
 - examples of tintings in profile-1
-- maybe keep `skinClassKey` e.g. two models could share same skin via different body ratios yet same head ratios?
 
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label

@@ -274,8 +274,8 @@ export default function World(props) {
           invert: true,
         },
         {
-          src: entries(skin.numSheets).flatMap(([skinClassKey, skinSheetCount]) =>
-            range(skinSheetCount).map(sheetId => getNpcSkinSheetUrl(skinClassKey, sheetId))
+          src: entries(skin.numSheets).flatMap(([npcClassKey, skinSheetCount]) =>
+            range(skinSheetCount).map(sheetId => getNpcSkinSheetUrl(npcClassKey, sheetId))
           ),
           texArray: state.texSkin,
           dim: { width: skinsTextureDimension, height: skinsTextureDimension },

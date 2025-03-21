@@ -1118,7 +1118,7 @@ class GeomorphService {
    * build name to UV Rect i.e. normalized to [0, 1] x [0, 1]
    * 🔔 we do not support transforms on parent groups
    * @param {string} svgContents
-   * @param {number} sheetId The index of this sheet relative to its skinClassKey.
+   * @param {number} sheetId The index of this sheet relative to its npcClassKey.
    * @param {string} logLabel
    * @returns {Geom.RectJson & { uvMap: Geomorph.UvRectLookup }}
    */
