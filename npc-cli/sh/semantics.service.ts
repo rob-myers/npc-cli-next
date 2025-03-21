@@ -135,19 +135,32 @@ class semanticsServiceClass {
     }
 
     const { value, values } = await this.lastExpanded(sem.Expand(Value));
+    const firstValue = values[0]; // know values.length > 0 because not Naked
 
-    if (values.some(x => typeof x !== 'string')) {
-      // e.g. forward non-string value from command substitution `foo=$( bar )`
-      useSession.api.setVar(meta, Name.Value, Append === true
-        ? (useSession.api.getVar(meta, Name.Value) ?? 0) + (values.length === 1 ? values[0] : values)
-        : values.length === 1 ? values[0] : values
-      );
-    } else {// string could be interpreted as e.g. number, Set
-      useSession.api.setVar(meta, Name.Value, Append === true
-        ? (useSession.api.getVar(meta, Name.Value) ?? 0) + parseJsArg(value)
-        : parseJsArg(value)
-      );
+    function objectAssignOrAdd(x: any, y: any) {
+      return typeof y === 'object' ? Object.assign(x, y) : x + y;
     }
+
+    if (Append === true) {
+      // Append `true` corresponds to `foo+=bar`, e.g.
+      // - ℹ️ x+=1 where x is `1` is `2`
+      // - ℹ️ x+='{baz:"qux"}' where x is `{foo:"bar"}` is `{foo:"bar",baz:"qux"}`
+      const leftArg = useSession.api.getVar(meta, Name.Value) ?? 0;
+      if (typeof firstValue !== 'string') {
+        // e.g. forward non-string value from command substitution `foo=$( bar )`
+        useSession.api.setVar(meta, Name.Value, objectAssignOrAdd(leftArg, firstValue));
+      } else {// string could be interpreted as e.g. number, Set
+        useSession.api.setVar(meta, Name.Value, objectAssignOrAdd(leftArg, parseJsArg(value)));
+      }
+    } else {
+      if (typeof firstValue !== 'string') {
+        // e.g. forward non-string value from command substitution `foo=$( bar )`
+        useSession.api.setVar(meta, Name.Value, values.length === 1 ? values[0] : values);
+      } else {// string could be interpreted as e.g. number, Set
+        useSession.api.setVar(meta, Name.Value, parseJsArg(value));
+      }
+    }
+
   }
 
   private async *BinaryCmd(node: Sh.BinaryCmd) {

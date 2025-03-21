@@ -120,7 +120,7 @@
   - 🚧 remove hard-coded `npc.uvReMap` and apply in profile-1 instead
 - 🚧 can tint skinParts via "second row" of `w.texUvReMap`
   - ✅ call it `w.npcAuxTex` i.e. auxiliary DataTextureArray for npcs
-  - 🚧 permit prefixes of Key.SkinPart
+  - ❌ permit prefixes of Key.SkinPart
 - examples of uv re-mappings in profile-1
 - examples of tintings in profile-1
 
@@ -132,13 +132,12 @@
 
 ### Extras
 
-- 🚧 mobile touch issues
-  - ✅ ContextMenu fixed
-  - Logger PopUp?
+- ✅ mobile ContextMenu touch issue
 - ❌ npc should not stop so suddenly near doorway
 - ✅ implement `+=` s.t. `c+=1` would increment if `c` numeric
 
-- could overload `+=` to work on JS objects
+- ✅ overload `+=` to work on JS objects
+  - `x=$( expr { foo: 42 } ) && x+='{ bar: 1024 }' && x`
 - if lookAt while walking, eventually lookAt once stopMoving
 - more abrupt walk -> idle when collide
 - 🚧 less abrupt turn just after doorway
