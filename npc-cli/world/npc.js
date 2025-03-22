@@ -895,19 +895,19 @@ export class Npc {
    * @returns 
    */
   onTickDetectStuck(deltaMs, agent) {
-    const smallDist = 0.4 * agent.raw.desiredSpeed * deltaMs;
+    const smallDist = 0.2 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
       this.s.slowBegin = null; // reset
       return;
     }
-
+    
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
     if (elapsedTime - this.s.slowBegin < 0.2) {// 200ms
       return;
     }
-
+    // 🔔 can prevent npc moving is acceleration too low
     this.w.npc.onStuckCustom?.(this, agent);
   }
 
@@ -1144,7 +1144,7 @@ export class Npc {
 }
 
 const staticMaxAcceleration = 4;
-const movingMaxAcceleration = 8;
+const movingMaxAcceleration = 4;
 const staticSeparationWeight = 1.5;
 const movingSeparationWeight = 1;
 // const movingSeparationWeight = 0.4;
