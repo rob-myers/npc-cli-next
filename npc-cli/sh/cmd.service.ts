@@ -49,6 +49,8 @@ import { observableToAsyncIterable } from "../service/observable-to-async-iterab
 
 /** Shell builtins */
 const commandKeys = {
+  /** Object.assign of parsed JS or variable-values */
+  assign: true,
   /** Change current key prefix */
   cd: true,
   /** Write tty message with markdown links and associated actions */
@@ -111,6 +113,25 @@ class cmdServiceClass {
   async *runCmd(node: Sh.CallExpr | Sh.DeclClause, command: CommandName, args: string[]) {
     const { meta } = node;
     switch (command) {
+      case "assign": {
+        const values = args.map(arg => {
+          const parsed = parseJsArg(arg);
+          return typeof parsed === 'string'
+            // parse failed so assume its a variable
+            ? useSession.api.getVarDeep(meta, arg)
+            : parsed
+          ;
+        });
+        if (isTtyAt(meta, 0)) {
+          yield Object.assign(values[0], ...values.slice(1));
+        } else {
+          let datum: any;
+          while ((datum = await read(meta)) !== EOF) {
+            yield Object.assign(datum, ...values);
+          }
+        }
+        break;
+      }
       case "cd": {
         if (args.length > 1) {
           throw new ShError(

@@ -118,6 +118,8 @@
   - ✅ precompute shared object per npcClassKey so `changeUvMap` is cleaner
   - ✅ general approach
   - 🚧 remove hard-coded `npc.uvReMap` and apply in profile-1 instead
+    - ✅ can `w n.rob.skin | assign '{ foo: "bar" }'`
+    - 🚧 move hard-coding to profile-1
 - 🚧 can tint skinParts via "second row" of `w.texUvReMap`
   - ✅ call it `w.npcAuxTex` i.e. auxiliary DataTextureArray for npcs
   - ❌ permit prefixes of Key.SkinPart
