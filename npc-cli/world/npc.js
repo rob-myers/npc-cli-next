@@ -48,10 +48,7 @@ export class Npc {
    * Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
    * where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
    */
-  skin = /** @type {NPC.SkinReMap} */ ({
-    // 🚧 hard-coded
-    'head-overlay-front': { prefix: 'confused' },
-  });
+  skin = /** @type {NPC.SkinReMap} */ ({});
 
   tint = /** @type {NPC.SkinTint} */ ({
     // 🚧 hard-coded
@@ -157,6 +154,8 @@ export class Npc {
 
     // 🔔 texture.type THREE.FloatType to handle negative uv offsets
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
+    const defaultPixel = [0, 0, initSheetTexId, 0];
+
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
       const target = this.skin[skinPartKey];
@@ -174,10 +173,7 @@ export class Npc {
         data[offset + 2] = dstSheetTexId;
         data[offset + 3] = 0;
       } else {
-        data[offset + 0] = 0;
-        data[offset + 1] = 0;
-        data[offset + 2] = initSheetTexId;
-        data[offset + 3] = 0;
+        data.set(defaultPixel, offset);
       }
     }
 
