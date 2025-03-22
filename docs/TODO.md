@@ -124,12 +124,12 @@
   - ✅ call it `w.npcAuxTex` i.e. auxiliary DataTextureArray for npcs
   - ❌ permit prefixes of Key.SkinPart
   - ✅ move hard-coded tint into profile-1
+
 - 🚧 good examples of uv re-mappings in profile-1
 - 🚧 good examples of tintings in profile-1
 
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
-
 - can show/hide/tint selector
 - can show/hide/tint label
 
@@ -144,12 +144,17 @@
 
 - ✅ overload `+=` to work on JS objects
   - `x=$( expr { foo: 42 } ) && x+='{ bar: 1024 }' && x`
-- if lookAt while walking, eventually lookAt once stopMoving
-- more abrupt walk -> idle when collide
-- 🚧 less abrupt turn just after doorway
+- ✅ less abrupt turn just after doorway
   - ✅ slow down turn during main offMesh seg
-  - try initially turning before start moving (generally)
+    - less abrupt but initial turn can be too slow
+  - ❌ try initially turning before start moving
+    - ℹ️ slow acceleration can trigger onTickDetectStuck
+    - ℹ️ problem happens near offMeshConnection, where uniform velocity enforced
+    - ℹ️ could set slow speed through door if start nearby
 
+- ✅ more abrupt walk -> idle when collide
+
+- if lookAt while walking, eventually lookAt once stopMoving
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
