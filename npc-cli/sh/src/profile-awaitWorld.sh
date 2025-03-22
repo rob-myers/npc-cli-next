@@ -12,6 +12,20 @@ spawn '{ npcKey: "kate", angle: -Math.PI/2 }' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
 # skin and tint
 w n.temp-npc.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
+w n.temp-npc.skin | assign '{
+  "body-front": { prefix: "test-body" },
+  "body-back": { prefix: "test-body" },
+  "body-left": { prefix: "test-body" },
+  "body-right": { prefix: "test-body" },
+  "body-top": { prefix: "test-body" },
+  "body-bottom": { prefix: "test-body" },
+  "body-overlay-front": { prefix: "test-body-overlay" },
+  "body-overlay-back": { prefix: "test-body-overlay" },
+  "body-overlay-left": { prefix: "test-body-overlay" },
+  "body-overlay-right": { prefix: "test-body-overlay" },
+  "body-overlay-top": { prefix: "test-body-overlay" },
+  "body-overlay-bottom": { prefix: "test-body-overlay" },
+}'
 w n.temp-npc.applySkin
 w n.temp-npc.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
 w n.temp-npc.applyTint

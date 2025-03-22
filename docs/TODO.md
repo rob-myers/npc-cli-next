@@ -126,14 +126,15 @@
   - ✅ move hard-coded tint into profile-1
 
 - 🚧 good examples of uv re-mappings in profile-1
-  - 🚧 grid_base-body
+  - ✅ test-body_base-body
+  - ✅ test-body-overlay_base-body-overlay
   - 🚧 grid_base-head
 - 🚧 good examples of tintings in profile-1
 
-- represent label images as 256-layer DataTextureArray
-  - requires bounds on max width/height of label
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
+- represent label images as 256-layer DataTextureArray
+  - requires bounds on max width/height of label
 - can show/hide/tint label
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin

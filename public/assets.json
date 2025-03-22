@@ -1282,13 +1282,13 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"cuboid-man": -1925566159, "human-0": 1700397335},
-    "imagesHash": -446205582
+    "imagesHash": -702498253
   },
   "skin": {
     "numSheets": {"cuboid-man": 1, "human-0": 2},
     "svgHashes": {
       "cuboid-man": [-1087841574],
-      "human-0": [-1704042196, 276968105]
+      "human-0": [-25512973, 276968105]
     },
     "sheetTexId": {"cuboid-man": [0], "human-0": [1, 2]},
     "uvMap": {
@@ -1626,17 +1626,101 @@
         },
         "confused_head-overlay-front": {
           "sheetId": 0,
-          "x": 0.375,
-          "y": 0.203125,
+          "x": 0.3125,
+          "y": 0.390625,
           "width": 0.0625,
           "height": 0.0625
         },
         "small-eyes_head-overlay-front": {
           "sheetId": 0,
-          "x": 0.375,
-          "y": 0.265625,
+          "x": 0.25,
+          "y": 0.390625,
           "width": 0.0625,
           "height": 0.0625
+        },
+        "test-body_body-top": {
+          "sheetId": 0,
+          "x": 0.453125,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-body_body-bottom": {
+          "sheetId": 0,
+          "x": 0.515625,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-body_body-left": {
+          "sheetId": 0,
+          "x": 0.390625,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "test-body_body-front": {
+          "sheetId": 0,
+          "x": 0.453125,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "test-body_body-right": {
+          "sheetId": 0,
+          "x": 0.515625,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "test-body_body-back": {
+          "sheetId": 0,
+          "x": 0.578125,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "test-body-overlay_body-overlay-top": {
+          "sheetId": 0,
+          "x": 0.453125,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-body-overlay_body-overlay-bottom": {
+          "sheetId": 0,
+          "x": 0.515625,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-body-overlay_body-overlay-left": {
+          "sheetId": 0,
+          "x": 0.390625,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "test-body-overlay_body-overlay-front": {
+          "sheetId": 0,
+          "x": 0.453125,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "test-body-overlay_body-overlay-right": {
+          "sheetId": 0,
+          "x": 0.515625,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "test-body-overlay_body-overlay-back": {
+          "sheetId": 0,
+          "x": 0.578125,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
         },
         "test-head-front": {
           "sheetId": 1,
