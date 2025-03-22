@@ -70,6 +70,14 @@ export function ContextMenu() {
       suppressKeys.forEach(key => delete keyToLink[key]);
       state.links = Object.values(keyToLink);
     },
+    getPosition() {
+      if (state.tracked === undefined) {
+        return state.position.clone();
+      } else {
+        const { object, offset } = state.tracked;
+        return object.position.clone().add(offset);
+      }
+    },
     hide(force) {
       if (state.pinned === true && force !== true) {
         return;
@@ -155,8 +163,12 @@ export function ContextMenu() {
       state.npcKey = npcKey;
       update();
     },
-    setTracked(input) {
-      state.tracked = input;
+    setTracked(object, offset) {
+      if (object === undefined) {
+        state.tracked = undefined;
+      } else {
+        state.tracked = { object, offset: offset ?? new THREE.Vector3() };
+      }
     },
     show() {
       state.open = true;
@@ -191,7 +203,7 @@ export function ContextMenu() {
     },
     toggleScaled() {
       state.scaled = !state.scaled;
-      const position = state.tracked?.position ?? state.position;
+      const position = state.getPosition();
       state.baseScale = state.scaled === true ? 1 / objectScale(position, w.r3f.camera) : undefined;
       update();
     },
@@ -440,13 +452,14 @@ const optsPopUpCss = css`
  * @property {boolean} open
  * @property {import("../components/PopUp").State} optsPopUp
  * @property {import('three').Vector3} position
- * @property {undefined | import("three").Object3D} tracked
+ * @property {undefined | import('../components/Html3d').TrackedObject3D} tracked
  * @property {boolean} pinned
  * @property {boolean} scaled
  * @property {string[]} selectNpcKeys
  * @property {boolean} showKvs
  * @property {(meta: Meta) => void} computeKvsFromMeta
  * @property {() => void} computeLinks
+ * @property {() => THREE.Vector3} getPosition Get actual position e.g. if tracked.
  * @property {(force?: boolean | undefined) => void} hide
  * @property {(e: React.KeyboardEvent<HTMLButtonElement>) => void} onKeyDownButton
  * @property {(e: React.PointerEvent) => void} onPointerDown
@@ -458,7 +471,7 @@ const optsPopUpCss = css`
  * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext
  * @property {(npcKey?: string | undefined) => void} setNpc
- * @property {(input?: import('three').Object3D) => void} setTracked
+ * @property {(object3d?: import('three').Object3D, offset?: THREE.Vector3) => void} setTracked
  * @property {() => void} show
  * @property {(next?: boolean) => void} toggleDocked optional set
  * @property {() => void} toggleOpen

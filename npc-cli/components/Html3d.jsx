@@ -57,7 +57,11 @@ export const Html3d = React.forwardRef(({
           }
           
           if (baseScale !== undefined) {
-            tracked === null ? v1.copy(position) : v1.setFromMatrixPosition(tracked.matrixWorld);
+            if (tracked === null) {
+              v1.copy(position)
+            } else {
+              v1.setFromMatrixPosition(tracked.object.matrixWorld).add(tracked.offset);
+            }
             const scale = objectScale(v1, r3f.camera) * baseScale;
             state.innerDiv.style.transform = `scale(${scale})`;
           }
@@ -71,7 +75,7 @@ export const Html3d = React.forwardRef(({
         if (tracked === null) {
           v1.copy(position);
         } else {
-          v1.setFromMatrixPosition(tracked.matrixWorld);
+          v1.setFromMatrixPosition(tracked.object.matrixWorld).add(tracked.offset);
         }
         if (offset !== undefined) {
           v1.add(offset);
@@ -144,7 +148,7 @@ export const Html3d = React.forwardRef(({
  * @property {THREE.Vector3Like} [offset]
  * @property {import("@react-three/fiber").RootState } r3f
  * @property {THREE.Vector3} position
- * @property {THREE.Object3D | null} tracked
+ * @property {TrackedObject3D | null} tracked
  * @property {boolean} visible
  */
 
@@ -231,3 +235,7 @@ function getCSSMatrix(matrix, multipliers, prepend = '') {
   /** @param {THREE.Matrix4} matrix */
   return (matrix) => getCSSMatrix(matrix, multipliers)
 })([1, -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, 1])
+
+/**
+ * @typedef {{ object: THREE.Object3D; offset: THREE.Vector3; }} TrackedObject3D
+ */

@@ -159,7 +159,7 @@
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
 
-- improve ContextMenu 3d position when npc Lie
+- ✅ improve ContextMenu 3d position when npc Lie
 
 ## Dev env
 

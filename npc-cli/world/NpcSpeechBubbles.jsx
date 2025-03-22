@@ -17,7 +17,9 @@ export default function NpcSpeechBubbles() {
     create(npcKey) {// assumes non-existent
       if (npcKey in w.n) {
         const cm = state.lookup[npcKey] = new SpeechBubbleApi(npcKey, w);
-        cm.setTracked(w.n[npcKey].m.group);
+        const npc = w.n[npcKey];
+        npc.offsetSpeech.set(0, 0, 0);
+        cm.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
         cm.updateOffset();
         cm.baseScale = speechBubbleBaseScale; // speech bubble always scaled
         cm.open = true;

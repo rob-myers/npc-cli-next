@@ -10,7 +10,7 @@ export class SpeechBubbleApi {
   epochMs = 0;
   
   position = new THREE.Vector3();
-  tracked = /** @type {undefined | import('three').Object3D} */ (undefined);
+  tracked = /** @type {undefined | import('../components/Html3d').TrackedObject3D} */ (undefined);
   offset = { x: 0, y: 0, z: 0 };
   
   open = false;
@@ -46,10 +46,10 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * @param {import('three').Object3D} [input] 
+   * @param {import('../components/Html3d').TrackedObject3D} [tracked] 
    */
-  setTracked(input) {
-    this.tracked = input;
+  setTracked(tracked) {
+    this.tracked = tracked;
   }
 
   update = noop

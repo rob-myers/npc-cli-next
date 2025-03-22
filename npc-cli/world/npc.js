@@ -7,7 +7,7 @@ import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpVectThree1, toV3, toXZ } from '../service/three';
+import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 import { cmUvService } from "../service/uv";
@@ -34,11 +34,13 @@ export class Npc {
     quad: /** @type {*} */ ({}), // 🚧 remove
     scale: 1,
     toAct: /** @type {*} */ ({}),
-  }
+  };
   
   mixer = emptyAnimationMixer;
   /** Shortcut to `this.m.group.position` */
   position = tmpVectThree1;
+  /** Shortcut to `this.m.group.rotation` */
+  rotation = tmpEulerThree;
   /** Difference between last position */
   delta = new THREE.Vector3();
 
@@ -96,6 +98,10 @@ export class Npc {
    * - Last set one (if not)
    */
   lastTarget = new THREE.Vector3();
+
+  /** ContextMenu has different position when `this.s.act` is `Lie` */
+  offsetMenu = new THREE.Vector3();
+  offsetSpeech = new THREE.Vector3();
 
   resolve = {
     fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
@@ -343,7 +349,7 @@ export class Npc {
    * Convert rotation.y back into "clockwise from east, viewed from above".
    */
   getAngle() {
-    return geom.radRange(Math.PI/2 - this.m.group.rotation.y);
+    return geom.radRange(Math.PI/2 - this.rotation.y);
   }
 
   getCornerAfterOffMesh() {
@@ -802,6 +808,7 @@ export class Npc {
       this.m.group = group;
       // Setup shortcut
       this.position = group.position;
+      this.rotation = group.rotation;
       // Resume `w.npc.spawn`
       this.resolve.spawn?.();
       // Ensure non-empty animation mixer
@@ -821,7 +828,7 @@ export class Npc {
     this.mixer.update(deltaMs);
 
     if (this.s.lookAngleDst !== null && this.s.permitTurn === true) {
-      if (dampAngle(this.m.group.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
+      if (dampAngle(this.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
       }
@@ -1056,6 +1063,7 @@ export class Npc {
       next.reset().fadeIn(glbFadeIn[this.s.act][input] * scaleFade).play();
       this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
       this.s.act = input;
+      this.updateOffsets();
       return 0;
     } else { // input is Meta
       switch (true) {
@@ -1083,7 +1091,7 @@ export class Npc {
     this.s.lookSecs = 0.3;
     if (this.s.lookAngleDst !== null) {
       // 🚧 turn a bit more e.g. just after doorway
-      this.s.lookAngleDst = this.m.group.rotation.y + deltaAngle(this.m.group.rotation.y, this.s.lookAngleDst) / 3;
+      this.s.lookAngleDst = this.rotation.y + deltaAngle(this.rotation.y, this.s.lookAngleDst) / 3;
     }
 
     this.s.permitTurn = true;
@@ -1128,6 +1136,18 @@ export class Npc {
       return true;
     } else {
       return false;
+    }
+  }
+
+  updateOffsets() {// contextmenu anchor, speech bubble anchor
+    switch (this.s.act) {
+      case 'Lie':
+        const radians = this.getAngle();
+        this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));
+        break;
+        default:
+        this.offsetMenu.set(0, 0, 0);
+        break;
     }
   }
 

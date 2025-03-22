@@ -294,9 +294,9 @@ export default function Npcs(props) {
       }
 
       // npc.startAnimation('Idle');
-      position.y = npc.startAnimation(p.meta ?? 'Idle');
-      npc.m.group.rotation.y = npc.getEulerAngle(npc.def.angle);
+      npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
+      position.y = npc.startAnimation(p.meta ?? 'Idle');
 
       if (npc.agent === null) {
         npc.position.copy(position);
