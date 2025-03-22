@@ -407,12 +407,12 @@ export default function Npcs(props) {
       ref={state.ref('group')}
     >
       {Object.values(state.npc).map(npc =>
-        <NPC key={npc.key} npc={npc} />
-        // <MemoizedNPC
-        //   key={npc.key}
-        //   npc={npc}
-        //   epochMs={npc.epochMs} // can invalidate memo
-        // />
+        // <NPC key={npc.key} npc={npc} />
+        <MemoizedNPC
+          key={npc.key}
+          npc={npc}
+          epochMs={npc.epochMs} // can invalidate memo
+        />
       )}
     </group>
   );
