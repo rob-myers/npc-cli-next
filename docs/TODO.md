@@ -100,7 +100,7 @@
     - ✅ ensure uvReMap is being updated
   - ✅ move selector/breath/label quad up i.e. no 32-pixel-gap
     - requires changing UV map in Blender too
-  - 🚧 clarify re-map format
+  - ✅ clarify re-map format
     - ✅ every uvRectKey has a skinPartKey
     - ℹ️ an atomic remapping amounts to `{ skinPartKey, dst: [uvRectKey: string, texArrayId: number] }`
     - ✅ `w.npc.initSkinMeta.map` -> `w.npc.initSkinMeta.triToKey`
@@ -108,11 +108,11 @@
     - ✅ `w.npc.initSkinMeta` -> `w.npc.skinInit`
     - ✅ support skin from other npcClass
       - `skinPartKey -> { prefix: string; npcClassKey?: string; }`
-  - 🚧 remove skinClassKey i.e. npcClassKey determines unique skin
+  - ✅ remove skinClassKey i.e. npcClassKey determines unique skin
     - ✅ `Key.SkinClass` -> `Key.NpcClass`
     - ✅ update SVG assets
     - ✅ regenerate PNG/WEBP
-    - 🚧 update in Blender
+    - ✅ update in Blender
   - ✅ can handle negative uv offsets
     - ℹ️ TexArray supports type `THREE.FloatType` (default `THREE.UnsignedByteType`)
   - ✅ precompute shared object per npcClassKey so `changeUvMap` is cleaner
@@ -147,6 +147,8 @@
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
+
+- improve ContextMenu 3d position when npc Lie
 
 ## Dev env
 
