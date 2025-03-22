@@ -50,10 +50,7 @@ export class Npc {
    */
   skin = /** @type {NPC.SkinReMap} */ ({});
 
-  tint = /** @type {NPC.SkinTint} */ ({
-    // 🚧 hard-coded
-    'head-overlay-front': [1, 0, 0, 1],
-  });
+  tint = /** @type {NPC.SkinTint} */ ({});
 
   /** State */
   s = {
@@ -180,25 +177,25 @@ export class Npc {
     texNpcAux.updateIndex(this.def.uid, data);
   }
 
+  /**
+   * Apply uv re-mapping @see {Npc.tint}
+   * - 2nd row of pixels
+   * - one pixel per triangle
+   */
   applyTint() {
-    // 🚧
     const texNpcAux = this.w.texNpcAux;
     const classKey = this.def.classKey;
     const { triToKey } = this.w.npc.skinAux[classKey];
 
-    // one pixel per triangle
-    // 🔔 texture.type THREE.FloatType to handle negative uv offsets
+    // THREE.FloatType handle negative uv offsets in applySkin
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
+    const defaultPixel = [1, 1, 1, 1];
     for (const [triangleId, { skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
       if (skinPartKey in this.tint) {
         data.set(/** @type {number[]} */ (this.tint[skinPartKey]), offset);
       } else {
-        // 🚧
-        data[offset + 0] = 0;
-        data[offset + 1] = 1;
-        data[offset + 2] = 0;
-        data[offset + 3] = 1;
+        data.set(defaultPixel, offset);
       }
     }
 

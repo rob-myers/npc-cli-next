@@ -87,7 +87,7 @@
   - ✅ test triangle centers against "uv-keyed rectangles"
   - ✅ verify/fix lookup
   - ✅ label uv-mapped properly
-- 🚧 shader maps "triangle id" to "uv offset"
+- ✅ shader maps "triangle id" to "uv offset"
   - ℹ️ "provoking vertex id" is last id in `w.npc.skinTriMap[triId].vertexIds`
   - ✅ `w.texSkinUvs` DataTextureArray has 256 layers (one per npc)
   - ✅ shader receives uvReMap
@@ -120,14 +120,18 @@
   - ✅ remove hard-coded `npc.uvReMap` and apply in profile-1 instead
     - ✅ can `w n.rob.skin | assign '{ foo: "bar" }'`
     - ✅ move hard-coding to profile-1
-- 🚧 can tint skinParts via "second row" of `w.texUvReMap`
+- ✅ can tint skinParts via "second row" of `w.texUvReMap`
   - ✅ call it `w.npcAuxTex` i.e. auxiliary DataTextureArray for npcs
   - ❌ permit prefixes of Key.SkinPart
-- examples of uv re-mappings in profile-1
-- examples of tintings in profile-1
+  - ✅ move hard-coded tint into profile-1
+- 🚧 good examples of uv re-mappings in profile-1
+- 🚧 good examples of tintings in profile-1
 
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
+
+- can show/hide/tint selector
+- can show/hide/tint label
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
   - https://threejs.org/examples/webgl_materials_texture_partialupdate.html
