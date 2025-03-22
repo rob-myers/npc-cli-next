@@ -528,7 +528,7 @@ export class Npc {
         if (other.s.target === null && !(nei.dist < closerDist)) {
           continue;
         }
-        this.stopMoving();
+        this.stopMoving(true);
         break;
       }
     }
@@ -1052,14 +1052,15 @@ export class Npc {
    * Start specific animation, or animation induced by meta.
    * Returns height to raise off ground e.g. for beds. 
    * @param {Key.Anim | Meta} input
+   * @param {number} [scaleFade]
    * @returns {number}
    */
-  startAnimation(input) {
+  startAnimation(input, scaleFade = 1) {
     if (typeof input === 'string') {
       const curr = this.m.toAct[this.s.act];
       const next = this.m.toAct[input];
-      curr.fadeOut(glbFadeOut[this.s.act][input]);
-      next.reset().fadeIn(glbFadeIn[this.s.act][input]).play();
+      curr.fadeOut(glbFadeOut[this.s.act][input] * scaleFade);
+      next.reset().fadeIn(glbFadeIn[this.s.act][input] * scaleFade).play();
       this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
       this.s.act = input;
       return 0;
@@ -1081,16 +1082,17 @@ export class Npc {
     }
   }
 
-  stopMoving() {
+  stopMoving(suddenly = false) {
     if (this.agent === null || this.s.target === null) {
       return;
     }
 
     this.s.lookSecs = 0.3;
-    if (this.s.lookAngleDst !== null) {// turn a bit more e.g. just after doorway
+    if (this.s.lookAngleDst !== null) {
+      // 🚧 turn a bit more e.g. just after doorway
       this.s.lookAngleDst = this.m.group.rotation.y + deltaAngle(this.m.group.rotation.y, this.s.lookAngleDst) / 3;
     }
-    // this.s.lookAngleDst = null;
+
     this.s.permitTurn = true;
     this.s.slowBegin = null;
     this.s.target = null;
@@ -1106,7 +1108,7 @@ export class Npc {
       // updateFlags: 1,
     });
     
-    this.startAnimation('Idle');
+    this.startAnimation('Idle', suddenly ? 1/3 : 1);
 
     const pos = this.agent.position(); // reset small motions:
     const position = this.lastStart.distanceTo(pos) <= 0.05 ? this.lastStart : pos;
