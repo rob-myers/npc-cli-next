@@ -126,11 +126,14 @@
   - ✅ move hard-coded tint into profile-1
 
 - 🚧 good examples of uv re-mappings in profile-1
+  - 🚧 grid_base-body
+  - 🚧 grid_base-head
 - 🚧 good examples of tintings in profile-1
 
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
-- can show/hide/tint selector
+- ✅ can show/hide/tint selector
+- ✅ can object-pick new npc
 - can show/hide/tint label
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
@@ -158,6 +161,7 @@
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
+- cuboids have bands via shader, using UVs
 
 - ✅ improve ContextMenu 3d position when npc Lie
 

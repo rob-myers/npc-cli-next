@@ -527,11 +527,12 @@ function NPC({ npc }) {
           <humanZeroShader
             key={HumanZeroShader.key}
             atlas={npc.w.texSkin.tex}
+            aux={npc.w.texNpcAux.tex}
+            opacity={npc.s.opacity}
             transparent
             uid={npc.def.uid}
-            aux={npc.w.texNpcAux.tex}
           />
-        ) || <cuboidManMaterial
+        ) || <cuboidManMaterial // 🚧 remove
           key={CuboidManMaterial.key}
           diffuse={[.8, .8, .8]}
           transparent

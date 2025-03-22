@@ -481,10 +481,14 @@ export const humanZeroShader = {
   Frag: /*glsl*/`
   
   uniform sampler2DArray atlas;
-  // uv re-mapping (1st row) and skin colouring (2nd row),
-  // where depth is number of npcs
+
+  // uv re-mapping (1st row)
+  // skin colour (2nd row)
+  // depth is max number of npcs
   uniform sampler2DArray aux;
+
   uniform bool objectPick;
+  uniform float opacity;
   uniform int uid;
 
   flat varying float dotProduct;
@@ -508,7 +512,9 @@ export const humanZeroShader = {
   void main() {
 
     if (objectPick == true) {
-      return; // 🚧 label should be left in "original position" under ground
+      // 🚧 label should be left in "original position" under ground
+      gl_FragColor = encodeNpcObjectPick();
+      return;
     }
 
     // 🔔 128 is width of DataArrayTexture aux
@@ -517,7 +523,7 @@ export const humanZeroShader = {
     vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
     vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
     // gl_FragColor = texel * vec4(vec3(0.1 + 0.7 * dotProduct), 1.0);
-    gl_FragColor = texel * vec4((0.1 + 0.7 * dotProduct) * vec3(diffuse), 1.0);
+    gl_FragColor = texel * vec4((0.1 + 0.7 * dotProduct) * vec3(diffuse), diffuse.a * opacity);
     #include <logdepthbuf_fragment>
   }
   `,
@@ -667,7 +673,7 @@ export const CameraLightMaterial = shaderMaterial(
   cameraLightShader.Frag,
 );
 
-// 🚧 replace
+// 🚧 remove
 export const CuboidManMaterial = shaderMaterial(
   {
     diffuse: new THREE.Vector3(1, 0.9, 0.6),
@@ -704,7 +710,7 @@ export const HumanZeroShader = shaderMaterial(
     atlas: emptyDataArrayTexture,
     aux: emptyDataArrayTexture,
     objectPick: false,
-    texSkinId: 0,
+    opacity: 1,
     uid: 0,
   },
   humanZeroShader.Vert,

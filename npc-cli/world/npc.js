@@ -1018,7 +1018,7 @@ export class Npc {
    * @param {number} g in `[0, 1]`
    * @param {number} b in `[0, 1]`
    */
-  setSelectorRgb(r, g, b) {
+  setSelectorRgb(r, g, b) {// 🚧 remove
     /** @type {[number, number, number]} */
     const selectorColor = [Number(r) || 0, Number(g) || 0, Number(b) || 0];
     // directly change uniform sans render
@@ -1041,11 +1041,16 @@ export class Npc {
    * @param {boolean} shouldShow
    */
   showSelector(shouldShow = !this.s.showSelector) {
-    shouldShow = Boolean(shouldShow);
-    this.s.showSelector = shouldShow;
-    // directly change uniform sans render
-    this.setUniform('showSelector', this.s.showSelector);
-    this.updateUniforms();
+    if (this.def.classKey === 'cuboid-man') {// 🚧 remove
+      shouldShow = Boolean(shouldShow);
+      this.s.showSelector = shouldShow;
+      this.setUniform('showSelector', this.s.showSelector);
+      this.updateUniforms();
+    } else {
+      this.s.showSelector = shouldShow;
+      this.tint.selector = [...this.s.selectorColor, shouldShow === true ? 1 : 0];
+      this.applyTint();
+    }
   }
 
   /**

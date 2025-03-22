@@ -1,7 +1,7 @@
 awaitWorld
 
-# 🚧 remove this line and below
-# temp while we migrate npc shaders
+# 🚧 remove everything below
+# 🚧 temp while we migrate npc shaders
 spawn '{ npcKey: "temp-npc", classKey: "human-0" }' '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 
 w npc.updateLabels rob will kate # efficiency
@@ -16,9 +16,10 @@ w n.temp-npc.applySkin
 w n.temp-npc.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
 w n.temp-npc.applyTint
 
-w n.rob.showSelector true
-selectedNpcKey="rob"
+w n.temp-npc.showSelector true
+selectedNpcKey="temp-npc"
 
+w e.grantNpcAccess temp-npc .
 w e.grantNpcAccess rob .
 # temp debug doors:
 w e.grantNpcAccess will .
