@@ -445,7 +445,7 @@ export const cuboidManShader = {
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
-  flat varying float dotProduct;
+  varying float dotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
 
@@ -491,7 +491,7 @@ export const humanZeroShader = {
   uniform float opacity;
   uniform int uid;
 
-  flat varying float dotProduct;
+  varying float dotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
 
@@ -524,6 +524,7 @@ export const humanZeroShader = {
     vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
     // gl_FragColor = texel * vec4(vec3(0.1 + 0.7 * dotProduct), 1.0);
     gl_FragColor = texel * vec4((0.1 + 0.7 * dotProduct) * vec3(diffuse), diffuse.a * opacity);
+    // gl_FragColor = texel * vec4(1.0 * vec3(diffuse), diffuse.a * opacity);
     #include <logdepthbuf_fragment>
   }
   `,
