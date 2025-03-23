@@ -125,10 +125,12 @@
   - ❌ permit prefixes of Key.SkinPart
   - ✅ move hard-coded tint into profile-1
 
+- skins: support inherited transforms on `<g>`
+  - ℹ️ we often make this mistake
+
 - 🚧 good examples of skin in profile-1
   - ✅ test-body_base-body
   - ✅ test-body-overlay_base-body-overlay
-  - support inherited transforms on `<g>`
   - examples of useful body-overlay
     - e.g. partially transparent clothing
   - uv mapping for tapered cuboid?
@@ -234,6 +236,9 @@
   - ℹ️ previously `<Floor>` was an earlier sibling, but no issue when later sibling
 
 - ✅ images hash should be based on SVGs in case of skins
+
+- warn if uv-map is not a grid (where rows/cols can have different size)
+
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 
