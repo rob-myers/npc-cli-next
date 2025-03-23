@@ -125,11 +125,19 @@
   - ❌ permit prefixes of Key.SkinPart
   - ✅ move hard-coded tint into profile-1
 
-- 🚧 good examples of uv re-mappings in profile-1
+- 🚧 good examples of skin in profile-1
   - ✅ test-body_base-body
   - ✅ test-body-overlay_base-body-overlay
-  - 🚧 grid_base-head
-- 🚧 good examples of tintings in profile-1
+  - support inherited transforms on `<g>`
+  - examples of useful body-overlay
+    - e.g. partially transparent clothing
+  - uv mapping for tapered cuboid?
+    - issue visible when draw diagonals, but maybe ignore
+  - inspiration from minecraft skins
+    - https://namemc.com/minecraft-skins
+  - draw curves around cuboids e.g. to depict vest-line
+  - test-head_base-head
+- 🚧 good examples of tints in profile-1
 
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
@@ -190,9 +198,9 @@
 
 - ✅ migrate `canvas` to `skia-canvas`
   - ℹ️ https://www.npmjs.com/package/skia-canvas
-- 🚧 skia-canvas issues
-  - fill pattern in human-0.1.tex not working 
-  - composite point light in human-0.0.tex not working 
+- 🚧 skia-canvas issue: fill pattern in human-0.1.tex not working 
+  - https://github.com/samizdatco/skia-canvas/issues/219
+- skia-canvas issue: composite point light in human-0.0.tex not working 
 
 - ✅ HMR of GLTF i.e. GLB
   - ✅ detect glb change and trigger code

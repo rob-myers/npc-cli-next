@@ -2,33 +2,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com" width="2048" height="2048" viewBox="0 0 2048 2048">
   <defs>
     <bx:grid x="0" y="0" width="16" height="16"/>
-    <filter id="duotone-filter-0" bx:preset="duotone 1 #4fa2cd #02477b 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
-      <feColorMatrix type="matrix" result="grayscale" values="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 0"/>
-      <feComponentTransfer color-interpolation-filters="sRGB">
-        <feFuncR type="gamma" exponent="1.5" amplitude="1" offset="0"/>
-        <feFuncG type="gamma" exponent="1.5" amplitude="1" offset="0"/>
-        <feFuncB type="gamma" exponent="1.5" amplitude="1" offset="0"/>
-      </feComponentTransfer>
-      <feComponentTransfer color-interpolation-filters="sRGB" result="duotone">
-        <feFuncR type="table" tableValues="0.31 0.008"/>
-        <feFuncG type="table" tableValues="0.635 0.278"/>
-        <feFuncB type="table" tableValues="0.804 0.482"/>
-        <feFuncA type="table" tableValues="0 1"/>
-      </feComponentTransfer>
-    </filter>
-    <filter id="point-light-filter-0" bx:preset="point-light 1 0.375 0.5 0.5 51 2 0.2 0.1 #ffffff" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
-      <feSpecularLighting result="specular-lighting" lighting-color="#ffffff" specularConstant="2" specularExponent="51">
-        <fePointLight x="0.375" y="0.5" z="0.5"/>
-      </feSpecularLighting>
-      <feDiffuseLighting result="diffuse-lighting" lighting-color="#ffffff" diffuseConstant="0.2">
-        <fePointLight x="0.375" y="0.5" z="0.5"/>
-      </feDiffuseLighting>
-      <feMerge result="lighting">
-        <feMergeNode in="diffuse-lighting"/>
-        <feMergeNode in="specular-lighting"/>
-      </feMerge>
-      <feComposite in="SourceGraphic" in2="lighting" operator="arithmetic" k1="1" k2="0.1" k3="0" k4="0"/>
-    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -179,7 +152,7 @@
         </circle>
       </g>
     </g>
-    <g style="filter: url(&quot;#duotone-filter-0&quot;) url(&quot;#point-light-filter-0&quot;);">
+    <g style="filter: none;">
       <title>test-body_body</title>
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="928">
         <title>top</title>
@@ -199,10 +172,24 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="1184">
         <title>back</title>
       </rect>
-      <rect width="96" height="96" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="144" x="944">
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="144" x="944">
         <title>_front</title>
       </rect>
-      <rect width="96" height="96" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="272" x="944">
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="224" x="944">
+        <title>_front</title>
+      </rect>
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="304" x="944">
+        <title>_front</title>
+      </rect>
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0);" y="560" x="816">
+        <title>_front</title>
+      </rect>
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0);" y="560" x="1072">
+        <title>_front</title>
+      </rect>
+      <line style="fill: rgb(255, 0, 0); stroke: rgb(255, 255, 255); stroke-width: 4px;" x1="804.025" y1="134.167" x2="928" y2="384"/>
+      <line style="fill: rgb(255, 0, 0); stroke: rgb(255, 255, 255); stroke-width: 4px; transform-origin: 1126.01px 259.084px;" x1="1188" y1="134.167" x2="1064.02" y2="384"/>
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0);" y="640" x="816">
         <title>_front</title>
       </rect>
     </g>
@@ -226,7 +213,6 @@
       <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill-opacity: 0.3; fill: none;" y="544" x="1184">
         <title>back</title>
       </rect>
-      <path d="M 1053.99 591.998 C 1037.13 591.998 1021.38 588.549 1008 582.568 L 1008 610.061 C 1019.92 618.675 1036.36 623.997 1054.49 623.997 C 1074.22 623.997 1091.91 617.711 1104 607.746 L 1104 580.671 C 1089.8 587.814 1072.57 591.998 1053.99 591.998 Z M 992 482.582 C 1007.9 471.096 1029.81 464 1053.99 464 C 1080.29 464 1103.88 472.381 1120 485.668 L 1120 618.327 C 1103.88 631.615 1080.29 639.996 1053.99 639.996 C 1029.81 639.996 1007.9 632.9 992 621.414 L 992 482.582 Z M 1104 496.252 C 1091.91 486.286 1074.22 480.001 1054.49 480.001 C 1036.36 480.001 1019.92 485.323 1008 493.937 L 1008 521.428 C 1021.38 515.447 1037.13 511.998 1053.99 511.998 C 1072.57 511.998 1089.8 516.182 1104 523.324 L 1104 496.252 Z M 1054.49 575.999 C 1074.22 575.999 1091.91 569.713 1104 559.748 L 1104 544.25 C 1091.91 534.284 1074.22 527.999 1054.49 527.999 C 1036.36 527.999 1019.92 533.321 1008 541.935 L 1008 562.063 C 1019.92 570.677 1036.36 575.999 1054.49 575.999 Z" style="stroke: rgb(0, 0, 0); fill-opacity: 0.3; fill: rgb(255, 0, 0);"/>
     </g>
   </g>
 </svg>
