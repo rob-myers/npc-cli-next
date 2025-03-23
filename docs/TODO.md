@@ -184,8 +184,15 @@
 
 - ✅ BUG: geomorphs.skins.uvMap not being updated onchange file
   - ℹ️ needed to define canSkip over all sheets, not per sheet
-- generated decor/obstacles/skin png,webp distinct on different laptops
-  - try migrating `canvas` to https://www.npmjs.com/package/skia-canvas
+
+- 🚧 generated decor/obstacles/skin png,webp distinct on different laptops
+  - try migrate `canvas` to `skia-canvas`
+
+- ✅ migrate `canvas` to `skia-canvas`
+  - ℹ️ https://www.npmjs.com/package/skia-canvas
+- 🚧 skia-canvas issues
+  - fill pattern in human-0.1.tex not working 
+  - composite point light in human-0.0.tex not working 
 
 - ✅ HMR of GLTF i.e. GLB
   - ✅ detect glb change and trigger code

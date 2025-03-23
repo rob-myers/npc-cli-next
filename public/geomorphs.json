@@ -39296,12 +39296,21 @@
         "width": 132,
         "height": 240
       },
+      "icon--key-card": {
+        "icon": true,
+        "decorImgKey": "icon--key-card",
+        "sheetId": 0,
+        "x": 304,
+        "y": 244,
+        "width": 72,
+        "height": 108
+      },
       "icon--warn": {
         "icon": true,
         "decorImgKey": "icon--warn",
         "sheetId": 0,
-        "x": 304,
-        "y": 244,
+        "x": 2,
+        "y": 364,
         "width": 84,
         "height": 75
       },
@@ -39309,8 +39318,8 @@
         "icon": true,
         "decorImgKey": "icon--door-closed",
         "sheetId": 0,
-        "x": 2,
-        "y": 364,
+        "x": 304,
+        "y": 354,
         "width": 77,
         "height": 77
       },
@@ -39318,8 +39327,8 @@
         "icon": true,
         "decorImgKey": "icon--door-locked",
         "sheetId": 0,
-        "x": 81,
-        "y": 364,
+        "x": 438,
+        "y": 2,
         "width": 77,
         "height": 77
       },
@@ -39327,8 +39336,8 @@
         "icon": true,
         "decorImgKey": "icon--door-open",
         "sheetId": 0,
-        "x": 160,
-        "y": 364,
+        "x": 438,
+        "y": 81,
         "width": 77,
         "height": 77
       },
@@ -39336,8 +39345,8 @@
         "icon": true,
         "decorImgKey": "icon--door-unlocked",
         "sheetId": 0,
-        "x": 239,
-        "y": 364,
+        "x": 438,
+        "y": 160,
         "width": 77,
         "height": 77
       },
@@ -39345,26 +39354,17 @@
         "icon": true,
         "decorImgKey": "icon--doc",
         "sheetId": 0,
-        "x": 318,
-        "y": 321,
+        "x": 88,
+        "y": 364,
         "width": 50,
         "height": 72
-      },
-      "icon--key-card": {
-        "icon": true,
-        "decorImgKey": "icon--key-card",
-        "sheetId": 0,
-        "x": 438,
-        "y": 2,
-        "width": 72,
-        "height": 48
       },
       "icon--info": {
         "icon": true,
         "decorImgKey": "icon--info",
         "sheetId": 0,
-        "x": 438,
-        "y": 52,
+        "x": 140,
+        "y": 364,
         "width": 60,
         "height": 60
       },
@@ -39372,14 +39372,14 @@
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
-        "x": 438,
-        "y": 114,
+        "x": 202,
+        "y": 364,
         "width": 38,
         "height": 58
       }
     },
-    "decorDims": [{"width": 512, "height": 443}],
-    "maxDecorDim": {"width": 512, "height": 443},
+    "decorDims": [{"width": 517, "height": 441}],
+    "maxDecorDim": {"width": 517, "height": 441},
     "obstacle": {
       "bridge--042--8x9 4": {
         "x": 2,
@@ -40155,13 +40155,13 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"cuboid-man": -1925566159, "human-0": 1700397335},
-    "imagesHash": -2048363209
+    "imagesHash": -1163812530
   },
   "skin": {
     "numSheets": {"cuboid-man": 1, "human-0": 2},
     "svgHashes": {
       "cuboid-man": [-1087841574],
-      "human-0": [-1503148783, 276968105]
+      "human-0": [-1503148783, 1474634897]
     },
     "sheetTexId": {"cuboid-man": [0], "human-0": [1, 2]},
     "uvMap": {

@@ -99,7 +99,7 @@
         <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="255.172" cy="615.602" r="13.998">
           <title>_right</title>
         </circle>
-        <rect x="201.17" y="649.601" width="48" height="24" style="stroke: rgb(0, 0, 0); stroke-width: 3px; fill: url(&quot;#pattern-1&quot;);">
+        <rect x="201.17" y="649.601" width="48" height="24" style="stroke: rgb(0, 0, 0); stroke-width: 3px; fill: url(#pattern-1);">
           <title>_mouth</title>
         </rect>
         <circle style="stroke: rgb(0, 0, 0);" cx="193.17" cy="617.6" r="6">

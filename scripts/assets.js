@@ -26,7 +26,7 @@ import { performance, PerformanceObserver } from 'perf_hooks'
 //@ts-ignore
 import getopts from 'getopts';
 import stringify from "json-stringify-pretty-compact";
-import { createCanvas, loadImage } from 'canvas';
+import { Canvas, loadImage } from 'skia-canvas';
 import PQueue from "p-queue-compat";
 
 // relative urls for sucrase-node
@@ -39,7 +39,7 @@ import { DEV_ENV_PORT, DEV_ORIGIN, ASSETS_JSON_FILENAME, GEOMORPHS_JSON_FILENAME
 import packRectangles from "../npc-cli/service/rects-packer";
 import { SymbolGraphClass } from "../npc-cli/graph/symbol-graph";
 import { helper } from "../npc-cli/service/helper";
-import { labelledSpawn, saveCanvasAsFile, tryLoadImage, tryReadString } from "./service";
+import { labelledSpawn, tryReadString } from "./service";
 
 const rawOpts = getopts(process.argv, {
   boolean: ['all', 'prePush'],
@@ -243,6 +243,8 @@ info({ opts });
 
   if (!prev.skipDecor) {
     perf('decor', 'creating decor sprite-sheet');
+    // 🚧 skia-canvas: non-local iri references not currently supported
+    // 🚧 skia-canvas: cannot append child nodes to an SVG shape.
     const toDecorImg = await createDecorSheetJson(assetsJson, prev);
     await drawDecorSheet(assetsJson, toDecorImg, prev);
     perf('decor');
@@ -252,6 +254,7 @@ info({ opts });
 
   if (!prev.skipNpcTex) {
     perf('createNpcTexAndUv', 'creating npc textures and uv meta');
+    // 🚧 skia-canvas: cannot append child nodes to an SVG shape.
     await createNpcTexAndUv(assetsJson, prev);
     perf('createNpcTexAndUv');
   } else {
@@ -531,7 +534,7 @@ async function drawObstaclesSheet(assets, prev) {
   
   const { obstacle: allObstacles, maxObstacleDim, obstacleDims } = assets.sheet;
   const obstacles = Object.values(allObstacles);
-  const ct = createCanvas(maxObstacleDim.width, maxObstacleDim.height).getContext('2d');
+  const ct = new Canvas(maxObstacleDim.width, maxObstacleDim.height).getContext('2d')
 
   const { changed: changedObstacles, removed: removedObstacles } = detectChangedObstacles(obstacles, assets, prev);
   info({ changedObstacles, removedObstacles });
@@ -567,7 +570,7 @@ async function drawObstaclesSheet(assets, prev) {
         if (!changedObstacles.has(`${symbolKey} ${obstacleId}`)) {
           // info(`${symbolKey} ${obstacleId} obstacle did not change`);
           const prevObs = /** @type {Geomorph.AssetsJson} */ (prev.assets).sheet.obstacle[`${symbolKey} ${obstacleId}`];
-          ct.drawImage(/** @type {import('canvas').Image} */ (prev.obstaclePngs[prevObs.sheetId]),
+          ct.drawImage(/** @type {import('skia-canvas').Image} */ (prev.obstaclePngs[prevObs.sheetId]),
             prevObs.x, prevObs.y, prevObs.width, prevObs.height,
             x, y, width, height,
           );
@@ -653,7 +656,7 @@ function getObstaclePngPaths(assets) {
  * 
  * @param {Geomorph.AssetsJson} assets
  * @param {Prev} prev
- * @returns {Promise<{ [key in Key.DecorImg]?: import('canvas').Image }>}
+ * @returns {Promise<{ [key in Key.DecorImg]?: import('skia-canvas').Image }>}
  */
 async function createDecorSheetJson(assets, prev) {
 
@@ -676,11 +679,11 @@ async function createDecorSheetJson(assets, prev) {
   ;
 
   const imgKeyToRect = /** @type {Record<Key.DecorImg, { width: number; height: Number; data: Geomorph.DecorSheetRectCtxt }>} */ ({});
-  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('canvas').Image }} */ ({});
+  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('skia-canvas').Image }} */ ({});
 
   // Compute changed images in parallel
   const promQueue = new PQueue({ concurrency: 5 });
-  // const promQueue = new PQueue({ concurrency: 1 });
+  // const promQueue = new PQueue({ concurrency: 1 }); // 🔔 for debug
   await Promise.all(changedSvgBasenames.map(baseName => promQueue.add(async () => {
     const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
     // svg contents -> data url
@@ -689,6 +692,7 @@ async function createDecorSheetJson(assets, prev) {
       return warn(`createDecorSheetJson: could not read "${svgPathName}"`);
     }
     // 🚧 `bun` is failing on `loadImage`
+    // 🔔 svg without "width", "height" is not rendered properly
     imgKeyToImg[decorImgKey] = await loadImage(svgPathName);
   })));
 
@@ -755,12 +759,12 @@ async function createDecorSheetJson(assets, prev) {
  * Create the actual sprite-sheet PNG(s).
  * 
  * @param {Geomorph.AssetsJson} assets
- * @param {Partial<Record<Key.DecorImg, import('canvas').Image>>} decorImgKeyToImage
+ * @param {Partial<Record<Key.DecorImg, import('skia-canvas').Image>>} decorImgKeyToImage
  * @param {Prev} prev
  */
 async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
   const { decor: allDecor, decorDims } = assets.sheet;
-  const ct = createCanvas(0, 0).getContext('2d');
+  const ct = new Canvas(0, 0).getContext('2d');
   const prevDecor = prev.assets?.sheet.decor;
   
   // group global decor lookup by sheet
@@ -783,7 +787,7 @@ async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
       } else {
         // assume image available in previous sprite-sheet
         const prevItem = /** @type {Geomorph.SpriteSheet['decor']} */ (prevDecor)[decorImgKey];
-        ct.drawImage(/** @type {import('canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
+        ct.drawImage(/** @type {import('skia-canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
           prevItem.x, prevItem.y, prevItem.width, prevItem.height,
           x, y, width, height,
         );
@@ -902,7 +906,7 @@ async function createNpcTexAndUv(assets, prev) {
       
       // convert SVG to PNG
       const image = await loadImage(svgPath);
-      const canvas = createCanvas(image.width, image.height);
+      const canvas = new Canvas(image.width, image.height);
       canvas.getContext('2d').drawImage(image, 0, 0);
       await saveCanvasAsFile(canvas, pngPath);
     }
@@ -937,8 +941,8 @@ function getSkinSvgPaths(npcTexMetas) {
 /**
  * @typedef Prev
  * @property {Geomorph.AssetsJson | null} assets
- * @property {(import('canvas').Image | null)[]} obstaclePngs
- * @property {(import('canvas').Image | null)[]} decorPngs
+ * @property {(import('skia-canvas').Image | null)[]} obstaclePngs
+ * @property {(import('skia-canvas').Image | null)[]} decorPngs
  * @property {NPC.TexMeta[]} npcTexMetas
  * @property {boolean} skipMaps
  * @property {boolean} skipObstacles
@@ -962,4 +966,26 @@ function perf(label, initMessage) {
     performance.measure(label, `${label}...`, `...${label}`);
     measuringLabels.delete(label);
   }
+}
+
+/**
+ * Read image server-side, or `null` on error.
+ * @param {string} filePath 
+ */
+async function tryLoadImage(filePath) {
+  try {
+    return await loadImage(filePath);
+  } catch (e) {// assume doesn't exist
+    return null;
+  }
+}
+
+/**
+ * @param {import('skia-canvas').Canvas} canvas 
+ * @param {string} outputPath 
+ */
+async function saveCanvasAsFile(canvas, outputPath) {
+  return canvas.saveAs(outputPath, {
+     format: 'png',
+  });
 }
