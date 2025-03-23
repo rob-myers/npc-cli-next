@@ -685,15 +685,11 @@ async function createDecorSheetJson(assets, prev) {
     const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
     // svg contents -> data url
     const svgPathName = path.resolve(decorDir, baseName);
-    const contents = await tryReadString(svgPathName);
-    if (contents === null) {
+    if (fs.existsSync(svgPathName) === false) {
       return warn(`createDecorSheetJson: could not read "${svgPathName}"`);
     }
     // 🚧 `bun` is failing on `loadImage`
-    // const svgDataUrl = `data:image/svg+xml;utf8,${contents}`;
-    // console.log({svgPathName});
-    const svgDataUrl = `data:image/svg+xml;base64,${btoa(contents)}`;
-    imgKeyToImg[decorImgKey] = await loadImage(svgDataUrl);
+    imgKeyToImg[decorImgKey] = await loadImage(svgPathName);
   })));
 
   /**
@@ -905,8 +901,7 @@ async function createNpcTexAndUv(assets, prev) {
       skin.svgHashes[npcClassKey].push(hashText(svgContents));
       
       // convert SVG to PNG
-      const svgDataUrl = `data:image/svg+xml;utf8,${svgContents}`;
-      const image = await loadImage(svgDataUrl);
+      const image = await loadImage(svgPath);
       const canvas = createCanvas(image.width, image.height);
       canvas.getContext('2d').drawImage(image, 0, 0);
       await saveCanvasAsFile(canvas, pngPath);

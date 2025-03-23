@@ -158,6 +158,12 @@
 
 - ✅ more abrupt walk -> idle when collide
 
+- 🚧 improve assets script
+  - ✅ more measurements in assets script
+  - ✅ fix `yarn clean-assets`
+  - ✅ use loadImage of svgPath instead of data-url
+  - 🚧 faster run onchange skin
+
 - if lookAt while walking, eventually lookAt once stopMoving
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
