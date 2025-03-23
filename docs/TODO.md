@@ -149,7 +149,7 @@
   - ✅ colour it red
   - ✅ position correctly
     - ℹ️ we're relying on dimensions set in Blender
-  - render npc.key
+  - ✅ render npc.key
   - can show/hide/tint label
   - ensure label hidden during object-pick (seems it is infront of floor)
 

@@ -40155,13 +40155,13 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"cuboid-man": -1925566159, "human-0": -1359132876},
-    "imagesHash": -1142497037
+    "imagesHash": -617906953
   },
   "skin": {
     "numSheets": {"cuboid-man": 1, "human-0": 2},
     "svgHashes": {
       "cuboid-man": [-1087841574],
-      "human-0": [1451241981, 1474634897]
+      "human-0": [351613057, 1474634897]
     },
     "sheetTexId": {"cuboid-man": [0], "human-0": [1, 2]},
     "uvMap": {
