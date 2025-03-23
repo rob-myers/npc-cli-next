@@ -515,37 +515,41 @@ export const humanZeroShader = {
   #include <logdepthbuf_pars_fragment>
 
   vec4 encodeNpcObjectPick() {
-    return vec4(
-      8.0, // object-pick identifier
-      float((uid >> 8) & 255),
-      float(uid & 255),
-      255.0
+    return vec4(// 8.0 is object-pick identifier
+      8.0, float((uid >> 8) & 255), float(uid & 255), 255.0
     ) / 255.0;
   }
 
   void main() {
 
     if (objectPick == true) {
-      // 🚧 label should be left in "original position" under ground
+      // 🚧 label should be invisible during object-pick
       gl_FragColor = encodeNpcObjectPick();
       return;
     }
     
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
-      // 🚧
-      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-      return;
+      
+      // 🚧 label
+      gl_FragColor = texture(label, vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid));
+
+    } else {
+
+      // 🔔 128 is width of DataArrayTexture aux
+      vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
+      float atlasId = uvOffset.z;
+      vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
+
+      vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
+
+      gl_FragColor = texel * vec4((0.1 + 0.7 * dotProduct) * vec3(diffuse), diffuse.a * opacity);
+      #include <logdepthbuf_fragment>
+
     }
 
-    // 🔔 128 is width of DataArrayTexture aux
-    vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
-    float atlasId = uvOffset.z;
-    vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
-    vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
-    // gl_FragColor = texel * vec4(vec3(0.1 + 0.7 * dotProduct), 1.0);
-    gl_FragColor = texel * vec4((0.1 + 0.7 * dotProduct) * vec3(diffuse), diffuse.a * opacity);
-    // gl_FragColor = texel * vec4(1.0 * vec3(diffuse), diffuse.a * opacity);
-    #include <logdepthbuf_fragment>
+    if (gl_FragColor.a < 0.1) {
+      discard; // comment out to debug label dimensions
+    }
   }
   `,
 };

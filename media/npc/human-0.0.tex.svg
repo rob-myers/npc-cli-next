@@ -119,7 +119,7 @@
     <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="23.04" cy="862.72" r="23.04">
       <title>_inner_default-breath</title>
     </circle>
-    <rect width="128" height="128" style="fill: none; stroke: rgb(255, 255, 255); stroke-opacity: 0;" x="640" y="800">
+    <rect width="128" height="32" style="fill: none; stroke-opacity: 0; stroke: rgb(0, 0, 0); stroke-width: 5px;" y="2016">
       <title>default_label</title>
     </rect>
     <g>

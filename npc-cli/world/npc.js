@@ -1020,11 +1020,29 @@ export class Npc {
       
       this.w.npc.update();
     } else {
-      // 🚧 new approach
+
       const { ct } = this.w.texNpcLabel;
       ct.clearRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
-      ct.fillStyle = '#f00';
-      ct.fillRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
+      
+      if (label === null) {
+        return;
+      }
+
+      const strokeWidth = 5;
+      const fontHeight = 18;
+
+      ct.strokeStyle = 'black';
+      ct.fillStyle = 'white';
+      ct.lineWidth = strokeWidth;
+      ct.font = `${fontHeight}px 'Courier new'`;
+      ct.textBaseline = 'top';
+      const { width } = ct.measureText(label);
+      const dx = (skinsLabelsTextureWidth - width)/2;
+      const dy = (skinsLabelsTextureHeight - fontHeight)/2;
+
+      ct.strokeText(label, dx + strokeWidth, dy + strokeWidth);
+      ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
+
       this.w.texNpcLabel.updateIndex(this.def.uid);
     }
 

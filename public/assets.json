@@ -1281,14 +1281,14 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "glbHash": {"cuboid-man": -1925566159, "human-0": 1011678797},
-    "imagesHash": 422794388
+    "glbHash": {"cuboid-man": -1925566159, "human-0": -1359132876},
+    "imagesHash": -1142497037
   },
   "skin": {
     "numSheets": {"cuboid-man": 1, "human-0": 2},
     "svgHashes": {
       "cuboid-man": [-1087841574],
-      "human-0": [89850988, 1474634897]
+      "human-0": [1451241981, 1474634897]
     },
     "sheetTexId": {"cuboid-man": [0], "human-0": [1, 2]},
     "uvMap": {
@@ -1619,10 +1619,10 @@
         },
         "default_label": {
           "sheetId": 0,
-          "x": 0.3125,
-          "y": 0.390625,
+          "x": 0,
+          "y": 0.984375,
           "width": 0.0625,
-          "height": 0.0625
+          "height": 0.015625
         },
         "confused_head-overlay-front": {
           "sheetId": 0,

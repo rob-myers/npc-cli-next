@@ -438,4 +438,4 @@ export const skinsUvsTextureWidth = 128;
 /** Max width (pixels) of any label */
 export const skinsLabelsTextureWidth = 200;
 /** Max height (pixels) of any label */
-export const skinsLabelsTextureHeight = 20;
+export const skinsLabelsTextureHeight = 200 / 4;
