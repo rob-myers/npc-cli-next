@@ -1029,10 +1029,10 @@ export class Npc {
       }
 
       const strokeWidth = 5;
-      const fontHeight = 18;
+      const fontHeight = 32;
 
       ct.strokeStyle = 'black';
-      ct.fillStyle = 'white';
+      ct.fillStyle = '#aaa';
       ct.lineWidth = strokeWidth;
       ct.font = `${fontHeight}px 'Courier new'`;
       ct.textBaseline = 'top';

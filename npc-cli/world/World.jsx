@@ -298,6 +298,8 @@ export default function World(props) {
         update();
       }
 
+      state.texNpcLabel.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
+
       state.npc?.forceUpdate(); // violate <MemoizedNPC>
 
       return true;
