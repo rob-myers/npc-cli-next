@@ -199,6 +199,12 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="1184">
         <title>back</title>
       </rect>
+      <rect width="96" height="96" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="144" x="944">
+        <title>_front</title>
+      </rect>
+      <rect width="96" height="96" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="272" x="944">
+        <title>_front</title>
+      </rect>
     </g>
     <g>
       <title>test-body-overlay_body-overlay</title>
