@@ -209,7 +209,6 @@
     - ℹ️ `@napi-rs/canvas` has issue too
   - composite point light in human-0.0.tex not working 
 
-
 - ✅ HMR of GLTF i.e. GLB
   - ✅ detect glb change and trigger code
   - ✅ provide npcClassKey -> glb hash in `geomorphs.json`
@@ -233,9 +232,11 @@
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 
-- 🚧 try `bun` https://bun.sh/
+- ✅ try `bun` https://bun.sh/
   - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
-  - try https://www.npmjs.com/package/skia-canvas
+  - ℹ️ did not work with `skia-canvas`
+  - ℹ️ worked with `@napi-rs/canvas`
+  - ℹ️ a bit faster than sucrase-node
 
 
 # Done
