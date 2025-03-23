@@ -226,7 +226,7 @@ export const cameraLightShader = {
  * - Does not support instancing
  * - Assumes USE_LOGDEPTHBUF
  */
-export const cuboidManShader = {
+export const cuboidManShader = {// 🚧 remove
 
   Vert: /*glsl*/`
 
@@ -441,7 +441,6 @@ export const cuboidManShader = {
   `,
 };
 
-// 🚧
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
@@ -486,6 +485,10 @@ export const humanZeroShader = {
   // skin colour (2nd row)
   // depth is max number of npcs
   uniform sampler2DArray aux;
+  
+  // 🔔 label must be a quad i.e. two triangles
+  uniform sampler2DArray label;
+  uniform int labelTriIds[2];
 
   uniform bool objectPick;
   uniform float opacity;
@@ -514,6 +517,11 @@ export const humanZeroShader = {
     if (objectPick == true) {
       // 🚧 label should be left in "original position" under ground
       gl_FragColor = encodeNpcObjectPick();
+      return;
+    }
+    
+    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
       return;
     }
 
@@ -710,6 +718,8 @@ export const HumanZeroShader = shaderMaterial(
   {
     atlas: emptyDataArrayTexture,
     aux: emptyDataArrayTexture,
+    label: emptyDataArrayTexture,
+    labelTriIds: [],
     objectPick: false,
     opacity: 1,
     uid: 0,

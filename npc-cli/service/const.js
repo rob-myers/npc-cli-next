@@ -434,3 +434,8 @@ export const skinsTextureDimension = 2048;
  * Each pixel represents (du, dv, sheetId) for uv-remapping
  */
 export const skinsUvsTextureWidth = 128;
+
+/** Max width (pixels) of any label */
+export const skinsLabelsTextureWidth = 200;
+/** Max height (pixels) of any label */
+export const skinsLabelsTextureHeight = 20;

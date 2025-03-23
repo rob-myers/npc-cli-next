@@ -142,9 +142,12 @@
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
 
-- represent label images as 256-layer DataTextureArray
-  - requires bounds on max width/height of label
-- can show/hide/tint label
+- 🚧 represent label images as 256-layer DataTextureArray
+  - ℹ️ requires bounds on max width/height of label
+  - ✅ colour it red
+  - 🚧 position correctly
+  - render npc.key
+  - can show/hide/tint label
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
   - https://threejs.org/examples/webgl_materials_texture_partialupdate.html
@@ -237,7 +240,6 @@
   - ℹ️ did not work with `skia-canvas`
   - ℹ️ worked with `@napi-rs/canvas`
   - ℹ️ a bit faster than sucrase-node
-
 
 # Done
 

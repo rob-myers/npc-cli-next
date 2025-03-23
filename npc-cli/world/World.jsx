@@ -8,7 +8,7 @@ import { Timer } from "three-stdlib";
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
-import { floorTextureDimension, maxNumberOfNpcs, skinsTextureDimension, skinsUvsTextureWidth } from "../service/const";
+import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth } from "../service/const";
 import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
@@ -70,7 +70,8 @@ export default function World(props) {
     texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
     texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
-    texNpcAux: new TexArray({ ctKey: 'skins-npc-aux-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
+    texNpcAux: new TexArray({ ctKey: 'skins-aux-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
+    texNpcLabel: new TexArray({ ctKey: 'skins-label-array', numTextures: maxNumberOfNpcs, width: skinsLabelsTextureWidth, height: skinsLabelsTextureHeight }),
     texVs: { floor: 0, ceiling: 0 }, // versions
 
     crowd: /** @type {*} */ (null),
@@ -429,8 +430,9 @@ export default function World(props) {
  * @property {TexArray} texDecor
  * @property {TexArray} texFloor
  * @property {TexArray} texObs
- * @property {TexArray} texSkin
- * @property {TexArray} texNpcAux uv re-mapping and skin tinting
+ * @property {TexArray} texSkin skin texels, one pre skin
+ * @property {TexArray} texNpcAux uv re-mapping and skin tinting, one per npc
+ * @property {TexArray} texNpcLabel label texels, one per npc
  * @property {{ floor: number; ceiling: number; }} texVs
  * @property {Geomorph.LayoutInstance[]} gms
  * Aligned to `map.gms`.

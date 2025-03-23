@@ -497,12 +497,13 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
  * @param {import('three').SkinnedMesh} skinnedMesh
  * @param {Geomorph.UvRectLookup} uvMap
  * @param {number} skinSheetId
- * @returns {{ triToUvKeys: NPC.TriToUvKeys; partToUvRect: NPC.SkinPartToUvRect; }}
+ * @returns {{ triToUvKeys: NPC.TriToUvKeys; partToUvRect: NPC.SkinPartToUvRect; labelTriIds: number[]; }}
  */
 export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
   const triToUvKeys = /** @type {NPC.TriToUvKeys} */ ([]);
   const partToUvRect = /** @type {NPC.SkinPartToUvRect} */ ({});
-  
+  const labelTriIds = /** @type {number[]} */ ([]);
+
   if (skinnedMesh.geometry.index !== null) {
     // 🔔 geometry must be un-welded i.e. triangles pairwise disjoint,
     // so we can detect current triangleId in fragment shader
@@ -531,16 +532,19 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
     const inner = sorted.find(([maxX]) => center.x < maxX);
     const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
     const vertexIds = tris[triId];
-    if (found !== undefined) {
-      const uvRectKey = found[1];
-      const skinPartKey = /** @type {Key.SkinPart} */ (uvRectKey.split('_')[1]);
-      triToUvKeys[triId] = { uvRectKey, skinPartKey };
-      partToUvRect[skinPartKey] = uvMap[uvRectKey];
-    } else {
+    if (found === undefined) {
       warn(`triangle not contained in any uv-rect: ${JSON.stringify({ triId, vertexIds })}`);
+      continue;
+    }
+    const uvRectKey = found[1];
+    const skinPartKey = /** @type {Key.SkinPart} */ (uvRectKey.split('_')[1]);
+    triToUvKeys[triId] = { uvRectKey, skinPartKey };
+    partToUvRect[skinPartKey] = uvMap[uvRectKey];
+    if (skinPartKey === 'label') {
+      labelTriIds.push(triId);
     }
   }
 
   // console.log({ sorted, centers, output });
-  return { triToUvKeys, partToUvRect };
+  return { triToUvKeys, partToUvRect, labelTriIds };
 }

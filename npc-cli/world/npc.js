@@ -4,7 +4,7 @@ import { damp, dampAngle } from "maath/easing";
 import { deltaAngle } from "maath/misc";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
@@ -53,6 +53,9 @@ export class Npc {
   skin = /** @type {NPC.SkinReMap} */ ({});
 
   tint = /** @type {NPC.SkinTint} */ ({});
+
+  /** @type {number[]} Shortcut to `this.w.npc.skinAux[this.def.key].labelTriIds` */
+  labelTriIds = [];
 
   /** State */
   s = {
@@ -139,6 +142,7 @@ export class Npc {
     this.def = def;
     this.w = w;
     this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
+    this.labelTriIds = w.npc.skinAux[def.classKey].labelTriIds;
   }
 
   /**
@@ -964,7 +968,7 @@ export class Npc {
    * - `w n.rob.setFace '{ uvMapKey: "cuboid-man", uvQuadKey: "head-front" }'`
    * @param {null | NPC.UvQuadId} faceId 
    */
-  setFace(faceId) {
+  setFace(faceId) {// 🚧 remove
     this.s.faceId = faceId;
     cmUvService.updateFaceQuad(this);
     // directly change uniform sans render
@@ -979,7 +983,7 @@ export class Npc {
    * - `w n.rob.setIcon '{ uvMapKey: "cuboid-man", uvQuadKey: "front-label-food" }'`
    * @param {null | NPC.UvQuadId} iconId 
    */
-  setIcon(iconId) {
+  setIcon(iconId) {// 🚧 remove
     this.s.iconId = iconId;
     cmUvService.updateIconQuad(this);
     // directly change uniform sans render
@@ -990,27 +994,36 @@ export class Npc {
   }
 
   /**
-   * Updates label sprite-sheet if necessary.
    * @param {string | null} label
    */
   setLabel(label) {
-    this.s.label = label;
+    this.s.label = label; // 🚧 restrict length?
 
-    const changedLabelsSheet = label !== null && this.w.npc.updateLabels(label) === true;
-
-    if (changedLabelsSheet === true) {
-      // 🔔 might need to update every npc
-      // avoidable by previously ensuring labels
-      Object.values(this.w.n).forEach((npc) => {
-        cmUvService.updateLabelQuad(npc);
-        npc.epochMs = Date.now();
-      });
+    if (this.def.classKey === 'cuboid-man') {// 🚧 remove
+      const changedLabelsSheet = label !== null && this.w.npc.updateLabels(label) === true;
+  
+      if (changedLabelsSheet === true) {
+        // 🔔 might need to update every npc
+        // avoidable by previously ensuring labels
+        Object.values(this.w.n).forEach((npc) => {
+          cmUvService.updateLabelQuad(npc);
+          npc.epochMs = Date.now();
+        });
+      } else {
+        cmUvService.updateLabelQuad(this);
+        this.epochMs = Date.now();
+      }
+      
+      this.w.npc.update();
     } else {
-      cmUvService.updateLabelQuad(this);
-      this.epochMs = Date.now();
+      // 🚧 new approach
+      const { ct } = this.w.texNpcLabel;
+      ct.clearRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
+      ct.fillStyle = '#f00';
+      ct.fillRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
+      this.w.texNpcLabel.updateIndex(this.def.uid);
     }
-    
-    this.w.npc.update();
+
   }
 
   /**
