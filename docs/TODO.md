@@ -145,9 +145,11 @@
 - 🚧 represent label images as 256-layer DataTextureArray
   - ℹ️ requires bounds on max width/height of label
   - ✅ colour it red
-  - 🚧 position correctly
+  - ✅ position correctly
+    - ℹ️ we're relying on dimensions set in Blender
   - render npc.key
   - can show/hide/tint label
+  - ensure label hidden during object-pick (seems it is infront of floor)
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
   - https://threejs.org/examples/webgl_materials_texture_partialupdate.html

@@ -40154,7 +40154,7 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "glbHash": {"human-0": 1700397335, "cuboid-man": -1925566159},
+    "glbHash": {"cuboid-man": -1925566159, "human-0": -257376799},
     "imagesHash": -1935961644
   },
   "skin": {

@@ -444,6 +444,7 @@ export const cuboidManShader = {// 🚧 remove
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
+  uniform int labelTriIds[2];
   varying float dotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
@@ -464,6 +465,16 @@ export const humanZeroShader = {
 
     triangleId = int(gl_VertexID / 3); // since geometry.toNonIndexed()
     vUv = uv;
+
+    // 🚧 label quad faces camera
+    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+      float labelHeight = 2.8; // 🚧 provide via uniform
+      vec4 mvPosition = modelViewMatrix * vec4(0.0, labelHeight, 0.0, 1.0); // Point above head
+      mvPosition.xy += transformed.xy;
+      gl_Position = projectionMatrix * mvPosition;
+      #include <logdepthbuf_vertex>
+      return;
+    } 
 
     vec4 mvPosition = vec4(transformed, 1.0);
     mvPosition = modelViewMatrix * mvPosition;
@@ -521,6 +532,7 @@ export const humanZeroShader = {
     }
     
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+      // 🚧
       gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
       return;
     }

@@ -142,7 +142,11 @@ export class Npc {
     this.def = def;
     this.w = w;
     this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
-    this.labelTriIds = w.npc.skinAux[def.classKey].labelTriIds;
+    if (def.classKey === 'cuboid-man') {// 🚧 remove
+      this.labelTriIds = [];
+    } else {
+      this.labelTriIds = w.npc.skinAux[def.classKey].labelTriIds;
+    }
   }
 
   /**
