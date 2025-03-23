@@ -150,6 +150,9 @@ info({ opts });
 
 (async function main() {
 
+  perf('without-webp');
+  perf('with-webp');
+
   perf('computePrev');
   const prev = await computePrev();
   // info({ prev });
@@ -248,9 +251,9 @@ info({ opts });
   }
 
   if (!prev.skipNpcTex) {
-    perf('createNpcTextures', 'creating npc textures');
-    await createNpcTexturesAndUvMeta(assetsJson, prev);
-    perf('createNpcTextures');
+    perf('createNpcTexAndUv', 'creating npc textures and uv meta');
+    await createNpcTexAndUv(assetsJson, prev);
+    perf('createNpcTexAndUv');
   } else {
     info('skipping npc textures');
   }
@@ -344,7 +347,9 @@ info({ opts });
 
   perf('geomorphs.json');
   //#endregion
-
+  
+  perf('without-webp');
+  
   /**
    * Tell the browser we're ready.
    * In development we use PNG (not WEBP) to avoid HMR delay.
@@ -376,6 +381,8 @@ info({ opts });
   pngPaths.length && await labelledSpawn('cwebp',
     'yarn', 'cwebp-fast', JSON.stringify({ files: pngPaths }), '--quality=50',
   );
+
+  perf('with-webp');
 
   if (opts.prePush) {
     /**
@@ -858,7 +865,7 @@ function getNpcTextureMetas() {
  * @param {Geomorph.AssetsJson} assets
  * @param {Prev} prev
  */
-async function createNpcTexturesAndUvMeta(assets, prev) {
+async function createNpcTexAndUv(assets, prev) {
   const { skin } = assets;
   const prevSvgHash = skin.svgHashes;
   
