@@ -1034,7 +1034,7 @@ export class Npc {
       ct.strokeStyle = 'black';
       ct.fillStyle = '#aaa';
       ct.lineWidth = strokeWidth;
-      ct.font = `${fontHeight}px 'Courier new'`;
+      ct.font = `${fontHeight}px Monospace`;
       ct.textBaseline = 'top';
       const { width } = ct.measureText(label);
       const dx = (skinsLabelsTextureWidth - width)/2;
