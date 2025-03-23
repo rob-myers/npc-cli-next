@@ -818,7 +818,7 @@ function computeGlbMetas() {
   const output = /** @type {Geomorph.SpriteSheet['glbHash']} */ ({});
   fs.readdirSync(assets3dDir).filter(
     (baseName) => baseName.endsWith(".glb")
-  ).forEach((glbBaseName) => {
+  ).sort().forEach((glbBaseName) => {
     const glbPath = path.resolve(assets3dDir, glbBaseName);
     const glbHash = hashText(fs.readFileSync(glbPath).toString());
     // 🔔 assume `{npcClassKey}.glb`
