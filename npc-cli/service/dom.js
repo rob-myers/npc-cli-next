@@ -253,7 +253,7 @@ export function strokeLine(ct, from, to) {
 }
 
 /**
- * @typedef {CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | import('skia-canvas').CanvasRenderingContext2D} CanvasContext2DType
+ * @typedef {CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | import('@napi-rs/canvas').SKRSContext2D} CanvasContext2DType
  */
 
 export function isSmallViewport() {

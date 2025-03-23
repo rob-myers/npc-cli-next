@@ -26,7 +26,7 @@ import { performance, PerformanceObserver } from 'perf_hooks'
 //@ts-ignore
 import getopts from 'getopts';
 import stringify from "json-stringify-pretty-compact";
-import { Canvas, loadImage } from 'skia-canvas';
+import { Canvas, loadImage } from '@napi-rs/canvas';
 import PQueue from "p-queue-compat";
 
 // relative urls for sucrase-node
@@ -570,7 +570,7 @@ async function drawObstaclesSheet(assets, prev) {
         if (!changedObstacles.has(`${symbolKey} ${obstacleId}`)) {
           // info(`${symbolKey} ${obstacleId} obstacle did not change`);
           const prevObs = /** @type {Geomorph.AssetsJson} */ (prev.assets).sheet.obstacle[`${symbolKey} ${obstacleId}`];
-          ct.drawImage(/** @type {import('skia-canvas').Image} */ (prev.obstaclePngs[prevObs.sheetId]),
+          ct.drawImage(/** @type {import('@napi-rs/canvas').Image} */ (prev.obstaclePngs[prevObs.sheetId]),
             prevObs.x, prevObs.y, prevObs.width, prevObs.height,
             x, y, width, height,
           );
@@ -656,7 +656,7 @@ function getObstaclePngPaths(assets) {
  * 
  * @param {Geomorph.AssetsJson} assets
  * @param {Prev} prev
- * @returns {Promise<{ [key in Key.DecorImg]?: import('skia-canvas').Image }>}
+ * @returns {Promise<{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }>}
  */
 async function createDecorSheetJson(assets, prev) {
 
@@ -679,7 +679,7 @@ async function createDecorSheetJson(assets, prev) {
   ;
 
   const imgKeyToRect = /** @type {Record<Key.DecorImg, { width: number; height: Number; data: Geomorph.DecorSheetRectCtxt }>} */ ({});
-  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('skia-canvas').Image }} */ ({});
+  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }} */ ({});
 
   // Compute changed images in parallel
   const promQueue = new PQueue({ concurrency: 5 });
@@ -759,7 +759,7 @@ async function createDecorSheetJson(assets, prev) {
  * Create the actual sprite-sheet PNG(s).
  * 
  * @param {Geomorph.AssetsJson} assets
- * @param {Partial<Record<Key.DecorImg, import('skia-canvas').Image>>} decorImgKeyToImage
+ * @param {Partial<Record<Key.DecorImg, import('@napi-rs/canvas').Image>>} decorImgKeyToImage
  * @param {Prev} prev
  */
 async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
@@ -787,7 +787,7 @@ async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
       } else {
         // assume image available in previous sprite-sheet
         const prevItem = /** @type {Geomorph.SpriteSheet['decor']} */ (prevDecor)[decorImgKey];
-        ct.drawImage(/** @type {import('skia-canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
+        ct.drawImage(/** @type {import('@napi-rs/canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
           prevItem.x, prevItem.y, prevItem.width, prevItem.height,
           x, y, width, height,
         );
@@ -941,8 +941,8 @@ function getSkinSvgPaths(npcTexMetas) {
 /**
  * @typedef Prev
  * @property {Geomorph.AssetsJson | null} assets
- * @property {(import('skia-canvas').Image | null)[]} obstaclePngs
- * @property {(import('skia-canvas').Image | null)[]} decorPngs
+ * @property {(import('@napi-rs/canvas').Image | null)[]} obstaclePngs
+ * @property {(import('@napi-rs/canvas').Image | null)[]} decorPngs
  * @property {NPC.TexMeta[]} npcTexMetas
  * @property {boolean} skipMaps
  * @property {boolean} skipObstacles
@@ -981,11 +981,10 @@ async function tryLoadImage(filePath) {
 }
 
 /**
- * @param {import('skia-canvas').Canvas} canvas 
+ * @param {import('@napi-rs/canvas').Canvas} canvas 
  * @param {string} outputPath 
  */
 async function saveCanvasAsFile(canvas, outputPath) {
-  return canvas.saveAs(outputPath, {
-     format: 'png',
-  });
+  const pngData = await canvas.encode('png');
+  await fs.promises.writeFile(outputPath, pngData);
 }

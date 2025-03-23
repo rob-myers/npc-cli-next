@@ -141,6 +141,7 @@
 
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
+
 - represent label images as 256-layer DataTextureArray
   - requires bounds on max width/height of label
 - can show/hide/tint label
@@ -194,13 +195,20 @@
   - ℹ️ needed to define canSkip over all sheets, not per sheet
 
 - 🚧 generated decor/obstacles/skin png,webp distinct on different laptops
-  - try migrate `canvas` to `skia-canvas`
+  - ✅ migrate `canvas` to `skia-canvas`
+  - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
 
 - ✅ migrate `canvas` to `skia-canvas`
   - ℹ️ https://www.npmjs.com/package/skia-canvas
-- 🚧 skia-canvas issue: fill pattern in human-0.1.tex not working 
-  - https://github.com/samizdatco/skia-canvas/issues/219
-- skia-canvas issue: composite point light in human-0.0.tex not working 
+- ✅ migrate `skia-canvas` to `@napi-rs/canvas`
+  - ℹ️ https://github.com/Brooooooklyn/canvas
+
+- 🚧 `skia-canvas` issues:
+  - fill pattern in human-0.1.tex not working 
+    - https://github.com/samizdatco/skia-canvas/issues/219
+    - ℹ️ `@napi-rs/canvas` has issue too
+  - composite point light in human-0.0.tex not working 
+
 
 - ✅ HMR of GLTF i.e. GLB
   - ✅ detect glb change and trigger code
@@ -224,7 +232,8 @@
 - ✅ images hash should be based on SVGs in case of skins
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
-- try `bun` https://bun.sh/
+
+- 🚧 try `bun` https://bun.sh/
   - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
   - try https://www.npmjs.com/package/skia-canvas
 
