@@ -466,26 +466,30 @@ export const humanZeroShader = {
     triangleId = int(gl_VertexID / 3); // since geometry.toNonIndexed()
     vUv = uv;
 
-    // 🚧 label quad faces camera
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+
+      // label quad faces camera
       float labelHeight = 2.8; // 🚧 provide via uniform
       vec4 mvPosition = modelViewMatrix * vec4(0.0, labelHeight, 0.0, 1.0); // Point above head
       mvPosition.xy += transformed.xy;
       gl_Position = projectionMatrix * mvPosition;
       #include <logdepthbuf_vertex>
-      return;
-    } 
+      
+    } else {
 
-    vec4 mvPosition = vec4(transformed, 1.0);
-    mvPosition = modelViewMatrix * mvPosition;
+      vec4 mvPosition = vec4(transformed, 1.0);
+      mvPosition = modelViewMatrix * mvPosition;
+  
+      // dot product for flat shading
+      vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
+      vec3 lightDir = -normalize(mvPosition.xyz);
+      dotProduct = dot(transformedNormal, lightDir);
+  
+      gl_Position = projectionMatrix * mvPosition;
+      #include <logdepthbuf_vertex>
 
-    // dot product for flat shading
-    vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
-    vec3 lightDir = -normalize(mvPosition.xyz);
-    dotProduct = dot(transformedNormal, lightDir);
+    }
 
-    gl_Position = projectionMatrix * mvPosition;
-    #include <logdepthbuf_vertex>
   }
   `,
   Frag: /*glsl*/`
@@ -530,12 +534,12 @@ export const humanZeroShader = {
     
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
       
-      // 🚧 label
+      // 🚧 label quad
       gl_FragColor = texture(label, vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid));
 
     } else {
 
-      // 🔔 128 is width of DataArrayTexture aux
+      // 128 DataArrayTexture aux width
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
       float atlasId = uvOffset.z;
       vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));

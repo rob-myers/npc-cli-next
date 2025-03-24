@@ -150,8 +150,10 @@
   - ✅ position correctly
     - ℹ️ we're relying on dimensions set in Blender
   - ✅ render npc.key
+  - avoid label flicker e.g. via larger UV area?
+    - try modify attribute uv
   - can show/hide/tint label
-  - ensure label hidden during object-pick (seems it is infront of floor)
+  - ensure label hidden during object-pick (seems it is in front of floor)
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
   - https://threejs.org/examples/webgl_materials_texture_partialupdate.html
