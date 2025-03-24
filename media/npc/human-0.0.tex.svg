@@ -172,24 +172,10 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="1184">
         <title>back</title>
       </rect>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="144" x="944">
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0); fill-opacity: 0.25;" y="560" x="816">
         <title>_front</title>
       </rect>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="224" x="944">
-        <title>_front</title>
-      </rect>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px;" y="304" x="944">
-        <title>_front</title>
-      </rect>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0);" y="560" x="816">
-        <title>_front</title>
-      </rect>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0);" y="560" x="1072">
-        <title>_front</title>
-      </rect>
-      <line style="fill: rgb(255, 0, 0); stroke: rgb(255, 255, 255); stroke-width: 4px;" x1="804.025" y1="134.167" x2="928" y2="384"/>
-      <line style="fill: rgb(255, 0, 0); stroke: rgb(255, 255, 255); stroke-width: 4px; transform-origin: 1126.01px 259.084px;" x1="1188" y1="134.167" x2="1064.02" y2="384"/>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0);" y="640" x="816">
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0); fill-opacity: 0.25;" y="560" x="1072">
         <title>_front</title>
       </rect>
     </g>
@@ -215,4 +201,6 @@
       </rect>
     </g>
   </g>
+  <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="1056" cy="124.936" rx="48" ry="44.936"/>
+  <path style="stroke: rgb(255, 255, 255); stroke-width: 4px; fill: none;" d="M 833.4 382.803 C 833.4 372.151 832.096 360.741 835.065 350.411 C 846.905 309.215 893.072 259.888 939.943 271.248 C 971.535 278.905 999.972 305.794 1012.109 335.555 C 1016.913 347.333 1019.725 357.83 1019.725 370.492 C 1019.725 374.429 1021.241 383.241 1016.301 380.553"/>
 </svg>
