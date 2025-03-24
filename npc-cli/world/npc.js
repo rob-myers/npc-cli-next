@@ -910,7 +910,7 @@ export class Npc {
    * @returns 
    */
   onTickDetectStuck(deltaMs, agent) {
-    const smallDist = 0.2 * agent.raw.desiredSpeed * deltaMs;
+    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
       this.s.slowBegin = null; // reset
@@ -1204,7 +1204,7 @@ export class Npc {
 }
 
 const staticMaxAcceleration = 4;
-const movingMaxAcceleration = 4;
+const movingMaxAcceleration = 6;
 const staticSeparationWeight = 1.5;
 const movingSeparationWeight = 1;
 // const movingSeparationWeight = 0.4;
