@@ -149,6 +149,7 @@
     - ℹ️ we're relying on dimensions set in Blender
   - ✅ render npc.key
   - 🚧 try avoid label flicker via larger UV area
+    - 🚧 fix Blender UVs slight error
     - 🚧 detect label min/max uvs
     - try modify attribute uv
   - can show/hide/tint label
