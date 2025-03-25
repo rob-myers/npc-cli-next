@@ -178,8 +178,8 @@ export default function Npcs(props) {
     setupSkinning() {
       w.menu.measure(`npc.setupSkinning`);
     
-      // compute triangleId -> uvRectKey
-      // skinAux also has various shortcuts
+      // 🔔 compute triangleId -> uvRectKey
+      // 🔔 compute skinAux i.e. various shortcuts
       state.skinAux = /** @type {*} */ ({});
       
       for (const [npcClassKey, gltf] of entries(state.gltf)) {

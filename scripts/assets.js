@@ -150,8 +150,8 @@ info({ opts });
 
 (async function main() {
 
-  perf('without-webp');
   perf('with-webp');
+  perf('without-webp');
 
   perf('computePrev');
   const prev = await computePrev();
@@ -574,6 +574,7 @@ async function drawObstaclesSheet(assets, prev) {
             prevObs.x, prevObs.y, prevObs.width, prevObs.height,
             x, y, width, height,
           );
+
         } else {
 
           info(`${symbolKey} ${obstacleId}: redrawing...`);
@@ -589,6 +590,7 @@ async function drawObstaclesSheet(assets, prev) {
           drawPolygons(ct, dstPngPoly, ['white', null], 'clip');
           ct.drawImage(image, srcPngRect.x, srcPngRect.y, srcPngRect.width, srcPngRect.height, x, y, width, height);
           ct.restore();
+
         }
   
       } else {
