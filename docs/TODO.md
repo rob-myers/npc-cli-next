@@ -149,7 +149,7 @@
     - ℹ️ we're relying on dimensions set in Blender
   - ✅ render npc.key
   - 🚧 try avoid label flicker via larger UV area
-    - detect label min/max uvs
+    - 🚧 detect label min/max uvs
     - try modify attribute uv
   - can show/hide/tint label
   - ensure label hidden during object-pick (seems it is in front of floor)
@@ -205,6 +205,7 @@
 - 🚧 generated decor/obstacles/skin png,webp distinct on different laptops
   - ✅ migrate `canvas` to `skia-canvas`
   - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
+  - 🚧 still seeing webp diff; do `cwebp` versions differ?
 
 - ✅ migrate `canvas` to `skia-canvas`
   - ℹ️ https://www.npmjs.com/package/skia-canvas
