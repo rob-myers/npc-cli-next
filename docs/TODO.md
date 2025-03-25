@@ -128,18 +128,16 @@
 - skins: support inherited transforms on `<g>`
   - ℹ️ we often make this mistake
 
-- 🚧 good examples of skin in profile-1
+- ❌ good examples of skin in profile-1
   - ✅ test-body_base-body
   - ✅ test-body-overlay_base-body-overlay
-  - examples of useful body-overlay
-    - e.g. partially transparent clothing
-  - uv mapping for tapered cuboid?
-    - issue visible when draw diagonals, but maybe ignore
-  - inspiration from minecraft skins
-    - https://namemc.com/minecraft-skins
-  - draw curves around cuboids e.g. to depict vest-line
-  - test-head_base-head
-- 🚧 good examples of tints in profile-1
+
+- 🚧 human-0 skin ~ cuboid-man with extra faces/icons
+  - faces ~ foo_head-overlay-front
+  - body icon {front,back} ~ foo_body-overlay-{front,back}
+- 🚧 human-0 tint examples
+  - ✅ red eyes
+  - ...
 
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
@@ -150,7 +148,8 @@
   - ✅ position correctly
     - ℹ️ we're relying on dimensions set in Blender
   - ✅ render npc.key
-  - avoid label flicker e.g. via larger UV area?
+  - 🚧 try avoid label flicker via larger UV area
+    - detect label min/max uvs
     - try modify attribute uv
   - can show/hide/tint label
   - ensure label hidden during object-pick (seems it is in front of floor)
