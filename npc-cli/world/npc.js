@@ -10,7 +10,6 @@ import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
-import { cmUvService } from "../service/uv";
 
 export class Npc {
 
@@ -31,7 +30,6 @@ export class Npc {
     // group: /** @type {*} */ (emptyGroup),
     material: /** @type {*} */ ({}),
     mesh: /** @type {*} */ ({}),
-    quad: /** @type {*} */ ({}), // 🚧 remove
     scale: 1,
     toAct: /** @type {*} */ ({}),
   };
@@ -63,9 +61,7 @@ export class Npc {
     agentState: /** @type {null | number} */ (null),
     permitTurn: true,
     doMeta: /** @type {null | Meta} */ (null),
-    faceId: /** @type {null | NPC.UvQuadId} */ (null),
     fadeSecs: 0.3,
-    iconId: /** @type {null | NPC.UvQuadId} */ (null),
     label: /** @type {null | string} */ (null),
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
@@ -123,15 +119,6 @@ export class Npc {
   /** @type {import('./World').State} World API */
   w;
 
-  /** Shortcut */
-  get baseTexture() {
-    return this.w.npc.tex[this.def.classKey];
-  }
-  /** Shortcut */
-  get labelTexture() {
-    return this.w.npc.tex.labels;
-  }
-
   /**
    * @param {NPC.NPCDef} def
    * @param {import('./World').State} w
@@ -142,11 +129,7 @@ export class Npc {
     this.def = def;
     this.w = w;
     this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
-    if (def.classKey === 'cuboid-man') {// 🚧 remove
-      this.labelTriIds = [];
-    } else {
-      this.labelTriIds = w.npc.skinAux[def.classKey].labelTriIds;
-    }
+    this.labelTriIds = w.npc.skinAux[def.classKey].labelTriIds;
   }
 
   /**
@@ -546,40 +529,7 @@ export class Npc {
    * Initialization we can do before mounting
    * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
    */
-  initializeOld({ scene, animations }) {// 🚧 remove
-    const { m } = this;
-    const meta = npcClassToMeta[this.def.classKey];
-    const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(scene));
-    const objectLookup = buildObject3DLookup(clonedRoot);
-
-    m.animations = animations;
-    // cloned bones
-    m.bones = getRootBones(Object.values(objectLookup.nodes));
-    // cloned mesh (overridden on mount)
-    m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
-    // overridden on mount
-    m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
-    m.mesh.userData.npcKey = this.key; // To decode pointer events
-
-    m.mesh.updateMatrixWorld();
-    m.mesh.computeBoundingBox();
-    m.mesh.computeBoundingSphere();
-    
-    const npcClassKey = this.def.classKey;
-    m.scale = npcClassToMeta[npcClassKey].scale;
-    m.quad = cmUvService.getDefaultUvQuads(this.def.classKey);
-    // ℹ️ see w.npc.spawn for more initialization
-  }
-
-  /**
-   * Initialization we can do before mounting
-   * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
-   */
   initialize(gltf) {
-    if (gltf === this.w.npc.gltf['cuboid-man']) {
-      this.initializeOld(gltf); // 🚧 npc shader migration
-      return;
-    }
     if (this.m.group !== null) {// onchange glb
       this.disposeModel();
     }
@@ -968,37 +918,6 @@ export class Npc {
   }
 
   /**
-   * Examples:
-   * - `w n.rob.setFace '{ uvMapKey: "cuboid-man", uvQuadKey: "front-face-angry" }'`
-   * - `w n.rob.setFace '{ uvMapKey: "cuboid-man", uvQuadKey: "head-front" }'`
-   * @param {null | NPC.UvQuadId} faceId 
-   */
-  setFace(faceId) {// 🚧 remove
-    this.s.faceId = faceId;
-    cmUvService.updateFaceQuad(this);
-    // directly change uniform sans render
-    const { texId, uvs } = this.m.quad.face;
-    this.setUniform('uFaceTexId', texId);
-    this.setUniform('uFaceUv', uvs);
-    this.updateUniforms();
-  }
-
-  /**
-   * Examples:
-   * - `w n.rob.setIcon '{ uvMapKey: "cuboid-man", uvQuadKey: "front-label-food" }'`
-   * @param {null | NPC.UvQuadId} iconId 
-   */
-  setIcon(iconId) {// 🚧 remove
-    this.s.iconId = iconId;
-    cmUvService.updateIconQuad(this);
-    // directly change uniform sans render
-    const { texId, uvs } = this.m.quad.icon;
-    this.setUniform('uIconTexId', texId);
-    this.setUniform('uIconUv', uvs);
-    this.updateUniforms();
-  }
-
-  /**
    * @param {string | undefined | null} label
    */
   setLabel(label = null) {
@@ -1008,69 +927,34 @@ export class Npc {
       this.s.label.slice(0, npcLabelMaxChars);
     }
 
-
-    if (this.def.classKey === 'cuboid-man') {// 🚧 remove
-      const changedLabelsSheet = label !== null && this.w.npc.updateLabels(label) === true;
-  
-      if (changedLabelsSheet === true) {
-        // 🔔 might need to update every npc
-        // avoidable by previously ensuring labels
-        Object.values(this.w.n).forEach((npc) => {
-          cmUvService.updateLabelQuad(npc);
-          npc.epochMs = Date.now();
-        });
-      } else {
-        cmUvService.updateLabelQuad(this);
-        this.epochMs = Date.now();
-      }
-      
-      this.w.npc.update();
-    } else {
-
-      const { ct } = this.w.texNpcLabel;
-      ct.clearRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
-      
-      if (label !== null) {
-        const strokeWidth = 5;
-        const fontHeight = 24; // permits > 12 chars on OSX Chrome
-  
-        ct.strokeStyle = 'black';
-        ct.fillStyle = '#aaa';
-        ct.lineWidth = strokeWidth;
-        ct.font = `${fontHeight}px Monospace`;
-        ct.textBaseline = 'top';
-        const { width } = ct.measureText(label);
-        const dx = (skinsLabelsTextureWidth - width)/2;
-        const dy = (skinsLabelsTextureHeight - fontHeight)/2;
-  
-        ct.strokeText(label, dx + strokeWidth, dy + strokeWidth);
-        ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
-      }
-
+    const { ct } = this.w.texNpcLabel;
+    ct.clearRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
+    
+    if (label === null) {
       this.w.texNpcLabel.updateIndex(this.def.uid);
+      return;
     }
 
+    const strokeWidth = 5;
+    const fontHeight = 24; // permits > 12 chars on OSX Chrome
+    ct.strokeStyle = 'black';
+    ct.fillStyle = '#aaa';
+    ct.lineWidth = strokeWidth;
+    ct.font = `${fontHeight}px Monospace`;
+    ct.textBaseline = 'top';
+    const { width } = ct.measureText(label);
+    const dx = (skinsLabelsTextureWidth - width)/2;
+    const dy = (skinsLabelsTextureHeight - fontHeight)/2;
+    ct.strokeText(label, dx + strokeWidth, dy + strokeWidth);
+    ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
+
+    this.w.texNpcLabel.updateIndex(this.def.uid);
   }
 
   /**
-   * @param {number} r in `[0, 1]`
-   * @param {number} g in `[0, 1]`
-   * @param {number} b in `[0, 1]`
-   */
-  setSelectorRgb(r, g, b) {// 🚧 remove
-    /** @type {[number, number, number]} */
-    const selectorColor = [Number(r) || 0, Number(g) || 0, Number(b) || 0];
-    // directly change uniform sans render
-    this.setUniform('selectorColor', selectorColor);
-    this.updateUniforms();
-    // remember for next render
-    this.s.selectorColor = selectorColor;
-  }
-
-  /**
-   * 🚧 refine type
-   * @param {'opacity' | 'uFaceTexId' | 'uFaceUv' | 'uIconTexId' | 'uIconUv' | 'selectorColor' | 'showSelector'} name 
-   * @param {number | THREE.Vector2[] | [number, number, number] | boolean} value 
+   * 🚧 only used for opacity?
+   * @param {'opacity'} name 
+   * @param {number} value 
    */
   setUniform(name, value) {
     this.m.material.uniforms[name].value = value; 
@@ -1080,27 +964,18 @@ export class Npc {
    * @param {boolean} shouldShow
    */
   showLabel(shouldShow) {
-    if (this.def.classKey === 'cuboid-man') {
-      return; // 🚧 remove
-    }
     (this.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
     this.applyTint();
   }
 
   /**
+   * Also tints selector via @see {s.selectorColor}
    * @param {boolean} shouldShow
    */
   showSelector(shouldShow) {
-    if (this.def.classKey === 'cuboid-man') {// 🚧 remove
-      shouldShow = Boolean(shouldShow);
-      this.s.showSelector = shouldShow;
-      this.setUniform('showSelector', this.s.showSelector);
-      this.updateUniforms();
-    } else {
-      this.s.showSelector = shouldShow;
-      this.tint.selector = [...this.s.selectorColor, shouldShow === true ? 1 : 0];
-      this.applyTint();
-    }
+    this.s.showSelector = shouldShow;
+    this.tint.selector = [...this.s.selectorColor, shouldShow === true ? 1 : 0];
+    this.applyTint();
   }
 
   /**
@@ -1204,10 +1079,6 @@ export class Npc {
         this.offsetMenu.set(0, 0, 0);
         break;
     }
-  }
-
-  updateUniforms() {
-    this.m.material.uniformsNeedUpdate = true;
   }
 
   async waitUntilStopped() {

@@ -40154,159 +40154,14 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "glbHash": {"cuboid-man": -1925566159, "human-0": 1932175113},
-    "imagesHash": 1461794293
+    "glbHash": {"human-0": 1932175113},
+    "imagesHash": 2134635619
   },
   "skin": {
-    "numSheets": {"cuboid-man": 1, "human-0": 2},
-    "svgHashes": {
-      "cuboid-man": [-1087841574],
-      "human-0": [121845226, 1474634897]
-    },
-    "sheetTexId": {"cuboid-man": [0], "human-0": [1, 2]},
+    "numSheets": {"human-0": 2},
+    "svgHashes": {"human-0": [121845226, 1474634897]},
+    "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
-      "cuboid-man": {
-        "ground-ring": {
-          "sheetId": 0,
-          "x": 0.9,
-          "y": 0,
-          "width": 0.1,
-          "height": 0.1
-        },
-        "ground-shadow": {
-          "sheetId": 0,
-          "x": 0.7,
-          "y": 0,
-          "width": 0.1,
-          "height": 0.1
-        },
-        "head-top": {
-          "sheetId": 0,
-          "x": 0,
-          "y": 0.15625,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "head-bottom": {
-          "sheetId": 0,
-          "x": 0.15625,
-          "y": 0.15625,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "head-left": {
-          "sheetId": 0,
-          "x": 0,
-          "y": 0.3125,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "head-right": {
-          "sheetId": 0,
-          "x": 0.15625,
-          "y": 0.3125,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "head-front": {
-          "sheetId": 0,
-          "x": 0,
-          "y": 0.46875,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "head-back": {
-          "sheetId": 0,
-          "x": 0.15625,
-          "y": 0.46875,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "body-front": {
-          "sheetId": 0,
-          "x": 0.53125,
-          "y": 0.15625,
-          "width": 0.15625,
-          "height": 0.390625
-        },
-        "body-back": {
-          "sheetId": 0,
-          "x": 0.84375,
-          "y": 0.15625,
-          "width": 0.15625,
-          "height": 0.390625
-        },
-        "body-right": {
-          "sheetId": 0,
-          "x": 0.6875,
-          "y": 0.15625,
-          "width": 0.15625,
-          "height": 0.390625
-        },
-        "body-left": {
-          "sheetId": 0,
-          "x": 0.375,
-          "y": 0.15625,
-          "width": 0.15625,
-          "height": 0.390625
-        },
-        "body-top": {
-          "sheetId": 0,
-          "x": 0.375,
-          "y": 0.546875,
-          "width": 0.1562499,
-          "height": 0.15625
-        },
-        "body-bottom": {
-          "sheetId": 0,
-          "x": 0.53125,
-          "y": 0.546875,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "ui-label": {
-          "sheetId": 0,
-          "x": 0,
-          "y": 0,
-          "width": 0.25,
-          "height": 0.125
-        },
-        "front-label-man": {
-          "sheetId": 0,
-          "x": 0.6875,
-          "y": 0.5468751,
-          "width": 0.15625,
-          "height": 0.1562501
-        },
-        "front-label-food": {
-          "sheetId": 0,
-          "x": 0.8437501,
-          "y": 0.5468751,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "front-label-mask": {
-          "sheetId": 0,
-          "x": 0.375,
-          "y": 0.7031252,
-          "width": 0.1562499,
-          "height": 0.15625
-        },
-        "front-face-angry": {
-          "sheetId": 0,
-          "x": 0.53125,
-          "y": 0.7031252,
-          "width": 0.15625,
-          "height": 0.15625
-        },
-        "front-label": {
-          "sheetId": 0,
-          "x": 0.8437501,
-          "y": 0.7031251,
-          "width": 0.15625,
-          "height": 0.15625
-        }
-      },
       "human-0": {
         "base_head-front": {
           "sheetId": 0,
@@ -40695,9 +40550,6 @@
         }
       }
     },
-    "uvMapDim": {
-      "cuboid-man": {"width": 1024, "height": 1024},
-      "human-0": {"width": 2048, "height": 2048}
-    }
+    "uvMapDim": {"human-0": {"width": 2048, "height": 2048}}
   }
 }

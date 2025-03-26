@@ -135,6 +135,7 @@
 - 🚧 human-0 skin ~ cuboid-man with extra faces/icons
   - faces ~ foo_head-overlay-front
   - body icon {front,back} ~ foo_body-overlay-{front,back}
+  - maybe smaller head
 - 🚧 human-0 tint examples
   - ✅ red eyes
   - ...
@@ -176,8 +177,8 @@
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
   - https://threejs.org/examples/webgl_materials_texture_partialupdate.html
 
-- remove cuboid-man
-- remove code from profile-awaitWorld and move to profile-1
+- ✅ remove cuboid-man
+- 🚧 remove code from profile-awaitWorld and move to profile-1
 
 ### Extras
 

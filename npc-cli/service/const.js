@@ -108,7 +108,7 @@ export const doorLockedColor = 'rgb(255, 230, 230)';
 export const doorUnlockedColor = 'rgb(230, 255, 230)';
 
 /** @type {Key.NpcClass} */
-export const defaultClassKey = 'cuboid-man';
+export const defaultClassKey = 'human-0';
 
 /**
  * Fade out previous animation (seconds)
@@ -331,19 +331,6 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
  * @type {Record<Key.NpcClass, NPC.ClassDef>}
  */
 export const npcClassToMeta = {
-  // 🚧 remove
-  'cuboid-man': {
-    modelUrl: '/3d/cuboid-man.glb',
-    npcClassKey: 'cuboid-man',
-    scale: 0.7,
-    materialName: 'cuboid-man-material',
-    meshName: 'cuboid-man-mesh',
-    groupName: 'Scene',
-    timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
-    radius: 0.5,
-    walkSpeed: 2.5,
-    runSpeed: 4,
-  },
 
   "human-0": {
     modelUrl: '/3d/human-0.glb',
@@ -359,13 +346,9 @@ export const npcClassToMeta = {
   },
 };
 
-
-// 🚧
-// export const npcClassKeys = /** @type {Key.NpcClass[]} */ (
-//   Object.keys(npcClassToMeta)
-// );
-/** @type {Key.NpcClass[]} */
-export const npcClassKeys = ['cuboid-man'];
+export const npcClassKeys = /** @type {Key.NpcClass[]} */ (
+  Object.keys(npcClassToMeta)
+);
 
 /**
  * Relates to `npc.def.uid` which is used for object-picking.

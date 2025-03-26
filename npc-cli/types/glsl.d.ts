@@ -15,32 +15,6 @@ declare module '@react-three/fiber' {
       objectPickRed?: number;
     };
 
-    // 🚧 remove
-    cuboidManMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
-      uNpcUid?: number;
-      diffuse?: Vector3Input;
-      opacity?: number;
-
-      showLabel?: boolean;
-      labelHeight?: number;
-      showSelector?: boolean;
-      selectorColor?: Vector3Input;
-
-      uBaseTexture: import('three').Texture;
-      uLabelTexture: import('three').Texture;
-      uAlt1Texture: import('three').Texture;
-
-      uFaceTexId?: number;
-      uIconTexId?: number;
-      uLabelTexId?: number;
-
-      uFaceUv?: Vector2Input[];
-      uIconUv?: Vector2Input[];
-      uLabelUv?: Vector2Input[];
-
-      uLabelDim?: Vector2Input;
-    } & SupportsObjectPick;
-
     humanZeroShader: ThreeElement<typeof import('three').ShaderMaterial> & {
       atlas: import('three').DataArrayTexture;
       aux: import('three').DataArrayTexture;

@@ -17,13 +17,6 @@ declare namespace NPC {
     walkSpeed: number;
   }
 
-  /** 🚧 remove */
-  type TextureKey = (
-    | Key.NpcClass
-    | 'labels'
-    // | 'cuboid-man-alt-1'
-  );
-
   interface Model {
     animations: import('three').AnimationClip[];
     /** Root bones */
@@ -34,14 +27,8 @@ declare namespace NPC {
     material: import('three').ShaderMaterial;
     /** Mounted mesh */
     mesh: import('three').SkinnedMesh;
-    quad: import('../service/uv').CuboidManQuads; // 🚧 remove
     scale: number;
     toAct: Record<Key.Anim, import('three').AnimationAction>;
-  }
-
-  interface UvQuadId {
-    uvMapKey: NPC.TextureKey;
-    uvQuadKey: string;
   }
 
   interface ClassDef {
@@ -50,9 +37,9 @@ declare namespace NPC {
     npcClassKey: Key.NpcClass;
     /** e.g. `1` */
     scale: number;
-    /** e.g. 'cuboid-man-material' */
+    /** e.g. 'human_0-material' */
     materialName: string; 
-    /** e.g. 'cuboid-man' */
+    /** e.g. 'human_0' */
     meshName: string;
     /** e.g. 'Scene' */
     groupName: string;
@@ -366,7 +353,6 @@ declare namespace NPC {
     skinPartKey: Key.SkinPart;
   }[];
 
-  // 🚧 remove
   type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
   
   type SkinReMap = Partial<Record<Key.SkinPart, {

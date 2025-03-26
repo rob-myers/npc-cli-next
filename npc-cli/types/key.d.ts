@@ -27,7 +27,6 @@ namespace Key {
    */
   type NpcClass = (
     | 'human-0'
-    | 'cuboid-man' // 🚧 remove
   );
 
   type ObjectPickedType = (

@@ -1,4 +1,4 @@
-import { fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
+import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
 
 /**
  * 🚧 try singleton instance instead, including other methods
@@ -16,7 +16,6 @@ export const helper = {
 
   /** @type {Record<Key.NpcClass, true>} */
   fromNpcClassKey: {
-    'cuboid-man': true,
     "human-0": true,
   },
 
@@ -66,9 +65,9 @@ export const helper = {
   },
   
   defaults: {// 🚧
-    radius: npcClassToMeta["cuboid-man"].radius * npcClassToMeta["cuboid-man"].scale / 2,
-    runSpeed: npcClassToMeta["cuboid-man"].runSpeed * npcClassToMeta["cuboid-man"].scale,
-    walkSpeed: npcClassToMeta["cuboid-man"].walkSpeed * npcClassToMeta["cuboid-man"].scale,
+    radius: npcClassToMeta[defaultClassKey].radius * npcClassToMeta[defaultClassKey].scale / 2,
+    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale,
+    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale,
   },
 
   // 🚧 fix types

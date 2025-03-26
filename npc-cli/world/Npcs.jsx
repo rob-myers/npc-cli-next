@@ -8,9 +8,7 @@ import { entries, isDevelopment, pause, range, takeFirst, warn } from "../servic
 import { getCanvas } from "../service/dom";
 import { computeMeshUvMappings, createLabelSpriteSheet, emptyAnimationMixer, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
-import { cmUvService } from "../service/uv";
-import { CuboidManMaterial, HumanZeroShader } from "../service/glsl";
-import { getNpcSkinSheetUrl } from "../service/fetch-assets";
+import { HumanZeroMaterial } from "../service/glsl";
 import { crowdAgentParams, Npc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -40,7 +38,6 @@ export default function Npcs(props) {
     npc: {},
     onStuckCustom: null,
     physicsPositions: [],
-    tex: /** @type {*} */ ({}), // 🚧 old
     showLastNavPath: false, // 🔔 for debug
 
     attachAgent(npc) {
@@ -55,15 +52,6 @@ export default function Npcs(props) {
         state.byAgId[npc.agent.agentIndex] = npc;
       }
       return npc.agent;
-    },
-    clearLabels() {
-      w.menu.measure('npc.clearLabels');
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale;
-      createLabelSpriteSheet([], state.label, { fontHeight });
-      state.tex.labels = state.label.tex;
-      // 🔔 warns from npc with non-null label
-      Object.values(state.npc).forEach(npc => cmUvService.updateLabelQuad(npc));
-      w.menu.measure('npc.clearLabels');
     },
     findPath(src, dst) {// 🔔 agent only use path as a guide
       const query = w.crowd.navMeshQuery;
@@ -116,10 +104,8 @@ export default function Npcs(props) {
       // track npc class meta
       nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
 
-      if (nextNpc.def.classKey !== 'cuboid-man') {// 🚧
-        nextNpc.applySkin();
-        nextNpc.applyTint();
-      }
+      nextNpc.applySkin();
+      nextNpc.applyTint();
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
@@ -183,7 +169,6 @@ export default function Npcs(props) {
       // 🔔 compute skinAux e.g. triangleId -> uvRectKey
 
       for (const [npcClassKey, gltf] of entries(state.gltf)) {
-        if (npcClassKey === 'cuboid-man') continue; // 🚧 remove cuboid-man
         
         const meta = npcClassToMeta[npcClassKey];
 
@@ -345,25 +330,6 @@ export default function Npcs(props) {
       w.r3f.advance(Date.now());
     },
     update,
-    updateLabels(...incomingLabels) {
-      const { lookup } = state.label;
-      const unseenLabels = incomingLabels.filter(label => !(label in lookup));
-
-      if (unseenLabels.length === 0) {
-        return false;
-      }
-      
-      w.menu.measure('npc.updateLabels');
-      const nextLabels = [...Object.keys(lookup), ...unseenLabels];
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale;
-      createLabelSpriteSheet(nextLabels, state.label, { fontHeight });
-      state.tex.labels = state.label.tex;
-      w.menu.measure('npc.updateLabels');
-
-      // update npc labels (avoidable by precomputing labels)
-      Object.values(state.npc).forEach(npc => cmUvService.updateLabelQuad(npc));
-      return true;
-    },
   }), { reset: { showLastNavPath: true } });
 
   w.npc = state;
@@ -375,8 +341,7 @@ export default function Npcs(props) {
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
   
-  React.useEffect(() => {// init + hmr
-    cmUvService.initialize(state.gltf); // 🚧 remove
+  React.useEffect(() => {// hmr
     if (process.env.NODE_ENV === 'development') {
       Object.values(state.npc).forEach(state.hotReloadNpc);
     }
@@ -395,18 +360,6 @@ export default function Npcs(props) {
     });
     
   }, [...Object.values(state.gltf), w.hash.sheets]);
-
-  // 🚧 remove
-  React.useEffect(() => {// npc textures
-    Promise.all(npcClassKeys.map(async classKey => {
-      state.tex[classKey] = emptyTexture;
-      const { npcClassKey } = npcClassToMeta[classKey];
-      const texUrl = getNpcSkinSheetUrl(npcClassKey, 0);
-      const tex = await textureLoader.loadAsync(texUrl);
-      tex.flipY = false;
-      state.tex[classKey] = tex;
-    })).then(() => state.forceUpdate());
-  }, [w.hash.sheets]);
 
   return (
     <group
@@ -443,7 +396,6 @@ export default function Npcs(props) {
  * We don't use an event because it can happen too often.
  * @property {number[]} physicsPositions
  * Format `[npc.bodyUid, npc.position.x, npc.position.y, npc.position.z, ...]`
- * @property {Record<NPC.TextureKey, THREE.Texture>} tex 🚧 old
  * @property {Map<number, string>} idToKey
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath
@@ -472,7 +424,6 @@ export default function Npcs(props) {
  * - initial mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
- * @property {() => void} clearLabels
  * @property {() => void} setupSkinning
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
@@ -492,7 +443,6 @@ export default function Npcs(props) {
  * @property {() => void} tickOnceDebounced
  * @property {() => Promise<void>} tickOnceDebug
  * @property {() => void} update
- * @property {(...incomingLabels: string[]) => boolean} updateLabels
  * - Ensures incomingLabels i.e. does not replace.
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
@@ -503,7 +453,7 @@ export default function Npcs(props) {
  * @param {NPCProps} props 
  */
 function NPC({ npc }) {
-  const { bones, mesh, quad } = npc.m;
+  const { bones, mesh } = npc.m;
 
   return (
     <group
@@ -527,7 +477,7 @@ function NPC({ npc }) {
 
         // 🔔 keep shader up-to-date
         // 🔔 update onchange gltf
-        key={`${CuboidManMaterial.key} ${mesh.uuid}`}
+        key={`${HumanZeroMaterial.key} ${mesh.uuid}`}
         onUpdate={(skinnedMesh) => {
           npc.m.mesh = skinnedMesh; 
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);
@@ -535,48 +485,21 @@ function NPC({ npc }) {
 
         renderOrder={0}
       >
-        {npc.def.classKey === 'human-0' && (
-          // <meshBasicMaterial color="red" />
-          // 🚧
-          <humanZeroShader
-            key={HumanZeroShader.key}
-            atlas={npc.w.texSkin.tex}
-            aux={npc.w.texNpcAux.tex}
-            diffuse={[.8, .8, .8]}
-            label={npc.w.texNpcLabel.tex}
-            labelHeight={wallHeight * (1 / 0.65)}
-            labelTriIds={npc.labelTriIds}
-            opacity={npc.s.opacity}
-            transparent
-            uid={npc.def.uid}
-          />
-        ) || <cuboidManMaterial // 🚧 remove
-          key={CuboidManMaterial.key}
+        {/* <meshBasicMaterial color="red" /> */}
+      
+        <humanZeroShader
+          key={HumanZeroMaterial.key}
+          atlas={npc.w.texSkin.tex}
+          aux={npc.w.texNpcAux.tex}
           diffuse={[.8, .8, .8]}
-          transparent
-          opacity={npc.s.opacity}
-          uNpcUid={npc.def.uid}
-          // objectPick={true}
-
+          label={npc.w.texNpcLabel.tex}
           labelHeight={wallHeight * (1 / 0.65)}
-          selectorColor={npc.s.selectorColor}
-          showSelector={npc.s.showSelector}
-          // showLabel={false}
-
-          uBaseTexture={npc.baseTexture}
-          uLabelTexture={npc.labelTexture}
-          uAlt1Texture={emptyTexture}
-          
-          uFaceTexId={quad.face.texId}
-          uIconTexId={quad.icon.texId}
-          uLabelTexId={quad.label.texId}
-
-          uFaceUv={quad.face.uvs}
-          uIconUv={quad.icon.uvs}
-          uLabelUv={quad.label.uvs}
-          
-          uLabelDim={quad.label.dim}
-        />}
+          labelTriIds={npc.labelTriIds}
+          opacity={npc.s.opacity}
+          transparent
+          uid={npc.def.uid}
+        />
+        
       </skinnedMesh>
     </group>
   )
