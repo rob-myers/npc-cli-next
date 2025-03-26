@@ -543,6 +543,7 @@ function NPC({ npc }) {
             atlas={npc.w.texSkin.tex}
             aux={npc.w.texNpcAux.tex}
             label={npc.w.texNpcLabel.tex}
+            labelHeight={wallHeight * (1 / 0.65)}
             labelTriIds={npc.labelTriIds}
             opacity={npc.s.opacity}
             transparent

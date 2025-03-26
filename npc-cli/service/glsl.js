@@ -444,6 +444,7 @@ export const cuboidManShader = {// 🚧 remove
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
+  uniform float labelHeight;
   uniform int labelTriIds[2];
   varying float dotProduct;
   flat varying int triangleId;
@@ -469,7 +470,6 @@ export const humanZeroShader = {
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
 
       // label quad faces camera
-      float labelHeight = 2.8; // 🚧 provide via uniform
       vec4 mvPosition = modelViewMatrix * vec4(0.0, labelHeight, 0.0, 1.0); // Point above head
       mvPosition.xy += transformed.xy;
       gl_Position = projectionMatrix * mvPosition;
@@ -531,28 +531,32 @@ export const humanZeroShader = {
       gl_FragColor = encodeNpcObjectPick();
       return;
     }
+
+    vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
+    diffuse.a *= opacity;
+
+    vec4 texel;
     
-    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
-      
-      // 🚧 label quad
-      gl_FragColor = texture(
+    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {// label quad
+
+      texel = texture(
         label,
         vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid)
       );
 
-    } else {
+    } else {// everything else
+
+      diffuse *= vec4(vec3(0.1 + 0.7 * dotProduct), 1.0); // flat shading
 
       // 128 DataArrayTexture aux width
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
       float atlasId = uvOffset.z;
-      vec4 texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
-
-      vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
-
-      gl_FragColor = texel * vec4((0.1 + 0.7 * dotProduct) * vec3(diffuse), diffuse.a * opacity);
-      #include <logdepthbuf_fragment>
-
+      texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
+      
     }
+
+    gl_FragColor = texel * diffuse;
+    #include <logdepthbuf_fragment>
 
     if (gl_FragColor.a < 0.1) {
       discard; // comment out to debug label dimensions
@@ -742,6 +746,7 @@ export const HumanZeroShader = shaderMaterial(
     atlas: emptyDataArrayTexture,
     aux: emptyDataArrayTexture,
     label: emptyDataArrayTexture,
+    labelHeight: 0,
     labelTriIds: [],
     objectPick: false,
     opacity: 1,

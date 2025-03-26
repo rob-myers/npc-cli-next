@@ -45,6 +45,7 @@ declare module '@react-three/fiber' {
       atlas: import('three').DataArrayTexture;
       aux: import('three').DataArrayTexture;
       label: import('three').DataArrayTexture;
+      labelHeight: number;
       labelTriIds: number[];
       opacity?: number;
       uid: number;

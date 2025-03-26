@@ -77,7 +77,7 @@ export class Npc {
     opacityDst: /** @type {null | number} */ (null),
     run: false,
     selectorColor: /** @type {[number, number, number]} */ ([0.6, 0.6, 1]),
-    showSelector: false,
+    showSelector: false, // 🚧 remove?
     /**
      * World timer elapsedTime (seconds) when slowness detected.
      * 🤔 Pausing currently resets World timer.
@@ -999,9 +999,9 @@ export class Npc {
   }
 
   /**
-   * @param {string | null} label
+   * @param {string | undefined | null} label
    */
-  setLabel(label) {
+  setLabel(label = null) {
     this.s.label = label; // 🚧 restrict length?
 
     if (this.def.classKey === 'cuboid-man') {// 🚧 remove
@@ -1025,24 +1025,22 @@ export class Npc {
       const { ct } = this.w.texNpcLabel;
       ct.clearRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
       
-      if (label === null) {
-        return;
+      if (label !== null) {
+        const strokeWidth = 5;
+        const fontHeight = 32;
+  
+        ct.strokeStyle = 'black';
+        ct.fillStyle = '#aaa';
+        ct.lineWidth = strokeWidth;
+        ct.font = `${fontHeight}px Monospace`;
+        ct.textBaseline = 'top';
+        const { width } = ct.measureText(label);
+        const dx = (skinsLabelsTextureWidth - width)/2;
+        const dy = (skinsLabelsTextureHeight - fontHeight)/2;
+  
+        ct.strokeText(label, dx + strokeWidth, dy + strokeWidth);
+        ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
       }
-
-      const strokeWidth = 5;
-      const fontHeight = 32;
-
-      ct.strokeStyle = 'black';
-      ct.fillStyle = '#aaa';
-      ct.lineWidth = strokeWidth;
-      ct.font = `${fontHeight}px Monospace`;
-      ct.textBaseline = 'top';
-      const { width } = ct.measureText(label);
-      const dx = (skinsLabelsTextureWidth - width)/2;
-      const dy = (skinsLabelsTextureHeight - fontHeight)/2;
-
-      ct.strokeText(label, dx + strokeWidth, dy + strokeWidth);
-      ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
 
       this.w.texNpcLabel.updateIndex(this.def.uid);
     }
@@ -1076,7 +1074,18 @@ export class Npc {
   /**
    * @param {boolean} shouldShow
    */
-  showSelector(shouldShow = !this.s.showSelector) {
+  showLabel(shouldShow) {
+    if (this.def.classKey === 'cuboid-man') {
+      return; // 🚧 remove
+    }
+    (this.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
+    this.applyTint();
+  }
+
+  /**
+   * @param {boolean} shouldShow
+   */
+  showSelector(shouldShow) {
     if (this.def.classKey === 'cuboid-man') {// 🚧 remove
       shouldShow = Boolean(shouldShow);
       this.s.showSelector = shouldShow;
