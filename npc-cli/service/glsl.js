@@ -30,7 +30,7 @@ const instancedWallsShader = {
     #include <logdepthbuf_vertex>
 
     // 🚧 remove hard-coded 35.0f
-    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 35.0f;
+    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 40.0f;
   }
 
   `,
