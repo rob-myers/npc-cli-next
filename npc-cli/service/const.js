@@ -348,7 +348,7 @@ export const npcClassToMeta = {
   "human-0": {
     modelUrl: '/3d/human-0.glb',
     npcClassKey: 'human-0',
-    scale: 0.7,
+    scale: 0.65,
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     groupName: 'Scene',

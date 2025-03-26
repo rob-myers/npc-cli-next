@@ -44,6 +44,7 @@ declare module '@react-three/fiber' {
     humanZeroShader: ThreeElement<typeof import('three').ShaderMaterial> & {
       atlas: import('three').DataArrayTexture;
       aux: import('three').DataArrayTexture;
+      diffuse?: Vector3Input;
       label: import('three').DataArrayTexture;
       labelHeight: number;
       labelTriIds: number[];

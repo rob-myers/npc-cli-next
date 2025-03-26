@@ -505,8 +505,9 @@ export const humanZeroShader = {
   uniform sampler2DArray label;
   uniform int labelTriIds[2];
 
-  uniform bool objectPick;
+  uniform vec3 diffuse;
   uniform float opacity;
+  uniform bool objectPick;
   uniform int uid;
 
   varying float dotProduct;
@@ -527,18 +528,19 @@ export const humanZeroShader = {
   void main() {
 
     if (objectPick == true) {
-      // 🚧 label should be invisible during object-pick
       gl_FragColor = encodeNpcObjectPick();
       return;
     }
 
-    vec4 diffuse = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
-    diffuse.a *= opacity;
+    // tinting (DataArrayTexture has width 128)
+    vec4 tint = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
+    tint *= vec4(diffuse, opacity);
 
     vec4 texel;
     
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {// label quad
 
+      // 🚧 avoid hard-coding
       texel = texture(
         label,
         vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid)
@@ -546,16 +548,17 @@ export const humanZeroShader = {
 
     } else {// everything else
 
-      diffuse *= vec4(vec3(0.1 + 0.7 * dotProduct), 1.0); // flat shading
+      tint *= vec4(vec3(0.1 + 0.7 * dotProduct), 1.0); // flat shading
 
-      // 128 DataArrayTexture aux width
+      // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
       float atlasId = uvOffset.z;
+
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
       
     }
 
-    gl_FragColor = texel * diffuse;
+    gl_FragColor = texel * tint;
     #include <logdepthbuf_fragment>
 
     if (gl_FragColor.a < 0.1) {
@@ -745,6 +748,7 @@ export const HumanZeroShader = shaderMaterial(
   {
     atlas: emptyDataArrayTexture,
     aux: emptyDataArrayTexture,
+    diffuse: new THREE.Vector3(1, 0.9, 0.6),
     label: emptyDataArrayTexture,
     labelHeight: 0,
     labelTriIds: [],
