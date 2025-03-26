@@ -34,7 +34,7 @@
     "@loadable/component": "^5.16.4",
     "@napi-rs/canvas": "^0.1.68",
     "@react-three/drei": "^10.0.0",
-    "@react-three/fiber": "^9.0.2",
+    "@react-three/fiber": "^9.1.0",
     "@recast-navigation/core": "npm:@rob-myers/recast-navigation__core@0.39.2",
     "@recast-navigation/generators": "npm:@rob-myers/recast-navigation__generators@0.39.2",
     "@recast-navigation/three": "npm:@rob-myers/recast-navigation__three@0.39.2",
