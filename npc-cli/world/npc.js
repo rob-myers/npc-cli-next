@@ -159,14 +159,17 @@ export class Npc {
         const dstUvRectKey = /** @type {const} */ (`${target.prefix}_${skinPartKey}`);
         const src = uvMap[uvRectKey];
         const dst = uvMap[dstUvRectKey];
+
         // can remap skinPartKey to another model's skin
         const dstSheetTexId = (target.classKey === undefined
           ? sheetTexIds : sheetAux[target.classKey].sheetTexIds
         )[dst.sheetId];
+        const dstObjectPickAlpha = skinPartKey === 'selector' ? 0 : 1;
+
         data[offset + 0] = dst.x - src.x;
         data[offset + 1] = dst.y - src.y;
         data[offset + 2] = dstSheetTexId;
-        data[offset + 3] = 0;
+        data[offset + 3] = dstObjectPickAlpha;
       } else {
         data.set(defaultPixel, offset);
       }

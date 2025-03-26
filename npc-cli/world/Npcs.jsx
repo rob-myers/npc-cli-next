@@ -487,7 +487,7 @@ function NPC({ npc }) {
       >
         {/* <meshBasicMaterial color="red" /> */}
       
-        <humanZeroShader
+        <humanZeroMaterial
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}

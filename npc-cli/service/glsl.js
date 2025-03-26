@@ -270,10 +270,11 @@ export const humanZeroShader = {
   `,
   Frag: /*glsl*/`
   
+  // skins 2048 * 2048 * numSkinSheets
   uniform sampler2DArray atlas;
 
-  // uv re-mapping (1st row)
-  // skin colour (2nd row)
+  // 1st row: uv re-mapping (dx, dy, atlasId), and object-pick alpha
+  // 2nd row: skin tints
   // depth is max number of npcs
   uniform sampler2DArray aux;
   
@@ -305,6 +306,7 @@ export const humanZeroShader = {
 
     if (objectPick == true) {
       gl_FragColor = encodeNpcObjectPick();
+      gl_FragColor.a *= texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid)).a;
       return;
     }
 
@@ -512,5 +514,5 @@ extend({
   InstancedLabelsMaterial,
   InstancedMultiTextureMaterial,
   CameraLightMaterial,
-  HumanZeroShader: HumanZeroMaterial,
+  HumanZeroMaterial,
 });

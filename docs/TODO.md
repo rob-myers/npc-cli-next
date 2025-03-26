@@ -179,6 +179,8 @@
 
 - ✅ remove cuboid-man
 - ✅ remove code from profile-awaitWorld and move to profile-1
+- 🚧 npc object-pick ignores selector quad
+  - apply alpha from aux uniform (1st row)
 
 ### Extras
 

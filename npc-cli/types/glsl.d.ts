@@ -15,12 +15,13 @@ declare module '@react-three/fiber' {
       objectPickRed?: number;
     };
 
-    humanZeroShader: ThreeElement<typeof import('three').ShaderMaterial> & {
+    humanZeroMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       atlas: import('three').DataArrayTexture;
       aux: import('three').DataArrayTexture;
       diffuse?: Vector3Input;
       label: import('three').DataArrayTexture;
       labelHeight: number;
+      /** Exactly two triangle ids corresponding to the label quad */
       labelTriIds: number[];
       opacity?: number;
       uid: number;
