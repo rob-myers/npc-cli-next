@@ -157,8 +157,9 @@ export class Npc {
   applySkin() {
     const texNpcAux = this.w.texNpcAux;
     const { classKey } = this.def;
-    const { skinAux } = this.w.npc;
-    const { triToKey, sheetId: initSheetId, uvMap, sheetTexIds } = skinAux[classKey];
+    const { skinAux, sheetAux } = this.w.npc;
+    const { sheetId: initSheetId, uvMap, sheetTexIds } = sheetAux[classKey];
+    const { triToKey } = skinAux[classKey];
 
     /** Index in DataTextureArray of this model's `initSheetId` sheet */
     const initSheetTexId = sheetTexIds[initSheetId];
@@ -177,7 +178,7 @@ export class Npc {
         const dst = uvMap[dstUvRectKey];
         // can remap skinPartKey to another model's skin
         const dstSheetTexId = (target.classKey === undefined
-          ? sheetTexIds : skinAux[target.classKey].sheetTexIds
+          ? sheetTexIds : sheetAux[target.classKey].sheetTexIds
         )[dst.sheetId];
         data[offset + 0] = dst.x - src.x;
         data[offset + 1] = dst.y - src.y;

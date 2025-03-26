@@ -417,18 +417,12 @@ export const defaultQuadUvs = [...Array(4)].map(_ => new THREE.Vector2());
  * @param {THREE.BufferGeometry} geometry 
  */
 export function getGeometryUvs(geometry) {
-  const flat = /** @type {THREE.BufferAttribute} */ (
-    geometry.getAttribute('uv')
-  ).toJSON().array;
-
+  const attribute = /** @type {THREE.BufferAttribute} */ (geometry.getAttribute('uv'));
+  const flat = attribute.toJSON().array;
   const vectors = flat.reduce((agg, x, i, xs) =>
     (i % 2 === 1 && agg.push(new Vect(xs[i - 1], x).precision(8)), agg)
   , /** @type {Geom.Vect[]} */ ([]));
-
-  return {
-    flat,
-    vectors,
-  };
+  return vectors;
 }
 
 /**
@@ -518,6 +512,7 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
 
   // arrange uvMap as sorted list of lists for fast querying
   // 🔔 assume it defines a grid, where rows/cols can have different widths/heights
+  // 🚧 exclude "default_label" (will follow from remaining 2 triangles)
   const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
     if (sheetId === skinSheetId) {
       (agg[x] ??= [x + width, []])[1].push([y + height, uvRectKey]);
@@ -527,17 +522,18 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
   const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
   sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
 
-  const { vectors: uvs } = getGeometryUvs(skinnedMesh.geometry);
+  const uvs = getGeometryUvs(skinnedMesh.geometry);
   const numVerts = skinnedMesh.geometry.getAttribute('position').count;
   const tris = range(numVerts / 3).map(i => [3 * i, 3 * i + 1, 3 * i + 2])
   /** Centre of mass of each UV-triangle (inside triangle) */
   const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
-  const uv = {
-    labelMin: { x: +Infinity, y: +Infinity },
-    labelMax: { x: -Infinity, y: -Infinity },
+  const uvLabel = {
+    min: new Vect(+Infinity, +Infinity),
+    max: new Vect(-Infinity, -Infinity),
   };
   
   // find uvRect fast via sorted rects
+  // also compute labelTriIds and label uv min/max
   for (const [triId, center] of centers.entries()) {
     const inner = sorted.find(([maxX]) => center.x < maxX);
     const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
@@ -552,17 +548,19 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
     partToUvRect[skinPartKey] = uvMap[uvRectKey];
     if (skinPartKey === 'label') {
       labelTriIds.push(triId);
-      // 🚧 compute (min, max)
       const baseVertexId = triId * 3;
       uvs.slice(baseVertexId, baseVertexId + 3).forEach(({x,y}) => {
-        uv.labelMin.x = Math.min(x, uv.labelMin.x);
-        uv.labelMin.y = Math.min(y, uv.labelMin.y);
-        uv.labelMax.x = Math.max(x, uv.labelMax.x);
-        uv.labelMax.y = Math.max(y, uv.labelMax.y);
+        uvLabel.min.x = Math.min(x, uvLabel.min.x);
+        uvLabel.min.y = Math.min(y, uvLabel.min.y);
+        uvLabel.max.x = Math.max(x, uvLabel.max.x);
+        uvLabel.max.y = Math.max(y, uvLabel.max.y);
       });
     }
   }
-  console.log({ uv })
-  // console.log({ sorted, centers, output });
+  
+  if (labelTriIds.length !== 2) {
+    warn(`expected exactly 2 triangles inside uv-rect default_label: saw ${labelTriIds.length}`);
+  }
+
   return { triToUvKeys, partToUvRect, labelTriIds };
 }

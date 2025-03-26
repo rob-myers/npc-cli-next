@@ -151,8 +151,13 @@
   - 🚧 try avoid label flicker via larger UV area
     - ✅ fix Blender UVs slight error
     - ✅ detect label min/max uvs
-    - 🚧 try modify attribute uv
-  - can show/hide/tint label
+    - ❌ try modify attribute uv
+      - ℹ️ decided against expanding label uvs (non-idempotent + hmr)
+    - ✅ separate npc.skinAux into npc.sheetAux and npc.skinAux
+    - larger label uv quad in Blender e.g. `[0, 0] ≤ x ≤ [1, 1 /4]`
+      - assume "hard-coded" into models
+      - rewrite triToUvKeys to account for label
+  - 🚧 can show/hide/tint label
   - ensure label hidden during object-pick (seems it is in front of floor)
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin

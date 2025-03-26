@@ -535,7 +535,10 @@ export const humanZeroShader = {
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
       
       // 🚧 label quad
-      gl_FragColor = texture(label, vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid));
+      gl_FragColor = texture(
+        label,
+        vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid)
+      );
 
     } else {
 
