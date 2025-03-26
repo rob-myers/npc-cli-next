@@ -138,18 +138,20 @@ export default function Npcs(props) {
       }
     },
     remove(...npcKeys) {
-      for (const npcKey of npcKeys) {
-        const npc = state.getNpc(npcKey); // throw if n'exist pas
-        npc.cancel(); // rejects promises
-        state.removeAgent(npc);
-        
-        delete state.npc[npcKey];
-        state.freeId.add(npc.def.uid);
-        state.idToKey.delete(npc.def.uid);
-      }
-      update();
-      for (const npcKey of npcKeys) {
-        w.events.next({ key: 'removed-npc', npcKey });
+      try {
+        for (const npcKey of npcKeys) {
+          const npc = state.getNpc(npcKey); // throw if n'exist pas
+          npc.cancel(); // rejects promises
+          state.removeAgent(npc);
+          
+          delete state.npc[npcKey];
+          state.freeId.add(npc.def.uid);
+          state.idToKey.delete(npc.def.uid);
+
+          w.events.next({ key: 'removed-npc', npcKey });
+        }
+      } finally {
+        update();
       }
     },
     removeAgent(npc) {
@@ -242,7 +244,7 @@ export default function Npcs(props) {
 
       // orient to meta 🚧 remove from elsewhere
       opts.angle ??= typeof p.meta?.orient === 'number'
-        ? Math.PI/2 - (p.meta.orient * (Math.PI / 180))
+        ? (p.meta.orient * (Math.PI / 180)) - Math.PI/2
         : undefined
       ;
 
@@ -360,6 +362,8 @@ export default function Npcs(props) {
     });
     
   }, [...Object.values(state.gltf), w.hash.sheets]);
+
+  console.log(Object.keys(state.npc));
 
   return (
     <group
@@ -491,7 +495,7 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.8, .8, .8]}
+          diffuse={[.6, .6, .6]}
           label={npc.w.texNpcLabel.tex}
           labelHeight={wallHeight * (1 / 0.65)}
           labelTriIds={npc.labelTriIds}

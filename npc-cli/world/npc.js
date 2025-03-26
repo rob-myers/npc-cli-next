@@ -207,7 +207,7 @@ export class Npc {
     texNpcAux.updateIndex(this.def.uid, data, 1);
   }
 
-  async cancel() {
+  cancel() {
     info(`${'cancel'}: cancelling ${this.key}`);
 
     this.reject.fade?.(`${'cancel'}: cancelled fade`);

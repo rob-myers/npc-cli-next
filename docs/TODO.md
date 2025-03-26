@@ -218,6 +218,11 @@
   - ✅ can see outlines on decor cuboids
   - 🚧 fix scaling
 
+- ✅ fix `w npc.remove`
+  - we were `w npc.remove rob_{0..7}` where later did not exist
+  - we now always finally update
+- ✅ fix spawn onto decor point orientation
+
 - ✅ improve ContextMenu 3d position when npc Lie
 
 ## Dev env
