@@ -149,7 +149,7 @@ export class Npc {
 
     // 🔔 texture.type THREE.FloatType to handle negative uv offsets
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
-    const defaultPixel = [0, 0, initSheetTexId, 0];
+    const defaultPixel = [0, 0, initSheetTexId, 1];
 
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
