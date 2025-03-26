@@ -363,8 +363,6 @@ export default function Npcs(props) {
     
   }, [...Object.values(state.gltf), w.hash.sheets]);
 
-  console.log(Object.keys(state.npc));
-
   return (
     <group
       name="npcs"

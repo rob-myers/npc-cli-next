@@ -181,8 +181,10 @@
 - ✅ remove code from profile-awaitWorld and move to profile-1
 - ✅ npc object-pick ignores selector quad
   - apply alpha from aux uniform (1st row)
+- sometimes object-pick stops working for a bit
+  - maybe issue with `renderObjectPickItem`
 
-- fixed npc speech bubble height
+- fix npc speech bubble height
   - depends on number of lines
 
 ### Extras
