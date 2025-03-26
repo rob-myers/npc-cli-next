@@ -977,7 +977,7 @@ export class Npc {
    */
   showSelector(shouldShow) {
     this.s.showSelector = shouldShow;
-    this.tint.selector = [...this.s.selectorColor, shouldShow === true ? 1 : 0];
+    this.tint.selector = [...this.s.selectorColor, shouldShow ? 1 : 0];
     this.applyTint();
   }
 
