@@ -151,7 +151,10 @@ export class Npc {
 
     // 🔔 texture.type THREE.FloatType to handle negative uv offsets
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
-    const defaultPixel = [0, 0, initSheetTexId, 1];
+    const defaultPixel = [0, 0, initSheetTexId];
+
+    /** @type {Partial<Record<Key.SkinPart, true>>} */
+    const hideInObjectPick = { selector: true, breath: true };
 
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
@@ -161,20 +164,19 @@ export class Npc {
         const dstUvRectKey = /** @type {const} */ (`${target.prefix}_${skinPartKey}`);
         const src = uvMap[uvRectKey];
         const dst = uvMap[dstUvRectKey];
-
         // can remap skinPartKey to another model's skin
         const dstSheetTexId = (target.classKey === undefined
           ? sheetTexIds : sheetAux[target.classKey].sheetTexIds
         )[dst.sheetId];
-        const dstObjectPickAlpha = skinPartKey === 'selector' ? 0 : 1;
 
         data[offset + 0] = dst.x - src.x;
         data[offset + 1] = dst.y - src.y;
         data[offset + 2] = dstSheetTexId;
-        data[offset + 3] = dstObjectPickAlpha;
       } else {
         data.set(defaultPixel, offset);
       }
+
+      data[offset + 3] = skinPartKey in hideInObjectPick ? 0 : 1;
     }
 
     texNpcAux.updateIndex(this.def.uid, data);
