@@ -439,3 +439,9 @@ export const skinsUvsTextureWidth = 128;
 export const skinsLabelsTextureWidth = 200;
 /** Max height (pixels) of any label */
 export const skinsLabelsTextureHeight = 200 / 4;
+
+/**
+ * Works for `24px Monospace` on OSX Chrome/Safari/Firefox
+ * @see {skinsLabelsTextureWidth}
+ */
+export const npcLabelMaxChars = 12;

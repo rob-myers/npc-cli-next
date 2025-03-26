@@ -49,7 +49,7 @@ declare module '@react-three/fiber' {
       labelTriIds: number[];
       opacity?: number;
       uid: number;
-    };
+    } & SupportsObjectPick;
 
     instancedLabelsMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       map: import('three').CanvasTexture;

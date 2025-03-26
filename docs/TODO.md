@@ -157,14 +157,20 @@
     - larger label uv quad in Blender e.g. `[0, 0] ≤ x ≤ [1, 1 /4]`
       - assume "hard-coded" into models
       - rewrite triToUvKeys to account for label
-  - 🚧 can show/hide/tint label
+  - ✅ can show/hide/tint label
     - ℹ️ hide label `w n.temp-npc.setLabel`
     - ℹ️ show label `w n.temp-npc.setLabel foo`
     - ℹ️ hide label `w n.temp-npc.showLabel`
     - ℹ️ show label `w n.temp-npc.showLabel true`
-    - 
-  - ensure label hidden during object-pick (seems it is in front of floor)
-  - clarify label max length
+    - can tint using e.g.
+      ```ts
+      npc.tint.label = [1, 0.5, 0.5, 1];
+      npc.applyTint();
+      ```
+
+  - ✅ ensure label hidden during object-pick (seems it is in front of floor)
+    - not why it works?
+  - ✅ clarify label max length
 
 - ✅ ensure we're doing partial texture updates e.g. when npc.applySkin
   - https://threejs.org/examples/webgl_materials_texture_partialupdate.html

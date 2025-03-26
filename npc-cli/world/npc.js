@@ -4,7 +4,7 @@ import { damp, dampAngle } from "maath/easing";
 import { deltaAngle } from "maath/misc";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
 import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
@@ -1002,7 +1002,12 @@ export class Npc {
    * @param {string | undefined | null} label
    */
   setLabel(label = null) {
-    this.s.label = label; // 🚧 restrict length?
+    this.s.label = label;
+
+    if (typeof this.s.label === 'string') {
+      this.s.label.slice(0, npcLabelMaxChars);
+    }
+
 
     if (this.def.classKey === 'cuboid-man') {// 🚧 remove
       const changedLabelsSheet = label !== null && this.w.npc.updateLabels(label) === true;
@@ -1027,7 +1032,7 @@ export class Npc {
       
       if (label !== null) {
         const strokeWidth = 5;
-        const fontHeight = 32;
+        const fontHeight = 24; // permits > 12 chars on OSX Chrome
   
         ct.strokeStyle = 'black';
         ct.fillStyle = '#aaa';
