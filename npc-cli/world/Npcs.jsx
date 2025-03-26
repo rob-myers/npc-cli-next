@@ -3,10 +3,10 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, physicsConfig, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
+import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig, wallHeight } from "../service/const";
 import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
 import { getCanvas } from "../service/dom";
-import { computeMeshUvMappings, createLabelSpriteSheet, emptyAnimationMixer, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
+import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
 import { crowdAgentParams, Npc } from "./npc";
