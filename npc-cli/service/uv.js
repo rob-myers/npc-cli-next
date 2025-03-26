@@ -97,7 +97,7 @@ class CuboidManUvService {
    * @returns {CuboidManQuadMetas};
    */
   initComputeQuadMetas(skinnedMesh) {
-    const uvs = getGeometryUvs(skinnedMesh.geometry);
+    const { vectors: uvs } = getGeometryUvs(skinnedMesh.geometry);
 
     /** @type {CuboidManQuadMetas} */
     const toQuadMeta = {

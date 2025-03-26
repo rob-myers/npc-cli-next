@@ -415,14 +415,20 @@ export const defaultQuadUvs = [...Array(4)].map(_ => new THREE.Vector2());
 /**
  * - precision 6
  * @param {THREE.BufferGeometry} geometry 
- * @returns {Geom.Vect[]}
  */
 export function getGeometryUvs(geometry) {
-  return /** @type {THREE.BufferAttribute} */ (
+  const flat = /** @type {THREE.BufferAttribute} */ (
     geometry.getAttribute('uv')
-  ).toJSON().array.reduce((agg, x, i, xs) =>
+  ).toJSON().array;
+
+  const vectors = flat.reduce((agg, x, i, xs) =>
     (i % 2 === 1 && agg.push(new Vect(xs[i - 1], x).precision(8)), agg)
   , /** @type {Geom.Vect[]} */ ([]));
+
+  return {
+    flat,
+    vectors,
+  };
 }
 
 /**
@@ -521,11 +527,15 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
   const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
   sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
 
-  const uvs = getGeometryUvs(skinnedMesh.geometry);
+  const { vectors: uvs } = getGeometryUvs(skinnedMesh.geometry);
   const numVerts = skinnedMesh.geometry.getAttribute('position').count;
   const tris = range(numVerts / 3).map(i => [3 * i, 3 * i + 1, 3 * i + 2])
   /** Centre of mass of each UV-triangle (inside triangle) */
   const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
+  const uv = {
+    labelMin: { x: +Infinity, y: +Infinity },
+    labelMax: { x: -Infinity, y: -Infinity },
+  };
   
   // find uvRect fast via sorted rects
   for (const [triId, center] of centers.entries()) {
@@ -542,9 +552,17 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
     partToUvRect[skinPartKey] = uvMap[uvRectKey];
     if (skinPartKey === 'label') {
       labelTriIds.push(triId);
+      // 🚧 compute (min, max)
+      const baseVertexId = triId * 3;
+      uvs.slice(baseVertexId, baseVertexId + 3).forEach(({x,y}) => {
+        uv.labelMin.x = Math.min(x, uv.labelMin.x);
+        uv.labelMin.y = Math.min(y, uv.labelMin.y);
+        uv.labelMax.x = Math.max(x, uv.labelMax.x);
+        uv.labelMax.y = Math.max(y, uv.labelMax.y);
+      });
     }
   }
-
+  console.log({ uv })
   // console.log({ sorted, centers, output });
   return { triToUvKeys, partToUvRect, labelTriIds };
 }

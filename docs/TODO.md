@@ -149,9 +149,9 @@
     - ℹ️ we're relying on dimensions set in Blender
   - ✅ render npc.key
   - 🚧 try avoid label flicker via larger UV area
-    - 🚧 fix Blender UVs slight error
-    - 🚧 detect label min/max uvs
-    - try modify attribute uv
+    - ✅ fix Blender UVs slight error
+    - ✅ detect label min/max uvs
+    - 🚧 try modify attribute uv
   - can show/hide/tint label
   - ensure label hidden during object-pick (seems it is in front of floor)
 
@@ -242,6 +242,8 @@
 
 - warn if uv-map is not a grid (where rows/cols can have different size)
 
+- Dev-only: Fix Emotion Hydration warning
+  - Does not appear when `yarn dev-assets`
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
 
