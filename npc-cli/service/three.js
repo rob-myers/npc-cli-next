@@ -213,7 +213,7 @@ export const navMeta = {
  */
 export function buildObject3DLookup(object) {
   /** @type {import("@react-three/fiber").ObjectMap} */
-  const data = { nodes: {}, materials: {}};
+  const data = { nodes: {}, materials: {}, meshes: {} };
   if (object) {
     object.traverse(/** @param {THREE.Object3D & { material?: THREE.Material }} obj */ obj => {
       if (typeof obj.name == 'string') {

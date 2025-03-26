@@ -594,7 +594,7 @@ export default function Decor(props) {
       {/* <meshBasicMaterial color="red" /> */}
       <instancedLabelsMaterial
         key={glsl.InstancedLabelsMaterial.key}
-        side={THREE.DoubleSide}
+        // side={THREE.DoubleSide}
         map={state.label.tex}
         transparent
         opacity={0.5}

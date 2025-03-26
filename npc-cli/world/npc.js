@@ -50,7 +50,9 @@ export class Npc {
    */
   skin = /** @type {NPC.SkinReMap} */ ({});
 
-  tint = /** @type {NPC.SkinTint} */ ({});
+  tint = /** @type {NPC.SkinTint} */ ({
+    selector: [1, 1, 1, 0],
+  });
 
   /** @type {number[]} Shortcut to `this.w.npc.skinAux[this.def.key].labelTriIds` */
   labelTriIds = [];

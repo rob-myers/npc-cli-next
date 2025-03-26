@@ -409,7 +409,7 @@ export default function WorldView(props) {
       const renderList = gl.renderLists.get(scene, 0);
 
       renderList.opaque.forEach(x => {
-        if (hasObjectPickShaderMaterial(x)) {
+        if (hasObjectPickShaderMaterial(x) === true) {
           state.renderObjectPickItem(gl, scene, camera, x);
         }
       });
@@ -418,7 +418,7 @@ export default function WorldView(props) {
         if (w.wall.opacity < 1 && x.object.name in fromXrayInstancedMeshName) {
           return;
         }
-        if (hasObjectPickShaderMaterial(x)) {
+        if (hasObjectPickShaderMaterial(x) === true) {
           state.renderObjectPickItem(gl, scene, camera, x);
         }
       });
