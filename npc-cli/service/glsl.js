@@ -132,10 +132,10 @@ const instancedLabelsShader = {
  *   - https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/meshphong.glsl.js
  *   - https://ycw.github.io/three-shaderlib-skim/dist/#/latest/basic/vertex
  */
-export const cameraLightShader = {
+export const instancedFlatShader = {
   Vert: /*glsl*/`
 
-  flat varying float dotProduct;
+  varying float dotProduct;
   varying vec3 vColor;
   flat varying uint vInstanceId;
 
@@ -153,23 +153,13 @@ export const cameraLightShader = {
     vec3 transformed = vec3(position);
     vec4 mvPosition = vec4(transformed, 1.0);
 
-    #ifdef USE_INSTANCING
-      mvPosition = instanceMatrix * mvPosition;
-    #endif
-
+    mvPosition = instanceMatrix * mvPosition;
     mvPosition = modelViewMatrix * mvPosition;
     gl_Position = projectionMatrix * mvPosition;
 
-    #ifdef USE_LOGDEPTHBUF
-      vFragDepth = 1.0 + gl_Position.w;
-      vIsPerspective = float( isPerspectiveMatrix( projectionMatrix ) );
-    #endif
-
     vec3 transformedNormal = objectNormal;
-    #ifdef USE_INSTANCING
-      mat3 im = mat3( instanceMatrix );
-      transformedNormal = im * transformedNormal;
-    #endif
+    mat3 im = mat3( instanceMatrix );
+    transformedNormal = im * transformedNormal;
     transformedNormal = normalMatrix * transformedNormal;
 
     vColor = vec3(1.0);
@@ -177,8 +167,10 @@ export const cameraLightShader = {
       vColor.xyz *= instanceColor.xyz;
     #endif
 
-    vec3 lightDir = normalize(mvPosition.xyz);
-    dotProduct = -min(dot(normalize(transformedNormal), lightDir), 0.0);
+    vec3 lightDir = -normalize(mvPosition.xyz);
+    dotProduct = dot(normalize(transformedNormal), lightDir);
+
+    #include <logdepthbuf_vertex>
   }
   `,
 
@@ -190,9 +182,8 @@ export const cameraLightShader = {
   uniform float opacity;
 
   flat varying uint vInstanceId;
-	flat varying float dotProduct;
+	varying float dotProduct;
   varying vec3 vColor;
-
 
   #include <common>
   #include <uv_pars_fragment>
@@ -473,10 +464,11 @@ export const InstancedMultiTextureMaterial = shaderMaterial(
 );
 
 /**
+ * Instanced Flat Shading
  * - Decor cuboids
  * - Door lights
  */
-export const CameraLightMaterial = shaderMaterial(
+export const InstancedFlatMaterial = shaderMaterial(
   {
     diffuse: new THREE.Vector3(1, 0.9, 0.6),
     // 🔔 map, mapTransform required else can get weird texture
@@ -486,8 +478,8 @@ export const CameraLightMaterial = shaderMaterial(
     objectPickRed: 0,
     opacity: 1,
   },
-  cameraLightShader.Vert,
-  cameraLightShader.Frag,
+  instancedFlatShader.Vert,
+  instancedFlatShader.Frag,
 );
 
 export const HumanZeroMaterial = shaderMaterial(
@@ -513,6 +505,6 @@ extend({
   InstancedMonochromeShader: InstancedWallsShader,
   InstancedLabelsMaterial,
   InstancedMultiTextureMaterial,
-  CameraLightMaterial,
+  InstancedFlatMaterial,
   HumanZeroMaterial,
 });

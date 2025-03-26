@@ -546,13 +546,13 @@ export default function Decor(props) {
       key={`${state.cuboids.length} cuboids`}
       ref={state.ref('cuboidInst')}
       args={[state.cuboidGeom, undefined, state.cuboids.length]}
-      frustumCulled={false}
+      // frustumCulled={false}
       renderOrder={-1}
       visible={ready}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
-      {ready && <cameraLightMaterial
-        key={glsl.CameraLightMaterial.key}
+      {ready && <instancedFlatMaterial
+        key={glsl.InstancedFlatMaterial.key}
         side={THREE.DoubleSide} // fix flipped gm
         diffuse={[0.4, 0.4, 0.4]}
         transparent

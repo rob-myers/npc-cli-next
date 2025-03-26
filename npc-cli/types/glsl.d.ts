@@ -9,11 +9,11 @@ declare module '@react-three/fiber' {
 
   interface ThreeElements {
 
-    cameraLightMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+    instancedFlatMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       diffuse?: Vector3Input;
       opacity?: number;
       objectPickRed?: number;
-    };
+    } & SupportsObjectPick;
 
     humanZeroMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       atlas: import('three').DataArrayTexture;

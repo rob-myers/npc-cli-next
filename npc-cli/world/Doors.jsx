@@ -331,8 +331,8 @@ export default function Doors(props) {
       frustumCulled={false}
       visible={state.ready}
     >
-      {state.ready && <cameraLightMaterial
-        key={glsl.CameraLightMaterial.key}
+      {state.ready && <instancedFlatMaterial
+        key={glsl.InstancedFlatMaterial.key}
         diffuse={[1, 1, 1]}
         objectPickRed={9}
         side={THREE.DoubleSide} // fix flipped gm
