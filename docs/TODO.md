@@ -225,6 +225,8 @@
   - we now always finally update
 - ✅ fix spawn onto decor point orientation
 
+- follow cam zoom should be centred on followed
+
 - ✅ improve ContextMenu 3d position when npc Lie
 
 ## Dev env
