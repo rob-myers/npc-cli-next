@@ -239,35 +239,33 @@ export const humanZeroShader = {
     #include <beginnormal_vertex>
     #include <skinnormal_vertex>
 
+    // since unwelded via geometry.toNonIndexed()
+    triangleId = int(gl_VertexID / 3);
+    vUv = uv;
+
     vec3 transformed = vec3(position);
     #include <skinning_vertex>
-
-    triangleId = int(gl_VertexID / 3); // since geometry.toNonIndexed()
-    vUv = uv;
+    vec4 mvPosition;
 
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
 
-      // label quad faces camera
-      vec4 mvPosition = modelViewMatrix * vec4(0.0, labelHeight, 0.0, 1.0); // Point above head
+      // label quad is above head and faces camera
+      mvPosition = modelViewMatrix * vec4(0.0, labelHeight, 0.0, 1.0);
       mvPosition.xy += transformed.xy;
-      gl_Position = projectionMatrix * mvPosition;
-      #include <logdepthbuf_vertex>
       
-    } else {
+    } else {// everything else
 
-      vec4 mvPosition = vec4(transformed, 1.0);
-      mvPosition = modelViewMatrix * mvPosition;
+      mvPosition = modelViewMatrix * vec4(transformed, 1.0);
   
-      // dot product for flat shading
+      // compute dot product for flat shading
       vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
       vec3 lightDir = -normalize(mvPosition.xyz);
       dotProduct = dot(transformedNormal, lightDir);
   
-      gl_Position = projectionMatrix * mvPosition;
-      #include <logdepthbuf_vertex>
-
     }
-
+    
+    gl_Position = projectionMatrix * mvPosition;
+    #include <logdepthbuf_vertex>
   }
   `,
   Frag: /*glsl*/`
