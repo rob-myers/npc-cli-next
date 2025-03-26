@@ -4,7 +4,10 @@ import { shaderMaterial } from "@react-three/drei";
 import { wallHeight } from "./const";
 import { defaultQuadUvs, emptyDataArrayTexture } from "./three";
 
-/** Monochrome */
+/**
+ * - Monochrome instanced walls.
+ * - More transparent the closer you get.
+ */
 const instancedWallsShader = {
   Vert: /*glsl*/`
 
@@ -26,8 +29,8 @@ const instancedWallsShader = {
     gl_Position = projectionMatrix * modelViewPosition;
     #include <logdepthbuf_vertex>
 
-    // 🚧 remove hard-coded 25.0f
-    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 25.0f;
+    // 🚧 remove hard-coded 35.0f
+    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 35.0f;
   }
 
   `,
