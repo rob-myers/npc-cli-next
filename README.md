@@ -64,6 +64,8 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
     w e.grantNpcAccess "rob_${c}" .
     c+=1
   done
+
+  w view.controls.reset
   ```
 
 ## Bits and bobs
