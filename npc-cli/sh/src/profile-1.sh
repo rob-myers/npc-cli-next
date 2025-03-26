@@ -1,14 +1,33 @@
 awaitWorld
 
-w npc.updateLabels rob will kate # efficiency
-
 spawn rob '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 spawn will '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 spawn '{ npcKey: "kate", angle: -Math.PI/2 }' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
-
 w n.rob.showSelector true
 selectedNpcKey="rob"
+
+# re-skin rob
+w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
+w n.rob.skin | assign '{
+  "body-front": { prefix: "test-body" },
+  "body-back": { prefix: "test-body" },
+  "body-left": { prefix: "test-body" },
+  "body-right": { prefix: "test-body" },
+  "body-top": { prefix: "test-body" },
+  "body-bottom": { prefix: "test-body" },
+  // "body-overlay-front": { prefix: "test-body-overlay" },
+  // "body-overlay-back": { prefix: "test-body-overlay" },
+  // "body-overlay-left": { prefix: "test-body-overlay" },
+  // "body-overlay-right": { prefix: "test-body-overlay" },
+  // "body-overlay-top": { prefix: "test-body-overlay" },
+  // "body-overlay-bottom": { prefix: "test-body-overlay" },
+}'
+w n.rob.applySkin
+
+# tint rob
+w n.rob.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
+w n.rob.applyTint
 
 w e.grantNpcAccess rob .
 # temp debug doors:

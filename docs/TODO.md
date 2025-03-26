@@ -178,7 +178,7 @@
   - https://threejs.org/examples/webgl_materials_texture_partialupdate.html
 
 - ✅ remove cuboid-man
-- 🚧 remove code from profile-awaitWorld and move to profile-1
+- ✅ remove code from profile-awaitWorld and move to profile-1
 
 ### Extras
 
