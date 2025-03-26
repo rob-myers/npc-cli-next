@@ -423,21 +423,12 @@
         "width": 132,
         "height": 240
       },
-      "icon--key-card": {
-        "icon": true,
-        "decorImgKey": "icon--key-card",
-        "sheetId": 0,
-        "x": 304,
-        "y": 244,
-        "width": 72,
-        "height": 108
-      },
       "icon--warn": {
         "icon": true,
         "decorImgKey": "icon--warn",
         "sheetId": 0,
-        "x": 2,
-        "y": 364,
+        "x": 304,
+        "y": 244,
         "width": 84,
         "height": 75
       },
@@ -445,8 +436,8 @@
         "icon": true,
         "decorImgKey": "icon--door-closed",
         "sheetId": 0,
-        "x": 304,
-        "y": 354,
+        "x": 2,
+        "y": 364,
         "width": 77,
         "height": 77
       },
@@ -454,8 +445,8 @@
         "icon": true,
         "decorImgKey": "icon--door-locked",
         "sheetId": 0,
-        "x": 438,
-        "y": 2,
+        "x": 81,
+        "y": 364,
         "width": 77,
         "height": 77
       },
@@ -463,8 +454,8 @@
         "icon": true,
         "decorImgKey": "icon--door-open",
         "sheetId": 0,
-        "x": 438,
-        "y": 81,
+        "x": 160,
+        "y": 364,
         "width": 77,
         "height": 77
       },
@@ -472,8 +463,8 @@
         "icon": true,
         "decorImgKey": "icon--door-unlocked",
         "sheetId": 0,
-        "x": 438,
-        "y": 160,
+        "x": 239,
+        "y": 364,
         "width": 77,
         "height": 77
       },
@@ -481,17 +472,26 @@
         "icon": true,
         "decorImgKey": "icon--doc",
         "sheetId": 0,
-        "x": 88,
-        "y": 364,
+        "x": 318,
+        "y": 321,
         "width": 50,
         "height": 72
+      },
+      "icon--key-card": {
+        "icon": true,
+        "decorImgKey": "icon--key-card",
+        "sheetId": 0,
+        "x": 438,
+        "y": 2,
+        "width": 72,
+        "height": 48
       },
       "icon--info": {
         "icon": true,
         "decorImgKey": "icon--info",
         "sheetId": 0,
-        "x": 140,
-        "y": 364,
+        "x": 438,
+        "y": 52,
         "width": 60,
         "height": 60
       },
@@ -499,14 +499,14 @@
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
-        "x": 202,
-        "y": 364,
+        "x": 438,
+        "y": 114,
         "width": 38,
         "height": 58
       }
     },
-    "decorDims": [{"width": 517, "height": 441}],
-    "maxDecorDim": {"width": 517, "height": 441},
+    "decorDims": [{"width": 512, "height": 443}],
+    "maxDecorDim": {"width": 512, "height": 443},
     "obstacle": {
       "bridge--042--8x9 4": {
         "x": 2,
@@ -1281,8 +1281,8 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "glbHash": {"cuboid-man": -1925566159, "human-0": -1202991365},
-    "imagesHash": 109156630
+    "glbHash": {"cuboid-man": -1925566159, "human-0": 1932175113},
+    "imagesHash": 1461794293
   },
   "skin": {
     "numSheets": {"cuboid-man": 1, "human-0": 2},
