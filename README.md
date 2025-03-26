@@ -147,3 +147,16 @@ In BoxySVG, if your `<g>` already has a transform you can use this trick:
 > - drag contents outside Group
 > - remove transform from Group (e.g. via elements panel E)
 > - drag contents back into Group
+
+### Convert to MP4 or GIF
+
+```sh
+# if necessary
+brew install ffmpeg
+
+# Convert mov to mp4
+cd ~/Desktop
+ffmpeg -i ~/Desktop/html-3d-example.mov -qscale 0 html-3d-example.mp4
+ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=10" -b:v 0 -crf 25 html-3d-example.mp4
+ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=60" -b:v 0 -crf 25 html-3d-example.mp4
+```
