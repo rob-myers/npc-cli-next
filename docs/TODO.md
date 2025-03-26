@@ -244,7 +244,8 @@
   - ✅ migrate `canvas` to `skia-canvas`
   - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
   - 🚧 still seeing webp diff
-    - do `cwebp` versions differ?
+    - personal laptop: `cwebp -version` is `1.3.0` `libsharpyuv: 0.2.0`
+    - work laptop: 🚧
 
 - ✅ migrate `canvas` to `skia-canvas`
   - ℹ️ https://www.npmjs.com/package/skia-canvas
