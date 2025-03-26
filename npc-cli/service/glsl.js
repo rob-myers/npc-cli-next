@@ -126,7 +126,7 @@ const instancedLabelsShader = {
 
 /**
  * - Shade color `diffuse` by light whose direction is always the camera's direction.
- * - Supports instancing.
+ * - Assumes InstancedMesh and supports USE_INSTANCING_COLOR
  * - Supports a single texture.
  * - We're using this as a guide:
  *   - https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/meshphong.glsl.js
@@ -138,6 +138,7 @@ export const instancedFlatShader = {
   varying float dotProduct;
   varying vec3 vColor;
   flat varying uint vInstanceId;
+  varying vec2 vUv;
 
   attribute uint instanceIds;
 
@@ -148,24 +149,26 @@ export const instancedFlatShader = {
   void main() {
     #include <uv_vertex>
     vInstanceId = instanceIds;
+    vUv = uv;
 
     vec3 objectNormal = vec3(normal);
     vec3 transformed = vec3(position);
+    
     vec4 mvPosition = vec4(transformed, 1.0);
-
     mvPosition = instanceMatrix * mvPosition;
     mvPosition = modelViewMatrix * mvPosition;
-    gl_Position = projectionMatrix * mvPosition;
 
-    vec3 transformedNormal = objectNormal;
-    mat3 im = mat3( instanceMatrix );
-    transformedNormal = im * transformedNormal;
-    transformedNormal = normalMatrix * transformedNormal;
+    gl_Position = projectionMatrix * mvPosition;
 
     vColor = vec3(1.0);
     #ifdef USE_INSTANCING_COLOR
       vColor.xyz *= instanceColor.xyz;
     #endif
+
+    vec3 transformedNormal = objectNormal;
+    mat3 im = mat3(instanceMatrix);
+    transformedNormal = im * transformedNormal;
+    transformedNormal = normalMatrix * transformedNormal;
 
     vec3 lightDir = -normalize(mvPosition.xyz);
     dotProduct = dot(normalize(transformedNormal), lightDir);
@@ -180,8 +183,10 @@ export const instancedFlatShader = {
   uniform bool objectPick;
   uniform int objectPickRed;
   uniform float opacity;
+  uniform bool quadOutlines;
 
   flat varying uint vInstanceId;
+  varying vec2 vUv;
 	varying float dotProduct;
   varying vec3 vColor;
 
@@ -195,8 +200,26 @@ export const instancedFlatShader = {
     #include <logdepthbuf_fragment>
     #include <map_fragment>
 
-    // gl_FragColor = vec4(vColor * diffuse * (0.1 + 0.7 * dotProduct), 1);
-    gl_FragColor = vec4(vColor * vec3(diffuseColor) * (0.1 + 0.7 * dotProduct), diffuseColor.a * opacity);
+    float ambientLight = 0.1;
+    float normalLight = 0.7;
+
+    if (quadOutlines == true) {
+      // 🚧 take account of scaling
+      float dx = 0.025, dy = 0.025;
+      if (
+        vUv.x <= dx
+        || vUv.x >= 1.0 - dx
+        || vUv.y <= dy
+        || vUv.y >= 1.0 - dy
+      ) {
+        ambientLight = 0.5;
+      }
+    }
+
+    gl_FragColor = vec4(
+      vColor * vec3(diffuseColor) * (ambientLight + normalLight * dotProduct),
+      diffuseColor.a * opacity
+    );
 
     if (objectPick == true) {
       gl_FragColor = vec4(
@@ -477,6 +500,7 @@ export const InstancedFlatMaterial = shaderMaterial(
     objectPick: false,
     objectPickRed: 0,
     opacity: 1,
+    quadOutlines: false,
   },
   instancedFlatShader.Vert,
   instancedFlatShader.Frag,

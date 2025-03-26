@@ -555,9 +555,10 @@ export default function Decor(props) {
         key={glsl.InstancedFlatMaterial.key}
         side={THREE.DoubleSide} // fix flipped gm
         diffuse={[0.4, 0.4, 0.4]}
-        transparent
         objectPickRed={7}
         opacity={query.status === 'success' ? 1 : 0}
+        quadOutlines
+        transparent
       />}
     </instancedMesh>
 

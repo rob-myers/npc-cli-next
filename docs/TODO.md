@@ -213,7 +213,10 @@
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
-- cuboids have bands via shader, using UVs
+
+- 🚧 cuboids have outlines via shader, using UVs
+  - ✅ can see outlines on decor cuboids
+  - 🚧 fix scaling
 
 - ✅ improve ContextMenu 3d position when npc Lie
 

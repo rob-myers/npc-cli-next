@@ -11,6 +11,8 @@ declare module '@react-three/fiber' {
 
     instancedFlatMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       diffuse?: Vector3Input;
+      /** Assuming model is built of quads, each with uvs covering [0, 1]x[0, 1] */
+      quadOutlines?: boolean;
       opacity?: number;
       objectPickRed?: number;
     } & SupportsObjectPick;
