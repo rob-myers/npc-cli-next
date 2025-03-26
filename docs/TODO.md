@@ -179,8 +179,11 @@
 
 - ✅ remove cuboid-man
 - ✅ remove code from profile-awaitWorld and move to profile-1
-- 🚧 npc object-pick ignores selector quad
+- ✅ npc object-pick ignores selector quad
   - apply alpha from aux uniform (1st row)
+
+- fixed npc speech bubble height
+  - depends on number of lines
 
 ### Extras
 
@@ -230,7 +233,8 @@
 - 🚧 generated decor/obstacles/skin png,webp distinct on different laptops
   - ✅ migrate `canvas` to `skia-canvas`
   - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
-  - 🚧 still seeing webp diff; do `cwebp` versions differ?
+  - 🚧 still seeing webp diff
+    - do `cwebp` versions differ?
 
 - ✅ migrate `canvas` to `skia-canvas`
   - ℹ️ https://www.npmjs.com/package/skia-canvas
