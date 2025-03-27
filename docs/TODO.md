@@ -132,10 +132,14 @@
 - 🚧 improve human-0
   - ✅ smaller head
   - ✅ possibly red eyes
-  - improve body icon
-  - faces
+  - ✅ improve body icon
+  - ℹ️ faces
+    - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "base" } }' && w n.rob.applySkin`
+    - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }' && w n.rob.applySkin`
+    - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "small-eyes" } }' && w n.rob.applySkin`
   - icons
   - tinting
+  - better alt body
 
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc

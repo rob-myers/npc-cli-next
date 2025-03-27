@@ -104,13 +104,13 @@
         <title>_demo-icon</title>
       </path>
     </g>
-    <rect width="128" height="128" style="fill: none;" x="128" y="800">
+    <rect width="128" height="128" style="fill: none;" x="128" y="832">
       <title>default_selector</title>
     </rect>
     <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="191.999" cy="895.999" r="61.999">
       <title>_default_selector</title>
     </circle>
-    <rect width="128" height="128" style="fill: none;" x="384" y="800">
+    <rect width="128" height="128" style="fill: none;" x="384" y="832">
       <title>default_breath</title>
     </rect>
     <circle style="stroke-width: 2.79351px; fill-opacity: 0.2; stroke-opacity: 0.5; stroke: rgb(153, 255, 153);" cx="448" cy="896" r="62">
@@ -123,12 +123,12 @@
       <title>default_label</title>
     </rect>
     <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; white-space: pre;" x="5.428" y="2038.69"><title>_label-test-text</title>label-test-text</text>
-    <g transform="matrix(1, 0, 0, 1, 0, 32)">
+    <g>
       <title>confused_head-overlay</title>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="800" y="800">
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="800" y="832">
         <title>front</title>
       </rect>
-      <g transform="matrix(1, 0, 0, 1, 638.83, 230.4)">
+      <g transform="matrix(1, 0, 0, 1, 638.83, 262.4)">
         <title>eyes</title>
         <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
           <title>_left</title>
@@ -138,12 +138,12 @@
         </circle>
       </g>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 0, 32)">
+    <g>
       <title>small-eyes_head-overlay</title>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="800">
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="832">
         <title>front</title>
       </rect>
-      <g transform="matrix(1, 0, 0, 1, 350.83, 230.4)">
+      <g transform="matrix(1, 0, 0, 1, 350.83, 262.4)">
         <title>eyes</title>
         <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="8">
           <title>_left</title>
