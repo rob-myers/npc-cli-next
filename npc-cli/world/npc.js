@@ -154,7 +154,11 @@ export class Npc {
     const defaultPixel = [0, 0, initSheetTexId];
 
     /** @type {Partial<Record<Key.SkinPart, true>>} */
-    const hideInObjectPick = { selector: true, breath: true };
+    const hideInObjectPick = {
+      breath: true,
+      label: true,
+      selector: true,
+    };
 
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
