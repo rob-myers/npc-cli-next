@@ -137,7 +137,8 @@
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "base" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "small-eyes" } }' && w n.rob.applySkin`
-  - icons
+  - 🚧 icons
+    - 🚧 `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "robot-icon" } }' && w n.rob.applySkin`
   - tinting
   - better alt body
 
@@ -184,6 +185,7 @@
 - ✅ remove code from profile-awaitWorld and move to profile-1
 - ✅ npc object-pick ignores selector quad
   - apply alpha from aux uniform (1st row)
+
 - 🚧 sometimes object-pick stops working for a bit
   - hopefully label was getting in the way (no longer rendered in object-pick)
 
