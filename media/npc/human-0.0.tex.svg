@@ -91,7 +91,7 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
         <title>front</title>
       </rect>
-      <path d="M 192 592 C 197.866 592 202.666 597.76 202.666 604.799 C 202.666 611.84 197.866 617.6 192 617.6 C 186.134 617.6 181.334 611.84 181.334 604.799 C 181.334 597.76 186.134 592 192 592 Z M 240 636.8 L 208 636.8 L 208 720 L 197.333 720 L 197.333 681.6 L 186.667 681.6 L 186.667 720 L 176.001 720 L 176.001 636.8 L 144 636.8 L 144 624 L 240 624 L 240 636.8 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 192px 619.226px;">
+      <path d="M 192 608 C 195.911 608 199.111 612.32 199.111 617.599 C 199.111 622.88 195.911 627.2 192 627.2 C 188.089 627.2 184.889 622.88 184.889 617.599 C 184.889 612.32 188.089 608 192 608 Z M 224 641.6 L 202.667 641.6 L 202.667 704 L 195.555 704 L 195.555 675.2 L 188.445 675.2 L 188.445 704 L 181.334 704 L 181.334 641.6 L 160 641.6 L 160 632 L 224 632 L 224 641.6 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 192px 628.419px;">
         <title>_demo-icon</title>
       </path>
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="256">
@@ -100,30 +100,30 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
         <title>back</title>
       </rect>
-      <path d="M 448 592 C 453.866 592 458.666 597.76 458.666 604.799 C 458.666 611.84 453.866 617.6 448 617.6 C 442.134 617.6 437.334 611.84 437.334 604.799 C 437.334 597.76 442.134 592 448 592 Z M 496 636.8 L 464 636.8 L 464 720 L 453.333 720 L 453.333 681.6 L 442.667 681.6 L 442.667 720 L 432.001 720 L 432.001 636.8 L 400 636.8 L 400 624 L 496 624 L 496 636.8 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 448px 619.226px;">
+      <path d="M 448 608 C 451.91 608 455.11 612.32 455.11 617.599 C 455.11 622.88 451.91 627.2 448 627.2 C 444.089 627.2 440.889 622.88 440.889 617.599 C 440.889 612.32 444.089 608 448 608 Z M 480 641.6 L 458.666 641.6 L 458.666 704 L 451.555 704 L 451.555 675.2 L 444.444 675.2 L 444.444 704 L 437.334 704 L 437.334 641.6 L 416 641.6 L 416 632 L 480 632 L 480 641.6 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 448px 628.419px;">
         <title>_demo-icon</title>
       </path>
     </g>
     <rect width="128" height="128" style="fill: none;" x="128" y="800">
       <title>default_selector</title>
     </rect>
-    <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="191.999" cy="863.999" r="61.999">
+    <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="191.999" cy="895.999" r="61.999">
       <title>_default_selector</title>
     </circle>
     <rect width="128" height="128" style="fill: none;" x="384" y="800">
       <title>default_breath</title>
     </rect>
-    <circle style="stroke-width: 2.79351px; fill-opacity: 0.2; stroke-opacity: 0.5; stroke: rgb(153, 255, 153);" cx="448" cy="864" r="62">
+    <circle style="stroke-width: 2.79351px; fill-opacity: 0.2; stroke-opacity: 0.5; stroke: rgb(153, 255, 153);" cx="448" cy="896" r="62">
       <title>_outer_default-breath</title>
     </circle>
-    <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="23.04" cy="862.72" r="23.04">
+    <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="23.04" cy="894.72" r="23.04">
       <title>_inner_default-breath</title>
     </circle>
     <rect width="128" height="32" style="fill: none; stroke: rgb(0, 0, 0);" y="2016">
       <title>default_label</title>
     </rect>
     <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; white-space: pre;" x="5.428" y="2038.69"><title>_label-test-text</title>label-test-text</text>
-    <g>
+    <g transform="matrix(1, 0, 0, 1, 0, 32)">
       <title>confused_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="800" y="800">
         <title>front</title>
@@ -138,7 +138,7 @@
         </circle>
       </g>
     </g>
-    <g>
+    <g transform="matrix(1, 0, 0, 1, 0, 32)">
       <title>small-eyes_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="800">
         <title>front</title>
