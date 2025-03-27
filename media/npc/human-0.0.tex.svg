@@ -138,12 +138,12 @@
         </circle>
       </g>
     </g>
-    <g>
+    <g transform="matrix(1, 0, 0, 1, 0, 32)">
       <title>small-eyes_head-overlay</title>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="832">
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="800">
         <title>front</title>
       </rect>
-      <g transform="matrix(1, 0, 0, 1, 350.83, 262.4)">
+      <g transform="matrix(1, 0, 0, 1, 350.83, 230.4)">
         <title>eyes</title>
         <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="8">
           <title>_left</title>

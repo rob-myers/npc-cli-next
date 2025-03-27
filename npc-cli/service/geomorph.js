@@ -1114,9 +1114,11 @@ class GeomorphService {
   }
 
   /**
-   * Given SVG contents with `<g><title>uv-map</title> {...} </g>`,
-   * build name to UV Rect i.e. normalized to [0, 1] x [0, 1]
-   * 🔔 we do not support transforms on parent groups
+   * Given SVG contents with `<g><title>uv-map</title> {...} </g>`, build
+   * lookup from name to UV Rect (normalized to [0, 1] x [0, 1])
+   * 
+   * 🔔 must set width, height explicitly on <svg>
+   * 🔔 supports transforms on parent groups
    * @param {string} svgContents
    * @param {number} sheetId The index of this sheet relative to its npcClassKey.
    * @param {string} logLabel
@@ -1128,13 +1130,15 @@ class GeomorphService {
       height: 0,
       uvMap: {},
     });
-    const tagStack = /** @type {{ tagName: string; attributes: Record<string, string>; }[]} */ ([]);
+    const tagStack = /** @type {HtmlParser2Tag[]} */ ([]);
     const folderStack = /** @type {string[]} */ ([]);
+    
+    /** Matrices of transforms arising from `g.transform`s */
+    const matrixStack = /** @type {Mat[]} */ ([]);
 
     const parser = new htmlparser2.Parser({
       onopentag(name, attributes) {
-        if (tagStack.length === 0) {
-          // 🔔 must set width, height explicitly on <svg>
+        if (tagStack.length === 0) {// svg.{width,height}
           output.width = Number(attributes.width) || 0;
           output.height = Number(attributes.height) || 0;
         }
@@ -1147,12 +1151,16 @@ class GeomorphService {
           return; // only consider <title> tags
         }
         
-        if (parent.tagName === "g") {
-          return folderStack.push(contents); // track folders
+        if (parent.tagName === "g") {// track folders, transforms
+          folderStack.push(contents);
+          if ('transform' in parent.attributes) {
+            matrixStack.push(new Mat().setMatrixValue(parent.attributes.transform));
+          }
+          return;
         }
         
         if (folderStack[0] !== 'uv-map') {
-          return; // only consider folder "uv-map"
+          return; // must be inside root folder "uv-map"
         }
 
         const baseName = contents;
@@ -1161,10 +1169,15 @@ class GeomorphService {
         }
         
         const poly = geomorph.extractPoly({ ...parent, title: contents }, {}, 1);
-        
+
         if (poly === null) {
           warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: failed to parse polygon`);
           return;
+        }
+
+        if (matrixStack.length !== 0) {
+          const matrix = matrixStack.reduce((agg, m) => agg.postMultiply(m), new Mat());
+          poly.applyMatrix(matrix);
         }
 
         // output sub-rect of [0, 1] x [0, 1]
@@ -1175,10 +1188,13 @@ class GeomorphService {
           ...poly.rect.scale(1 / output.width, 1 / output.height).precision(8).json,
         };
       },
-      onclosetag(tag) {
-        tagStack.pop();
-        if (tag === "g") {
+      onclosetag(tagName) {
+        const tag = /** @type {HtmlParser2Tag} */ (tagStack.pop());
+        if (tagName === "g") {
           folderStack.pop();
+          if ('transform' in tag.attributes) {
+            matrixStack.pop();
+          }
         } 
       },
     });
@@ -1515,3 +1531,9 @@ const tmpMat2 = new Mat();
 
 const metaVarNames = ['wallHeight'];
 const metaVarValues = [wallHeight];
+
+/**
+ * @typedef HtmlParser2Tag
+ * @property {string} tagName
+ * @property {Record<string, string>} attributes
+ */

@@ -257,7 +257,7 @@
     - personal laptop: `cwebp -version` is `1.3.0` `libsharpyuv: 0.2.0`
     - work laptop: 🚧
 
-- skins: support inherited transforms on `<g>`
+- ✅ skins: support inherited transforms on `<g>`
   - ℹ️ we often make this mistake
 
 - ✅ migrate `canvas` to `skia-canvas`
