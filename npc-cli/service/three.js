@@ -227,6 +227,10 @@ export function buildObject3DLookup(object) {
   return data;
 }
 
+/**
+ * 12 triangles:
+ * > right x2, left x2, front x2, back x2, top x2, bottom x2
+ */
 export const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
 
 /** @param {string} key */

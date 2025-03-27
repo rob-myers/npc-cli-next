@@ -226,6 +226,8 @@
 
 - 🚧 cuboids have outlines via shader, using UVs
   - ✅ can see outlines on decor cuboids
+  - ℹ️ box geometry has 12 triangles with ordering:
+    > right x2, left x2, front x2, back x2, top x2, bottom x2
   - 🚧 fix scaling (non-trivial)
 
 - ✅ fix `w npc.remove`
