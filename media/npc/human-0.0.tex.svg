@@ -100,9 +100,6 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
         <title>back</title>
       </rect>
-      <path d="M 448 608 C 451.91 608 455.11 612.32 455.11 617.599 C 455.11 622.88 451.91 627.2 448 627.2 C 444.089 627.2 440.889 622.88 440.889 617.599 C 440.889 612.32 444.089 608 448 608 Z M 480 641.6 L 458.666 641.6 L 458.666 704 L 451.555 704 L 451.555 675.2 L 444.444 675.2 L 444.444 704 L 437.334 704 L 437.334 641.6 L 416 641.6 L 416 632 L 480 632 L 480 641.6 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 448px 628.419px;">
-        <title>_demo-icon</title>
-      </path>
     </g>
     <rect width="128" height="128" style="fill: none;" x="128" y="832">
       <title>default_selector</title>
@@ -222,6 +219,7 @@
       </g>
     </g>
   </g>
-  <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="1056" cy="124.936" rx="48" ry="44.936"/>
-  <path style="stroke: rgb(255, 255, 255); stroke-width: 4px; fill: none;" d="M 833.4 382.803 C 833.4 372.151 832.096 360.741 835.065 350.411 C 846.905 309.215 893.072 259.888 939.943 271.248 C 971.535 278.905 999.972 305.794 1012.109 335.555 C 1016.913 347.333 1019.725 357.83 1019.725 370.492 C 1019.725 374.429 1021.241 383.241 1016.301 380.553"/>
+  <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="992" cy="65.064" rx="48" ry="44.936"/>
+  <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="862" cy="188.936" rx="48" ry="44.936"/>
+  <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="1122" cy="188.936" rx="48" ry="44.936"/>
 </svg>

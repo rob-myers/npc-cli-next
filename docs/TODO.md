@@ -138,9 +138,10 @@
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "small-eyes" } }' && w n.rob.applySkin`
   - 🚧 icons
-    - 🚧 `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "robot-icon" } }' && w n.rob.applySkin`
+    - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "robot-icon" } }' && w n.rob.applySkin`
+    - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "heart-icon" } }' && w n.rob.applySkin`
   - tinting
-  - better alt body
+  - ✅ better alt body
 
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
