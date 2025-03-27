@@ -542,7 +542,8 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
     const skinPartKey = /** @type {Key.SkinPart} */ (uvRectKey.split('_')[1]);
     triToUvKeys[triId] = { uvRectKey, skinPartKey };
     partToUvRect[skinPartKey] = uvMap[uvRectKey];
-    if (skinPartKey === 'label') {
+    // if (skinPartKey === 'label') {
+    if (uvRectKey === 'default_label') {
       labelTriIds.push(triId);
     }
   }
