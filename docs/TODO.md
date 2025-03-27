@@ -125,20 +125,17 @@
   - ❌ permit prefixes of Key.SkinPart
   - ✅ move hard-coded tint into profile-1
 
-- skins: support inherited transforms on `<g>`
-  - ℹ️ we often make this mistake
-
 - ❌ good examples of skin in profile-1
   - ✅ test-body_base-body
   - ✅ test-body-overlay_base-body-overlay
 
-- 🚧 human-0 skin ~ cuboid-man with extra faces/icons
-  - faces ~ foo_head-overlay-front
-  - body icon {front,back} ~ foo_body-overlay-{front,back}
-  - maybe smaller head
-- 🚧 human-0 tint examples
-  - ✅ red eyes
-  - ...
+- 🚧 improve human-0
+  - ✅ smaller head
+  - ✅ possibly red eyes
+  - improve body icon
+  - faces
+  - icons
+  - tinting
 
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
@@ -184,8 +181,10 @@
 - sometimes object-pick stops working for a bit
   - maybe issue with `renderObjectPickItem`
 
-- fix npc speech bubble height
-  - depends on number of lines
+- npc speech bubble replaces label
+- npc speech bubble has larger font
+
+- another model human-1 or pet-0
 
 ### Extras
 
@@ -218,14 +217,17 @@
 
 - 🚧 cuboids have outlines via shader, using UVs
   - ✅ can see outlines on decor cuboids
-  - 🚧 fix scaling
+  - 🚧 fix scaling (non-trivial)
 
 - ✅ fix `w npc.remove`
   - we were `w npc.remove rob_{0..7}` where later did not exist
   - we now always finally update
 - ✅ fix spawn onto decor point orientation
 
+- try to simplify walk smoothing "hacks"
+
 - follow cam zoom should be centred on followed
+- follow option should be tinted when in use
 
 - ✅ improve ContextMenu 3d position when npc Lie
 
@@ -248,6 +250,9 @@
   - 🚧 still seeing webp diff
     - personal laptop: `cwebp -version` is `1.3.0` `libsharpyuv: 0.2.0`
     - work laptop: 🚧
+
+- skins: support inherited transforms on `<g>`
+  - ℹ️ we often make this mistake
 
 - ✅ migrate `canvas` to `skia-canvas`
   - ℹ️ https://www.npmjs.com/package/skia-canvas
