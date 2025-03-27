@@ -5,7 +5,6 @@ import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig, wallHeight } from "../service/const";
 import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
-import { getCanvas } from "../service/dom";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
@@ -488,7 +487,7 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.6, .6, .6]}
+          diffuse={[.8, .8, .8]}
 
           label={npc.w.texNpcLabel.tex}
           labelHeight={wallHeight * (1 / 0.65)}

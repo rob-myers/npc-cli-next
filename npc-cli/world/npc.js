@@ -74,8 +74,7 @@ export class Npc {
     /** Desired opacity */
     opacityDst: /** @type {null | number} */ (null),
     run: false,
-    selectorColor: /** @type {[number, number, number]} */ ([0.6, 0.6, 1]),
-    showSelector: false, // 🚧 remove?
+    selectorColor: /** @type {[number, number, number]} */ ([0.8, 0.8, 1]),
     /**
      * World timer elapsedTime (seconds) when slowness detected.
      * 🤔 Pausing currently resets World timer.
@@ -985,7 +984,6 @@ export class Npc {
    * @param {boolean} shouldShow
    */
   showSelector(shouldShow) {
-    this.s.showSelector = shouldShow;
     this.tint.selector = [...this.s.selectorColor, shouldShow ? 1 : 0];
     this.applyTint();
   }
