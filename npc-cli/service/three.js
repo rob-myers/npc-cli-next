@@ -512,7 +512,6 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
 
   // arrange uvMap as sorted list of lists for fast querying
   // 🔔 assume it defines a grid, where rows/cols can have different widths/heights
-  // 🚧 exclude "default_label" (will follow from remaining 2 triangles)
   const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
     if (sheetId === skinSheetId) {
       (agg[x] ??= [x + width, []])[1].push([y + height, uvRectKey]);

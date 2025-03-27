@@ -164,12 +164,11 @@ export default function Npcs(props) {
         npc.s.offMesh = null;
       }
     },
-    setupSkinning() {
-      w.menu.measure(`npc.setupSkinning`);
-    
+    setupSkins() {
       // 🔔 compute sheetAux e.g. uvMap
       // 🔔 compute skinAux e.g. triangleId -> uvRectKey
 
+      w.menu.measure(`npc.setupSkins`);
       for (const [npcClassKey, gltf] of entries(state.gltf)) {
         
         const meta = npcClassToMeta[npcClassKey];
@@ -196,7 +195,7 @@ export default function Npcs(props) {
           // 🔔 un-weld vertices so triangleId follows from vertexId
           mesh.geometry = mesh.geometry.toNonIndexed();
         }
-        
+
         // 🔔 always recompute: either mesh or sheet might have changed
         const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
   
@@ -207,8 +206,7 @@ export default function Npcs(props) {
           triToKey: triToUvKeys,
         };
       }
-
-      w.menu.measure(`npc.setupSkinning`);
+      w.menu.measure(`npc.setupSkins`);
     },
     async spawn(opts, p) {
       if (typeof opts === 'string') {
@@ -350,7 +348,7 @@ export default function Npcs(props) {
   }, []);
   
   React.useEffect(() => {// onchange gltf or sheets
-    state.setupSkinning();
+    state.setupSkins();
 
     // 🔔 reinitialize respective npcs
     Object.values(state.npc).filter(
@@ -426,7 +424,7 @@ export default function Npcs(props) {
  * - initial mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
- * @property {() => void} setupSkinning
+ * @property {() => void} setupSkins
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc

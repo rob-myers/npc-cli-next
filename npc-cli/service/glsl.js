@@ -29,7 +29,7 @@ const instancedWallsShader = {
     gl_Position = projectionMatrix * modelViewPosition;
     #include <logdepthbuf_vertex>
 
-    // 🚧 remove hard-coded 35.0f
+    // 🚧 remove hard-coded divisor
     vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 40.0f;
   }
 
@@ -287,7 +287,7 @@ export const humanZeroShader = {
   `,
   Frag: /*glsl*/`
   
-  // skins 2048 * 2048 * numSkinSheets
+  // skins: 2048 * 2048 * numSkinSheets
   uniform sampler2DArray atlas;
 
   // 1st row: uv re-mapping (dx, dy, atlasId), and object-pick alpha
@@ -323,6 +323,7 @@ export const humanZeroShader = {
 
     if (objectPick == true) {
       gl_FragColor = encodeNpcObjectPick();
+      // hide some triangles e.g. selector, label, breath
       gl_FragColor.a *= texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid)).a;
       return;
     }

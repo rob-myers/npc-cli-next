@@ -152,10 +152,10 @@
     - ❌ try modify attribute uv
       - ℹ️ decided against expanding label uvs (non-idempotent + hmr)
     - ✅ separate npc.skinAux into npc.sheetAux and npc.skinAux
-    - larger label uv quad in Blender e.g. `[0, 0] ≤ x ≤ [1, 1 /4]`
-      - assume "hard-coded" into models
-      - rewrite triToUvKeys to account for label
-      - replace shader hard-coded uv scaling by template const
+    - ❌ larger label uv quad in human-0.tex and Blender
+      - ℹ️ we're trying to keep things uniform i.e. label is like everything else
+      - ℹ️ if really need to resolution can move label to own area on far right
+    - 🚧 forward uv label min/max into npc shader to avoid hard-coding
   - ✅ can show/hide/tint label
     - ℹ️ hide label `w n.temp-npc.setLabel`
     - ℹ️ show label `w n.temp-npc.setLabel foo`
