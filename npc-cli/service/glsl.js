@@ -339,9 +339,8 @@ export const humanZeroShader = {
 
       texel = texture(
         label,
-        // 🚧 support offset along y-axis
-        // vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid)
-        vec3((vUv.x - labelUvRect4.x) * (1.0 / labelUvRect4.z), 1.0 - (1.0 - vUv.y) * (1.0 / labelUvRect4.a), uid)
+        // 🤔 double negative unclear for y
+        vec3((vUv.x - labelUvRect4.x) * (1.0 / labelUvRect4.z), 1.0 - (labelUvRect4.y + labelUvRect4.a - vUv.y) * (1.0 / labelUvRect4.a), uid)
       );
 
     } else {// everything else

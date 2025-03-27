@@ -140,13 +140,13 @@
 - ✅ can show/hide/tint selector
 - ✅ can object-pick new npc
 
-- 🚧 represent label images as 256-layer DataTextureArray
+- ✅ represent label images as 256-layer DataTextureArray
   - ℹ️ requires bounds on max width/height of label
   - ✅ colour it red
   - ✅ position correctly
     - ℹ️ we're relying on dimensions set in Blender
   - ✅ render npc.key
-  - 🚧 try avoid label flicker via larger UV area
+  - ✅ try avoid label flicker via larger UV area
     - ✅ fix Blender UVs slight error
     - ✅ detect label min/max uvs
     - ❌ try modify attribute uv
@@ -155,10 +155,10 @@
     - ❌ larger label uv quad in human-0.tex and Blender
       - ℹ️ we're trying to keep things uniform i.e. label is like everything else
       - ℹ️ if really need to resolution can move label to own area on far right
-    - 🚧 forward uv label rect into npc shader to avoid hard-coding
+    - ✅ forward uv label rect into npc shader to avoid hard-coding
       - ✅ remove width, height hard-coding
       - ✅ can offset along x-axis
-      - 🚧 can offset along y-axis
+      - ✅ can offset along y-axis
   - ✅ can show/hide/tint label
     - ℹ️ hide label `w n.rob.setLabel`
     - ℹ️ show label `w n.rob.setLabel foo`
