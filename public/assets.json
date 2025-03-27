@@ -495,12 +495,21 @@
         "width": 60,
         "height": 60
       },
+      "icon--robot": {
+        "icon": true,
+        "decorImgKey": "icon--robot",
+        "sheetId": 0,
+        "x": 438,
+        "y": 114,
+        "width": 60,
+        "height": 60
+      },
       "icon--square": {
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
         "x": 438,
-        "y": 114,
+        "y": 176,
         "width": 38,
         "height": 58
       }
@@ -1282,7 +1291,7 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -1118186859},
-    "imagesHash": 138519932
+    "imagesHash": -688454002
   },
   "skin": {
     "numSheets": {"human-0": 2},

@@ -197,9 +197,10 @@ export const fromDecorImgKey = {// 🔔 must extend when adding new decor
   'icon--door-locked': true,
   'icon--door-open': true,
   'icon--door-unlocked': true,
-  'icon--warn': true,
   'icon--key-card': true,
+  'icon--robot': true,
   'icon--square': true,
+  'icon--warn': true,
 };
 
 /**
