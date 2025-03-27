@@ -298,6 +298,7 @@ export const humanZeroShader = {
   // 🔔 label must be a quad i.e. two triangles
   uniform sampler2DArray label;
   uniform int labelTriIds[2];
+  uniform vec4 labelUvRect4;
 
   uniform vec3 diffuse;
   uniform float opacity;
@@ -336,10 +337,11 @@ export const humanZeroShader = {
     
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {// label quad
 
-      // 🚧 avoid hard-coding
+      // 🚧 avoid hard-coding: label can be offset
       texel = texture(
         label,
-        vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid)
+        // vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid)
+        vec3(vUv.x * (1.0 / labelUvRect4.z), 1.0 - (1.0 - vUv.y) * (1.0 / labelUvRect4.a), uid)
       );
 
     } else {// everything else
@@ -518,6 +520,7 @@ export const HumanZeroMaterial = shaderMaterial(
     label: emptyDataArrayTexture,
     labelHeight: 0,
     labelTriIds: [],
+    labelUvRect4: new THREE.Vector4(),
     objectPick: false,
     opacity: 1,
     uid: 0,

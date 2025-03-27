@@ -366,4 +366,12 @@ declare namespace NPC {
    * Values are `[r, g, b, a]` where `r`, `g`, `b`, `a` in `[0, 1]`
    */
   type SkinTint = Partial<Record<Key.SkinPart, [number, number, number, number]>>
+
+  interface SkinAux {
+    npcClassKey: Key.NpcClass;
+    labelTriIds: number[];
+    labelUvRect4: [number, number, number, number];
+    partToUv: NPC.SkinPartToUvRect;
+    triToKey: NPC.TriToUvKeys;
+  }
 }

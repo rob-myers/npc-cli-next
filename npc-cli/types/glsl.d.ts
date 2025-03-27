@@ -4,6 +4,7 @@ declare module '@react-three/fiber' {
   interface SupportsObjectPick {
     objectPick?: boolean;
   }
+  type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
   type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
   type Vector2Input = import('three').Vector2Tuple | import('three').Vector2;
 
@@ -25,6 +26,7 @@ declare module '@react-three/fiber' {
       labelHeight: number;
       /** Exactly two triangle ids corresponding to the label quad */
       labelTriIds: number[];
+      labelUvRect4: Vector4Input;
       opacity?: number;
       uid: number;
     } & SupportsObjectPick;

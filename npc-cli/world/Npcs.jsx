@@ -30,11 +30,6 @@ export default function Npcs(props) {
     idToKey: new Map(),
     sheetAux: /** @type {*} */ ({}),
     skinAux: /** @type {*} */ ({}),
-    label: {
-      count: 0,
-      lookup: {},
-      tex: new THREE.CanvasTexture(getCanvas(`${w.key} npc.label`)),
-    },
     npc: {},
     onStuckCustom: null,
     physicsPositions: [],
@@ -198,10 +193,14 @@ export default function Npcs(props) {
 
         // 🔔 always recompute: either mesh or sheet might have changed
         const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
-  
+        const labelUvRect = uvMap.default_label;
+
         state.skinAux[npcClassKey] = {
           npcClassKey: meta.npcClassKey,
           labelTriIds,
+          labelUvRect4: labelUvRect
+            ? [labelUvRect.x, labelUvRect.y, labelUvRect.width, labelUvRect.height]
+            : [0, 0, 0, 0],
           partToUv: partToUvRect,
           triToKey: triToUvKeys,
         };
@@ -350,15 +349,19 @@ export default function Npcs(props) {
   React.useEffect(() => {// onchange gltf or sheets
     state.setupSkins();
 
-    // 🔔 reinitialize respective npcs
-    Object.values(state.npc).filter(
-      npc => npc.m.animations !== state.gltf[npc.def.classKey].animations
-    ).forEach(npc => {
-      npc.initialize(state.gltf[npc.def.classKey]);
-      npc.mixer = emptyAnimationMixer; // overwritten on remount
-      npc.epochMs = Date.now(); // invalidate cache
+    Object.values(state.npc).forEach(npc => {
+      // update stale ref
+      npc.skinAux = state.skinAux[npc.def.classKey];
+
+      if (npc.m.animations !== state.gltf[npc.def.classKey].animations) {
+        // reinitialize if changed meshes
+        npc.initialize(state.gltf[npc.def.classKey]);
+        npc.mixer = emptyAnimationMixer; // overwritten on remount
+        npc.epochMs = Date.now(); // invalidate cache
+      }
     });
-    
+
+    update();
   }, [...Object.values(state.gltf), w.hash.sheets]);
 
   return (
@@ -388,7 +391,6 @@ export default function Npcs(props) {
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
- * @property {import("../service/three").LabelsSheetAndTex} label
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
  * @property {{ [npcKey: string]: Npc }} npc
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
@@ -411,12 +413,7 @@ export default function Npcs(props) {
  * - initial `sheetId` relative to npcClassKey
  * - `sheetTexIds` (mapping from sheetId to DataTextureArray index)
  * - uv map `uvMap` (over all sheets)
- * @property {Record<Key.NpcClass, {
- *   npcClassKey: Key.NpcClass;
- *   labelTriIds: number[];
- *   partToUv: NPC.SkinPartToUvRect;
- *   triToKey: NPC.TriToUvKeys;
- * }>} skinAux
+ * @property {Record<Key.NpcClass, NPC.SkinAux>} skinAux
  * For each npcClassKey (a.k.a 3d model), its:
  * - `npcClassKey`
  * - triangle ids `labelTriIds` corresponds to label quad
@@ -492,9 +489,12 @@ function NPC({ npc }) {
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
           diffuse={[.6, .6, .6]}
+
           label={npc.w.texNpcLabel.tex}
           labelHeight={wallHeight * (1 / 0.65)}
-          labelTriIds={npc.labelTriIds}
+          labelTriIds={npc.skinAux.labelTriIds}
+          labelUvRect4={npc.skinAux.labelUvRect4}
+
           opacity={npc.s.opacity}
           transparent
           uid={npc.def.uid}

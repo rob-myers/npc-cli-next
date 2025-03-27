@@ -54,8 +54,8 @@ export class Npc {
     selector: [1, 1, 1, 0],
   });
 
-  /** @type {number[]} Shortcut to `this.w.npc.skinAux[this.def.key].labelTriIds` */
-  labelTriIds = [];
+  /** Shortcut to `this.w.npc.skinAux[this.def.key]` */
+  skinAux = /** @type {NPC.SkinAux} */ ({});
 
   /** State */
   s = {
@@ -131,7 +131,6 @@ export class Npc {
     this.def = def;
     this.w = w;
     this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
-    this.labelTriIds = w.npc.skinAux[def.classKey].labelTriIds;
   }
 
   /**
@@ -567,6 +566,8 @@ export class Npc {
 
     this.applySkin();
     this.applyTint();
+
+    this.skinAux = this.w.npc.skinAux[this.def.classKey];
   }
 
   /**

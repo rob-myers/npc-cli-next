@@ -502,7 +502,6 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
 export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
   const triToUvKeys = /** @type {NPC.TriToUvKeys} */ ([]);
   const partToUvRect = /** @type {NPC.SkinPartToUvRect} */ ({});
-  const labelTriIds = /** @type {number[]} */ ([]);
 
   if (skinnedMesh.geometry.index !== null) {
     // 🔔 geometry must be un-welded i.e. triangles pairwise disjoint,
@@ -526,10 +525,8 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
   const tris = range(numVerts / 3).map(i => [3 * i, 3 * i + 1, 3 * i + 2])
   /** Centre of mass of each UV-triangle (inside triangle) */
   const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
-  const uvLabel = {
-    min: new Vect(+Infinity, +Infinity),
-    max: new Vect(-Infinity, -Infinity),
-  };
+
+  const labelTriIds = /** @type {number[]} */ ([]);
   
   // find uvRect fast via sorted rects
   // also compute labelTriIds and label uv min/max
@@ -547,19 +544,16 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
     partToUvRect[skinPartKey] = uvMap[uvRectKey];
     if (skinPartKey === 'label') {
       labelTriIds.push(triId);
-      const baseVertexId = triId * 3;
-      uvs.slice(baseVertexId, baseVertexId + 3).forEach(({x,y}) => {
-        uvLabel.min.x = Math.min(x, uvLabel.min.x);
-        uvLabel.min.y = Math.min(y, uvLabel.min.y);
-        uvLabel.max.x = Math.max(x, uvLabel.max.x);
-        uvLabel.max.y = Math.max(y, uvLabel.max.y);
-      });
     }
   }
   
   if (labelTriIds.length !== 2) {
-    warn(`expected exactly 2 triangles inside uv-rect default_label: saw ${labelTriIds.length}`);
+    warn(`expected exactly 2 triangles inside uv-rect default_label: ${JSON.stringify(labelTriIds)}`);
   }
 
-  return { triToUvKeys, partToUvRect, labelTriIds };
+  return {
+    triToUvKeys,
+    partToUvRect,
+    labelTriIds,
+  };
 }
