@@ -155,18 +155,20 @@
     - ❌ larger label uv quad in human-0.tex and Blender
       - ℹ️ we're trying to keep things uniform i.e. label is like everything else
       - ℹ️ if really need to resolution can move label to own area on far right
-    - 🚧 forward uv label min/max into npc shader to avoid hard-coding
+    - 🚧 forward uv label rect into npc shader to avoid hard-coding
+      - ✅ remove width, height hard-coding
+      - ✅ can offset along x-axis
+      - 🚧 can offset along y-axis
   - ✅ can show/hide/tint label
-    - ℹ️ hide label `w n.temp-npc.setLabel`
-    - ℹ️ show label `w n.temp-npc.setLabel foo`
-    - ℹ️ hide label `w n.temp-npc.showLabel`
-    - ℹ️ show label `w n.temp-npc.showLabel true`
+    - ℹ️ hide label `w n.rob.setLabel`
+    - ℹ️ show label `w n.rob.setLabel foo`
+    - ℹ️ hide label `w n.rob.showLabel`
+    - ℹ️ show label `w n.rob.showLabel true`
     - can tint using e.g.
       ```ts
       npc.tint.label = [1, 0.5, 0.5, 1];
       npc.applyTint();
       ```
-
   - ✅ ensure label hidden during object-pick (seems it is in front of floor)
     - not why it works?
   - ✅ clarify label max length
@@ -178,8 +180,8 @@
 - ✅ remove code from profile-awaitWorld and move to profile-1
 - ✅ npc object-pick ignores selector quad
   - apply alpha from aux uniform (1st row)
-- sometimes object-pick stops working for a bit
-  - maybe issue with `renderObjectPickItem`
+- 🚧 sometimes object-pick stops working for a bit
+  - hopefully label was getting in the way (no longer rendered in object-pick)
 
 - npc speech bubble replaces label
 - npc speech bubble has larger font

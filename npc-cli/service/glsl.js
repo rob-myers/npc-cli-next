@@ -337,11 +337,11 @@ export const humanZeroShader = {
     
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {// label quad
 
-      // 🚧 avoid hard-coding: label can be offset
       texel = texture(
         label,
+        // 🚧 support offset along y-axis
         // vec3(vUv.x * (1.0 / 0.0625), 1.0 - (1.0 - vUv.y) * (1.0 / 0.015625), uid)
-        vec3(vUv.x * (1.0 / labelUvRect4.z), 1.0 - (1.0 - vUv.y) * (1.0 / labelUvRect4.a), uid)
+        vec3((vUv.x - labelUvRect4.x) * (1.0 / labelUvRect4.z), 1.0 - (1.0 - vUv.y) * (1.0 / labelUvRect4.a), uid)
       );
 
     } else {// everything else
