@@ -40164,11 +40164,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -1118186859},
-    "imagesHash": -1795101874
+    "imagesHash": -1637200234
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [939069253, 1474634897]},
+    "svgHashes": {"human-0": [-1242950855, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -40469,6 +40469,13 @@
         "heart-icon_body-overlay-front": {
           "sheetId": 0,
           "x": 0.0625,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "plus-icon_body-overlay-front": {
+          "sheetId": 0,
+          "x": 0.125,
           "y": 0.46875,
           "width": 0.0625,
           "height": 0.125

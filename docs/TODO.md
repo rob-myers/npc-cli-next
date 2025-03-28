@@ -137,10 +137,11 @@
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "base" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "head-overlay-front": { prefix: "small-eyes" } }' && w n.rob.applySkin`
-  - 🚧 icons
+  - ✅ basic icons i.e. body-overlay-front
     - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "robot-icon" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "heart-icon" } }' && w n.rob.applySkin`
-  - tinting
+    - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "plus-icon" } }' && w n.rob.applySkin`
+  - 🚧 tinting
   - ✅ better alt body
 
 - ✅ can show/hide/tint selector
@@ -260,7 +261,8 @@
   - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
   - 🚧 still seeing webp diff
     - personal laptop: `cwebp -version` is `1.3.0` `libsharpyuv: 0.2.0`
-    - work laptop: 🚧
+    - work laptop: `1.5.0 libsharpyuv: 0.4.1`
+    - 🚧 update personal laptop `brew install cwebp`
 
 - ✅ skins: support inherited transforms on `<g>`
   - ℹ️ we often make this mistake
