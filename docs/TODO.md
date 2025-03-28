@@ -192,11 +192,15 @@
 - ✅ npc object-pick ignores selector quad
   - apply alpha from aux uniform (1st row)
 
-- 🚧 sometimes object-pick stops working for a bit
-  - hopefully label was getting in the way (no longer rendered in object-pick)
+- ✅ sometimes object-pick stops working for a bit
+  - seems label was getting in the way (no longer rendered in object-pick)
 
-- npc speech bubble replaces label
-- npc speech bubble has larger font
+- 🚧 npc label positioning
+  - ✅ npc labelHeight uniform is height off floor i.e. world y position
+  - 🚧 directly change npc labelHeight onchange animation
+    - no need for render
+- 🚧 npc speech bubble replaces label
+- 🚧 npc speech bubble has larger font
 
 - another model human-1 or pet-0
 

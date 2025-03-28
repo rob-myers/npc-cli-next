@@ -267,7 +267,9 @@ export const humanZeroShader = {
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
 
       // label quad is above head and faces camera
-      mvPosition = modelViewMatrix * vec4(0.0, labelHeight, 0.0, 1.0);
+      mvPosition = modelMatrix[3]; // translation
+      mvPosition.y = labelHeight;
+      mvPosition = viewMatrix * mvPosition;
       mvPosition.xy += transformed.xy;
       
     } else {// everything else

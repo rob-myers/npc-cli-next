@@ -333,6 +333,7 @@ export default function Npcs(props) {
   w.npc = state;
   w.n = state.npc;
   
+  // load meshes
   entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {
     const { [npcClassKey]: hash } = w.geomorphs.sheet.glbHash;
     const cacheBustingQuery = isDevelopment() ? `?hash=${hash}` : '';
@@ -490,7 +491,7 @@ function NPC({ npc }) {
           diffuse={[.6, .6, .6]}
 
           label={npc.w.texNpcLabel.tex}
-          labelHeight={wallHeight * (1 / 0.65)}
+          labelHeight={wallHeight}
           labelTriIds={npc.skinAux.labelTriIds}
           labelUvRect4={npc.skinAux.labelUvRect4}
 
