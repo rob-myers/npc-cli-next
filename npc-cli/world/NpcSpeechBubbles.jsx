@@ -56,7 +56,11 @@ export default function NpcSpeechBubbles() {
   const update = useUpdate();
 
   return Object.values(state.lookup).map(cm =>
-    <MemoizedContextMenu key={cm.key} cm={cm} epochMs={cm.epochMs}/>
+    <MemoizedContextMenu
+      key={cm.key}
+      cm={cm}
+      epochMs={cm.epochMs}
+    />
   );
 }
 
@@ -77,8 +81,8 @@ function NpcSpeechBubble({ cm }) {
   cm.update = useUpdate();
 
   React.useEffect(() => {
-    // Need extra initial render e.g. when paused
-    cm.update();
+    // Extra initial render e.g. for speak while paused
+    setTimeout(cm.update);
   }, []);
 
   return (
