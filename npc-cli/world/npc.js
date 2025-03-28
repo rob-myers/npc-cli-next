@@ -65,6 +65,7 @@ export class Npc {
     doMeta: /** @type {null | Meta} */ (null),
     fadeSecs: 0.3,
     label: /** @type {null | string} */ (null),
+    labelHeight: 0,
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
     lookSecs: 0.3,
@@ -363,6 +364,23 @@ export class Npc {
    */
   getAngle() {
     return geom.radRange(Math.PI/2 - this.rotation.y);
+  }
+
+  /**
+   * @param {Meta} meta 
+   * @returns {Key.Anim}
+   */
+  getAnimKeyFromMeta(meta) {
+    switch (true) {
+      case meta.sit:
+        return 'Sit';
+      case meta.stand:
+        return 'Idle';
+      case meta.lie:
+        return 'Lie';
+      default:
+        return 'Idle';
+    }
   }
 
   getCornerAfterOffMesh() {
@@ -975,8 +993,7 @@ export class Npc {
   }
 
   /**
-   * 🚧 only used for opacity?
-   * @param {'opacity'} name 
+   * @param {'opacity' | 'labelHeight'} name 
    * @param {number} value 
    */
   setUniform(name, value) {
@@ -1001,38 +1018,23 @@ export class Npc {
   }
 
   /**
-   * Start specific animation, or animation induced by meta.
-   * Returns height to raise off ground e.g. for beds. 
+   * Start animation via key or meta
+   * 🚧 try remove scaleFade
    * @param {Key.Anim | Meta} input
    * @param {number} [scaleFade]
-   * @returns {number}
    */
   startAnimation(input, scaleFade = 1) {
-    if (typeof input === 'string') {
-      const curr = this.m.toAct[this.s.act];
-      const next = this.m.toAct[input];
-      curr.fadeOut(glbFadeOut[this.s.act][input] * scaleFade);
-      next.reset().fadeIn(glbFadeIn[this.s.act][input] * scaleFade).play();
-      this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
-      this.s.act = input;
-      this.updateOffsets();
-      return 0;
-    } else { // input is Meta
-      switch (true) {
-        case input.sit:
-          this.startAnimation('Sit');
-          return typeof input.y === 'number' ? input.y : 0;
-        case input.stand:
-          this.startAnimation('Idle');
-          return 0;
-        case input.lie:
-          this.startAnimation('Lie');
-          return typeof input.y === 'number' ? input.y : 0;
-        default:
-          this.startAnimation('Idle');
-          return 0;
-      }
+    if (typeof input !== 'string') {
+      input = this.getAnimKeyFromMeta(input);
     }
+    const curr = this.m.toAct[this.s.act];
+    const next = this.m.toAct[input];
+    curr.fadeOut(glbFadeOut[this.s.act][input] * scaleFade);
+    next.reset().fadeIn(glbFadeIn[this.s.act][input] * scaleFade).play();
+    this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
+    this.s.act = input;
+
+    this.updateLabelOffsets();
   }
 
   stopMoving(suddenly = false) {
@@ -1091,16 +1093,20 @@ export class Npc {
     }
   }
 
-  updateOffsets() {// contextmenu anchor, speech bubble anchor
-    switch (this.s.act) {
-      case 'Lie':
-        const radians = this.getAngle();
-        this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));
-        break;
-        default:
-        this.offsetMenu.set(0, 0, 0);
-        break;
+  updateLabelOffsets() {
+    if (this.s.act === 'Lie') {// fix contextmenu position
+      const radians = this.getAngle();
+      this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));
+    } else {
+      this.offsetMenu.set(0, 0, 0);
     }
+    
+    // shader label position
+    // 🚧 shortcut to meta[classKey].animHeights
+    this.s.labelHeight = this.position.y + 2;
+    this.setUniform('labelHeight', this.s.labelHeight);
+    
+    // 🚧 speech bubble position ~ same as label
   }
 
   async waitUntilStopped() {

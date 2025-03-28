@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig, wallHeight } from "../service/const";
+import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
 import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
@@ -236,7 +236,6 @@ export default function Npcs(props) {
       }
 
       let npc = state.npc[opts.npcKey];
-      const position = toV3(p);
 
       // orient to meta 🚧 remove from elsewhere
       opts.angle ??= typeof p.meta?.orient === 'number'
@@ -282,25 +281,28 @@ export default function Npcs(props) {
           update();
         });
       }
-
-      // npc.startAnimation('Idle');
+      
+      const position = npc.position.set(
+        p.x, // 🔔 specify height via meta.y 
+        typeof p.meta?.y === 'number' ? p.meta.y : 0,
+        p.y,
+      );
       npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
-      position.y = npc.startAnimation(p.meta ?? 'Idle');
+
+      npc.startAnimation(p.meta ?? {});
 
       if (npc.agent === null) {
-        npc.position.copy(position);
         if (agent === true) {
           const agent = state.attachAgent(npc);
           // 🔔 pin to current position
-          agent.requestMoveTarget(npc.position);
+          agent.requestMoveTarget(position);
           // must tell physics.worker because not moving
           state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
           state.byAgId[agent.agentIndex] = npc;
         }
       } else {
         if (dstNav === false || agent === false) {
-          npc.position.copy(position);
           state.removeAgent(npc);
           // must tell physics.worker because not moving
           state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
@@ -491,7 +493,7 @@ function NPC({ npc }) {
           diffuse={[.6, .6, .6]}
 
           label={npc.w.texNpcLabel.tex}
-          labelHeight={wallHeight}
+          labelHeight={npc.s.labelHeight}
           labelTriIds={npc.skinAux.labelTriIds}
           labelUvRect4={npc.skinAux.labelUvRect4}
 

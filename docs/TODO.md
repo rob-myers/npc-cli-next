@@ -197,9 +197,11 @@
 
 - 🚧 npc label positioning
   - ✅ npc labelHeight uniform is height off floor i.e. world y position
-  - 🚧 directly change npc labelHeight onchange animation
+  - ✅ directly change npc labelHeight onchange animation
     - no need for render
+  - 🚧 use offsets meta.animHeights[animKey]
 - 🚧 npc speech bubble replaces label
+  - e.g. `rob: foo bar baz`
 - 🚧 npc speech bubble has larger font
 
 - another model human-1 or pet-0

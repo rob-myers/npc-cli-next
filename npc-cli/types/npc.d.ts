@@ -32,23 +32,25 @@ declare namespace NPC {
   }
 
   interface ClassDef {
-    /** Format `/3d/{npcClassKey}.glb` */
-    modelUrl: `/3d/${Key.NpcClass}.glb`;
-    npcClassKey: Key.NpcClass;
-    /** e.g. `1` */
-    scale: number;
+    /** Height above npc's head */
+    animHeight: Record<Key.Anim, number>;
+    /** e.g. 'Scene' */
+    groupName: string;
     /** e.g. 'human_0-material' */
     materialName: string; 
     /** e.g. 'human_0' */
     meshName: string;
-    /** e.g. 'Scene' */
-    groupName: string;
-    /** Animation to timeScale, default 1 */
-    timeScale: { [animName: string]: number };
+    /** Format `/3d/{npcClassKey}.glb` */
+    modelUrl: `/3d/${Key.NpcClass}.glb`;
+    npcClassKey: Key.NpcClass;
     /** Pre-scale */
     radius: number;
-    walkSpeed: number;
     runSpeed: number;
+    /** e.g. `1` */
+    scale: number;
+    /** Animation to timeScale, default 1 */
+    timeScale: Partial<Record<Key.Anim, number>>;
+    walkSpeed: number;
   }
 
   interface TexMeta {
