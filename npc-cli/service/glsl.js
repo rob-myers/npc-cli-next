@@ -330,8 +330,12 @@ export const humanZeroShader = {
     }
 
     // tinting (DataArrayTexture has width 128)
+    // 🤔 tint factor is 0.25
     vec4 tint = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
-    tint *= vec4(diffuse, opacity);
+    tint.x = diffuse.x + 0.25 * tint.x;
+    tint.y = diffuse.y + 0.25 * tint.y;
+    tint.z = diffuse.z + 0.25 * tint.z;
+    tint.a *= opacity;
 
     vec4 texel;
     

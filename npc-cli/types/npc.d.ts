@@ -356,10 +356,21 @@ declare namespace NPC {
   type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
   
   type SkinReMap = Partial<Record<Key.SkinPart, {
-    /** Given key `skinPart` this is `foo` such that `foo_${skinPart}` is in npcClassKey's UV map */
+    /**
+     * For example `base`, where `base_{skinPart}` is in this npc's class's uv map.
+     */
     prefix: string;
-    /** Optionally remap to another model's skins */
+    /**
+     * Optionally look inside another model's UV map.
+     */
     classKey?: Key.NpcClass;
+    /** 
+     * Optionally use another skin part:
+     * > e.g. if `prefix` is `body-overlay-back` could use `robot--icon_body-overlay-front`
+     * 
+     * In other words, an icon mapped to body overlay front can also be used on the back.
+     */
+    otherPart?: Key.SkinPart;
   }>>;
 
   /**

@@ -129,7 +129,7 @@
   - ✅ test-body_base-body
   - ✅ test-body-overlay_base-body-overlay
 
-- 🚧 improve human-0
+- ✅ improve human-0
   - ✅ smaller head
   - ✅ possibly red eyes
   - ✅ improve body icon
@@ -141,7 +141,11 @@
     - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "robot-icon" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "heart-icon" } }' && w n.rob.applySkin`
     - `w n.rob.skin | assign '{ "body-overlay-front": { prefix: "plus-icon" } }' && w n.rob.applySkin`
-  - 🚧 tinting
+    - `w n.rob.skin | assign '{ "body-overlay-back": { prefix: "plus-icon", otherPart: "body-overlay-front" } }' && w n.rob.applySkin`
+  - ✅ tinting
+    - ℹ️ tint.{x,y,z} = diffuse.{x,y,z} + 0.25 * tint.{x,y,z}
+    - `w n.rob.tint | assign '{ "body-overlay-front": [1, 0, 0, 0.8] }' && w n.rob.applyTint`
+    - `w n.rob.tint | assign '{ "body-top": [1, 1, 0, 1] }' && w n.rob.applyTint`
   - ✅ better alt body
 
 - ✅ can show/hide/tint selector
@@ -298,6 +302,8 @@
   - ℹ️ previously `<Floor>` was an earlier sibling, but no issue when later sibling
 
 - ✅ images hash should be based on SVGs in case of skins
+
+- support 
 
 - warn if uv-map is not a grid (where rows/cols can have different size)
 

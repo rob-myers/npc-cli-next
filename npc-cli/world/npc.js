@@ -162,23 +162,35 @@ export class Npc {
       const offset = 4 * triangleId;
       const target = this.skin[skinPartKey];
       
-      if (target !== undefined) {
-        const dstUvRectKey = /** @type {const} */ (`${target.prefix}_${skinPartKey}`);
-        const src = uvMap[uvRectKey];
-        const dst = uvMap[dstUvRectKey];
-        // can remap skinPartKey to another model's skin
-        const dstSheetTexId = (target.classKey === undefined
-          ? sheetTexIds : sheetAux[target.classKey].sheetTexIds
-        )[dst.sheetId];
+      data[offset + 3] = skinPartKey in hideInObjectPick ? 0 : 1;
 
-        data[offset + 0] = dst.x - src.x;
-        data[offset + 1] = dst.y - src.y;
-        data[offset + 2] = dstSheetTexId;
-      } else {
+      if (target === undefined) {
         data.set(defaultPixel, offset);
+        continue;
       }
 
-      data[offset + 3] = skinPartKey in hideInObjectPick ? 0 : 1;
+      const dstUvRectKey = /** @type {const} */ (`${target.prefix}_${
+        // 🚧
+        target?.otherPart ?? skinPartKey
+      }`);
+      const src = uvMap[uvRectKey];
+      const dst = uvMap[dstUvRectKey];
+
+      if (dst === undefined) {
+        warn(`${'applySkin'}: dstUvRectKey not found: ${dstUvRectKey}`)
+        data.set(defaultPixel, offset); // fallback to initial skin
+        continue;
+      }
+
+      // can remap skinPartKey to another model's skin
+      const dstSheetTexId = (target.classKey === undefined
+        ? sheetTexIds : sheetAux[target.classKey].sheetTexIds
+      )[dst.sheetId];
+
+      data[offset + 0] = dst.x - src.x;
+      data[offset + 1] = dst.y - src.y;
+      data[offset + 2] = dstSheetTexId;
+
     }
 
     texNpcAux.updateIndex(this.def.uid, data);
