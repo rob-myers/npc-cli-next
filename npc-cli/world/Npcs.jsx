@@ -487,7 +487,7 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.8, .8, .8]}
+          diffuse={[.6, .6, .6]}
 
           label={npc.w.texNpcLabel.tex}
           labelHeight={wallHeight * (1 / 0.65)}
