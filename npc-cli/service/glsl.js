@@ -239,7 +239,7 @@ export const instancedFlatShader = {
 export const humanZeroShader = {
   Vert: /*glsl*/`
 
-  uniform float labelHeight;
+  uniform float labelY;
   uniform int labelTriIds[2];
   varying float dotProduct;
   flat varying int triangleId;
@@ -268,7 +268,7 @@ export const humanZeroShader = {
 
       // label quad is above head and faces camera
       mvPosition = modelMatrix[3]; // translation
-      mvPosition.y = labelHeight;
+      mvPosition.y = labelY;
       mvPosition = viewMatrix * mvPosition;
       mvPosition.xy += transformed.xy;
       
