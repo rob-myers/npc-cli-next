@@ -13,8 +13,6 @@ export class SpeechBubbleApi {
   tracked = /** @type {undefined | import('../components/Html3d').TrackedObject3D} */ (undefined);
   offset = { x: 0, y: 0, z: 0 };
   
-  open = false;
-
   /** @type {import('../components/Html3d').State} */
   html3d = /** @type {*} */ (null);
 

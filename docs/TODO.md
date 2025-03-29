@@ -201,7 +201,7 @@
     - no need for render
   - ✅ use offsets animHeights[animKey] and modelLabelHeight
 
-- 🚧 npc speech bubble replaces label when present
+- ✅ npc speech bubble replaces label when present
   - e.g. `rob: foo bar baz`
   - ✅ same "position" as label (although label centred)
 - 🚧 npc speech bubble has larger font

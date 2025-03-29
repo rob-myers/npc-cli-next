@@ -390,7 +390,9 @@ export default function useHandleEvents(w) {
           break;
         }
         case "speech":
-          w.menu.say(e.npcKey, e.speech);
+          if (e.speech !== '') {
+            w.menu.say(e.npcKey, e.speech);
+          }
           break;
         case "started-moving": {
           /**
@@ -637,17 +639,24 @@ export default function useHandleEvents(w) {
     revokeNpcAccess(npcKey, regexDef) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
-    say(npcKey, ...parts) {// ensure/change/delete
+    async say(npcKey, ...parts) {// ensure/change/delete
       const cm = w.bubble.get(npcKey) || w.bubble.create(npcKey);
       const speechWithLinks = parts.join(' ').trim();
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
 
-      if (speechWithLinks === '') {// delete
-        w.bubble.delete(npcKey);
-      } else {// change
-        cm.open = true;
+      /** Otherwise, stop saying */
+      const startSaying = speechWithLinks !== '';
+      
+      const npc = w.n[npcKey];
+      npc.showLabel(!startSaying);
+      // 🔔 ensure label change whilst paused
+      w.disabled === true && await w.npc.tickOnceDebug();
+
+      if (startSaying) {
         cm.speech = speechSansLinks;
         cm.update();
+      } else {
+        w.bubble.delete(npcKey);
       }
 
       w.events.next({ key: 'speech', npcKey, speech: speechWithLinks });

@@ -20,7 +20,6 @@ export default function NpcSpeechBubbles() {
         const npc = w.n[npcKey];
         cm.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
         cm.baseScale = speechBubbleBaseScale; // speech bubble always scaled
-        cm.open = true;
         update();
         return cm;
       } else {
@@ -92,7 +91,7 @@ function NpcSpeechBubble({ cm }) {
       position={cm.position}
       r3f={cm.w.r3f}
       tracked={cm.tracked ?? null}
-      visible={cm.open}
+      visible
     >
       <div className="bubble">
         <div className="speech">
