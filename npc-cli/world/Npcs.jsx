@@ -89,6 +89,7 @@ export default function Npcs(props) {
     },
     hotReloadNpc(prevNpc) {
       // 🔔 HMR by copying prevNpc non-methods into nextNpc
+      // 🔔 we don't support e.g. variable re-naming in `npc.s`
       const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
       
       nextNpc.epochMs = Date.now(); // invalidate React.Memo
