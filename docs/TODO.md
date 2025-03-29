@@ -259,13 +259,13 @@
 - ✅ fix object-pick of door-light from certain angles
   - something to do with npc
 
-- `w | json` crashed
-- `w | pretty` is huge
-
 - ✅ remove npc `<select>` from ContextMenu opts
+
 - try to simplify walk smoothing "hacks"
 - follow cam zoom should be centred on followed
 - follow option should be tinted when in use
+- `w | json` should not crash
+  - `w | pretty` is huge
 
 - ✅ improve ContextMenu 3d position when npc Lie
 
