@@ -203,6 +203,7 @@
 
 - 🚧 npc speech bubble replaces label when present
   - e.g. `rob: foo bar baz`
+  - ✅ same "position" as label (although label centred)
 - 🚧 npc speech bubble has larger font
 
 - another model human-1

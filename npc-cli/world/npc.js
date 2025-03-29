@@ -1094,36 +1094,22 @@ export class Npc {
 
   updateLabelOffsets() {
     const { act } = this.s;
+    const { animHeights, labelHeight } = this.gltfAux;
+    const offsetY = animHeights[act] + 3 * labelHeight;
     
-    // contextmenu position
-    // 🚧 speech bubble position remove hard-coding
-    switch (act) {
-      case 'Idle':
-      case 'Run':
-      case 'Walk':
-        this.offsetSpeech.y = 1.75 + 0.1;
-        this.offsetMenu.set(0, 0, 0);
-        break;
-      case 'Lie':
-        this.offsetSpeech.y = 0.9;
-        this.offsetMenu.set(0, 0, 0);
-        break;
-      case 'Sit': {
-        // fix contextmenu position
-        const radians = this.getAngle();
-        this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));
-        //
-        this.offsetSpeech.y = 1.6;
-        break;
-      }
-      default:
-        throw testNever(act);
-    }
+    // speech bubble (if exists)
+    this.offsetSpeech.y = offsetY;
 
     // shader label position
-    const { animHeights, labelHeight } = this.gltfAux;
-    this.s.labelY = this.position.y + animHeights[act] + 3 * labelHeight;
+    this.s.labelY = this.position.y + offsetY;
     this.setUniform('labelY', this.s.labelY);
+
+    if (act === 'Lie') {// fix contextmenu position
+      const radians = this.getAngle();
+      this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));      
+    } else {
+      this.offsetMenu.set(0, 0, 0);
+    }
   }
 
   async waitUntilStopped() {
