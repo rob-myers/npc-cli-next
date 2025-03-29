@@ -262,7 +262,7 @@ export function generateSelector(selector, extraArgs) {
     /** @param {string} x @param {any[]} xs */
     return function selectByRegexp(x, ...xs) {
       // 🚧 support extraArgs e.g. extract via '$2 $1'
-      return selector.test.call(selector, typeof x === "string" ? x : JSON.stringify(x));
+      return selector.test.call(selector, typeof x === "string" ? x : jsStringify(x));
     };
   }
   if (selector === undefined) {
