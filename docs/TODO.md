@@ -246,6 +246,9 @@
   - we now always finally update
 - ✅ fix spawn onto decor point orientation
 
+- ✅ fix object-pick of door-light from certain angles
+  - something to do with npc
+
 - try to simplify walk smoothing "hacks"
 
 - follow cam zoom should be centred on followed

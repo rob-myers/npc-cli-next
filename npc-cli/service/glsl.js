@@ -328,6 +328,7 @@ export const humanZeroShader = {
       gl_FragColor = encodeNpcObjectPick();
       // hide some triangles e.g. selector, label, breath
       gl_FragColor.a *= texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid)).a;
+      #include <logdepthbuf_fragment>
       return;
     }
 
