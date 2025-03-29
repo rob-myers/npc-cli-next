@@ -133,7 +133,7 @@ export const npcContextMenuCss = css`
     font-weight: lighter;
     font-style: italic;
     font-size: 1rem;
-    color: #fff;
+    color: rgba(255, 255, 255, 0.6);
     background-color: rgba(0, 0, 0, 0.5);
     
     display: -webkit-box;

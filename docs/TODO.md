@@ -206,11 +206,12 @@
 - ❌ npc speech bubble has larger font
 - ✅ npc speech bubble prefixed with npc key e.g. `rob: foo bar baz`
 
-- 🚧 fade context menu on spawn
+- ✅ fade context menu on spawn
   - ✅ can manually fade ContextMenu whilst not docked
   - ✅ ContextMenu tracks `{ npcKey, object3d, offset }`
   - ✅ fade tracked npc fades non-docked ContextMenu
     - ℹ️ horrendous!
+
 - 🚧 fade speech bubble on spawn
 
 - another model human-1
