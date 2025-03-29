@@ -476,13 +476,18 @@ class srcServiceClass {
         return `(${contents.join(" ")})`;
       }
       case "Assign": {
-        if (node.Name === null) {
+        if (node.Name === null) {// ?
           return this.src(node.Value);
         }
+        if (node.Value === null && node.parent?.type === 'DeclClause') {
+          return this.src(node.Name); // prefer "foo" over "foo="
+        }
+
         const varName = node.Name.Value;
-        if (node.Array) {
+        if (node.Array !== null) {
           return `${varName}=${this.src(node.Array)}`;
-        } else if (node.Index) {
+        }
+        if (node.Index !== null) {
           return `${varName}[${this.src(node.Index)}]${node.Append ? "+" : ""}=${this.src(
             node.Value
           )}`;
