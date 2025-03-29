@@ -317,6 +317,7 @@ export class Npc {
     this.s.fadeSecs = ms / 1000;
     
     try {
+      this.w.events.next({ key: 'fade-npc', npcKey: this.key, opacityDst });
       await new Promise((resolve, reject) => {
         this.resolve.fade = resolve;
         this.reject.fade = reject;
@@ -339,8 +340,6 @@ export class Npc {
    */
   async fadeSpawn(point, opts = {}) {
     try {
-      // const meta = opts.meta ?? point.meta ?? {};
-      // point.meta ??= meta;
       Object.assign(point.meta ??= {}, opts.meta);
       await this.fade(0, 300);
 

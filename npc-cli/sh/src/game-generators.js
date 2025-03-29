@@ -191,7 +191,8 @@ export async function* handleContextMenu({ api, w, datum: e }) {
     }
 
     const { meta } = w.cm;
-    const npcKey = w.cm.npcKey;
+    // 🚧 support contextual npc e.g. open/unlock
+    const npcKey = /** @type {undefined | string} */ (undefined);
 
     switch (e.linkKey) {
       case "look":

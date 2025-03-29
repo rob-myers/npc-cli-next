@@ -137,6 +137,7 @@ declare namespace NPC {
     | { key: 'speech'; npcKey: string; speech: string }
     | { key: 'controls-start' }
     | { key: 'controls-end' }
+    | { key: 'fade-npc'; npcKey: string; opacityDst: number }
     // ...
   );
 

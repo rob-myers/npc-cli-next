@@ -38,7 +38,6 @@ export function ContextMenu() {
     links: [],
     match: {},
     meta: {},
-    npcKey: undefined,
     selectNpcKeys: [],
 
     computeKvsFromMeta(meta) {
@@ -153,11 +152,12 @@ export function ContextMenu() {
       state.computeKvsFromMeta(meta);
       state.computeLinks();
     },
-    setTracked(object, offset) {
-      if (object === undefined) {
+    setTracked(npcKey) {
+      if (npcKey === undefined) {
         state.tracked = undefined;
       } else {
-        state.tracked = { object, offset: offset ?? new THREE.Vector3() };
+        const npc = w.n[npcKey];
+        state.tracked = { npcKey, object: npc.m.group, offset: npc.offsetMenu };
       }
     },
     show() {
@@ -419,12 +419,11 @@ const optsPopUpCss = css`
  * @property {NPC.ContextMenuLink[]} links
  * @property {{ [matcherKey: string]: NPC.ContextMenuMatcher }} match
  * @property {Meta} meta
- * @property {undefined | string} npcKey
  * @property {undefined | import("three").Vector3Like} offset
  * @property {boolean} open
  * @property {import("../components/PopUp").State} optsPopUp
  * @property {import('three').Vector3} position
- * @property {undefined | import('../components/Html3d').TrackedObject3D} tracked
+ * @property {undefined | { npcKey: string } & import('../components/Html3d').TrackedObject3D} tracked
  * @property {boolean} pinned
  * @property {boolean} scaled
  * @property {string[]} selectNpcKeys
@@ -441,7 +440,7 @@ const optsPopUpCss = css`
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext
- * @property {(object3d?: import('three').Object3D, offset?: THREE.Vector3) => void} setTracked
+ * @property {(npcKey?: string) => void} setTracked
  * @property {() => void} show
  * @property {(next?: boolean) => void} toggleDocked optional set
  * @property {() => void} toggleOpen

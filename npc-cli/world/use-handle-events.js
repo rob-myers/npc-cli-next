@@ -665,10 +665,9 @@ export default function useHandleEvents(w) {
       const { lastDown } = w.view;
       if (lastDown === undefined) {
         return;
-      } else if ('npcKey' in lastDown.meta) {
+      } else if (typeof lastDown.meta.npcKey === 'string') {
         const { npcKey } = lastDown.meta;
-        const npc = w.n[npcKey];
-        w.cm.setTracked(npc.m.group, npc.offsetMenu);
+        w.cm.setTracked(npcKey);
         w.debug.setPickIndicator();
         w.cm.setContext(lastDown);
         w.cm.show();

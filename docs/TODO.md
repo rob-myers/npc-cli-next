@@ -208,7 +208,7 @@
 
 - 🚧 fade context menu on spawn
   - ✅ can manually fade ContextMenu whilst not docked
-  - 🚧 ContextMenu tracks npcs not `{ object3d, offset }`
+  - ✅ ContextMenu tracks `{ npcKey, object3d, offset }`
   - 🚧 fade tracked npc fades non-docked ContextMenu
 - fade speech bubble on spawn
 
@@ -256,6 +256,9 @@
 
 - ✅ fix object-pick of door-light from certain angles
   - something to do with npc
+
+- `w | json` crashed
+- `w | pretty` is huge
 
 - ✅ remove npc `<select>` from ContextMenu opts
 - try to simplify walk smoothing "hacks"
