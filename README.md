@@ -64,6 +64,8 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
     w e.grantNpcAccess "rob_${c}" .
     c+=1
   done
+  
+  # commands work while paused via prefix `ptags=no-pause;`
 
   w view.controls.reset
   ```
