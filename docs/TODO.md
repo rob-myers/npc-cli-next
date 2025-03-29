@@ -272,7 +272,11 @@
   - 🚧 still seeing webp diff
     - personal laptop: `cwebp -version` is `1.3.0` `libsharpyuv: 0.2.0`
     - work laptop: `1.5.0 libsharpyuv: 0.4.1`
-    - 🚧 update personal laptop `brew install cwebp`
+    - ❌ update personal laptop `brew install cwebp`
+      - didn't work (apparently need to upgrade OSX 15)
+    - ✅ manually added
+      - https://developers.google.com/speed/webp/docs/precompiled
+      - `cwebp -version` is `1.5.0 libsharpyuv: 0.4.1` 
 
 - ✅ skins: support inherited transforms on `<g>`
   - ℹ️ we often make this mistake
