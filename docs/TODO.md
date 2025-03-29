@@ -206,7 +206,7 @@
 - ❌ npc speech bubble has larger font
 - ✅ npc speech bubble prefixed with npc key e.g. `rob: foo bar baz`
 
-- fade speech bubble on spawn
+- 🚧 fade speech bubble on spawn
 - fade context menu on spawn
 
 - another model human-1

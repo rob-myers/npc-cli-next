@@ -83,6 +83,10 @@ export const Html3d = React.forwardRef(({
         return calculatePosition(v1, r3f.camera, r3f.get().size);
       },
 
+      setNonDockedOpacity(opacity) {
+        state.rootDiv.style.setProperty(html3DOpacityCssVar, `${opacity}`);
+      },
+
     }), { deps: [baseScale, docked, offset, position, tracked] });
 
     React.useImperativeHandle(ref, () => state, []);
@@ -122,10 +126,6 @@ export const Html3d = React.forwardRef(({
       if (docked ? state.innerDiv : state.rootDiv) {
         state.rootDiv.style.visibility = visible ? 'visible' : 'hidden';
         state.rootDiv.className = cx({ docked }, className);
-        // &:not(.docked) {
-        //   transition: opacity ease-out 200ms;
-        //   opacity: var(${html3DOpacityCssVar});
-        // }
         state.rootDiv.style.transition = docked ? '' : 'opacity ease-out 200ms';
         state.rootDiv.style.opacity = docked ? '' : `var(${html3DOpacityCssVar})`;
       }
@@ -163,16 +163,10 @@ export const Html3d = React.forwardRef(({
 * @property {number} zoom
 * @property {(rootState?: import('@react-three/fiber').RootState) => void} onFrame
 * @property {() => [number, number]} computePosition
+* @property {(opacity: number) => void} setNonDockedOpacity
 */
 
 export const html3DOpacityCssVar = '--html-3d-opacity';
-
-const rootCss = css`
-  &:not(.docked) {
-    transition: opacity ease-out 200ms;
-    opacity: var(${html3DOpacityCssVar});
-  }
-`;
 
 const eps = 0.001;
 const v1 = new THREE.Vector3()
