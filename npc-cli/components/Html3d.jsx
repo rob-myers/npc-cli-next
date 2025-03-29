@@ -83,10 +83,6 @@ export const Html3d = React.forwardRef(({
         return calculatePosition(v1, r3f.camera, r3f.get().size);
       },
 
-      setNonDockedOpacity(opacity) {
-        state.rootDiv.style.setProperty(html3DOpacityCssVar, `${opacity}`);
-      },
-
     }), { deps: [baseScale, docked, offset, position, tracked] });
 
     React.useImperativeHandle(ref, () => state, []);
@@ -163,7 +159,6 @@ export const Html3d = React.forwardRef(({
 * @property {number} zoom
 * @property {(rootState?: import('@react-three/fiber').RootState) => void} onFrame
 * @property {() => [number, number]} computePosition
-* @property {(opacity: number) => void} setNonDockedOpacity
 */
 
 export const html3DOpacityCssVar = '--html-3d-opacity';

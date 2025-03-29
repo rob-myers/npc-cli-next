@@ -152,6 +152,9 @@ export function ContextMenu() {
       state.computeKvsFromMeta(meta);
       state.computeLinks();
     },
+    setNonDockedOpacity(opacity) {
+      state.html3d.rootDiv.style.setProperty(contextMenuOpacityCssVar, `${opacity}`);
+    },
     setTracked(npcKey) {
       if (npcKey === undefined) {
         state.tracked = undefined;
@@ -321,6 +324,9 @@ function ContextMenuMeta({ state }) {
 
 const contextMenuWidthPx = 200;
 
+export const contextMenuOpacityCssVar = '--content-menu-opacity';
+
+
 export const contextMenuCss = css`
   position: absolute;
   left: 0;
@@ -340,6 +346,9 @@ export const contextMenuCss = css`
       border: 1px solid #333;
       padding: 4px;
       font-size: small;
+
+      opacity: var(${contextMenuOpacityCssVar});
+      transition: opacity 200ms;
     }
   }
 
@@ -440,6 +449,7 @@ const optsPopUpCss = css`
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext
+ * @property {(opacity: number) => void} setNonDockedOpacity
  * @property {(npcKey?: string) => void} setTracked
  * @property {() => void} show
  * @property {(next?: boolean) => void} toggleDocked optional set

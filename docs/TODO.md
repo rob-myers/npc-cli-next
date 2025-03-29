@@ -209,8 +209,9 @@
 - 🚧 fade context menu on spawn
   - ✅ can manually fade ContextMenu whilst not docked
   - ✅ ContextMenu tracks `{ npcKey, object3d, offset }`
-  - 🚧 fade tracked npc fades non-docked ContextMenu
-- fade speech bubble on spawn
+  - ✅ fade tracked npc fades non-docked ContextMenu
+    - ℹ️ horrendous!
+- 🚧 fade speech bubble on spawn
 
 - another model human-1
 
