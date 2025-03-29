@@ -93,10 +93,9 @@ function NpcSpeechBubble({ cm }) {
       tracked={cm.tracked ?? null}
       visible
     >
-      <div className="bubble">
-        <div className="speech">
-          {cm.speech}
-        </div>
+      <div className="speech">
+        <span className="npc-key">{cm.key}{': '}</span>
+        {cm.speech}
       </div>
     </Html3d>
   );
@@ -130,29 +129,24 @@ export const npcContextMenuCss = css`
     justify-content: center;
   }
   
-  .bubble {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
-    font-size: 1rem;
-    color: #ff9;
-    
-    transition: width 300ms;
-  }
-
   .speech {
     font-weight: lighter;
     font-style: italic;
     font-size: 1rem;
-
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.5);
+    
     display: -webkit-box;
     justify-content: center;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical; 
     overflow: hidden;
-
+    
     text-align: center;
+  }
+
+  .npc-key {
+    font-style: normal;
+    color: #ff9;
   }
 `;

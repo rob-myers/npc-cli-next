@@ -202,9 +202,12 @@
   - ✅ use offsets animHeights[animKey] and modelLabelHeight
 
 - ✅ npc speech bubble replaces label when present
-  - e.g. `rob: foo bar baz`
   - ✅ same "position" as label (although label centred)
-- 🚧 npc speech bubble has larger font
+- ❌ npc speech bubble has larger font
+- ✅ npc speech bubble prefixed with npc key e.g. `rob: foo bar baz`
+
+- fade speech bubble on spawn
+- fade context menu on spawn
 
 - another model human-1
 
