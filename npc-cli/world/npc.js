@@ -54,7 +54,7 @@ export class Npc {
   });
 
   /** Shortcut to `this.w.npc.gltfAux[this.def.classKet]` */
-  gltfAux = /** @type {NPC.SkinAux} */ ({});
+  gltfAux = /** @type {NPC.GltfAux} */ ({});
 
   /** State */
   s = {
@@ -64,7 +64,7 @@ export class Npc {
     doMeta: /** @type {null | Meta} */ (null),
     fadeSecs: 0.3,
     label: /** @type {null | string} */ (null),
-    labelHeight: 0,
+    labelY: 0,
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
     lookSecs: 0.3,
@@ -992,7 +992,7 @@ export class Npc {
   }
 
   /**
-   * @param {'opacity' | 'labelHeight'} name 
+   * @param {'opacity' | 'labelY'} name 
    * @param {number} value 
    */
   setUniform(name, value) {
@@ -1101,10 +1101,12 @@ export class Npc {
     }
     
     // shader label position
-    // 🚧 shortcut to meta[classKey].animHeights
-    const labelHeight = 0.25 * 0.65; // 🚧
-    this.s.labelHeight = this.position.y + this.gltfAux.animHeights[this.s.act] + 3 * labelHeight;
-    this.setUniform('labelHeight', this.s.labelHeight);
+    const { animHeights, labelHeight } = this.gltfAux;
+    this.s.labelY = (
+      (this.position.y + animHeights[this.s.act] + labelHeight)
+      + 2 * labelHeight
+    );
+    this.setUniform('labelY', this.s.labelY);
     
     // 🚧 speech bubble position ~ same as label
   }

@@ -195,11 +195,11 @@
 - ✅ sometimes object-pick stops working for a bit
   - seems label was getting in the way (no longer rendered in object-pick)
 
-- 🚧 npc label positioning
+- ✅ npc label positioning
   - ✅ npc labelHeight uniform is height off floor i.e. world y position
   - ✅ directly change npc labelHeight onchange animation
     - no need for render
-  - 🚧 use offsets meta.animHeights[animKey]
+  - ✅ use offsets animHeights[animKey] and modelLabelHeight
 - 🚧 npc speech bubble replaces label
   - e.g. `rob: foo bar baz`
 - 🚧 npc speech bubble has larger font

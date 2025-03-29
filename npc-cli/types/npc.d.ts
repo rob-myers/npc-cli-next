@@ -41,6 +41,8 @@ declare namespace NPC {
     /** Height above npc's head, pre-scale */
     modelAnimHeight: Record<Key.Anim, number>;
     /** Pre-scale */
+    modelLabelHeight: number;
+    /** Pre-scale */
     modelRadius: number;
     /** Format `/3d/{npcClassKey}.glb` */
     modelUrl: `/3d/${Key.NpcClass}.glb`;
@@ -380,12 +382,13 @@ declare namespace NPC {
    */
   type SkinTint = Partial<Record<Key.SkinPart, [number, number, number, number]>>
 
-  interface SkinAux {
+  interface GltfAux {
     npcClassKey: Key.NpcClass;
     labelTriIds: number[];
     labelUvRect4: [number, number, number, number];
     partToUv: NPC.SkinPartToUvRect;
     triToKey: NPC.TriToUvKeys;
     animHeights: Record<Key.Anim, number>;
+    labelHeight: number;
   }
 }

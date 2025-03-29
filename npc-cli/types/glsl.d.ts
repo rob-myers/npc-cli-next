@@ -18,18 +18,10 @@ declare module '@react-three/fiber' {
       objectPickRed?: number;
     } & SupportsObjectPick;
 
-    humanZeroMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
-      atlas: import('three').DataArrayTexture;
-      aux: import('three').DataArrayTexture;
-      diffuse?: Vector3Input;
-      label: import('three').DataArrayTexture;
-      labelHeight: number;
-      /** Exactly two triangle ids corresponding to the label quad */
-      labelTriIds: number[];
-      labelUvRect4: Vector4Input;
-      opacity?: number;
-      uid: number;
-    } & SupportsObjectPick;
+    humanZeroMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & HumanZeroMaterialProps
+    );
 
     instancedLabelsMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       map: import('three').CanvasTexture;
@@ -52,4 +44,27 @@ declare module '@react-three/fiber' {
     } & SupportsObjectPick;
 
   }
+}
+
+type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
+type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
+
+// 🚧 migrate all custom shaders
+export interface HumanZeroMaterialProps {
+  atlas: import('three').DataArrayTexture;
+  aux: import('three').DataArrayTexture;
+  diffuse: Vector3Input;
+  label: import('three').DataArrayTexture;
+  labelY: number;
+  labelTriIds: number[];
+  labelUvRect4: Vector4Input;
+  /* A default value must be provided for object-pick to work */
+  objectPick?: boolean;
+  opacity: number;
+  uid: number;
+}
+
+/** From node_modules/@react-three/drei/core/shaderMaterial.d.ts */
+export interface ShaderMaterialArg {
+  [name: string]: import('three').CubeTexture | import('three').Texture | Int32Array | Float32Array | import('three').Matrix4 | import('three').Matrix3 | import('three').Quaternion | import('three').Vector4 | import('three').Vector3 | import('three').Vector2 | import('three').Color | MeshBVHUniformStruct | number | boolean | Array<any> | null;
 }

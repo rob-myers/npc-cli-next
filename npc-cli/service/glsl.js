@@ -521,19 +521,25 @@ export const InstancedFlatMaterial = shaderMaterial(
   instancedFlatShader.Frag,
 );
 
+/** @type {import('@/npc-cli/types/glsl').HumanZeroMaterialProps} */
+const humanZeroMaterialDefaultProps = {
+  atlas: emptyDataArrayTexture,
+  aux: emptyDataArrayTexture,
+  diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  label: emptyDataArrayTexture,
+  labelY: 0,
+  labelTriIds: [],
+  labelUvRect4: new THREE.Vector4(),
+  objectPick: false,
+  opacity: 1,
+  uid: 0,
+};
+
+
 export const HumanZeroMaterial = shaderMaterial(
-  {
-    atlas: emptyDataArrayTexture,
-    aux: emptyDataArrayTexture,
-    diffuse: new THREE.Vector3(1, 0.9, 0.6),
-    label: emptyDataArrayTexture,
-    labelHeight: 0,
-    labelTriIds: [],
-    labelUvRect4: new THREE.Vector4(),
-    objectPick: false,
-    opacity: 1,
-    uid: 0,
-  },
+  /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
+    humanZeroMaterialDefaultProps
+  ),
   humanZeroShader.Vert,
   humanZeroShader.Frag,
 );

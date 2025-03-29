@@ -89,8 +89,12 @@ export default function Npcs(props) {
     },
     hotReloadNpc(prevNpc) {
       // 🔔 HMR by copying prevNpc non-methods into nextNpc
-      // 🔔 we don't support e.g. variable re-naming in `npc.s`
-      const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
+      // 🔔 supports variable re-naming in `npc.s`
+      // const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
+      const nextNpc = state.npc[prevNpc.key] = new Npc(prevNpc.def, w)
+      const { s, ...rest } = nextNpc; //@ts-ignore
+      Object.keys(s).forEach(k => k in prevNpc.s && (s[k] = prevNpc.s[k])); //@ts-ignore
+      Object.keys(rest).forEach(k => k in prevNpc && (nextNpc[k] = prevNpc[k]));
       
       nextNpc.epochMs = Date.now(); // invalidate React.Memo
       if (nextNpc.agent !== null) {// avoid stale ref
@@ -206,6 +210,7 @@ export default function Npcs(props) {
           animHeights: mapValues(
             meta.modelAnimHeight, x => x * meta.scale
           ),
+          labelHeight: meta.modelLabelHeight * meta.scale,
         };
       }
       w.menu.measure(`npc.setupSkins`);
@@ -420,7 +425,7 @@ export default function Npcs(props) {
  * - initial `sheetId` relative to npcClassKey
  * - `sheetTexIds` (mapping from sheetId to DataTextureArray index)
  * - uv map `uvMap` (over all sheets)
- * @property {Record<Key.NpcClass, NPC.SkinAux>} gltfAux
+ * @property {Record<Key.NpcClass, NPC.GltfAux>} gltfAux
  * For each npcClassKey (a.k.a 3d model), its:
  * - `npcClassKey`
  * - triangle ids `labelTriIds` corresponds to label quad
@@ -498,7 +503,7 @@ function NPC({ npc }) {
           diffuse={[.6, .6, .6]}
 
           label={npc.w.texNpcLabel.tex}
-          labelHeight={npc.s.labelHeight}
+          labelY={npc.s.labelY}
           labelTriIds={npc.gltfAux.labelTriIds}
           labelUvRect4={npc.gltfAux.labelUvRect4}
 
