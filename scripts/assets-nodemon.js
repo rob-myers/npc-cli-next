@@ -47,7 +47,9 @@ async function onRestart(nodemonFiles = []) {
   const startEpochMs = Date.now();
   const changedFiles = Array.from(changed.keys());
   await labelledSpawn('assets',
-    'sucrase-node', 'scripts/assets', `--changedFiles=${JSON.stringify(changedFiles)}`,
+    // 'sucrase-node',
+    'bun',
+    'scripts/assets', `--changedFiles=${JSON.stringify(changedFiles)}`,
   );
   const seconds = ((Date.now() - startEpochMs) / 1000).toFixed(2);
   info(`took ${seconds}s`);
