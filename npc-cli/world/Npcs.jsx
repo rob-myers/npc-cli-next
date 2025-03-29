@@ -286,11 +286,12 @@ export default function Npcs(props) {
         });
       }
       
-      const position = npc.position.set(
-        p.x, // 🔔 specify height via meta.y 
-        typeof p.meta?.y === 'number' ? p.meta.y : 0,
-        p.y,
-      );
+      // 🔔 input `p` can be Vect (x, y) or Vector3Like (x, y, z)
+      const position = toV3(p);
+      // 🔔 non-zero height must be set via `p.meta`
+      position.y = typeof p.meta?.y === 'number' ? p.meta.y : 0;
+
+      npc.position.copy(position);
       npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
@@ -494,7 +495,7 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.6, .6, .6]}
+          diffuse={[.9, .9, .9]}
 
           label={npc.w.texNpcLabel.tex}
           labelHeight={npc.s.labelHeight}
