@@ -383,7 +383,6 @@ export default function useHandleEvents(w) {
           (state.roomToNpcs[e.gmRoomId.gmId][e.gmRoomId.roomId] ??= new Set()).add(e.npcKey);
 
           w.cm.refreshOptsPopUp(); // update npcKey select
-          w.bubble.get(e.npcKey)?.updateOffset(); // update speechBubble height
 
           if (w.disabled === true) {
             w.npc.tickOnceDebounced();

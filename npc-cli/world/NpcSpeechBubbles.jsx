@@ -18,9 +18,7 @@ export default function NpcSpeechBubbles() {
       if (npcKey in w.n) {
         const cm = state.lookup[npcKey] = new SpeechBubbleApi(npcKey, w);
         const npc = w.n[npcKey];
-        npc.offsetSpeech.set(0, 0, 0);
         cm.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
-        cm.updateOffset();
         cm.baseScale = speechBubbleBaseScale; // speech bubble always scaled
         cm.open = true;
         update();
@@ -88,7 +86,7 @@ function NpcSpeechBubble({ cm }) {
   return (
     <Html3d
       ref={cm.html3dRef.bind(cm)}
-      css={cm.key === 'default' ? undefined: npcContextMenuCss}
+      css={npcContextMenuCss}
       baseScale={cm.baseScale}
       offset={cm.offset}
       position={cm.position}

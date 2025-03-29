@@ -5,7 +5,7 @@ import { deltaAngle } from "maath/misc";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
-import { error, info, warn } from '../service/generic';
+import { error, info, testNever, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
@@ -1093,22 +1093,37 @@ export class Npc {
   }
 
   updateLabelOffsets() {
-    if (this.s.act === 'Lie') {// fix contextmenu position
-      const radians = this.getAngle();
-      this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));
-    } else {
-      this.offsetMenu.set(0, 0, 0);
-    }
+    const { act } = this.s;
     
+    // contextmenu position
+    // 🚧 speech bubble position remove hard-coding
+    switch (act) {
+      case 'Idle':
+      case 'Run':
+      case 'Walk':
+        this.offsetSpeech.y = 1.75 + 0.1;
+        this.offsetMenu.set(0, 0, 0);
+        break;
+      case 'Lie':
+        this.offsetSpeech.y = 0.9;
+        this.offsetMenu.set(0, 0, 0);
+        break;
+      case 'Sit': {
+        // fix contextmenu position
+        const radians = this.getAngle();
+        this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));
+        //
+        this.offsetSpeech.y = 1.6;
+        break;
+      }
+      default:
+        throw testNever(act);
+    }
+
     // shader label position
     const { animHeights, labelHeight } = this.gltfAux;
-    this.s.labelY = (
-      (this.position.y + animHeights[this.s.act] + labelHeight)
-      + 2 * labelHeight
-    );
+    this.s.labelY = this.position.y + animHeights[act] + 3 * labelHeight;
     this.setUniform('labelY', this.s.labelY);
-    
-    // 🚧 speech bubble position ~ same as label
   }
 
   async waitUntilStopped() {

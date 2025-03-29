@@ -54,24 +54,6 @@ export class SpeechBubbleApi {
 
   update = noop
 
-  // 🚧 depends on number of lines of text
-  updateOffset() {
-    const npc = this.w.n[this.key];
-
-    switch (npc.s.act) {
-      case 'Idle':
-      case 'Run':
-      case 'Walk':
-        this.offset.y = 1.75 + 0.1;
-        break;
-      case 'Lie':
-        this.offset.y = 0.9;
-        break;
-      case 'Sit':
-        this.offset.y = 1.6;
-        break;
-    }
-  }
 }
 
 function noop() {};

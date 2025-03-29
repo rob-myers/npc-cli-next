@@ -200,11 +200,12 @@
   - ✅ directly change npc labelHeight onchange animation
     - no need for render
   - ✅ use offsets animHeights[animKey] and modelLabelHeight
-- 🚧 npc speech bubble replaces label
+
+- 🚧 npc speech bubble replaces label when present
   - e.g. `rob: foo bar baz`
 - 🚧 npc speech bubble has larger font
 
-- another model human-1 or pet-0
+- another model human-1
 
 ### Extras
 
