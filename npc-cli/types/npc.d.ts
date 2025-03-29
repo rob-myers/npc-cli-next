@@ -32,19 +32,19 @@ declare namespace NPC {
   }
 
   interface ClassDef {
-    /** Height above npc's head */
-    animHeight: Record<Key.Anim, number>;
     /** e.g. 'Scene' */
     groupName: string;
     /** e.g. 'human_0-material' */
     materialName: string; 
     /** e.g. 'human_0' */
     meshName: string;
+    /** Height above npc's head, pre-scale */
+    modelAnimHeight: Record<Key.Anim, number>;
+    /** Pre-scale */
+    modelRadius: number;
     /** Format `/3d/{npcClassKey}.glb` */
     modelUrl: `/3d/${Key.NpcClass}.glb`;
     npcClassKey: Key.NpcClass;
-    /** Pre-scale */
-    radius: number;
     runSpeed: number;
     /** e.g. `1` */
     scale: number;
@@ -386,5 +386,6 @@ declare namespace NPC {
     labelUvRect4: [number, number, number, number];
     partToUv: NPC.SkinPartToUvRect;
     triToKey: NPC.TriToUvKeys;
+    animHeights: Record<Key.Anim, number>;
   }
 }

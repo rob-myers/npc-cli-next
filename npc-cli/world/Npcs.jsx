@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
-import { entries, isDevelopment, pause, range, takeFirst, warn } from "../service/generic";
+import { entries, isDevelopment, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
@@ -25,10 +25,10 @@ export default function Npcs(props) {
     byAgId: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
+    gltfAux: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
     idToKey: new Map(),
     sheetAux: /** @type {*} */ ({}),
-    skinAux: /** @type {*} */ ({}),
     npc: {},
     onStuckCustom: null,
     physicsPositions: [],
@@ -161,7 +161,7 @@ export default function Npcs(props) {
     },
     setupSkins() {
       // 🔔 compute sheetAux e.g. uvMap
-      // 🔔 compute skinAux e.g. triangleId -> uvRectKey
+      // 🔔 compute gltfAux e.g. triangleId -> uvRectKey
 
       w.menu.measure(`npc.setupSkins`);
       for (const [npcClassKey, gltf] of entries(state.gltf)) {
@@ -195,7 +195,7 @@ export default function Npcs(props) {
         const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
         const labelUvRect = uvMap.default_label;
 
-        state.skinAux[npcClassKey] = {
+        state.gltfAux[npcClassKey] = {
           npcClassKey: meta.npcClassKey,
           labelTriIds,
           labelUvRect4: labelUvRect
@@ -203,6 +203,9 @@ export default function Npcs(props) {
             : [0, 0, 0, 0],
           partToUv: partToUvRect,
           triToKey: triToUvKeys,
+          animHeights: mapValues(
+            meta.modelAnimHeight, x => x * meta.scale
+          ),
         };
       }
       w.menu.measure(`npc.setupSkins`);
@@ -354,7 +357,7 @@ export default function Npcs(props) {
 
     Object.values(state.npc).forEach(npc => {
       // update stale ref
-      npc.skinAux = state.skinAux[npc.def.classKey];
+      npc.gltfAux = state.gltfAux[npc.def.classKey];
 
       if (npc.m.animations !== state.gltf[npc.def.classKey].animations) {
         // reinitialize if changed meshes
@@ -416,7 +419,7 @@ export default function Npcs(props) {
  * - initial `sheetId` relative to npcClassKey
  * - `sheetTexIds` (mapping from sheetId to DataTextureArray index)
  * - uv map `uvMap` (over all sheets)
- * @property {Record<Key.NpcClass, NPC.SkinAux>} skinAux
+ * @property {Record<Key.NpcClass, NPC.SkinAux>} gltfAux
  * For each npcClassKey (a.k.a 3d model), its:
  * - `npcClassKey`
  * - triangle ids `labelTriIds` corresponds to label quad
@@ -495,8 +498,8 @@ function NPC({ npc }) {
 
           label={npc.w.texNpcLabel.tex}
           labelHeight={npc.s.labelHeight}
-          labelTriIds={npc.skinAux.labelTriIds}
-          labelUvRect4={npc.skinAux.labelUvRect4}
+          labelTriIds={npc.gltfAux.labelTriIds}
+          labelUvRect4={npc.gltfAux.labelUvRect4}
 
           opacity={npc.s.opacity}
           transparent

@@ -53,8 +53,8 @@ export class Npc {
     selector: [1, 1, 1, 0],
   });
 
-  /** Shortcut to `this.w.npc.skinAux[this.def.key]` */
-  skinAux = /** @type {NPC.SkinAux} */ ({});
+  /** Shortcut to `this.w.npc.gltfAux[this.def.classKet]` */
+  gltfAux = /** @type {NPC.SkinAux} */ ({});
 
   /** State */
   s = {
@@ -140,7 +140,7 @@ export class Npc {
   applySkin() {
     const texNpcAux = this.w.texNpcAux;
     const { classKey } = this.def;
-    const { skinAux, sheetAux } = this.w.npc;
+    const { gltfAux: skinAux, sheetAux } = this.w.npc;
     const { sheetId: initSheetId, uvMap, sheetTexIds } = sheetAux[classKey];
     const { triToKey } = skinAux[classKey];
 
@@ -204,7 +204,7 @@ export class Npc {
   applyTint() {
     const texNpcAux = this.w.texNpcAux;
     const classKey = this.def.classKey;
-    const { triToKey } = this.w.npc.skinAux[classKey];
+    const { triToKey } = this.w.npc.gltfAux[classKey];
 
     // THREE.FloatType handle negative uv offsets in applySkin
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
@@ -595,7 +595,7 @@ export class Npc {
     this.applySkin();
     this.applyTint();
 
-    this.skinAux = this.w.npc.skinAux[this.def.classKey];
+    this.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
   /**
@@ -1102,7 +1102,8 @@ export class Npc {
     
     // shader label position
     // 🚧 shortcut to meta[classKey].animHeights
-    this.s.labelHeight = this.position.y + 2;
+    const labelHeight = 0.25 * 0.65; // 🚧
+    this.s.labelHeight = this.position.y + this.gltfAux.animHeights[this.s.act] + 3 * labelHeight;
     this.setUniform('labelHeight', this.s.labelHeight);
     
     // 🚧 speech bubble position ~ same as label

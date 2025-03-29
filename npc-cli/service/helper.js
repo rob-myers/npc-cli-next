@@ -65,7 +65,7 @@ export const helper = {
   },
   
   defaults: {// 🚧
-    radius: npcClassToMeta[defaultClassKey].radius * npcClassToMeta[defaultClassKey].scale / 2,
+    radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale / 2,
     runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale,
     walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale,
   },

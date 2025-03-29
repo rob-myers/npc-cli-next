@@ -334,15 +334,15 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
 export const npcClassToMeta = {
 
   "human-0": {
-    animHeight: {// 🚧 heights prior to scale
-      Idle: 2, Run: 2, Walk: 2, Lie: 0.5, Sit: 1.8,
+    modelAnimHeight: {// 🚧 heights prior to scale
+      Idle: 2.1, Run: 2.1, Walk: 2.1, Lie: 0.5, Sit: 1.6,
     },
     groupName: 'Scene',
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     modelUrl: '/3d/human-0.glb',
     npcClassKey: 'human-0',
-    radius: 0.5,
+    modelRadius: 0.5,
     runSpeed: 4,
     scale: 0.65,
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
