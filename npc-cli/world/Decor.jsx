@@ -196,7 +196,7 @@ export default function Decor(props) {
     },
     createLabelMatrix4(d) {
       const { width, height } = state.label.lookup[d.meta.label];
-      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale);
+      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale) * 0.5;
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
