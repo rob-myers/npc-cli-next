@@ -206,8 +206,11 @@
 - ❌ npc speech bubble has larger font
 - ✅ npc speech bubble prefixed with npc key e.g. `rob: foo bar baz`
 
-- 🚧 fade speech bubble on spawn
-- fade context menu on spawn
+- 🚧 fade context menu on spawn
+  - ✅ can manually fade ContextMenu whilst not docked
+  - 🚧 ContextMenu tracks npcs not `{ object3d, offset }`
+  - 🚧 fade tracked npc fades non-docked ContextMenu
+- fade speech bubble on spawn
 
 - another model human-1
 
@@ -254,8 +257,8 @@
 - ✅ fix object-pick of door-light from certain angles
   - something to do with npc
 
+- ✅ remove npc `<select>` from ContextMenu opts
 - try to simplify walk smoothing "hacks"
-
 - follow cam zoom should be centred on followed
 - follow option should be tinted when in use
 

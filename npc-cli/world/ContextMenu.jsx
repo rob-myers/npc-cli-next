@@ -109,11 +109,6 @@ export function ContextMenu() {
         state.onToggleLink(e);
       }
     },
-    onSelectNpc(e) {
-      const { value } = e.currentTarget;
-      state.npcKey = value in w.n ? value : undefined;
-      state.refreshOptsPopUp();
-    },
     onToggleLink(e) {
       const el = /** @type {HTMLElement} */ (e.target);
       const linkKey = el.dataset.key;
@@ -127,7 +122,6 @@ export function ContextMenu() {
 
       switch (linkKey) {
         // case 'delete': w.c.delete(e.cmKey); break;
-        case 'clear-npc': state.setNpc(); break;
         case 'hide': state.hide(true); break;
         case 'toggle-docked': state.toggleDocked(); break;
         case 'toggle-kvs': state.toggleKvs(); break;
@@ -158,10 +152,6 @@ export function ContextMenu() {
       state.position = position.clone();
       state.computeKvsFromMeta(meta);
       state.computeLinks();
-    },
-    setNpc(npcKey) {
-      state.npcKey = npcKey;
-      update();
     },
     setTracked(object, offset) {
       if (object === undefined) {
@@ -269,19 +259,6 @@ function ContextMenuLinks({ state }) {
         onChange={state.onToggleOptsPopup.bind(state)}
         width={200}
       >
-        <select
-          className="select-npc"
-          onChange={state.onSelectNpc.bind(state)}
-          value={state.npcKey ?? ""}
-        >
-          <option key="none" value="">
-            no npc
-          </option>
-          {state.selectNpcKeys.map(npcKey => 
-            <option key={npcKey} value={npcKey}>{npcKey}</option>
-          )}
-        </select>
-
         <button
           key="toggle-scaled"
           data-key="toggle-scaled"
@@ -418,7 +395,6 @@ export const contextMenuCss = css`
       color: #ff7;
     }
   }
-
 `;
 
 const optsPopUpCss = css`
@@ -429,10 +405,6 @@ const optsPopUpCss = css`
     justify-content: space-around;
     align-items: center;
     font-size: small;
-  
-    select {
-      border: 1px solid #555;
-    }
   }
 ;`
 
@@ -465,12 +437,10 @@ const optsPopUpCss = css`
  * @property {(e: React.PointerEvent) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
- * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onSelectNpc
  * @property {(willOpen: boolean) => void} onToggleOptsPopup
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext
- * @property {(npcKey?: string | undefined) => void} setNpc
  * @property {(object3d?: import('three').Object3D, offset?: THREE.Vector3) => void} setTracked
  * @property {() => void} show
  * @property {(next?: boolean) => void} toggleDocked optional set
