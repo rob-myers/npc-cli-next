@@ -64,10 +64,10 @@ ptags=no-pause; click | filter meta.floor | map --forever '(input, { w, home }) 
 
 w update 'w => w.decor.showLabels = true'
 w update 'w => {
-  w.view.targetFov = w.smallViewport ? 10 : 30;
-  w.view.controlsOpts.minAzimuthAngle = w.smallViewport ? Math.PI / 4 : 0;
-  w.view.controlsOpts.maxAzimuthAngle = w.smallViewport ? Math.PI / 4 : 0;
-  w.view.controlsOpts.maxDistance = w.smallViewport ? 64 : 28;
+  w.view.targetFov = w.smallViewport ? 20 : 30;
+  w.view.controlsOpts.minAzimuthAngle = 0;
+  w.view.controlsOpts.maxAzimuthAngle = 0;
+  w.view.controlsOpts.maxDistance = w.smallViewport ? 20 : 28;
 }'
 
 setupContextMenu
