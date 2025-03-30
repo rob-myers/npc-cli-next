@@ -71,11 +71,17 @@ ptags=no-pause; events | handleLoggerLinks &
 
 setupOnSlowNpc
 
-w update 'w => w.view.controls.setAzimuthalAngle(0)'
-sleep 1
+# force zoom in via maxDistance
+# rotate to fixed angle
 w update 'w => {
-  w.view.targetFov = w.smallViewport ? 20 : 30;
+  w.view.controlsOpts.maxDistance = w.smallViewport ? 24 : 16;
+  w.view.controls.setAzimuthalAngle(0);
+}'
+sleep 1
+# fix rotation, fov, maxDistance
+w update 'w => {
   w.view.controlsOpts.minAzimuthAngle = 0;
   w.view.controlsOpts.maxAzimuthAngle = 0;
-  w.view.controlsOpts.maxDistance = w.smallViewport ? 32 : 32;
+  w.view.targetFov = w.smallViewport ? 20 : 30;
+  w.view.controlsOpts.maxDistance = w.smallViewport ? 24 : 24;
 }'
