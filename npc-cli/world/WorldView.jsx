@@ -27,21 +27,21 @@ export default function WorldView(props) {
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
-    controlsViewportOpts: {
-      // minAzimuthAngle: -Infinity,
-      // maxAzimuthAngle: +Infinity,
-      minAzimuthAngle: Math.PI * 0,
-      maxAzimuthAngle: Math.PI * 0,
+    controlsOpts: {
+      minAzimuthAngle: -Infinity,
+      maxAzimuthAngle: +Infinity,
+      // minAzimuthAngle: Math.PI * 0,
+      // maxAzimuthAngle: Math.PI * 0,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
       minDistance: 16,
-      maxDistance: 28,
+      maxDistance: 96,
       panSpeed: 2,
       zoomSpeed: 0.5,
     },
     down: null,
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 20,
+    fov: 10,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
@@ -434,7 +434,7 @@ export default function WorldView(props) {
       w.r3f.advance(Date.now());
       return state.canvas.toDataURL(type, quality);
     },
-  }), { reset: { controlsViewportOpts: true } });
+  }), { reset: { controlsOpts: true } });
 
   w.view = state;
 
@@ -483,7 +483,7 @@ export default function WorldView(props) {
         domElement={state.canvas}
         onStart={state.onControlsStart}
         onEnd={state.onControlsEnd}
-        {...state.controlsViewportOpts}
+        {...state.controlsOpts}
         //@ts-ignore see three-stdlib patch
         minPanDistance={w.smallViewport ? 0.05 : 0}
       />
@@ -513,7 +513,7 @@ export default function WorldView(props) {
  * @property {() => void} clearTarget
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
  * @property {import('three-stdlib').MapControls} controls
- * @property {import('@react-three/drei').MapControlsProps} controlsViewportOpts
+ * @property {import('@react-three/drei').MapControlsProps} controlsOpts
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
  * @property {{ pickStart: number; pickEnd: number; pointerDown: number; pointerUp: number; }} epoch
