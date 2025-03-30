@@ -263,13 +263,8 @@
 
 - ✅ remove npc `<select>` from ContextMenu opts
 
-- 🚧 try avoid npc flicker when zoomed out
-  - provide small "global" DataTexture to all npcs
-  - 🚧 try darken npcs
-    - ℹ️ must exclude selector and label
-    - global DataTexture provides skin color-mul
-  - try less flickery skin (applied at distance)
-  - try increase label size
+- ✅ try avoid npc flicker when zoomed out
+  - ✅ less flickery skin with thicker "base" lines
 
 - try to simplify walk smoothing "hacks"
 - follow cam zoom should be centred on followed
