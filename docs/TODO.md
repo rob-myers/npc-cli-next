@@ -266,8 +266,8 @@
 - ✅ try avoid npc flicker when zoomed out
   - ✅ less flickery skin with thicker "base" lines
 
+- ✅ follow cam zoom should be centred on followed
 - try to simplify walk smoothing "hacks"
-- follow cam zoom should be centred on followed
 - follow option should be tinted when in use
 - `w | json` should not crash
   - `w | pretty` is huge

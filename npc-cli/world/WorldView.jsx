@@ -32,7 +32,7 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 12,
+      minDistance: 8,
       maxDistance: 96,
       panSpeed: 2,
       zoomSpeed: 0.5,
@@ -128,7 +128,7 @@ export default function WorldView(props) {
     },
     followPosition(dst, opts = { smoothTime: 1 }) {
       // @ts-ignore see patch
-      state.controls.zoomToConstant = null;
+      state.controls.zoomToConstant = dst;
 
       state.target = {
         dst,
@@ -526,7 +526,8 @@ export default function WorldView(props) {
  * @property {THREE.Raycaster} raycaster
  * @property {HTMLDivElement} rootEl
  * @property {null | { dst: THREE.Vector3; y?: number; reject?(err?: any): void; resolve?(): void; } & LookAtOpts} target
- * Speed is m/s
+ * - `target` is tracked in XZ plane at height `target.y`
+ * - `maxSpeed` in m/s
  * @property {null | number} targetFov
  * @property {'near' | 'far'} zoomState
  *
