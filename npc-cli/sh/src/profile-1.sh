@@ -77,5 +77,5 @@ w update 'w => {
   w.view.targetFov = w.smallViewport ? 20 : 30;
   w.view.controlsOpts.minAzimuthAngle = 0;
   w.view.controlsOpts.maxAzimuthAngle = 0;
-  w.view.controlsOpts.maxDistance = w.smallViewport ? 20 : 32;
+  w.view.controlsOpts.maxDistance = w.smallViewport ? 32 : 32;
 }'

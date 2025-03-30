@@ -23,7 +23,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, w.smallViewport ? 48 : 32, 0],
+    camInitPos: [0, 32, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
