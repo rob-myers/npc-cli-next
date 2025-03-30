@@ -30,8 +30,6 @@ export default function WorldView(props) {
     controlsOpts: {
       minAzimuthAngle: -Infinity,
       maxAzimuthAngle: +Infinity,
-      // minAzimuthAngle: Math.PI * 0,
-      // maxAzimuthAngle: Math.PI * 0,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
       minDistance: 12,
@@ -434,7 +432,7 @@ export default function WorldView(props) {
       w.r3f.advance(Date.now());
       return state.canvas.toDataURL(type, quality);
     },
-  }), { reset: { controlsOpts: true } });
+  }), { reset: { controlsOpts: false } });
 
   w.view = state;
 
