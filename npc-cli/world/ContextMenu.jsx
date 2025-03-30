@@ -338,24 +338,25 @@ export const contextMenuCss = css`
   > div {
     transform-origin: 0 0;
     pointer-events: all;
-
-    .inner-root {
-      width: ${contextMenuWidthPx}px;
-      background-color: rgba(0, 0, 0, 0.8);
-      border-radius: 0 8px 8px 8px;
-      border: 1px solid #333;
-      padding: 4px;
-      font-size: small;
-
-      opacity: var(${contextMenuOpacityCssVar});
-      transition: opacity 200ms;
-    }
   }
 
+  .inner-root {
+    width: ${contextMenuWidthPx}px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 0 8px 8px 8px;
+    border: 1px solid #333;
+    padding: 4px;
+    font-size: small;
+  }
+  
   z-index: ${zIndexWorld.contextMenu};
-
+  
   &.docked {
     transform: unset !important;
+  }
+  &:not(.docked) .inner-root {
+    opacity: var(${contextMenuOpacityCssVar});
+    transition: opacity 200ms;
   }
 
   .select-npc {

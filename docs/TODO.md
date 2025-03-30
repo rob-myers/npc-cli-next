@@ -214,6 +214,8 @@
 
 - ✅ fade speech bubble on spawn
 
+- ✅ ContextMenu tracking npc should not fade while docked
+
 - another model human-1
 
 ### Extras
@@ -261,9 +263,12 @@
 
 - ✅ remove npc `<select>` from ContextMenu opts
 
-- try avoid npc flicker when zoomed out
+- 🚧 try avoid npc flicker when zoomed out
   - provide small "global" DataTexture to all npcs
-  - try darken npcs
+  - 🚧 try darken npcs
+    - ℹ️ must exclude selector and label
+    - global DataTexture provides skin color-mul
+  - try less flickery skin (applied at distance)
   - try increase label size
 
 - try to simplify walk smoothing "hacks"
