@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { npcSpeechBubbleOpacityCssVar } from './NpcSpeechBubbles';
 
 /**
  * 🔔 Avoid `foo = (...bar) => baz` because incompatible with our approach to class HMR.
@@ -41,6 +42,11 @@ export class SpeechBubbleApi {
     html3d !== null
       ? this.html3d = html3d // @ts-ignore
       : delete this.html3d;
+  }
+
+  /** @param {number} opacityDst */
+  setOpacity(opacityDst) {
+    this.html3d.rootDiv.style.setProperty(npcSpeechBubbleOpacityCssVar, `${opacityDst}`);
   }
 
   /**

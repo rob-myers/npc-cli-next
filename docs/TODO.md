@@ -212,7 +212,7 @@
   - ✅ fade tracked npc fades non-docked ContextMenu
     - ℹ️ horrendous!
 
-- 🚧 fade speech bubble on spawn
+- ✅ fade speech bubble on spawn
 
 - another model human-1
 
@@ -260,6 +260,11 @@
   - something to do with npc
 
 - ✅ remove npc `<select>` from ContextMenu opts
+
+- try avoid npc flicker when zoomed out
+  - provide small "global" DataTexture to all npcs
+  - try darken npcs
+  - try increase label size
 
 - try to simplify walk smoothing "hacks"
 - follow cam zoom should be centred on followed

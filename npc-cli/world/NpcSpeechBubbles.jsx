@@ -85,7 +85,7 @@ function NpcSpeechBubble({ cm }) {
   return (
     <Html3d
       ref={cm.html3dRef.bind(cm)}
-      css={npcContextMenuCss}
+      css={npcSpeechBubbleCss}
       baseScale={cm.baseScale}
       offset={cm.offset}
       position={cm.position}
@@ -111,7 +111,9 @@ const MemoizedContextMenu = React.memo(NpcSpeechBubble);
 
 const speechBubbleBaseScale = 4;
 
-export const npcContextMenuCss = css`
+export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
+
+export const npcSpeechBubbleCss = css`
   --menu-width: 200px;
 
   position: absolute;
@@ -122,17 +124,21 @@ export const npcContextMenuCss = css`
   pointer-events: none;
   background: transparent !important;
 
+  
   > div {
     transform-origin: calc(+1/2 * var(--menu-width)) 0;
     width: var(--menu-width);
     display: flex;
     justify-content: center;
+    
+    opacity: var(${npcSpeechBubbleOpacityCssVar});
+    transition: opacity 300ms;
   }
   
   .speech {
     font-weight: lighter;
     font-style: italic;
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: rgba(255, 255, 255, 0.6);
     background-color: rgba(0, 0, 0, 0.5);
     

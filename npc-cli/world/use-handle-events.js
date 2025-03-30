@@ -413,6 +413,7 @@ export default function useHandleEvents(w) {
           if (w.cm.tracked !== undefined && w.cm.tracked.npcKey === npc.key) {
             w.cm.setNonDockedOpacity(e.opacityDst);
           }
+          w.bubble.lookup[npc.key]?.setOpacity(e.opacityDst);
           break;
       }
     },
