@@ -267,6 +267,10 @@
   - ✅ less flickery skin with thicker "base" lines
 
 - ✅ follow cam zoom should be centred on followed
+
+- ✅ navigation bug in 301 at bridge right door
+  - offMeshConnection didn't reach, had to edit walls
+
 - try to simplify walk smoothing "hacks"
 - follow option should be tinted when in use
 - `w | json` should not crash
