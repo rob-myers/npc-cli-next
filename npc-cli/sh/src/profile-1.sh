@@ -74,7 +74,7 @@ setupOnSlowNpc
 # force zoom in via maxDistance
 # rotate to fixed angle
 w update 'w => {
-  w.view.controlsOpts.maxDistance = w.smallViewport ? 24 : 16;
+  w.view.controlsOpts.maxDistance = w.smallViewport ? 16 : 16;
   w.view.controls.setAzimuthalAngle(0);
 }'
 sleep 1
@@ -82,6 +82,6 @@ sleep 1
 w update 'w => {
   w.view.controlsOpts.minAzimuthAngle = 0;
   w.view.controlsOpts.maxAzimuthAngle = 0;
-  w.view.targetFov = w.smallViewport ? 20 : 30;
-  w.view.controlsOpts.maxDistance = w.smallViewport ? 24 : 24;
+  w.view.targetFov = w.smallViewport ? 30 : 30;
+  w.view.controlsOpts.maxDistance = w.smallViewport ? 20 : 24;
 }'
