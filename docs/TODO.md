@@ -216,6 +216,8 @@
 
 - ✅ ContextMenu tracking npc should not fade while docked
 
+- fix skin uv overflows
+
 - another model human-1
 
 ### Extras

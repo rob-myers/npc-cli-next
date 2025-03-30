@@ -82,6 +82,7 @@ sleep 1
 w update 'w => {
   w.view.controlsOpts.minAzimuthAngle = 0;
   w.view.controlsOpts.maxAzimuthAngle = 0;
+  w.view.controlsOpts.maxPolarAngle = Math.PI / 6;
   w.view.targetFov = w.smallViewport ? 30 : 30;
   w.view.controlsOpts.maxDistance = w.smallViewport ? 20 : 24;
 }'
