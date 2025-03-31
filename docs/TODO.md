@@ -348,6 +348,7 @@
   - Does not appear when `yarn dev-assets`
 - HMR of MDX subcomponents
 - HMR of npc models onchange const
+- Changing `wallHeight` should somehow force update assets.json and geomorphs.json
 
 - ✅ try `bun` https://bun.sh/
   - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
