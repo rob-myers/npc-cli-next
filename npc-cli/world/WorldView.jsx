@@ -126,16 +126,6 @@ export default function WorldView(props) {
       }
       return e;
     },
-    followPosition(dst, opts = { smoothTime: 1 }) {
-      // @ts-ignore see patch
-      state.controls.zoomToConstant = dst;
-
-      state.target = {
-        dst,
-        y: 1.5, // agent height
-        ...opts,
-      };
-    },
     handleClickInDebugMode(e) {
       if (
         w.disabled === true
@@ -432,6 +422,21 @@ export default function WorldView(props) {
       w.r3f.advance(Date.now());
       return state.canvas.toDataURL(type, quality);
     },
+    toggleFollowPosition(dst, opts = { smoothTime: 1 }) {
+      if (state.target?.dst === dst) {
+        state.clearTarget();
+        return;
+      }
+
+      // @ts-ignore see patch
+      state.controls.zoomToConstant = dst;
+
+      state.target = {
+        dst,
+        y: 1.5, // agent height
+        ...opts,
+      };
+    },
   }), { reset: { controlsOpts: false } });
 
   w.view = state;
@@ -535,7 +540,6 @@ export default function WorldView(props) {
  * @property {() => number} getNumPointers
  * @property {(e: React.PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
- * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
  * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
@@ -553,6 +557,7 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
+ * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} toggleFollowPosition
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
  */

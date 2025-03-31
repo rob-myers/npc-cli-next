@@ -244,6 +244,8 @@
   - ✅ use loadImage of svgPath instead of data-url
   - 🚧 faster run onchange skin
 
+- 🚧 can change camera height smoothly
+
 - if lookAt while walking, eventually lookAt once stopMoving
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
@@ -274,7 +276,8 @@
   - offMeshConnection didn't reach, had to edit walls
 
 - try to simplify walk smoothing "hacks"
-- follow option should be tinted when in use
+- ✅ follow option should be "selected" when in use
+- ✅ toggle follow
 - `w | json` should not crash
   - `w | pretty` is huge
 
@@ -339,8 +342,6 @@
   - ℹ️ previously `<Floor>` was an earlier sibling, but no issue when later sibling
 
 - ✅ images hash should be based on SVGs in case of skins
-
-- support 
 
 - warn if uv-map is not a grid (where rows/cols can have different size)
 

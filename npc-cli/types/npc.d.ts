@@ -315,6 +315,7 @@ declare namespace NPC {
   interface ContextMenuLink {
     key: string;
     label: string;
+    selected?(): boolean;
   }
 
   interface ContextMenuContextDef {

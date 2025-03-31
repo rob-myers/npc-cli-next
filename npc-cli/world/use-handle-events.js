@@ -155,10 +155,6 @@ export default function useHandleEvents(w) {
       // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
       return null;
     },
-    followNpc(npcKey) {
-      const npc = w.n[npcKey];
-      w.view.followPosition(npc.position);
-    },
     getRaycastIntersection(e, decoded) {
       /** @type {THREE.Mesh} */
       let mesh;
@@ -416,6 +412,10 @@ export default function useHandleEvents(w) {
           w.bubble.lookup[npc.key]?.setOpacity(e.opacityDst);
           break;
       }
+    },
+    isFollowingNpc(npcKey) {
+      const npc = w.n[npcKey];
+      return npc !== undefined && w.view.target?.dst === npc.position;
     },
     npcCanAccess(npcKey, gdKey) {
       for (const regexDef of state.npcToAccess[npcKey] ?? []) {
@@ -704,6 +704,10 @@ export default function useHandleEvents(w) {
 
       return w.door.toggleDoorRaw(door, opts);
     },
+    toggleFollowNpc(npcKey) {
+      const npc = w.n[npcKey];
+      w.view.toggleFollowPosition(npc.position);
+    },
     toggleLock(gdKey, opts) {
       const door = w.door.byKey[gdKey];
 
@@ -781,11 +785,12 @@ export default function useHandleEvents(w) {
  * @property {(npc: NPC.NPC) => void} clearOffMesh
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
- * @property {(npcKey: string) => void} followNpc
+ * @property {(npcKey: string) => void} toggleFollowNpc
  * @property {(e: React.PointerEvent<Element>, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
  * @property {(npcKey: string, regexDef: string) => void} grantNpcAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
+ * @property {(npcKey: string) => boolean} isFollowingNpc
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh-main' }>, npc: NPC.NPC) => void} onEnterOffMeshConnectionMain

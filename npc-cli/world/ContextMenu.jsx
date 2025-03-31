@@ -1,6 +1,7 @@
 import React from "react";
 import * as THREE from "three";
 import { css } from "@emotion/react";
+import cx from "classnames";
 import { stringify as javascriptStringify } from 'javascript-stringify';
 import debounce from "debounce";
 
@@ -59,13 +60,14 @@ export function ContextMenu() {
      */
     computeLinks() {
       let suppressKeys = /** @type {string[]} */ ([]);
+
       const keyToLink = Object.values(state.match).reduce((agg, matcher) => {
         const { showLinks, hideKeys } = matcher(state);
         showLinks?.forEach(link => agg[link.key] = link);
         suppressKeys.push(...hideKeys ?? []);
         return agg;
       }, /** @type {{ [linkKey: string]: NPC.ContextMenuLink }} */ ({}));
-      
+
       suppressKeys.forEach(key => delete keyToLink[key]);
       state.links = Object.values(keyToLink);
     },
@@ -204,6 +206,7 @@ export function ContextMenu() {
       state.showKvs = !state.showKvs;
       update();
     },
+    update,
   }));
 
   w.cm = state;
@@ -297,11 +300,15 @@ function ContextMenuLinks({ state }) {
         x
       </button>
 
-      {state.links.map(({ key, label }) =>
+      {state.links.map(({ key, label, selected }) =>
         <button
           key={key}
           data-key={key}
-          className="custom-link"
+          className={
+            typeof selected === 'function'
+              ? cx({ 'custom-link': true, selected: selected?.() === true })
+              : 'custom-link'
+          }
         >
           {label}
         </button>
@@ -389,6 +396,10 @@ export const contextMenuCss = css`
   }
   .links button.custom-link {
     padding: 5px 4px;
+    &.selected {
+      text-decoration: none;
+      font-style: italic;
+    }
   }
 
   .kvs {
@@ -458,4 +469,5 @@ const optsPopUpCss = css`
  * @property {() => void} togglePinned
  * @property {() => void} toggleScaled Ensure smooth transition when start scaling
  * @property {() => void} toggleKvs
+ * @property {() => void} update
  **/

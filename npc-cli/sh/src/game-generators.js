@@ -163,7 +163,6 @@ export const setupContextMenu = ({ w }) => {
       showLinks.push(
         { key: "open", label: "open" },
         { key: "close", label: "close" },
-        // GM only...
         { key: "lock", label: "lock" },
         { key: "unlock", label: "unlock" },
         // 🚧 knock
@@ -171,7 +170,13 @@ export const setupContextMenu = ({ w }) => {
     }
 
     if (typeof meta.npcKey === "string") {
-      showLinks.push({ key: "follow", label: "follow" });
+      showLinks.push({
+        key: "follow",
+        label: "follow",
+        selected() {
+          return w.e.isFollowingNpc(meta.npcKey);
+        },
+      });
     }
 
     return { showLinks };
@@ -204,7 +209,8 @@ export async function* handleContextMenu({ api, w, datum: e }) {
         break;
       case "follow":
         if (typeof meta.npcKey === "string") {
-          w.view.followPosition(w.n[meta.npcKey].position);
+          w.e.toggleFollowNpc(meta.npcKey);
+          w.cm.update();
         }
         break;
       case "open":
