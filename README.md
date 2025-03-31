@@ -78,6 +78,9 @@ We can also patch `package1/node_modules/package2`
 > https://www.npmjs.com/package/patch-package#nested-packages
 
 This permits us to patch `three-stdlib` inside `@react-three/drei`.
+```sh
+npx patch-package @react-three/drei/three-stdlib
+```
 
 
 ### Bump versions in our branch of recast-navigation-js

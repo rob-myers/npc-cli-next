@@ -244,6 +244,8 @@
   - ✅ use loadImage of svgPath instead of data-url
   - 🚧 faster run onchange skin
 
+- ✅ on follow npc prevent both polar/azimuth delta
+  - patching `@react-three-drei/three-stdlib`
 - 🚧 can change camera height smoothly
 
 - if lookAt while walking, eventually lookAt once stopMoving
