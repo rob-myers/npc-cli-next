@@ -687,9 +687,6 @@ export default function useHandleEvents(w) {
     someNpcNearDoor(gdKey) {
       return state.doorToNearbyNpcs[gdKey]?.size > 0;
     },
-    stopFollowing() {
-      w.view.clearTarget();
-    },
     toggleDoor(gdKey, opts) {
       const door = w.door.byKey[gdKey];
 
@@ -806,7 +803,6 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string, regexDef: string) => void} revokeNpcAccess
  * @property {(npcKey: string, ...parts: string[]) => void} say
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
- * @property {() => void} stopFollowing
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
  * Returns `true` iff successful.
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; point?: Geom.VectJson; } & Geomorph.ToggleLockOpts) => boolean} toggleLock

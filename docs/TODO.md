@@ -247,6 +247,8 @@
 - ✅ on follow npc prevent both polar/azimuth delta
   - patching `@react-three-drei/three-stdlib`
 - 🚧 can change camera height smoothly
+  - `w.view.targetY`
+  - reset on use controls (otherwise never gives us when target OOB)
 
 - if lookAt while walking, eventually lookAt once stopMoving
 - prevent intersection when two npcs move diagonally through doorway

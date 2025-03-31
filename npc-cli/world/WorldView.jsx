@@ -23,7 +23,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 32, 0],
+    camInitPos: [0, 24, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -58,6 +58,7 @@ export default function WorldView(props) {
     rootEl: /** @type {*} */ (null),
     target: null,
     targetFov: null,
+    targetY: null,
     zoomState: 'near', // 🚧 finer-grained
 
     canvasRef(canvasEl) {
@@ -175,6 +176,7 @@ export default function WorldView(props) {
     },
     onControlsStart() {
       w.events.next({ key: 'controls-start' });
+      state.targetY = null;
     },
     onCreated(rootState) {
       w.threeReady = true;
@@ -330,9 +332,11 @@ export default function WorldView(props) {
       state.handleClickInDebugMode(e); // step world in debug mode
     },
     onTick(deltaMs) {
+      const { camera } = w.r3f;
+
       if (state.targetFov !== null) {
-        w.r3f.camera.fov = state.fov;
-        w.r3f.camera.updateProjectionMatrix();
+        camera.fov = state.fov;
+        camera.updateProjectionMatrix();
         if (damp(state, 'fov', state.targetFov, 0.4, deltaMs, undefined, undefined, undefined) === false) {
           state.targetFov = null;
           state.syncRenderMode();
@@ -348,6 +352,13 @@ export default function WorldView(props) {
         }
         //@ts-ignore see patch i.e. fix azimuth angle
         state.controls.update(true);
+      }
+
+      // 🚧
+      if (state.targetY !== null) {
+        if (damp(camera.position, 'y', state.targetY, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
+          state.targetY = null;
+        }
       }
     },
     openSnapshot(type = 'image/webp', quality) {
@@ -534,6 +545,7 @@ export default function WorldView(props) {
  * - `target` is tracked in XZ plane at height `target.y`
  * - `maxSpeed` in m/s
  * @property {null | number} targetFov
+ * @property {null | number} targetY
  * @property {'near' | 'far'} zoomState
  *
  * @property {() => number} getDownDistancePx
