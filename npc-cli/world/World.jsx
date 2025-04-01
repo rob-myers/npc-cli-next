@@ -141,8 +141,8 @@ export default function World(props) {
       const output = mapValues(state.hmr, (prev, key) => prev !== nextHmr[key])
       return state.hmr = nextHmr, output;
     },
-    update(mutator) {
-      mutator?.(state);
+    async update(mutator) {
+      await mutator?.(state);
       update();
     },
   }), { reset: { lib: true, texFloor: false, texCeil: false } });
