@@ -6,8 +6,8 @@
   - ✅ follow should persist after pan
   - ✅ rewrite `w.view.lookAt` in terms of `w.view.tween`
   - ✅ `w.view.dst` contains all tween destinations
-  - `w.view.dstCount` is `Object.keys(w.view.dst).length`
-  - `w.view.tween` can run whilst paused
+  - ❌ `w.view.dstCount` is `Object.keys(w.view.dst).length`
+  - ✅ `w.view.tween` can run whilst paused
   - simplify azimuth and polar e.g. `setAzimuthalAngle` once
 
 - when w.view.enableControls show "ui disabled icon"
