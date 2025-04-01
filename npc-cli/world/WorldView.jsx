@@ -92,9 +92,11 @@ export default function WorldView(props) {
       state.target = null;
       state.syncRenderMode();
 
-      // @ts-ignore see patch
       state.controls.zoomToConstant = null;
 
+      state.clearTargetDamping();
+    },
+    clearTargetDamping() {
       /**
        * 🔔 clear damping https://github.com/pmndrs/maath/blob/626d198fbae28ba82f2f1b184db7fcafd4d23846/packages/maath/src/easing.ts#L93
        * @type {{ __damp?: { [velKey: string]: number } }}
@@ -163,31 +165,17 @@ export default function WorldView(props) {
     isPointerEventDrag(e) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
-    // linear via `{ maxSpeed: 1000 / 60 }`
-    async lookAt(point, opts = { smoothTime: 0.4 }) {// 🚧 rewrite in terms of tween
-
+    async lookAt(point, opts = { smoothTime: 0.4 }) {
       if (w.disabled === true && state.target !== null && w.reqAnimId === 0) {
-        state.clearTarget(); // we paused while targeting, so clear damping
+        state.clearTargetDamping();
       }
 
-      return new Promise((resolve, reject) => {
-        state.resolve.look = resolve;
-        state.reject.look = reject;
-        state.target = {
-          dst: toV3(point),
-          y: 1.5, // agent height
-          ...opts,
-        };
-        // @ts-ignore see patch
-        state.controls.zoomToConstant = state.target.dst.clone();
-  
-        if (w.disabled === true) {// can lookAt while paused
-          state.syncRenderMode();
-          w.timer.reset();
-          w.onDebugTick();
-        }
-      });
+      const dst = toV3(point);
+      dst.y = 1.5; // agent height
 
+      state.controls.zoomToConstant = dst.clone();
+
+      return state.tween({ look: dst, lookOpts: opts });
     },
     onChangeControls(_e) {
       const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
@@ -492,7 +480,6 @@ export default function WorldView(props) {
         return;
       }
 
-      // @ts-ignore see patch
       state.controls.zoomToConstant = dst;
 
       state.target = {
@@ -520,16 +507,14 @@ export default function WorldView(props) {
       }
 
       if (opts.look !== undefined) {
-
         state.target = {
           dst: opts.look,
           y: opts.look.y,
-          // 🚧 more opts
+          ...opts.lookOpts,
         };
         promises.push(
           new Promise((resolve, reject) => [state.resolve.look = resolve, state.reject.look = reject])
         );
-        
       } else {// we don't support rotations if looking
         
         if (typeof opts.azimuthal === 'number') {
@@ -632,8 +617,12 @@ export default function WorldView(props) {
  * - The last click identifier is the "current one".
  * @property {(canvasEl: null | HTMLCanvasElement) => void} canvasRef
  * @property {() => void} clearTarget
+ * @property {() => void} clearTargetDamping
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
- * @property {import('three-stdlib').MapControls & { sphericalDelta: THREE.Spherical }} controls
+ * @property {import('three-stdlib').MapControls & {
+ *   sphericalDelta: THREE.Spherical;
+ *   zoomToConstant: null | THREE.Vector3;
+ * }} controls
  * We provide access to `sphericalDelta` via patch.
  * @property {import('@react-three/drei').MapControlsProps} controlsOpts
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
@@ -686,7 +675,14 @@ export default function WorldView(props) {
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} toggleFollowPosition
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
- * @property {(opts: { fov?: number; distance?: number; look?: THREE.Vector3; azimuthal?: number; polar?: number }) => Promise<void>} tween
+ * @property {(opts: {
+ *   fov?: number;
+ *   distance?: number;
+ *   look?: THREE.Vector3;
+ *   azimuthal?: number;
+ *   polar?: number;
+ *   lookOpts?: LookAtOpts;
+ * }) => Promise<void>} tween
  */
 
 const rootCss = css`
