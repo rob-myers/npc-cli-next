@@ -66,8 +66,16 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
   done
   
   # commands work while paused via prefix `ptags=no-pause;`
+  ptags=no-pause events
 
+  # reset or save control state i.e. current view
   w view.controls.reset
+  w view.controls.saveState
+
+  # this command does not exit until the World is enabled
+  test $( w disabled ) &&
+    events '({ key }) => key === "enabled"' | take 1
+
   ```
 
 ## Bits and bobs

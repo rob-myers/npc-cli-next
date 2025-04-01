@@ -1,7 +1,14 @@
 # TODO
 
-- ✅ can await tween camera azimuthal/polar angle
-- ✅ initially tween camera angle into fixed angle
+- 🚧 WorldView tween improvements
+  - ✅ can await tween camera azimuthal/polar angle
+  - ✅ initially tween camera angle into fixed angle
+  - rewrite `w.view.lookAt` in terms of `w.view.tween`
+  - `w.view.dst` contains all tween destinations
+  - `w.view.dstCount` is `Object.keys(w.view.dst).length`
+  - `w.view.tween` can run whilst paused
+  - simplify azimuth and polar e.g. `setAzimuthalAngle` once
+
 - when w.view.enableControls show "ui disabled icon"
 
 - another model human-1

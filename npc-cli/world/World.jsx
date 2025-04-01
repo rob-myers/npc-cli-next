@@ -108,7 +108,12 @@ export default function World(props) {
     onDebugTick() {
       state.timer.update();
       // Animate camera while paused
-      if (state.view.targetFov !== null || state.view.target !== null) {
+      if (
+        state.view.targetFov !== null
+        || state.view.target !== null
+        || state.view.targetDistance !== null
+        || state.view.targetPolar !== null
+      ) {
         state.view.onTick(state.timer.getDelta());
         state.reqAnimId = requestAnimationFrame(state.onDebugTick);
       } else if (state.disabled === true) {
@@ -333,6 +338,7 @@ export default function World(props) {
     if (!state.disabled) {
       state.onTick();
     }
+    state.events.next({ key: state.disabled ? 'disabled' : 'enabled' });
     return () => state.stopTick();
   }, [state.disabled]);
 
