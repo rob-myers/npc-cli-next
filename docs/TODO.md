@@ -246,10 +246,14 @@
 
 - ✅ on follow npc prevent both polar/azimuth delta
   - patching `@react-three-drei/three-stdlib`
-- 🚧 can change camera height smoothly
-  - `w.view.targetY`
-  - reset on use controls (otherwise never gives us when target OOB)
 
+- ✅ ContextMenu look stops follow and update UI
+
+- ✅ can change camera height smoothly
+  - ℹ️ `w.view.targetDistance`
+  - ✅ async `w.view.tween`
+    - e.g. `w view.tween '{ fov: 50 }'`
+    - e.g. `w view.tween '{ distance: 20 }'`
 - if lookAt while walking, eventually lookAt once stopMoving
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection

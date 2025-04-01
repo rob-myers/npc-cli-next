@@ -206,6 +206,7 @@ export async function* handleContextMenu({ api, w, datum: e }) {
         } else {
           w.view.lookAt(w.cm.position).catch(() => {});
         }
+        w.cm.update(); // Might have stopped follow
         break;
       case "follow":
         if (typeof meta.npcKey === "string") {

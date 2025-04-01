@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
-import { damp } from "maath/easing";
+import { damp, damp3 } from "maath/easing";
 
 import { debug } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -23,7 +23,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 24, 0],
+    camInitPos: [0, 20, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -33,13 +33,13 @@ export default function WorldView(props) {
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
       minDistance: 8,
-      maxDistance: 96,
+      maxDistance: w.smallViewport ? 20 : 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
     },
     down: null,
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 10,
+    fov: 30,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
@@ -55,10 +55,12 @@ export default function WorldView(props) {
       mat3: new THREE.Matrix3(),
     },
     raycaster: new THREE.Raycaster(),
+    resolve: { fov: undefined, look: undefined, zoom: undefined },
+    reject: { fov: undefined, look: undefined, zoom: undefined },
     rootEl: /** @type {*} */ (null),
     target: null,
+    targetDistance: null,
     targetFov: null,
-    targetY: null,
     zoomState: 'near', // 🚧 finer-grained
 
     canvasRef(canvasEl) {
@@ -68,7 +70,8 @@ export default function WorldView(props) {
       }
     },
     clearTarget() {
-      state.target?.reject?.('cancelled target');
+      state.reject.look?.('cancelled look');
+      state.reject.look = undefined;
 
       state.target = null;
       state.syncRenderMode();
@@ -93,6 +96,9 @@ export default function WorldView(props) {
       const normalMatrix = mat3.getNormalMatrix(mesh.matrixWorld);
       output.applyNormalMatrix(normalMatrix);
       return output;
+    },
+    enableControls(enabled = true) {
+      state.controls.enabled = !!enabled;
     },
     getDownDistancePx() {
       return state.down?.screenPoint.distanceTo(state.lastScreenPoint) ?? 0;
@@ -142,17 +148,17 @@ export default function WorldView(props) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
     // linear via `{ maxSpeed: 1000 / 60 }`
-    async lookAt(point, opts = { smoothTime: 0.2 }) {
+    async lookAt(point, opts = { smoothTime: 0.4 }) {
       if (w.disabled === true && state.target !== null && w.reqAnimId === 0) {
         state.clearTarget(); // we paused while targeting, so clear damping
       }
 
       return new Promise((resolve, reject) => {
+        state.resolve.look = resolve;
+        state.reject.look = reject;
         state.target = {
           dst: toV3(point),
           y: 1.5, // agent height
-          resolve,
-          reject,
           ...opts,
         };
         // @ts-ignore see patch
@@ -176,7 +182,10 @@ export default function WorldView(props) {
     },
     onControlsStart() {
       w.events.next({ key: 'controls-start' });
-      state.targetY = null;
+      // 🔔 enabled controls override targetFov, target, targetDistance,
+      state.reject.fov?.('cancelled fov change');
+      state.reject.zoom?.('cancelled zoom');
+      state.reject.look?.('cancelled look');
     },
     onCreated(rootState) {
       w.threeReady = true;
@@ -306,7 +315,8 @@ export default function WorldView(props) {
     onPointerMove(e) {
       state.lastScreenPoint.copy(getRelativePointer(e));
 
-      if (state.target?.resolve !== undefined && state.down !== null && state.getDownDistancePx() > 5) {
+      // 🔔 we do not clear target when following
+      if (state.resolve.look !== undefined && state.down !== null && state.getDownDistancePx() > 5) {
         state.clearTarget(); // cancel target if moved a bit
       }
     },
@@ -334,19 +344,20 @@ export default function WorldView(props) {
     onTick(deltaMs) {
       const { camera } = w.r3f;
 
-      if (state.targetFov !== null) {
+      if (state.targetFov !== null) {// change fov
         camera.fov = state.fov;
         camera.updateProjectionMatrix();
-        if (damp(state, 'fov', state.targetFov, 0.4, deltaMs, undefined, undefined, undefined) === false) {
+        if (damp(state, 'fov', state.targetFov, 0.4, deltaMs, 100, undefined, 1) === false) {
           state.targetFov = null;
           state.syncRenderMode();
+          state.resolve.fov?.();
         }
       }
 
-      if (state.target !== null && state.down === null) {
+      if (state.target !== null && state.down === null) {// look or follow
         if (dampXZ(state.controls.target, state.target.dst, state.target.smoothTime, deltaMs, state.target.maxSpeed, state.target.y, 0.01) === false) {
-          if (state.target.resolve !== undefined) {
-            state.target.resolve();
+          if (state.resolve.look !== undefined) {
+            state.resolve.look?.();
             state.clearTarget();
           }
         }
@@ -354,10 +365,13 @@ export default function WorldView(props) {
         state.controls.update(true);
       }
 
-      // 🚧
-      if (state.targetY !== null) {
-        if (damp(camera.position, 'y', state.targetY, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
-          state.targetY = null;
+      if (state.targetDistance !== null) {// zoom
+        const { minDistance, maxDistance, target } = state.controls;
+        const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.targetDistance));
+        const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
+        if (damp3(camera.position, targetCamPos, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
+          state.targetDistance = null;
+          state.resolve.zoom?.();
         }
       }
     },
@@ -425,6 +439,7 @@ export default function WorldView(props) {
       });
     },
     syncRenderMode() {
+      // 🚧 state.targetDistance !== null?
       const frameloop = w.disabled === true && state.target === null && state.targetFov === null ? 'demand' : 'always';
       w.r3f?.set({ frameloop });
       return frameloop;
@@ -447,6 +462,34 @@ export default function WorldView(props) {
         y: 1.5, // agent height
         ...opts,
       };
+    },
+    async tween(opts) {
+      const promises = /** @type {Promise<void>[]} */ ([]);
+
+      if (typeof opts.fov === 'number') {
+        state.targetFov = opts.fov;
+        promises.push(new Promise((resolve, reject) => 
+          [state.resolve.fov = resolve, state.reject.fov = reject]
+        ));
+      }
+      if (typeof opts.distance === 'number') {
+        state.targetDistance = opts.distance;
+        promises.push(
+          new Promise((resolve, reject) => [state.resolve.zoom = resolve, state.reject.zoom = reject])
+        );
+      }
+      if (opts.look !== undefined) {
+        state.target = {
+          dst: opts.look,
+          y: opts.look.y,
+          // 🚧 more opts
+        };
+        promises.push(
+          new Promise((resolve, reject) => [state.resolve.look = resolve, state.reject.look = reject])
+        );
+      }
+
+      await Promise.all(promises);
     },
   }), { reset: { controlsOpts: false } });
 
@@ -540,14 +583,18 @@ export default function WorldView(props) {
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
  * @property {THREE.Raycaster} raycaster
+ * @property {Record<'fov' | 'look' | 'zoom', undefined | ((value?: any) => void)>} resolve
+ * - follow has `resolve.look` undefined i.e. never resolves
+ * @property {Record<'fov' | 'look' | 'zoom', undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
- * @property {null | { dst: THREE.Vector3; y?: number; reject?(err?: any): void; resolve?(): void; } & LookAtOpts} target
+ * @property {null | { dst: THREE.Vector3; y?: number; } & LookAtOpts} target
  * - `target` is tracked in XZ plane at height `target.y`
  * - `maxSpeed` in m/s
+ * @property {null | number} targetDistance
  * @property {null | number} targetFov
- * @property {null | number} targetY
  * @property {'near' | 'far'} zoomState
  *
+ * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
  * @property {(e: React.PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
@@ -572,6 +619,7 @@ export default function WorldView(props) {
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} toggleFollowPosition
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
+ * @property {(opts: { fov?: number; distance?: number; look?: THREE.Vector3 }) => Promise<void>} tween
  */
 
 const rootCss = css`

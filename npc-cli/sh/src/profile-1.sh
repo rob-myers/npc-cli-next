@@ -71,12 +71,11 @@ ptags=no-pause; events | handleLoggerLinks &
 
 setupOnSlowNpc
 
+w view.tween "{ distance: 12 }"
+
+# restrict camera angle
 w update 'w => {
   w.view.controlsOpts.minAzimuthAngle = w.view.controls.getAzimuthalAngle();
   w.view.controlsOpts.maxAzimuthAngle = w.view.controls.getAzimuthalAngle();
   w.view.controlsOpts.maxPolarAngle = Math.PI / 6;
-  w.view.controlsOpts.minDistance = 10;
-  w.view.controlsOpts.maxDistance = 24;
-  w.view.targetY = w.smallViewport ? 12 : 12;
-  w.view.targetFov = w.smallViewport ? 30 : 30;
 }'
