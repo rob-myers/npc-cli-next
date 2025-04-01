@@ -8,7 +8,8 @@
   - ✅ `w.view.dst` contains all tween destinations
   - ❌ `w.view.dstCount` is `Object.keys(w.view.dst).length`
   - ✅ `w.view.tween` can run whilst paused
-  - simplify azimuth and polar e.g. `setAzimuthalAngle` once
+  - ✅ simplify azimuth and polar e.g. `setAzimuthalAngle` once
+  - test many examples
 
 - when w.view.enableControls show "ui disabled icon"
 

@@ -367,9 +367,6 @@ export default function WorldView(props) {
       }
 
       if (state.dst.azimuthal !== undefined) {// azimuthal angle
-        const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
-        state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, state.dst.azimuthal));
-        state.controls.setAzimuthalAngle(state.dst.azimuthal);
         if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
           delete state.dst.azimuthal;
           state.resolve.theta?.();
@@ -377,9 +374,6 @@ export default function WorldView(props) {
       }
 
       if (state.dst.polar !== undefined) {// polar angle
-        const { minPolarAngle, maxPolarAngle } = state.controls;
-        state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, state.dst.polar));
-        state.controls.setPolarAngle(state.dst.polar);
         if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
           delete state.dst.polar;
           state.resolve.phi?.();
@@ -497,13 +491,19 @@ export default function WorldView(props) {
       } else {// we don't support rotations if looking
         
         if (typeof opts.azimuthal === 'number') {
-          state.dst.azimuthal = opts.azimuthal;
+          const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
+          state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, opts.azimuthal));
+          state.controls.setAzimuthalAngle(state.dst.azimuthal);
+
           promises.push(
             new Promise((resolve, reject) => [state.resolve.theta = resolve, state.reject.theta = reject])
           );
         }
         if (typeof opts.polar === 'number') {
-          state.dst.polar = opts.polar;
+          const { minPolarAngle, maxPolarAngle } = state.controls;
+          state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, opts.polar));
+          state.controls.setPolarAngle(state.dst.polar);
+
           promises.push(
             new Promise((resolve, reject) => [state.resolve.phi = resolve, state.reject.phi = reject])
           );
