@@ -59,20 +59,7 @@ export default function WorldView(props) {
     reject: { fov: undefined, look: undefined, zoom: undefined, phi: undefined, theta: undefined },
     rootEl: /** @type {*} */ (null),
 
-    // 🚧 dst: { ... }
-    // 🚧 dstCount: Object.keys(dst).length
-    // dst: {
-    //   azimuthal: null,
-    //   distance: null,
-    //   fov: null,
-    //   polar: null,
-    //   target: null,
-    // },
-    target: null,
-    targetAzimuthal: null,
-    targetDistance: null,
-    targetFov: null,
-    targetPolar: null,
+    dst: {},
 
     zoomState: 'near', // 🚧 finer-grained
 
@@ -89,7 +76,7 @@ export default function WorldView(props) {
       state.reject?.phi?.('cancelled rotation: polar');
       state.reject?.theta?.('cancelled rotation: azimuthal');
 
-      state.target = null;
+      delete state.dst.target;
       state.syncRenderMode();
 
       state.controls.zoomToConstant = null;
@@ -166,14 +153,12 @@ export default function WorldView(props) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
     async lookAt(point, opts = { smoothTime: 0.4 }) {
-      if (w.disabled === true && state.target !== null && w.reqAnimId === 0) {
+      if (w.disabled === true && state.dst.target !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping();
       }
 
       const dst = toV3(point);
-      dst.y = 1.5; // agent height
-
-      state.controls.zoomToConstant = dst.clone();
+      state.controls.zoomToConstant = dst;
 
       return state.tween({ look: dst, lookOpts: opts });
     },
@@ -349,18 +334,19 @@ export default function WorldView(props) {
     onTick(deltaMs) {
       const { camera } = w.r3f;
 
-      if (state.targetFov !== null) {// change fov
+      if (state.dst.fov !== undefined) {// change fov
         camera.fov = state.fov;
         camera.updateProjectionMatrix();
-        if (damp(state, 'fov', state.targetFov, 0.4, deltaMs, 100, undefined, 1) === false) {
-          state.targetFov = null;
+        if (damp(state, 'fov', state.dst.fov, 0.4, deltaMs, 100, undefined, 1) === false) {
+          delete state.dst.fov;
           state.syncRenderMode();
           state.resolve.fov?.();
         }
       }
 
-      if (state.target !== null && state.down === null) {// look or follow
-        if (dampXZ(state.controls.target, state.target.dst, state.target.smoothTime, deltaMs, state.target.maxSpeed, state.target.y, 0.01) === false) {
+      if (state.dst.target !== undefined && state.down === null) {// look or follow
+        const { target, targetOpts } = state.dst;
+        if (dampXZ(state.controls.target, target, targetOpts?.smoothTime, deltaMs, targetOpts?.y ?? 1.5, target.y, 0.01) === false) {
           if (state.resolve.look !== undefined) {
             state.resolve.look?.();
             state.clearTarget();
@@ -370,32 +356,32 @@ export default function WorldView(props) {
         state.controls.update(true);
       }
 
-      if (state.targetDistance !== null) {// zoom
+      if (state.dst.distance !== undefined) {// zoom
         const { minDistance, maxDistance, target } = state.controls;
-        const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.targetDistance));
+        const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.dst.distance));
         const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
         if (damp3(camera.position, targetCamPos, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
-          state.targetDistance = null;
+          delete state.dst.distance;
           state.resolve.zoom?.();
         }
       }
 
-      if (state.targetAzimuthal !== null) {// azimuthal angle
+      if (state.dst.azimuthal !== undefined) {// azimuthal angle
         const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
-        state.targetAzimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, state.targetAzimuthal));
-        state.controls.setAzimuthalAngle(state.targetAzimuthal);
+        state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, state.dst.azimuthal));
+        state.controls.setAzimuthalAngle(state.dst.azimuthal);
         if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
-          state.targetAzimuthal = null;
+          delete state.dst.azimuthal;
           state.resolve.theta?.();
         }
       }
 
-      if (state.targetPolar !== null) {// polar angle
+      if (state.dst.polar !== undefined) {// polar angle
         const { minPolarAngle, maxPolarAngle } = state.controls;
-        state.targetPolar = Math.min(maxPolarAngle, Math.max(minPolarAngle, state.targetPolar));
-        state.controls.setPolarAngle(state.targetPolar);
+        state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, state.dst.polar));
+        state.controls.setPolarAngle(state.dst.polar);
         if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
-          state.targetPolar = null;
+          delete state.dst.polar;
           state.resolve.phi?.();
         }
       }
@@ -465,8 +451,8 @@ export default function WorldView(props) {
       });
     },
     syncRenderMode() {
-      // 🚧 state.targetDistance !== null?
-      const frameloop = w.disabled === true && state.target === null && state.targetFov === null ? 'demand' : 'always';
+      const tweening = Object.keys(state.dst).length > 0;
+      const frameloop = w.disabled === true && tweening === false ? 'demand' : 'always';
       w.r3f?.set({ frameloop });
       return frameloop;
     },
@@ -474,57 +460,50 @@ export default function WorldView(props) {
       w.r3f.advance(Date.now());
       return state.canvas.toDataURL(type, quality);
     },
-    toggleFollowPosition(dst, opts = { smoothTime: 1 }) {
-      if (state.target?.dst === dst) {
+    toggleFollowPosition(dst, opts = { smoothTime: 1, y: 1.5 }) {
+      if (state.dst.target === dst) {
         state.clearTarget();
         return;
       }
 
       state.controls.zoomToConstant = dst;
 
-      state.target = {
-        dst,
-        y: 1.5, // agent height
-        ...opts,
-      };
-      state.resolve.look = undefined;
+      state.dst.target = dst;
+      state.dst.targetOpts = opts;
     },
     async tween(opts) {
       const promises = /** @type {Promise<void>[]} */ ([]);
 
       if (typeof opts.fov === 'number') {
-        state.targetFov = opts.fov;
+        state.dst.fov = opts.fov;
         promises.push(new Promise((resolve, reject) => 
           [state.resolve.fov = resolve, state.reject.fov = reject]
         ));
       }
 
       if (typeof opts.distance === 'number') {
-        state.targetDistance = opts.distance;
+        state.dst.distance = opts.distance;
         promises.push(
           new Promise((resolve, reject) => [state.resolve.zoom = resolve, state.reject.zoom = reject])
         );
       }
 
       if (opts.look !== undefined) {
-        state.target = {
-          dst: opts.look,
-          y: opts.look.y,
-          ...opts.lookOpts,
-        };
+        state.dst.target = opts.look;
+        state.dst.targetOpts = opts.lookOpts;
         promises.push(
           new Promise((resolve, reject) => [state.resolve.look = resolve, state.reject.look = reject])
         );
       } else {// we don't support rotations if looking
         
         if (typeof opts.azimuthal === 'number') {
-          state.targetAzimuthal = opts.azimuthal;
+          state.dst.azimuthal = opts.azimuthal;
           promises.push(
             new Promise((resolve, reject) => [state.resolve.theta = resolve, state.reject.theta = reject])
           );
         }
         if (typeof opts.polar === 'number') {
-          state.targetPolar = opts.polar;
+          state.dst.polar = opts.polar;
           promises.push(
             new Promise((resolve, reject) => [state.resolve.phi = resolve, state.reject.phi = reject])
           );
@@ -627,6 +606,16 @@ export default function WorldView(props) {
  * @property {import('@react-three/drei').MapControlsProps} controlsOpts
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
+ * 
+ * @property {{
+ *   azimuthal?: number;
+ *   distance?: number;
+ *   fov?: number;
+ *   polar?: number;
+ *   target?: THREE.Vector3;
+ *   targetOpts?: LookAtOpts;
+ * }} dst
+ *
  * @property {{ pickStart: number; pickEnd: number; pointerDown: number; pointerUp: number; }} epoch
  * Each uses Date.now() i.e. milliseconds since epoch
  * @property {number} fov
@@ -641,13 +630,6 @@ export default function WorldView(props) {
  * - follow has `resolve.look` undefined i.e. never resolves
  * @property {Record<'fov' | 'look' | 'zoom' | 'theta' | 'phi', undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
- * @property {null | { dst: THREE.Vector3; y?: number; } & LookAtOpts} target
- * - `target` is tracked in XZ plane at height `target.y`
- * - `maxSpeed` in m/s
- * @property {null | number} targetDistance
- * @property {null | number} targetFov
- * @property {null | number} targetAzimuthal
- * @property {null | number} targetPolar
  * @property {'near' | 'far'} zoomState
  *
  * @property {(enabled?: boolean) => void} enableControls Default `true`
@@ -715,6 +697,7 @@ const statsCss = css`
  * @typedef LookAtOpts
  * @property {number} [maxSpeed]
  * @property {number} [smoothTime]
+ * @property {number} [y]
 */
 
 const pixelBuffer = new Uint8Array(4);

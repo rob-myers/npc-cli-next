@@ -109,10 +109,7 @@ export default function World(props) {
       state.timer.update();
       // Animate camera while paused
       if (
-        state.view.targetFov !== null
-        || state.view.target !== null
-        || state.view.targetDistance !== null
-        || state.view.targetPolar !== null
+        Object.keys(state.view.dst).length > 0 // 🚧
       ) {
         state.view.onTick(state.timer.getDelta());
         state.reqAnimId = requestAnimationFrame(state.onDebugTick);
