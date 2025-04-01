@@ -59,6 +59,15 @@ export default function WorldView(props) {
     reject: { fov: undefined, look: undefined, zoom: undefined, phi: undefined, theta: undefined },
     rootEl: /** @type {*} */ (null),
 
+    // 🚧 dst: { ... }
+    // 🚧 dstCount: Object.keys(dst).length
+    // dst: {
+    //   azimuthal: null,
+    //   distance: null,
+    //   fov: null,
+    //   polar: null,
+    //   target: null,
+    // },
     target: null,
     targetAzimuthal: null,
     targetDistance: null,
@@ -155,7 +164,8 @@ export default function WorldView(props) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
     // linear via `{ maxSpeed: 1000 / 60 }`
-    async lookAt(point, opts = { smoothTime: 0.4 }) {
+    async lookAt(point, opts = { smoothTime: 0.4 }) {// 🚧 rewrite in terms of tween
+
       if (w.disabled === true && state.target !== null && w.reqAnimId === 0) {
         state.clearTarget(); // we paused while targeting, so clear damping
       }
@@ -490,6 +500,7 @@ export default function WorldView(props) {
         y: 1.5, // agent height
         ...opts,
       };
+      state.resolve.look = undefined;
     },
     async tween(opts) {
       const promises = /** @type {Promise<void>[]} */ ([]);
@@ -509,6 +520,7 @@ export default function WorldView(props) {
       }
 
       if (opts.look !== undefined) {
+
         state.target = {
           dst: opts.look,
           y: opts.look.y,
@@ -517,6 +529,7 @@ export default function WorldView(props) {
         promises.push(
           new Promise((resolve, reject) => [state.resolve.look = resolve, state.reject.look = reject])
         );
+        
       } else {// we don't support rotations if looking
         
         if (typeof opts.azimuthal === 'number') {
@@ -525,7 +538,6 @@ export default function WorldView(props) {
             new Promise((resolve, reject) => [state.resolve.theta = resolve, state.reject.theta = reject])
           );
         }
-        
         if (typeof opts.polar === 'number') {
           state.targetPolar = opts.polar;
           promises.push(
@@ -533,6 +545,12 @@ export default function WorldView(props) {
           );
         }
 
+      }
+
+      if (w.disabled === true) {// can tween while paused
+        state.syncRenderMode();
+        w.timer.reset();
+        w.onDebugTick();
       }
 
       await Promise.all(promises);
