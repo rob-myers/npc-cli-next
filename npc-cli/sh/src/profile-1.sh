@@ -71,11 +71,14 @@ ptags=no-pause; events | handleLoggerLinks &
 
 setupOnSlowNpc
 
-w view.tween "{ distance: 12 }"
-
-# restrict camera angle
+# transition to fixed camera angle
+w view.enableControls false
+w view.tween '{ azimuthal: Math.PI/4, polar: Math.PI/6 }'
+w view.tween '{ distance: 12 }'
+# fix the camera angle
 w update 'w => {
-  w.view.controlsOpts.minAzimuthAngle = w.view.controls.getAzimuthalAngle();
-  w.view.controlsOpts.maxAzimuthAngle = w.view.controls.getAzimuthalAngle();
-  w.view.controlsOpts.maxPolarAngle = Math.PI / 6;
+  w.view.controlsOpts.minAzimuthAngle = Math.PI/4;
+  w.view.controlsOpts.maxAzimuthAngle = Math.PI/4;
+  w.view.controlsOpts.maxPolarAngle = Math.PI/6;
 }'
+w view.enableControls true

@@ -1,5 +1,9 @@
 # TODO
 
+- ✅ can await tween camera azimuthal/polar angle
+- ✅ initially tween camera angle into fixed angle
+- when w.view.enableControls show "ui disabled icon"
+
 - another model human-1
 
 - 🚧 improve assets script
@@ -324,7 +328,7 @@
 - ✅ generated decor/obstacles/skin png,webp distinct on different laptops
   - ✅ migrate `canvas` to `skia-canvas`
   - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
-  - 🚧 still seeing webp diff
+  - still seeing webp diff
     - personal laptop: `cwebp -version` is `1.3.0` `libsharpyuv: 0.2.0`
     - work laptop: `1.5.0 libsharpyuv: 0.4.1`
     - ❌ update personal laptop `brew install cwebp`
