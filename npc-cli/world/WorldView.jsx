@@ -55,12 +55,16 @@ export default function WorldView(props) {
       mat3: new THREE.Matrix3(),
     },
     raycaster: new THREE.Raycaster(),
-    resolve: { fov: undefined, look: undefined, zoom: undefined },
-    reject: { fov: undefined, look: undefined, zoom: undefined },
+    resolve: { fov: undefined, look: undefined, zoom: undefined, phi: undefined, theta: undefined },
+    reject: { fov: undefined, look: undefined, zoom: undefined, phi: undefined, theta: undefined },
     rootEl: /** @type {*} */ (null),
+
     target: null,
+    targetAzimuthal: null,
     targetDistance: null,
     targetFov: null,
+    targetPolar: null,
+
     zoomState: 'near', // 🚧 finer-grained
 
     canvasRef(canvasEl) {
@@ -72,6 +76,9 @@ export default function WorldView(props) {
     clearTarget() {
       state.reject.look?.('cancelled look');
       state.reject.look = undefined;
+
+      state.reject?.phi?.('cancelled rotation: polar');
+      state.reject?.theta?.('cancelled rotation: azimuthal');
 
       state.target = null;
       state.syncRenderMode();
@@ -374,6 +381,27 @@ export default function WorldView(props) {
           state.resolve.zoom?.();
         }
       }
+
+      if (state.targetAzimuthal !== null) {// azimuthal angle
+        const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
+        state.targetAzimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, state.targetAzimuthal));
+        state.controls.setAzimuthalAngle(state.targetAzimuthal);
+        if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
+          state.targetAzimuthal = null;
+          state.resolve.theta?.();
+        }
+      }
+
+      if (state.targetPolar !== null) {// polar angle
+        const { minPolarAngle, maxPolarAngle } = state.controls;
+        state.targetPolar = Math.min(maxPolarAngle, Math.max(minPolarAngle, state.targetPolar));
+        state.controls.setPolarAngle(state.targetPolar);
+        if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
+          state.targetPolar = null;
+          state.resolve.phi?.();
+        }
+      }
+
     },
     openSnapshot(type = 'image/webp', quality) {
       window.open(dataUrlToBlobUrl(state.toDataURL(type, quality)), '_blank');
@@ -472,12 +500,14 @@ export default function WorldView(props) {
           [state.resolve.fov = resolve, state.reject.fov = reject]
         ));
       }
+
       if (typeof opts.distance === 'number') {
         state.targetDistance = opts.distance;
         promises.push(
           new Promise((resolve, reject) => [state.resolve.zoom = resolve, state.reject.zoom = reject])
         );
       }
+
       if (opts.look !== undefined) {
         state.target = {
           dst: opts.look,
@@ -487,6 +517,22 @@ export default function WorldView(props) {
         promises.push(
           new Promise((resolve, reject) => [state.resolve.look = resolve, state.reject.look = reject])
         );
+      } else {// we don't support rotations if looking
+        
+        if (typeof opts.azimuthal === 'number') {
+          state.targetAzimuthal = opts.azimuthal;
+          promises.push(
+            new Promise((resolve, reject) => [state.resolve.theta = resolve, state.reject.theta = reject])
+          );
+        }
+        
+        if (typeof opts.polar === 'number') {
+          state.targetPolar = opts.polar;
+          promises.push(
+            new Promise((resolve, reject) => [state.resolve.phi = resolve, state.reject.phi = reject])
+          );
+        }
+
       }
 
       await Promise.all(promises);
@@ -569,7 +615,8 @@ export default function WorldView(props) {
  * @property {(canvasEl: null | HTMLCanvasElement) => void} canvasRef
  * @property {() => void} clearTarget
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
- * @property {import('three-stdlib').MapControls} controls
+ * @property {import('three-stdlib').MapControls & { sphericalDelta: THREE.Spherical }} controls
+ * We provide access to `sphericalDelta` via patch.
  * @property {import('@react-three/drei').MapControlsProps} controlsOpts
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
@@ -583,15 +630,17 @@ export default function WorldView(props) {
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
  * @property {THREE.Raycaster} raycaster
- * @property {Record<'fov' | 'look' | 'zoom', undefined | ((value?: any) => void)>} resolve
+ * @property {Record<'fov' | 'look' | 'zoom' | 'theta' | 'phi', undefined | ((value?: any) => void)>} resolve
  * - follow has `resolve.look` undefined i.e. never resolves
- * @property {Record<'fov' | 'look' | 'zoom', undefined | ((error?: any) => void)>} reject
+ * @property {Record<'fov' | 'look' | 'zoom' | 'theta' | 'phi', undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
  * @property {null | { dst: THREE.Vector3; y?: number; } & LookAtOpts} target
  * - `target` is tracked in XZ plane at height `target.y`
  * - `maxSpeed` in m/s
  * @property {null | number} targetDistance
  * @property {null | number} targetFov
+ * @property {null | number} targetAzimuthal
+ * @property {null | number} targetPolar
  * @property {'near' | 'far'} zoomState
  *
  * @property {(enabled?: boolean) => void} enableControls Default `true`
@@ -619,7 +668,7 @@ export default function WorldView(props) {
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} toggleFollowPosition
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
- * @property {(opts: { fov?: number; distance?: number; look?: THREE.Vector3 }) => Promise<void>} tween
+ * @property {(opts: { fov?: number; distance?: number; look?: THREE.Vector3; azimuthal?: number; polar?: number }) => Promise<void>} tween
  */
 
 const rootCss = css`
