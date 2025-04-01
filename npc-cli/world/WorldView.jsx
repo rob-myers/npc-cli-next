@@ -464,6 +464,7 @@ export default function WorldView(props) {
 
       state.dst.target = dst;
       state.dst.targetOpts = opts;
+      state.resolve.look = undefined;
     },
     async tween(opts) {
       const promises = /** @type {Promise<void>[]} */ ([]);

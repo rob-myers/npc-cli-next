@@ -9,7 +9,8 @@
   - ❌ `w.view.dstCount` is `Object.keys(w.view.dst).length`
   - ✅ `w.view.tween` can run whilst paused
   - ✅ simplify azimuth and polar e.g. `setAzimuthalAngle` once
-  - test many examples
+  - 🚧 test many examples
+    - ✅ fix follow after pan again
 
 - when w.view.enableControls show "ui disabled icon"
 
