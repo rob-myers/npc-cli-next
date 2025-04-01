@@ -1,5 +1,43 @@
 # TODO
 
+- another model human-1
+
+- 🚧 improve assets script
+  - ✅ more measurements in assets script
+  - ✅ fix `yarn clean-assets`
+  - ✅ use loadImage of svgPath instead of data-url
+  - 🚧 faster run onchange skin
+
+- if lookAt while walking, eventually lookAt once stopMoving
+- prevent intersection when two npcs move diagonally through doorway
+  - forbid (src,dst)'s intersection
+  - forbid dst's close to each other
+
+- 🚧 cuboids have outlines via shader, using UVs
+  - ✅ can see outlines on decor cuboids
+  - ℹ️ box geometry has 12 triangles with ordering:
+    > right x2, left x2, front x2, back x2, top x2, bottom x2
+  - 🚧 fix scaling (non-trivial)
+
+- try to simplify walk smoothing "hacks"
+- `w | json` should not crash
+  - `w | pretty` is huge
+
+- 🚧 `skia-canvas` issues:
+  - fill pattern in human-0.1.tex not working 
+    - https://github.com/samizdatco/skia-canvas/issues/219
+    - ℹ️ `@napi-rs/canvas` has issue too
+  - composite point light in human-0.0.tex not working 
+
+- warn if uv-map is not a grid (where rows/cols can have different size)
+
+- Dev-only: Fix Emotion Hydration warning
+  - Does not appear when `yarn dev-assets`
+- HMR of MDX subcomponents
+- HMR of npc models onchange const
+- Changing `wallHeight` should somehow force update assets.json and geomorphs.json
+
+
 ## Branch `clean-npc-shaders`
 
 - ✅ create `human-0.blend`
@@ -216,9 +254,7 @@
 
 - ✅ ContextMenu tracking npc should not fade while docked
 
-- fix skin uv overflows
-
-- another model human-1
+- 🚧 fix skin uv overflows
 
 ### Extras
 
@@ -238,12 +274,6 @@
 
 - ✅ more abrupt walk -> idle when collide
 
-- 🚧 improve assets script
-  - ✅ more measurements in assets script
-  - ✅ fix `yarn clean-assets`
-  - ✅ use loadImage of svgPath instead of data-url
-  - 🚧 faster run onchange skin
-
 - ✅ on follow npc prevent both polar/azimuth delta
   - patching `@react-three-drei/three-stdlib`
 
@@ -254,16 +284,6 @@
   - ✅ async `w.view.tween`
     - e.g. `w view.tween '{ fov: 50 }'`
     - e.g. `w view.tween '{ distance: 20 }'`
-- if lookAt while walking, eventually lookAt once stopMoving
-- prevent intersection when two npcs move diagonally through doorway
-  - forbid (src,dst)'s intersection
-  - forbid dst's close to each other
-
-- 🚧 cuboids have outlines via shader, using UVs
-  - ✅ can see outlines on decor cuboids
-  - ℹ️ box geometry has 12 triangles with ordering:
-    > right x2, left x2, front x2, back x2, top x2, bottom x2
-  - 🚧 fix scaling (non-trivial)
 
 - ✅ fix `w npc.remove`
   - we were `w npc.remove rob_{0..7}` where later did not exist
@@ -283,11 +303,8 @@
 - ✅ navigation bug in 301 at bridge right door
   - offMeshConnection didn't reach, had to edit walls
 
-- try to simplify walk smoothing "hacks"
 - ✅ follow option should be "selected" when in use
 - ✅ toggle follow
-- `w | json` should not crash
-  - `w | pretty` is huge
 
 - ✅ improve ContextMenu 3d position when npc Lie
 
@@ -304,7 +321,7 @@
 - ✅ BUG: geomorphs.skins.uvMap not being updated onchange file
   - ℹ️ needed to define canSkip over all sheets, not per sheet
 
-- 🚧 generated decor/obstacles/skin png,webp distinct on different laptops
+- ✅ generated decor/obstacles/skin png,webp distinct on different laptops
   - ✅ migrate `canvas` to `skia-canvas`
   - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
   - 🚧 still seeing webp diff
@@ -323,12 +340,6 @@
   - ℹ️ https://www.npmjs.com/package/skia-canvas
 - ✅ migrate `skia-canvas` to `@napi-rs/canvas`
   - ℹ️ https://github.com/Brooooooklyn/canvas
-
-- 🚧 `skia-canvas` issues:
-  - fill pattern in human-0.1.tex not working 
-    - https://github.com/samizdatco/skia-canvas/issues/219
-    - ℹ️ `@napi-rs/canvas` has issue too
-  - composite point light in human-0.0.tex not working 
 
 - ✅ HMR of GLTF i.e. GLB
   - ✅ detect glb change and trigger code
@@ -350,14 +361,6 @@
   - ℹ️ previously `<Floor>` was an earlier sibling, but no issue when later sibling
 
 - ✅ images hash should be based on SVGs in case of skins
-
-- warn if uv-map is not a grid (where rows/cols can have different size)
-
-- Dev-only: Fix Emotion Hydration warning
-  - Does not appear when `yarn dev-assets`
-- HMR of MDX subcomponents
-- HMR of npc models onchange const
-- Changing `wallHeight` should somehow force update assets.json and geomorphs.json
 
 - ✅ try `bun` https://bun.sh/
   - ℹ️ `yarn assets-bun` is failing due to `canvas` (node-canvas)
