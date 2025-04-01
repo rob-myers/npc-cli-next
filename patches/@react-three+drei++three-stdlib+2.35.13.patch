@@ -1,11 +1,12 @@
 diff --git a/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts b/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts
-index f491602..ea78bb0 100644
+index f491602..f22d379 100644
 --- a/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts
 +++ b/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts
-@@ -49,6 +49,7 @@ declare class OrbitControls extends EventDispatcher<StandardControlsEventMap> {
+@@ -49,6 +49,8 @@ declare class OrbitControls extends EventDispatcher<StandardControlsEventMap> {
      position0: Vector3;
      zoom0: number;
      _domElementKeyEvents: any;
++    zoomToConstant: null | Vector3;
 +    sphericalDelta: import('three').Spherical;
      getPolarAngle: () => number;
      getAzimuthalAngle: () => number;
