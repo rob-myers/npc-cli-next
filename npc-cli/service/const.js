@@ -184,7 +184,7 @@ export const doorSwitchHeight = 1;
 export const doorSwitchDecorImgKey = /** @type {const} */ ('icon--square');
 
 /**
- * @typedef {keyof fromDecorImgKey} DecorImgKey
+ * @typedef {keyof typeof fromDecorImgKey} DecorImgKey
  */
 
 /** Aligned to media/decor/{key}.svg */
