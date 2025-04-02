@@ -1,5 +1,16 @@
 # TODO
 
+## Branch `start-blog`
+
+### Site
+
+- in small viewport, stop Viewer drag from sometimes causing blog to scroll
+  - try attaching drag listeners to an overlay rather than body
+
+- clean up site components
+
+### World
+
 - 🚧 tween: provide many examples
 - when w.view.enableControls show "ui disabled icon"
 
