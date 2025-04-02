@@ -80,6 +80,6 @@ w update 'w => {
   w.view.controlsOpts.minAzimuthAngle = Math.PI/4;
   w.view.controlsOpts.maxAzimuthAngle = Math.PI/4;
   w.view.controlsOpts.maxPolarAngle = Math.PI/6;
-  w.view.controlsOpts.maxDistance = 20;
+  w.view.controlsOpts.maxDistance = 24;
 }'
 w view.enableControls true
