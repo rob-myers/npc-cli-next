@@ -55,7 +55,7 @@
 - Changing `wallHeight` should somehow force update assets.json and geomorphs.json
 
 
-## Branch `clean-npc-shaders`
+## ✅ Branch `clean-npc-shaders`
 
 - ✅ create `human-0.blend`
   - ✅ move notes into docs/npc-shader-redo.md
@@ -271,7 +271,7 @@
 
 - ✅ ContextMenu tracking npc should not fade while docked
 
-- 🚧 fix skin uv overflows
+- ✅ fix skin uv overflows
 
 ### Extras
 
