@@ -415,7 +415,7 @@ export default function useHandleEvents(w) {
     },
     isFollowingNpc(npcKey) {
       const npc = w.n[npcKey];
-      return npc !== undefined && w.view.dst.target === npc.position;
+      return npc !== undefined && w.view.dst.look === npc.position;
     },
     npcCanAccess(npcKey, gdKey) {
       for (const regexDef of state.npcToAccess[npcKey] ?? []) {
