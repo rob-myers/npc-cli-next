@@ -1,6 +1,6 @@
 # TODO
 
-- 🚧 WorldView tween improvements
+- ✅ WorldView tween improvements
   - ✅ can await tween camera azimuthal/polar angle
   - ✅ initially tween camera angle into fixed angle
   - ✅ follow should persist after pan
@@ -9,9 +9,9 @@
   - ❌ `w.view.dstCount` is `Object.keys(w.view.dst).length`
   - ✅ `w.view.tween` can run whilst paused
   - ✅ simplify azimuth and polar e.g. `setAzimuthalAngle` once
-  - 🚧 test many examples
-    - ✅ fix follow after pan again
+  - ✅ fix follow after pan again
 
+- 🚧 tween: provide many examples
 - when w.view.enableControls show "ui disabled icon"
 
 - another model human-1
@@ -37,11 +37,14 @@
 - `w | json` should not crash
   - `w | pretty` is huge
 
-- 🚧 `skia-canvas` issues:
-  - fill pattern in human-0.1.tex not working 
+- BoxySVG `&quot;` issue
+  - https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
+  - `skia-canvas` issues:
     - https://github.com/samizdatco/skia-canvas/issues/219
-    - ℹ️ `@napi-rs/canvas` has issue too
-  - composite point light in human-0.0.tex not working 
+    - 🚧 possibly just an issue with `&quot;` inside url.
+  - ✅ find a fix which removes them e.g. `url(&quot;#foo&quot;)` -> `url(#foo)`
+    - `yarn test-svg-to-png media/debug/test-gradient-fill.svg`
+  - prefer BoxySVG fix rather than apply our fix (for the moment)
 
 - warn if uv-map is not a grid (where rows/cols can have different size)
 

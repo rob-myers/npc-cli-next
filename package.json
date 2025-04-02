@@ -19,6 +19,7 @@
     "get-pngs": "npm run ts-script scripts/get-pngs",
     "get-pngs-fast": "bun scripts/get-pngs",
     "pre-push": "npm run assets-bun -- --prePush",
+    "test-svg-to-png": "npm run ts-script scripts/test-svg-to-png",
     "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
     "types": "tsc --noEmit",
     "watch-assets": "source scripts/watch-assets.sh",
