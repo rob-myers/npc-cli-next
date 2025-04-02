@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <radialGradient gradientUnits="userSpaceOnUse" cx="50" cy="50" r="25" id="gradient-0">
+      <stop offset="0" style="stop-color: rgb(84.706% 84.706% 84.706%)"/>
+      <stop offset="1" style="stop-color: rgb(48.42% 48.42% 48.42%)"/>
+    </radialGradient>
+  </defs>
+  <rect x="25" y="25" width="50" height="50" style="stroke: rgb(0, 0, 0); fill: url(&quot;#gradient-0&quot;);"/>
+</svg>

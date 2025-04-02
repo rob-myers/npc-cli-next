@@ -129,6 +129,7 @@ export class Poly {
   }
 
   /**
+   * Mutates this polygon.
    * @param {import('./mat').Mat} m
    */
   applyMatrix(m, sansTranslate = false) {

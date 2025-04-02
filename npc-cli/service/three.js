@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { LineMaterial } from "three-stdlib";
 import { damp } from "maath/easing";
 
+import { range, warn } from "./generic";
 import { Rect, Vect } from "../geom";
 import packRectangles from "./rects-packer";
 
@@ -179,6 +180,7 @@ export const redWireFrameMat = new THREE.MeshStandardMaterial({
 export const tmpVectThree1 = new THREE.Vector3();
 export const tmpVectThree2 = new THREE.Vector3();
 export const tmpVectThree3 = new THREE.Vector3();
+export const tmpEulerThree = new THREE.Euler();
 export const tmpMatFour1 = new THREE.Matrix4();
 export const tmpMesh1 = new THREE.Mesh();
 export const tmpBox1 = new THREE.Box3();
@@ -209,20 +211,26 @@ export const navMeta = {
  * @param {THREE.Object3D} object 
  * @returns {import("@react-three/fiber").ObjectMap}
  */
-export function buildObjectLookup(object) {
+export function buildObject3DLookup(object) {
   /** @type {import("@react-three/fiber").ObjectMap} */
-  const data = { nodes: {}, materials: {}};
+  const data = { nodes: {}, materials: {}, meshes: {} };
   if (object) {
     object.traverse(/** @param {THREE.Object3D & { material?: THREE.Material }} obj */ obj => {
-      if (obj.name) data.nodes[obj.name] = obj;
-      if (obj.material && !data.materials[obj.material.name]) {
-        data.materials[obj.material.name] = obj.material;
+      if (typeof obj.name == 'string') {
+        data.nodes[obj.name] = obj;
+      }
+      if (typeof obj.material?.name === 'string' && !data.materials[obj.material.name]) {
+        data.materials[obj.material.name] = obj.material; // 1st with name
       }
     });
   }
   return data;
 }
 
+/**
+ * 12 triangles:
+ * > right x2, left x2, front x2, back x2, top x2, bottom x2
+ */
 export const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
 
 /** @param {string} key */
@@ -324,6 +332,10 @@ export const emptyGroup = new THREE.Group();
 
 export const emptyAnimationMixer = new THREE.AnimationMixer(emptyGroup);
 
+export const emptyShaderMaterial = new THREE.ShaderMaterial();
+
+export const emptySkinnedMesh = new THREE.SkinnedMesh();
+
 /**
  * @typedef CanvasTexMetaDef
  * @property {number} width 
@@ -407,21 +419,21 @@ export const defaultQuadUvs = [...Array(4)].map(_ => new THREE.Vector2());
 /**
  * - precision 6
  * @param {THREE.BufferGeometry} geometry 
- * @returns {Geom.VectJson[]}
  */
 export function getGeometryUvs(geometry) {
-  return /** @type {THREE.BufferAttribute} */ (
-    geometry.getAttribute('uv')
-  ).toJSON().array.reduce((agg, x, i, xs) =>
-    (i % 2 === 1 && agg.push(new Vect(xs[i - 1], x).precision(6)), agg)
-  , /** @type {Geom.VectJson[]} */ ([]));
+  const attribute = /** @type {THREE.BufferAttribute} */ (geometry.getAttribute('uv'));
+  const flat = attribute.toJSON().array;
+  const vectors = flat.reduce((agg, x, i, xs) =>
+    (i % 2 === 1 && agg.push(new Vect(xs[i - 1], x).precision(8)), agg)
+  , /** @type {Geom.Vect[]} */ ([]));
+  return vectors;
 }
 
 /**
  * @param {THREE.Object3D[]} objs 
  * @returns {THREE.Bone[]}
  */
-export function getParentBones(objs) {
+export function getRootBones(objs) {
   return objs.filter(/** @returns {x is THREE.Bone} */ (x) =>
     x instanceof THREE.Bone && !(x.parent instanceof THREE.Bone)
   );
@@ -447,7 +459,6 @@ const tempInstanceLocalMatrix = new THREE.Matrix4();
 const tempInstanceWorldMatrix = new THREE.Matrix4();
 
 /**
- * 
  * @param {THREE.InstancedMesh} inst 
  * @param {number} instanceId 
  */
@@ -484,4 +495,70 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
   resY = damp(current, "y", y ?? v3d.y, smoothTime, deltaMs, maxSpeed, undefined, eps);
   resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaMs, maxSpeed * (dz / dMax), undefined, eps);
   return resX || resY || resZ;
+}
+
+/**
+ * @param {import('three').SkinnedMesh} skinnedMesh
+ * @param {Geomorph.UvRectLookup} uvMap
+ * @param {number} skinSheetId
+ * @returns {{ triToUvKeys: NPC.TriToUvKeys; partToUvRect: NPC.SkinPartToUvRect; labelTriIds: number[]; }}
+ */
+export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
+  const triToUvKeys = /** @type {NPC.TriToUvKeys} */ ([]);
+  const partToUvRect = /** @type {NPC.SkinPartToUvRect} */ ({});
+
+  if (skinnedMesh.geometry.index !== null) {
+    // 🔔 geometry must be un-welded i.e. triangles pairwise disjoint,
+    // so we can detect current triangleId in fragment shader
+    throw Error(`skinnedMesh "${skinnedMesh.name}" must satisfy \`geometry.index === null\`: use geometry.toNonIndexed()`);
+  }
+
+  // arrange uvMap as sorted list of lists for fast querying
+  // 🔔 assume it defines a grid, where rows/cols can have different widths/heights
+  const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
+    if (sheetId === skinSheetId) {
+      (agg[x] ??= [x + width, []])[1].push([y + height, uvRectKey]);
+    }
+    return agg;
+  }, /** @type {Record<number, [maxX: number, [maxY: number, uvRectKey: string][]]>} */ ([]));
+  const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
+
+  const uvs = getGeometryUvs(skinnedMesh.geometry);
+  const numVerts = skinnedMesh.geometry.getAttribute('position').count;
+  const tris = range(numVerts / 3).map(i => [3 * i, 3 * i + 1, 3 * i + 2])
+  /** Centre of mass of each UV-triangle (inside triangle) */
+  const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
+
+  const labelTriIds = /** @type {number[]} */ ([]);
+  
+  // find uvRect fast via sorted rects
+  // also compute labelTriIds and label uv min/max
+  for (const [triId, center] of centers.entries()) {
+    const inner = sorted.find(([maxX]) => center.x < maxX);
+    const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
+    const vertexIds = tris[triId];
+    if (found === undefined) {
+      warn(`triangle not contained in any uv-rect: ${JSON.stringify({ triId, vertexIds })}`);
+      continue;
+    }
+    const uvRectKey = found[1];
+    const skinPartKey = /** @type {Key.SkinPart} */ (uvRectKey.split('_')[1]);
+    triToUvKeys[triId] = { uvRectKey, skinPartKey };
+    partToUvRect[skinPartKey] = uvMap[uvRectKey];
+    // if (skinPartKey === 'label') {
+    if (uvRectKey === 'default_label') {
+      labelTriIds.push(triId);
+    }
+  }
+  
+  if (labelTriIds.length !== 2) {
+    warn(`expected exactly 2 triangles inside uv-rect default_label: ${JSON.stringify(labelTriIds)}`);
+  }
+
+  return {
+    triToUvKeys,
+    partToUvRect,
+    labelTriIds,
+  };
 }

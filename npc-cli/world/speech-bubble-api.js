@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { npcSpeechBubbleOpacityCssVar } from './NpcSpeechBubbles';
 
 /**
  * 🔔 Avoid `foo = (...bar) => baz` because incompatible with our approach to class HMR.
@@ -10,11 +11,9 @@ export class SpeechBubbleApi {
   epochMs = 0;
   
   position = new THREE.Vector3();
-  tracked = /** @type {undefined | import('three').Object3D} */ (undefined);
+  tracked = /** @type {undefined | import('../components/Html3d').TrackedObject3D} */ (undefined);
   offset = { x: 0, y: 0, z: 0 };
   
-  open = false;
-
   /** @type {import('../components/Html3d').State} */
   html3d = /** @type {*} */ (null);
 
@@ -45,32 +44,20 @@ export class SpeechBubbleApi {
       : delete this.html3d;
   }
 
+  /** @param {number} opacityDst */
+  setOpacity(opacityDst) {
+    this.html3d.rootDiv.style.setProperty(npcSpeechBubbleOpacityCssVar, `${opacityDst}`);
+  }
+
   /**
-   * @param {import('three').Object3D} [input] 
+   * @param {import('../components/Html3d').TrackedObject3D} [tracked] 
    */
-  setTracked(input) {
-    this.tracked = input;
+  setTracked(tracked) {
+    this.tracked = tracked;
   }
 
   update = noop
 
-  updateOffset() {
-    const npc = this.w.n[this.key];
-
-    switch (npc.s.act) {
-      case 'Idle':
-      case 'Run':
-      case 'Walk':
-        this.offset.y = 2 - 0.1;
-        break;
-      case 'Lie':
-        this.offset.y = 0.9;
-        break;
-      case 'Sit':
-        this.offset.y = 1.6;
-        break;
-    }
-  }
 }
 
 function noop() {};

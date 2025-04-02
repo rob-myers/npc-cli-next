@@ -22,19 +22,19 @@ import { helper } from "./helper";
 
 class GeomorphService {
 
-  /** @type {Geomorph.GeomorphKey[]} */
+  /** @type {Key.Geomorph[]} */
   get gmKeys() {
     return keys(helper.toGmNum);
   }
 
-  /** @type {Geomorph.SymbolKey[]} */
+  /** @type {Key.Symbol[]} */
   get hullKeys() {
     return keys(helper.fromSymbolKey).filter(this.isHullKey);
   }
 
   /**
    * 🔔 computed in assets script
-   * @param {Geomorph.GeomorphKey} gmKey 
+   * @param {Key.Geomorph} gmKey 
    * @param {Geomorph.FlatSymbol} symbol Flat hull symbol
    * @param {Geomorph.Assets} assets
    * @returns {Geomorph.Layout}
@@ -138,7 +138,7 @@ class GeomorphService {
       labels,
       obstacles: symbol.obstacles.map(/** @returns {Geomorph.LayoutObstacle} */ o => {
         const obstacleId = /** @type {number} */ (o.meta.obsId);
-        const symbolKey = /** @type {Geomorph.SymbolKey} */ (o.meta.symKey);
+        const symbolKey = /** @type {Key.Symbol} */ (o.meta.symKey);
         const origPoly = assets.symbols[symbolKey].obstacles[o.meta.obsId];
         const transform = /** @type {Geom.SixTuple} */ (o.meta.transform ?? [1, 0, 0, 1, 0, 0]);
         tmpMat1.feedFromArray(transform);
@@ -368,11 +368,12 @@ class GeomorphService {
    * @param {Geomorph.AssetsJson} assetsJson
    * @return {Geomorph.Assets}
    */
-  deserializeAssets({ maps, meta, symbols, sheet }) {
+  deserializeAssets({ maps, meta, symbols, sheet, skin }) {
     return {
       meta,
       symbols: mapValues(symbols, (x) => this.deserializeSymbol(x)),
       sheet,
+      skin,
       maps,
     };
   }
@@ -381,11 +382,12 @@ class GeomorphService {
    * @param {Geomorph.GeomorphsJson} geomorphsJson
    * @return {Geomorph.Geomorphs}
    */
-  deserializeGeomorphs({ map, layout, sheet }) {
+  deserializeGeomorphs({ map, layout, sheet, skin }) {
     return {
       map,
       layout: mapValues(layout, (x) => this.deserializeLayout(x)),
       sheet,
+      skin,
     };
   }
 
@@ -517,12 +519,12 @@ class GeomorphService {
   }
 
   /**
-   * Extract polygon with meta from <rect>, <path>, <circle> or <image>
-   * - <rect> e.g. possibly rotated wall
-   * - <path> e.g. complex obstacle
-   * - <circle> i.e. decor circle
-   * - <image> i.e. background image in symbol
-   * - <polygon>
+   * Extract polygon with meta from `<rect>`, `<path>`, `<circle>`, `<image>` or `<polygon>`
+   * - `<rect>` e.g. possibly rotated wall
+   * - `<path>` e.g. complex obstacle
+   * - `<circle>` i.e. decor circle
+   * - `<image>` i.e. background image in symbol
+   * - `<polygon>`
    * @private
    * @param {{ tagName: string; attributes: Record<string, string>; title: string; }} tagMeta
    * @param {Meta} meta
@@ -680,7 +682,7 @@ class GeomorphService {
    * Mutates `flattened`, using pre-existing entries.
    * Expects dependent flattened symbols to be in `flattened`.
    * @param {Geomorph.Symbol} symbol 
-   * @param {Record<Geomorph.SymbolKey, Geomorph.FlatSymbol>} flattened 
+   * @param {Record<Key.Symbol, Geomorph.FlatSymbol>} flattened 
    * This lookup only needs to contain sub-symbols of `symbol`.
    * @returns {void}
    */
@@ -790,7 +792,7 @@ class GeomorphService {
 
   /**
    * @param {string | undefined} input
-   * @returns {input is Geomorph.DecorImgKey}
+   * @returns {input is Key.DecorImg}
    */
   isDecorImgKey(input) {
     return input !== undefined && input in helper.fromDecorImgKey;
@@ -821,7 +823,7 @@ class GeomorphService {
   }
 
   /**
-   * @param {Geomorph.GeomorphKey | Geomorph.GeomorphNumber} input
+   * @param {Key.Geomorph | Key.GeomorphNumber} input
    */
   isEdgeGm(input) {
     input = typeof input === "string" ? helper.toGmNum[input] : input;
@@ -830,7 +832,7 @@ class GeomorphService {
 
   /**
    * @param {number} input
-   * @returns {input is Geomorph.GeomorphNumber}
+   * @returns {input is Key.GeomorphNumber}
    */
   isGmNumber(input) {
     return input in helper.toGmKey;
@@ -842,7 +844,7 @@ class GeomorphService {
   }
 
   /**
-   * @param {Geomorph.SymbolKey} symbolKey
+   * @param {Key.Symbol} symbolKey
    */
   isHullKey(symbolKey) {
     return symbolKey.endsWith("--hull");
@@ -850,7 +852,7 @@ class GeomorphService {
 
   /**
    * @param {string} input
-   * @returns {input is Geomorph.SymbolKey}
+   * @returns {input is Key.Symbol}
    */
   isSymbolKey(input) {
     return input in helper.fromSymbolKey;
@@ -919,7 +921,8 @@ class GeomorphService {
 
   /**
    * Parse Starship Symbol
-   * @param {Geomorph.SymbolKey} symbolKey
+   * 🔔 we do not support transforms on parent groups
+   * @param {Key.Symbol} symbolKey
    * @param {string} svgContents
    * @returns {Geomorph.Symbol}
    */
@@ -1111,24 +1114,31 @@ class GeomorphService {
   }
 
   /**
-   * Given SVG contents with `<g><title>uv-map</title> {...} </g>`,
-   * parse name to UV Rect i.e. normalized to [0, 1] x [0, 1]
-   * @param {string} svgContents 
-   * @param {string} logLabel 
-   * @returns {{ width: number; height: number; uvMap: { [uvRectName: string]: Geom.RectJson }; }}
+   * Given SVG contents with `<g><title>uv-map</title> {...} </g>`, build
+   * lookup from name to UV Rect (normalized to [0, 1] x [0, 1])
+   * 
+   * 🔔 must set width, height explicitly on <svg>
+   * 🔔 supports transforms on parent groups
+   * @param {string} svgContents
+   * @param {number} sheetId The index of this sheet relative to its npcClassKey.
+   * @param {string} logLabel
+   * @returns {Geom.RectJson & { uvMap: Geomorph.UvRectLookup }}
    */
-  parseUvMapRects(svgContents, logLabel) {
+  parseUvMapRects(svgContents, sheetId, logLabel) {
     const output = /** @type {ReturnType<GeomorphService['parseUvMapRects']>} */ ({
       width: 0,
       height: 0,
       uvMap: {},
     });
-    const tagStack = /** @type {{ tagName: string; attributes: Record<string, string>; }[]} */ ([]);
+    const tagStack = /** @type {HtmlParser2Tag[]} */ ([]);
     const folderStack = /** @type {string[]} */ ([]);
+    
+    /** Matrices of transforms arising from `g.transform`s */
+    const matrixStack = /** @type {Mat[]} */ ([]);
 
     const parser = new htmlparser2.Parser({
       onopentag(name, attributes) {
-        if (tagStack.length === 0) {
+        if (tagStack.length === 0) {// svg.{width,height}
           output.width = Number(attributes.width) || 0;
           output.height = Number(attributes.height) || 0;
         }
@@ -1141,33 +1151,51 @@ class GeomorphService {
           return; // only consider <title> tags
         }
         
-        if (parent.tagName === "g") {
-          return folderStack.push(contents); // track folders
+        if (parent.tagName === "g") {// track folders, transforms
+          folderStack.push(contents);
+          if ('transform' in parent.attributes) {
+            matrixStack.push(new Mat().setMatrixValue(parent.attributes.transform));
+          }
+          return;
         }
         
-        if (folderStack.at(-1) !== 'uv-map') {
-          return; // only consider top-level folder "uv-map"
+        if (folderStack[0] !== 'uv-map') {
+          return; // must be inside root folder "uv-map"
         }
 
-        // Blender UV SVG Export generates <polygon>'s
-        if (parent.tagName !== "polygon") {
-          return void (
-            warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: ignored non <polygon>`)
-          );
+        const baseName = contents;
+        if (baseName.startsWith('_')) {
+          return; // ignore underscore-prefixed items e.g. _demo-icon
         }
-
+        
         const poly = geomorph.extractPoly({ ...parent, title: contents }, {}, 1);
 
-        if (poly) {// output sub-rect of [0, 1] x [0, 1]
-          const uvRectName = contents; // e.g. `head-right`
-          output.uvMap[uvRectName] = poly.rect
-            .scale(1 / output.width, 1 / output.height)
-            .precision(4).json
-          ;
+        if (poly === null) {
+          warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: failed to parse polygon`);
+          return;
         }
+
+        if (matrixStack.length !== 0) {
+          const matrix = matrixStack.reduce((agg, m) => agg.postMultiply(m), new Mat());
+          poly.applyMatrix(matrix);
+        }
+
+        // output sub-rect of [0, 1] x [0, 1]
+        const extendedName = folderStack.slice(1).concat(baseName).join('-');
+        const uvRectKey = extendedName; // e.g. `base-head-right`
+        output.uvMap[uvRectKey] = {
+          sheetId,
+          ...poly.rect.scale(1 / output.width, 1 / output.height).precision(8).json,
+        };
       },
-      onclosetag() {
-        tagStack.pop();
+      onclosetag(tagName) {
+        const tag = /** @type {HtmlParser2Tag} */ (tagStack.pop());
+        if (tagName === "g") {
+          folderStack.pop();
+          if ('transform' in tag.attributes) {
+            matrixStack.pop();
+          }
+        } 
       },
     });
 
@@ -1203,11 +1231,12 @@ class GeomorphService {
    * @param {Geomorph.Geomorphs} geomorphs
    * @returns {Geomorph.GeomorphsJson}
    */
-  serializeGeomorphs({ map, layout, sheet }) {
+  serializeGeomorphs({ map, layout, sheet, skin }) {
     return {
       map,
       layout: mapValues(layout, (x) => geomorph.serializeLayout(x)),
       sheet,
+      skin,
     };
   }
 
@@ -1502,3 +1531,9 @@ const tmpMat2 = new Mat();
 
 const metaVarNames = ['wallHeight'];
 const metaVarValues = [wallHeight];
+
+/**
+ * @typedef HtmlParser2Tag
+ * @property {string} tagName
+ * @property {Record<string, string>} attributes
+ */

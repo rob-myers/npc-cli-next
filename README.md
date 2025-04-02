@@ -16,11 +16,17 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Development dependencies
 
 ```sh
-# cwebp
-brew install webp
+# cwebp e.g. https://developers.google.com/speed/webp/docs/precompiled
+# must be version 1.5.0 libsharpyuv: 0.4.1
 
 # ImageMagick
 brew install imagemagick
+```
+
+```sh
+# fix `npm install` of npm module `canvas`
+# https://github.com/Automattic/node-canvas/issues/1825#issuecomment-1090125736
+brew install pkg-config cairo pango libpng jpeg giflib librsvg
 ```
 
 ## Starship Symbols Source PNGs
@@ -41,7 +47,7 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 ## Development only routes
 
-These are removed in production by temporarily moving `app/api` into `public`.
+These are removed in production via next.config output `export`.
 
 ```sh
 curl --silent localhost:3000/api/connect/myFunUid/dev-events
@@ -49,15 +55,27 @@ curl --silent -XPOST localhost:3000/api/send-dev-event
 curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 }'
 ```
 
-## Example shell commands
+## Example NPC-CLI shell commands
 
   ```sh
   c=0
   while true; do
     spawn "rob_${c}" $( click 1 )
     w e.grantNpcAccess "rob_${c}" .
-    call 'x => x.home.c++'
+    c+=1
   done
+  
+  # commands work while paused via prefix `ptags=no-pause;`
+  ptags=no-pause events
+
+  # reset or save control state i.e. current view
+  w view.controls.reset
+  w view.controls.saveState
+
+  # this command does not exit until the World is enabled
+  test $( w disabled ) &&
+    events '({ key }) => key === "enabled"' | take 1
+
   ```
 
 ## Bits and bobs
@@ -68,6 +86,10 @@ We can also patch `package1/node_modules/package2`
 > https://www.npmjs.com/package/patch-package#nested-packages
 
 This permits us to patch `three-stdlib` inside `@react-three/drei`.
+```sh
+npx patch-package @react-three/drei/three-stdlib
+```
+
 
 ### Bump versions in our branch of recast-navigation-js
 
@@ -102,3 +124,54 @@ but after publishing we should re-comment these paths and use turbopack.
 ```
 
 1. Run `npm install`
+
+
+### Debug on mobile hotspot
+
+```sh
+yarn dev
+
+# get local ip address for mobile development
+ipconfig getifaddr en0
+
+# navigate to http://${ipAddress}:3000
+```
+
+### Fix VSCode push button error
+
+> NPM module canvas was compiled against a different Node.js version
+
+Following [this answer](https://stackoverflow.com/a/67935178/2917822) we can start VSCode in a terminal whose node version matches the repo's node version.
+
+```sh
+cd $REPO_ROOT
+nvm use
+code .
+```
+
+### Avoid nested transforms in SVGs
+
+We don't support transforms applied to `<g>`s, for example in skin SVGs.
+> 🔔 maybe we should...
+
+In BoxySVG, you can avoid introducing transforms on `<g>`s by
+- selecting all of its children (rather than the Group)
+- e.g. Geometry > change Y.
+
+In BoxySVG, if your `<g>` already has a transform you can use this trick:
+> - drag contents outside Group
+> - remove transform from Group (e.g. via elements panel E)
+> - drag contents back into Group
+
+### Convert to MP4 or GIF
+
+```sh
+# if necessary
+brew install ffmpeg
+
+# Convert mov to mp4
+cd ~/Desktop
+ffmpeg -i ~/Desktop/html-3d-example.mov -qscale 0 html-3d-example.mp4
+ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=10" -b:v 0 -crf 25 html-3d-example.mp4
+ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=60" -b:v 0 -crf 25 html-3d-example.mp4
+```

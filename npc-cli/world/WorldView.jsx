@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
-import { damp } from "maath/easing";
+import { damp, damp3 } from "maath/easing";
 
 import { debug } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -23,23 +23,23 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, w.smallViewport ? 48 : 32, 0],
+    camInitPos: [0, 20, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
-    controlsViewportOpts: {
+    controlsOpts: {
       minAzimuthAngle: -Infinity,
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
       minDistance: 8,
-      maxDistance: 96,
+      maxDistance: w.smallViewport ? 20 : 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
     },
     down: null,
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 10,
+    fov: 30,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
@@ -55,9 +55,12 @@ export default function WorldView(props) {
       mat3: new THREE.Matrix3(),
     },
     raycaster: new THREE.Raycaster(),
+    resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
+    reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
-    target: null,
-    targetFov: null,
+
+    dst: {},
+
     zoomState: 'near', // 🚧 finer-grained
 
     canvasRef(canvasEl) {
@@ -66,15 +69,25 @@ export default function WorldView(props) {
         state.rootEl = /** @type {HTMLDivElement} */ (canvasEl.parentElement?.parentElement);
       }
     },
-    clearTarget() {
-      state.target?.reject?.('cancelled target');
+    clearTweens() {// 🔔 does not stop follow
 
-      state.target = null;
+      if (state.dst.look !== undefined && state.reject.look !== undefined) {
+        // stop looking (not following)
+        state.reject.look?.('cancelled look');
+        state.reject.look = undefined;
+        delete state.dst.look; // 🔔
+      }
+
+      state.reject?.distance?.('cancelled distance');
+      state.reject?.fov?.('cancelled fov');
+      state.reject?.polar?.('cancelled rotation: polar');
+      state.reject?.azimuthal?.('cancelled rotation: azimuthal');
+      
       state.syncRenderMode();
-
-      // @ts-ignore see patch
       state.controls.zoomToConstant = null;
-
+      state.clearTargetDamping();
+    },
+    clearTargetDamping() {
       /**
        * 🔔 clear damping https://github.com/pmndrs/maath/blob/626d198fbae28ba82f2f1b184db7fcafd4d23846/packages/maath/src/easing.ts#L93
        * @type {{ __damp?: { [velKey: string]: number } }}
@@ -92,6 +105,9 @@ export default function WorldView(props) {
       const normalMatrix = mat3.getNormalMatrix(mesh.matrixWorld);
       output.applyNormalMatrix(normalMatrix);
       return output;
+    },
+    enableControls(enabled = true) {
+      state.controls.enabled = !!enabled;
     },
     getDownDistancePx() {
       return state.down?.screenPoint.distanceTo(state.lastScreenPoint) ?? 0;
@@ -126,16 +142,6 @@ export default function WorldView(props) {
       }
       return e;
     },
-    followPosition(dst, opts = { smoothTime: 1 }) {
-      // @ts-ignore see patch
-      state.controls.zoomToConstant = null;
-
-      state.target = {
-        dst,
-        y: 1.5, // agent height
-        ...opts,
-      };
-    },
     handleClickInDebugMode(e) {
       if (
         w.disabled === true
@@ -150,35 +156,33 @@ export default function WorldView(props) {
     isPointerEventDrag(e) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
-    // linear via `{ maxSpeed: 1000 / 60 }`
-    async lookAt(point, opts = { smoothTime: 0.2 }) {
-      if (w.disabled === true && state.target !== null && w.reqAnimId === 0) {
-        state.clearTarget(); // we paused while targeting, so clear damping
+    async lookAt(point, opts = { smoothTime: 0.4 }) {// look with "locked zoom"
+      if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
+        state.clearTargetDamping(); // needs justification
       }
 
-      return new Promise((resolve, reject) => {
-        state.target = {
-          dst: toV3(point),
-          y: 1.5, // agent height
-          resolve,
-          reject,
-          ...opts,
-        };
-        // @ts-ignore see patch
-        state.controls.zoomToConstant = state.target.dst.clone();
-  
-        if (w.disabled === true) {// can lookAt while paused
-          state.syncRenderMode();
-          w.timer.reset();
-          w.onDebugTick();
-        }
-      });
-
+      try {
+        const dst = toV3(point);
+        state.controls.zoomToConstant = dst;
+        await state.tween({ look: dst, lookOpts: opts });
+      } finally {
+        state.controls.zoomToConstant = null;
+      }
     },
     onChangeControls(_e) {
       const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
       zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
       state.zoomState = zoomState;
+    },
+    onControlsEnd() {
+      w.events.next({ key: 'controls-end' });
+    },
+    onControlsStart() {
+      w.events.next({ key: 'controls-start' });
+      // 🔔 enabled controls override targetFov, target, targetDistance,
+      state.reject.fov?.('cancelled fov change');
+      state.reject.distance?.('cancelled zoom');
+      state.reject.look?.('cancelled look');
     },
     onCreated(rootState) {
       w.threeReady = true;
@@ -242,7 +246,7 @@ export default function WorldView(props) {
         position,
       }));
 
-      if (state.epoch.pointerUp > state.epoch.pickStart) {
+      if (state.epoch.pointerUp >= state.epoch.pickStart) {
         // Native "pointerup" occurred before we finished this object-pick.
         // We can now trigger the world event:
         w.events.next(state.getWorldPointerEvent({
@@ -308,8 +312,8 @@ export default function WorldView(props) {
     onPointerMove(e) {
       state.lastScreenPoint.copy(getRelativePointer(e));
 
-      if (state.target?.resolve !== undefined && state.down !== null && state.getDownDistancePx() > 5) {
-        state.clearTarget(); // cancel target if moved a bit
+      if (state.down !== null && state.getDownDistancePx() > 5) {
+        state.clearTweens(); // won't stop follow
       }
     },
     onPointerUp(e) {
@@ -334,25 +338,51 @@ export default function WorldView(props) {
       state.handleClickInDebugMode(e); // step world in debug mode
     },
     onTick(deltaMs) {
-      if (state.targetFov !== null) {
-        w.r3f.camera.fov = state.fov;
-        w.r3f.camera.updateProjectionMatrix();
-        if (damp(state, 'fov', state.targetFov, 0.1, deltaMs, undefined, undefined, undefined) === false) {
-          state.targetFov = null;
+      const { camera } = w.r3f;
+
+      if (state.dst.fov !== undefined) {// change fov
+        camera.fov = state.fov;
+        camera.updateProjectionMatrix();
+        if (damp(state, 'fov', state.dst.fov, 0.4, deltaMs, undefined, undefined, 1) === false) {
+          delete state.dst.fov;
           state.syncRenderMode();
+          state.resolve.fov?.();
         }
       }
 
-      if (state.target !== null && state.down === null) {
-        if (dampXZ(state.controls.target, state.target.dst, state.target.smoothTime, deltaMs, state.target.maxSpeed, state.target.y, 0.01) === false) {
-          if (state.target.resolve !== undefined) {
-            state.target.resolve();
-            state.clearTarget();
-          }
+      if (state.dst.look !== undefined && state.down === null) {// look or follow
+        const { look: target, lookOpts } = state.dst;
+        if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, lookOpts?.y ?? 1.5, 0.01) === false) {
+          state.resolve.look?.();
         }
         //@ts-ignore see patch i.e. fix azimuth angle
         state.controls.update(true);
       }
+
+      if (state.dst.distance !== undefined) {// zoom
+        const { minDistance, maxDistance, target } = state.controls;
+        const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.dst.distance));
+        const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
+        if (damp3(camera.position, targetCamPos, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
+          delete state.dst.distance;
+          state.resolve.distance?.();
+        }
+      }
+
+      if (state.dst.azimuthal !== undefined) {// azimuthal angle
+        if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
+          delete state.dst.azimuthal;
+          state.resolve.azimuthal?.();
+        }
+      }
+
+      if (state.dst.polar !== undefined) {// polar angle
+        if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
+          delete state.dst.polar;
+          state.resolve.polar?.();
+        }
+      }
+
     },
     openSnapshot(type = 'image/webp', quality) {
       window.open(dataUrlToBlobUrl(state.toDataURL(type, quality)), '_blank');
@@ -403,7 +433,7 @@ export default function WorldView(props) {
       const renderList = gl.renderLists.get(scene, 0);
 
       renderList.opaque.forEach(x => {
-        if (hasObjectPickShaderMaterial(x)) {
+        if (hasObjectPickShaderMaterial(x) === true) {
           state.renderObjectPickItem(gl, scene, camera, x);
         }
       });
@@ -412,13 +442,23 @@ export default function WorldView(props) {
         if (w.wall.opacity < 1 && x.object.name in fromXrayInstancedMeshName) {
           return;
         }
-        if (hasObjectPickShaderMaterial(x)) {
+        if (hasObjectPickShaderMaterial(x) === true) {
           state.renderObjectPickItem(gl, scene, camera, x);
         }
       });
     },
+    stopFollowing() {
+      if (state.dst.look !== undefined && state.resolve.look === undefined) {
+        delete state.dst.look;
+        state.controls.zoomToConstant = null;
+        return true;
+      } else {
+        return false;
+      }
+    },
     syncRenderMode() {
-      const frameloop = w.disabled === true && state.target === null && state.targetFov === null ? 'demand' : 'always';
+      const tweening = Object.keys(state.dst).length > 0;
+      const frameloop = w.disabled === true && tweening === false ? 'demand' : 'always';
       w.r3f?.set({ frameloop });
       return frameloop;
     },
@@ -426,13 +466,81 @@ export default function WorldView(props) {
       w.r3f.advance(Date.now());
       return state.canvas.toDataURL(type, quality);
     },
-  }), { reset: { controlsViewportOpts: true } });
+    toggleFollowPosition(dst, opts = { smoothTime: 0.8, y: 1.5 }) {
+      if (state.stopFollowing()) {
+        return;
+      }
+
+      // lock zoom
+      state.controls.zoomToConstant = dst;
+
+      /**
+       * - following amounts to "look tween without resolve/reject"
+       * - 🔔 stop look via @see {state.stopFollowing} or @see {state.toggleFollowPosition}
+       */
+      state.dst.look = dst;
+      state.dst.lookOpts = opts;
+      state.resolve.look = undefined;
+      state.reject.look = undefined;
+    },
+    async tween(opts) {
+      const promises = /** @type {Promise<void>[]} */ ([]);
+
+      /** @param {Exclude<keyof State['dst'], 'lookOpts'>} key */
+      function createPromise(key) {
+        return (new Promise((resolve, reject) =>
+          [state.resolve[key] = resolve, state.reject[key] = reject]
+        ).catch(() => delete state.dst[key])); // stop on reject
+      }
+
+      if (typeof opts.fov === 'number') {
+        state.dst.fov = opts.fov;
+        promises.push(createPromise('fov'));
+      }
+
+      if (typeof opts.distance === 'number') {
+        state.dst.distance = opts.distance;
+        promises.push(createPromise('distance'));
+      }
+
+      if (opts.look !== undefined) {
+
+        state.dst.look = opts.look;
+        state.dst.lookOpts = opts.lookOpts;
+        promises.push(createPromise('look'));
+
+      } else {// we don't support rotations if looking
+        
+        if (typeof opts.azimuthal === 'number') {
+          const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
+          state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, opts.azimuthal));
+          state.controls.setAzimuthalAngle(state.dst.azimuthal);
+          promises.push(createPromise('azimuthal'));
+        }
+        if (typeof opts.polar === 'number') {
+          const { minPolarAngle, maxPolarAngle } = state.controls;
+          state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, opts.polar));
+          state.controls.setPolarAngle(state.dst.polar);
+          promises.push(createPromise('polar'));
+        }
+
+      }
+
+      if (w.disabled === true) {// can tween while paused
+        state.syncRenderMode();
+        w.timer.reset();
+        w.onDebugTick();
+      }
+
+      await Promise.all(promises);
+    },
+  }), { reset: { controlsOpts: false } });
 
   w.view = state;
 
   React.useEffect(() => {
     if (state.controls && !w.crowd) {// 🔔 initially only
-      state.controls.setPolarAngle(Math.PI / 4);
+      state.controls.setPolarAngle(Math.PI / 6);
       state.controls.setAzimuthalAngle(Math.PI / 4);
     }
     emptySceneForPicking.onAfterRender = state.renderObjectPickScene;
@@ -473,7 +581,9 @@ export default function WorldView(props) {
         zoomToCursor
         onChange={state.onChangeControls}
         domElement={state.canvas}
-        {...state.controlsViewportOpts}
+        onStart={state.onControlsStart}
+        onEnd={state.onControlsEnd}
+        {...state.controlsOpts}
         //@ts-ignore see three-stdlib patch
         minPanDistance={w.smallViewport ? 0.05 : 0}
       />
@@ -500,12 +610,27 @@ export default function WorldView(props) {
  * - Pending click identifiers, provided by shell.
  * - The last click identifier is the "current one".
  * @property {(canvasEl: null | HTMLCanvasElement) => void} canvasRef
- * @property {() => void} clearTarget
+ * @property {() => void} clearTweens
+ * @property {() => void} clearTargetDamping
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
- * @property {import('three-stdlib').MapControls} controls
- * @property {import('@react-three/drei').MapControlsProps} controlsViewportOpts
+ * @property {import('three-stdlib').MapControls & {
+ *   sphericalDelta: THREE.Spherical;
+ *   zoomToConstant: null | THREE.Vector3;
+ * }} controls
+ * We provide access to `sphericalDelta` via patch.
+ * @property {import('@react-three/drei').MapControlsProps} controlsOpts
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
+ * 
+ * @property {{
+ *   azimuthal?: number;
+ *   distance?: number;
+ *   fov?: number;
+ *   polar?: number;
+ *   look?: THREE.Vector3;
+ *   lookOpts?: LookAtOpts;
+ * }} dst
+ *
  * @property {{ pickStart: number; pickEnd: number; pointerDown: number; pointerUp: number; }} epoch
  * Each uses Date.now() i.e. milliseconds since epoch
  * @property {number} fov
@@ -516,23 +641,26 @@ export default function WorldView(props) {
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
  * @property {THREE.Raycaster} raycaster
+ * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((value?: any) => void)>} resolve
+ * - follow has `resolve.look` undefined i.e. never resolves
+ * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
- * @property {null | { dst: THREE.Vector3; y?: number; reject?(err?: any): void; resolve?(): void; } & LookAtOpts} target
- * Speed is m/s
- * @property {null | number} targetFov
  * @property {'near' | 'far'} zoomState
  *
+ * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
  * @property {(e: React.PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
- * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
  * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
+ * @property {() => boolean} stopFollowing
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {(e?: THREE.Event) => void} onChangeControls
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
+ * @property {() => void} onControlsEnd
+ * @property {() => void} onControlsStart
  * @property {(e: React.PointerEvent<HTMLElement>) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerLeave
  * @property {(e: React.PointerEvent) => void} onPointerMove
@@ -542,27 +670,26 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
+ * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} toggleFollowPosition
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
+ * @property {(opts: {
+ *   fov?: number;
+ *   distance?: number;
+ *   look?: THREE.Vector3;
+ *   azimuthal?: number;
+ *   polar?: number;
+ *   lookOpts?: LookAtOpts;
+ * }) => Promise<void>} tween
  */
 
 const rootCss = css`
   user-select: none;
-
-  > div:first-of-type(div) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    canvas {
-      background-color: rgba(20, 20, 20, 1);
-      width: 100%;
-      height: 100%;
-      /* background-color: rgba(60, 60, 60, 1); */
-      /* background-color: rgba(255, 255, 255, 1); */
-    }
+  canvas[data-engine] {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(20, 20, 20, 1);
   }
-
 `;
 
 const statsCss = css`
@@ -586,6 +713,7 @@ const statsCss = css`
  * @typedef LookAtOpts
  * @property {number} [maxSpeed]
  * @property {number} [smoothTime]
+ * @property {number} [y]
 */
 
 const pixelBuffer = new Uint8Array(4);

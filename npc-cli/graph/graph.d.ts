@@ -92,7 +92,7 @@ declare namespace Graph {
   interface GmGraphNodeGm extends BaseGmGraphNode {
     type: "gm";
     /** Key of parent geomorph */
-    gmKey: Geomorph.GeomorphKey;
+    gmKey: Key.Geomorph;
     gmId: number;
     /** `gm-${gmKey}-[${transform}]` */
     id: string;
@@ -111,7 +111,7 @@ declare namespace Graph {
     /** `door-${gmKey}-[${transform}]-${hullDoorIndex}` */
     id: string;
     /** Key of parent geomorph */
-    gmKey: Geomorph.GeomorphKey;
+    gmKey: Key.Geomorph;
     /** Index of parent geomorph instance in its respective array */
     gmId: number;
     /** Transform of parent geomorph */
@@ -217,7 +217,7 @@ declare namespace Graph {
   //#region SymbolGraph
 
   interface SymbolGraphNode {
-    id: Geomorph.SymbolKey;
+    id: Key.Symbol;
   }
   
   interface SymbolGraphEdgeOpts extends BaseEdgeOpts {

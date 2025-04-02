@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   compiler: {
     emotion: true,
   },
+  // 🔔 fixes https://github.com/vercel/next.js/issues/76395 after upgrade to next@^15.2.1
+  transpilePackages: ['next-mdx-remote'],
   // 🔔 dev only, where turbo runs via `next dev --turbopack`
   experimental: {
     turbo: {
@@ -17,6 +19,8 @@ const nextConfig: NextConfig = {
           as: "*.js",
         },
       },
+      // resolveAlias // 🚧 tsconfig paths here?
+      // unstablePersistentCaching: true,
     },
   },
   // 🔔 build only, because turbopack does not run during build
@@ -25,6 +29,10 @@ const nextConfig: NextConfig = {
       test: /\/sh\/src\/.*\.sh$/,
       use: "raw-loader",
     });
+    // if (typeof config.devServer?.client === 'object') {
+    //   console.log('🔔', config.devServer.client);
+    //   // config.devServer.client.reconnect = true;
+    // }
     // config.optimization!.minimizer = [];
     return config;
   },

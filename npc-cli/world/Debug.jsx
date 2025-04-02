@@ -265,7 +265,7 @@ export default function Debug(props) {
  * @property {(WW.PhysicDebugItem & { parsedKey: WW.PhysicsParsedBodyKey })[]} staticColliders
  * @property {null | NPC.DownData} pick
  * @property {THREE.BufferGeometry} physicsLines
- * @property {(gmKey: Geomorph.GeomorphKey) => void} ensureNavPoly
+ * @property {(gmKey: Key.Geomorph) => void} ensureNavPoly
  * @property {(e: MessageEvent<WW.MsgFromPhysicsWorker>) => void} onPhysicsDebugData
  * @property {(path: THREE.Vector3Like[]) => void} setNavPath
  * @property {(...polyIds: number[]) => void} selectNavPolys

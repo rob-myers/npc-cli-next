@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 100 100" style="filter: none;" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-        <defs>
-                <bx:grid x="0" y="0" width="300" height="300"/>
-                <filter id="outline-filter-0" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%" bx:preset="outline 1 2 #999">
-                        <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="2"/>
-                        <feFlood flood-color="#999" result="flood"/>
-                        <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
-                        <feMerge>
-                                <feMergeNode in="outline"/>
-                                <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                </filter>
-        </defs>
-        <g style="filter: none;">
-                <ellipse style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 4px;" cx="50" cy="50" rx="48" ry="48">
-                        <title>circle</title>
-                </ellipse>
-                <text style="font-family: 'Courier New'; font-size: 96px; white-space: pre; filter: url('#outline-filter-0');" x="21.195181" y="75.539321"><title>letter-i</title>i</text>
-        </g>
+<svg width="100" height="100" viewBox="0 0 100 100" style="filter: none;" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:grid x="0" y="0" width="300" height="300"/>
+    <filter id="outline-filter-0" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%" bx:preset="outline 1 2 #999">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="2"/>
+      <feFlood flood-color="#999" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge>
+        <feMergeNode in="outline"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g style="filter: none;">
+    <ellipse style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 4px;" cx="50" cy="50" rx="48" ry="48">
+      <title>circle</title>
+    </ellipse>
+    <path d="M 52.75 19.188 L 52.75 29.36 L 46.938 29.36 L 46.938 19.188 Z M 52.891 39.391 L 52.891 76.048 L 68.359 76.048 Q 69.813 76.048 70.422 76.587 Q 71.031 77.126 71.031 78.016 Q 71.031 78.86 70.422 79.423 Q 69.813 79.985 68.359 79.985 L 33.484 79.985 Q 32.078 79.985 31.469 79.423 Q 30.859 78.86 30.859 78.016 Q 30.859 77.126 31.469 76.587 Q 32.078 76.048 33.484 76.048 L 48.953 76.048 L 48.953 43.376 L 37.469 43.376 Q 36.063 43.376 35.43 42.813 Q 34.797 42.251 34.797 41.407 Q 34.797 40.516 35.406 39.954 Q 36.016 39.391 37.469 39.391 Z" style="text-wrap-mode: nowrap; filter: url(&quot;#outline-filter-0&quot;);"/>
+  </g>
 </svg>

@@ -38,6 +38,27 @@ export function getRelativePointer(e) {
 }
 
 /**
+ * 🚧 clarify
+ * @param {React.TouchEvent} e
+ * @param {number} identifier
+ * @returns {undefined | {clientX: number, clientY: number}}
+ */
+export function getTouch(e, identifier) {
+  return (e.targetTouches && Array.from(e.targetTouches).find(t => identifier === t.identifier)) ||
+    (e.changedTouches && Array.from(e.changedTouches).find(t => identifier === t.identifier));
+}
+
+/**
+ * 🚧 clarify
+ * @param {React.TouchEvent} e 
+ * @returns {number | undefined}
+ */
+export function getTouchIdentifier(e) {
+  if (e.targetTouches?.[0]) return e.targetTouches[0].identifier;
+  if (e.changedTouches?.[0]) return e.changedTouches[0].identifier;
+}
+
+/**
  * @param {number} dim
  * @param {string} color
  */
@@ -232,7 +253,7 @@ export function strokeLine(ct, from, to) {
 }
 
 /**
- * @typedef {CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | import('canvas').CanvasRenderingContext2D} CanvasContext2DType
+ * @typedef {CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | import('@napi-rs/canvas').SKRSContext2D} CanvasContext2DType
  */
 
 export function isSmallViewport() {

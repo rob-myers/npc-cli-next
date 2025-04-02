@@ -207,6 +207,15 @@ export function deepClone(input) {
 }
 
 /**
+ * @template {string | number} K
+ * @template {any} V
+ * @param {Partial<Record<K, V>> | Record<K, V>} record
+ */
+export function entries(record) {
+  return /** @type {[K, V][]} */ (Object.entries(record));
+}
+
+/**
  * Convert a function, regexp or string into a 'selector'.
  * - for functions we merely prefix args `extraArgs`
  * - for strings we support e.g.
@@ -253,7 +262,7 @@ export function generateSelector(selector, extraArgs) {
     /** @param {string} x @param {any[]} xs */
     return function selectByRegexp(x, ...xs) {
       // 🚧 support extraArgs e.g. extract via '$2 $1'
-      return selector.test.call(selector, typeof x === "string" ? x : JSON.stringify(x));
+      return selector.test.call(selector, typeof x === "string" ? x : jsStringify(x));
     };
   }
   if (selector === undefined) {
@@ -381,6 +390,7 @@ export function parseJsWithCt(input, names = [], values = []) {
  */
 export function parseJsonArg(input) {
   try {
+    //@ts-ignore // 🚧
     return input === undefined ? undefined : JSON.parse(input);
   } catch {
     return input;

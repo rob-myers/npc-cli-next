@@ -5,3 +5,4 @@
 /// <reference path="../npc-cli/types/global.d.ts"/>
 /// <reference path="../npc-cli/graph/graph.d.ts"/>
 /// <reference path="../npc-cli/types/npc.d.ts"/>
+/// <reference path="../npc-cli/types/key.d.ts"/>

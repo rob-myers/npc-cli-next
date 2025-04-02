@@ -4,7 +4,8 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "ES2023.Array"
     ],
     "allowJs": true,
     "checkJs": true,
@@ -14,6 +15,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    "noErrorTruncation": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -42,7 +44,8 @@
     },
     "types": [
       "@emotion/react/types/css-prop",
-      "webpack-env"
+      "webpack-env",
+      "webpack-dev-server"
     ]
   },
   "include": [

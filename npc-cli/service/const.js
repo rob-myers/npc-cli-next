@@ -107,12 +107,12 @@ export const doorLockedColor = 'rgb(255, 230, 230)';
 
 export const doorUnlockedColor = 'rgb(230, 255, 230)';
 
-/** @type {NPC.ClassKey} */
-export const defaultClassKey = 'cuboid-man';
+/** @type {Key.NpcClass} */
+export const defaultClassKey = 'human-0';
 
 /**
  * Fade out previous animation (seconds)
- * @type {Record<NPC.AnimKey, Record<NPC.AnimKey, number>>}
+ * @type {Record<Key.Anim, Record<Key.Anim, number>>}
  */
 export const glbFadeOut = {
     Idle: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0.2, Lie: 0 },
@@ -124,14 +124,14 @@ export const glbFadeOut = {
 
 /**
  * Fade in next animation (seconds).
- * @type {Record<NPC.AnimKey, Record<NPC.AnimKey, number>>}
+ * @type {Record<Key.Anim, Record<Key.Anim, number>>}
  */
  export const glbFadeIn = {
     Idle: { Idle: 0, Run: 0.2, Walk: 0.1, Sit: 0.1, Lie: 0 },
     Lie: { Idle: 0, Run: 0, Walk: 0, Sit: 0, Lie: 0 },
     Run: { Idle: 0.05, Run: 0, Walk: 0.1, Sit: 0.2, Lie: 0 },
     Sit: { Idle: 0.1, Run: 0.1, Walk: 0.1, Sit: 0, Lie: 0 },
-    Walk: { Idle: 0.05, Run: 0.1, Walk: 0, Sit: 0.2, Lie: 0 },
+    Walk: { Idle: 0.2, Run: 0.1, Walk: 0, Sit: 0.2, Lie: 0 },
 };
 
 export const defaultNpcInteractRadius = geomorphGridMeters;
@@ -158,9 +158,9 @@ export const decorGridSize = geomorphGridMeters * 2;
 export const decorIconRadius = 5 * sguToWorldScale;
 
 export const fallbackDecorImgKey = {
-  /** @type {Geomorph.DecorImgKey} */
+  /** @type {Key.DecorImg} */
   point: 'icon--info',
-  /** @type {Geomorph.DecorImgKey} */
+  /** @type {Key.DecorImg} */
   quad: 'icon--warn',
 };
 
@@ -184,7 +184,7 @@ export const doorSwitchHeight = 1;
 export const doorSwitchDecorImgKey = /** @type {const} */ ('icon--square');
 
 /**
- * @typedef {keyof fromDecorImgKey} DecorImgKey
+ * @typedef {keyof typeof fromDecorImgKey} DecorImgKey
  */
 
 /** Aligned to media/decor/{key}.svg */
@@ -197,9 +197,10 @@ export const fromDecorImgKey = {// 🔔 must extend when adding new decor
   'icon--door-locked': true,
   'icon--door-open': true,
   'icon--door-unlocked': true,
-  'icon--warn': true,
   'icon--key-card': true,
+  'icon--robot': true,
   'icon--square': true,
+  'icon--warn': true,
 };
 
 /**
@@ -328,39 +329,29 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
 
 /**
  * The `*.glb` files must be exported from Blender using respective `media/npc/*.blend`
- * @type {Record<NPC.ClassKey, NPC.ClassDef>}
+ * @type {Record<Key.NpcClass, NPC.ClassDef>}
  */
 export const npcClassToMeta = {
-  'cuboid-man': {
-    url: '/3d/cuboid-man.glb',
-    scale: 0.6,
-    materialName: 'cuboid-man-material',
-    meshName: 'cuboid-man-mesh',
+
+  "human-0": {
     groupName: 'Scene',
-    skinBaseName: 'cuboid-man.tex.png',
+    materialName: 'human-0-material',
+    meshName: 'human-0-mesh',
+    modelAnimHeight: {// pre-scale heights
+      Idle: 2.1, Run: 2.1, Walk: 2.1, Lie: 0.5, Sit: 1.6,
+    },
+    modelLabelHeight: 0.25,
+    modelUrl: '/3d/human-0.glb',
+    npcClassKey: 'human-0',
+    modelRadius: 0.5,
+    runSpeed: 4,
+    scale: 0.7,
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
-    // 🚧
-    radius: 0.5,
     walkSpeed: 2.5,
-    runSpeed: 4,
-  },
-  'cuboid-pet': {
-    url: '/3d/cuboid-pet.glb',
-    // scale: 1,
-    scale: 0.6,
-    materialName: 'cuboid-pet-material',
-    meshName: 'cuboid-pet-mesh',
-    groupName: 'Scene',
-    skinBaseName: 'cuboid-pet.tex.png',
-    timeScale: { 'Idle': 0.4, 'Walk': 0.5 },
-    // 🚧
-    radius: 0.5,
-    walkSpeed: 2,
-    runSpeed: 4,
   },
 };
 
-export const npcClassKeys = /** @type {NPC.ClassKey[]} */ (
+export const npcClassKeys = /** @type {Key.NpcClass[]} */ (
   Object.keys(npcClassToMeta)
 );
 
@@ -379,7 +370,7 @@ export const physicsConfig = {
 };
 
 /**
- * @type {Record<NPC.ObjectPickedType, boolean>}
+ * @type {Record<Key.ObjectPickedType, boolean>}
  */
 export const pickedTypesInSomeRoom = {
     wall: true,
@@ -422,3 +413,23 @@ export const fromXrayInstancedMeshName = {
 
 /** @type {Geom.SixTuple} */
 export const switchDecorQuadScaleUp = [1, 0, 0, 1.5, 0, 0];
+
+/** `2048 * 2048` can contain main skins */
+export const skinsTextureDimension = 2048;
+
+/**
+ * One pixel per triangle in model (currently assume ≤ 128).
+ * Each pixel represents (du, dv, sheetId) for uv-remapping
+ */
+export const skinsUvsTextureWidth = 128;
+
+/** Max width (pixels) of any label */
+export const skinsLabelsTextureWidth = 200;
+/** Max height (pixels) of any label */
+export const skinsLabelsTextureHeight = 200 / 4;
+
+/**
+ * Works for `24px Monospace` on OSX Chrome/Safari/Firefox
+ * @see {skinsLabelsTextureWidth}
+ */
+export const npcLabelMaxChars = 12;

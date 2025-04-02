@@ -17,7 +17,7 @@ export default function createGmsData() {
     /** Total number of obstacles, each being a single quad:  */
     obstaclesCount: 0,
     /** This induces the floor/ceil texture array ordering */
-    seenGmKeys: /** @type {Geomorph.GeomorphKey[]} */ ([]),
+    seenGmKeys: /** @type {Key.Geomorph[]} */ ([]),
     /** Total number of walls, where each wall is a single quad:  */
     wallCount: 0,
     /** Per gmId, total number of wall line segments:  */
@@ -210,7 +210,7 @@ export default function createGmsData() {
       ];
     },
     /**
-     * @param {Geomorph.GeomorphKey} gmKey 
+     * @param {Key.Geomorph} gmKey 
      * @returns {number}
      */
     getTextureId(gmKey) {
@@ -247,14 +247,14 @@ const emptyGmData = {
 /**
  * @typedef {ReturnType<typeof createGmsData>} GmsData
  * 1. Data determined by `w.gms` (can change in dev, or dynamic navMesh).
- * 2. Data determined by a `Geomorph.GeomorphKey`, keyed by latter.
+ * 2. Data determined by a `Key.Geomorph`, keyed by latter.
  */
 
 /**
- * Data determined by a `Geomorph.GeomorphKey`.
+ * Data determined by a `Key.Geomorph`.
  * We do not store in `w.gms` to avoid duplication.
  * @typedef GmData
- * @property {Geomorph.GeomorphKey} gmKey
+ * @property {Key.Geomorph} gmKey
  * @property {[Geom.Vect, Geom.Vect][]} doorSegs
  * @property {CanvasRenderingContext2D} hitCtxt
  * @property {import('three').BufferGeometry} [navPoly] Debug only

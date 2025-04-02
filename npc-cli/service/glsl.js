@@ -4,7 +4,11 @@ import { shaderMaterial } from "@react-three/drei";
 import { wallHeight } from "./const";
 import { defaultQuadUvs, emptyDataArrayTexture } from "./three";
 
-const instancedMonochromeShader = {
+/**
+ * - Monochrome instanced walls.
+ * - More transparent the closer you get.
+ */
+const instancedWallsShader = {
   Vert: /*glsl*/`
 
   attribute uint instanceIds;
@@ -25,6 +29,7 @@ const instancedMonochromeShader = {
     gl_Position = projectionMatrix * modelViewPosition;
     #include <logdepthbuf_vertex>
 
+    // 🚧 remove hard-coded divisor
     vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 25.0f;
   }
 
@@ -124,18 +129,19 @@ const instancedLabelsShader = {
 
 /**
  * - Shade color `diffuse` by light whose direction is always the camera's direction.
- * - Supports instancing.
+ * - Assumes InstancedMesh and supports USE_INSTANCING_COLOR
  * - Supports a single texture.
  * - We're using this as a guide:
  *   - https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/meshphong.glsl.js
  *   - https://ycw.github.io/three-shaderlib-skim/dist/#/latest/basic/vertex
  */
-export const cameraLightShader = {
+export const instancedFlatShader = {
   Vert: /*glsl*/`
 
-  flat varying float dotProduct;
+  varying float dotProduct;
   varying vec3 vColor;
   flat varying uint vInstanceId;
+  varying vec2 vUv;
 
   attribute uint instanceIds;
 
@@ -146,37 +152,31 @@ export const cameraLightShader = {
   void main() {
     #include <uv_vertex>
     vInstanceId = instanceIds;
+    vUv = uv;
 
     vec3 objectNormal = vec3(normal);
     vec3 transformed = vec3(position);
+    
     vec4 mvPosition = vec4(transformed, 1.0);
-
-    #ifdef USE_INSTANCING
-      mvPosition = instanceMatrix * mvPosition;
-    #endif
-
+    mvPosition = instanceMatrix * mvPosition;
     mvPosition = modelViewMatrix * mvPosition;
+
     gl_Position = projectionMatrix * mvPosition;
-
-    #ifdef USE_LOGDEPTHBUF
-      vFragDepth = 1.0 + gl_Position.w;
-      vIsPerspective = float( isPerspectiveMatrix( projectionMatrix ) );
-    #endif
-
-    vec3 transformedNormal = objectNormal;
-    #ifdef USE_INSTANCING
-      mat3 im = mat3( instanceMatrix );
-      transformedNormal = im * transformedNormal;
-    #endif
-    transformedNormal = normalMatrix * transformedNormal;
 
     vColor = vec3(1.0);
     #ifdef USE_INSTANCING_COLOR
       vColor.xyz *= instanceColor.xyz;
     #endif
 
-    vec3 lightDir = normalize(mvPosition.xyz);
-    dotProduct = -min(dot(normalize(transformedNormal), lightDir), 0.0);
+    vec3 transformedNormal = objectNormal;
+    mat3 im = mat3(instanceMatrix);
+    transformedNormal = im * transformedNormal;
+    transformedNormal = normalMatrix * transformedNormal;
+
+    vec3 lightDir = -normalize(mvPosition.xyz);
+    dotProduct = dot(normalize(transformedNormal), lightDir);
+
+    #include <logdepthbuf_vertex>
   }
   `,
 
@@ -186,11 +186,12 @@ export const cameraLightShader = {
   uniform bool objectPick;
   uniform int objectPickRed;
   uniform float opacity;
+  uniform bool quadOutlines;
 
   flat varying uint vInstanceId;
-	flat varying float dotProduct;
+  varying vec2 vUv;
+	varying float dotProduct;
   varying vec3 vColor;
-
 
   #include <common>
   #include <uv_pars_fragment>
@@ -202,8 +203,26 @@ export const cameraLightShader = {
     #include <logdepthbuf_fragment>
     #include <map_fragment>
 
-    // gl_FragColor = vec4(vColor * diffuse * (0.1 + 0.7 * dotProduct), 1);
-    gl_FragColor = vec4(vColor * vec3(diffuseColor) * (0.1 + 0.7 * dotProduct), diffuseColor.a * opacity);
+    float ambientLight = 0.1;
+    float normalLight = 0.7;
+
+    if (quadOutlines == true) {
+      // 🚧 take account of scaling
+      float dx = 0.025, dy = 0.025;
+      if (
+        vUv.x <= dx
+        || vUv.x >= 1.0 - dx
+        || vUv.y <= dy
+        || vUv.y >= 1.0 - dy
+      ) {
+        ambientLight = 0.5;
+      }
+    }
+
+    gl_FragColor = vec4(
+      vColor * vec3(diffuseColor) * (ambientLight + normalLight * dotProduct),
+      diffuseColor.a * opacity
+    );
 
     if (objectPick == true) {
       gl_FragColor = vec4(
@@ -217,35 +236,14 @@ export const cameraLightShader = {
   `,
 };
 
-/**
- * - Assumes specific mesh cuboid-man with 64 vertices.
- * - Supports similar mesh i.e. cuboid-pet.
- * - Based on `cameraLightShader`
- * - Does not support instancing
- * - Assumes USE_LOGDEPTHBUF
- */
-export const cuboidManShader = {
-
+export const humanZeroShader = {
   Vert: /*glsl*/`
 
-  uniform bool showLabel;
-  uniform bool showSelector;
-
-  uniform float labelHeight;
-  uniform vec3 selectorColor;
-
-  uniform vec2 uFaceUv[4];
-  uniform vec2 uIconUv[4];
-  uniform vec2 uLabelUv[4];
-  // label width/height changes
-  uniform vec2 uLabelDim;
-
-  attribute int vertexId;
-
-  flat varying int vId;
+  uniform float labelY;
+  uniform int labelTriIds[2];
+  varying float dotProduct;
+  flat varying int triangleId;
   varying vec2 vUv;
-  varying vec3 vColor;
-  flat varying float dotProduct;
 
   #include <common>
   #include <uv_pars_vertex>
@@ -257,100 +255,60 @@ export const cuboidManShader = {
     #include <skinbase_vertex>
     #include <beginnormal_vertex>
     #include <skinnormal_vertex>
-    vec3 transformed = vec3(position);
-    #include <skinning_vertex>
 
-    vId = vertexId;
-    vColor = vec3(1.0);
+    // since unwelded via geometry.toNonIndexed()
+    triangleId = int(gl_VertexID / 3);
     vUv = uv;
 
-    // ℹ️ unused "uvs from DataTexture"
-    // vec2 uvId = vec2( float (vId) / 64.0, 0.0);
-    // vUv = texture2D(textures[1], uvId).xy;
+    vec3 transformed = vec3(position);
+    #include <skinning_vertex>
+    vec4 mvPosition;
 
-    if (vId >= 60) {// ⭐️ label quad
+    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
 
-      if (showLabel == false) {
-        return;
-      }
-
-      vUv = uLabelUv[vId - 60];
-
-      // Point above head
-      vec4 mvPosition = modelViewMatrix * vec4(0.0, labelHeight, 0.0, 1.0);
+      // label quad is above head and faces camera
+      mvPosition = modelMatrix[3]; // translation
+      mvPosition.y = labelY;
+      mvPosition = viewMatrix * mvPosition;
+      mvPosition.xy += transformed.xy;
       
-      // Quad faces the camera
-      // mvPosition.xy += transformed.xy;
-      // Overwrite geometry for custom label width/height
-      if (vId == 60) {
-        mvPosition.xy += vec2(uLabelDim.x, uLabelDim.y) * 0.5;
-      } else if (vId == 61) {
-        mvPosition.xy += vec2(-uLabelDim.x, uLabelDim.y) * 0.5;
-      } else if (vId == 62) {
-        mvPosition.xy += vec2(uLabelDim.x, -uLabelDim.y) * 0.5;
-      } else {
-        mvPosition.xy += vec2(-uLabelDim.x, -uLabelDim.y) * 0.5;
-      }
-      gl_Position = projectionMatrix * mvPosition;
-      #include <logdepthbuf_vertex>
-      return;
+    } else {// everything else
 
-    } else if (vId >= 56) {// ⭐️ icon quad
-
-      vUv = uIconUv[vId - 56];
-
-    } else if (vId >= 52) {// ⭐️ selector quad
-      
-      if (showSelector == false) {
-        return;
-      }
-
-      vColor = selectorColor;
-
-    } else if (vId <= 3 * 5) {// ⭐️ face quad
-
-      // [3 * 0, 3 * 1, 3 * 4, 3 * 5]
-      switch (vId) {
-        case 0: vUv = uFaceUv[0]; break;
-        case 3: vUv = uFaceUv[1]; break;
-        case 12: vUv = uFaceUv[2]; break;
-        case 15: vUv = uFaceUv[3]; break;
-      }
-
+      mvPosition = modelViewMatrix * vec4(transformed, 1.0);
+  
+      // compute dot product for flat shading
+      vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
+      vec3 lightDir = -normalize(mvPosition.xyz);
+      dotProduct = dot(transformedNormal, lightDir);
+  
     }
-
-    vec4 mvPosition = vec4(transformed, 1.0);
-    mvPosition = modelViewMatrix * mvPosition;
+    
     gl_Position = projectionMatrix * mvPosition;
-
     #include <logdepthbuf_vertex>
-
-    // dot product for basic lighting in fragment shader
-    // vec3 transformedNormal = normalize(normalMatrix * vec3(normal));
-    vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
-    vec3 lightDir = normalize(mvPosition.xyz);
-    dotProduct = -min(dot(transformedNormal, lightDir), 0.0);
   }
   `,
-
   Frag: /*glsl*/`
+  
+  // skins: 2048 * 2048 * numSkinSheets
+  uniform sampler2DArray atlas;
 
-  uniform int uNpcUid;
+  // 1st row: uv re-mapping (dx, dy, atlasId), and object-pick alpha
+  // 2nd row: skin tints
+  // depth is max number of npcs
+  uniform sampler2DArray aux;
+  
+  // 🔔 label must be a quad i.e. two triangles
+  uniform sampler2DArray label;
+  uniform int labelTriIds[2];
+  uniform vec4 labelUvRect4;
+
   uniform vec3 diffuse;
-  uniform bool objectPick;
   uniform float opacity;
+  uniform bool objectPick;
+  uniform int uid;
 
-  uniform sampler2D uBaseTexture;
-  uniform sampler2D uLabelTexture;
-  uniform sampler2D uAlt1Texture;
-
-  uniform int uFaceTexId;
-  uniform int uIconTexId;
-  uniform int uLabelTexId;
-
-  flat varying int vId;
-	flat varying float dotProduct;
-  varying vec3 vColor;
+  varying float dotProduct;
+  flat varying int triangleId;
   varying vec2 vUv;
 
   #include <common>
@@ -358,83 +316,61 @@ export const cuboidManShader = {
   #include <map_pars_fragment>
   #include <logdepthbuf_pars_fragment>
 
-  //#region getTexelColor
-  // ℹ️ https://stackoverflow.com/a/74729081/2917822
-  vec4 getTexelColor(int texId, vec2 uv) {
-    switch (texId) {
-      case 0: return texture2D(uBaseTexture, uv);
-      case 1: return texture2D(uLabelTexture, uv);
-      case 2: return texture2D(uAlt1Texture, uv);
-    }
-    return vec4(0.0);
-  }
-  //#endregion
-
-  /**
-   * - 8 means npc
-   * - uNpcUid in 0..65535 (msByte, lsByte),
-   *   although probably in 0..255
-   */
   vec4 encodeNpcObjectPick() {
-    return vec4(
-      8.0,
-      // 255.0,
-      float((uNpcUid >> 8) & 255),
-      float(uNpcUid & 255),
-      255.0
+    return vec4(// 8.0 is object-pick identifier
+      8.0, float((uid >> 8) & 255), float(uid & 255), 255.0
     ) / 255.0;
   }
 
   void main() {
-    vec4 diffuseColor = vec4(diffuse, 1);
-    #include <logdepthbuf_fragment>
-    #include <map_fragment>
-
-    if (vId >= 60) {// ⭐️ label quad
-
-      diffuseColor *= getTexelColor(uLabelTexId, vUv);
-
-    } else if (vId >= 56) {// ⭐️ icon quad
-
-      diffuseColor *= getTexelColor(uIconTexId, vUv);
-      
-    } else {
-
-      switch (vId) {
-        case 0: case 3: case 12: case 15: // ⭐️ face quad
-          diffuseColor *= getTexelColor(uFaceTexId, vUv);
-        break;
-        default:
-          diffuseColor *= getTexelColor(0, vUv);
-      }
-
-    }
-
-    diffuseColor.a *= opacity;
-
-    if (diffuseColor.a < 0.1) {
-      discard;
-    }
 
     if (objectPick == true) {
-      if (vId < 60) gl_FragColor = encodeNpcObjectPick();
+      gl_FragColor = encodeNpcObjectPick();
+      // hide some triangles e.g. selector, label, breath
+      gl_FragColor.a *= texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid)).a;
+      #include <logdepthbuf_fragment>
       return;
     }
 
-    if (vId >= 60) {// ⭐️ label quad (no lighting)
+    // tinting (DataArrayTexture has width 128)
+    // 🤔 tint factor is 0.25
+    vec4 tint = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
+    tint.x = diffuse.x + 0.25 * tint.x;
+    tint.y = diffuse.y + 0.25 * tint.y;
+    tint.z = diffuse.z + 0.25 * tint.z;
+    tint.a *= opacity;
 
-      gl_FragColor = vec4(vColor * vec3(diffuseColor) * 1.0, diffuseColor.a);
+    vec4 texel;
+    
+    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {// label quad
 
-    } else if (vId >= 52 && vId < 56) { // ⭐️ selector quad (no lighting)
+      texel = texture(
+        label,
+        vec3(
+          (vUv.x - labelUvRect4.x) * (1.0 / labelUvRect4.z),
+          (vUv.y - labelUvRect4.y) * (1.0 / labelUvRect4.a),
+          uid
+        )
+      );
 
-      gl_FragColor = vec4(vColor * vec3(diffuseColor) * 1.0, diffuseColor.a);
+    } else {// everything else
 
-    } else {// basic lighting
+      tint *= vec4(vec3(0.1 + 0.7 * dotProduct), 1.0); // flat shading
 
-      gl_FragColor = vec4(vColor * vec3(diffuseColor) * (0.1 + 0.7 * dotProduct), diffuseColor.a);
+      // skinning
+      vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
+      float atlasId = uvOffset.z;
 
+      texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
+      
     }
 
+    gl_FragColor = texel * tint;
+    #include <logdepthbuf_fragment>
+
+    if (gl_FragColor.a < 0.1) {
+      discard; // comment out to debug label dimensions
+    }
   }
   `,
 };
@@ -520,14 +456,14 @@ export const instancedMultiTextureShader = {
   `,
 };
 
-export const InstancedMonochromeShader = shaderMaterial(
+export const InstancedWallsShader = shaderMaterial(
   {
     diffuse: new THREE.Vector3(1, 0.5, 0.5),
     objectPick: false,
     opacity: 1,
   },
-  instancedMonochromeShader.Vert,
-  instancedMonochromeShader.Frag,
+  instancedWallsShader.Vert,
+  instancedWallsShader.Frag,
 );
 
 export const InstancedLabelsMaterial = shaderMaterial(
@@ -541,14 +477,21 @@ export const InstancedLabelsMaterial = shaderMaterial(
   instancedLabelsShader.Frag,
 );
 
+/**
+ * - Ceiling
+ * - Decor quads
+ * - Doors
+ * - Obstacles
+ * - Floor
+ */
 export const InstancedMultiTextureMaterial = shaderMaterial(
   {
     alphaTest: 0.5,
     atlas: emptyDataArrayTexture,
     diffuse: new THREE.Vector3(1, 0.9, 0.6),
     // 🔔 map, mapTransform required else can get weird texture
-    map: null,
-    mapTransform: new THREE.Matrix3(),
+    // map: null,
+    // mapTransform: new THREE.Matrix3(),
     colorSpace: false,
     objectPick: false,
     objectPickRed: 0,
@@ -558,7 +501,12 @@ export const InstancedMultiTextureMaterial = shaderMaterial(
   instancedMultiTextureShader.Frag,
 );
 
-export const CameraLightMaterial = shaderMaterial(
+/**
+ * Instanced Flat Shading
+ * - Decor cuboids
+ * - Door lights
+ */
+export const InstancedFlatMaterial = shaderMaterial(
   {
     diffuse: new THREE.Vector3(1, 0.9, 0.6),
     // 🔔 map, mapTransform required else can get weird texture
@@ -567,50 +515,42 @@ export const CameraLightMaterial = shaderMaterial(
     objectPick: false,
     objectPickRed: 0,
     opacity: 1,
+    quadOutlines: false,
   },
-  cameraLightShader.Vert,
-  cameraLightShader.Frag,
+  instancedFlatShader.Vert,
+  instancedFlatShader.Frag,
 );
 
-export const CuboidManMaterial = shaderMaterial(
-  {
-    diffuse: new THREE.Vector3(1, 0.9, 0.6),
-    // 🔔 map, mapTransform required else can get weird texture
-    map: null,
-    mapTransform: new THREE.Matrix3(),
-    opacity: 1,
-    objectPick: false,
-    uNpcUid: 0,
+/** @type {import('@/npc-cli/types/glsl').HumanZeroMaterialProps} */
+const humanZeroMaterialDefaultProps = {
+  atlas: emptyDataArrayTexture,
+  aux: emptyDataArrayTexture,
+  diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  label: emptyDataArrayTexture,
+  labelY: 0,
+  labelTriIds: [],
+  labelUvRect4: new THREE.Vector4(),
+  objectPick: false,
+  opacity: 1,
+  uid: 0,
+};
 
-    showLabel: true,
-    labelHeight: wallHeight,
-    showSelector: true,
-    selectorColor: [0, 0, 1],
 
-    uBaseTexture: null,
-    uLabelTexture: null,
-    uAlt1Texture: null,
-
-    uFaceTexId: 0,
-    uIconTexId: 0,
-    uLabelTexId: 0,
-    uFaceUv: defaultQuadUvs,
-    uIconUv: defaultQuadUvs,
-    uLabelUv: defaultQuadUvs,
-    uLabelDim: defaultQuadUvs[0],
-  },
-  cuboidManShader.Vert,
-  cuboidManShader.Frag,
+export const HumanZeroMaterial = shaderMaterial(
+  /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
+    humanZeroMaterialDefaultProps
+  ),
+  humanZeroShader.Vert,
+  humanZeroShader.Frag,
 );
 
 /**
  * @see glsl.d.ts
  */
 extend({
-  InstancedMonochromeShader,
-  // InstancedUvMappingMaterial,
+  InstancedMonochromeShader: InstancedWallsShader,
   InstancedLabelsMaterial,
   InstancedMultiTextureMaterial,
-  CameraLightMaterial,
-  CuboidManMaterial,
+  InstancedFlatMaterial,
+  HumanZeroMaterial,
 });

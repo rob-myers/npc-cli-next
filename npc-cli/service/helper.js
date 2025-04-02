@@ -1,4 +1,4 @@
-import { fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
+import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
 
 /**
  * 🚧 try singleton instance instead, including other methods
@@ -14,10 +14,9 @@ export const helper = {
   /** Aligned to media/decor/{key}.svg */
   fromDecorImgKey,
 
-  /** @type {Record<NPC.ClassKey, true>} */
+  /** @type {Record<Key.NpcClass, true>} */
   fromNpcClassKey: {
-    'cuboid-man': true,
-    "cuboid-pet": true,
+    "human-0": true,
   },
 
   /** Global over all `queryFilter`s */
@@ -35,7 +34,7 @@ export const helper = {
     excludeDoors: 1,
   }),
 
-  /** @type {Record<Geomorph.GeomorphNumber, Geomorph.GeomorphKey>} */
+  /** @type {Record<Key.GeomorphNumber, Key.Geomorph>} */
   toGmKey: {
     101: "g-101--multipurpose",
     102: "g-102--research-deck",
@@ -45,7 +44,7 @@ export const helper = {
     303: "g-303--passenger-deck",
   },
 
-  /** @type {Record<Geomorph.GeomorphKey, Geomorph.GeomorphNumber>} */
+  /** @type {Record<Key.Geomorph, Key.GeomorphNumber>} */
   toGmNum: {
     "g-101--multipurpose": 101,
     "g-102--research-deck": 102,
@@ -55,7 +54,7 @@ export const helper = {
     "g-303--passenger-deck": 303,
   },
 
-  /** @type {Record<Geomorph.GeomorphKey, Geomorph.SymbolKey>} */
+  /** @type {Record<Key.Geomorph, Key.Symbol>} */
   toHullKey: {
     "g-101--multipurpose": "101--hull",
     "g-102--research-deck": "102--hull",
@@ -65,14 +64,14 @@ export const helper = {
     "g-303--passenger-deck": "303--hull",
   },
   
-  defaults: {
-    radius: npcClassToMeta["cuboid-man"].radius * npcClassToMeta["cuboid-man"].scale / 2,
-    runSpeed: npcClassToMeta["cuboid-man"].runSpeed * npcClassToMeta["cuboid-man"].scale,
-    walkSpeed: npcClassToMeta["cuboid-man"].walkSpeed * npcClassToMeta["cuboid-man"].scale,
+  defaults: {// 🚧
+    radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale / 2,
+    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale,
+    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale,
   },
 
   // 🚧 fix types
-  // /** @type {Record<NPC.AnimKey, true>} */
+  // /** @type {Record<Key.Anim, true>} */
   fromAnimKey: {
     Idle: true,
     Lie: true,
@@ -156,7 +155,7 @@ export const helper = {
 
   /**
    * @param {string} input 
-   * @returns {input is NPC.ClassKey}
+   * @returns {input is Key.NpcClass}
    */
   isNpcClassKey(input) {
     return input in helper.fromNpcClassKey;
@@ -164,7 +163,7 @@ export const helper = {
   
   /**
    * @param {string} input 
-   * @returns {input is NPC.AnimKey}
+   * @returns {input is Key.Anim}
    */
   isAnimKey(input) {
     return input in helper.fromAnimKey;

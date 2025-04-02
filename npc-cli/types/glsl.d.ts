@@ -1,76 +1,70 @@
-declare global {
-  namespace React.JSX {
+import { type ThreeElement } from '@react-three/fiber'
+declare module '@react-three/fiber' {
+  
+  interface SupportsObjectPick {
+    objectPick?: boolean;
+  }
+  type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
+  type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
+  type Vector2Input = import('three').Vector2Tuple | import('three').Vector2;
 
-    type BaseExtendedShaderMaterial<T = {}> = import('@react-three/fiber').Object3DNode<
-      import('three').ShaderMaterial,
-      typeof THREE.ShaderMaterial
-    > & T;
+  interface ThreeElements {
 
-    type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
-    type Vector2Input = import('three').Vector2Tuple | import('three').Vector2;
-    
-    type Texture = import('three').Texture;
+    instancedFlatMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+      diffuse?: Vector3Input;
+      /** Assuming model is built of quads, each with uvs covering [0, 1]x[0, 1] */
+      quadOutlines?: boolean;
+      opacity?: number;
+      objectPickRed?: number;
+    } & SupportsObjectPick;
 
-    interface SupportsObjectPick {
-      objectPick?: boolean;
-    }
+    humanZeroMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & HumanZeroMaterialProps
+    );
 
-    interface IntrinsicElements {
-      instancedMonochromeShader: BaseExtendedShaderMaterial<{
-        diffuse?: Vector3Input;
-        opacity?: number;
-      } & SupportsObjectPick>;
+    instancedLabelsMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+      map: import('three').CanvasTexture;
+      diffuse?: Vector3Input;
+    };
 
-      // instancedUvMappingMaterial: BaseExtendedShaderMaterial<{
-      //   map: import('three').CanvasTexture;
-      // }>;
+    instancedMonochromeShader: ThreeElement<typeof import('three').ShaderMaterial> & {
+      diffuse?: Vector3Input;
+      opacity?: number;
+    } & SupportsObjectPick;
 
-      instancedLabelsMaterial: BaseExtendedShaderMaterial<{
-        map: import('three').CanvasTexture;
-        // ...
-      }>;
+    instancedMultiTextureMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
+      alphaTest?: number;
+      colorSpace?: boolean;
+      diffuse?: Vector3Input;
+      atlas: import('three').DataArrayTexture;
+      /** Red component in [0..255] used by objectPick rgba */
+      objectPickRed?: number;
+      opacity?: number;
+    } & SupportsObjectPick;
 
-      instancedMultiTextureMaterial: BaseExtendedShaderMaterial<{
-        alphaTest?: number;
-        colorSpace?: boolean;
-        diffuse?: Vector3Input;
-        atlas: import('three').DataArrayTexture;
-        /** Red component in [0..255] used by objectPick rgba */
-        objectPickRed?: number;
-        opacity?: number;
-      } & SupportsObjectPick>;
-
-      cameraLightMaterial: BaseExtendedShaderMaterial<{
-        diffuse?: Vector3Input;
-        opacity?: number;
-      }>;
-
-      cuboidManMaterial: BaseExtendedShaderMaterial<{
-        uNpcUid?: number;
-        diffuse?: Vector3Input;
-        opacity?: number;
-
-        showLabel?: boolean;
-        labelHeight?: number;
-        showSelector?: boolean;
-        selectorColor?: Vector3Input;
-
-        uBaseTexture: Texture;
-        uLabelTexture: Texture;
-        uAlt1Texture: Texture;
-
-        uFaceTexId?: number;
-        uIconTexId?: number;
-        uLabelTexId?: number;
-
-        uFaceUv?: Vector2Input[];
-        uIconUv?: Vector2Input[];
-        uLabelUv?: Vector2Input[];
-
-        uLabelDim?: Vector2Input;
-      } & SupportsObjectPick>;
-    }
   }
 }
 
-export {}; // Required
+type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
+type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
+
+// 🚧 migrate all custom shaders
+export interface HumanZeroMaterialProps {
+  atlas: import('three').DataArrayTexture;
+  aux: import('three').DataArrayTexture;
+  diffuse: Vector3Input;
+  label: import('three').DataArrayTexture;
+  labelY: number;
+  labelTriIds: number[];
+  labelUvRect4: Vector4Input;
+  /* A default value must be provided for object-pick to work */
+  objectPick?: boolean;
+  opacity: number;
+  uid: number;
+}
+
+/** From node_modules/@react-three/drei/core/shaderMaterial.d.ts */
+export interface ShaderMaterialArg {
+  [name: string]: import('three').CubeTexture | import('three').Texture | Int32Array | Float32Array | import('three').Matrix4 | import('three').Matrix3 | import('three').Quaternion | import('three').Vector4 | import('three').Vector3 | import('three').Vector2 | import('three').Color | MeshBVHUniformStruct | number | boolean | Array<any> | null;
+}

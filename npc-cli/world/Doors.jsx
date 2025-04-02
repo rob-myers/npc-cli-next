@@ -42,7 +42,7 @@ export default function Doors(props) {
       const instanceIds = /** @type {number[]} */ ([]);
 
       for (const meta of Object.values(state.byKey)) {
-        /** @type {Geomorph.DecorImgKey} */
+        /** @type {Key.DecorImg} */
         const key = meta.door.meta.hull ? 'door--hull' : 'door--standard';
         const { x, y, width, height, sheetId } = sheet[key];
         uvOffsets.push(x / maxDecorDim.width, y / maxDecorDim.height);
@@ -331,8 +331,8 @@ export default function Doors(props) {
       frustumCulled={false}
       visible={state.ready}
     >
-      {state.ready && <cameraLightMaterial
-        key={glsl.CameraLightMaterial.key}
+      {state.ready && <instancedFlatMaterial
+        key={glsl.InstancedFlatMaterial.key}
         diffuse={[1, 1, 1]}
         objectPickRed={9}
         side={THREE.DoubleSide} // fix flipped gm

@@ -35,7 +35,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       try {
         // 🔔 read frontmatter from <script id="frontmatter-json">
         const script = document.getElementById('frontmatter-json') as HTMLScriptElement;
-        const frontMatter = JSON.parse(script.innerHTML) as FrontMatter;
+        const frontMatter = JSON.parse(JSON.parse(script.innerHTML)) as FrontMatter;
         // console.log({frontMatter});
         set({
           articleKey: frontMatter.key ?? null,

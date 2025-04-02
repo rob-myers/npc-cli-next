@@ -47,7 +47,7 @@ export async function* click({ api, args, w }) {
     
     const e = await /** @type {Promise<NPC.PointerUpEvent>} */ (new Promise((resolve, reject) => {
       eventsSub = w.events.subscribe({ next(e) {
-        if (e.key !== "pointerup" || w.view.isPointerEventDrag(e) === true || api.isRunning() === false) {
+        if (e.key !== "pointerup" || e.pointers > 1 || w.view.isPointerEventDrag(e) === true || api.isRunning() === false) {
           return;
         } else if (e.clickId !== undefined && clickId === undefined) {
           return; // `click {n}` overrides `click`
@@ -163,7 +163,6 @@ export const setupContextMenu = ({ w }) => {
       showLinks.push(
         { key: "open", label: "open" },
         { key: "close", label: "close" },
-        // GM only...
         { key: "lock", label: "lock" },
         { key: "unlock", label: "unlock" },
         // 🚧 knock
@@ -171,7 +170,13 @@ export const setupContextMenu = ({ w }) => {
     }
 
     if (typeof meta.npcKey === "string") {
-      showLinks.push({ key: "follow", label: "follow" });
+      showLinks.push({
+        key: "follow",
+        label: "follow",
+        selected() {
+          return w.e.isFollowingNpc(meta.npcKey);
+        },
+      });
     }
 
     return { showLinks };
@@ -191,7 +196,8 @@ export async function* handleContextMenu({ api, w, datum: e }) {
     }
 
     const { meta } = w.cm;
-    const npcKey = w.cm.npcKey;
+    // 🚧 support contextual npc e.g. open/unlock
+    const npcKey = /** @type {undefined | string} */ (undefined);
 
     switch (e.linkKey) {
       case "look":
@@ -200,10 +206,12 @@ export async function* handleContextMenu({ api, w, datum: e }) {
         } else {
           w.view.lookAt(w.cm.position).catch(() => {});
         }
+        w.cm.update(); // Might have stopped follow
         break;
       case "follow":
         if (typeof meta.npcKey === "string") {
-          w.view.followPosition(w.n[meta.npcKey].position);
+          w.e.toggleFollowNpc(meta.npcKey);
+          w.cm.update();
         }
         break;
       case "open":
@@ -258,20 +266,12 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 export const setupOnSlowNpc = ({ w, args }) => {
 
   w.npc.onStuckCustom = (npc, agent) => {
-    // warn(`${npc.key}: going slow`);
-
+    // console.warn(`${npc.key}: going slow`);
     switch (args[0]) {
-      case 'closest-nei': {
-        const nei = agent.raw.get_neis(0); // 0th is closest
-        const other = w.npc.byAgId[nei.idx];
-        const target = /** @type {import('three').Vector3} */ (npc.s.target);
-        if (target.distanceTo(other.lastTarget) < 3 * w.lib.defaults.radius) {
-          npc.stopMoving();
-        }
+      case 'noop': // do nothing
         break;
-      }
-      default:
-        npc.stopMoving();
+      default: // both stop
+        npc.stopMoving(true);
         break;
     }
   };

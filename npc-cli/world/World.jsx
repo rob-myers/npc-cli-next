@@ -4,16 +4,15 @@ import { Subject, firstValueFrom } from "rxjs";
 import { filter } from "rxjs/operators";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
-import debounce from "debounce";
 
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
-import { floorTextureDimension } from "../service/const";
-import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues } from "../service/generic";
+import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth } from "../service/const";
+import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
-import { removeCached, setCached } from "../service/query-client";
-import { fetchGeomorphsJson, getDecorSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
+import { queryCache, removeCached, setCached } from "../service/query-client";
+import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
 import { geomorph } from "../service/geomorph";
 import createGmsData from "../service/create-gms-data";
 import { imageLoader, toV3, toXZ } from "../service/three";
@@ -70,7 +69,10 @@ export default function World(props) {
     texCeil: new TexArray({ ctKey: 'ceil-tex-array', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
-    texVs: { floor: 0, ceiling: 0 },
+    texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
+    texNpcAux: new TexArray({ ctKey: 'skins-aux-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
+    texNpcLabel: new TexArray({ ctKey: 'skins-label-array', numTextures: maxNumberOfNpcs, width: skinsLabelsTextureWidth, height: skinsLabelsTextureHeight }),
+    texVs: { floor: 0, ceiling: 0 }, // versions
 
     crowd: /** @type {*} */ (null),
 
@@ -106,7 +108,9 @@ export default function World(props) {
     onDebugTick() {
       state.timer.update();
       // Animate camera while paused
-      if (state.view.targetFov !== null || state.view.target !== null) {
+      if (
+        Object.keys(state.view.dst).length > 0 // 🚧
+      ) {
         state.view.onTick(state.timer.getDelta());
         state.reqAnimId = requestAnimationFrame(state.onDebugTick);
       } else if (state.disabled === true) {
@@ -137,8 +141,8 @@ export default function World(props) {
       const output = mapValues(state.hmr, (prev, key) => prev !== nextHmr[key])
       return state.hmr = nextHmr, output;
     },
-    update(mutator) {
-      mutator?.(state);
+    async update(mutator) {
+      await mutator?.(state);
       update();
     },
   }), { reset: { lib: true, texFloor: false, texCeil: false } });
@@ -187,8 +191,10 @@ export default function World(props) {
         );
       }
       
-      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged } = state.trackHmr(
-        { createGmsData, GmGraphClass },
+      // 🔔 if this function changes we'll run the whole query
+      const queryFnHash = hashText(queryCache.find({ queryKey: [WORLD_QUERY_FIRST_KEY], exact: false })?.options.queryFn?.toString() ?? '');
+      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr(
+        { createGmsData, GmGraphClass, queryFnHash },
       );
 
       if (mapChanged || gmsDataChanged) {
@@ -246,39 +252,57 @@ export default function World(props) {
         hash: state.hash,
       });
 
-      if (!dataChanged) {
+      if (!dataChanged && !queryFnHashChanged) {
         update();
         return true;
       }
 
-      // Update texture arrays
-      const { decorDims, maxDecorDim, obstacleDims, maxObstacleDim } = state.geomorphs.sheet;
+      // Update texture arrays: decor, obstacles, skins
+      const {
+        sheet: { decorDims, maxDecorDim, obstacleDims, maxObstacleDim },
+        skin,
+      } = state.geomorphs;
 
-      for (const { src, dim, texArray, invert } of [{
-        src: decorDims.map((_, sheetId) => getDecorSheetUrl(sheetId)),
-        texArray: state.texDecor,
-        dim: maxDecorDim, 
-        invert: false,
-      }, {
-        src: obstacleDims.map((_, sheetId) => getObstaclesSheetUrl(sheetId)),
-        texArray: state.texObs,
-        dim: maxObstacleDim, 
-        invert: true,
-      }]) {
+      for (const { src, dim, texArray, invert } of [
+        {
+          src: decorDims.map((_, sheetId) => getDecorSheetUrl(sheetId)),
+          texArray: state.texDecor,
+          dim: maxDecorDim, 
+          invert: false,
+        },
+        {
+          src: obstacleDims.map((_, sheetId) => getObstaclesSheetUrl(sheetId)),
+          texArray: state.texObs,
+          dim: maxObstacleDim, 
+          invert: true,
+        },
+        {
+          src: entries(skin.numSheets).flatMap(([npcClassKey, skinSheetCount]) =>
+            range(skinSheetCount).map(sheetId => getNpcSkinSheetUrl(npcClassKey, sheetId))
+          ),
+          texArray: state.texSkin,
+          dim: { width: skinsTextureDimension, height: skinsTextureDimension },
+          invert: false,
+        },
+      ]) {
         texArray.resize({ width: dim.width, height: dim.height, numTextures: src.length });
         texArray.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
 
-        await Promise.all(src.map(async (url, sheetId) => {
+        await Promise.all(src.map(async (url, texId) => {
           const img = await imageLoader.loadAsync(url);
           texArray.ct.clearRect(0, 0, dim.width, dim.height);
           texArray.ct.drawImage(img, 0, 0);
           invert && invertCanvas(texArray.ct.canvas, getContext2d('invert-copy'), getContext2d('invert-mask'));
-          texArray.updateIndex(sheetId);
+          texArray.updateIndex(texId);
         }));
 
         texArray.update();
         update();
       }
+
+      state.texNpcLabel.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
+
+      state.npc?.forceUpdate(); // violate <MemoizedNPC>
 
       return true;
     },
@@ -311,6 +335,7 @@ export default function World(props) {
     if (!state.disabled) {
       state.onTick();
     }
+    state.events.next({ key: state.disabled ? 'disabled' : 'enabled' });
     return () => state.stopTick();
   }, [state.disabled]);
 
@@ -319,13 +344,6 @@ export default function World(props) {
       <WorldView disabled={props.disabled} stats>
         {state.geomorphs && (
           <group>
-            <Floor />
-            <group visible={state.crowd !== null}>
-              <Ceiling />
-              <Walls />
-              <Doors />
-              <Obstacles />
-            </group>
             <React.Suspense>
               {state.crowd && <>
                 <Decor />
@@ -337,6 +355,13 @@ export default function World(props) {
                 />
               </>}
             </React.Suspense>
+            <Floor />
+            <group visible={state.crowd !== null}>
+              <Ceiling />
+              <Walls />
+              <Doors />
+              <Obstacles />
+            </group>
           </group>
         )}
       </WorldView>
@@ -360,9 +385,13 @@ export default function World(props) {
  * @property {string} mapKey
  * @property {Geomorph.GeomorphsHash} hash
  * @property {Geomorph.GmsData} gmsData
- * Data determined by `w.gms` or a `Geomorph.GeomorphKey`.
+ * Data determined by `w.gms` or a `Key.Geomorph`.
  * - A geomorph key is "non-empty" iff `gmsData[gmKey].wallPolyCount` non-zero.
- * @property {{ createGmsData: typeof createGmsData; GmGraphClass: typeof GmGraphClass }} hmr
+ * @property {{
+ *   createGmsData: typeof createGmsData;
+ *   GmGraphClass: typeof GmGraphClass;
+ *   queryFnHash: number;
+ * }} hmr
  * Change-tracking for Hot Module Reloading (HMR) only
  * @property {Subject<NPC.Event>} events
  * @property {Geomorph.Geomorphs} geomorphs
@@ -402,10 +431,13 @@ export default function World(props) {
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm
  *
- * @property {TexArray} texFloor
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
+ * @property {TexArray} texFloor
  * @property {TexArray} texObs
+ * @property {TexArray} texSkin skin texels, one pre skin
+ * @property {TexArray} texNpcAux uv re-mapping and skin tinting, one per npc
+ * @property {TexArray} texNpcLabel label texels, one per npc
  * @property {{ floor: number; ceiling: number; }} texVs
  * @property {Geomorph.LayoutInstance[]} gms
  * Aligned to `map.gms`.

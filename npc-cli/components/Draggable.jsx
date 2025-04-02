@@ -2,6 +2,7 @@ import React from "react";
 import debounce from "debounce";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
+import { getTouch, getTouchIdentifier } from "../service/dom";
 import useStateRef from "../hooks/use-state-ref";
 
 /**
@@ -22,19 +23,6 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
         props.dragClassName === undefined
         || /** @type {HTMLElement} */ (e.target).classList.contains(props.dragClassName)
       );
-    },
-    getTouchIdentifier(e) {
-      if (e.targetTouches && e.targetTouches[0]) return e.targetTouches[0].identifier;
-      if (e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].identifier;
-    },
-    /**
-     * @param {React.TouchEvent} e
-     * @param {number} identifier
-     * @returns {undefined | {clientX: number, clientY: number}}
-     */
-    getTouch(e, identifier) {
-      return (e.targetTouches && Array.from(e.targetTouches).find(t => identifier === t.identifier)) ||
-        (e.changedTouches && Array.from(e.changedTouches).find(t => identifier === t.identifier));
     },
     onMouseDown(e) {
       if (!state.canDrag(e)) {
@@ -62,11 +50,12 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       state.updatePos(e.clientX - state.rel.x, e.clientY - state.rel.y);
     },
     onTouchStart(e) {
+      e.stopPropagation();
       if (!state.canDrag(e)) {
         return;
       }
-      state.touchId = state.getTouchIdentifier(e);
-      const touchObj = typeof state.touchId  === 'number' ? state.getTouch(e, state.touchId) : null;
+      state.touchId = getTouchIdentifier(e);
+      const touchObj = typeof state.touchId  === 'number' ? getTouch(e, state.touchId) : null;
       if (!touchObj) {
         return null; // not the right touch
       }
@@ -86,7 +75,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       e.stopPropagation();
       
       // Subtract rel to keep the cursor "in same position"
-      const touchObj = /** @type {{clientX: number, clientY: number}} */ (state.getTouch(e, /** @type {number} */ (state.touchId)));
+      const touchObj = /** @type {{clientX: number, clientY: number}} */ (getTouch(e, /** @type {number} */ (state.touchId)));
       state.updatePos(touchObj.clientX - state.rel.x, touchObj.clientY - state.rel.y);
     },
     persist: debounce(() => {
@@ -179,8 +168,6 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
  *   rel: { x: number; y: number };
  *   touchId: undefined | number;
  *   canDrag(e: React.MouseEvent | React.TouchEvent): boolean;
- *   getTouchIdentifier(e: React.TouchEvent): number | undefined;
- *   getTouch(e: React.TouchEvent, identifier: number): undefined | { clientX: number; clientY: number };
  *   onMouseDown(e: React.MouseEvent): void;
  *   onMouseUp(e: React.MouseEvent | MouseEvent): void;
  *   onMouseMove(e: React.MouseEvent | MouseEvent): void;

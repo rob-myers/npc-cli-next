@@ -4,12 +4,13 @@ declare namespace Geomorph {
     P extends Geom.VectJson | Geom.Vect,
     R extends Geom.RectJson | Geom.Rect
   > {
-    symbols: Record<Geomorph.SymbolKey, Geomorph.SymbolGeneric<T, P, R>>;
+    symbols: Record<Key.Symbol, Geomorph.SymbolGeneric<T, P, R>>;
     maps: Record<string, Geomorph.MapDef>;
     sheet: SpriteSheet;
+    skin: SpriteSheetSkins;
     /**
      * `metaKey` is either
-     * - a `Geomorph.SymbolKey`
+     * - a `Key.Symbol`
      * - a mapKey e.g. `demo-map-1`
      */
     meta: { [metaKey: string]: {
@@ -47,7 +48,7 @@ declare namespace Geomorph {
     mapGmHashes: number[];
   }
 
-  type PerGeomorphHash = Record<Geomorph.GeomorphKey, {
+  type PerGeomorphHash = Record<Key.Geomorph, {
     full: number;
     decor: number;
     nav: number;
@@ -143,8 +144,9 @@ declare namespace Geomorph {
     C extends Geomorph.Connector | Geomorph.ConnectorJson
   > {
     map: Record<string, Geomorph.MapDef>;
-    layout: Record<Geomorph.GeomorphKey, Geomorph.LayoutGeneric<T, P, R, C>>;
+    layout: Record<Key.Geomorph, Geomorph.LayoutGeneric<T, P, R, C>>;
     sheet: SpriteSheet;
+    skin: SpriteSheetSkins;
   }
 
   type Geomorphs = GeomorphsGeneric<Geom.Poly, Geom.Vect, Geom.Rect, Connector>;
@@ -180,7 +182,7 @@ declare namespace Geomorph {
     V extends Geom.VectJson | Geom.Vect,
     R extends Geom.RectJson | Geom.Rect
   > {
-    key: SymbolKey;
+    key: Key.Symbol;
     isHull: boolean;
     /** SVG's width (from `viewBox`) in world coordinates */
     width: number;
@@ -207,7 +209,7 @@ declare namespace Geomorph {
 
     /** Symbols can have sub symbols, e.g. hull symbols use them to layout a geomorph. */
     symbols: {
-      symbolKey: Geomorph.SymbolKey;
+      symbolKey: Key.Symbol;
       /** Original width (Starship Symbols coordinates i.e. 60 ~ 1 grid) */
       width: number;
       /** Original height (Starship Symbols coordinates i.e. 60 ~ 1 grid) */
@@ -258,7 +260,7 @@ declare namespace Geomorph {
   interface MapDef {
     /** e.g. `demo-map-1` */
     key: string;
-    gms: { gmKey: GeomorphKey; transform: Geom.SixTuple; }[];
+    gms: { gmKey: Key.Geomorph; transform: Geom.SixTuple; }[];
   }
 
   /**
@@ -271,8 +273,8 @@ declare namespace Geomorph {
     R extends Geom.RectJson | Geom.Rect,
     C extends Geomorph.Connector | Geomorph.ConnectorJson
   > {
-    key: GeomorphKey;
-    num: GeomorphNumber;
+    key: Key.Geomorph;
+    num: Key.GeomorphNumber;
     pngRect: R;
 
     decor: Decor[];
@@ -319,7 +321,7 @@ declare namespace Geomorph {
     V extends Geom.VectJson | Geom.Vect,
   > {
     /** The `symbol` the obstacle originally comes from */
-    symbolKey: SymbolKey;
+    symbolKey: Key.Symbol;
     /** The index in `symbol.obstacles` this obstacle corresponds to */
     obstacleId: number;
     /** The height of this particular instance */
@@ -365,7 +367,7 @@ declare namespace Geomorph {
     type: 'point';
     /** Orientation in degrees, where the unit vector `(1, 0)` corresponds to `0`  */
     orient: number;
-    meta: Meta<Geomorph.GmRoomId & { img?: DecorImgKey }>;
+    meta: Meta<Geomorph.GmRoomId & { img?: Key.DecorImg }>;
   }
   
   /** Simple polygon sans holes. */
@@ -375,7 +377,7 @@ declare namespace Geomorph {
     center: Geom.VectJson;
     /** Determinant of 2x2 part of `transform` */
     det: number;
-    meta: Meta<Geomorph.GmRoomId & { img: DecorImgKey }>;
+    meta: Meta<Geomorph.GmRoomId & { img: Key.DecorImg }>;
   }
 
   interface DecorRect extends BaseDecor {
@@ -399,18 +401,16 @@ declare namespace Geomorph {
      * Indicates decor that comes from a geomorph layout,
      * i.e. decor that is initially instantiated.
      */
-    src?: Geomorph.GeomorphKey;
+    src?: Key.Geomorph;
     // /** For defining decor via CLI (more succinct) */
     // tags?: string[];
   }
 
   type DecorSheetRectCtxt = Meta<{
-    decorImgKey: Geomorph.DecorImgKey;
+    decorImgKey: Key.DecorImg;
     /** 0-based index of sheet */
     sheetId: number;
   }>;
-
-  type DecorImgKey = import('../service/const.js').DecorImgKey;
 
   /** 🚧 clarify */
   type DecorCollidable = Geomorph.DecorCircle | Geomorph.DecorRect;
@@ -423,27 +423,13 @@ declare namespace Geomorph {
 
   //#endregion
 
-  type GeomorphKey =
-    | "g-101--multipurpose"
-    | "g-102--research-deck"
-    | "g-103--cargo-bay"
-    | "g-301--bridge"
-    | "g-302--xboat-repair-bay"
-    | "g-303--passenger-deck";
-
-  type GeomorphNumber = 101 | 102 | 103 | 301 | 302 | 303;
-
-  /**
-   * 🔔 Depends on service/const, but avoids duplication.
-   */
-  type SymbolKey = import('../service/const').SymbolKey;
 
   /**
    * All sprite-sheet metadata.
    */
   interface SpriteSheet {
     /** Over all sheets */
-    decor: Record<Geomorph.DecorImgKey, Geom.RectJson & DecorSheetRectCtxt>;
+    decor: Record<Key.DecorImg, Geom.RectJson & DecorSheetRectCtxt>;
     /** Aligned to sheets; its length is the number of the sheets. */
     decorDims: { width: number; height: number; }[];
     /** Maximum over all sheets, for texture array */
@@ -460,21 +446,25 @@ declare namespace Geomorph {
     /** Maximum over all sheets, for texture array */
     maxObstacleDim: { width: number; height: number; }
 
+    // 🚧 avoid referencing NPC namespace
+    glbHash: Record<Key.NpcClass, number>;
     imagesHash: number;
-    skins: {
-      /** e.g. `npcClassKey` is a `uvMapKey` */
-      svgHash: { [uvMapKey: string]: number; };
-      /** e.g. `npcClassKey` is a `uvMapKey` */
-      uvMap: { [uvMapKey: string]: UvRectLookup; };
-      /** e.g. `npcClassKey` is a `uvMapKey` */
-      uvMapDim: { [uvMapKey: string]: { width: number; height: number; }; };
-    };
   }
 
-  type ObstacleKey = `${Geomorph.SymbolKey} ${number}`;
+  interface SpriteSheetSkins {
+    numSheets: Record<Key.NpcClass, number>;
+    /** One per sheet for skin class */
+    svgHashes: Record<Key.NpcClass, number[]>;
+    /** From `(npcClassKey, sheetId)` to "index into skins DataTextureArray" */
+    sheetTexId: Record<Key.NpcClass, number[]>;
+    uvMap: Record<Key.NpcClass, UvRectLookup>;
+    uvMapDim: Record<Key.NpcClass, { width: number; height: number; }>;
+  }
+
+  type ObstacleKey = `${Key.Symbol} ${number}`;
 
   interface ObstacleSheetRectCtxt {
-    symbolKey: Geomorph.SymbolKey;
+    symbolKey: Key.Symbol;
     obstacleId: number;
     /** e.g. `chair` */
     type: string;
@@ -482,7 +472,12 @@ declare namespace Geomorph {
   }
 
   interface UvRectLookup {
-    [uvRectName: string]: Geom.RectJson
+    [uvRectName: string]: UvRect;
+  }
+
+  interface UvRect extends Geom.RectJson {
+    /** Relative to parent npcClassKey */
+    sheetId: number;
   }
 
   type GmsData = import('../service/create-gms-data').GmsData;

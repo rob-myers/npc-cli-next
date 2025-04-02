@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:grid x="0" y="0" width="32" height="32"/>
+  </defs>
+  <g>
+    <title>head</title>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="512">
+      <title>head-front</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640">
+      <title>head-back</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" y="128" x="512">
+      <title>head-left</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640" y="128">
+      <title>head-right</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="512" y="256">
+      <title>head-top</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640" y="256">
+      <title>head-bottom</title>
+    </rect>
+  </g>
+  <g>
+    <title>body</title>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" x="128">
+      <title>body-top</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" x="256">
+      <title>body-bottom</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170); transform-box: fill-box; transform-origin: 50% 50%;" y="128" x="128">
+      <title>body-front</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128" x="256">
+      <title>body-right</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128">
+      <title>body-left</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128" x="384">
+      <title>body-back</title>
+    </rect>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, 0, 511.999969)">
+    <title>body-overlay</title>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" x="128">
+      <title>body-top</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" x="256">
+      <title>body-bottom</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170); transform-box: fill-box; transform-origin: 50% 50%;" y="128" x="128">
+      <title>body-front</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128" x="256">
+      <title>body-right</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128">
+      <title>body-left</title>
+    </rect>
+    <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);" y="128" x="384">
+      <title>body-back</title>
+    </rect>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, 0, 511.999969)">
+    <title>head-overlay</title>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="512">
+      <title>head-front</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640">
+      <title>head-back</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" y="128" x="512">
+      <title>head-left</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640" y="128">
+      <title>head-right</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="512" y="256">
+      <title>head-top</title>
+    </rect>
+    <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: rgb(204, 204, 204);" x="640" y="256">
+      <title>head-bottom</title>
+    </rect>
+  </g>
+</svg>

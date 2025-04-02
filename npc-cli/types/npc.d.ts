@@ -5,10 +5,10 @@ declare namespace NPC {
   interface NPCDef {
     /** User specified e.g. `rob` */
     key: string;
-    /** Numeric id used in object-picking */
-    pickUid: number;
+    /** Numeric id used e.g. for object-picking */
+    uid: number;
     /** Specifies the underlying 3D model */
-    classKey: ClassKey;
+    classKey: Key.NpcClass;
     /** Radians */
     angle: number;
     /** World units per second */
@@ -17,61 +17,70 @@ declare namespace NPC {
     walkSpeed: number;
   }
 
-  type ClassKey = (
-    | 'cuboid-man'
-    | 'cuboid-pet'
-  );
-  
-  type TextureKey = (
-    | ClassKey
-    | 'labels'
-    // | 'cuboid-man-alt-1'
-  );
-
-  interface UvQuadId {
-    uvMapKey: NPC.TextureKey;
-    uvQuadKey: string;
+  interface Model {
+    animations: import('three').AnimationClip[];
+    /** Root bones */
+    bones: import('three').Bone[];
+    /** Root group available on mount */
+    group: import('three').Group;
+    /** Mounted material (initially import('three').MeshPhysicalMaterial via GLTF) */
+    material: import('three').ShaderMaterial;
+    /** Mounted mesh */
+    mesh: import('three').SkinnedMesh;
+    scale: number;
+    toAct: Record<Key.Anim, import('three').AnimationAction>;
   }
 
   interface ClassDef {
-    /** e.g. '/3d/cuboid-man.glb' */
-    url: string;
-    /** e.g. `1` */
-    scale :number;
-    /** e.g. 'cuboid-man-material' */
-    materialName: string; 
-    /** e.g. 'cuboid-man' */
-    meshName: string;
     /** e.g. 'Scene' */
     groupName: string;
-    /** e.g. 'cuboid-man.tex.png' */
-    skinBaseName: string;
-    /** Animation to timeScale, default 1 */
-    timeScale: { [animName: string]: number };
+    /** e.g. 'human_0-material' */
+    materialName: string; 
+    /** e.g. 'human_0' */
+    meshName: string;
+    /** Height above npc's head, pre-scale */
+    modelAnimHeight: Record<Key.Anim, number>;
     /** Pre-scale */
-    radius: number;
-    walkSpeed: number;
+    modelLabelHeight: number;
+    /** Pre-scale */
+    modelRadius: number;
+    /** Format `/3d/{npcClassKey}.glb` */
+    modelUrl: `/3d/${Key.NpcClass}.glb`;
+    npcClassKey: Key.NpcClass;
     runSpeed: number;
+    /** e.g. `1` */
+    scale: number;
+    /** Animation to timeScale, default 1 */
+    timeScale: Partial<Record<Key.Anim, number>>;
+    walkSpeed: number;
   }
 
   interface TexMeta {
-    /**
-     * e.g. `cuboid-man`
-     * 🚧 refine type
-     */
-    npcClassKey: string;
-    /** e.g. `cuboid-man.tex.svg` */
+    /** e.g. `human-0` */
+    npcClassKey: Key.NpcClass;
+    /** e.g. `0` 🔔 (assume no gaps and `0` exists) */
+    skinSheetId: number;
+    /** e.g. `human-0.0.tex.svg` */
     svgBaseName: string;
     svgPath: string;
     pngPath: string;
+    /** Can determine by comparing modified time of SVG vs PNG */
     canSkip: boolean;
+  }
+
+  interface GltfMeta {
+    /** e.g. `human-0` */
+    npcClassKey: Key.NpcClass;
+    /** e.g. `human-0.glb` */
+    glbBaseName: string;
+    /** e.g. `.../public/3d/human-0.glb` */
+    glbPath: string;
+    glbHash: number;
   }
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
   }
-
-  type AnimKey = keyof import('../service/helper').Helper['fromAnimKey'];
 
   type Event = (
     | PointerUpEvent
@@ -126,6 +135,9 @@ declare namespace NPC {
     | { key: 'exit-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
     | { key: 'logger-link'; npcKey: string; } & NPC.LoggerLinkEvent
     | { key: 'speech'; npcKey: string; speech: string }
+    | { key: 'controls-start' }
+    | { key: 'controls-end' }
+    | { key: 'fade-npc'; npcKey: string; opacityDst: number }
     // ...
   );
 
@@ -270,21 +282,9 @@ declare namespace NPC {
   type ObstacleRef = import("@recast-navigation/core").ObstacleRef;
 
   type DecodedObjectPick = Meta<{
-    picked: ObjectPickedType;
+    picked: Key.ObjectPickedType;
     instanceId: number;
   }>;
-
-  type ObjectPickedType = (
-    | 'wall'
-    | 'floor'
-    | 'ceiling'
-    | 'door'
-    | 'quad'
-    | 'obstacle'
-    | 'cuboid'
-    | 'npc'
-    | 'lock-light'
-  );
 
   type MetaActDef = (
     | { key: 'open' | 'close' | 'lock' | 'unlock'; gdKey: Geomorph.GmDoorKey; }
@@ -297,7 +297,7 @@ declare namespace NPC {
     /** Label of button */
     label: string;
     /** `icon--*` key */
-    icon: Geomorph.DecorImgKey;
+    icon: Key.DecorImg;
     /** The meta of ContextMenu (from prior click) when button was clicked */
     meta: Meta<T>;
   }
@@ -315,6 +315,7 @@ declare namespace NPC {
   interface ContextMenuLink {
     key: string;
     label: string;
+    selected?(): boolean;
   }
 
   interface ContextMenuContextDef {
@@ -343,4 +344,53 @@ declare namespace NPC {
     viewportRange: import("@xterm/xterm").IViewportRange;
   }
 
+  /**
+   * For a given mesh, a mapping from triangle id to its parent uv-rectangle's key.
+   * The latter arises from the original SVG used to generate the uv-map, see
+   * e.g. media/npc/human-0.svg.
+   */
+  type TriToUvKeys = {
+    /**
+     * Key of a uv-rect defined in skin SVG.
+     * Never begins with `_`.
+     */
+    uvRectKey: string;
+    /** This is just `uvRectKey.split('_')[1]` */
+    skinPartKey: Key.SkinPart;
+  }[];
+
+  type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
+  
+  type SkinReMap = Partial<Record<Key.SkinPart, {
+    /**
+     * For example `base`, where `base_{skinPart}` is in this npc's class's uv map.
+     */
+    prefix: string;
+    /**
+     * Optionally look inside another model's UV map.
+     */
+    classKey?: Key.NpcClass;
+    /** 
+     * Optionally use another skin part:
+     * > e.g. if `prefix` is `body-overlay-back` could use `robot--icon_body-overlay-front`
+     * 
+     * In other words, an icon mapped to body overlay front can also be used on the back.
+     */
+    otherPart?: Key.SkinPart;
+  }>>;
+
+  /**
+   * Values are `[r, g, b, a]` where `r`, `g`, `b`, `a` in `[0, 1]`
+   */
+  type SkinTint = Partial<Record<Key.SkinPart, [number, number, number, number]>>
+
+  interface GltfAux {
+    npcClassKey: Key.NpcClass;
+    labelTriIds: number[];
+    labelUvRect4: [number, number, number, number];
+    partToUv: NPC.SkinPartToUvRect;
+    triToKey: NPC.TriToUvKeys;
+    animHeights: Record<Key.Anim, number>;
+    labelHeight: number;
+  }
 }

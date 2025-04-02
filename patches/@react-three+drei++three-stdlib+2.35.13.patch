@@ -1,37 +1,53 @@
+diff --git a/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts b/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts
+index f491602..f22d379 100644
+--- a/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts
++++ b/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.d.ts
+@@ -49,6 +49,8 @@ declare class OrbitControls extends EventDispatcher<StandardControlsEventMap> {
+     position0: Vector3;
+     zoom0: number;
+     _domElementKeyEvents: any;
++    zoomToConstant: null | Vector3;
++    sphericalDelta: import('three').Spherical;
+     getPolarAngle: () => number;
+     getAzimuthalAngle: () => number;
+     setPolarAngle: (x: number) => void;
 diff --git a/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.js b/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.js
-index 576ad6f..def255d 100644
+index 576ad6f..65cfbea 100644
 --- a/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.js
 +++ b/node_modules/@react-three/drei/node_modules/three-stdlib/controls/OrbitControls.js
-@@ -80,6 +80,8 @@ class OrbitControls extends EventDispatcher {
+@@ -80,6 +80,9 @@ class OrbitControls extends EventDispatcher {
      __publicField(this, "target0");
      __publicField(this, "position0");
      __publicField(this, "zoom0");
 +    __publicField(this, "minPanDistance");
 +    __publicField(this, "zoomToConstant");
++    __publicField(this, "sphericalDelta");
      // the target DOM element for key events
      __publicField(this, "_domElementKeyEvents", null);
      __publicField(this, "getPolarAngle");
-@@ -109,6 +111,9 @@ class OrbitControls extends EventDispatcher {
+@@ -109,6 +112,10 @@ class OrbitControls extends EventDispatcher {
      this.target0 = this.target.clone();
      this.position0 = this.object.position.clone();
      this.zoom0 = this.object.zoom;
 +    this.minPanDistance = 0;
 +    /** @type {null | import('three').Vector3} */
 +    this.zoomToConstant = null;
++    this.sphericalDelta = new Spherical();
      this.getPolarAngle = () => spherical.phi;
      this.getAzimuthalAngle = () => spherical.theta;
      this.setPolarAngle = (value) => {
-@@ -178,7 +183,8 @@ class OrbitControls extends EventDispatcher {
+@@ -178,7 +185,9 @@ class OrbitControls extends EventDispatcher {
        const lastPosition = new Vector3();
        const lastQuaternion = new Quaternion();
        const twoPI = 2 * Math.PI;
 -      return function update() {
-+      return function update(fixAzimuth) {
-+        const fixedAzimuth = fixAzimuth === true ? scope.getAzimuthalAngle() : null;
++      return function update(fixAngle) {
++        const fixedAzimuth = fixAngle === true ? scope.getAzimuthalAngle() : null;
++        const fixedPolar = fixAngle === true ? scope.getPolarAngle() : null;
          const position = scope.object.position;
          quat.setFromUnitVectors(object.up, up);
          quatInverse.copy(quat).invert();
-@@ -195,8 +201,8 @@ class OrbitControls extends EventDispatcher {
+@@ -195,8 +204,8 @@ class OrbitControls extends EventDispatcher {
            spherical.theta += sphericalDelta.theta;
            spherical.phi += sphericalDelta.phi;
          }
@@ -42,7 +58,16 @@ index 576ad6f..def255d 100644
          if (isFinite(min) && isFinite(max)) {
            if (min < -Math.PI)
              min += twoPI;
-@@ -245,6 +251,9 @@ class OrbitControls extends EventDispatcher {
+@@ -212,7 +221,7 @@ class OrbitControls extends EventDispatcher {
+             spherical.theta = spherical.theta > (min + max) / 2 ? Math.max(min, spherical.theta) : Math.min(max, spherical.theta);
+           }
+         }
+-        spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
++        spherical.phi = fixedPolar === null ? Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi)) : fixedPolar;
+         spherical.makeSafe();
+         if (scope.enableDamping === true) {
+           scope.target.addScaledVector(panOffset, scope.dampingFactor);
+@@ -245,6 +254,9 @@ class OrbitControls extends EventDispatcher {
              const prevRadius = offset.length();
              newRadius = clampDistance(prevRadius * scale);
              const radiusDelta = prevRadius - newRadius;
@@ -52,7 +77,16 @@ index 576ad6f..def255d 100644
              scope.object.position.addScaledVector(dollyDirection, radiusDelta);
              scope.object.updateMatrixWorld();
            } else if (scope.object.isOrthographicCamera) {
-@@ -377,6 +386,9 @@ class OrbitControls extends EventDispatcher {
+@@ -335,7 +347,7 @@ class OrbitControls extends EventDispatcher {
+     let state = STATE.NONE;
+     const EPS = 1e-6;
+     const spherical = new Spherical();
+-    const sphericalDelta = new Spherical();
++    const sphericalDelta = this.sphericalDelta;
+     let scale = 1;
+     const panOffset = new Vector3();
+     const rotateStart = new Vector2();
+@@ -377,6 +389,9 @@ class OrbitControls extends EventDispatcher {
        return function panLeft2(distance, objectMatrix) {
          v.setFromMatrixColumn(objectMatrix, 0);
          v.multiplyScalar(-distance);
@@ -62,7 +96,7 @@ index 576ad6f..def255d 100644
          panOffset.add(v);
        };
      })();
-@@ -390,6 +402,9 @@ class OrbitControls extends EventDispatcher {
+@@ -390,6 +405,9 @@ class OrbitControls extends EventDispatcher {
            v.crossVectors(scope.object.up, v);
          }
          v.multiplyScalar(distance);

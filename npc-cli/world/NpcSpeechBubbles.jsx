@@ -17,10 +17,9 @@ export default function NpcSpeechBubbles() {
     create(npcKey) {// assumes non-existent
       if (npcKey in w.n) {
         const cm = state.lookup[npcKey] = new SpeechBubbleApi(npcKey, w);
-        cm.setTracked(w.n[npcKey].m.group);
-        cm.updateOffset();
+        const npc = w.n[npcKey];
+        cm.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
         cm.baseScale = speechBubbleBaseScale; // speech bubble always scaled
-        cm.open = true;
         update();
         return cm;
       } else {
@@ -54,7 +53,11 @@ export default function NpcSpeechBubbles() {
   const update = useUpdate();
 
   return Object.values(state.lookup).map(cm =>
-    <MemoizedContextMenu key={cm.key} cm={cm} epochMs={cm.epochMs}/>
+    <MemoizedContextMenu
+      key={cm.key}
+      cm={cm}
+      epochMs={cm.epochMs}
+    />
   );
 }
 
@@ -75,25 +78,24 @@ function NpcSpeechBubble({ cm }) {
   cm.update = useUpdate();
 
   React.useEffect(() => {
-    // Need extra initial render e.g. when paused
-    cm.update();
+    // Extra initial render e.g. for speak while paused
+    setTimeout(cm.update);
   }, []);
 
   return (
     <Html3d
       ref={cm.html3dRef.bind(cm)}
-      css={cm.key === 'default' ? undefined: npcContextMenuCss}
+      css={npcSpeechBubbleCss}
       baseScale={cm.baseScale}
       offset={cm.offset}
       position={cm.position}
       r3f={cm.w.r3f}
       tracked={cm.tracked ?? null}
-      visible={cm.open}
+      visible
     >
-      <div className="bubble">
-        <div className="speech">
-          {cm.speech}
-        </div>
+      <div className="speech">
+        <span className="npc-key">{cm.key}{': '}</span>
+        {cm.speech}
       </div>
     </Html3d>
   );
@@ -109,7 +111,9 @@ const MemoizedContextMenu = React.memo(NpcSpeechBubble);
 
 const speechBubbleBaseScale = 4;
 
-export const npcContextMenuCss = css`
+export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
+
+export const npcSpeechBubbleCss = css`
   --menu-width: 200px;
 
   position: absolute;
@@ -120,36 +124,35 @@ export const npcContextMenuCss = css`
   pointer-events: none;
   background: transparent !important;
 
+  
   > div {
     transform-origin: calc(+1/2 * var(--menu-width)) 0;
     width: var(--menu-width);
     display: flex;
     justify-content: center;
+    
+    opacity: var(${npcSpeechBubbleOpacityCssVar});
+    transition: opacity 300ms;
   }
   
-  .bubble {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
-    font-size: 1rem;
-    color: #ff9;
-    
-    transition: width 300ms;
-  }
-
   .speech {
     font-weight: lighter;
     font-style: italic;
-    font-size: 1rem;
-
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(0, 0, 0, 0.5);
+    
     display: -webkit-box;
     justify-content: center;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical; 
     overflow: hidden;
-
+    
     text-align: center;
+  }
+
+  .npc-key {
+    font-style: normal;
+    color: #ff9;
   }
 `;

@@ -143,7 +143,7 @@ export class Mat {
   /** @param  {undefined | string | Geom.SixTuple | MatrixJson} source */
   setMatrixValue(source) {
     if (typeof source === 'string') {
-      const transform = source
+      const transform = source // 🔔 assume comma separator
         .slice('matrix('.length, -')'.length).split(',').map(Number);
       return this.feedFromArray( /** @type {Geom.SixTuple} */(transform));
     } else if (!source) {

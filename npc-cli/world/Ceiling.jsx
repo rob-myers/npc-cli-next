@@ -52,7 +52,8 @@ export default function Ceiling(props) {
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      drawPolygons(ct, tops.nonHull, ['#666', '#001', thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, ['#001', '#666', thickLineWidth]);
+      // drawPolygons(ct, tops.nonHull, ['#666', '#001', thickLineWidth]);
       drawPolygons(ct, tops.window, [black, wallsColor, thinLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
@@ -86,6 +87,9 @@ export default function Ceiling(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
+    setOpacity(opacity) {
+      state.opacity = Math.min(Math.max(0, opacity), 1);
+    },
   }), { reset: { opacity: true } });
 
   w.ceil = state;
@@ -111,7 +115,7 @@ export default function Ceiling(props) {
         transparent
         atlas={tex}
         alphaTest={0.3} opacity={state.opacity} depthWrite={false}
-        diffuse={[0.8, 0.8, 1]}
+        diffuse={[0.8, 0.8, .8]}
         objectPickRed={3}
         // colorSpace
       />
@@ -131,6 +135,7 @@ export default function Ceiling(props) {
  * @property {number} opacity
  *
  * @property {() => Promise<void>} draw
- * @property {(gmKey: Geomorph.GeomorphKey) => void} drawGm
+ * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {() => void} positionInstances
+ * @property {(opacity: number) => void} setOpacity
  */

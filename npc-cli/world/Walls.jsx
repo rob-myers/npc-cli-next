@@ -4,19 +4,16 @@ import * as THREE from "three";
 import { Mat, Vect } from "../geom";
 import { instancedMeshName, wallHeight } from "../service/const";
 import { getQuadGeometryXY } from "../service/three";
-import { InstancedMonochromeShader } from "../service/glsl";
+import { InstancedWallsShader } from "../service/glsl";
 import { geomorph } from "../service/geomorph";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
-import useUpdate from "../hooks/use-update";
 
 /**
  * @param {Props} props
  */
 export default function Walls(props) {
   const w = React.useContext(WorldContext);
-
-  const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
@@ -105,7 +102,6 @@ export default function Walls(props) {
     },
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
-      update();
     },
   }));
 
@@ -129,7 +125,7 @@ export default function Walls(props) {
     >
       {/* <meshBasicMaterial side={THREE.DoubleSide} color="#866" wireframe /> */}
       <instancedMonochromeShader
-        key={InstancedMonochromeShader.key}
+        key={InstancedWallsShader.key}
         diffuse={[0, 0, 0]}
         // diffuse={transparent ? [.4, .4, .5] : [0, 0, 0]}
         // ℹ️ for transparency

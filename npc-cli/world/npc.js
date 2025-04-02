@@ -1,22 +1,20 @@
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
+import { deltaAngle } from "maath/misc";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta } from '../service/const';
-import { error, info, warn } from '../service/generic';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
+import { error, info, testNever, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObjectLookup, emptyAnimationMixer, emptyGroup, getParentBones, tmpVectThree1, toV3, toXZ } from '../service/three';
+import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
-import { cmUvService } from "../service/uv";
 
 export class Npc {
 
   /** @type {string} User specified e.g. `rob` */
   key;
-  /** @type {import('./World').State} World API */
-  w;
   /** @type {NPC.NPCDef} Initial definition */
   def;
   /** @type {number} When we (re)spawned */
@@ -24,38 +22,49 @@ export class Npc {
   /** @type {number} Physics body identifier i.e. `hashText(key)` */
   bodyUid;
   
-  /** Model */
+  /** @type {NPC.Model} Model */
   m = {
-    animations: /** @type {THREE.AnimationClip[]} */ ([]),
-    /** Root bones */
-    bones: /** @type {THREE.Bone[]} */ ([]),
-    /** Root group available on mount */
-    group: emptyGroup,
-    /** Mounted material (initially THREE.MeshPhysicalMaterial via GLTF) */
-    material: /** @type {THREE.ShaderMaterial} */ ({}),
-    /** Mounted mesh */
-    mesh: /** @type {THREE.SkinnedMesh} */ ({}),
-    quad: /** @type {import('../service/uv').CuboidManQuads} */ ({}),
-    toAct: /** @type {Record<NPC.AnimKey, THREE.AnimationAction>} */ ({}),
+    animations: [],
+    bones: [],
+    group: /** @type {*} */ (null),
+    material: /** @type {*} */ ({}),
+    mesh: /** @type {*} */ ({}),
     scale: 1,
-  }
+    toAct: /** @type {*} */ ({}),
+  };
   
   mixer = emptyAnimationMixer;
   /** Shortcut to `this.m.group.position` */
   position = tmpVectThree1;
+  /** Shortcut to `this.m.group.rotation` */
+  rotation = tmpEulerThree;
   /** Difference between last position */
   delta = new THREE.Vector3();
 
+  /**
+   * `skin` amounts to a "uv re-mapping".
+   * 
+   * Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
+   * where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
+   */
+  skin = /** @type {NPC.SkinReMap} */ ({});
+
+  tint = /** @type {NPC.SkinTint} */ ({
+    selector: [1, 1, 1, 0],
+  });
+
+  /** Shortcut to `this.w.npc.gltfAux[this.def.classKet]` */
+  gltfAux = /** @type {NPC.GltfAux} */ ({});
+
   /** State */
   s = {
-    act: /** @type {NPC.AnimKey} */ ('Idle'),
+    act: /** @type {Key.Anim} */ ('Idle'),
     agentState: /** @type {null | number} */ (null),
-    autoIdleLook: true,
+    permitTurn: true,
     doMeta: /** @type {null | Meta} */ (null),
-    faceId: /** @type {null | NPC.UvQuadId} */ (null),
     fadeSecs: 0.3,
-    iconId: /** @type {null | NPC.UvQuadId} */ (null),
     label: /** @type {null | string} */ (null),
+    labelY: 0,
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
     lookSecs: 0.3,
@@ -65,8 +74,7 @@ export class Npc {
     /** Desired opacity */
     opacityDst: /** @type {null | number} */ (null),
     run: false,
-    selectorColor: /** @type {[number, number, number]} */ ([0.6, 0.6, 1]),
-    showSelector: false,
+    selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
     /**
      * World timer elapsedTime (seconds) when slowness detected.
      * 🤔 Pausing currently resets World timer.
@@ -91,6 +99,10 @@ export class Npc {
    */
   lastTarget = new THREE.Vector3();
 
+  /** ContextMenu has different position when `this.s.act` is `Lie` */
+  offsetMenu = new THREE.Vector3();
+  offsetSpeech = new THREE.Vector3();
+
   resolve = {
     fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
     move: /** @type {undefined | ((value?: any) => void)} */ (undefined),
@@ -105,14 +117,8 @@ export class Npc {
     turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
   };
 
-  /** Shortcut */
-  get baseTexture() {
-    return this.w.npc.tex[this.def.classKey];
-  }
-  /** Shortcut */
-  get labelTexture() {
-    return this.w.npc.tex.labels;
-  }
+  /** @type {import('./World').State} World API */
+  w;
 
   /**
    * @param {NPC.NPCDef} def
@@ -126,7 +132,96 @@ export class Npc {
     this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
   }
 
-  async cancel() {
+  /**
+   * Apply uv re-mapping @see {Npc.skin}
+   * - 1st row of pixels
+   * - one pixel per triangle
+   */
+  applySkin() {
+    const texNpcAux = this.w.texNpcAux;
+    const { classKey } = this.def;
+    const { gltfAux: skinAux, sheetAux } = this.w.npc;
+    const { sheetId: initSheetId, uvMap, sheetTexIds } = sheetAux[classKey];
+    const { triToKey } = skinAux[classKey];
+
+    /** Index in DataTextureArray of this model's `initSheetId` sheet */
+    const initSheetTexId = sheetTexIds[initSheetId];
+
+    // 🔔 texture.type THREE.FloatType to handle negative uv offsets
+    const data = new Float32Array(4 * texNpcAux.opts.width * 1);
+    const defaultPixel = [0, 0, initSheetTexId];
+
+    /** @type {Partial<Record<Key.SkinPart, true>>} */
+    const hideInObjectPick = {
+      breath: true,
+      label: true,
+      selector: true,
+    };
+
+    for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
+      const offset = 4 * triangleId;
+      const target = this.skin[skinPartKey];
+      
+      data[offset + 3] = skinPartKey in hideInObjectPick ? 0 : 1;
+
+      if (target === undefined) {
+        data.set(defaultPixel, offset);
+        continue;
+      }
+
+      const dstUvRectKey = /** @type {const} */ (`${target.prefix}_${
+        // 🚧
+        target?.otherPart ?? skinPartKey
+      }`);
+      const src = uvMap[uvRectKey];
+      const dst = uvMap[dstUvRectKey];
+
+      if (dst === undefined) {
+        warn(`${'applySkin'}: dstUvRectKey not found: ${dstUvRectKey}`)
+        data.set(defaultPixel, offset); // fallback to initial skin
+        continue;
+      }
+
+      // can remap skinPartKey to another model's skin
+      const dstSheetTexId = (target.classKey === undefined
+        ? sheetTexIds : sheetAux[target.classKey].sheetTexIds
+      )[dst.sheetId];
+
+      data[offset + 0] = dst.x - src.x;
+      data[offset + 1] = dst.y - src.y;
+      data[offset + 2] = dstSheetTexId;
+
+    }
+
+    texNpcAux.updateIndex(this.def.uid, data);
+  }
+
+  /**
+   * Apply uv re-mapping @see {Npc.tint}
+   * - 2nd row of pixels
+   * - one pixel per triangle
+   */
+  applyTint() {
+    const texNpcAux = this.w.texNpcAux;
+    const classKey = this.def.classKey;
+    const { triToKey } = this.w.npc.gltfAux[classKey];
+
+    // THREE.FloatType handle negative uv offsets in applySkin
+    const data = new Float32Array(4 * texNpcAux.opts.width * 1);
+    const defaultPixel = [1, 1, 1, 1];
+    for (const [triangleId, { skinPartKey }] of triToKey.entries()) {
+      const offset = 4 * triangleId;
+      if (skinPartKey in this.tint) {
+        data.set(/** @type {number[]} */ (this.tint[skinPartKey]), offset);
+      } else {
+        data.set(defaultPixel, offset);
+      }
+    }
+
+    texNpcAux.updateIndex(this.def.uid, data, 1);
+  }
+
+  cancel() {
     info(`${'cancel'}: cancelling ${this.key}`);
 
     this.reject.fade?.(`${'cancel'}: cancelled fade`);
@@ -136,8 +231,17 @@ export class Npc {
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
   }
 
-  dispose() {
-    // 🚧
+  disposeModel() {
+    this.m.animations = [];
+    this.m.bones = [];
+    // @ts-ignore
+    this.m['group'] = null;
+    this.m.material.dispose?.();
+    this.m.material = emptyShaderMaterial;
+    this.m.mesh.visible = false;
+    this.m.mesh = emptySkinnedMesh;
+    Object.values(this.m.toAct).forEach(act => act.stop());
+    this.m.toAct = /** @type {*} */ ({});
   }
 
   /**
@@ -213,6 +317,7 @@ export class Npc {
     this.s.fadeSecs = ms / 1000;
     
     try {
+      this.w.events.next({ key: 'fade-npc', npcKey: this.key, opacityDst });
       await new Promise((resolve, reject) => {
         this.resolve.fade = resolve;
         this.reject.fade = reject;
@@ -230,13 +335,11 @@ export class Npc {
    * @param {object} opts
    * @param {Meta} [opts.meta]
    * @param {number} [opts.angle]
-   * @param {NPC.ClassKey} [opts.classKey]
+   * @param {Key.NpcClass} [opts.classKey]
    * @param {boolean} [opts.requireNav]
    */
   async fadeSpawn(point, opts = {}) {
     try {
-      // const meta = opts.meta ?? point.meta ?? {};
-      // point.meta ??= meta;
       Object.assign(point.meta ??= {}, opts.meta);
       await this.fade(0, 300);
 
@@ -245,7 +348,6 @@ export class Npc {
       const dy = point.y - currPoint.y;
 
       await this.w.npc.spawn({
-        // -dy because "ccw east" relative to (+x,-z)
         angle: opts.angle ?? (dx === 0 && dy === 0 ? undefined : Math.atan2(dy, dx)),
         classKey: opts.classKey,
         npcKey: this.key,
@@ -255,16 +357,36 @@ export class Npc {
     }
   }
 
-  forceUpdate() {
-    this.epochMs = Date.now();
-    this.w.npc.update();
+  /**
+   * Convert rotation.y back into "clockwise from east, viewed from above".
+   */
+  getAngle() {
+    return geom.radRange(Math.PI/2 - this.rotation.y);
   }
 
   /**
-   * cw from east convention
+   * @param {Meta} meta 
+   * @returns {Key.Anim}
    */
-  getAngle() {// Assume only rotated about y axis
-    return geom.radRange(Math.PI/2 - this.m.group.rotation.y);
+  getAnimKeyFromMeta(meta) {
+    switch (true) {
+      case meta.sit:
+        return 'Sit';
+      case meta.stand:
+        return 'Idle';
+      case meta.lie:
+        return 'Lie';
+      default:
+        return 'Idle';
+    }
+  }
+
+  getCornerAfterOffMesh() {
+    // cannot use agent.corners() because ag->ncorners is 0 on offMeshConnection
+    return {
+      x: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 0),
+      y: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 2),
+    };
   }
 
   /**
@@ -322,6 +444,16 @@ export class Npc {
     ;
   }
 
+  getNextCorner() {
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const offset = agent.state() === 2 ? 6 : 0;
+    return {// agent.corners() empty while offMeshConnection
+      x: agent.raw.get_cornerVerts(offset + 0),
+      y: agent.raw.get_cornerVerts(offset + 1),
+      z: agent.raw.get_cornerVerts(offset + 2),
+    };
+  }
+
   /** @returns {Geom.VectJson} */
   getPoint() {
     const { x, z: y } = this.position;
@@ -349,6 +481,18 @@ export class Npc {
     // return 0.5;
     // return this.def.runSpeed;
     return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
+  }
+
+  /** @param {NPC.OffMeshState} offMesh */
+  goSlowOffMesh(offMesh) {
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
+    anim.set_tmax(anim.t + tmpVect1.copy(this.getPoint()).distanceTo(offMesh.dst) / this.getSlowSpeed());
+    agent.updateParameters({ maxSpeed: this.getSlowSpeed() });
+    offMesh.tToDist = this.getSlowSpeed();
+    if (this.s.act === 'Run') {
+      this.startAnimation('Walk');
+    }
   }
 
   /**
@@ -383,7 +527,8 @@ export class Npc {
     }
 
     // look further along the path
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4); // 🔔 why 0.4?
+    // 🔔 with 0.2 saw jerk when two agents through doorway
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
     const radians = Math.atan2(dirY, dirX);
@@ -411,7 +556,7 @@ export class Npc {
         if (other.s.target === null && !(nei.dist < closerDist)) {
           continue;
         }
-        this.stopMoving();
+        this.stopMoving(true);
         break;
       }
     }
@@ -421,29 +566,35 @@ export class Npc {
    * Initialization we can do before mounting
    * @param {import('three-stdlib').GLTF & import('@react-three/fiber').ObjectMap} gltf
    */
-  initialize({ scene, animations }) {
-    const { m } = this;
-    const meta = npcClassToMeta[this.def.classKey];
-    const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(scene));
-    const objectLookup = buildObjectLookup(clonedRoot);
+  initialize(gltf) {
+    if (this.m.group !== null) {// onchange glb
+      this.disposeModel();
+    }
 
-    m.animations = animations;
+    const clonedRoot = /** @type {THREE.Group} */ (SkeletonUtils.clone(gltf.scene));
+    const objectLookup = buildObject3DLookup(clonedRoot);
+    
+    const meta = npcClassToMeta[this.def.classKey];
+    const { m } = this;
+    
+    m.animations = gltf.animations;
     // cloned bones
-    m.bones = getParentBones(Object.values(objectLookup.nodes));
+    m.bones = getRootBones(Object.values(objectLookup.nodes));
     // cloned mesh (overridden on mount)
     m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
     // overridden on mount
     m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
-    m.mesh.userData.npcKey = this.key; // To decode pointer events
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();
     m.mesh.computeBoundingSphere();
-    
-    const npcClassKey = this.def.classKey;
-    m.scale = npcClassToMeta[npcClassKey].scale;
-    m.quad = cmUvService.getDefaultUvQuads(this.def.classKey);
-    // ℹ️ see w.npc.spawn for more initialization
+
+    m.scale = meta.scale;
+
+    this.applySkin();
+    this.applyTint();
+
+    this.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
   /**
@@ -490,6 +641,7 @@ export class Npc {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(dst)}`);
     }
 
+    this.s.permitTurn = true;
     this.s.lookSecs = 0.15;
 
     this.agent.updateParameters({
@@ -654,8 +806,11 @@ export class Npc {
       this.m.group = group;
       // Setup shortcut
       this.position = group.position;
+      this.rotation = group.rotation;
       // Resume `w.npc.spawn`
       this.resolve.spawn?.();
+      // Ensure non-empty animation mixer
+      this.setupMixer();
     } else {
       this.m.group = emptyGroup;
       this.position = tmpVectThree1;
@@ -670,8 +825,8 @@ export class Npc {
   onTick(deltaMs, positions) {
     this.mixer.update(deltaMs);
 
-    if (this.s.lookAngleDst !== null) {
-      if (dampAngle(this.m.group.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
+    if (this.s.lookAngleDst !== null && this.s.permitTurn === true) {
+      if (dampAngle(this.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
       }
@@ -745,19 +900,19 @@ export class Npc {
    * @returns 
    */
   onTickDetectStuck(deltaMs, agent) {
-    const smallDist = 0.25 * agent.raw.desiredSpeed * deltaMs;
+    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
       this.s.slowBegin = null; // reset
       return;
     }
-
+    
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
     if (elapsedTime - this.s.slowBegin < 0.2) {// 200ms
       return;
     }
-
+    // 🔔 can prevent npc moving is acceleration too low
     this.w.npc.onStuckCustom?.(this, agent);
   }
 
@@ -765,15 +920,13 @@ export class Npc {
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
     const speedSqr = vel.x ** 2 + vel.z ** 2;
-
-    if (speedSqr > 0.2 ** 2) {
-      this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
-    }
+    this.s.lookSecs = speedSqr < 0.2 ** 2 ? 2 : 0.2; // 🔔 improve and justify
+    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
   }
 
   /** @param {NPC.CrowdAgent} agent */
   onTickTurnNoTarget(agent) {
-    if (this.s.autoIdleLook === false || agent.raw.nneis === 0) {
+    if (agent.raw.nneis === 0) {
       return;
     }
     if (agent.raw.desiredSpeed < 0.5) {
@@ -791,6 +944,10 @@ export class Npc {
   }
 
   setupMixer() {
+    if (this.mixer !== emptyAnimationMixer) {
+      return;
+    }
+
     this.mixer = new THREE.AnimationMixer(this.m.group);
 
     this.m.toAct = this.m.animations.reduce((agg, a) => helper.isAnimKey(a.name)
@@ -800,74 +957,42 @@ export class Npc {
   }
 
   /**
-   * @param {null | NPC.UvQuadId} faceId 
+   * @param {string | undefined | null} label
    */
-  setFace(faceId) {
-    this.s.faceId = faceId;
-    cmUvService.updateFaceQuad(this);
-    // directly change uniform sans render
-    const { texId, uvs } = this.m.quad.face;
-    this.setUniform('uFaceTexId', texId);
-    this.setUniform('uFaceUv', uvs);
-    this.updateUniforms();
-  }
-
-  /**
-   * @param {null | NPC.UvQuadId} iconId 
-   */
-  setIcon(iconId) {
-    this.s.iconId = iconId;
-    cmUvService.updateIconQuad(this);
-    // directly change uniform sans render
-    const { texId, uvs } = this.m.quad.icon;
-    this.setUniform('uIconTexId', texId);
-    this.setUniform('uIconUv', uvs);
-    this.updateUniforms();
-  }
-
-  /**
-   * Updates label sprite-sheet if necessary.
-   * @param {string | null} label
-   */
-  setLabel(label) {
+  setLabel(label = null) {
     this.s.label = label;
 
-    const changedLabelsSheet = label !== null && this.w.npc.updateLabels(label) === true;
-
-    if (changedLabelsSheet === true) {
-      // 🔔 might need to update every npc
-      // avoidable by previously ensuring labels
-      Object.values(this.w.n).forEach((npc) => {
-        cmUvService.updateLabelQuad(npc);
-        npc.epochMs = Date.now();
-      });
-    } else {
-      cmUvService.updateLabelQuad(this);
-      this.epochMs = Date.now();
+    if (typeof this.s.label === 'string') {
+      this.s.label.slice(0, npcLabelMaxChars);
     }
+
+    const { ct } = this.w.texNpcLabel;
+    ct.clearRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
     
-    this.w.npc.update();
+    if (label === null) {
+      this.w.texNpcLabel.updateIndex(this.def.uid);
+      return;
+    }
+
+    const strokeWidth = 5;
+    const fontHeight = 24; // permits > 12 chars on OSX Chrome
+    ct.strokeStyle = 'black';
+    ct.fillStyle = '#aaa';
+    ct.lineWidth = strokeWidth;
+    ct.font = `${fontHeight}px Monospace`;
+    ct.textBaseline = 'top';
+    const { width } = ct.measureText(label);
+    const dx = (skinsLabelsTextureWidth - width)/2;
+    const dy = (skinsLabelsTextureHeight - fontHeight)/2;
+    ct.strokeText(label, dx + strokeWidth, dy + strokeWidth);
+    ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
+
+    this.w.texNpcLabel.updateIndex(this.def.uid);
   }
 
   /**
-   * @param {number} r in `[0, 1]`
-   * @param {number} g in `[0, 1]`
-   * @param {number} b in `[0, 1]`
-   */
-  setSelectorRgb(r, g, b) {
-    /** @type {[number, number, number]} */
-    const selectorColor = [Number(r) || 0, Number(g) || 0, Number(b) || 0];
-    // directly change uniform sans render
-    this.setUniform('selectorColor', selectorColor);
-    this.updateUniforms();
-    // remember for next render
-    this.s.selectorColor = selectorColor;
-  }
-
-  /**
-   * 🚧 refine type
-   * @param {'opacity' | 'uFaceTexId' | 'uFaceUv' | 'uIconTexId' | 'uIconUv' | 'selectorColor' | 'showSelector'} name 
-   * @param {number | THREE.Vector2[] | [number, number, number] | boolean} value 
+   * @param {'opacity' | 'labelY'} name 
+   * @param {number} value 
    */
   setUniform(name, value) {
     this.m.material.uniforms[name].value = value; 
@@ -876,67 +1001,54 @@ export class Npc {
   /**
    * @param {boolean} shouldShow
    */
-  showSelector(shouldShow = !this.s.showSelector) {
-    shouldShow = Boolean(shouldShow);
-    this.s.showSelector = shouldShow;
-    // directly change uniform sans render
-    this.setUniform('showSelector', this.s.showSelector);
-    this.updateUniforms();
+  showLabel(shouldShow) {
+    (this.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
+    this.applyTint();
   }
 
   /**
-   * Start specific animation, or animation induced by meta.
-   * Returns height to raise off ground e.g. for beds. 
-   * @param {NPC.AnimKey | Meta} input
-   * @returns {number}
+   * Also tints selector via @see {s.selectorColor}
+   * @param {boolean} shouldShow
    */
-  startAnimation(input) {
-    if (typeof input === 'string') {
-      const curr = this.m.toAct[this.s.act];
-      const next = this.m.toAct[input];
-      curr.fadeOut(glbFadeOut[this.s.act][input]);
-      next.reset().fadeIn(glbFadeIn[this.s.act][input]).play();
-      this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
-      this.s.act = input;
-      return 0;
-    } else { // input is Meta
-      switch (true) {
-        case input.sit:
-          this.startAnimation('Sit');
-          return typeof input.y === 'number' ? input.y : 0;
-        case input.stand:
-          this.startAnimation('Idle');
-          return 0;
-        case input.lie:
-          this.startAnimation('Lie');
-          return typeof input.y === 'number' ? input.y : 0;
-        default:
-          this.startAnimation('Idle');
-          return 0;
-      }
-    }
+  showSelector(shouldShow) {
+    this.tint.selector = [...this.s.selectorTint, shouldShow ? 1 : 0];
+    this.applyTint();
   }
 
-  stopMoving() {
+  /**
+   * Start animation via key or meta
+   * 🚧 try remove scaleFade
+   * @param {Key.Anim | Meta} input
+   * @param {number} [scaleFade]
+   */
+  startAnimation(input, scaleFade = 1) {
+    if (typeof input !== 'string') {
+      input = this.getAnimKeyFromMeta(input);
+    }
+    const curr = this.m.toAct[this.s.act];
+    const next = this.m.toAct[input];
+    curr.fadeOut(glbFadeOut[this.s.act][input] * scaleFade);
+    next.reset().fadeIn(glbFadeIn[this.s.act][input] * scaleFade).play();
+    this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
+    this.s.act = input;
+
+    this.updateLabelOffsets();
+  }
+
+  stopMoving(suddenly = false) {
     if (this.agent === null || this.s.target === null) {
       return;
     }
 
     this.s.lookSecs = 0.3;
-    if (this.position.distanceTo(this.s.target) < 0.4) {
-      this.s.lookAngleDst = null; // e.g. after offMeshConnection
-    } else {
-      const offset = this.agent.state() === 2 ? 6 : 0;
-      const lookTarget = {// agent.corners() empty while offMeshConnection
-        x: this.agent.raw.get_cornerVerts(offset + 0),
-        y: this.agent.raw.get_cornerVerts(offset + 1),
-        z: this.agent.raw.get_cornerVerts(offset + 2),
-      };
-      this.s.lookAngleDst = this.getEulerAngle(this.getLookAngle(lookTarget));
+    if (this.s.lookAngleDst !== null) {
+      // 🚧 turn a bit more e.g. just after doorway
+      this.s.lookAngleDst = this.rotation.y + deltaAngle(this.rotation.y, this.s.lookAngleDst) / 3;
     }
 
-    this.s.target = null;
+    this.s.permitTurn = true;
     this.s.slowBegin = null;
+    this.s.target = null;
 
     this.agent.updateParameters({
       maxSpeed: this.getMaxSpeed() * 0.75,
@@ -949,7 +1061,7 @@ export class Npc {
       // updateFlags: 1,
     });
     
-    this.startAnimation('Idle');
+    this.startAnimation('Idle', suddenly ? 1/3 : 1);
 
     const pos = this.agent.position(); // reset small motions:
     const position = this.lastStart.distanceTo(pos) <= 0.05 ? this.lastStart : pos;
@@ -979,8 +1091,24 @@ export class Npc {
     }
   }
 
-  updateUniforms() {
-    this.m.material.uniformsNeedUpdate = true;
+  updateLabelOffsets() {
+    const { act } = this.s;
+    const { animHeights, labelHeight } = this.gltfAux;
+    const offsetY = animHeights[act] + 3 * labelHeight;
+    
+    // speech bubble (if exists)
+    this.offsetSpeech.y = offsetY;
+
+    // shader label position
+    this.s.labelY = this.position.y + offsetY;
+    this.setUniform('labelY', this.s.labelY);
+
+    if (act === 'Lie') {// fix contextmenu position
+      const radians = this.getAngle();
+      this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));      
+    } else {
+      this.offsetMenu.set(0, 0, 0);
+    }
   }
 
   async waitUntilStopped() {
@@ -992,15 +1120,17 @@ export class Npc {
 }
 
 const staticMaxAcceleration = 4;
-const movingMaxAcceleration = 8;
-const staticSeparationWeight = 2;
-const movingSeparationWeight = 0.5;
+const movingMaxAcceleration = 6;
+const staticSeparationWeight = 1.5;
+const movingSeparationWeight = 1;
 // const movingSeparationWeight = 0.4;
 const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
-const closeDist = helper.defaults.radius * 1.8;
+const closeDist = helper.defaults.radius * 1.7;
 const closerDist = helper.defaults.radius * 0.8;
+
+const tmpVect1 = new Vect();
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {

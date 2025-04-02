@@ -12,7 +12,7 @@ const changed = /** @type {Map<string, number>} */ (new Map());
 // @ts-ignore
 nodemon({
   delay: 0.1,
-  ext: 'svg,png',
+  ext: 'svg,png,glb',
   runOnChangeOnly: true,
   script: 'scripts/noop.js', // 🔔 must override default behaviour 
   watch: [
@@ -23,6 +23,7 @@ nodemon({
     'media/map/',
     'media/decor/',
     'media/npc/',
+    'public/3d/*.glb',
   ],
   exitcrash: true,
 }).on('restart', onRestart).on('quit', onQuit);
@@ -46,7 +47,9 @@ async function onRestart(nodemonFiles = []) {
   const startEpochMs = Date.now();
   const changedFiles = Array.from(changed.keys());
   await labelledSpawn('assets',
-    'sucrase-node', 'scripts/assets', `--changedFiles=${JSON.stringify(changedFiles)}`,
+    // 'sucrase-node',
+    'bun',
+    'scripts/assets', `--changedFiles=${JSON.stringify(changedFiles)}`,
   );
   const seconds = ((Date.now() - startEpochMs) / 1000).toFixed(2);
   info(`took ${seconds}s`);

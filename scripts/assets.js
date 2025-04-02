@@ -26,7 +26,7 @@ import { performance, PerformanceObserver } from 'perf_hooks'
 //@ts-ignore
 import getopts from 'getopts';
 import stringify from "json-stringify-pretty-compact";
-import { createCanvas, loadImage } from 'canvas';
+import { Canvas, loadImage } from '@napi-rs/canvas';
 import PQueue from "p-queue-compat";
 
 // relative urls for sucrase-node
@@ -39,7 +39,7 @@ import { DEV_ENV_PORT, DEV_ORIGIN, ASSETS_JSON_FILENAME, GEOMORPHS_JSON_FILENAME
 import packRectangles from "../npc-cli/service/rects-packer";
 import { SymbolGraphClass } from "../npc-cli/graph/symbol-graph";
 import { helper } from "../npc-cli/service/helper";
-import { labelledSpawn, saveCanvasAsFile, tryLoadImage, tryReadString } from "./service";
+import { labelledSpawn, tryReadString } from "./service";
 
 const rawOpts = getopts(process.argv, {
   boolean: ['all', 'prePush'],
@@ -109,6 +109,8 @@ async function computePrev() {
     skipObstacles: skipPossible && obstaclePngs.every(Boolean) && !opts.changedFiles.some(x => x.startsWith(symbolsDir)),
     skipDecor: skipPossible && decorPngs.every(Boolean) && !opts.changedFiles.some(x => x.startsWith(decorDir)),
     skipNpcTex: skipPossible && npcTexMetas.every(x => x.canSkip) && !opts.changedFiles.some(x => x.startsWith(npcDir)),
+    // 🔔 only recompute when forced to or some glb changed
+    skipGltfs: skipPossible && !opts.changedFiles.some(x => x.endsWith('.glb')),
   };
 }
 
@@ -148,6 +150,9 @@ info({ opts });
 
 (async function main() {
 
+  perf('with-webp');
+  perf('without-webp');
+
   perf('computePrev');
   const prev = await computePrev();
   // info({ prev });
@@ -177,12 +182,15 @@ info({ opts });
       obstacleDims: [],
       maxObstacleDim: { width: 0, height: 0 },
 
+      glbHash: /** @type {Geomorph.SpriteSheet['glbHash']} */ ({}),
       imagesHash: 0,
-      skins: {
-        svgHash: {},
-        uvMap: {},
-        uvMapDim: {},
-      },
+    },
+    skin: {
+      numSheets: /** @type {Geomorph.SpriteSheetSkins['numSheets']} */ ({}),
+      svgHashes: /** @type {Geomorph.SpriteSheetSkins['svgHashes']} */ ({}),
+      sheetTexId: /** @type {Geomorph.SpriteSheetSkins['sheetTexId']} */ ({}),
+      uvMap: /** @type {Geomorph.SpriteSheetSkins['uvMap']} */ ({}),
+      uvMapDim: /** @type {Geomorph.SpriteSheetSkins['uvMapDim']} */ ({}),
     },
     symbols: /** @type {*} */ ({}), maps: {},
   };
@@ -190,7 +198,7 @@ info({ opts });
   if (prev.assets) {// use previous (may overwrite later)
     const { symbols, meta } = prev.assets;
     symbolBaseNames.forEach(baseName => {
-      const symbolKey = /** @type {Geomorph.SymbolKey} */ (baseName.slice(0, -".svg".length));
+      const symbolKey = /** @type {Key.Symbol} */ (baseName.slice(0, -".svg".length));
       assetsJson.symbols[symbolKey] = symbols[symbolKey];
       assetsJson.meta[symbolKey] = meta[symbolKey];
     });
@@ -200,6 +208,7 @@ info({ opts });
     });
     assetsJson.maps = prev.assets.maps;
     assetsJson.sheet = prev.assets.sheet;
+    assetsJson.skin = prev.assets.skin;
   }
 
   //#region ℹ️ Compute assets.json and sprite-sheets
@@ -234,6 +243,8 @@ info({ opts });
 
   if (!prev.skipDecor) {
     perf('decor', 'creating decor sprite-sheet');
+    // 🚧 skia-canvas: non-local iri references not currently supported
+    // 🚧 skia-canvas: cannot append child nodes to an SVG shape.
     const toDecorImg = await createDecorSheetJson(assetsJson, prev);
     await drawDecorSheet(assetsJson, toDecorImg, prev);
     perf('decor');
@@ -242,9 +253,10 @@ info({ opts });
   }
 
   if (!prev.skipNpcTex) {
-    perf('createNpcTextures', 'creating npc textures');
-    await createNpcTexturesAndUvMeta(assetsJson, prev);
-    perf('createNpcTextures');
+    perf('createNpcTexAndUv', 'creating npc textures and uv meta');
+    // 🚧 skia-canvas: cannot append child nodes to an SVG shape.
+    await createNpcTexAndUv(assetsJson, prev);
+    perf('createNpcTexAndUv');
   } else {
     info('skipping npc textures');
   }
@@ -254,17 +266,29 @@ info({ opts });
   );
   info({ changedKeys: changedSymbolAndMapKeys });
 
-  // hash sprite-sheet PNGs (including skins lastModified)
+  // construct sheet.gltfHash
+  if (!prev.skipGltfs) {
+    assetsJson.sheet.glbHash = computeGlbMetas();
+  }
+
+  // hash sprite-sheet PNGs: decor, obstacles, skins
+  // 🚧 split for faster computation?
+  // 🚧 compute image hash faster?
   perf('sheet.imagesHash');
-  assetsJson.sheet.imagesHash =
-    prev.skipObstacles && prev.skipDecor && assetsJson.sheet.imagesHash
-      ? assetsJson.sheet.imagesHash
-      : hashJson([
-          ...getDecorPngPaths(assetsJson),
-          ...getObstaclePngPaths(assetsJson),
-        ].map(x => fs.readFileSync(x).toString())
-    )
-  ;
+  if (!(
+    prev.skipObstacles === true
+    && prev.skipDecor === true
+    && prev.skipNpcTex === true
+    && assetsJson.sheet.imagesHash !== 0
+  )) {
+    assetsJson.sheet.imagesHash = hashJson([
+      ...getDecorPngPaths(assetsJson),
+      ...getObstaclePngPaths(assetsJson),
+      // ...getSkinPngPaths(prev.npcTexMetas),
+      // 🔔 on remove g.transform we trigger change
+      ...getSkinSvgPaths(prev.npcTexMetas),
+    ].map(x => fs.readFileSync(x).toString()));
+  }
   perf('sheet.imagesHash');
 
   fs.writeFileSync(assetsFilepath, stringify(assetsJson));
@@ -279,7 +303,7 @@ info({ opts });
 
   /** Compute flat symbols i.e. recursively unfold "symbols" folder. */
   // 🚧 reuse unchanged i.e. `changedSymbolAndMapKeys` unreachable
-  const flattened = /** @type {Record<Geomorph.SymbolKey, Geomorph.FlatSymbol>} */ ({});
+  const flattened = /** @type {Record<Key.Symbol, Geomorph.FlatSymbol>} */ ({});
   perf('stratified symbolGraph');
   const symbolGraph = SymbolGraphClass.from(assetsJson.symbols);
   const symbolsStratified = symbolGraph.stratify();
@@ -305,7 +329,7 @@ info({ opts });
   info({ changedGmKeys });
 
   perf('createLayouts');
-  /** @type {Record<Geomorph.GeomorphKey, Geomorph.Layout>} */
+  /** @type {Record<Key.Geomorph, Geomorph.Layout>} */
   const layout = keyedItemsToLookup(geomorph.gmKeys.map(gmKey => {
     const hullKey = helper.toHullKey[gmKey];
     const flatSymbol = flattened[hullKey];
@@ -319,13 +343,16 @@ info({ opts });
     map: assetsJson.maps,
     layout: layoutJson,
     sheet: assetsJson.sheet,
+    skin: assetsJson.skin,
   };
 
   fs.writeFileSync(geomorphsFilepath, stringify(geomorphs));
 
   perf('geomorphs.json');
   //#endregion
-
+  
+  perf('without-webp');
+  
   /**
    * Tell the browser we're ready.
    * In development we use PNG (not WEBP) to avoid HMR delay.
@@ -345,6 +372,7 @@ info({ opts });
   let pngPaths = [
     ...getObstaclePngPaths(assetsJson),
     ...getDecorPngPaths(assetsJson),
+    ...getSkinPngPaths(prev.npcTexMetas),
   ];
   if (!opts.prePush) {
     // Only convert PNG if (i) lacks a WEBP, or (ii) has an "older one"
@@ -356,6 +384,8 @@ info({ opts });
   pngPaths.length && await labelledSpawn('cwebp',
     'yarn', 'cwebp-fast', JSON.stringify({ files: pngPaths }), '--quality=50',
   );
+
+  perf('with-webp');
 
   if (opts.prePush) {
     /**
@@ -402,7 +432,7 @@ function parseSymbols({ symbols, meta }, symbolBasenames) {
   for (const baseName of symbolBasenames) {
     const filePath = path.resolve(symbolsDir, baseName);
     const contents = fs.readFileSync(filePath).toString();
-    const symbolKey = /** @type {Geomorph.SymbolKey} */ (baseName.slice(0, -".svg".length));
+    const symbolKey = /** @type {Key.Symbol} */ (baseName.slice(0, -".svg".length));
 
     const parsed = geomorph.parseSymbol(symbolKey, contents);
     const serialized = geomorph.serializeSymbol(parsed);
@@ -504,7 +534,7 @@ async function drawObstaclesSheet(assets, prev) {
   
   const { obstacle: allObstacles, maxObstacleDim, obstacleDims } = assets.sheet;
   const obstacles = Object.values(allObstacles);
-  const ct = createCanvas(maxObstacleDim.width, maxObstacleDim.height).getContext('2d');
+  const ct = new Canvas(maxObstacleDim.width, maxObstacleDim.height).getContext('2d')
 
   const { changed: changedObstacles, removed: removedObstacles } = detectChangedObstacles(obstacles, assets, prev);
   info({ changedObstacles, removedObstacles });
@@ -540,10 +570,11 @@ async function drawObstaclesSheet(assets, prev) {
         if (!changedObstacles.has(`${symbolKey} ${obstacleId}`)) {
           // info(`${symbolKey} ${obstacleId} obstacle did not change`);
           const prevObs = /** @type {Geomorph.AssetsJson} */ (prev.assets).sheet.obstacle[`${symbolKey} ${obstacleId}`];
-          ct.drawImage(/** @type {import('canvas').Image} */ (prev.obstaclePngs[prevObs.sheetId]),
+          ct.drawImage(/** @type {import('@napi-rs/canvas').Image} */ (prev.obstaclePngs[prevObs.sheetId]),
             prevObs.x, prevObs.y, prevObs.width, prevObs.height,
             x, y, width, height,
           );
+
         } else {
 
           info(`${symbolKey} ${obstacleId}: redrawing...`);
@@ -559,6 +590,7 @@ async function drawObstaclesSheet(assets, prev) {
           drawPolygons(ct, dstPngPoly, ['white', null], 'clip');
           ct.drawImage(image, srcPngRect.x, srcPngRect.y, srcPngRect.width, srcPngRect.height, x, y, width, height);
           ct.restore();
+
         }
   
       } else {
@@ -626,7 +658,7 @@ function getObstaclePngPaths(assets) {
  * 
  * @param {Geomorph.AssetsJson} assets
  * @param {Prev} prev
- * @returns {Promise<{ [key in Geomorph.DecorImgKey]?: import('canvas').Image }>}
+ * @returns {Promise<{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }>}
  */
 async function createDecorSheetJson(assets, prev) {
 
@@ -648,25 +680,22 @@ async function createDecorSheetJson(assets, prev) {
     : svgBasenames
   ;
 
-  const imgKeyToRect = /** @type {Record<Geomorph.DecorImgKey, { width: number; height: Number; data: Geomorph.DecorSheetRectCtxt }>} */ ({});
-  const imgKeyToImg = /** @type {{ [key in Geomorph.DecorImgKey]?: import('canvas').Image }} */ ({});
+  const imgKeyToRect = /** @type {Record<Key.DecorImg, { width: number; height: Number; data: Geomorph.DecorSheetRectCtxt }>} */ ({});
+  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }} */ ({});
 
   // Compute changed images in parallel
   const promQueue = new PQueue({ concurrency: 5 });
-  // const promQueue = new PQueue({ concurrency: 1 });
+  // const promQueue = new PQueue({ concurrency: 1 }); // 🔔 for debug
   await Promise.all(changedSvgBasenames.map(baseName => promQueue.add(async () => {
-    const decorImgKey = /** @type {Geomorph.DecorImgKey} */ (baseName.slice(0, -'.svg'.length));
+    const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
     // svg contents -> data url
     const svgPathName = path.resolve(decorDir, baseName);
-    const contents = await tryReadString(svgPathName);
-    if (contents === null) {
+    if (fs.existsSync(svgPathName) === false) {
       return warn(`createDecorSheetJson: could not read "${svgPathName}"`);
     }
     // 🚧 `bun` is failing on `loadImage`
-    // const svgDataUrl = `data:image/svg+xml;utf8,${contents}`;
-    // console.log({svgPathName});
-    const svgDataUrl = `data:image/svg+xml;base64,${btoa(contents)}`;
-    imgKeyToImg[decorImgKey] = await loadImage(svgDataUrl);
+    // 🔔 svg without "width", "height" is not rendered properly
+    imgKeyToImg[decorImgKey] = await loadImage(svgPathName);
   })));
 
   /**
@@ -676,7 +705,7 @@ async function createDecorSheetJson(assets, prev) {
   const scale = sguSymbolScaleDown * spriteSheetDecorExtraScale;
 
   for (const baseName of svgBasenames) {
-    const decorImgKey = /** @type {Geomorph.DecorImgKey} */ (baseName.slice(0, -'.svg'.length));
+    const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
     const img = imgKeyToImg[decorImgKey];
 
     if (img) {// changedSvgBasenames.includes(baseName)
@@ -732,12 +761,12 @@ async function createDecorSheetJson(assets, prev) {
  * Create the actual sprite-sheet PNG(s).
  * 
  * @param {Geomorph.AssetsJson} assets
- * @param {Partial<Record<Geomorph.DecorImgKey, import('canvas').Image>>} decorImgKeyToImage
+ * @param {Partial<Record<Key.DecorImg, import('@napi-rs/canvas').Image>>} decorImgKeyToImage
  * @param {Prev} prev
  */
 async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
   const { decor: allDecor, decorDims } = assets.sheet;
-  const ct = createCanvas(0, 0).getContext('2d');
+  const ct = new Canvas(0, 0).getContext('2d');
   const prevDecor = prev.assets?.sheet.decor;
   
   // group global decor lookup by sheet
@@ -760,7 +789,7 @@ async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
       } else {
         // assume image available in previous sprite-sheet
         const prevItem = /** @type {Geomorph.SpriteSheet['decor']} */ (prevDecor)[decorImgKey];
-        ct.drawImage(/** @type {import('canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
+        ct.drawImage(/** @type {import('@napi-rs/canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
           prevItem.x, prevItem.y, prevItem.width, prevItem.height,
           x, y, width, height,
         );
@@ -784,19 +813,47 @@ function getDecorPngPaths(assets) {
 //#region npcs
 
 /**
+ * 🔔 filename extension is 'glb' rather than 'gltf'
+ * @returns {Geomorph.SpriteSheet['glbHash']}
+ */
+function computeGlbMetas() {
+  const output = /** @type {Geomorph.SpriteSheet['glbHash']} */ ({});
+  fs.readdirSync(assets3dDir).filter(
+    (baseName) => baseName.endsWith(".glb")
+  ).sort().forEach((glbBaseName) => {
+    const glbPath = path.resolve(assets3dDir, glbBaseName);
+    const glbHash = hashText(fs.readFileSync(glbPath).toString());
+    // 🔔 assume `{npcClassKey}.glb`
+    const npcClassKey = /** @type {Key.NpcClass} */ (glbBaseName.split('.')[0]);
+    output[npcClassKey] = glbHash;
+  });
+  return output;
+}
+
+/**
+ * lexicographically sorted, so that e.g.
+ * `{npcClassKey}.0.tex.svg` is before `{npcClassKey}.1.tex.svg`
  * @returns {NPC.TexMeta[]}
  */
 function getNpcTextureMetas() {
   return fs.readdirSync(npcDir).filter(
     (baseName) => baseName.endsWith(".tex.svg")
+    // (baseName) => {
+    //   const matched = baseName.match(/^(\S+)\.\d+\.tex\.svg$/);
+    //   return matched !== null && matched[1] in helper.fromNpcClassKey;
+    // }
   ).sort().map((svgBaseName) => {
     const svgPath = path.resolve(npcDir, svgBaseName);
     const { mtimeMs: svgMtimeMs } = fs.statSync(svgPath);
     const pngPath = path.resolve(assets3dDir, svgBaseName.slice(0, -'.svg'.length).concat('.png'));
-    let pngMtimeMs = 0; try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
+    let pngMtimeMs = 0;
+    try { pngMtimeMs = fs.statSync(pngPath).mtimeMs } catch {};
+    // 🔔 assume `{npcClassKey}.{skinSheetId}.tex.svg`
+    const [npcClassKey, skinSheetId] = svgBaseName.split('.');
+
     return {
-      // 🔔 assume `{npcClassKey}.tex.svg`
-      npcClassKey: svgBaseName.split('.', 1)[0],
+      npcClassKey: /** @type {Key.NpcClass} */ (npcClassKey),
+      skinSheetId: Number(skinSheetId),
       svgBaseName,
       svgPath,
       pngPath,
@@ -810,29 +867,75 @@ function getNpcTextureMetas() {
  * @param {Geomorph.AssetsJson} assets
  * @param {Prev} prev
  */
-async function createNpcTexturesAndUvMeta(assets, prev) {
-  const { skins, skins: { svgHash } } = assets.sheet
-  skins.svgHash = {};
-  for (const { npcClassKey, canSkip, svgBaseName, svgPath, pngPath } of prev.npcTexMetas) {
-    if (canSkip && svgHash[npcClassKey]) {
-      skins.svgHash[npcClassKey] = svgHash[npcClassKey];
-    } else {
+async function createNpcTexAndUv(assets, prev) {
+  const { skin } = assets;
+  const prevSvgHash = skin.svgHashes;
+  
+  // group by npcClassKey
+  const bySkinClass = mapValues(helper.fromNpcClassKey, (_, npcClassKey) => {
+    const npcTexMetas = prev.npcTexMetas.filter(x => x.npcClassKey === npcClassKey);
+    return {
+      npcClassKey,
+      npcTexMetas,
+      canSkip: npcClassKey in prevSvgHash && npcTexMetas.every(x => x.canSkip === true),
+    };
+  });
+
+  for (const { npcClassKey, canSkip, npcTexMetas } of Object.values(bySkinClass)) {
+    if (canSkip) {
+      // console.log('🔔 skipping', npcClassKey);
+      continue; // reuse e.g. skins.uvMap[npcClassKey]
+    }
+
+    // reset things we don't overwrite
+    skin.numSheets[npcClassKey] = 0;
+    skin.svgHashes[npcClassKey] = [];
+    skin.uvMap[npcClassKey] = {};
+
+    for (const { svgBaseName, svgPath, pngPath, skinSheetId } of npcTexMetas) {
       const svgContents = fs.readFileSync(svgPath).toString();
 
+      // count sheets per class
+      skin.numSheets[npcClassKey]++;
+      
       // extract uv-mapping from top-level folder "uv-map"
-      const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, svgBaseName);
-      assets.sheet.skins.uvMap[npcClassKey] = uvMap;
-      assets.sheet.skins.uvMapDim[npcClassKey] = { width, height };
+      // merge sheets (must use distinct names in different SVGs for same skin)
+      const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, skinSheetId, svgBaseName);
+      Object.assign(skin.uvMap[npcClassKey] ??= {}, uvMap);
+      skin.uvMapDim[npcClassKey] = { width, height };
 
+      skin.svgHashes[npcClassKey].push(hashText(svgContents));
+      
       // convert SVG to PNG
-      skins.svgHash[npcClassKey] = hashText(svgContents);
-      const svgDataUrl = `data:image/svg+xml;utf8,${svgContents}`;
-      const image = await loadImage(svgDataUrl);
-      const canvas = createCanvas(image.width, image.height);
+      const image = await loadImage(svgPath);
+      const canvas = new Canvas(image.width, image.height);
       canvas.getContext('2d').drawImage(image, 0, 0);
       await saveCanvasAsFile(canvas, pngPath);
     }
   }
+
+  // recompute skins.texArrayId (linearly order all sheets)
+  let nextTexArrayId = 0;
+  skin.sheetTexId = mapValues(skin.numSheets, (numSheets) => {
+    const output = range(numSheets).map(i => nextTexArrayId + i);
+    nextTexArrayId += output.length;
+    return output;
+  });
+
+}
+
+/**
+ * @param {NPC.TexMeta[]} npcTexMetas
+ */
+function getSkinPngPaths(npcTexMetas) {
+  return npcTexMetas.map(({ pngPath }) => pngPath);
+}
+
+/**
+ * @param {NPC.TexMeta[]} npcTexMetas
+ */
+function getSkinSvgPaths(npcTexMetas) {
+  return npcTexMetas.map(({ svgPath }) => svgPath);
 }
 
 //#endregion
@@ -840,13 +943,14 @@ async function createNpcTexturesAndUvMeta(assets, prev) {
 /**
  * @typedef Prev
  * @property {Geomorph.AssetsJson | null} assets
- * @property {(import('canvas').Image | null)[]} obstaclePngs
- * @property {(import('canvas').Image | null)[]} decorPngs
+ * @property {(import('@napi-rs/canvas').Image | null)[]} obstaclePngs
+ * @property {(import('@napi-rs/canvas').Image | null)[]} decorPngs
  * @property {NPC.TexMeta[]} npcTexMetas
  * @property {boolean} skipMaps
  * @property {boolean} skipObstacles
  * @property {boolean} skipDecor
  * @property {boolean} skipNpcTex
+ * @property {boolean} skipGltfs
  */
 
 /**
@@ -864,4 +968,25 @@ function perf(label, initMessage) {
     performance.measure(label, `${label}...`, `...${label}`);
     measuringLabels.delete(label);
   }
+}
+
+/**
+ * Read image server-side, or `null` on error.
+ * @param {string} filePath 
+ */
+async function tryLoadImage(filePath) {
+  try {
+    return await loadImage(filePath);
+  } catch (e) {// assume doesn't exist
+    return null;
+  }
+}
+
+/**
+ * @param {import('@napi-rs/canvas').Canvas} canvas 
+ * @param {string} outputPath 
+ */
+async function saveCanvasAsFile(canvas, outputPath) {
+  const pngData = await canvas.encode('png');
+  await fs.promises.writeFile(outputPath, pngData);
 }

@@ -76,7 +76,7 @@ export default function Floor(props) {
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
-      drawPolygons(ct, navPoly, ['#00000055', '#554', 0.02]);
+      drawPolygons(ct, navPoly, ['#00000055', '#445', 0.02]);
 
       // grids
       ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
@@ -152,7 +152,7 @@ export default function Floor(props) {
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
- * @property {(gmKey: Geomorph.GeomorphKey) => void} drawGm
+ * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {() => void} positionInstances
  */
 

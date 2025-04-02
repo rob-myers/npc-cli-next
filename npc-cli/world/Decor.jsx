@@ -196,7 +196,7 @@ export default function Decor(props) {
     },
     createLabelMatrix4(d) {
       const { width, height } = state.label.lookup[d.meta.label];
-      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale);
+      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale) * 0.7;
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
@@ -546,18 +546,19 @@ export default function Decor(props) {
       key={`${state.cuboids.length} cuboids`}
       ref={state.ref('cuboidInst')}
       args={[state.cuboidGeom, undefined, state.cuboids.length]}
-      frustumCulled={false}
+      // frustumCulled={false}
       renderOrder={-1}
       visible={ready}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
-      {ready && <cameraLightMaterial
-        key={glsl.CameraLightMaterial.key}
+      {ready && <instancedFlatMaterial
+        key={glsl.InstancedFlatMaterial.key}
         side={THREE.DoubleSide} // fix flipped gm
         diffuse={[0.4, 0.4, 0.4]}
-        transparent
         objectPickRed={7}
         opacity={query.status === 'success' ? 1 : 0}
+        quadOutlines
+        transparent
       />}
     </instancedMesh>
 
@@ -594,7 +595,7 @@ export default function Decor(props) {
       {/* <meshBasicMaterial color="red" /> */}
       <instancedLabelsMaterial
         key={glsl.InstancedLabelsMaterial.key}
-        side={THREE.DoubleSide}
+        // side={THREE.DoubleSide}
         map={state.label.tex}
         transparent
         opacity={0.5}

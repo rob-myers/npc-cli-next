@@ -3,13 +3,11 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, gmLabelHeightSgu, maxNumberOfNpcs, npcClassKeys, npcClassToMeta, spriteSheetDecorExtraScale, wallHeight } from "../service/const";
-import { pause, range, takeFirst, warn } from "../service/generic";
-import { getCanvas } from "../service/dom";
-import { createLabelSpriteSheet, emptyTexture, textureLoader, toV3, toXZ } from "../service/three";
+import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
+import { entries, isDevelopment, mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
-import { cmUvService } from "../service/uv";
-import { CuboidManMaterial } from "../service/glsl";
+import { HumanZeroMaterial } from "../service/glsl";
 import { crowdAgentParams, Npc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -25,20 +23,16 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
-    freePickId: new Set(range(maxNumberOfNpcs)),
+    freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
+    gltfAux: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
-    label: {
-      count: 0,
-      lookup: {},
-      tex: new THREE.CanvasTexture(getCanvas(`${w.key} npc.label`)),
-    },
+    idToKey: new Map(),
+    sheetAux: /** @type {*} */ ({}),
     npc: {},
     onStuckCustom: null,
     physicsPositions: [],
-    tex: /** @type {*} */ ({}),
-    pickIdToKey: new Map(),
-    showLastNavPath: false, // 🔔 debug
+    showLastNavPath: false, // 🔔 for debug
 
     attachAgent(npc) {
       if (npc.agent === null) {
@@ -53,16 +47,7 @@ export default function Npcs(props) {
       }
       return npc.agent;
     },
-    clearLabels() {
-      w.menu.measure('npc.clearLabels');
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale;
-      createLabelSpriteSheet([], state.label, { fontHeight });
-      state.tex.labels = state.label.tex;
-      // 🔔 warns from npc with non-null label
-      Object.values(state.npc).forEach(npc => cmUvService.updateLabelQuad(npc));
-      w.menu.measure('npc.clearLabels');
-    },
-    findPath(src, dst) {// 🔔 agent may follow different path
+    findPath(src, dst) {// 🔔 agent only use path as a guide
       const query = w.crowd.navMeshQuery;
       const { path, success } = query.computePath(src, dst, {
         filter: w.crowd.getFilter(0),
@@ -71,6 +56,11 @@ export default function Npcs(props) {
         warn(`${'findPath'} failed: ${JSON.stringify({ src, dst })}`);
       }
       return success === false || path.length === 0 ? null : path;
+    },
+    forceUpdate() {
+      const now = Date.now();
+      Object.values(state.npc).forEach(npc => npc.epochMs = now)
+      update();
     },
     getClosestNavigable(p, maxDelta = 0.5) {
       const { success, point: closest } = w.crowd.navMeshQuery.findClosestPoint(p, {
@@ -96,6 +86,25 @@ export default function Npcs(props) {
       } else {
         return npc;
       }
+    },
+    hotReloadNpc(prevNpc) {
+      // 🔔 HMR by copying prevNpc non-methods into nextNpc
+      // 🔔 supports variable re-naming in `npc.s`
+      // const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
+      const nextNpc = state.npc[prevNpc.key] = new Npc(prevNpc.def, w)
+      const { s, ...rest } = nextNpc; //@ts-ignore
+      Object.keys(s).forEach(k => k in prevNpc.s && (s[k] = prevNpc.s[k])); //@ts-ignore
+      Object.keys(rest).forEach(k => k in prevNpc && (nextNpc[k] = prevNpc[k]));
+      
+      nextNpc.epochMs = Date.now(); // invalidate React.Memo
+      if (nextNpc.agent !== null) {// avoid stale ref
+        state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
+      }
+      // track npc class meta
+      nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
+
+      nextNpc.applySkin();
+      nextNpc.applyTint();
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
@@ -128,18 +137,20 @@ export default function Npcs(props) {
       }
     },
     remove(...npcKeys) {
-      for (const npcKey of npcKeys) {
-        const npc = state.getNpc(npcKey); // throw if n'exist pas
-        npc.cancel(); // rejects promises
-        state.removeAgent(npc);
-        
-        delete state.npc[npcKey];
-        state.freePickId.add(npc.def.pickUid);
-        state.pickIdToKey.delete(npc.def.pickUid);
-      }
-      update();
-      for (const npcKey of npcKeys) {
-        w.events.next({ key: 'removed-npc', npcKey });
+      try {
+        for (const npcKey of npcKeys) {
+          const npc = state.getNpc(npcKey); // throw if n'exist pas
+          npc.cancel(); // rejects promises
+          state.removeAgent(npc);
+          
+          delete state.npc[npcKey];
+          state.freeId.add(npc.def.uid);
+          state.idToKey.delete(npc.def.uid);
+
+          w.events.next({ key: 'removed-npc', npcKey });
+        }
+      } finally {
+        update();
       }
     },
     removeAgent(npc) {
@@ -151,6 +162,58 @@ export default function Npcs(props) {
         npc.agentAnim = null;
         npc.s.offMesh = null;
       }
+    },
+    setupSkins() {
+      // 🔔 compute sheetAux e.g. uvMap
+      // 🔔 compute gltfAux e.g. triangleId -> uvRectKey
+
+      w.menu.measure(`npc.setupSkins`);
+      for (const [npcClassKey, gltf] of entries(state.gltf)) {
+        
+        const meta = npcClassToMeta[npcClassKey];
+
+        const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
+        // get sheetId from orig material name e.g. human-0.0.tex.png
+        const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (mesh.material);
+        const matBaseName = origMaterial.map?.name ?? null;
+        const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
+
+        const {
+          uvMap: {[meta.npcClassKey]: uvMap},
+          sheetTexId: {[meta.npcClassKey]: sheetTexIds},
+        } = w.geomorphs.skin;
+
+        state.sheetAux[npcClassKey] = {
+          npcClassKey: meta.npcClassKey,
+          sheetId: skinSheetId,
+          sheetTexIds,
+          uvMap,
+        };
+
+        if (mesh.geometry.index !== null) {
+          // 🔔 un-weld vertices so triangleId follows from vertexId
+          mesh.geometry = mesh.geometry.toNonIndexed();
+        }
+
+        // 🔔 always recompute: either mesh or sheet might have changed
+        const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
+        const labelUvRect = uvMap.default_label;
+
+        state.gltfAux[npcClassKey] = {
+          npcClassKey: meta.npcClassKey,
+          labelTriIds,
+          labelUvRect4: labelUvRect
+            ? [labelUvRect.x, labelUvRect.y, labelUvRect.width, labelUvRect.height]
+            : [0, 0, 0, 0],
+          partToUv: partToUvRect,
+          triToKey: triToUvKeys,
+          animHeights: mapValues(
+            meta.modelAnimHeight, x => x * meta.scale
+          ),
+          labelHeight: meta.modelLabelHeight * meta.scale,
+        };
+      }
+      w.menu.measure(`npc.setupSkins`);
     },
     async spawn(opts, p) {
       if (typeof opts === 'string') {
@@ -182,11 +245,10 @@ export default function Npcs(props) {
       }
 
       let npc = state.npc[opts.npcKey];
-      const position = toV3(p);
 
       // orient to meta 🚧 remove from elsewhere
       opts.angle ??= typeof p.meta?.orient === 'number'
-        ? Math.PI/2 - (p.meta.orient * (Math.PI / 180))
+        ? (p.meta.orient * (Math.PI / 180)) - Math.PI/2
         : undefined
       ;
 
@@ -196,7 +258,7 @@ export default function Npcs(props) {
 
         npc.def = {
           key: opts.npcKey,
-          pickUid: npc.def.pickUid,
+          uid: npc.def.uid,
           angle: opts.angle ?? npc.getAngle() ?? 0, // prev angle fallback
           classKey: opts.classKey ?? npc.def.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
@@ -211,13 +273,13 @@ export default function Npcs(props) {
         // Spawn
         npc = state.npc[opts.npcKey] = new Npc({
           key: opts.npcKey,
-          pickUid: takeFirst(state.freePickId),
+          uid: takeFirst(state.freeId),
           angle: opts.angle ?? 0,
           classKey: opts.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
         }, w);
-        state.pickIdToKey.set(npc.def.pickUid, opts.npcKey);
+        state.idToKey.set(npc.def.uid, opts.npcKey);
 
         npc.initialize(state.gltf[npc.def.classKey]);
       }
@@ -227,27 +289,30 @@ export default function Npcs(props) {
           npc.resolve.spawn = resolve;
           update();
         });
-        npc.setupMixer();
       }
+      
+      // 🔔 input `p` can be Vect (x, y) or Vector3Like (x, y, z)
+      const position = toV3(p);
+      // 🔔 non-zero height must be set via `p.meta`
+      position.y = typeof p.meta?.y === 'number' ? p.meta.y : 0;
 
-      // npc.startAnimation('Idle');
-      position.y = npc.startAnimation(p.meta ?? 'Idle');
-      npc.m.group.rotation.y = npc.getEulerAngle(npc.def.angle);
+      npc.position.copy(position);
+      npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
+      npc.startAnimation(p.meta ?? {});
+
       if (npc.agent === null) {
-        npc.position.copy(position);
         if (agent === true) {
           const agent = state.attachAgent(npc);
           // 🔔 pin to current position
-          agent.requestMoveTarget(npc.position);
+          agent.requestMoveTarget(position);
           // must tell physics.worker because not moving
           state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
           state.byAgId[agent.agentIndex] = npc;
         }
       } else {
         if (dstNav === false || agent === false) {
-          npc.position.copy(position);
           state.removeAgent(npc);
           // must tell physics.worker because not moving
           state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
@@ -275,56 +340,41 @@ export default function Npcs(props) {
       w.r3f.advance(Date.now());
     },
     update,
-    updateLabels(...incomingLabels) {
-      const { lookup } = state.label;
-      const unseenLabels = incomingLabels.filter(label => !(label in lookup));
-
-      if (unseenLabels.length === 0) {
-        return false;
-      }
-      
-      w.menu.measure('npc.updateLabels');
-      const nextLabels = [...Object.keys(lookup), ...unseenLabels];
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale;
-      createLabelSpriteSheet(nextLabels, state.label, { fontHeight });
-      state.tex.labels = state.label.tex;
-      w.menu.measure('npc.updateLabels');
-
-      // update npc labels (avoidable by precomputing labels)
-      Object.values(state.npc).forEach(npc => cmUvService.updateLabelQuad(npc));
-      return true;
-    },
   }), { reset: { showLastNavPath: true } });
 
   w.npc = state;
   w.n = state.npc;
-
-  state.gltf["cuboid-man"] = useGLTF(npcClassToMeta["cuboid-man"].url);
-  state.gltf["cuboid-pet"] = useGLTF(npcClassToMeta["cuboid-pet"].url);
   
-  React.useEffect(() => {// init + hmr
-    cmUvService.initialize(state.gltf);
-    process.env.NODE_ENV === 'development' && Object.values(state.npc).forEach(oldNpc => {
-      // 🔔 HMR by overwriting newNpc's non-methods with oldNpc's
-      const newNpc = state.npc[oldNpc.key] = Object.assign(new Npc(oldNpc.def, w), {...oldNpc});
-      newNpc.epochMs = Date.now();
-      if (newNpc.agent !== null) {// avoid stale ref
-        state.byAgId[newNpc.agent.agentIndex] = newNpc;
-      }
-      oldNpc.dispose();
-      update();
-    });
+  // load meshes
+  entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {
+    const { [npcClassKey]: hash } = w.geomorphs.sheet.glbHash;
+    const cacheBustingQuery = isDevelopment() ? `?hash=${hash}` : '';
+    state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
+  });
+  
+  React.useEffect(() => {// hmr
+    if (process.env.NODE_ENV === 'development') {
+      Object.values(state.npc).forEach(state.hotReloadNpc);
+    }
   }, []);
+  
+  React.useEffect(() => {// onchange gltf or sheets
+    state.setupSkins();
 
-  React.useEffect(() => {// npc textures 🚧 use single DataTextureArray
-    Promise.all(npcClassKeys.map(async classKey => {
-      state.tex[classKey] = emptyTexture;
-      const { skinBaseName } = npcClassToMeta[classKey];
-      const tex = await textureLoader.loadAsync(`/3d/${skinBaseName}?v=${w.hash.sheets}`);
-      tex.flipY = false;
-      state.tex[classKey] = tex;
-    })).then(() => Object.values(state.npc).forEach(npc => npc.forceUpdate()));
-  }, [w.hash.sheets]);
+    Object.values(state.npc).forEach(npc => {
+      // update stale ref
+      npc.gltfAux = state.gltfAux[npc.def.classKey];
+
+      if (npc.m.animations !== state.gltf[npc.def.classKey].animations) {
+        // reinitialize if changed meshes
+        npc.initialize(state.gltf[npc.def.classKey]);
+        npc.mixer = emptyAnimationMixer; // overwritten on remount
+        npc.epochMs = Date.now(); // invalidate cache
+      }
+    });
+
+    update();
+  }, [...Object.values(state.gltf), w.hash.sheets]);
 
   return (
     <group
@@ -336,7 +386,7 @@ export default function Npcs(props) {
         <MemoizedNPC
           key={npc.key}
           npc={npc}
-          epochMs={npc.epochMs} // override memo
+          epochMs={npc.epochMs} // can invalidate memo
         />
       )}
     </group>
@@ -351,25 +401,43 @@ export default function Npcs(props) {
 /**
  * @typedef State
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
- * @property {Set<number>} freePickId Those npc object-pick ids not-currently-used.
+ * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
- * @property {import("../service/three").LabelsSheetAndTex} label
- * @property {Record<NPC.ClassKey, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
+ * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
  * @property {{ [npcKey: string]: Npc }} npc
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * Custom callback to handle npc slow down.
  * We don't use an event because it can happen too often.
  * @property {number[]} physicsPositions
  * Format `[npc.bodyUid, npc.position.x, npc.position.y, npc.position.z, ...]`
- * @property {Record<NPC.TextureKey, THREE.Texture>} tex
- * @property {Map<number, string>} pickIdToKey
+ * @property {Map<number, string>} idToKey
  * Correspondence between object-pick ids and npcKeys.
  * @property {boolean} showLastNavPath
  *
+ * @property {Record<Key.NpcClass, {
+ *   npcClassKey: Key.NpcClass;
+ *   sheetId: number;
+ *   sheetTexIds: number[];
+ *   uvMap: Geomorph.UvRectLookup;
+ * }>} sheetAux
+ * For each npcClassKey (a.k.a 3d model), its:
+ * - `npcClassKey`
+ * - initial `sheetId` relative to npcClassKey
+ * - `sheetTexIds` (mapping from sheetId to DataTextureArray index)
+ * - uv map `uvMap` (over all sheets)
+ * @property {Record<Key.NpcClass, NPC.GltfAux>} gltfAux
+ * For each npcClassKey (a.k.a 3d model), its:
+ * - `npcClassKey`
+ * - triangle ids `labelTriIds` corresponds to label quad
+ * - initial mapping `partToUv` from skinPartKey to uvRect
+ * - initial mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
+ *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
- * @property {() => void} clearLabels
+ * @property {() => void} setupSkins
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
+ * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
+ * @property {(prevNpc: NPC.NPC) => void} hotReloadNpc
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore
@@ -384,7 +452,6 @@ export default function Npcs(props) {
  * @property {() => void} tickOnceDebounced
  * @property {() => Promise<void>} tickOnceDebug
  * @property {() => void} update
- * @property {(...incomingLabels: string[]) => boolean} updateLabels
  * - Ensures incomingLabels i.e. does not replace.
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
@@ -395,7 +462,7 @@ export default function Npcs(props) {
  * @param {NPCProps} props 
  */
 function NPC({ npc }) {
-  const { bones, mesh, quad } = npc.m;
+  const { bones, mesh } = npc.m;
 
   return (
     <group
@@ -404,52 +471,47 @@ function NPC({ npc }) {
       scale={npc.m.scale}
       // dispose={null}
     >
-      {/* <mesh position={[0, physicsConfig.agentHeight / 2, 0]} scale={1/npc.m.scale} renderOrder={1}>
-        <cylinderGeometry args={[physicsConfig.agentRadius, physicsConfig.agentRadius, 1.5, 32]} />
+      {/* <mesh position={[0, (physicsConfig.agentHeight / 2) * 1/npc.m.scale, 0]} scale={1/npc.m.scale} renderOrder={1}>
+        <cylinderGeometry args={[physicsConfig.agentRadius, physicsConfig.agentRadius, physicsConfig.agentHeight, 32]} />
         <meshBasicMaterial color="red" transparent opacity={0.25} />
       </mesh> */}
 
       {bones.map((bone, i) => <primitive key={i} object={bone} />)}
+
       <skinnedMesh
         geometry={mesh.geometry}
         position={mesh.position}
         skeleton={mesh.skeleton}
         userData={mesh.userData}
-        key={CuboidManMaterial.key} // 🔔 keep shader up-to-date
+
+        // 🔔 keep shader up-to-date
+        // 🔔 update onchange gltf
+        key={`${HumanZeroMaterial.key} ${mesh.uuid}`}
         onUpdate={(skinnedMesh) => {
           npc.m.mesh = skinnedMesh; 
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);
         }}
+
         renderOrder={0}
       >
-        {/* <meshPhysicalMaterial transparent color="red" /> */}
-        <cuboidManMaterial
-          key={CuboidManMaterial.key}
-          diffuse={[.8, .8, .8]}
-          transparent
+        {/* <meshBasicMaterial color="red" /> */}
+      
+        <humanZeroMaterial
+          key={HumanZeroMaterial.key}
+          atlas={npc.w.texSkin.tex}
+          aux={npc.w.texNpcAux.tex}
+          diffuse={[.4, .4, .4]}
+
+          label={npc.w.texNpcLabel.tex}
+          labelY={npc.s.labelY}
+          labelTriIds={npc.gltfAux.labelTriIds}
+          labelUvRect4={npc.gltfAux.labelUvRect4}
+
           opacity={npc.s.opacity}
-          uNpcUid={npc.def.pickUid}
-          // objectPick={true}
-
-          labelHeight={wallHeight * (1 / 0.65)}
-          selectorColor={npc.s.selectorColor}
-          showSelector={npc.s.showSelector}
-          // showLabel={false}
-
-          uBaseTexture={npc.baseTexture}
-          uLabelTexture={npc.labelTexture}
-          uAlt1Texture={emptyTexture}
-          
-          uFaceTexId={quad.face.texId}
-          uIconTexId={quad.icon.texId}
-          uLabelTexId={quad.label.texId}
-
-          uFaceUv={quad.face.uvs}
-          uIconUv={quad.icon.uvs}
-          uLabelUv={quad.label.uvs}
-          
-          uLabelDim={quad.label.dim}
+          transparent
+          uid={npc.def.uid}
         />
+        
       </skinnedMesh>
     </group>
   )
@@ -463,6 +525,6 @@ function NPC({ npc }) {
 /** @type {React.MemoExoticComponent<(props: NPCProps & { epochMs: number }) => React.JSX.Element>} */
 const MemoizedNPC = React.memo(NPC);
 
-useGLTF.preload(Object.values(npcClassToMeta).map(x => x.url));
+useGLTF.preload(Object.values(npcClassToMeta).map(x => x.modelUrl));
 
 const smallHalfExtent = 0.001;

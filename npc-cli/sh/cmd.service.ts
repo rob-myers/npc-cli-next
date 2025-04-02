@@ -49,6 +49,8 @@ import { observableToAsyncIterable } from "../service/observable-to-async-iterab
 
 /** Shell builtins */
 const commandKeys = {
+  /** Object.assign of parsed JS or variable-values */
+  assign: true,
   /** Change current key prefix */
   cd: true,
   /** Write tty message with markdown links and associated actions */
@@ -111,6 +113,25 @@ class cmdServiceClass {
   async *runCmd(node: Sh.CallExpr | Sh.DeclClause, command: CommandName, args: string[]) {
     const { meta } = node;
     switch (command) {
+      case "assign": {
+        const values = args.map(arg => {
+          const parsed = parseJsArg(arg);
+          return typeof parsed === 'string'
+            // parse failed so assume its a variable
+            ? useSession.api.getVarDeep(meta, arg)
+            : parsed
+          ;
+        });
+        if (isTtyAt(meta, 0)) {
+          yield Object.assign(values[0], ...values.slice(1));
+        } else {
+          let datum: any;
+          while ((datum = await read(meta)) !== EOF) {
+            yield Object.assign(datum, ...values);
+          }
+        }
+        break;
+      }
       case "cd": {
         if (args.length > 1) {
           throw new ShError(
@@ -124,21 +145,21 @@ class cmdServiceClass {
 
         try {
           if (!args[0]) {
-            useSession.api.setVar(meta, "PWD", "home");
+            useSession.api.setVar(meta, "PWD", "/home");
           } else if (args[0] === "-") {
             useSession.api.setVar(meta, "PWD", prevPwd);
           } else if (args[0].startsWith("/")) {
             const parts = normalizeAbsParts(args[0].split("/"));
             if (resolveNormalized(parts, this.provideProcessCtxt(node.meta)) === undefined) {
-              throw Error;
+              throw Error();
             }
-            useSession.api.setVar(meta, "PWD", parts.join("/"));
+            useSession.api.setVar(meta, "PWD", ['', ...parts].join("/"));
           } else {
             const parts = normalizeAbsParts(currPwd.split("/").concat(args[0].split("/")));
             if (resolveNormalized(parts, this.provideProcessCtxt(node.meta)) === undefined) {
-              throw Error;
+              throw Error();
             }
-            useSession.api.setVar(meta, "PWD", parts.join("/"));
+            useSession.api.setVar(meta, "PWD", ['', ...parts].join("/"));
           }
         } catch {
           useSession.api.setVar(meta, "OLDPWD", prevPwd);
@@ -307,7 +328,7 @@ class cmdServiceClass {
           ],
         });
         const pwd = useSession.api.getVar(meta, "PWD");
-        const queries = operands.length ? operands.slice() : [""];
+        const queries = operands.length > 0 ? operands.slice() : [""];
         const root = this.provideProcessCtxt(meta);
         const roots = queries.map((path) => resolvePath(path, root, pwd));
 
@@ -321,32 +342,28 @@ class cmdServiceClass {
           if (roots.length > 1) yield `${ansi.Blue}${queries[i]}:`;
           let keys = (opts.r ? keysDeep(obj) : Object.keys(obj)).sort();
           let items = [] as string[];
-          if (pwd === "home" && !opts.a)
+          if (pwd === "/home" && !opts.a) {
             keys = keys.filter((x) => x.toUpperCase() !== x || /^[0-9]/.test(x));
+          }
 
-          if (opts.l) {
-            if (typeof obj === "function")
+          if (opts.l === true) {
+            if (typeof obj === "function") {
               keys = keys.filter((x) => !["caller", "callee", "arguments"].includes(x));
-            const metas = opts.r
-              ? keys.map(
-                  (x) =>
-                    deepGet(obj, x.split("/"))?.constructor?.name ||
-                    (obj[x] === null ? "null" : "undefined")
-                )
-              : keys.map(
-                  (x) => obj[x]?.constructor?.name || (obj[x] === null ? "null" : "undefined")
-                );
+            }
+            const metas = opts.r !== undefined
+              ? keys.map((x) => deepGet(obj, x.split("/"))?.constructor?.name || (obj[x] === null ? "null" : "undefined"))
+              : keys.map((x) => obj[x]?.constructor?.name || (obj[x] === null ? "null" : "undefined"))
+            ;
             const metasWidth = Math.max(...metas.map((x) => x.length));
-            items = keys.map(
-              (x, i) =>
-                `${ansi.BrightYellow}${metas[i].padEnd(metasWidth)}${ansi.White} ${x}${ansi.Reset}`
-            );
+            items = keys.map((x, i) => `${ansi.BrightYellow}${metas[i].padEnd(metasWidth)}${ansi.White} ${x}${ansi.Reset}`);
           } else if (opts[1]) {
             items = keys;
           } else {
             items = cliColumns(keys, { width: ttyShell.xterm.xterm.cols }).split(/\r?\n/);
           }
-          for (const item of items) yield item;
+          for (const item of items) {
+            yield item;
+          }
         }
         break;
       }
@@ -458,7 +475,7 @@ class cmdServiceClass {
         break;
       }
       case "pwd": {
-        yield "/" + useSession.api.getVar(meta, "PWD");
+        yield useSession.api.getVar(meta, "PWD");
         break;
       }
       case "return": {

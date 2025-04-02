@@ -1,6 +1,7 @@
 import React from "react";
 import * as THREE from "three";
 import { css } from "@emotion/react";
+import cx from "classnames";
 import { stringify as javascriptStringify } from 'javascript-stringify';
 import debounce from "debounce";
 
@@ -38,7 +39,6 @@ export function ContextMenu() {
     links: [],
     match: {},
     meta: {},
-    npcKey: undefined,
     selectNpcKeys: [],
 
     computeKvsFromMeta(meta) {
@@ -60,15 +60,24 @@ export function ContextMenu() {
      */
     computeLinks() {
       let suppressKeys = /** @type {string[]} */ ([]);
+
       const keyToLink = Object.values(state.match).reduce((agg, matcher) => {
         const { showLinks, hideKeys } = matcher(state);
         showLinks?.forEach(link => agg[link.key] = link);
         suppressKeys.push(...hideKeys ?? []);
         return agg;
       }, /** @type {{ [linkKey: string]: NPC.ContextMenuLink }} */ ({}));
-      
+
       suppressKeys.forEach(key => delete keyToLink[key]);
       state.links = Object.values(keyToLink);
+    },
+    getPosition() {
+      if (state.tracked === undefined) {
+        return state.position.clone();
+      } else {
+        const { object, offset } = state.tracked;
+        return object.position.clone().add(offset);
+      }
     },
     hide(force) {
       if (state.pinned === true && force !== true) {
@@ -101,11 +110,6 @@ export function ContextMenu() {
         state.onToggleLink(e);
       }
     },
-    onSelectNpc(e) {
-      const { value } = e.currentTarget;
-      state.npcKey = value in w.n ? value : undefined;
-      state.refreshOptsPopUp();
-    },
     onToggleLink(e) {
       const el = /** @type {HTMLElement} */ (e.target);
       const linkKey = el.dataset.key;
@@ -119,7 +123,6 @@ export function ContextMenu() {
 
       switch (linkKey) {
         // case 'delete': w.c.delete(e.cmKey); break;
-        case 'clear-npc': state.setNpc(); break;
         case 'hide': state.hide(true); break;
         case 'toggle-docked': state.toggleDocked(); break;
         case 'toggle-kvs': state.toggleKvs(); break;
@@ -151,12 +154,16 @@ export function ContextMenu() {
       state.computeKvsFromMeta(meta);
       state.computeLinks();
     },
-    setNpc(npcKey) {
-      state.npcKey = npcKey;
-      update();
+    setNonDockedOpacity(opacity) {
+      state.html3d.rootDiv.style.setProperty(contextMenuOpacityCssVar, `${opacity}`);
     },
-    setTracked(input) {
-      state.tracked = input;
+    setTracked(npcKey) {
+      if (npcKey === undefined) {
+        state.tracked = undefined;
+      } else {
+        const npc = w.n[npcKey];
+        state.tracked = { npcKey, object: npc.m.group, offset: npc.offsetMenu };
+      }
     },
     show() {
       state.open = true;
@@ -191,7 +198,7 @@ export function ContextMenu() {
     },
     toggleScaled() {
       state.scaled = !state.scaled;
-      const position = state.tracked?.position ?? state.position;
+      const position = state.getPosition();
       state.baseScale = state.scaled === true ? 1 / objectScale(position, w.r3f.camera) : undefined;
       update();
     },
@@ -199,6 +206,7 @@ export function ContextMenu() {
       state.showKvs = !state.showKvs;
       update();
     },
+    update,
   }));
 
   w.cm = state;
@@ -257,19 +265,6 @@ function ContextMenuLinks({ state }) {
         onChange={state.onToggleOptsPopup.bind(state)}
         width={200}
       >
-        <select
-          className="select-npc"
-          onChange={state.onSelectNpc.bind(state)}
-          value={state.npcKey ?? ""}
-        >
-          <option key="none" value="">
-            no npc
-          </option>
-          {state.selectNpcKeys.map(npcKey => 
-            <option key={npcKey} value={npcKey}>{npcKey}</option>
-          )}
-        </select>
-
         <button
           key="toggle-scaled"
           data-key="toggle-scaled"
@@ -305,11 +300,15 @@ function ContextMenuLinks({ state }) {
         x
       </button>
 
-      {state.links.map(({ key, label }) =>
+      {state.links.map(({ key, label, selected }) =>
         <button
           key={key}
           data-key={key}
-          className="custom-link"
+          className={
+            typeof selected === 'function'
+              ? cx({ 'custom-link': true, selected: selected?.() === true })
+              : 'custom-link'
+          }
         >
           {label}
         </button>
@@ -332,6 +331,9 @@ function ContextMenuMeta({ state }) {
 
 const contextMenuWidthPx = 200;
 
+export const contextMenuOpacityCssVar = '--content-menu-opacity';
+
+
 export const contextMenuCss = css`
   position: absolute;
   left: 0;
@@ -343,21 +345,25 @@ export const contextMenuCss = css`
   > div {
     transform-origin: 0 0;
     pointer-events: all;
-
-    .inner-root {
-      width: ${contextMenuWidthPx}px;
-      background-color: rgba(0, 0, 0, 0.8);
-      border-radius: 0 8px 8px 8px;
-      border: 1px solid #333;
-      padding: 4px;
-      font-size: small;
-    }
   }
 
+  .inner-root {
+    width: ${contextMenuWidthPx}px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 0 8px 8px 8px;
+    border: 1px solid #333;
+    padding: 4px;
+    font-size: small;
+  }
+  
   z-index: ${zIndexWorld.contextMenu};
-
+  
   &.docked {
     transform: unset !important;
+  }
+  &:not(.docked) .inner-root {
+    opacity: var(${contextMenuOpacityCssVar});
+    transition: opacity 200ms;
   }
 
   .select-npc {
@@ -390,6 +396,10 @@ export const contextMenuCss = css`
   }
   .links button.custom-link {
     padding: 5px 4px;
+    &.selected {
+      text-decoration: none;
+      font-style: italic;
+    }
   }
 
   .kvs {
@@ -406,7 +416,6 @@ export const contextMenuCss = css`
       color: #ff7;
     }
   }
-
 `;
 
 const optsPopUpCss = css`
@@ -417,10 +426,6 @@ const optsPopUpCss = css`
     justify-content: space-around;
     align-items: center;
     font-size: small;
-  
-    select {
-      border: 1px solid #555;
-    }
   }
 ;`
 
@@ -435,34 +440,34 @@ const optsPopUpCss = css`
  * @property {NPC.ContextMenuLink[]} links
  * @property {{ [matcherKey: string]: NPC.ContextMenuMatcher }} match
  * @property {Meta} meta
- * @property {undefined | string} npcKey
  * @property {undefined | import("three").Vector3Like} offset
  * @property {boolean} open
  * @property {import("../components/PopUp").State} optsPopUp
  * @property {import('three').Vector3} position
- * @property {undefined | import("three").Object3D} tracked
+ * @property {undefined | { npcKey: string } & import('../components/Html3d').TrackedObject3D} tracked
  * @property {boolean} pinned
  * @property {boolean} scaled
  * @property {string[]} selectNpcKeys
  * @property {boolean} showKvs
  * @property {(meta: Meta) => void} computeKvsFromMeta
  * @property {() => void} computeLinks
+ * @property {() => THREE.Vector3} getPosition Get actual position e.g. if tracked.
  * @property {(force?: boolean | undefined) => void} hide
  * @property {(e: React.KeyboardEvent<HTMLButtonElement>) => void} onKeyDownButton
  * @property {(e: React.PointerEvent) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
- * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onSelectNpc
  * @property {(willOpen: boolean) => void} onToggleOptsPopup
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext
- * @property {(npcKey?: string | undefined) => void} setNpc
- * @property {(input?: import('three').Object3D) => void} setTracked
+ * @property {(opacity: number) => void} setNonDockedOpacity
+ * @property {(npcKey?: string) => void} setTracked
  * @property {() => void} show
  * @property {(next?: boolean) => void} toggleDocked optional set
  * @property {() => void} toggleOpen
  * @property {() => void} togglePinned
  * @property {() => void} toggleScaled Ensure smooth transition when start scaling
  * @property {() => void} toggleKvs
+ * @property {() => void} update
  **/
