@@ -13,6 +13,8 @@
 
 - sh: fix `echo What\'s`
 
+- no longer need to fade Html3D on resize?
+
 - another model human-1
 
 - tween: provide many examples
