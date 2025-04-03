@@ -122,8 +122,6 @@ export const Html3d = React.forwardRef(({
       if (docked ? state.innerDiv : state.rootDiv) {
         state.rootDiv.style.visibility = visible ? 'visible' : 'hidden';
         state.rootDiv.className = cx({ docked }, className);
-        state.rootDiv.style.transition = docked ? '' : 'opacity ease-out 200ms';
-        state.rootDiv.style.opacity = docked ? '' : `var(${html3DOpacityCssVar})`;
       }
     }, [state.rootDiv, state.innerDiv, className, docked, visible]);
 
@@ -160,8 +158,6 @@ export const Html3d = React.forwardRef(({
 * @property {(rootState?: import('@react-three/fiber').RootState) => void} onFrame
 * @property {() => [number, number]} computePosition
 */
-
-export const html3DOpacityCssVar = '--html-3d-opacity';
 
 const eps = 0.001;
 const v1 = new THREE.Vector3()

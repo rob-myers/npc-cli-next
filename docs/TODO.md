@@ -14,7 +14,8 @@
 - ✅ sh: fix `echo What\'s`
   - braceOpts.keepQuotes true
 
-- no longer need to fade Html3D on resize?
+- ✅ no longer need to fade Html3D on resize
+  - seems to track well now
 
 - another model human-1
 
@@ -42,14 +43,15 @@
 - `w | json` should not crash
   - `w | pretty` is huge
 
-- BoxySVG `&quot;` issue
+- @napi-rs/canvas `&quot;` issue
+  - https://github.com/Brooooooklyn/canvas/issues/1029
   - https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
   - `skia-canvas` issues:
     - https://github.com/samizdatco/skia-canvas/issues/219
     - 🚧 possibly just an issue with `&quot;` inside url.
   - ✅ find a fix which removes them e.g. `url(&quot;#foo&quot;)` -> `url(#foo)`
     - `yarn test-svg-to-png media/debug/test-gradient-fill.svg`
-  - prefer BoxySVG fix rather than apply our fix (for the moment)
+  - ❌ prefer BoxySVG fix rather than apply our fix (for the moment)
 
 - warn if uv-map is not a grid (where rows/cols can have different size)
 
