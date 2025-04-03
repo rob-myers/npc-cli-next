@@ -11,10 +11,12 @@
 
 ### World
 
-- 🚧 tween: provide many examples
-- when w.view.enableControls show "ui disabled icon"
+- sh: fix `echo What\'s`
 
 - another model human-1
+
+- tween: provide many examples
+- when w.view.enableControls show "ui disabled icon"
 
 - 🚧 improve assets script
   - ✅ more measurements in assets script
