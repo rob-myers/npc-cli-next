@@ -39,7 +39,7 @@ export default function WorldView(props) {
     },
     down: null,
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 30,
+    fov: 40,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
