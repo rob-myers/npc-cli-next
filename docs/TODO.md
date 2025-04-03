@@ -11,7 +11,8 @@
 
 ### World
 
-- sh: fix `echo What\'s`
+- ✅ sh: fix `echo What\'s`
+  - braceOpts.keepQuotes true
 
 - no longer need to fade Html3D on resize?
 

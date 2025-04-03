@@ -75,6 +75,7 @@ export function interpretEscapeSequences(input: string): string {
 const bracesOpts: braces.Options = {
   expand: true,
   rangeLimit: Infinity,
+  keepQuotes: true, // prevent where's -> wheres
 };
 
 export function literal({ Value, parent }: Sh.Lit): string[] {
@@ -99,7 +100,7 @@ export function literal({ Value, parent }: Sh.Lit): string[] {
   }
   // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
   // We escape square brackets for npm module `braces`.
-  value = value.replace(/\\(['"\\$`])/g, "$1")
+  value = value.replace(/\\(['"\\$`])/g, "$1");
   return braces(value.replace(/\[/g, "\\[").replace(/\]/g, "\\]"), bracesOpts);
 }
 
