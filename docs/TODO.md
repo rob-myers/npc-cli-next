@@ -4,8 +4,8 @@
 
 ### Site
 
-- in small viewport, stop Viewer drag from sometimes causing blog to scroll
-  - try attaching drag listeners to an overlay rather than body
+- ❌ in small viewport, stop Viewer drag from sometimes causing blog to scroll
+  - we'll rely on overflow flex-items algorithms
 
 - clean up site components
 
