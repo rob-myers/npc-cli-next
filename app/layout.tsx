@@ -4,6 +4,7 @@ import Root from "@/components/Root";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "@xterm/xterm/css/xterm.css";
 import "./globals.css";
+import "flexlayout-react/style/light.css";
 
 export const metadata: Metadata = {
   title: "NPC CLI",
@@ -18,13 +19,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
+        {/* <link
           // 🔔 avoid HMR issues (flash + small clientHeight) when import 'flexlayout-react/style/light.css'
           rel="stylesheet"
           type="text/css"
           href="/css/flexlayout-react__style__light.css"
           as="style"
-        />
+        /> */}
       </head>
       <body>
         <Root>

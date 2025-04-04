@@ -280,6 +280,10 @@ const tabsCss = css`
   width: 100%;
   height: 100%;
 
+  .flexlayout__tabset_content {
+    background-color: #000;
+  }
+
   .flexlayout__tab {
     background-color: black;
     border-top: 3px solid #444;
