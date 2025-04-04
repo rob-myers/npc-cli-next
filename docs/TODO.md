@@ -7,7 +7,8 @@
 - ❌ in small viewport, stop Viewer drag from sometimes causing blog to scroll
   - we'll rely on overflow flex-items algorithms
 
-- clean up site components
+- 🚧 clarify site components
+  - ✅ move Nav styles out of Root
 
 ### World
 

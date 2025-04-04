@@ -168,6 +168,36 @@ const navCss = css`
   &.${sidebarClasses.collapsed} .${menuClasses.menuItemRoot}.title {
     opacity: 0;
   }
+
+  @media (max-width: ${breakpoint}) {
+
+    // avoid displace <main> on expand
+    position: fixed !important;
+    z-index: ${zIndexSite.nav};
+    height: 100vh;
+    height: 100dvh;
+
+    // only show toggle when collapsed
+    &.${sidebarClasses.collapsed} {
+      pointer-events: none;
+
+      border: none !important;
+      > div {
+        background-color: transparent;
+        overflow: hidden;
+        .${menuClasses.root} {
+          display: none;
+        }
+      }
+      button.toggle {
+        top: calc(0.5 * (${view.barSize} - 2rem));
+        width: 2rem;
+        height: 2rem;
+        margin-top: 0;
+        pointer-events: all;
+      }
+    }
+  }
 `;
 
 const icon = {

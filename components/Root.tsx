@@ -60,36 +60,6 @@ const rootCss = css`
   flex-direction: row;
   height: 100vh;
   height: 100dvh;
-
-  @media (max-width: ${breakpoint}) {
-    // cannot move to Nav due to react-pro-sidebar api
-    > aside {
-      position: fixed;
-      z-index: ${zIndexSite.nav};
-      height: 100vh;
-      height: 100dvh;
-
-      &.${sidebarClasses.collapsed} {
-        pointer-events: none;
-
-        border: none !important;
-        > div {
-          background-color: transparent;
-          overflow: hidden;
-          .${menuClasses.root} {
-            display: none;
-          }
-        }
-        button.toggle {
-          top: calc(0.5 * (${view.barSize} - 2rem));
-          width: 2rem;
-          height: 2rem;
-          margin-top: 0;
-          pointer-events: all;
-        }
-      }
-    }
-  }
 `;
 
 const rootContentCss = css`
