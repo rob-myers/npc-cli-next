@@ -10,9 +10,7 @@ import {
 import debounce from "debounce";
 import { useBeforeunload } from "react-beforeunload";
 import { css } from "@emotion/react";
-import cx from "classnames";
 
-import { afterBreakpoint, breakpoint } from "../../components/const";
 import { detectTabPrevNextShortcut } from "../service/generic";
 import {
   TabDef,
@@ -24,7 +22,6 @@ import {
 } from "./tab-factory";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import Spinner from "../components/Spinner";
 
 export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
   const state = useStateRef((): State => ({
@@ -195,45 +192,29 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
   const update = useUpdate();
 
   return (
-    <>
-      <figure
-        key={state.resetCount}
-        css={tabsCss}
-        className="tabs"
-        ref={state.ref('rootEl')}
-        tabIndex={0}
-        onKeyDown={state.onKeyDown}
-      >
-        {state.everEnabled && (
-          <FlexLayout
-            model={state.model}
-            factory={(node) => factory(node, state, tabsDefChanged)}
-            realtimeResize
-            onModelChange={state.onModelChange}
-            onAction={state.onAction}
-          />
-        )}
-      </figure>
-
-      {!state.everEnabled && (
-        <button
-          css={interactButtonCss}
-          className={cx({ collapsed: props.collapsed })}
-          onPointerDown={() => state.toggleEnabled(true)}
-        >
-          <div>
-            {props.browserLoaded ? "interact" : <Spinner size={24} />}
-          </div>
-        </button>
+    <figure
+      key={state.resetCount}
+      css={tabsCss}
+      className="tabs"
+      onKeyDown={state.onKeyDown}
+      ref={state.ref('rootEl')}
+      tabIndex={0}
+    >
+      {state.everEnabled && (
+        <FlexLayout
+          factory={(node) => factory(node, state, tabsDefChanged)}
+          model={state.model}
+          onModelChange={state.onModelChange}
+          onAction={state.onAction}
+          realtimeResize
+        />
       )}
-
-    </>
+    </figure>
   );
 });
 
 export interface Props extends TabsDef {
   browserLoaded: boolean;
-  collapsed: boolean;
   rootOrientationVertical?: boolean;
   /** Invoked onchange state.enabled */
   onToggled?(next: boolean): void;
@@ -338,36 +319,3 @@ const tabsCss = css`
   }
 `;
 
-const interactButtonCss = css`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  @media (min-width: ${afterBreakpoint}) {
-    left: var(--view-bar-size);
-    top: 0;
-    width: calc(100% - var(--view-bar-size));
-    height: 100%;
-  }
-  @media (max-width: ${breakpoint}) {
-    left: 0;
-    top: calc(var(--view-bar-size) + 32px + 4px);
-    width: 100%;
-    height: calc(100% - 2 * var(--view-bar-size));
-  }
-
-  user-select: none;
-  &.collapsed {
-    display: none;
-  }
-
-  > div {
-    letter-spacing: 2px;
-    pointer-events: all;
-    
-    cursor: pointer;
-    font-size: 1rem;
-    color: white;
-  }
-`;
