@@ -17,10 +17,10 @@
 - ✅ no longer need to fade Html3D on resize
   - seems to track well now
 
-- another model human-1
-
+- profile-1 camera target y should always be 1.5?
 - tween: provide many examples
 - can disable zoom independently
+- another model human-1
 - ❌ when w.view.enableControls show "ui disabled icon"
 
 - 🚧 improve assets script

@@ -32,7 +32,7 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 8,
+      minDistance: 6,
       maxDistance: w.smallViewport ? 20 : 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
