@@ -79,44 +79,48 @@ export default function Nav() {
   );
 }
 
-
-// 🔔 See parent component for more CSS
 const navCss = css`
+
+  .${sidebarClasses.container} {
+    z-index: ${zIndexSite.nav};
+  }
+
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 
   color: white;
   border-right: 1px solid #444 !important;
+  text-transform: lowercase;
 
-  text-transform: lowercase; // 🔔
 
+  // root item height and hover
   a.${menuClasses.button}, span.${menuClasses.button} {
+    height: ${nav.menuItem};
+    
     &:hover {
       background-color: transparent;
       text-decoration: underline;
     }
-    height: ${nav.menuItem};
   }
 
+  // root item icon
+  span.${menuClasses.icon} {
+    width: 1rem;
+    min-width: 1rem;
+    margin-right: 24px;
+    margin-left: 12px;
+  }
+
+  // sub-menu
   .${menuClasses.subMenuContent} {
     background-color: #222222;
     padding-left: 20px;
   }
-
-  span.${menuClasses.label} a {
-    color: white;
-    text-decoration: none;
+  .${menuClasses.SubMenuExpandIcon} {
+    padding-right: 0.5rem;
   }
 
-  span.${menuClasses.icon} {
-    width: 1rem;
-    min-width: 1rem;
-  }
-
-  .${sidebarClasses.container} {
-      z-index: ${zIndexSite.nav};
-  }
-
+  // collapsed (only visible on desktop)
   &.${sidebarClasses.collapsed} {
     span.${menuClasses.icon} {
       margin-left: 4px;
@@ -126,16 +130,7 @@ const navCss = css`
     }
   }
 
-  &:not(.${sidebarClasses.collapsed}) {
-    span.${menuClasses.icon} {
-      margin-right: 24px;
-      margin-left: 12px;
-    }
-    .${menuClasses.SubMenuExpandIcon} {
-      padding-right: 0.5rem;
-    }
-  }
-
+  // Nav title
   .${menuClasses.menuItemRoot}.title {
     opacity: 1;
     transition: opacity 500ms;
@@ -162,9 +157,7 @@ const navCss = css`
         font-size: 1.3rem;
       }
     }
-
   }
-
   &.${sidebarClasses.collapsed} .${menuClasses.menuItemRoot}.title {
     opacity: 0;
   }
@@ -180,6 +173,9 @@ const navCss = css`
     // only show toggle when collapsed
     &.${sidebarClasses.collapsed} {
       pointer-events: none;
+      button.toggle {
+        pointer-events: all;
+      }
 
       border: none !important;
       > div {
@@ -188,13 +184,6 @@ const navCss = css`
         .${menuClasses.root} {
           display: none;
         }
-      }
-      button.toggle {
-        top: calc(0.5 * (${view.barSize} - 2rem));
-        width: 2rem;
-        height: 2rem;
-        margin-top: 0;
-        pointer-events: all;
       }
     }
   }

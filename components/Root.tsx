@@ -5,11 +5,10 @@ import React from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { css } from "@emotion/react";
-import { menuClasses, sidebarClasses } from "react-pro-sidebar";
 import { useBeforeunload } from "react-beforeunload";
 
 import { queryClient } from '@/npc-cli/service/query-client';
-import { afterBreakpoint, breakpoint, view, zIndexSite } from "./const";
+import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 import useOnResize from "@/npc-cli/hooks/use-on-resize";
 import Nav from "./Nav";

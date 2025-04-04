@@ -9,6 +9,7 @@
 
 - 🚧 clarify site components
   - ✅ move Nav styles out of Root
+  - ✅ clarify Nav styles
 
 ### World
 
