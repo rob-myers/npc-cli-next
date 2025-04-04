@@ -7,7 +7,7 @@ import useSite from "./site.store";
 import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import { getNavWidth, isSmallView } from "./layout";
 
-import { State } from "./Viewer";
+import { type State, viewerBaseCssVar } from "./Viewer";
 import {
   FontAwesomeIcon,
   faRefreshThin,
@@ -73,7 +73,7 @@ export default function ViewerControls({ api }: Props) {
       api.rootEl.style.transition = `min-width 0s, min-height 0s`;
 
       if (useSite.api.isViewClosed()) {
-        api.rootEl.style.setProperty("--viewer-base", `${0}%`);
+        api.rootEl.style.setProperty(viewerBaseCssVar, `${0}%`);
         useSite.api.toggleView(true);
       }
     },
@@ -98,20 +98,20 @@ export default function ViewerControls({ api }: Props) {
         document.body.removeEventListener("pointerleave", state.onDragEnd);
         api.rootEl.style.transition = "";
 
-        const percent = parseFloat(api.rootEl.style.getPropertyValue("--viewer-base"));
+        const percent = parseFloat(api.rootEl.style.getPropertyValue(viewerBaseCssVar));
         if (percent < 10) {
-          api.rootEl.style.setProperty("--viewer-base", `${50}%`);
+          api.rootEl.style.setProperty(viewerBaseCssVar, `${50}%`);
           state.toggleCollapsed();
         }
       }
     },
     getViewerBase() {
-      const percentage = api.rootEl.style.getPropertyValue("--viewer-base");
+      const percentage = api.rootEl.style.getPropertyValue(viewerBaseCssVar);
       return percentage === null ? null : parseFloat(percentage);
     },
     setViewerBase(percentage: number) {
       percentage = Math.max(0, Math.min(100, percentage));
-      api.rootEl.style.setProperty("--viewer-base", `${percentage}%`);
+      api.rootEl.style.setProperty(viewerBaseCssVar, `${percentage}%`);
       tryLocalStorageSet(localStorageKey.viewerBasePercentage, `${percentage}%`);
     },
     toggleCollapsed() {
@@ -179,6 +179,9 @@ interface Props {
   api: State;
 }
 
+export const viewBarSizeCssVar = '--view-bar-size';
+export const viewIconSizeCssVar = '--view-icon-size';
+
 const buttonsCss = css`
   display: flex;
   justify-content: right;
@@ -191,7 +194,7 @@ const buttonsCss = css`
   @media (min-width: ${afterBreakpoint}) {
     cursor: col-resize;
     flex-direction: column-reverse;
-    width: var(--view-bar-size);
+    width: var(${viewBarSizeCssVar});
     height: 100%;
     border-right: 1px solid #444;
   }
@@ -222,12 +225,12 @@ const buttonsCss = css`
     align-items: center;
 
     @media (min-width: ${afterBreakpoint}) {
-      width: var(--view-bar-size);
+      width: var(${viewBarSizeCssVar});
       height: ${nav.menuItem};
     }
     @media (max-width: ${breakpoint}) {
-      width: var(--view-icon-size);
-      height: var(--view-bar-size);
+      width: var(${viewIconSizeCssVar});
+      height: var(${viewBarSizeCssVar});
     }
 
     color: white;

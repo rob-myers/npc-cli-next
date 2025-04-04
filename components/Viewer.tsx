@@ -15,7 +15,7 @@ import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
 import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
-import ViewerControls from "./ViewerControls";
+import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 import Spinner from "@/npc-cli/components/Spinner";
 
 export default function Viewer() {
@@ -81,7 +81,7 @@ export default function Viewer() {
 
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
-    percentStr !== null && state.rootEl.style.setProperty("--viewer-base", percentStr);
+    percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
   }, []);
 
   const update = useUpdate();
@@ -139,15 +139,18 @@ export interface State {
   tabs: TabsState;
 }
 
+export const viewerBaseCssVar = '--viewer-base';
+
 const viewerCss = css`
-  // ViewerControls
-  --view-bar-size: ${view.barSize};
-  --view-icon-size: ${view.iconSize};
-  
+  ${css`
+    ${viewBarSizeCssVar}: ${view.barSize};
+    ${viewIconSizeCssVar}: ${view.iconSize};
+  `}
+
   // if never drag or maximise, toggle acts like this
-  --viewer-base: 50%;
+  ${viewerBaseCssVar}: 50%;
   &.collapsed {
-    --viewer-base: 0%;
+    ${viewerBaseCssVar}: 0%;
   }
 
   position: relative;
@@ -161,7 +164,7 @@ const viewerCss = css`
   @media (min-width: ${afterBreakpoint}) {
     flex-direction: row;
     transition: min-width 500ms;
-    min-width: var(--viewer-base);
+    min-width: var(${viewerBaseCssVar});
     &.collapsed {
       min-width: 0%;
     }
@@ -170,7 +173,7 @@ const viewerCss = css`
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
     transition: min-height 500ms;
-    min-height: var(--viewer-base);
+    min-height: var(${viewerBaseCssVar});
     &.collapsed {
       min-height: 0%;
     }
@@ -205,16 +208,16 @@ const interactButtonCss = css`
   user-select: none;
 
   @media (min-width: ${afterBreakpoint}) {
-    left: var(--view-bar-size);
+    left: var(${viewBarSizeCssVar});
     top: 0;
-    width: calc(100% - var(--view-bar-size));
+    width: calc(100% - var(${viewBarSizeCssVar}));
     height: 100%;
   }
   @media (max-width: ${breakpoint}) {
     left: 0;
-    top: calc(var(--view-bar-size) + 32px + 4px);
+    top: calc(var(${viewBarSizeCssVar}) + 32px + 4px);
     width: 100%;
-    height: calc(100% - 2 * var(--view-bar-size));
+    height: calc(100% - 2 * var(${viewBarSizeCssVar}));
   }
 
   > div {
