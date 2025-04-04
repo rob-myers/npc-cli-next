@@ -16,15 +16,18 @@ export default function Main(props: React.PropsWithChildren) {
   return (
     <section
       className="prose max-w-screen-lg prose-headings:font-light"
-      css={sectionMainCss}
+      css={mainSectionCss}
       data-testid="main"
       {...{ [sideNoteRootDataAttribute]: true }}
     >
-      <header css={mainHeaderCss} data-testid="main-title">
+      <header
+        css={mainHeaderCss}
+        data-testid="main-title"
+      >
         NPC CLI
       </header>
 
-      <main>
+      <main css={mainMainCss}>
         {props.children}
       </main>
 
@@ -37,16 +40,7 @@ export default function Main(props: React.PropsWithChildren) {
   );
 }
 
-const sectionMainCss = css`
-  > header {
-    background-color: #fff;
-    z-index: ${zIndexSite.mainHeader};
-  }
-  > main {
-    background-color: #fff;
-    padding-top: 2rem;
-  }
-
+const mainSectionCss = css`
   @media (max-width: ${breakpoint}) {
     overflow: scroll;
     max-width: unset !important;
@@ -59,40 +53,54 @@ const sectionMainCss = css`
     display: flex;
     flex-direction: column;
     overflow-x: auto;
-
-    > header, > main {
-      margin-left: 1rem;
-      margin-right: 1rem;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-    > header {
-      margin-top: 0rem;
-      min-width: calc(400px + 2 * 2rem);
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-    }
-    > main {
-      flex: 1;
-      padding-bottom: 6rem;
-      min-width: calc(400px + 2 * 2rem);
-    }
   }
 `;
 
 const mainHeaderCss = css`
+  z-index: ${zIndexSite.mainHeader};
   position: sticky;
+  height: 4rem;
   top: 0;
 
   display: flex;
   justify-content: right;
   align-items: center;
-  height: 4rem;
-  
+
+  background-color: #fff;
   color: #444;
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
+
+  @media (min-width: ${afterBreakpoint}) {
+    min-width: calc(400px + 2 * 2rem);
+
+    margin-top: 0rem;
+    margin-right: 1rem;
+    margin-left: 1rem;
+
+    padding-top: 1rem;
+    padding-right: 2rem;
+    padding-bottom: 1rem;
+    padding-left: 2rem;
+  }
+`;
+
+const mainMainCss = css`
+  background-color: #fff;
+  padding-top: 2rem;
+
+  @media (min-width: ${afterBreakpoint}) {
+    flex: 1;
+    min-width: calc(400px + 2 * 2rem);
+
+    margin-right: 1rem;
+    margin-left: 1rem;
+
+    padding-right: 2rem;
+    padding-bottom: 6rem;
+    padding-left: 2rem;
+  }
 `;
 
 const overlayCss = css`
@@ -113,7 +121,8 @@ const overlayCss = css`
     cursor: pointer;
     opacity: 1;
   }
-  /* fix safari i.e. Viewer scroll was jerky when pointer-events: all */
+  
+  /* fix Safari i.e. Viewer scroll was jerky when pointer-events: all */
   &.overlayOpen.navOpen {
     pointer-events: all;
   }
