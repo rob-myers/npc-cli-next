@@ -182,6 +182,7 @@ const viewerCss = css`
 
 const tabsContainerCss = css`
   height: 100%;
+  width: 100%;
 
   &:not(.collapsed) {
     cursor: auto;
