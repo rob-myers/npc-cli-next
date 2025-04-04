@@ -75,11 +75,11 @@ setupOnSlowNpc
 w view.enableControls false
 w view.tween '{ azimuthal: Math.PI/4, polar: Math.PI/6 }'
 w view.enableControls true
-w view.tween '{ distance: 16 }'
+w view.tween '{ distance: 12 }'
 # fix camera angle and reduce maxDistance
 w update 'w => {
   w.view.controlsOpts.minAzimuthAngle = Math.PI/4;
   w.view.controlsOpts.maxAzimuthAngle = Math.PI/4;
   w.view.controlsOpts.maxPolarAngle = Math.PI/6;
-  w.view.controlsOpts.maxDistance = 24;
+  w.view.controlsOpts.maxDistance = 20;
 }'
