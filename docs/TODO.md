@@ -4,46 +4,9 @@
 
 ### Site
 
-- ❌ in small viewport, stop Viewer drag from sometimes causing blog to scroll
-  - we'll rely on overflow flex-items algorithms
-
-- ✅ clarify and clean site component styles
-  - ✅ move Nav styles out of Root
-  - ✅ clarify Nav styles
-  - ✅ clarify Main styles
-  - ✅ clarify ViewerControls styles
-
-- ✅ cleanup Viewer
-  - ❌ Viewer: HMR issue
-    - full refresh happens if add/remove ref to `profile` (which uses raw-loader)
-  - ✅ move tabsDefs into site.store
-  - ✅ set initial tabsDefs somewhere
-  - ✅ clarify Viewer styles
+Start blog.
 
 ### World
-
-- ✅ sh: fix `echo What\'s`
-  - braceOpts.keepQuotes true
-
-- ✅ no longer need to fade Html3D on resize
-  - seems to track well now
-
-- profile-1 camera target y should always be 1.5?
-- tween: provide many examples
-- can disable zoom independently
-- another model human-1
-- ❌ when w.view.enableControls show "ui disabled icon"
-
-- 🚧 improve assets script
-  - ✅ more measurements in assets script
-  - ✅ fix `yarn clean-assets`
-  - ✅ use loadImage of svgPath instead of data-url
-  - 🚧 faster run onchange skin
-
-- if lookAt while walking, eventually lookAt once stopMoving
-- prevent intersection when two npcs move diagonally through doorway
-  - forbid (src,dst)'s intersection
-  - forbid dst's close to each other
 
 - 🚧 cuboids have outlines via shader, using UVs
   - ✅ can see outlines on decor cuboids
@@ -51,11 +14,24 @@
     > right x2, left x2, front x2, back x2, top x2, bottom x2
   - 🚧 fix scaling (non-trivial)
 
-- try to simplify walk smoothing "hacks"
-- `w | json` should not crash
+- 🚧 `w | json` should not crash
   - `w | pretty` is huge
 
-- @napi-rs/canvas `&quot;` issue
+- profile-1 camera target y should always be 1.5?
+- tween: provide many examples
+- can disable zoom independently
+- Tabs: debug is global among Tab instances
+- another model human-1
+- try to simplify walk smoothing "hacks"
+- if lookAt while walking, eventually lookAt once stopMoving
+- ❌ when w.view.enableControls show "ui disabled icon"
+- prevent intersection when two npcs move diagonally through doorway
+  - forbid (src,dst)'s intersection
+  - forbid dst's close to each other
+
+### Dev Env
+
+- 🚧 @napi-rs/canvas `&quot;` issue
   - https://github.com/Brooooooklyn/canvas/issues/1029
   - https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
   - `skia-canvas` issues:
@@ -64,6 +40,12 @@
   - ✅ find a fix which removes them e.g. `url(&quot;#foo&quot;)` -> `url(#foo)`
     - `yarn test-svg-to-png media/debug/test-gradient-fill.svg`
   - ❌ prefer BoxySVG fix rather than apply our fix (for the moment)
+
+- 🚧 improve assets script
+  - ✅ more measurements in assets script
+  - ✅ fix `yarn clean-assets`
+  - ✅ use loadImage of svgPath instead of data-url
+  - 🚧 faster run onchange skin
 
 - warn if uv-map is not a grid (where rows/cols can have different size)
 
@@ -522,7 +504,7 @@
   - ✅ fix follow after pan again
 
 
-## Dev env
+### Dev env
 
 - ✅ Npc texture PNG -> WEBP
 - ✅ HMR breaking on close/open laptop
@@ -583,5 +565,30 @@
   - ℹ️ a bit faster than sucrase-node
 
 
-# Branch `start-blog`
+## Branch `start-blog`
 
+### Site
+
+- ❌ in small viewport, stop Viewer drag from sometimes causing blog to scroll
+  - we'll rely on overflow flex-items algorithms
+
+- ✅ clarify and clean site component styles
+  - ✅ move Nav styles out of Root
+  - ✅ clarify Nav styles
+  - ✅ clarify Main styles
+  - ✅ clarify ViewerControls styles
+
+- ✅ cleanup Viewer
+  - ❌ Viewer: HMR issue
+    - full refresh happens if add/remove ref to `profile` (which uses raw-loader)
+  - ✅ move tabsDefs into site.store
+  - ✅ set initial tabsDefs somewhere
+  - ✅ clarify Viewer styles
+
+### World
+
+- ✅ sh: fix `echo What\'s`
+  - braceOpts.keepQuotes true
+
+- ✅ no longer need to fade Html3D on resize
+  - seems to track well now
