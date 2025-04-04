@@ -7,18 +7,18 @@
 - ❌ in small viewport, stop Viewer drag from sometimes causing blog to scroll
   - we'll rely on overflow flex-items algorithms
 
-- 🚧 clarify and clean site component styles
+- ✅ clarify and clean site component styles
   - ✅ move Nav styles out of Root
   - ✅ clarify Nav styles
   - ✅ clarify Main styles
-  - 🚧 clarify ViewerControls styles
+  - ✅ clarify ViewerControls styles
 
-- 🚧 cleanup Viewer
+- ✅ cleanup Viewer
   - ❌ Viewer: HMR issue
     - full refresh happens if add/remove ref to `profile` (which uses raw-loader)
   - ✅ move tabsDefs into site.store
   - ✅ set initial tabsDefs somewhere
-  - 🚧 clarify Viewer styles
+  - ✅ clarify Viewer styles
 
 ### World
 

@@ -183,33 +183,37 @@ export const viewBarSizeCssVar = '--view-bar-size';
 export const viewIconSizeCssVar = '--view-icon-size';
 
 const buttonsCss = css`
+  z-index: ${zIndexSite.aboveViewerFocusOutline};
+
   display: flex;
   justify-content: right;
   align-items: center;
+
   background-color: #000;
   touch-action: none;
 
-  z-index: ${zIndexSite.aboveViewerFocusOutline};
-
   @media (min-width: ${afterBreakpoint}) {
-    cursor: col-resize;
-    flex-direction: column-reverse;
     width: var(${viewBarSizeCssVar});
     height: 100%;
+    flex-direction: column-reverse;
+
+    cursor: col-resize;
     border-right: 1px solid #444;
   }
 
   @media (max-width: ${breakpoint}) {
-    cursor: row-resize;
-    flex-direction: row;
-    border-bottom: 1px solid #444;
     height: ${view.barSize};
+    flex-direction: row;
+
+    cursor: row-resize;
+    border-bottom: 1px solid #444;
   }
 
   .left-or-bottom-group {
     flex: 1;
     display: flex;
     align-items: end;
+
     padding: 12px 16px;
     pointer-events: none;
 
@@ -218,7 +222,7 @@ const buttonsCss = css`
     }
   }
 
-
+  // each control is a button
   button {
     display: flex;
     justify-content: center;
@@ -241,6 +245,7 @@ const buttonsCss = css`
     }
   }
 
+  // toggle Viewer
   button:last-child {
     @media (min-width: ${afterBreakpoint}) {
       height: ${view.barSize};
