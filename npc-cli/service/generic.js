@@ -1,5 +1,5 @@
 import prettyCompact from "json-stringify-pretty-compact";
-import safeStableStringify from "safe-stable-stringify";
+// import safeStableStringify from "safe-stable-stringify";
 import { stringify as javascriptStringify } from 'javascript-stringify';
 
 /**
@@ -445,7 +445,8 @@ export function removeFromLookup(itemKey, lookup) {
  * @param {*} input 
  */
 export function safeJsonCompact(input) {
-  return prettyCompact(JSON.parse(safeStableStringify(input) ?? ''));
+  // return prettyCompact(JSON.parse(safeStableStringify(input) ?? ''));
+  return prettyCompact(parseJsArg(javascriptStringify(input) ?? ''));
 }
 
 /** @param {string} input */

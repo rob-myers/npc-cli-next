@@ -838,6 +838,11 @@ class cmdServiceClass {
       return isTtyAt(this.meta, fd);
     },
 
+    /** Create succinct JSON projections of JS values */
+    json(x: any) {
+      return safeJsonCompact(x);
+    },
+
     kill(group = false) {
       cmdService.killProcesses(this.meta.sessionKey, [this.meta.pid], { group });
     },
@@ -864,11 +869,6 @@ class cmdServiceClass {
     /** Pretty print JS values */
     pretty(x: any) {
       return jsStringify(isProxy(x) ? { ...x } : x, true);
-    },
-
-    /** Create succinct JSON projections of JS values */
-    json(x: any) {
-      return safeJsonCompact(x);
     },
 
     /** Read once from stdin. */

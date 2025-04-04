@@ -14,8 +14,12 @@ Start blog.
     > right x2, left x2, front x2, back x2, top x2, bottom x2
   - 🚧 fix scaling (non-trivial)
 
-- 🚧 `w | json` should not crash
-  - `w | pretty` is huge
+- ✅ pipe to json should not crash
+  - ℹ️ `w | json` crashes
+    - "Paused before potential out of memory crash"
+    - 4.8 Gb
+  - ℹ️ `expr window | json` takes about 10 secs to fail
+  - ℹ️ `w | pretty` is huge
 
 - profile-1 camera target y should always be 1.5?
 - tween: provide many examples
