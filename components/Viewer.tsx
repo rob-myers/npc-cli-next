@@ -1,4 +1,4 @@
-import React, { ComponentProps } from "react";
+import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
 import { shallow } from "zustand/shallow";
@@ -9,7 +9,6 @@ import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 
 import { profile } from "@/npc-cli/sh/src";
-import { isTouchDevice } from "@/npc-cli/service/dom";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
@@ -19,7 +18,15 @@ import { tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 
 export default function Viewer() {
-  const site = useSite(({ browserLoaded, viewOpen }) => ({ browserLoaded, viewOpen }), shallow);
+  const site = useSite(({
+    browserLoaded,
+    tabsDefs,
+    viewOpen,
+  }) => ({
+    browserLoaded,
+    tabsDefs,
+    viewOpen,
+  }), shallow);
 
   const state = useStateRef<State>(() => ({
     rootEl: null as any,
@@ -44,7 +51,34 @@ export default function Viewer() {
     trackVisible: true,
   });
 
-  React.useEffect(() => {// remember Viewer percentage
+  React.useEffect(() => {
+
+    // 🚧 initialize Tabs
+    // 🔔 presence of `profile` triggers full fast-refresh
+    useSite.api.setTabsDefs([[
+      {
+        type: "component",
+        class: "World",
+        filepath: "test-world-1",
+        // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+        props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+      },
+    ],
+    [
+      {
+        type: "terminal",
+        filepath: "tty-1",
+        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
+      },
+      {
+        type: "terminal",
+        filepath: "tty-2",
+        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
+      },
+      { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+    ]]);
+
+    // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     // if (percentStr !== null && state.rootEl.style.getPropertyValue("--viewer-base") === '') {
     percentStr !== null && state.rootEl.style.setProperty("--viewer-base", percentStr);
@@ -63,7 +97,6 @@ export default function Viewer() {
     >
       <ViewerControls api={state} />
       <Tabs
-        // ref={x => void (state.tabs = x ?? state.tabs)}
         ref={state.ref('tabs')}
         id="viewer-tabs"
         browserLoaded={site.browserLoaded}
@@ -72,40 +105,7 @@ export default function Viewer() {
         onToggled={update}
         persistLayout
         rootOrientationVertical
-        tabs={((tabsetDefs: ComponentProps<typeof Tabs>['tabs']) =>
-          // Only one tabset on mobile
-          isTouchDevice() ? [tabsetDefs.flatMap(x => x)] : tabsetDefs
-        )([
-          [
-            {
-              type: "component",
-              class: "World",
-              filepath: "test-world-1",
-              // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-              props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-            },
-            // {
-            //   type: "component",
-            //   class: "TestCharacterDemo",
-            //   filepath: "test-character-demo",
-            //   props: {},
-            // },
-            // { type: "component", class: "TestWorker", filepath: "r3-worker-demo", props: {} },
-          ],
-          [
-            {
-              type: "terminal",
-              filepath: "tty-1",
-              env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
-            },
-            {
-              type: "terminal",
-              filepath: "tty-2",
-              env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
-            },
-            { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-          ],
-        ])}
+        tabs={site.tabsDefs}
       />
     </aside>
   );

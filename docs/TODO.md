@@ -11,6 +11,14 @@
   - ✅ move Nav styles out of Root
   - ✅ clarify Nav styles
   - ✅ clarify Main styles
+  - 🚧 clarify ViewerControls styles
+
+- 🚧 cleanup Viewer
+  - ❌ Viewer: HMR issue
+    - full refresh happens if add/remove ref to `profile` (which uses raw-loader)
+  - ✅ move tabsDefs into site.store
+  - ✅ set initial tabsDefs somewhere
+  - 🚧 better approach e.g. from blog page
   - 🚧 clarify Viewer styles
 
 ### World

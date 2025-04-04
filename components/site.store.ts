@@ -19,6 +19,8 @@ import {
   error,
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
+import { isTouchDevice } from "@/npc-cli/service/dom";
+import { type TabDef } from "@/npc-cli/tabs/tab-factory";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -29,6 +31,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   mainOverlay: false,
   navOpen: false,
   viewOpen: false,
+  tabsDefs: [],
 
   api: {
     getFrontMatterFromScript() {
@@ -54,7 +57,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       if (isDevelopment()) {
         connectDevEventsWebsocket();
-
         /**
          * In development refetch on refocus can automate changes.
          * In production, see https://github.com/TanStack/query/pull/4805.
@@ -69,33 +71,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         });
       }
 
-      function onGiscusMessage(message: MessageEvent) {
-        if (message.origin === "https://giscus.app" && message.data.giscus?.discussion) {
-          const discussion = message.data.giscus.discussion as GiscusDiscussionMeta;
-          info("giscus meta", discussion);
-          const { articleKey } = get();
-          if (articleKey) {
-            set(
-              ({ discussMeta: comments }) => ({
-                discussMeta: { ...comments, [articleKey]: discussion },
-              }),
-              undefined,
-              "store-giscus-meta"
-            );
-            return true;
-          }
-        }
-      }
+      window.addEventListener("message", useSite.api.onGiscusMessage);
+      cleanUps.push(() => window.removeEventListener("message", useSite.api.onGiscusMessage));
 
-      window.addEventListener("message", onGiscusMessage);
-      cleanUps.push(() => window.removeEventListener("message", onGiscusMessage));
-
+      // ready
       set(() => ({ browserLoaded: true }), undefined, "browser-load");
 
-      const topLevel: typeof defaultSiteTopLevelState =
-        safeJsonParse(
-          tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
-        ) ?? {};
+      // open Nav/Viewer based on localStorage or defaults
+      const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
+        tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
+      ) ?? {};
       if (topLevel.viewOpen) {
         set(() => ({ viewOpen: topLevel.viewOpen }));
       }
@@ -110,9 +95,35 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       return !get().viewOpen;
     },
 
+    onGiscusMessage(message: MessageEvent) {
+      if (message.origin === "https://giscus.app" && message.data.giscus?.discussion) {
+        const discussion = message.data.giscus.discussion as GiscusDiscussionMeta;
+        info("giscus meta", discussion);
+        const { articleKey } = get();
+        if (articleKey) {
+          set(
+            ({ discussMeta: comments }) => ({
+              discussMeta: { ...comments, [articleKey]: discussion },
+            }),
+            undefined,
+            "store-giscus-meta"
+          );
+          return true;
+        }
+      }
+      return false;
+    },
+
     onTerminate() {
       const { navOpen, viewOpen } = get();
       tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
+    },
+
+    setTabsDefs(tabsDefs) {
+      set({
+        // flatten tabsets on mobile for better UX
+        tabsDefs: isTouchDevice() ? [tabsDefs.flatMap(x => x)] : tabsDefs,
+      });
     },
 
     toggleNav(next) {
@@ -146,17 +157,21 @@ export type State = {
   browserLoaded: boolean;
   discussMeta: { [articleKey: string]: GiscusDiscussionMeta };
   frontMatter: FrontMatter;
-
+  
   mainOverlay: boolean;
   navOpen: boolean;
+  /** Tabs is inside Viewer */
+  tabsDefs: TabDef[][];
   viewOpen: boolean;
 
   api: {
     // clickToClipboard(e: React.MouseEvent): Promise<void>;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
+    onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
     getFrontMatterFromScript(): FrontMatter;
+    setTabsDefs(tabsDefs: TabDef[][]): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
