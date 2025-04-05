@@ -5,6 +5,7 @@
 ### Site
 
 - 🚧 write 1st blog i.e. npc cli blog
+  - can somehow change tabs from blog
 
 - basic help page
 
