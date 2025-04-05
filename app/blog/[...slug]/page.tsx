@@ -21,7 +21,9 @@ export default async function BlogPage(props: {
     {React.createElement(imported.default, {
       components: {
         Card,
-        SideNote,
+        SideNote: (props: React.ComponentProps<typeof SideNote>) => (
+          <SideNote bubbleClassName="not-prose" {...props} />
+        ),
       },
     })}
   </>;
@@ -39,4 +41,3 @@ export async function generateStaticParams(): Promise<Slug[]> {
 interface Slug {
   slug: string[];
 }
-

@@ -1,14 +1,17 @@
 "use client"
 import React from 'react';
+import cx from 'classnames';
 import { css } from '@emotion/react';
 import { sideNoteRootDataAttribute } from './const';
 
 /**
  * - Direction is `right` unless < 200 pixels to the right of
  *   root element, in which case direction is `left`
- * - Currently .dark-mode applies `filter: invert(1)`
  */
-export default function SideNote(props: React.PropsWithChildren<{ width?: number }>) {
+export default function SideNote(props: React.PropsWithChildren<{
+  bubbleClassName?: string; 
+  width?: number;
+}>) {
   const timeoutId = React.useRef(0);
 
   return <>
@@ -37,7 +40,7 @@ export default function SideNote(props: React.PropsWithChildren<{ width?: number
     </span>
     <span
       css={speechBubbleCss}
-      className="side-note-bubble"
+      className={cx("side-note-bubble", props.bubbleClassName)}
       onMouseEnter={_ => window.clearTimeout(timeoutId.current)}
       onMouseLeave={e => (timeoutId.current = close(e, 'bubble'))} // Triggered on mobile click outside
     >
@@ -185,7 +188,6 @@ const speechBubbleCss = css`
     }
   }
 `;
-
 
 const hoverShowMs = 500;
 const minInfoWidth = 200;
