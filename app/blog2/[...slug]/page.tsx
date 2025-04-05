@@ -6,38 +6,22 @@ export default async function BlogPage(props: {
 
   const { slug } = await props.params;
   const mdxFilename = `${slug[0]}.mdx` as const;
-  // const content = await fs.readFile(path.join(repoRoot, 'posts', mdxFilename), 'utf-8');
-
   const imported = await import(`@/posts/${mdxFilename}`);
 
-  console.log({ mdxFilename, imported });
-
-
-  // const data = await compileMDX<FrontMatter>({
-  //   source: content,
-  //   options: {
-  //     parseFrontmatter: true,
-  //   },
-  //   components: {
-  //     Card,
-  //     SideNote,
-  //     // 🚧
-  //   },
-  // });
-
   return <>
-    {/* <script
-      id="frontmatter-json"
+    <script
+      id="page-metadata-json"
       // stringify twice avoids "SyntaxError: Unexpected token ':' (at blog/:1:16614)"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(data.frontmatter)) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(
+        imported.metadata ?? { key: 'fallback-metadata' }
+      )) }}
     />
-    {data.content} */}
     {React.createElement(imported.default)}
   </>;
 }
 
 export async function generateStaticParams(): Promise<Slug[]> {
-  // 🚧 generate from mdx metadata
+  // 🚧 generate automatically
   // const posts = await fetch('https://.../posts').then((res) => res.json())
   // return posts.map((post) => ({
   //   slug: post.slug,
@@ -49,4 +33,3 @@ interface Slug {
   slug: string[];
 }
 
-const repoRoot = process.cwd();

@@ -42,7 +42,7 @@
   - ℹ️ https://nextjs.org/docs/pages/building-your-application/configuring/mdx
   - ✅ /test/mdx works with hot-reloading
   - ✅ can statically export pages: /blog2/index
-  - 🚧 `export metadata` approach replaces frontmatter
+  - ✅ `export metadata` approach can replace frontmatter
   - /blog2 -> /blog1 and remove `next-remote-mdx`
 
 - 🚧 @napi-rs/canvas `&quot;` issue
