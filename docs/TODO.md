@@ -35,6 +35,7 @@
   - ℹ️ `w | pretty` is huge
 
 - profile-1 camera target y should always be 1.5?
+- somehow additionally indicate npc is selected by ContextMenu when docked
 - tween: provide many examples
 - can disable zoom independently
 - Tabs: debug is global among Tab instances
