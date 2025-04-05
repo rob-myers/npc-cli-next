@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 
-import { debug } from "../service/generic.js";
+import { debug, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isTouchDevice } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
@@ -74,6 +74,7 @@ export default function WorldView(props) {
       if (state.dst.look !== undefined && state.reject.look !== undefined) {
         // stop looking (not following)
         state.reject.look?.('cancelled look');
+        state.resolve.look = undefined;
         state.reject.look = undefined;
         delete state.dst.look; // 🔔
       }
@@ -83,6 +84,11 @@ export default function WorldView(props) {
       state.reject?.polar?.('cancelled rotation: polar');
       state.reject?.azimuthal?.('cancelled rotation: azimuthal');
       
+      keys(state.resolve).forEach(key => {
+        delete state.resolve[key];
+        delete state.reject[key];
+      });
+
       state.syncRenderMode();
       state.controls.zoomToConstant = null;
       state.clearTargetDamping();
@@ -108,6 +114,18 @@ export default function WorldView(props) {
     },
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
+    },
+    followPosition(dst, opts = { smoothTime: 0.8, y: 1.5 }) {
+      // lock zoom
+      state.controls.zoomToConstant = dst;
+      /**
+       * - following amounts to "look tween without resolve/reject"
+       * - 🔔 stop look via @see {state.stopFollowing}
+       */
+      state.dst.look = dst;
+      state.dst.lookOpts = opts;
+      state.resolve.look = undefined;
+      state.reject.look = undefined;
     },
     getDownDistancePx() {
       return state.down?.screenPoint.distanceTo(state.lastScreenPoint) ?? 0;
@@ -345,7 +363,6 @@ export default function WorldView(props) {
         camera.updateProjectionMatrix();
         if (damp(state, 'fov', state.dst.fov, 0.4, deltaMs, undefined, undefined, 1) === false) {
           delete state.dst.fov;
-          state.syncRenderMode();
           state.resolve.fov?.();
         }
       }
@@ -457,7 +474,7 @@ export default function WorldView(props) {
       }
     },
     syncRenderMode() {
-      const tweening = Object.keys(state.dst).length > 0;
+      const tweening = Object.keys(state.resolve).length > 0;
       const frameloop = w.disabled === true && tweening === false ? 'demand' : 'always';
       w.r3f?.set({ frameloop });
       return frameloop;
@@ -466,23 +483,6 @@ export default function WorldView(props) {
       w.r3f.advance(Date.now());
       return state.canvas.toDataURL(type, quality);
     },
-    toggleFollowPosition(dst, opts = { smoothTime: 0.8, y: 1.5 }) {
-      if (state.stopFollowing()) {
-        return;
-      }
-
-      // lock zoom
-      state.controls.zoomToConstant = dst;
-
-      /**
-       * - following amounts to "look tween without resolve/reject"
-       * - 🔔 stop look via @see {state.stopFollowing} or @see {state.toggleFollowPosition}
-       */
-      state.dst.look = dst;
-      state.dst.lookOpts = opts;
-      state.resolve.look = undefined;
-      state.reject.look = undefined;
-    },
     async tween(opts) {
       const promises = /** @type {Promise<void>[]} */ ([]);
 
@@ -490,7 +490,13 @@ export default function WorldView(props) {
       function createPromise(key) {
         return (new Promise((resolve, reject) =>
           [state.resolve[key] = resolve, state.reject[key] = reject]
-        ).catch(() => delete state.dst[key])); // stop on reject
+        ).catch(() =>
+          delete state.dst[key] // stop on reject
+        )).finally(() => {
+          delete state.resolve[key];
+          delete state.reject[key];
+          state.syncRenderMode();
+        });
       }
 
       if (typeof opts.fov === 'number') {
@@ -670,7 +676,7 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
- * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} toggleFollowPosition
+ * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
  * @property {(opts: {

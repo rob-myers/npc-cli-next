@@ -155,6 +155,10 @@ export default function useHandleEvents(w) {
       // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
       return null;
     },
+    followNpc(npcKey) {
+      const npc = w.n[npcKey];
+      w.view.followPosition(npc.position);
+    },
     getRaycastIntersection(e, decoded) {// 🚧 move to WorldView
       /** @type {THREE.Mesh} */
       let mesh;
@@ -701,10 +705,6 @@ export default function useHandleEvents(w) {
 
       return w.door.toggleDoorRaw(door, opts);
     },
-    toggleFollowNpc(npcKey) {
-      const npc = w.n[npcKey];
-      w.view.toggleFollowPosition(npc.position);
-    },
     toggleLock(gdKey, opts) {
       const door = w.door.byKey[gdKey];
 
@@ -782,7 +782,7 @@ export default function useHandleEvents(w) {
  * @property {(npc: NPC.NPC) => void} clearOffMesh
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
- * @property {(npcKey: string) => void} toggleFollowNpc
+ * @property {(npcKey: string) => void} followNpc
  * @property {(e: React.PointerEvent<Element>, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
  * @property {(npcKey: string, regexDef: string) => void} grantNpcAccess
  * @property {(e: NPC.Event) => void} handleEvents

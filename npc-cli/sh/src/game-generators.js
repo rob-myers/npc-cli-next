@@ -210,7 +210,11 @@ export async function* handleContextMenu({ api, w, datum: e }) {
         break;
       case "follow":
         if (typeof meta.npcKey === "string") {
-          w.e.toggleFollowNpc(meta.npcKey);
+          if (w.e.isFollowingNpc(meta.npcKey)) {
+            w.view.stopFollowing();
+          } else {
+            w.e.followNpc(meta.npcKey);
+          }
           w.cm.update();
         }
         break;
