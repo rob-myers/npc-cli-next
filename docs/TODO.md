@@ -36,8 +36,14 @@
 ### Dev Env
 
 - 🚧 fix hmr of blogs
-  - https://github.com/gaearon/overreacted.io/pull/797/files
-  - maybe migrate back to https://nextjs.org/docs/pages/building-your-application/configuring/mdx
+  - ❌ https://github.com/gaearon/overreacted.io/pull/797/files
+
+- 🚧 migrate back to standard next.js mdx solution
+  - ℹ️ https://nextjs.org/docs/pages/building-your-application/configuring/mdx
+  - ✅ /test/mdx works with hot-reloading
+  - 🚧 can statically export pages
+  - `export metadata` approach
+  - remove `next-remote-mdx`
 
 - 🚧 @napi-rs/canvas `&quot;` issue
   - https://github.com/Brooooooklyn/canvas/issues/1029
