@@ -3,10 +3,9 @@ import { css } from "@emotion/react";
 import cx from "classnames";
 import { shallow } from "zustand/shallow";
 
-import { afterBreakpoint, breakpoint, zIndexSite } from "./const";
+import { afterBreakpoint, breakpoint, zIndexSite, sideNoteRootDataAttribute } from "./const";
 import useSite from "./site.store";
 import { isSmallView } from "./layout";
-import { sideNoteRootDataAttribute } from "./SideNote";
 
 export default function Main(props: React.PropsWithChildren) {
   const site = useSite(({ navOpen, mainOverlay }) => ({ navOpen, mainOverlay }), shallow);

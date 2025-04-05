@@ -58,3 +58,5 @@ export const zIndexSite = /** @type {const} */ ({
 
   aboveViewerFocusOutline: 1,
 });
+
+export const sideNoteRootDataAttribute = 'data-side-note-root';

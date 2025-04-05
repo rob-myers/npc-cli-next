@@ -1,6 +1,7 @@
 "use client"
 import React from 'react';
 import { css } from '@emotion/react';
+import { sideNoteRootDataAttribute } from './const';
 
 /**
  * - Direction is `right` unless < 200 pixels to the right of
@@ -185,7 +186,6 @@ const speechBubbleCss = css`
   }
 `;
 
-export const sideNoteRootDataAttribute = 'data-side-note-root';
 
 const hoverShowMs = 500;
 const minInfoWidth = 200;
