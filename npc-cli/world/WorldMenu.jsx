@@ -289,7 +289,9 @@ const loggerContainerCss = css`
   display: flex;
   flex-direction: column;
   align-items: start;
-  pointer-events: none;
+
+  // avoid blocking World above Logger and right of PopUp
+  pointer-events: none !important;
 `;
 
 const loggerPopUpCss = css`
