@@ -72,7 +72,7 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <MenuItem icon={icon.automata}>Automata</MenuItem>
+        <MenuItem icon={icon.research}>Research</MenuItem>
         <MenuItem icon={icon.help}>Help</MenuItem>
         <MenuItem icon={icon.about}>About</MenuItem>
       </Menu>
@@ -196,7 +196,7 @@ const icon = {
   dev: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
   help: <FontAwesomeIcon icon={faCircleQuestion} color="white" size="1x" />,
   about: <FontAwesomeIcon icon={faCircleInfo} color="white" size="1x" />,
-  automata: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
+  research: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
 };
 
 const toggleCss = css`
