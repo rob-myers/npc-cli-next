@@ -27,28 +27,28 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   articlesMeta: allArticlesMeta,
   browserLoaded: false,
   discussMeta: {},
-  frontMatter: {} as FrontMatter,
+  pageMetadata: {} as PageMetadata,
   mainOverlay: false,
   navOpen: false,
   viewOpen: false,
   tabsDefs: [],
 
   api: {
-    getFrontMatterFromScript() {
+    getPageMetadataFromScript() {
       try {
-        // 🔔 read frontmatter from <script id="frontmatter-json">
-        const script = document.getElementById('frontmatter-json') as HTMLScriptElement;
-        const frontMatter = JSON.parse(JSON.parse(script.innerHTML)) as FrontMatter;
-        // console.log({frontMatter});
+        // 🔔 read metadata from <script id="page-metadata-json">
+        const script = document.getElementById('page-metadata-json') as HTMLScriptElement;
+        const pageMetadata = JSON.parse(JSON.parse(script.innerHTML)) as PageMetadata;
+        console.log({pageMetadata});
         set({
-          articleKey: frontMatter.key ?? null,
-          frontMatter,
+          articleKey: pageMetadata.key ?? null,
+          pageMetadata: pageMetadata,
         }, undefined, "set-article-key");
-        return frontMatter;
+        return pageMetadata;
       } catch (e) {
         error(`frontMatter failed (script#frontmatter-json): using fallback frontMatter`);
         console.error(e);
-        return { key: 'fallback-frontmatter' } as FrontMatter;
+        return { key: 'fallback-frontmatter' } as PageMetadata;
       }
     },
 
@@ -156,7 +156,7 @@ export type State = {
   articlesMeta: typeof allArticlesMeta;
   browserLoaded: boolean;
   discussMeta: { [articleKey: string]: GiscusDiscussionMeta };
-  frontMatter: FrontMatter;
+  pageMetadata: PageMetadata;
   
   mainOverlay: boolean;
   navOpen: boolean;
@@ -170,7 +170,7 @@ export type State = {
     isViewClosed(): boolean;
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
-    getFrontMatterFromScript(): FrontMatter;
+    getPageMetadataFromScript(): PageMetadata;
     setTabsDefs(tabsDefs: TabDef[][]): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
@@ -193,7 +193,7 @@ export interface ArticleMeta {
   tags: string[];
 }
 
-export interface FrontMatter {
+export interface PageMetadata {
   key: string;
   date: string;
   info: string;

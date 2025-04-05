@@ -35,15 +35,15 @@
 
 ### Dev Env
 
-- 🚧 fix hmr of blogs
+- ✅ fix hmr of blogs
   - ❌ https://github.com/gaearon/overreacted.io/pull/797/files
 
-- 🚧 migrate back to standard next.js mdx solution
+- ✅ migrate back to standard next.js mdx solution
   - ℹ️ https://nextjs.org/docs/pages/building-your-application/configuring/mdx
   - ✅ /test/mdx works with hot-reloading
   - ✅ can statically export pages: /blog2/index
   - ✅ `export metadata` approach can replace frontmatter
-  - /blog2 -> /blog1 and remove `next-remote-mdx`
+  - ✅ /blog2 -> /blog1 and remove `next-remote-mdx`
 
 - 🚧 @napi-rs/canvas `&quot;` issue
   - https://github.com/Brooooooklyn/canvas/issues/1029
@@ -64,8 +64,9 @@
 - warn if uv-map is not a grid (where rows/cols can have different size)
 
 - Dev-only: Fix Emotion Hydration warning
-  - Does not appear when `yarn dev-assets`
-- HMR of MDX subcomponents
+  - ℹ️ Does not appear when `yarn dev-assets`
+- ✅ HMR of MDX subcomponents
+
 - HMR of npc models onchange const
 - Changing `wallHeight` should somehow force update assets.json and geomorphs.json
 

@@ -18,9 +18,9 @@ import Viewer from "./Viewer";
 
 export default function Root({ children }: React.PropsWithChildren) {
 
-  const frontMatter = useSite(x => x.frontMatter);
+  const frontMatter = useSite(x => x.pageMetadata);
   const pathname = usePathname();
-  React.useEffect(() => void useSite.api.getFrontMatterFromScript(), [pathname]);
+  React.useEffect(() => void useSite.api.getPageMetadataFromScript(), [pathname]);
   
   React.useEffect(() => useSite.api.initiateBrowser(), []);
   useOnResize(); // Update matchMedia computations
