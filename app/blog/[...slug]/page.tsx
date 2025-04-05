@@ -1,4 +1,6 @@
 import React from 'react';
+import Card from "@/components/Card";
+import SideNote from "@/components/SideNote";
 
 export default async function BlogPage(props: {
   params: Promise<Slug>;
@@ -16,7 +18,12 @@ export default async function BlogPage(props: {
         imported.metadata ?? { key: 'fallback-metadata' }
       )) }}
     />
-    {React.createElement(imported.default)}
+    {React.createElement(imported.default, {
+      components: {
+        Card,
+        SideNote,
+      },
+    })}
   </>;
 }
 
