@@ -4,7 +4,19 @@
 
 ### Site
 
- 🚧 start blog
+- 🚧 write 1st blog i.e. npc cli blog
+
+- basic help page
+
+- basic about page
+
+- write 1st dev blog
+  - ℹ️ aligned to npc cli too i.e. focus on how various subsystems were built
+
+- sketch 1st automata blog
+  - ℹ️ nondeterministic automata language-theoretically
+  - summary of pre-existing academic work
+
 
 ### World
 

@@ -6,7 +6,7 @@ import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "r
 import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useStateRef from "../npc-cli/hooks/use-state-ref";
-import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight } from "./Icon";
+import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight, faCodeBranch } from "./Icon";
 
 export default function Nav() {
   const collapsed = useSite(({ navOpen }) => !navOpen);
@@ -72,6 +72,7 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
+        <MenuItem icon={icon.automata}>Automata</MenuItem>
         <MenuItem icon={icon.help}>Help</MenuItem>
         <MenuItem icon={icon.about}>About</MenuItem>
       </Menu>
@@ -194,6 +195,7 @@ const icon = {
   dev: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
   help: <FontAwesomeIcon icon={faCircleQuestion} color="white" size="1x" />,
   about: <FontAwesomeIcon icon={faCircleInfo} color="white" size="1x" />,
+  automata: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
 };
 
 const toggleCss = css`
