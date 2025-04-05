@@ -4,7 +4,7 @@
 
 ### Site
 
-Start blog.
+ 🚧 start blog
 
 ### World
 
@@ -34,6 +34,10 @@ Start blog.
   - forbid dst's close to each other
 
 ### Dev Env
+
+- 🚧 fix hmr of blogs
+  - https://github.com/gaearon/overreacted.io/pull/797/files
+  - maybe migrate back to https://nextjs.org/docs/pages/building-your-application/configuring/mdx
 
 - 🚧 @napi-rs/canvas `&quot;` issue
   - https://github.com/Brooooooklyn/canvas/issues/1029
