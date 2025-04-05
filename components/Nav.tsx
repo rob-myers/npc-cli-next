@@ -110,6 +110,7 @@ const navCss = css`
     min-width: 1rem;
     margin-right: 24px;
     margin-left: 12px;
+    transition: margin-left 300ms;
   }
 
   // sub-menu
