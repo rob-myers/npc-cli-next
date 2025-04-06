@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ['next-mdx-remote'],
   // 🔔 dev only, where turbo runs via `next dev --turbopack`
   experimental: {
+    scrollRestoration: true,
     turbo: {
       rules: {
         "**/sh/src/*.sh": {
