@@ -10,14 +10,8 @@ export default function Carousel({ children, ...rest }: Props) {
   return (
     <div css={carouselCss}>
       <ReactMultiCarousel
-        // additionalTransfrom={0}
-        // arrows
-        // centerMode
-        // draggable
         infinite
-        // keyBoardControl
-        // minimumTouchDrag={80}
-        // renderDotsOutside
+        renderDotsOutside
 
         responsive={{// 🚧
           desktop: {
@@ -45,7 +39,8 @@ export default function Carousel({ children, ...rest }: Props) {
 
         showDots
         slidesToSlide={1}
-        swipeable
+        draggable={false}
+        swipeable={false}
 
         {...rest}
       >
@@ -61,33 +56,34 @@ type Props = Omit<React.ComponentProps<typeof ReactMultiCarousel>, 'responsive'>
 }
 
 const carouselCss = css`
-
   width: 100%;
 
-  @media (max-width: ${breakpoint}) {
-    max-height: 500px;
-  }
-  @media (min-width: ${afterBreakpoint}) {
-    max-height: 600px;
+  > div {
+    @media (max-width: ${breakpoint}) {
+      max-height: 600px;
+    }
+    @media (min-width: ${afterBreakpoint}) {
+      max-height: 600px;
+    }
   }
 
-  padding: 24px 0;
   background-color: #000;
   
   li {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
   }
   img {
     object-fit: contain;
-
     filter: brightness(150%); // 🚧
     background-color: black;
   }
 
   ul.react-multi-carousel-dot-list  {
+    position: unset;
+    gap: 8px;
+    padding: 32px 0;
     filter: invert();
   }
 `;
