@@ -417,11 +417,11 @@ export default function useHandleEvents(w) {
           break;
       }
     },
-    lookAt(input) {
+    async lookAt(input) {
       if (typeof input === 'string') {// npcKey
         input = w.n[input].position;
       }
-      w.view.tween({ look: toV3(input) });
+      await w.view.tween({ look: toV3(input) });
     },
     isFollowingNpc(npcKey) {
       const npc = w.n[npcKey];
