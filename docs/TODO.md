@@ -10,7 +10,7 @@
     - https://www.npmjs.com/package/react-multi-carousel
     - ✅ mount carousel
     - ✅ initial test pics after first `<Card>`
-  - refine carousel
+  - 🚧 refine carousel
   - can somehow change tabs from blog
 
 - basic help page

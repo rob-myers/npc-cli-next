@@ -60,14 +60,18 @@ type Props = Omit<React.ComponentProps<typeof ReactMultiCarousel>, 'responsive'>
 
 const carouselCss = css`
 
-  /* height: 600px; */
-  /* width: 100dvw; */
-  width: 600px;
   width: 100%;
-
+  
   li {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 24px;
     display: flex;
     justify-content: center;
-    /* align-items: center; */
+    background-color: #ddd;
   }
+
+  /* ul.react-multi-carousel-dot-list  {
+    height: 24px;
+  } */
 `;
