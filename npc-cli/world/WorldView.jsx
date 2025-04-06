@@ -490,9 +490,8 @@ export default function WorldView(props) {
       function createPromise(key) {
         return (new Promise((resolve, reject) =>
           [state.resolve[key] = resolve, state.reject[key] = reject]
-        ).catch(() =>
-          delete state.dst[key] // stop on reject
-        )).finally(() => {
+        )).catch().finally(() => {
+          delete state.dst[key];
           delete state.resolve[key];
           delete state.reject[key];
           state.syncRenderMode();
