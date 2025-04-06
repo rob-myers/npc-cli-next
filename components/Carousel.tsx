@@ -61,17 +61,29 @@ type Props = Omit<React.ComponentProps<typeof ReactMultiCarousel>, 'responsive'>
 const carouselCss = css`
 
   width: 100%;
+  /* height: 500px; // 🚧 */
+  background-color: #ddd;
   
   li {
     margin: 0;
     padding: 0;
-    margin-bottom: 24px;
+    /* margin-bottom: 24px; */
     display: flex;
+    /* align-items: center; */
     justify-content: center;
-    background-color: #ddd;
+  }
+  img {
+    object-fit: contain;
+
+    filter: brightness(150%); // 🚧
+    background-color: black;
   }
 
-  /* ul.react-multi-carousel-dot-list  {
-    height: 24px;
-  } */
+  ul.react-multi-carousel-track {
+    padding-bottom: 24px;
+  }
+
+  ul.react-multi-carousel-dot-list  {
+    padding: 24px 0;
+  }
 `;
