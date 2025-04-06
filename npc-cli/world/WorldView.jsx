@@ -330,7 +330,7 @@ export default function WorldView(props) {
     onPointerMove(e) {
       state.lastScreenPoint.copy(getRelativePointer(e));
 
-      if (state.down !== null && state.getDownDistancePx() > 5) {
+      if (state.controls.enabled === true && state.down !== null && state.getDownDistancePx() > 5) {
         state.clearTweens(); // won't stop follow
       }
     },
@@ -487,7 +487,7 @@ export default function WorldView(props) {
       const promises = /** @type {Promise<void>[]} */ ([]);
 
       /** @param {Exclude<keyof State['dst'], 'lookOpts'>} key */
-      function createPromise(key) {
+      async function createPromise(key) {
         return (new Promise((resolve, reject) =>
           [state.resolve[key] = resolve, state.reject[key] = reject]
         )).catch().finally(() => {
