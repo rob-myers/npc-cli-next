@@ -6,7 +6,7 @@ import { pause, warn, debug, testNever } from "../service/generic";
 import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
-import { getTempInstanceMesh, toXZ } from "../service/three";
+import { getTempInstanceMesh, toV3 } from "../service/three";
 import useStateRef from "../hooks/use-state-ref";
 
 /**
@@ -417,6 +417,12 @@ export default function useHandleEvents(w) {
           break;
       }
     },
+    lookAt(input) {
+      if (typeof input === 'string') {// npcKey
+        input = w.n[input].position;
+      }
+      w.view.tween({ look: toV3(input) });
+    },
     isFollowingNpc(npcKey) {
       const npc = w.n[npcKey];
       return npc !== undefined && w.view.dst.look === npc.position;
@@ -787,6 +793,7 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string, regexDef: string) => void} grantNpcAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
+ * @property {(input: string | THREE.Vector3 | Vect) => void} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
