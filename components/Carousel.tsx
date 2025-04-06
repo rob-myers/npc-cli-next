@@ -5,6 +5,7 @@ import ReactMultiCarousel, { ResponsiveType } from 'react-multi-carousel';
 import { css } from '@emotion/react';
 
 import "react-multi-carousel/lib/styles.css";
+
 import { afterBreakpoint, breakpoint } from './const';
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
 import useMeasure from 'react-use-measure';
@@ -29,7 +30,8 @@ export default function Carousel({ children, ...rest }: Props) {
       <ReactMultiCarousel
         ref={state.ref('carousel')}
         infinite
-        renderDotsOutside
+        // renderDotsOutside
+        ssr
 
         responsive={{// 🚧
           desktop: {
@@ -89,7 +91,7 @@ const carouselCss = css`
 
   background-color: #000;
   
-  ul {
+  ul.react-multi-carousel-track {
     height: 100%;
   }
   li {
@@ -105,9 +107,9 @@ const carouselCss = css`
   }
 
   ul.react-multi-carousel-dot-list  {
-    position: unset;
     gap: 8px;
-    padding: 32px 0;
+    padding: 20px 0;
     filter: invert();
   }
+  
 `;
