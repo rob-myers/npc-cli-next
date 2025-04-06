@@ -95,7 +95,7 @@ const carouselCss = css`
   img {
     object-fit: contain;
     filter: brightness(150%); // 🚧
-    background-color: black;
+    margin: 0;
   }
 
   ul.react-multi-carousel-dot-list  {
