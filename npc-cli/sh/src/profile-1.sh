@@ -72,10 +72,13 @@ ptags=no-pause; events | handleLoggerLinks &
 setupOnSlowNpc
 
 # transition to fixed camera angle
-w view.enableControls false
-w view.tween '{ azimuthal: Math.PI/4, polar: Math.PI/6 }'
-w view.enableControls true
-w view.tween '{ distance: 12 }'
+w update 'async w => {
+  w.view.enableControls(false);
+  await w.view.tween({ azimuthal: Math.PI/4, polar: Math.PI/6 });
+  w.view.enableControls(true);
+  await w.view.tween({ distance: 12 });
+}'
+
 # fix camera angle and reduce maxDistance
 w update 'w => {
   w.view.controlsOpts.minAzimuthAngle = Math.PI/4;
@@ -83,3 +86,5 @@ w update 'w => {
   w.view.controlsOpts.maxPolarAngle = Math.PI/6;
   w.view.controlsOpts.maxDistance = 20;
 }'
+
+w e.lookAt rob
