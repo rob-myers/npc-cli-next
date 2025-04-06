@@ -66,6 +66,7 @@ const rootContentCss = css`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
   
   @media (max-width: ${breakpoint}) {
     flex-direction: column;

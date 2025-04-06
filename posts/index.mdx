@@ -8,27 +8,57 @@ export const metadata = {
   tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
 };
 
+import Carousel from '../components/Carousel';
+import Image from 'next/image';
+
+import TestPng from '../public/images/localhost_3000_blog_index.png.webp';
+import TestPng2 from '../public/images/localhost_3000_blog_index_2.png.webp';
+
+
 # Home
 
 ## Intent
 
-This website is concerned with a fun but difficult problem.
+This blog is concerned with a fun but difficult problem.
 
 <Card id="underlying-problem"> 
 **Underlying Problem**
 
 Create a video game whose Non-Player Characters behave just like human-controlled characters.
-
-{/* Create a video game where every Non-Player Character <SideNote>A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
-behaves like a human-controlled character. The Player cannot distinguish the NPCs from human-controlled characters. */}
-{/* where the Player cannot distinguish any Non-Player Character <SideNote>A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
-from human-controlled characters. */}
 </Card>
 
-This problem can be "solved" by constraining the environment e.g. abstract puzzles, card games, racing games.
-So let's assume the NPCs <SideNote>A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote> can move freely through a 3D environment without time constraints.
-Under this assumption,
-we know of no game solving the underlying problem.
-No game even comes close.
-It seems nobody knows how to tackle it directly.
+<Carousel>
+  {/* {[]} */}
+  <Image
+    src={TestPng.src}
+    width={TestPng.width}
+    height={TestPng.height}
+  />
+  <Image
+    src={TestPng2.src}
+    width={TestPng2.width}
+    height={TestPng2.height}
+  />
+</Carousel>
 
+This problem can be "solved" by constraining the environment e.g.
+abstract puzzles, card games, racing games.
+So let's assume the NPCs <SideNote>
+A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote> 
+can move freely through a 3D environment without time constraints.
+Under this assumption,
+no known game solves the underlying problem.
+Nothing even comes close.
+It seems nobody knows how to tackle this problem directly.
+
+But what about indirectly?
+This brings us to our overall objectives:
+
+<Card id="underlying-problem"> 
+**Our Objectives**
+
+{/* Create a video game whose Non-Player Characters behave just like human-controlled characters. */}
+
+1. Build real-time control systems for NPCs.
+2. Enable a Game Master <SideNote>G</SideNote> to act indistinguishably from many humans.
+</Card>

@@ -6,9 +6,11 @@
 
 - 🚧 write 1st blog (npc cli)
   - 🚧 content
-  - 🚧 try carousel
+  - ✅ try carousel
     - https://www.npmjs.com/package/react-multi-carousel
-    - initial pics after first `<Card>`
+    - ✅ mount carousel
+    - ✅ initial test pics after first `<Card>`
+  - refine carousel
   - can somehow change tabs from blog
 
 - basic help page
