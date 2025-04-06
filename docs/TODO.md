@@ -13,6 +13,9 @@
   - 🚧 refine carousel
   - can somehow change tabs from blog
 
+- fix desktop scroll of grey side area
+  - need to move into scrollable flex-child
+
 - basic help page
 
 - basic about page
