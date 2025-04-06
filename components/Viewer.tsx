@@ -29,6 +29,8 @@ export default function Viewer() {
     viewOpen,
   }), shallow);
 
+  const update = useUpdate();
+
   const state = useStateRef<State>(() => ({
     rootEl: null as any,
     tabs: {} as TabsState,
@@ -44,6 +46,7 @@ export default function Viewer() {
         state.tabs.toggleEnabled(true);
       }
     },
+    update,
   }));
 
   useIntersection({
@@ -83,8 +86,6 @@ export default function Viewer() {
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
   }, []);
-
-  const update = useUpdate();
 
   const collapsed = !site.viewOpen;
 
@@ -132,11 +133,12 @@ export default function Viewer() {
 }
 
 export interface State {
-  onChangeIntersect(intersects: boolean): void;
-  onKeyDown(e: React.KeyboardEvent): void;
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
+  onChangeIntersect(intersects: boolean): void;
+  onKeyDown(e: React.KeyboardEvent): void;
+  update(): void;
 }
 
 export const viewerBaseCssVar = '--viewer-base';

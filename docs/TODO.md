@@ -4,7 +4,11 @@
 
 ### Site
 
-- 🚧 write 1st blog i.e. npc cli blog
+- 🚧 write 1st blog (npc cli)
+  - 🚧 content
+  - 🚧 try carousel
+    - https://www.npmjs.com/package/react-multi-carousel
+    - initial pics after first `<Card>`
   - can somehow change tabs from blog
 
 - basic help page
@@ -26,7 +30,7 @@
     > right x2, left x2, front x2, back x2, top x2, bottom x2
   - 🚧 fix scaling (non-trivial)
 
-- bug: pause then reset should show interact message
+- ✅ bug: pause then reset should show interact message
 
 - shell should show debugs not errors
 - profile-1 camera target y should always be 1.5?

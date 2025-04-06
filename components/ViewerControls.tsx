@@ -31,11 +31,11 @@ export default function ViewerControls({ api }: Props) {
   const state = useStateRef(() => ({
     onLongReset() {
       api.tabs.hardReset();
-      update();
+      api.update(); // show "interact"
     },
     onReset: debounce(() => {
       api.tabs.reset();
-      update();
+      api.update(); // show "interact"
     }, 300),
     toggleEnabled() {
       api.tabs.toggleEnabled();
