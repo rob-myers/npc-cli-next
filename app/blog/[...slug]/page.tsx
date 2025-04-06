@@ -11,13 +11,7 @@ export default async function BlogPage(props: {
   const imported = await import(`@/posts/${mdxFilename}`);
 
   return <>
-    <script
-      id="page-metadata-json"
-      // stringify twice avoids "SyntaxError: Unexpected token ':' (at blog/:1:16614)"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(
-        imported.metadata ?? { key: 'fallback-metadata' }
-      )) }}
-    />
+
     {React.createElement(imported.default, {
       components: {
         Card,
@@ -26,6 +20,15 @@ export default async function BlogPage(props: {
         ),
       },
     })}
+
+    <script
+      id="page-metadata-json"
+      // stringify twice avoids "SyntaxError: Unexpected token ':' (at blog/:1:16614)"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(
+        imported.metadata ?? { key: 'fallback-metadata' }
+      )) }}
+    />
+
   </>;
 }
 
@@ -35,7 +38,10 @@ export async function generateStaticParams(): Promise<Slug[]> {
   // return posts.map((post) => ({
   //   slug: post.slug,
   // }))
-  return [{ slug: ['index'] }, { slug: ['strategy-1'] }];
+  return [
+    { slug: ['index'] }, 
+    { slug: ['strategy-1'] },
+  ];
 }
 
 interface Slug {
