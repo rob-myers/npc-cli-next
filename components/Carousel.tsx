@@ -79,21 +79,27 @@ const carouselCss = css`
   > div {
     @media (max-width: ${breakpoint}) {
       max-height: 400px;
+      height: 400px;
     }
     @media (min-width: ${afterBreakpoint}) {
       max-height: 500px;
+      height: 500px;
     }
   }
 
   background-color: #000;
   
+  ul {
+    height: 100%;
+  }
   li {
     margin: 0;
     padding: 0;
     display: flex;
   }
   img {
-    object-fit: contain;
+    object-fit: cover;
+    object-position: 0% 0%;
     filter: brightness(150%); // 🚧
     margin: 0;
   }
