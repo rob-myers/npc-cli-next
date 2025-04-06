@@ -1,15 +1,33 @@
 "use client"
 
+import React from 'react';
 import ReactMultiCarousel, { ResponsiveType } from 'react-multi-carousel';
 import { css } from '@emotion/react';
 
 import "react-multi-carousel/lib/styles.css";
 import { afterBreakpoint, breakpoint } from './const';
+import useStateRef from '@/npc-cli/hooks/use-state-ref';
+import useMeasure from 'react-use-measure';
 
 export default function Carousel({ children, ...rest }: Props) {
+
+  const state = useStateRef(() => ({
+    carousel: {} as ReactMultiCarousel,
+  }));
+
+  const [measureRef, bounds] = useMeasure(({ debounce: 0 }));
+
+  React.useEffect(() => {
+    state.carousel?.forceUpdate();
+  }, [bounds]);
+
   return (
-    <div css={carouselCss}>
+    <div
+      css={carouselCss}
+      ref={measureRef}
+    >
       <ReactMultiCarousel
+        ref={state.ref('carousel')}
         infinite
         renderDotsOutside
 
@@ -60,10 +78,10 @@ const carouselCss = css`
 
   > div {
     @media (max-width: ${breakpoint}) {
-      max-height: 600px;
+      max-height: 400px;
     }
     @media (min-width: ${afterBreakpoint}) {
-      max-height: 600px;
+      max-height: 500px;
     }
   }
 
