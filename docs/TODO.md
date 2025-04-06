@@ -18,7 +18,6 @@
   - ℹ️ nondeterministic automata language-theoretically
   - summary of pre-existing academic work
 
-
 ### World
 
 - 🚧 cuboids have outlines via shader, using UVs
@@ -27,13 +26,9 @@
     > right x2, left x2, front x2, back x2, top x2, bottom x2
   - 🚧 fix scaling (non-trivial)
 
-- ✅ pipe to json should not crash
-  - ℹ️ `w | json` crashes
-    - "Paused before potential out of memory crash"
-    - 4.8 Gb
-  - ℹ️ `expr window | json` takes about 10 secs to fail
-  - ℹ️ `w | pretty` is huge
+- bug: pause then reset should show interact message
 
+- shell should show debugs not errors
 - profile-1 camera target y should always be 1.5?
 - somehow additionally indicate npc is selected by ContextMenu when docked
 - tween: provide many examples
@@ -621,3 +616,10 @@
 
 - ✅ no longer need to fade Html3D on resize
   - seems to track well now
+
+- ✅ pipe to json should not crash
+  - ℹ️ `w | json` crashes
+    - "Paused before potential out of memory crash"
+    - 4.8 Gb
+  - ℹ️ `expr window | json` takes about 10 secs to fail
+  - ℹ️ `w | pretty` is huge
