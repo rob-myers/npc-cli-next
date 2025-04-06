@@ -67,7 +67,7 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <SubMenu icon={icon.dev} label="Dev">
+        <SubMenu icon={icon.devBlog} label="Dev Blog">
           <MenuItem>Tech</MenuItem>
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
@@ -193,7 +193,7 @@ const navCss = css`
 
 const icon = {
   blog: <FontAwesomeIcon icon={faRobot} color="white" size="1x" />,
-  dev: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
+  devBlog: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
   help: <FontAwesomeIcon icon={faCircleQuestion} color="white" size="1x" />,
   about: <FontAwesomeIcon icon={faCircleInfo} color="white" size="1x" />,
   research: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
