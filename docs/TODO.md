@@ -16,6 +16,8 @@
     - ✅ mount carousel
     - ✅ initial test pics after first `<Card>`
   - 🚧 refine carousel
+  - carousel has labels
+  - real images in carousel
   - can somehow change tabs from blog
 
 - ✅ fix desktop scroll of grey side area
