@@ -8,34 +8,39 @@ import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, But
 
 import 'pure-react-carousel/dist/react-carousel.es.css';
 
+import { breakpoint } from './const';
+import { isTouchDevice } from '@/npc-cli/service/dom';
+
 export default function Carousel(props: Props) {
   return (
-    <div css={carouselCss}>
-      <CarouselProvider
-        {...props}
-        naturalSlideWidth={props.naturalSlideWidth ?? props.aspectRatio ?? 16/9}
-        naturalSlideHeight={props.naturalSlideHeight ?? 1}
-        totalSlides={props.slides?.length ?? 0}
-        infinite
-        // horizontalPixelThreshold={100}
-        lockOnWindowScroll
-      >
-        <Slider>
-          {props.slides.map(({ img, label }, index) =>
-            <Slide index={index}>
-              <Image
-                src={img.src}
-                width={img.width}
-                height={img.height}
-                alt={label ?? 'an image'} // 🚧
-              />
-            </Slide>
-          )}
-        </Slider>
-        <ButtonBack>{'<'}</ButtonBack>
-        <ButtonNext>{'>'}</ButtonNext>
-      </CarouselProvider>
-    </div>
+    <CarouselProvider
+      css={carouselCss}
+      {...props}
+
+      naturalSlideWidth={props.naturalSlideWidth ?? props.aspectRatio ?? 16/9}
+      naturalSlideHeight={props.naturalSlideHeight ?? 1}
+      totalSlides={props.slides?.length ?? 0}
+      infinite
+      dragEnabled
+      touchEnabled={false}
+      // lockOnWindowScroll
+      // horizontalPixelThreshold={100}
+    >
+      <Slider>
+        {props.slides.map(({ img, label }, index) =>
+          <Slide index={index}>
+            <Image
+              src={img.src}
+              width={img.width}
+              height={img.height}
+              alt={label ?? 'an image'} // 🚧
+            />
+          </Slide>
+        )}
+      </Slider>
+      <ButtonBack>{'<'}</ButtonBack>
+      <ButtonNext>{'>'}</ButtonNext>
+    </CarouselProvider>
   );
 }
 
@@ -50,7 +55,6 @@ type Props = CarouselProviderProps & {// 🚧
 
 const carouselCss = css`
   position: relative;
-
   background-color: #999;
 
   .carousel__inner-slide {
@@ -60,17 +64,25 @@ const carouselCss = css`
   }
   .carousel__back-button, .carousel__next-button {
     position: absolute;
-    top: 50%;
-    padding: 8px 24px;
-
-    line-height: 1.2;
-    color: white;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 2rem;
+    bottom: 32px;
     
+    line-height: 1.2;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: 300;
     
+    padding: 8px 24px;
+    font-size: 2rem;
     background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    
+    @media (max-width: ${breakpoint}) {
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      background-color: rgba(100, 100, 100, 0.5);
+      border: 1px solid #8888ff77;
+    }
+    
     border-radius: 8px;
 
     &:disabled {
