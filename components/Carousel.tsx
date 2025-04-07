@@ -4,7 +4,7 @@ import { type StaticImageData } from 'next/image';
 import Image from 'next/image';
 import { css } from '@emotion/react';
 import React from 'react';
-import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
+import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, ButtonNext, ImageWithZoom } from 'pure-react-carousel';
 
 import 'pure-react-carousel/dist/react-carousel.es.css';
 
@@ -15,16 +15,19 @@ export default function Carousel(props: Props) {
         {...props}
         naturalSlideWidth={props.naturalSlideWidth ?? props.aspectRatio ?? 16/9}
         naturalSlideHeight={props.naturalSlideHeight ?? 1}
-        totalSlides={2}
+        totalSlides={props.slides?.length ?? 0}
+        infinite
+        // horizontalPixelThreshold={100}
+        lockOnWindowScroll
       >
         <Slider>
           {props.slides.map(({ img, label }, index) =>
-            <Slide index={index} >
+            <Slide index={index}>
               <Image
                 src={img.src}
                 width={img.width}
                 height={img.height}
-                alt={label ?? 'an image'}
+                alt={label ?? 'an image'} // 🚧
               />
             </Slide>
           )}
@@ -36,8 +39,7 @@ export default function Carousel(props: Props) {
   );
 }
 
-type Props = CarouselProviderProps & {
-  // 🚧
+type Props = CarouselProviderProps & {// 🚧
   /** Can use this instead of `naturalSlideWidth` and `naturalSlideHeight` */
   aspectRatio?: number;
   slides: {
@@ -47,7 +49,6 @@ type Props = CarouselProviderProps & {
 };
 
 const carouselCss = css`
-
   position: relative;
 
   background-color: #999;
@@ -57,7 +58,6 @@ const carouselCss = css`
     align-items: center;
     background-color: black;
   }
-
   .carousel__back-button, .carousel__next-button {
     position: absolute;
     top: 50%;
