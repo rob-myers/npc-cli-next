@@ -63,13 +63,19 @@ const carouselCss = css`
     top: 50%;
     padding: 8px 24px;
 
-    line-height: 1.4;
+    line-height: 1.2;
     color: white;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 2rem;
-    /* font-weight: 700; */
+    
+    font-weight: 300;
+    
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 8px;
+
+    &:disabled {
+      filter: brightness(50%);
+    }
   }
   .carousel__back-button {
     left: 0;
