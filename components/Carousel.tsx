@@ -9,9 +9,11 @@ import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, But
 import 'pure-react-carousel/dist/react-carousel.es.css';
 
 import { breakpoint } from './const';
-import { isTouchDevice } from '@/npc-cli/service/dom';
 
 export default function Carousel(props: Props) {
+
+  const totalSlides = props.slides?.length ?? 0;
+
   return (
     <CarouselProvider
       css={carouselCss}
@@ -19,7 +21,7 @@ export default function Carousel(props: Props) {
 
       naturalSlideWidth={props.naturalSlideWidth ?? props.aspectRatio ?? 16/9}
       naturalSlideHeight={props.naturalSlideHeight ?? 1}
-      totalSlides={props.slides?.length ?? 0}
+      totalSlides={totalSlides}
       infinite
       dragEnabled
       touchEnabled={false}
@@ -28,7 +30,10 @@ export default function Carousel(props: Props) {
     >
       <Slider>
         {props.slides.map(({ img, label }, index) =>
-          <Slide index={index}>
+          <Slide
+            index={index}
+            {...props.mobileAspectRatio && { css: slideCss(props.mobileAspectRatio, totalSlides) }}
+          >
             <Image
               src={img.src}
               width={img.width}
@@ -47,6 +52,7 @@ export default function Carousel(props: Props) {
 type Props = CarouselProviderProps & {// 🚧
   /** Can use this instead of `naturalSlideWidth` and `naturalSlideHeight` */
   aspectRatio?: number;
+  mobileAspectRatio?: number;
   slides: {
     img: StaticImageData;
     label?: string;
@@ -98,3 +104,14 @@ const carouselCss = css`
     margin-right: 24px;
   }
 `;
+
+// tempStyle.paddingBottom = pct((naturalSlideHeight * 100) / (naturalSlideWidth * totalSlides));
+function slideCss(mobileAspectRatio: number, totalSlides: number) {
+  return css`
+    @media (max-width: ${mobileBreakpoint}) {
+      padding-bottom: ${(100 * (1 /mobileAspectRatio) * (1 / totalSlides)).toPrecision(6)}% !important;
+    }
+  `;
+}
+
+const mobileBreakpoint = '800px';
