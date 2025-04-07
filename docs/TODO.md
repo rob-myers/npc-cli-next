@@ -10,8 +10,11 @@
     - https://www.npmjs.com/package/react-multi-carousel
     - ✅ mount carousel
     - ✅ initial test pics after first `<Card>`
-  - 🚧 try another carousel
+  - ✅ try another carousel
     - https://www.npmjs.com/package/pure-react-carousel
+    - ✅ patch carousel
+    - ✅ mount carousel
+    - ✅ initial test pics after first `<Card>`
   - 🚧 refine carousel
   - can somehow change tabs from blog
 
@@ -80,6 +83,10 @@
   - ✅ fix `yarn clean-assets`
   - ✅ use loadImage of svgPath instead of data-url
   - 🚧 faster run onchange skin
+
+- blog/index -> /blog/home
+  - observed caching of local build sending /blog/index -> /blog/ and received 404
+  - alternatively could handle /blog/
 
 - get `<Image>`s working in local build
   - ℹ️ `npm run build && cd out && npx http-server`
