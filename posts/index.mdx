@@ -9,6 +9,7 @@ export const metadata = {
 };
 
 import Carousel from '../components/Carousel';
+import Carousel2 from '../components/Carousel2';
 import Image from 'next/image';
 
 import TestPng from '../public/images/localhost_3000_blog_index.png.webp';
@@ -41,6 +42,13 @@ Create a video game whose Non-Player Characters behave just like human-controlle
     alt='test-2'
   />
 </Carousel>
+
+<Carousel2
+  slides={[
+    { img: TestPng, label: 'foo' },
+    { img: TestPng2, label: 'bar' },
+  ]}
+/>
 
 This problem can be "solved" by constraining the environment e.g.
 abstract puzzles, card games, racing games.

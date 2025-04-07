@@ -81,6 +81,11 @@
   - ✅ use loadImage of svgPath instead of data-url
   - 🚧 faster run onchange skin
 
+- get `<Image>`s working in local build
+  - ℹ️ `npm run build && cd out && npx http-server`
+  - image endpoint not available
+    - e.g. `/_next/image?url=/_next/static/media/localhost_3000_blog_index_2.png.c9ed7e6c.webp&w=3840&q=75`
+
 - warn if uv-map is not a grid (where rows/cols can have different size)
 
 - Dev-only: Fix Emotion Hydration warning
