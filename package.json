@@ -75,7 +75,6 @@
     "react": "^19.0.0",
     "react-beforeunload": "^2.6.0",
     "react-dom": "^19.0.0",
-    "react-multi-carousel": "^2.8.5",
     "react-pro-sidebar": "^1.1.0",
     "react-use-measure": "^2.1.7",
     "recast-navigation": "^0.39.0",

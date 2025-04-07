@@ -1,115 +1,55 @@
 "use client"
 
-import React from 'react';
-import ReactMultiCarousel, { ResponsiveType } from 'react-multi-carousel';
+import { type StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { css } from '@emotion/react';
+import React from 'react';
+import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 
-import "react-multi-carousel/lib/styles.css";
+import 'pure-react-carousel/dist/react-carousel.es.css';
 
-import { afterBreakpoint, breakpoint } from './const';
-import useStateRef from '@/npc-cli/hooks/use-state-ref';
-import useMeasure from 'react-use-measure';
-
-export default function Carousel({ children, ...rest }: Props) {
-
-  const state = useStateRef(() => ({
-    carousel: {} as ReactMultiCarousel,
-  }));
-
-  const [measureRef, bounds] = useMeasure(({ debounce: 0 }));
-
-  React.useEffect(() => {
-    state.carousel?.forceUpdate();
-  }, [bounds]);
-
+export default function Carousel2(props: Props) {
   return (
-    <div
-      css={carouselCss}
-      ref={measureRef}
-    >
-      <ReactMultiCarousel
-        ref={state.ref('carousel')}
-        infinite
-        // renderDotsOutside
-        ssr
-
-        responsive={{// 🚧
-          desktop: {
-            breakpoint: {
-              max: 3000,
-              min: 1024
-            },
-            items: 1
-          },
-          mobile: {
-            breakpoint: {
-              max: 464,
-              min: 0
-            },
-            items: 1
-          },
-          tablet: {
-            breakpoint: {
-              max: 1024,
-              min: 464
-            },
-            items: 1
-          }
-        }}
-
-        showDots
-        slidesToSlide={1}
-        draggable={false}
-        swipeable={false}
-
-        {...rest}
+    <div css={carouselCss}>
+      <CarouselProvider
+        {...props}
+        naturalSlideWidth={500}
+        naturalSlideHeight={300}
+        totalSlides={2}
       >
-        {children}
-      </ReactMultiCarousel>
+        <Slider>
+          {props.slides.map(({ img, label }, index) =>
+            <Slide index={index} >
+              <Image
+                src={img.src}
+                width={img.width}
+                height={img.height}
+                alt={label ?? 'an image'}
+              />
+            </Slide>
+          )}
+        </Slider>
+        <ButtonBack>Back</ButtonBack>
+        <ButtonNext>Next</ButtonNext>
+      </CarouselProvider>
     </div>
   );
 }
 
-type Props = Omit<React.ComponentProps<typeof ReactMultiCarousel>, 'responsive'> & {
-  responsive?: ResponsiveType;
+type Props = CarouselProviderProps & {
   // 🚧
-}
+  slides: {
+    img: StaticImageData;
+    label?: string;
+  }[];
+};
 
 const carouselCss = css`
-  width: 100%;
-
-  > div {
-    @media (max-width: ${breakpoint}) {
-      max-height: 400px;
-      height: 400px;
-    }
-    @media (min-width: ${afterBreakpoint}) {
-      max-height: 500px;
-      height: 500px;
-    }
-  }
-
-  background-color: #000;
-  
-  ul.react-multi-carousel-track {
-    height: 100%;
-  }
-  li {
-    margin: 0;
-    padding: 0;
+  .carousel__inner-slide {
     display: flex;
+    align-items: center;
   }
   img {
-    object-fit: cover;
-    object-position: 0% 0%;
-    filter: brightness(150%); // 🚧
-    margin: 0;
+    /* margin: 0; */
   }
-
-  ul.react-multi-carousel-dot-list  {
-    gap: 8px;
-    padding: 20px 0;
-    filter: invert();
-  }
-  
 `;
