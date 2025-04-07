@@ -64,7 +64,7 @@ export default function ViewerControls({ api }: Props) {
         isSmallView() ? "cursor-row-resize" : "cursor-col-resize"
       );
       // trigger main overlay (iframe can get in the way of body)
-      useSite.setState({ mainOverlay: true });
+      useSite.setState({ draggingView: true });
       document.body.addEventListener("pointermove", state.onDrag);
       document.body.addEventListener("pointerup", state.onDragEnd);
       if (!isTouchDevice()) {
@@ -92,7 +92,7 @@ export default function ViewerControls({ api }: Props) {
         state.dragOffset = null;
         document.documentElement.classList.remove("cursor-col-resize");
         document.documentElement.classList.remove("cursor-row-resize");
-        useSite.setState({ mainOverlay: false });
+        useSite.setState({ draggingView: false });
         document.body.removeEventListener("pointermove", state.onDrag);
         document.body.removeEventListener("pointerup", state.onDragEnd);
         document.body.removeEventListener("pointerleave", state.onDragEnd);

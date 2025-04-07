@@ -27,8 +27,8 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   articlesMeta: allArticlesMeta,
   browserLoaded: false,
   discussMeta: {},
+  draggingView: false,
   pageMetadata: {} as PageMetadata,
-  mainOverlay: false,
   navOpen: false,
   viewOpen: false,
   tabsDefs: [],
@@ -158,7 +158,7 @@ export type State = {
   discussMeta: { [articleKey: string]: GiscusDiscussionMeta };
   pageMetadata: PageMetadata;
   
-  mainOverlay: boolean;
+  draggingView: boolean;
   navOpen: boolean;
   /** Tabs is inside Viewer */
   tabsDefs: TabDef[][];

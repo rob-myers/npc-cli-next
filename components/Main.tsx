@@ -8,50 +8,62 @@ import useSite from "./site.store";
 import { isSmallView } from "./layout";
 
 export default function Main(props: React.PropsWithChildren) {
-  const site = useSite(({ navOpen, mainOverlay }) => ({ navOpen, mainOverlay }), shallow);
+  const site = useSite(({ navOpen, draggingView }) => ({ navOpen, draggingView }), shallow);
 
-  const overlayOpen = site.mainOverlay || (site.navOpen && isSmallView());
+  const overlayOpen = site.draggingView || (site.navOpen && isSmallView());
 
   return (
-    <section
-      className="prose max-w-screen-lg prose-headings:font-light"
-      css={mainSectionCss}
-      data-testid="main"
-      {...{ [sideNoteRootDataAttribute]: true }}
+    <div
+      css={mainCss}
+      className={cx("scroll-container", { draggingView: site.draggingView })}
     >
-      <header
-        css={mainHeaderCss}
-        data-testid="main-title"
+      <section
+        className="prose max-w-screen-lg prose-headings:font-light"
+        data-testid="main"
+        {...{ [sideNoteRootDataAttribute]: true }}
       >
-        NPC CLI
-      </header>
+        <header
+          css={mainHeaderCss}
+          data-testid="main-title"
+        >
+          NPC CLI
+        </header>
 
-      <main css={mainMainCss}>
-        {props.children}
-      </main>
+        <main css={mainMainCss}>
+          {props.children}
+        </main>
 
-      <div
-        css={overlayCss}
-        className={cx({ overlayOpen, navOpen: site.navOpen })}
-        onClick={() => useSite.api.toggleNav()}
-      />
-    </section>
+        <div
+          css={overlayCss}
+          className={cx({ overlayOpen, navOpen: site.navOpen })}
+          onClick={() => useSite.api.toggleNav()}
+        />
+      </section>
+    </div>
   );
 }
 
-const mainSectionCss = css`
-  @media (max-width: ${breakpoint}) {
-    overflow: scroll;
-    max-width: unset !important;
-    padding: 0 12px;
+const mainCss = css`
+  width: 100%;
+  overflow: scroll;
+  &.draggingView {
+    pointer-events: none;
   }
 
-  @media (min-width: ${afterBreakpoint}) {
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    overflow-x: auto;
+  > section {
+    @media (max-width: ${breakpoint}) {
+      /* overflow: scroll; */
+      max-width: unset !important;
+      padding: 0 12px;
+    }
+  
+    @media (min-width: ${afterBreakpoint}) {
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      /* overflow-x: auto; */
+    }
   }
 `;
 
