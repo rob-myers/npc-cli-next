@@ -4,7 +4,7 @@ import { type StaticImageData } from 'next/image';
 import Image from 'next/image';
 import { css } from '@emotion/react';
 import React from 'react';
-import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
+import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, ButtonNext, DotGroup } from 'pure-react-carousel';
 
 import 'pure-react-carousel/dist/react-carousel.es.css';
 
@@ -47,6 +47,7 @@ export default function Carousel(props: Props) {
         </Slider>
         <ButtonBack>{'<'}</ButtonBack>
         <ButtonNext>{'>'}</ButtonNext>
+        <DotGroup />
       </CarouselProvider>
     </div>
   );
@@ -69,12 +70,12 @@ const carouselMaxHeightCssVar = '--carousel-max-height';
 
 const carouselCss = css`
   ${carouselMaxHeightCssVar}: 500px;
-
+  
+  --carousel-nav-button-height: 64px;
   margin: 48px 0;
-  --carousel-nav-button-height: 48px;
   @media (max-width: ${mobileBreakpoint}) {
-    margin: 32px 0;
     --carousel-nav-button-height: 32px;
+    margin: 32px 0;
   }
   
   display: flex;
@@ -127,6 +128,41 @@ const carouselCss = css`
   }
   .carousel__next-button {
     right: 0;
+  }
+
+  .carousel__dot-group {
+    --carousel-dot-group-height: 20px;
+    --carousel-dot-height: 12px;
+    
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: var(--carousel-nav-button-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    pointer-events: none;
+    /* background-color: #ff000077; */
+  }
+  .carousel__dot {
+    width: var(--carousel-dot-height);
+    height: var(--carousel-dot-height);
+    pointer-events: all;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    &.carousel__dot--selected span {
+      display: block;
+      width: calc(var(--carousel-dot-height) * 0.75);
+      height: calc(var(--carousel-dot-height) * 0.75);
+      background-color: #666;
+      border-radius: 50%;
+    }
   }
 `;
 
