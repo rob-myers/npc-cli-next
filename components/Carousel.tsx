@@ -27,7 +27,7 @@ export default function Carousel(props: Props) {
       dragEnabled
       touchEnabled={false} // avoid scroll mobile interrupt
     >
-      <CarouselLabel />
+      <CarouselLabel {...props} />
       <Slider>
         {props.slides.map(({ img, label }, index) =>
           <Slide
@@ -43,8 +43,8 @@ export default function Carousel(props: Props) {
           </Slide>
         )}
       </Slider>
-      <ButtonBack>{'<'}</ButtonBack>
-      <ButtonNext>{'>'}</ButtonNext>
+      <ButtonBack><div>{'<'}</div></ButtonBack>
+      <ButtonNext><div>{'>'}</div></ButtonNext>
       <DotGroup />
     </CarouselProvider>
   );
@@ -67,41 +67,33 @@ const carouselMaxHeightCssVar = '--carousel-max-height';
 
 const carouselCss = css`
   ${carouselMaxHeightCssVar}: 500px;
-  --carousel-nav-button-height: 64px;
+  --carousel-label-height: 80px;
+  --carousel-footer-height: 64px;
   
   margin: 48px 0;
   @media (max-width: ${mobileBreakpoint}) {
-    --carousel-nav-button-height: 40px;
+    --carousel-label-height: 64px;
+    --carousel-footer-height: 48px;
     margin: 32px 0;
   }
   
   display: flex;
   justify-content: center;
   position: relative;
-  user-select: none;
   
   background-color: #222;
-
-  > span.label {
-    position: absolute;
-    color: white;
-    height: var(--carousel-nav-button-height);
-    display: flex;
-    align-items: center;
-  }
   
-  > div {
+  .carousel__slider {
     width: 100%;
     max-height: var(--carousel-max-height);
     overflow: hidden;
-    margin: var(--carousel-nav-button-height) 0;
-
+    margin: var(--carousel-label-height) 0 var(--carousel-footer-height) 0;
+    
+    user-select: none;
     border: 1px solid rgba(100, 100, 100, 0.5);
     border-width: 1px 0;
     background-color: #444;
-  }
-
-  .carousel__slider {
+    
     // 🚧 better images
     filter: brightness(150%);
   }
@@ -114,18 +106,26 @@ const carouselCss = css`
 
   .carousel__back-button, .carousel__next-button {
     position: absolute;
-    bottom: 0;
-    height: var(--carousel-nav-button-height);
+    top: 0;
+    height: var(--carousel-label-height);
     
-    line-height: 1.2;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     font-weight: 300;
-    font-size: 1rem;
     
-    padding: 8px 24px;
-    background-color: rgba(0, 0, 0, 1);
-    color: white;
+    padding: 16px;
+    background-color: black;
     
+    div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      background-color: #444;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+    }
+
     &:disabled {
       filter: brightness(50%);
     }
@@ -142,9 +142,9 @@ const carouselCss = css`
     --carousel-dot-height: 12px;
     
     position: absolute;
-    bottom: calc(var(--carousel-nav-button-height) * -1);
+    bottom: 0;
     width: 100%;
-    height: var(--carousel-nav-button-height);
+    height: var(--carousel-footer-height);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -184,20 +184,51 @@ function mobileAspectRatioCss(mobileAspectRatio: number, totalSlides: number) {
   `;
 }
 
-function CarouselLabel() {
+function CarouselLabel(props: Props) {
   const carouselContext = React.useContext(CarouselContext);
+  const [currentSlide, setCurrentSlide] = React.useState(carouselContext.getStoreState().currentSlide);
 
   React.useEffect(() => {
     function onChange() {
-      console.log('onChange', carouselContext.getStoreState().currentSlide);
+      const { currentSlide } = carouselContext.getStoreState();
+      // console.log('onChange', currentSlide);
+      setCurrentSlide(currentSlide);
     }
     carouselContext.subscribe(onChange);
     return () => carouselContext.unsubscribe(onChange);
   }, [carouselContext]);
 
   return (
-    <span className="label">
-      Foo bar
-    </span>
+    <div css={labelCss} className="label">
+      <div>
+        {props.slides?.[currentSlide].label}
+      </div>
+    </div>
   );
 }
+
+const labelCss = css`
+  position: absolute;
+  width: calc(100% - 2 * 64px); // for ellipsis
+  display: flex;
+  justify-content: center;
+  
+  padding: 0 24px;
+  height: var(--carousel-label-height);
+  line-height: var(--carousel-label-height);
+
+  background-color: #000;
+  color: #eee;
+  text-transform: lowercase;
+  
+  > div {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
+  
+    font-family: sans-serif;
+    font-weight: 300;
+    letter-spacing: 2px;
+  }
+`;
