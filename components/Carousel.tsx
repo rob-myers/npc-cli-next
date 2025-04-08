@@ -42,6 +42,9 @@ export default function Carousel(props: Props) {
                 height={img.height}
                 alt={label}
               />
+              <div className="label">
+                {label}
+              </div>
             </Slide>
           )}
         </Slider>
@@ -74,7 +77,7 @@ const carouselCss = css`
   --carousel-nav-button-height: 64px;
   margin: 48px 0;
   @media (max-width: ${mobileBreakpoint}) {
-    --carousel-nav-button-height: 32px;
+    /* --carousel-nav-button-height: 32px; */
     margin: 32px 0;
   }
   
@@ -84,6 +87,15 @@ const carouselCss = css`
   user-select: none;
   
   background-color: #222;
+
+  // 🚧
+  .label {
+    opacity: 0.5;
+    transition: opacity 300ms;
+  }
+  &:hover .label, &:active .label, &:focus .label {
+    opacity: 1;
+  }
   
   > div {
     width: 100%;
@@ -103,8 +115,26 @@ const carouselCss = css`
   .carousel__inner-slide {
     display: flex;
     align-items: center;
+    justify-content: center;
     background-color: black;
   }
+  .carousel__inner-slide .label {
+    position: absolute;
+    top: 0;
+    padding: 8px 12px;
+    line-height: 1;
+    letter-spacing: 1px;
+
+    font-size: 1.3rem;
+    @media (max-width: ${mobileBreakpoint}) {
+      font-size: 1rem;
+    }
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: 300;
+    color: white;
+    background-color: rgba(100, 100, 100, 0.2);
+  }
+
   .carousel__back-button, .carousel__next-button {
     position: absolute;
     bottom: 0;
@@ -164,6 +194,7 @@ const carouselCss = css`
       border-radius: 50%;
     }
   }
+
 `;
 
 function mobileAspectRatioCss(mobileAspectRatio: number, totalSlides: number) {
