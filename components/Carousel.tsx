@@ -62,19 +62,22 @@ type Props = CarouselProviderProps & {// 🚧
 const carouselCss = css`
   /* position: relative; */
   /* background-color: #999; */
-  border: 1px solid #444;
+  /* border: 1px solid #444; */
   
   margin: 48px 0;
   @media (max-width: ${breakpoint}) {
     margin: 32px 0;
   }
-
+  
   display: flex;
   justify-content: center;
   
   > div {
     position: relative;
-    width: 80%;
+    width: 100%;
+    border: 24px solid #eee;
+    max-height: 500px;
+    overflow: hidden;
   }
 
   .carousel__inner-slide {
