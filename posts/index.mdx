@@ -27,6 +27,11 @@ This blog is concerned with a fun but difficult problem.
 Create a video game whose Non-Player Characters behave just like human-controlled characters.
 </Card>
 
+Let's pause a moment to consider the underlying problem.
+It's related to Turing's "Imitation game": the Player is the interrogator,
+the questions are video game interactions.
+Can the NPCs <SideNote> A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote> fool the Player?
+
 <Carousel
   slides={[
     { img: TestPng, label: 'foo' },
@@ -36,10 +41,9 @@ Create a video game whose Non-Player Characters behave just like human-controlle
   maxHeight={500}
 />
 
-This problem can be "solved" by constraining the environment e.g.
-abstract puzzles, card games, racing games.
-So let's assume the NPCs <SideNote>
-A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote> 
+One way to "solve" this problem is by constraining the environment e.g.
+abstract puzzles <SideNote>Abstract puzzle games include card games, Tetris and Snake. NPCs can only  "make a move".</SideNote> and racing games.
+So let's assume the NPCs
 can move freely through a 3D environment without time constraints.
 Under this assumption,
 no known game solves the underlying problem.
