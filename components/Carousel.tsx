@@ -4,7 +4,7 @@ import { type StaticImageData } from 'next/image';
 import Image from 'next/image';
 import { css } from '@emotion/react';
 import React from 'react';
-import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, ButtonNext, DotGroup } from 'pure-react-carousel';
+import { CarouselProvider, CarouselProviderProps, Slider, Slide, ButtonBack, ButtonNext, DotGroup, CarouselContext } from 'pure-react-carousel';
 
 import 'pure-react-carousel/dist/react-carousel.es.css';
 
@@ -16,43 +16,37 @@ export default function Carousel(props: Props) {
   const mobileAspectRatio = Array.isArray(props.aspectRatio) ? props.aspectRatio[0] : props.aspectRatio;
 
   return (
-    <div
+    <CarouselProvider
+      {...props}
       css={carouselCss}
-      className="carousel-container"
       {...props.maxHeight && { style: {[carouselMaxHeightCssVar as string]: `${props.maxHeight}px`} }}
+      naturalSlideWidth={aspectRatio}
+      naturalSlideHeight={1}
+      totalSlides={totalSlides}
+      infinite
+      dragEnabled
+      touchEnabled={false} // avoid scroll mobile interrupt
     >
-      <CarouselProvider
-        {...props}
-        naturalSlideWidth={aspectRatio}
-        naturalSlideHeight={1}
-        totalSlides={totalSlides}
-        infinite
-        dragEnabled
-        touchEnabled={false} // avoid scroll mobile interrupt
-      >
-        <Slider>
-          {props.slides.map(({ img, label }, index) =>
-            <Slide
-              index={index}
-              css={mobileAspectRatioCss(mobileAspectRatio, totalSlides)} // 🚧 cache?
-            >
-              <Image
-                src={img.src}
-                width={img.width}
-                height={img.height}
-                alt={label}
-              />
-              <div className="label">
-                {label}
-              </div>
-            </Slide>
-          )}
-        </Slider>
-        <ButtonBack>{'<'}</ButtonBack>
-        <ButtonNext>{'>'}</ButtonNext>
-        <DotGroup />
-      </CarouselProvider>
-    </div>
+      <CarouselLabel />
+      <Slider>
+        {props.slides.map(({ img, label }, index) =>
+          <Slide
+            index={index}
+            css={mobileAspectRatioCss(mobileAspectRatio, totalSlides)} // 🚧 cache?
+          >
+            <Image
+              src={img.src}
+              width={img.width}
+              height={img.height}
+              alt={label}
+            />
+          </Slide>
+        )}
+      </Slider>
+      <ButtonBack>{'<'}</ButtonBack>
+      <ButtonNext>{'>'}</ButtonNext>
+      <DotGroup />
+    </CarouselProvider>
   );
 }
 
@@ -73,11 +67,11 @@ const carouselMaxHeightCssVar = '--carousel-max-height';
 
 const carouselCss = css`
   ${carouselMaxHeightCssVar}: 500px;
-  
   --carousel-nav-button-height: 64px;
+  
   margin: 48px 0;
   @media (max-width: ${mobileBreakpoint}) {
-    /* --carousel-nav-button-height: 32px; */
+    --carousel-nav-button-height: 40px;
     margin: 32px 0;
   }
   
@@ -88,13 +82,12 @@ const carouselCss = css`
   
   background-color: #222;
 
-  // 🚧
-  .label {
-    opacity: 0.5;
-    transition: opacity 300ms;
-  }
-  &:hover .label, &:active .label, &:focus .label {
-    opacity: 1;
+  > span.label {
+    position: absolute;
+    color: white;
+    height: var(--carousel-nav-button-height);
+    display: flex;
+    align-items: center;
   }
   
   > div {
@@ -103,8 +96,8 @@ const carouselCss = css`
     overflow: hidden;
     margin: var(--carousel-nav-button-height) 0;
 
-    border: 1px solid rgba(100, 100, 100, 1);
-    border-width: 2px 0;
+    border: 1px solid rgba(100, 100, 100, 0.5);
+    border-width: 1px 0;
     background-color: #444;
   }
 
@@ -117,22 +110,6 @@ const carouselCss = css`
     align-items: center;
     justify-content: center;
     background-color: black;
-  }
-  .carousel__inner-slide .label {
-    position: absolute;
-    top: 0;
-    padding: 8px 12px;
-    line-height: 1;
-    letter-spacing: 1px;
-
-    font-size: 1.3rem;
-    @media (max-width: ${mobileBreakpoint}) {
-      font-size: 1rem;
-    }
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-weight: 300;
-    color: white;
-    background-color: rgba(100, 100, 100, 0.2);
   }
 
   .carousel__back-button, .carousel__next-button {
@@ -165,7 +142,7 @@ const carouselCss = css`
     --carousel-dot-height: 12px;
     
     position: absolute;
-    bottom: 0;
+    bottom: calc(var(--carousel-nav-button-height) * -1);
     width: 100%;
     height: var(--carousel-nav-button-height);
     display: flex;
@@ -174,24 +151,25 @@ const carouselCss = css`
     gap: 12px;
 
     pointer-events: none;
-    /* background-color: #ff000077; */
+    background: none;
   }
   .carousel__dot {
+
+    @media (max-width: ${mobileBreakpoint}) {
+      --carousel-dot-height: 8px;
+    }
+
     width: var(--carousel-dot-height);
     height: var(--carousel-dot-height);
     pointer-events: all;
-    background-color: white;
+    background-color: #888;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     
-    &.carousel__dot--selected span {
-      display: block;
-      width: calc(var(--carousel-dot-height) * 0.75);
-      height: calc(var(--carousel-dot-height) * 0.75);
-      background-color: #666;
-      border-radius: 50%;
+    &.carousel__dot--selected {
+      background-color: white;
     }
   }
 
@@ -204,4 +182,22 @@ function mobileAspectRatioCss(mobileAspectRatio: number, totalSlides: number) {
       padding-bottom: ${(100 * (1 /mobileAspectRatio) * (1 / totalSlides)).toPrecision(6)}% !important;
     }
   `;
+}
+
+function CarouselLabel() {
+  const carouselContext = React.useContext(CarouselContext);
+
+  React.useEffect(() => {
+    function onChange() {
+      console.log('onChange', carouselContext.getStoreState().currentSlide);
+    }
+    carouselContext.subscribe(onChange);
+    return () => carouselContext.unsubscribe(onChange);
+  }, [carouselContext]);
+
+  return (
+    <span className="label">
+      Foo bar
+    </span>
+  );
 }
