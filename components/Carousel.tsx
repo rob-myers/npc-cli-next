@@ -15,37 +15,37 @@ export default function Carousel(props: Props) {
   const totalSlides = props.slides?.length ?? 0;
 
   return (
-    <CarouselProvider
-      css={carouselCss}
-      {...props}
-
-      naturalSlideWidth={props.naturalSlideWidth ?? props.aspectRatio ?? 16/9}
-      naturalSlideHeight={props.naturalSlideHeight ?? 1}
-      totalSlides={totalSlides}
-      infinite
-      dragEnabled
-      touchEnabled={false}
-      // lockOnWindowScroll
-      // horizontalPixelThreshold={100}
-    >
-      <Slider>
-        {props.slides.map(({ img, label }, index) =>
-          <Slide
-            index={index}
-            {...props.mobileAspectRatio && { css: slideCss(props.mobileAspectRatio, totalSlides) }}
-          >
-            <Image
-              src={img.src}
-              width={img.width}
-              height={img.height}
-              alt={label ?? 'an image'} // 🚧
-            />
-          </Slide>
-        )}
-      </Slider>
-      <ButtonBack>{'<'}</ButtonBack>
-      <ButtonNext>{'>'}</ButtonNext>
-    </CarouselProvider>
+    <div css={carouselCss} className="carousel-container">
+      <CarouselProvider
+        {...props}
+        naturalSlideWidth={props.naturalSlideWidth ?? props.aspectRatio ?? 16/9}
+        naturalSlideHeight={props.naturalSlideHeight ?? 1}
+        totalSlides={totalSlides}
+        infinite
+        dragEnabled
+        touchEnabled={false}
+        // lockOnWindowScroll
+        // horizontalPixelThreshold={100}
+      >
+        <Slider>
+          {props.slides.map(({ img, label }, index) =>
+            <Slide
+              index={index}
+              {...props.mobileAspectRatio && { css: slideCss(props.mobileAspectRatio, totalSlides) }}
+            >
+              <Image
+                src={img.src}
+                width={img.width}
+                height={img.height}
+                alt={label ?? 'an image'} // 🚧
+              />
+            </Slide>
+          )}
+        </Slider>
+        <ButtonBack>{'<'}</ButtonBack>
+        <ButtonNext>{'>'}</ButtonNext>
+      </CarouselProvider>
+    </div>
   );
 }
 
@@ -60,8 +60,22 @@ type Props = CarouselProviderProps & {// 🚧
 };
 
 const carouselCss = css`
-  position: relative;
-  background-color: #999;
+  /* position: relative; */
+  /* background-color: #999; */
+  border: 1px solid #444;
+  
+  margin: 48px 0;
+  @media (max-width: ${breakpoint}) {
+    margin: 32px 0;
+  }
+
+  display: flex;
+  justify-content: center;
+  
+  > div {
+    position: relative;
+    width: 80%;
+  }
 
   .carousel__inner-slide {
     display: flex;
@@ -70,7 +84,7 @@ const carouselCss = css`
   }
   .carousel__back-button, .carousel__next-button {
     position: absolute;
-    bottom: 32px;
+    bottom: 0;
     
     line-height: 1.2;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -80,6 +94,7 @@ const carouselCss = css`
     font-size: 2rem;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
+    border: 1px solid #aaaaaa99;
     
     @media (max-width: ${breakpoint}) {
       font-size: 1rem;
@@ -97,11 +112,9 @@ const carouselCss = css`
   }
   .carousel__back-button {
     left: 0;
-    margin-left: 24px;
   }
   .carousel__next-button {
     right: 0;
-    margin-right: 24px;
   }
 `;
 
