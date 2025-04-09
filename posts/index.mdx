@@ -9,7 +9,6 @@ export const metadata = {
 };
 
 import Carousel from '../components/Carousel';
-import Carousel2 from '../components/Carousel2';
 import Image from 'next/image';
 
 import TestPng from '../public/images/localhost_3000_blog_index.png.webp';
@@ -35,15 +34,6 @@ the questions are video game interactions.
 Can the NPCs <SideNote> A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote> fool the Player?
 
 <Carousel
-  slides={[
-    { img: TestPng, label: 'We\'ve built the system directly into this site' },
-    { img: TestPng2, label: 'This image is a bit shit and needs improvement' },
-  ]}
-  aspectRatio={[1.4, 2]}
-  maxHeight={400}
-/>
-
-<Carousel2
   items={[
     { img: TestPng, label: 'We\'ve built the system directly into this site' },
     { img: TestPng2, label: 'This image is a bit shit and needs improvement' },

@@ -17,7 +17,7 @@
     - ✅ initial test pics after first `<Card>`
   - ✅ try yet another carousel
     - https://www.npmjs.com/package/embla-carousel
-  - 🚧 remove prev Carousel
+  - ✅ remove prev Carousel i.e. pure-react-carousel
   - 🚧 refine carousel
   - carousel has labels
   - real images in carousel
