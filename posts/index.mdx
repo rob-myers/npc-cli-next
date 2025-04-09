@@ -9,6 +9,7 @@ export const metadata = {
 };
 
 import Carousel from '../components/Carousel';
+import Carousel2 from '../components/Carousel2';
 import Image from 'next/image';
 
 import TestPng from '../public/images/localhost_3000_blog_index.png.webp';
@@ -40,6 +41,13 @@ Can the NPCs <SideNote> A "Non-Player Character" (NPC) is a video game character
   ]}
   aspectRatio={[1.4, 2]}
   maxHeight={400}
+/>
+
+<Carousel2
+  items={[
+    { img: TestPng, label: 'We\'ve built the system directly into this site' },
+    { img: TestPng2, label: 'This image is a bit shit and needs improvement' },
+  ]}
 />
 
 One way to "solve" this problem is by constraining the environment e.g.

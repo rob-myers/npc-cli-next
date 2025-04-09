@@ -219,7 +219,10 @@ const labelCss = css`
 
   background-color: #000;
   color: #eee;
-  text-transform: lowercase;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: 300;
+  letter-spacing: 2px;
+  /* text-transform: lowercase; */
   
   > div {
     display: -webkit-box;
@@ -227,8 +230,5 @@ const labelCss = css`
     -webkit-box-orient: vertical; 
     overflow: hidden;
   
-    font-family: sans-serif;
-    font-weight: 300;
-    letter-spacing: 2px;
   }
 `;

@@ -15,6 +15,8 @@
     - ✅ patch carousel
     - ✅ mount carousel
     - ✅ initial test pics after first `<Card>`
+  - 🚧 try yet another carousel
+    - https://www.npmjs.com/package/embla-carousel
   - 🚧 refine carousel
   - carousel has labels
   - real images in carousel
@@ -56,6 +58,14 @@
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
+
+- bug: sh
+  - multi-line edit using Option+Enter not working
+    - need repro
+  - paste multiline command and start Option-Deleting midway
+    - need repro
+  - ctrl + w while multiple input: goes back a line
+    - need repro
 
 ### Dev Env
 
