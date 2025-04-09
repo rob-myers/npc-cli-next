@@ -11,6 +11,7 @@ import useUpdate from '@/npc-cli/hooks/use-update';
 
 export default function Carousel2(props: Props) {
 
+  // 🚧 for better hmr move "innards" into own component
   const [emblaRef, emblaApi] = useEmblaCarousel({
     // dragThreshold: ,
     loop: true,
@@ -19,8 +20,9 @@ export default function Carousel2(props: Props) {
   const update = useUpdate();
 
   const state = useStateRef(() => ({
-    selectedIndex: 0, // 🚧
+    currentSlide: 0,
     snapList: [] as number[],
+
     initDots() {
       state.snapList = emblaApi!.scrollSnapList();
     },
@@ -34,7 +36,7 @@ export default function Carousel2(props: Props) {
       emblaApi?.scrollPrev();
     },
     onSelect() {
-      state.selectedIndex = emblaApi!.selectedScrollSnap();
+      state.currentSlide = emblaApi!.selectedScrollSnap();
       update();
     },
   }), { deps: [emblaApi] });
@@ -49,7 +51,7 @@ export default function Carousel2(props: Props) {
       .on('reInit', state.onSelect)
       .on('select', state.onSelect)
     ;
-  }, [emblaApi]);
+  }, [emblaApi, props.items]);
 
   return (
     <div css={carouselCss} className="embla">
@@ -64,13 +66,17 @@ export default function Carousel2(props: Props) {
                 height={img.height}
                 alt={label}
               />
+              <div className="slide-label">
+                <div>
+                {label}
+                </div>
+              </div>
             </div>
           ))}
         </div>
-      </div>
 
-      <div className="embla__controls">
         <div className="embla__buttons">
+
           <button
             className="embla__button embla__button--prev"
             type="button"
@@ -79,6 +85,10 @@ export default function Carousel2(props: Props) {
             {prevIcon}
           </button>
 
+          {/* <div className="slide-label">
+            {state.label}
+          </div> */}
+
           <button
             className="embla__button embla__button--next"
             type="button"
@@ -86,20 +96,21 @@ export default function Carousel2(props: Props) {
           >
             {nextIcon}
           </button>
-        </div>
 
-        <div className="embla__dots">
-          {state.snapList.map((_, index) => (
-            <button
-              type="button"
-              key={index}
-              onClick={() => state.onDotClick(index)}
-              className={cx('embla__dot', {
-                'embla__dot--selected': index === state.selectedIndex,
-              })}
-            />
-          ))}
         </div>
+      </div>
+
+      <div className="embla__dots">
+        {state.snapList.map((_, index) => (
+          <button
+            type="button"
+            key={index}
+            onClick={() => state.onDotClick(index)}
+            className={cx('embla__dot', {
+              'embla__dot--selected': index === state.currentSlide,
+            })}
+          />
+        ))}
       </div>
     </div>
   );
@@ -114,18 +125,26 @@ interface Props extends EmblaOptionsType {
   }[];
 }
 
+// 🚧 remove hard-coded lengths
+// 🚧 responsive button/label distance from bottom
 const carouselCss = css`
   --slide-spacing: 1rem;
-  --text-high-contrast-rgb-value: 230, 230, 230;
+  --slider-dot-width: 0.75rem;
+  --slider-dot-gap: 16px;
+  --slider-next-button-width: 32px;
+  --slider-next-icon-width: 15px;
   
+  user-select: none;
+
   .embla__viewport {
-    /* height: 200px; */
+    position: relative;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
   }
 
   .embla__container {
     display: flex;
-    /* gap: var(--slide-spacing); */
     padding: 0;
   }
   .embla__slide {
@@ -134,87 +153,113 @@ const carouselCss = css`
     margin-right: var(--slide-spacing);
     
     filter: brightness(1.5); // 🚧 temp
-
+    
     img {
       margin: 0;
       height: 100%;
       object-fit: cover;
       object-position: 0% 0%;
+      border-radius: 16px;
     }
   }
 
-  .embla__controls {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    justify-content: space-between;
-    gap: 1.2rem;
-    margin-top: 1.8rem;
-  }
   .embla__buttons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.6rem;
-    align-items: center;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 24px * 2);
+    /* align-items: center; */
+    margin: 32px 0;
+    pointer-events: none;
   }
   .embla__button {
-    -webkit-tap-highlight-color: rgba(var(--text-high-contrast-rgb-value), 0.5);
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: transparent;
-    touch-action: manipulation;
-    display: inline-flex;
-    text-decoration: none;
-    cursor: pointer;
-    border: 0;
-    padding: 0;
-    margin: 0;
-    box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
-    width: 3.6rem;
-    height: 3.6rem;
-    z-index: 1;
-    border-radius: 50%;
-    color: var(--text-body);
+    width: var(--slider-next-button-width);
+    height: var(--slider-next-button-width);
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    
+    -webkit-tap-highlight-color: #0000ff22;
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation;
+    text-decoration: none;
+    cursor: pointer;
+
+    pointer-events: all;
+
+    color: white;
+    background-color: #444;
+    border-radius: 50%;
+    border: 1px solid #99999977;
   }
   .embla__button__svg {
-    width: 20px;
-    height: 20px;
+    width: var(--slider-next-icon-width);
+    height: var(--slider-next-icon-width);
+  }
+  .slide-label {
+    position: absolute;
+    bottom: calc(36px);
+    bottom: 0;
+    width: 100%;
+    height: calc(36px + 64px);
+    max-height: calc(36px + 64px);
+    overflow: hidden;
+    // 🚧
+    padding: 0 calc(64px + 8px);
+    color: #99a;
+    background-color: #00000066;
+    flex: 1;
+    text-align: center;
+    /* margin: 0 24px; */
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    > div {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; 
+      overflow: hidden;
+
+      user-select: text;
+    }
   }
 
   .embla__dots {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: var(--slider-dot-gap);
+    height: 48px;
+    /* background-color: #222; */
+    /* border-top: 1px solid #99999955; */
   }
   .embla__dot {
     cursor: pointer;
     border: 0;
     padding: 0;
     margin: 0;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: var(--slider-dot-width);
+    height: var(--slider-dot-width);
     display: flex;
     align-items: center;
     justify-content: center;
     
-    background-color: black;
+    background-color: #eee;
     border-radius: 50%;
-  }
-  .embla__dot:after {
-    content: '';
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    background-color: black;
-  }
-  .embla__dot--selected:after {
-    background-color: white;
+    border: 1px solid #999;
+    
+    &.embla__dot--selected {
+      background-color: white;
+      border: 2px solid #444;
+    }
   }
 
 

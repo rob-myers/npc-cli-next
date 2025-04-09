@@ -15,8 +15,9 @@
     - ✅ patch carousel
     - ✅ mount carousel
     - ✅ initial test pics after first `<Card>`
-  - 🚧 try yet another carousel
+  - ✅ try yet another carousel
     - https://www.npmjs.com/package/embla-carousel
+  - 🚧 remove prev Carousel
   - 🚧 refine carousel
   - carousel has labels
   - real images in carousel
