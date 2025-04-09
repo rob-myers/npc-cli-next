@@ -50,19 +50,19 @@ const mainCss = css`
     pointer-events: none;
   }
 
-  > section {
-    @media (max-width: ${breakpoint}) {
-      /* overflow: scroll; */
+  @media (max-width: ${breakpoint}) {
+    > section {
       max-width: unset !important;
       padding: 0 12px;
     }
+  }
   
-    @media (min-width: ${afterBreakpoint}) {
+  @media (min-width: ${afterBreakpoint}) {
+    > section {
       width: 100%;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      /* overflow-x: auto; */
     }
   }
 `;
@@ -104,13 +104,8 @@ const mainMainCss = css`
   @media (min-width: ${afterBreakpoint}) {
     flex: 1;
     min-width: calc(400px + 2 * 2rem);
-
-    margin-right: 1rem;
-    margin-left: 1rem;
-
-    padding-right: 2rem;
-    padding-bottom: 6rem;
-    padding-left: 2rem;
+    margin: 0 1rem;
+    padding: 2rem 4rem 6rem 4rem;
   }
 `;
 
