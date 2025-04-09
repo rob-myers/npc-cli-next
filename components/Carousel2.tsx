@@ -1,21 +1,18 @@
 "use client"
 
+import Image, { type StaticImageData } from 'next/image';
 import { css } from '@emotion/react';
 import useEmblaCarousel from 'embla-carousel-react';
-import Image, { type StaticImageData } from 'next/image';
 
 export default function Carousel2(props: Props) {
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     // dragThreshold: ,
-  });
+  }, []);
 
   return (
     <div css={carouselCss} className="embla" ref={emblaRef}>
       <div className="embla__container">
-        {/* <div className="embla__slide">Slide 1</div>
-        <div className="embla__slide">Slide 2</div>
-        <div className="embla__slide">Slide 3</div> */}
         {props.items.map(({ img, label }) => (
           <div className="embla__slide">
             <Image
@@ -26,6 +23,25 @@ export default function Carousel2(props: Props) {
             />
           </div>
         ))}
+      </div>
+
+      <div className="embla__controls">
+        {/* <div className="embla__buttons">
+          <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
+          <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+        </div>
+
+        <div className="embla__dots">
+          {scrollSnaps.map((_, index) => (
+            <DotButton
+              key={index}
+              onClick={() => onDotButtonClick(index)}
+              className={'embla__dot'.concat(
+                index === selectedIndex ? ' embla__dot--selected' : ''
+              )}
+            />
+          ))}
+        </div> */}
       </div>
     </div>
   );
@@ -41,18 +57,25 @@ interface Props extends EmblaOptionsType {
 }
 
 const carouselCss = css`
+  --slide-spacing: 1rem;
+
   overflow: hidden;
-  
-  width: 600px; // 🚧
-  background-color: #000;
+  /* height: 200px; */
 
   .embla__container {
     display: flex;
+    gap: var(--slide-spacing);
   }
   .embla__slide {
     flex: 0 0 100%;
     min-width: 0;
-    display: flex;
-    align-items: center;
+
+    filter: brightness(1.5); // 🚧 temp
+
+    img {
+      height: 100%;
+      object-fit: cover;
+      object-position: 0% 0%;
+    }
   }
 `;
