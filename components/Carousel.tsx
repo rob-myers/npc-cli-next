@@ -6,6 +6,7 @@ import { css } from '@emotion/react';
 import cx from 'classnames';
 import useEmblaCarousel from 'embla-carousel-react';
 
+import { mobileBreakpoint } from './const';
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
 import useUpdate from '@/npc-cli/hooks/use-update';
 
@@ -54,7 +55,10 @@ export default function Carousel(props: Props) {
   }, [emblaApi, props.items]);
 
   return (
-    <div css={carouselCss} className="embla">
+    <div
+      css={carouselCss}
+      {...props.maxHeight && { style: { ['--slider-max-height' as any]: `${props.maxHeight}px` } }}
+    >
       
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
@@ -84,10 +88,6 @@ export default function Carousel(props: Props) {
           >
             {prevIcon}
           </button>
-
-          {/* <div className="slide-label">
-            {state.label}
-          </div> */}
 
           <button
             className="embla__button embla__button--next"
@@ -123,20 +123,28 @@ interface Props extends EmblaOptionsType {
     img: StaticImageData;
     label: string;
   }[];
+  maxHeight?: number;
 }
 
 // 🚧 remove hard-coded lengths
 // 🚧 responsive button/label distance from bottom
 const carouselCss = css`
+  --slider-max-height: unset;
   --slide-spacing: 1rem;
   --slider-dot-width: 0.75rem;
+  --slider-dots-height: 48px;
   --slider-dot-gap: 16px;
   --slider-next-button-width: 32px;
   --slider-next-icon-width: 15px;
   
   user-select: none;
-
+  margin: 40px 0 20px 0;
+  @media (max-width: ${mobileBreakpoint}) {
+    margin: 24px 0 0 0;
+  }
+  
   .embla__viewport {
+    max-height: var(--slider-max-height);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -203,7 +211,6 @@ const carouselCss = css`
   }
   .slide-label {
     position: absolute;
-    bottom: calc(36px);
     bottom: 0;
     width: 100%;
     height: calc(36px + 64px);
@@ -213,6 +220,7 @@ const carouselCss = css`
     padding: 0 calc(64px + 8px);
     color: #99a;
     background-color: #00000066;
+    border-radius: 0 0 16px 16px;
     flex: 1;
     text-align: center;
     /* margin: 0 24px; */
@@ -237,9 +245,7 @@ const carouselCss = css`
     justify-content: center;
     align-items: center;
     gap: var(--slider-dot-gap);
-    height: 48px;
-    /* background-color: #222; */
-    /* border-top: 1px solid #99999955; */
+    height: var(--slider-dots-height);
   }
   .embla__dot {
     cursor: pointer;
