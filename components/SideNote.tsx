@@ -120,9 +120,11 @@ const speechBubbleCss = css`
   }
 
   .info {
+    position: absolute;
+    z-index: 1;
+
     visibility: hidden;
     white-space: normal;
-    position: absolute;
     width: var(--info-width);
     margin-left: calc(-0.5 * var(--info-width));
     padding: 16px;
