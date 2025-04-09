@@ -545,7 +545,7 @@ export default function WorldView(props) {
 
   React.useEffect(() => {
     if (state.controls && !w.crowd) {// 🔔 initially only
-      state.controls.setPolarAngle(Math.PI / 6);
+      state.controls.setPolarAngle(Math.PI / 4);
       state.controls.setAzimuthalAngle(Math.PI / 4);
     }
     emptySceneForPicking.onAfterRender = state.renderObjectPickScene;
