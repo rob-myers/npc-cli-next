@@ -14,7 +14,6 @@ export default function Carousel(props: Props) {
 
   // 🚧 for better hmr move "innards" into own component
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    // dragThreshold: ,
     loop: true,
   }, []);
 
@@ -57,7 +56,10 @@ export default function Carousel(props: Props) {
   return (
     <div
       css={carouselCss}
-      {...props.maxHeight && { style: { ['--slider-max-height' as any]: `${props.maxHeight}px` } }}
+      style={{
+        ...props.maxHeight && {['--slider-max-height' as any]: `${props.maxHeight}px`},
+        ...props.minHeight && {['--slider-min-height' as any]: `${props.minHeight}px`},
+      }}
     >
       
       <div className="embla__viewport" ref={emblaRef}>
@@ -124,12 +126,14 @@ interface Props extends EmblaOptionsType {
     label: string;
   }[];
   maxHeight?: number;
+  minHeight?: number;
 }
 
 // 🚧 remove hard-coded lengths
 // 🚧 responsive button/label distance from bottom
 const carouselCss = css`
   --slider-max-height: unset;
+  --slider-min-height: unset;
   --slide-spacing: 1rem;
   --slider-dot-width: 0.75rem;
   --slider-dots-height: 48px;
@@ -145,6 +149,7 @@ const carouselCss = css`
   
   .embla__viewport {
     max-height: var(--slider-max-height);
+    min-height: var(--slider-min-height);
     position: relative;
     overflow: hidden;
     display: flex;
