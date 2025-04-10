@@ -62,15 +62,20 @@ export default function Carousel(props: Props) {
       }}
     >
       
-      <div className="embla__viewport" ref={emblaRef}>
+      <div
+        className="embla__viewport"
+        ref={emblaRef}
+        style={{ filter: props.filter }}
+      >
         <div className="embla__container">
-          {props.items.map(({ img, label }, index) => (
+          {props.items.map(({ img, label, objectPosition }, index) => (
             <div className="embla__slide" key={index}>
               <Image
                 src={img.src}
                 width={img.width}
                 height={img.height}
                 alt={label}
+                style={{ objectPosition }}
               />
               <div className="slide-label">
                 <div>
@@ -124,7 +129,11 @@ interface Props extends EmblaOptionsType {
   items: {
     img: StaticImageData;
     label: string;
+    /** CSS `object-position` applied to `<img>` */
+    objectPosition?: string;
   }[];
+  /** CSS `filter` e.g. `brightness(0.5)` */
+  filter?: string;
   maxHeight?: number;
   minHeight?: number;
 }
@@ -165,14 +174,14 @@ const carouselCss = css`
     min-width: 0;
     margin-right: var(--slide-spacing);
     
-    filter: brightness(1.5); // 🚧 temp
+    /* filter: brightness(1.5); */
     
     img {
       margin: 0;
       height: 100%;
       object-fit: cover;
-      object-position: 0% 0%;
       border-radius: 16px;
+      /* object-position: 0% 0%; */
     }
   }
 
