@@ -150,11 +150,13 @@ const carouselCss = css`
   --slider-dot-gap: 16px;
   --slider-next-button-width: 32px;
   --slider-next-icon-width: 16px;
+  --slider-border-radius: 16px;
   
   user-select: none;
   margin: 40px 0 20px 0;
   @media (max-width: ${mobileBreakpoint}) {
-    margin: 24px 0 0 0;
+    margin: 32px 0 0 0;
+    --slider-border-radius: 8px;
   }
   
   .embla__viewport {
@@ -182,6 +184,7 @@ const carouselCss = css`
       height: 100%;
       object-fit: cover;
       border-radius: 16px;
+      border-radius: var(--slider-border-radius);
       /* object-position: 0% 0%; */
     }
   }
@@ -230,17 +233,22 @@ const carouselCss = css`
     height: calc(36px + 64px);
     max-height: calc(36px + 64px);
     overflow: hidden;
+
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     // 🚧
     padding: 0 calc(64px + 8px);
     color: #99a;
     background-color: #00000066;
-    border-radius: 0 0 16px 16px;
-    flex: 1;
+    border-radius: 0 0 var(--slider-border-radius) var(--slider-border-radius);
     text-align: center;
     
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @media (max-width: ${mobileBreakpoint}) {
+      font-size: small;
+    }
     
     > div {
       display: -webkit-box;
