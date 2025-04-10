@@ -11,9 +11,8 @@ export const metadata = {
 import Carousel from '../components/Carousel';
 import Image from 'next/image';
 
-import TestPng from '../public/images/localhost_3000_blog_index.png.webp';
-import TestPng2 from '../public/images/localhost_3000_blog_index_2.png.webp';
-
+import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
+import ManyNpcTwoTtyWebp from '../public/images/blog_index--many-npcs-two-ttys.png.webp';
 
 # Home
 
@@ -34,9 +33,10 @@ Can the NPCs fool the Player? <SideNote> A "Non-Player Character" (NPC) is a vid
 
 <Carousel
   items={[
-    { img: TestPng, label: 'We\'ve built the system directly into this site' },
-    { img: TestPng2, label: 'This image is a bit shit and needs improvement' },
+    { img: WorldTwoNpcWebp, label: 'We\'ve built the system directly into this site', objectPosition: '0% 0%' },
+    { img: ManyNpcTwoTtyWebp, label: 'This image is a bit shit and needs improvement' },
   ]}
+  filter="brightness(1.5)"
   maxHeight={500}
   minHeight={400}
 />

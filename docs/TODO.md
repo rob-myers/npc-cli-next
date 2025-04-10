@@ -6,22 +6,25 @@
 
 - 🚧 write 1st blog (npc cli)
   - 🚧 content
-  - ✅ try carousel
-    - https://www.npmjs.com/package/react-multi-carousel
-    - ✅ mount carousel
-    - ✅ initial test pics after first `<Card>`
-  - ✅ try another carousel
-    - https://www.npmjs.com/package/pure-react-carousel
-    - ✅ patch carousel
-    - ✅ mount carousel
-    - ✅ initial test pics after first `<Card>`
-  - ✅ try yet another carousel
-    - https://www.npmjs.com/package/embla-carousel
-  - ✅ remove prev Carousel i.e. pure-react-carousel
-  - 🚧 refine carousel
-  - carousel has labels
-  - real images in carousel
+  - 🚧 add a carousel
   - can somehow change tabs from blog
+
+- ✅ try carousel
+  - https://www.npmjs.com/package/react-multi-carousel
+  - ✅ mount carousel
+  - ✅ initial test pics after first `<Card>`
+- ✅ try another carousel
+  - https://www.npmjs.com/package/pure-react-carousel
+  - ✅ patch carousel
+  - ✅ mount carousel
+  - ✅ initial test pics after first `<Card>`
+- ✅ try yet another carousel
+  - https://www.npmjs.com/package/embla-carousel
+- ✅ remove prev Carousel (pure-react-carousel)
+
+- 🚧 refine chosen carousel embla-carousel
+  - ✅ carousel has labels
+  - 🚧 real images in carousel
 
 - ✅ fix desktop scroll of grey side area
 
@@ -61,12 +64,9 @@
   - forbid dst's close to each other
 
 - bug: sh
-  - multi-line edit using Option+Enter not working
-    - need repro
-  - paste multiline command and start Option-Deleting midway
-    - need repro
-  - ctrl + w while multiple input: goes back a line
-    - need repro
+  - multi-line edit using Option+Enter not working (need repro)
+  - paste multiline command and start Option-Deleting midway  (need repro)
+  - ctrl + w while multiple input: goes back a line (need repro)
 
 ### Dev Env
 
