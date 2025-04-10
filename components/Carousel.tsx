@@ -60,6 +60,7 @@ export default function Carousel(props: Props) {
         ...props.maxHeight && {['--slider-max-height' as any]: `${props.maxHeight}px`},
         ...props.minHeight && {['--slider-min-height' as any]: `${props.minHeight}px`},
       }}
+      className="not-prose" // no tailwind typography
     >
       
       <div
@@ -79,7 +80,7 @@ export default function Carousel(props: Props) {
               />
               <div className="slide-label">
                 <div>
-                {label}
+                  {label}
                 </div>
               </div>
             </div>

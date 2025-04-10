@@ -33,8 +33,15 @@ Can the NPCs fool the Player? <SideNote> A "Non-Player Character" (NPC) is a vid
 
 <Carousel
   items={[
-    { img: WorldTwoNpcWebp, label: 'We\'ve built the system directly into this site', objectPosition: '0% 0%' },
-    { img: ManyNpcTwoTtyWebp, label: 'This image is a bit shit and needs improvement' },
+    {
+      img: WorldTwoNpcWebp,
+      label: <>We've built the system <strong>directly</strong> into this site.</>,
+      objectPosition: '0% 0%',
+    },
+    {
+      img: ManyNpcTwoTtyWebp,
+      label: <>This includes generic scripting built on the shell parser <a href="https://github.com/mvdan/sh" target="_blank">mvdan/sh</a></>,
+    },
   ]}
   filter="brightness(1.5)"
   maxHeight={500}
