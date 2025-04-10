@@ -25,6 +25,7 @@
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
   - 🚧 real images in carousel
+  - auto png to webp in public/images
 
 - ✅ fix desktop scroll of grey side area
 
