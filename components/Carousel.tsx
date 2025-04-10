@@ -55,12 +55,12 @@ export default function Carousel(props: Props) {
 
   return (
     <div
+      className="carousel not-prose" // no tailwind typography
       css={carouselCss}
       style={{
         ...props.maxHeight && {['--slider-max-height' as any]: `${props.maxHeight}px`},
         ...props.minHeight && {['--slider-min-height' as any]: `${props.minHeight}px`},
       }}
-      className="not-prose" // no tailwind typography
     >
       
       <div
@@ -153,11 +153,15 @@ const carouselCss = css`
   --slider-border-radius: 16px;
   
   user-select: none;
-  margin: 64px 0 20px 0;
+  margin: 48px 0;
+  padding: 48px 48px 16px 48px;
   @media (max-width: ${mobileBreakpoint}) {
-    margin: 40px 0 0 0;
+    margin: 32px 0;
     --slider-border-radius: 8px;
   }
+  
+  border: 1px solid #aaa;
+  border-radius: var(--slider-border-radius);
   
   .embla__viewport {
     max-height: var(--slider-max-height);
@@ -166,6 +170,7 @@ const carouselCss = css`
     overflow: hidden;
     display: flex;
     justify-content: center;
+    border-radius: var(--slider-border-radius);
   }
 
   .embla__container {
@@ -176,16 +181,13 @@ const carouselCss = css`
     flex: 0 0 100%;
     min-width: 0;
     margin-right: var(--slide-spacing);
-    
-    /* filter: brightness(1.5); */
-    
+
     img {
       margin: 0;
       height: 100%;
       object-fit: cover;
       border-radius: 16px;
       border-radius: var(--slider-border-radius);
-      /* object-position: 0% 0%; */
     }
   }
 
@@ -242,20 +244,24 @@ const carouselCss = css`
     // 🚧
     padding: 0 calc(64px + 8px);
     color: #99a;
-    background-color: #00000066;
+    background-color: #00000099;
     border-radius: 0 0 var(--slider-border-radius) var(--slider-border-radius);
     text-align: center;
     
     @media (max-width: ${mobileBreakpoint}) {
-      font-size: small;
+      font-size: 0.9rem;
     }
     
     > div {
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical; 
       overflow: hidden;
       user-select: text;
+    }
+
+    a {
+      color: #77d;
     }
   }
 
