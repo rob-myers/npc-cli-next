@@ -24,11 +24,16 @@ body {
     "Helvetica Neue", sans-serif;
   font-weight: 400;
   letter-spacing: 0.5px;
-}
 
-nextjs-portal {
-  .nextjs-toast.nextjs-toast-errors-parent.nextjs-error-with-static {
-    /* Hide e.g. expected errors from our TTY */
-    display: none !important;
+  /* For not-prose e.g. SideNote and Carousel label */
+  a {
+    color: #55d;
   }
 }
+
+/* Hide e.g. expected errors from our TTY */
+/* nextjs-portal {
+  .nextjs-toast.nextjs-toast-errors-parent.nextjs-error-with-static {
+    display: none !important;
+  }
+} */

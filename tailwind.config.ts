@@ -12,7 +12,10 @@ export default {
           css: {
             blockquote: {
               quotes: "none"
-            }
+            },
+            a: {
+              color: "#55d"
+            },
           },
         }
       },
