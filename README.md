@@ -191,21 +191,21 @@ Sometimes we want to exit the offMeshConnection at a different speed than we ent
 - Suppose move in 1D with:
   - init/final position `x(0) := 0`, `x(t_1) := x_1` where `t_1` unknown.
   - init/final velocity `v(0) := u_0`, `v(t_1) := u_1`.
-- Suppose we constantly decelerate i.e. `dv/dt = a ≤ 0` from speed `u_0` to `u_1` at `x(t_1) := x_1`
+- Suppose we constantly decelerate i.e. `dv/dt = a ≤ 0` from speed `u_0` to `u_1` at time `t_1`
 
 It follows that:
 - `v(t) = u_0 + a . t` for all `t ≥ 0`
 - `x(t) = u_0 . t + a/2 . t^2` for all `t ≥ 0`.
 - `v(t_1) = u_1` hence `t_1 = (u_0 - u_1) / |a|`
 - `x(t_1) = x_1` hence `x_1 = ((u_0 - u_1) / |a|). ( u_0 - (u_0 - u_1) / 2 )`
-  i.e. `x_1 = (|a| / 2 ) . (u_0 - u_1). (u_0 + u_1)`
+  i.e. `x_1 = (1 / 2|a|) . (u_0 - u_1). (u_0 + u_1)`
 
 Sanity check: if `u_0 = u_1` then `t_1 = x_1 = 0` i.e. immediate.
-Sanity check: if `u_1 = 0` then `x_1 = 0.5 * |a| . u_0^2`
+Sanity check: if `u_1 = 0` then `x_1 = 0.5 . 1/|a| . u_0^2`
 
-Then we know
-- the deceleration `|a| = 2 . x_1 / (u_0^2 - u_1^2)`.
-- the time `t_1 = (u_0 + u_1) / (2 . x_1)`
+Then we know:
+- the deceleration `|a| = 0.5 . (1 / x_1) . (u_0 - u_1) . (u_0 + u_1)`.
+- the time `t_1 = (u_0 - u_1) / |a| = 2 * x_1 * (1 / (u_0 + u_1))`
 
 Finally, if we start decelerating at `t=tmid` we need to
 change `tmax` to `tmid + t_1` using the above formula for `t_1`.
