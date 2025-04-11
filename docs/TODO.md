@@ -5,9 +5,10 @@
 ### Site
 
 - 🚧 write 1st blog (npc cli)
-  - 🚧 content
-  - 🚧 add a carousel
+  - ✅ more content
+  - ✅ add a carousel
   - can somehow change tabs from blog
+  - more content
 
 - ✅ try carousel
   - https://www.npmjs.com/package/react-multi-carousel
@@ -24,7 +25,8 @@
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
-  - 🚧 real images in carousel
+  - 🚧 improve images in first carousel
+  - clean carousel css e.g. more css variables
   - auto png to webp in public/images
 
 - ✅ fix desktop scroll of grey side area
@@ -50,6 +52,16 @@
 
 - ✅ bug: pause then reset should show interact message
 
+- 🚧 improve motion through doorways
+  - ✅ clarify how to decelerate by changing `t_max` after `t_mid`
+  - 🚧 write code and test it
+  - try to simplify walk smoothing "hacks"
+  - avoid dead-stop on enter small room
+    - e.g. by slowing down inside doorway (increase tmax)
+  - prevent intersection when two npcs move diagonally through doorway
+    - forbid (src,dst)'s intersection
+    - forbid dst's close to each other
+
 - shell should show debugs not errors
 - profile-1 camera target y should always be 1.5?
 - somehow additionally indicate npc is selected by ContextMenu when docked
@@ -57,13 +69,6 @@
 - can disable zoom independently
 - Tabs: debug is global among Tab instances
 - another model human-1
-
-- try to simplify walk smoothing "hacks"
-- avoid dead-stop on enter small room
-  - e.g. by slowing down inside doorway (increase tmax)
-- prevent intersection when two npcs move diagonally through doorway
-  - forbid (src,dst)'s intersection
-  - forbid dst's close to each other
 
 - if lookAt while walking, eventually lookAt once stopMoving
 - ❌ when w.view.enableControls show "ui disabled icon"
