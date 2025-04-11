@@ -52,8 +52,10 @@
 
 - ✅ bug: pause then reset should show interact message
 
-- 🚧 improve motion through doorways
-  - ✅ clarify how to decelerate by changing `t_max` after `t_mid`
+- 🚧 improve motion through doorways (offMeshConnection)
+  - ✅ clarify deceleration from `u_0` to `u_1` in fixed distance `|src - dst|`.
+    - may not actually use this, but worth working out
+  - 🚧 extend our recast-navigation-js branch with `agentAnim.tScale`
   - 🚧 write code and test it
   - try to simplify walk smoothing "hacks"
   - avoid dead-stop on enter small room

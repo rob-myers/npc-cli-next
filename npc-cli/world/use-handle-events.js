@@ -506,19 +506,23 @@ export default function useHandleEvents(w) {
       w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.srcGrKey) });
     },
     onEnterOffMeshConnectionMain(e, npc) {
-      npc.s.lookSecs = 0.5; // slow down look
+      npc.s.lookSecs = 0.5; // slow down look 🚧 remove?
+      
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
-      // 🔔 on enter main seg
-      // - if another traverses main seg in opposite direction, stop
-      // - if another traverses main seg in same direction, go slowly
-      // 🔔 ignore intersections e.g. where two npcs go diagonally at same time
+      /**
+       * 🔔 on enter main seg
+       * - if another traverses main seg in opposite direction, stop
+       * - if another traverses main seg in same direction, go slowly
+       * 
+       * 🔔 currently ignore intersections (e.g. two diagonals)
+      */
+
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
         if (tr.orig.srcGrKey !== offMesh.orig.srcGrKey) {
           // detected conflicting traversal s.t. tr.seg > 0
-          // 🔔 must teleport after stopMoving to prevent offMeshConnection
-          npc.stopMoving();
+          npc.stopMoving(); // 🔔 now teleport to prevent offMeshConnection
           /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position);
         } else {
           npc.goSlowOffMesh(tr);

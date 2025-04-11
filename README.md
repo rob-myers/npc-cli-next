@@ -78,6 +78,21 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
   ```
 
+## Working with a branch of `recast-navigation-js`
+
+Follow instructions here:
+> https://github.com/rob-myers/recast-navigation-js/blob/main/DEVELOPMENT.md
+
+```sh
+brew install cmake
+
+# at repo root
+git checkout feat/expose-all-mesh-anim
+# yarn build does not work, but we can:
+# might have to manually delete packages/recast-navigation-wasm/{build,dist}
+yarn build:packages2
+```
+
 ## Bits and bobs
 
 ### `patch-package`
@@ -101,7 +116,7 @@ but after publishing we should re-comment these paths and use turbopack.
 #### At `recast-navigation-js` repo root
 
 1. Manually bump versions
-  - search for current patch e.g. 0.39.1 and replace with next e.g. 0.39.2
+  - search for current patch e.g. `0.39.2` and replace with next e.g. `0.39.3`
   - do not include yarn.lock, files should be:
     > packages/recast-navigation{,-core,-generators,-playcanvas,-three,-wasm}
 
@@ -178,16 +193,6 @@ ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=60" -b:v 0 -c
 
 ### Deceleration in terms of time
 
-Recast-Detour animates motion over offMeshConnections using times `0 ≤ t ≤ tmax`.
-
-- `t=0` we're near the offMeshConnection.
-- `t=tmid` we're at offMeshConnection start.
-  > we introduce `tmid` in a branch
-- `t=tmax` we're at offMeshConnection end.
-
-Sometimes we want to exit the offMeshConnection at a different speed than we entered it,
- e.g. if we're just about to stop.
-
 - Suppose move in 1D with:
   - init/final position `x(0) := 0`, `x(t_1) := x_1` where `t_1` unknown.
   - init/final velocity `v(0) := u_0`, `v(t_1) := u_1`.
@@ -206,6 +211,3 @@ Sanity check: if `u_1 = 0` then `x_1 = 0.5 . 1/|a| . u_0^2`
 Then we know:
 - the deceleration `|a| = 0.5 . (1 / x_1) . (u_0 - u_1) . (u_0 + u_1)`.
 - the time `t_1 = (u_0 - u_1) / |a| = 2 * x_1 * (1 / (u_0 + u_1))`
-
-Finally, if we start decelerating at `t=tmid` we need to
-change `tmax` to `tmid + t_1` using the above formula for `t_1`.
