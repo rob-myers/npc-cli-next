@@ -381,8 +381,10 @@ export class Npc {
     }
   }
 
+  /**
+   * Cannot use agent.corners() because ag->ncorners is 0 on offMeshConnection
+   */
   getCornerAfterOffMesh() {
-    // cannot use agent.corners() because ag->ncorners is 0 on offMeshConnection
     return {
       x: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 0),
       y: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 2),
@@ -483,7 +485,10 @@ export class Npc {
     return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
   }
 
-  /** @param {NPC.OffMeshState} offMesh */
+  /**
+   * Go slow while traversing offMeshConnection e.g. because another agent is already traversing.
+   * @param {NPC.OffMeshState} offMesh
+   */
   goSlowOffMesh(offMesh) {
     const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
     const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
