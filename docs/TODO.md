@@ -57,12 +57,16 @@
 - can disable zoom independently
 - Tabs: debug is global among Tab instances
 - another model human-1
+
 - try to simplify walk smoothing "hacks"
-- if lookAt while walking, eventually lookAt once stopMoving
-- ❌ when w.view.enableControls show "ui disabled icon"
+- avoid dead-stop on enter small room
+  - e.g. by slowing down inside doorway (increase tmax)
 - prevent intersection when two npcs move diagonally through doorway
   - forbid (src,dst)'s intersection
   - forbid dst's close to each other
+
+- if lookAt while walking, eventually lookAt once stopMoving
+- ❌ when w.view.enableControls show "ui disabled icon"
 
 - bug: sh
   - multi-line edit using Option+Enter not working (need repro)
