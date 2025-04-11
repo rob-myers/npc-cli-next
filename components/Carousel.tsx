@@ -144,7 +144,7 @@ interface Props extends EmblaOptionsType {
 const carouselCss = css`
   --slider-max-height: unset;
   --slider-min-height: unset;
-  --slide-spacing: 1rem;
+  --slide-spacing: 32px;
   --slider-dot-width: 0.75rem;
   --slider-dots-height: 48px;
   --slider-dot-gap: 16px;

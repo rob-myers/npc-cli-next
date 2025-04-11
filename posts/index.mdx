@@ -35,12 +35,12 @@ Can the NPCs fool the Player? <SideNote> A "Non-Player Character" (NPC) is a vid
   items={[
     {
       img: WorldTwoNpcWebp,
-      label: <>We've built the system <em>directly</em> into this site.</>,
+      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
       objectPosition: '0% 0%',
     },
     {
       img: ManyNpcTwoTtyWebp,
-      label: <>CLI stands for Command Line Interface.</>,
+      label: <>CLI stands for <em>Command Line Interface.</em></>,
       objectPosition: '100% 0%',
     },
   ]}
@@ -49,19 +49,18 @@ Can the NPCs fool the Player? <SideNote> A "Non-Player Character" (NPC) is a vid
   minHeight={400}
 />
 
-This problem is traditionally "solved" by constraining the environment.
-Abstract puzzles games <SideNote>Card games or Tetris for example.</SideNote> restrict the possible moves.
+This problem is traditionally "solved" by constraining the interactions.
+Abstract puzzle games restrict the possible moves.
 Racing games restrict interaction to physical collisions.
 A vast number of games only involve aggressive NPCs, constrained by their time-limited existence.
-So let's assume the NPCs
-can move freely through a 3D environment without time constraints.
-Under this assumption,
-no known game solves the underlying problem.
+So let's assume the NPCs can move freely through a 3D environment without time constraints.
+Under this assumption, no known game solves the underlying problem.
 Nothing even comes close.
-It seems nobody knows how to tackle this problem directly.
+Such NPC behaviour has not improved dramatically for 20 years.
 
-But what about indirectly?
-This brings us to our overall objectives:
+Maybe we're trying to run before we can walk.
+For example, we don't really have a precise way of talking about NPC behaviour.
+Then in our pursuit of the underlying problem this blog has the following objectives:
 
 <Card id="underlying-problem"> 
 **Our Objectives**
@@ -69,5 +68,5 @@ This brings us to our overall objectives:
 {/* Create a video game whose Non-Player Characters behave just like human-controlled characters. */}
 
 1. Build real-time control systems for NPCs.
-2. Enable a Game Master <SideNote>G</SideNote> to act indistinguishably from many humans.
+2. Enable a Game Master to act indistinguishably from many humans. <SideNote>A Game Master (aka Dungeon Master) is another human who controls the Game World.</SideNote>
 </Card>
