@@ -63,10 +63,11 @@
   - ✅ extend our recast-navigation-js branch with `agentAnim.tScale`
   - 🚧 write code and test it
     - ✅ `npc.s.tScale.dst` is approached during offMeshConnection
-    - 🚧 `npc.slowDownOffMeshConnection`
-      - 🚧 should update (exit) speed too
-      - 🚧 update `offMesh.tToDist` as "new current speed"
-    - 🚧 trigger before "small room"
+    - ✅ `npc.setOffMeshExitSpeed`
+      - ✅ should update (exit) speed too
+      - ✅ update `offMesh.tToDist` as "new current speed"
+    - ✅ trigger before "small room"
+    - ✅ remove `npc.goSlowOffMesh`
     - 🚧 trigger when will stop near offMeshConnection dst
   - try to simplify walk smoothing "hacks"
   - avoid dead-stop on enter small room
@@ -74,6 +75,8 @@
   - prevent intersection when two npcs move diagonally through doorway
     - forbid (src,dst)'s intersection
     - forbid dst's close to each other
+
+- try "turn around before moving" via small acceleration initially
 
 - shell should show debugs not errors
 - profile-1 camera target y should always be 1.5?

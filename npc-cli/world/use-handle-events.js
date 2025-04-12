@@ -518,7 +518,6 @@ export default function useHandleEvents(w) {
        * 
        * 🔔 currently ignore intersections (e.g. two diagonals)
       */
-
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
@@ -527,9 +526,14 @@ export default function useHandleEvents(w) {
           npc.stopMoving(); // 🔔 now teleport to prevent offMeshConnection
           /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position);
         } else {
-          npc.goSlowOffMesh(tr);
+          npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
         }
-        break;
+        return;
+      }
+
+      // slow down as approach small room
+      if (offMesh.orig.dstRoomMeta.small === true) { 
+        npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
       }
     },
     onExitDoorCollider(e) {// e.type === 'nearby'

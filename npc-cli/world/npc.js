@@ -481,30 +481,12 @@ export class Npc {
     }
   }
 
-  getSlowSpeed() {
-    return this.def.walkSpeed * 0.5;
-  }
-
   getMaxSpeed() {
     // return 0.5;
     // return this.def.runSpeed;
     return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
   }
 
-  /**
-   * Go slow while traversing offMeshConnection e.g. because another agent is already traversing.
-   * @param {NPC.OffMeshState} offMesh
-   */
-  goSlowOffMesh(offMesh) {
-    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
-    const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
-    anim.set_tmax(anim.t + tmpVect1.copy(this.getPoint()).distanceTo(offMesh.dst) / this.getSlowSpeed());
-    agent.updateParameters({ maxSpeed: this.getSlowSpeed() });
-    offMesh.tToDist = this.getSlowSpeed();
-    if (this.s.act === 'Run') {
-      this.startAnimation('Walk');
-    }
-  }
 
   /**
    * 1. Step `offMesh.seg` through `[0, 1, 2]`
@@ -1004,6 +986,34 @@ export class Npc {
     ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
 
     this.w.texNpcLabel.updateIndex(this.def.uid);
+  }
+
+  /**
+   * @param {number} exitSpeed
+   */
+  setOffMeshExitSpeed(exitSpeed) {
+    if (this.s.offMesh === null) {
+      return warn(`${'slowDownOffMesh'}: ${this.key}: s.offMesh is null`);
+    }
+    if (this.agentAnim === null) {
+      return warn(`${'slowDownOffMesh'}: ${this.key}: no agent`);
+    }
+    if (exitSpeed < 0.05) {
+      return warn(`${'slowDownOffMesh'}: ${this.key}: exit speed to slow (${exitSpeed})`);
+    }
+
+    this.s.tScale = {
+      start: this.agentAnim.t,
+      dst: exitSpeed / this.getMaxSpeed(),
+    };
+
+    /** @type {NPC.CrowdAgent} */ (this.agent).updateParameters({ maxSpeed: exitSpeed });
+    // 🚧 approx e.g. getFurtherAlongOffMesh will be even further
+    this.s.offMesh.tToDist = exitSpeed;
+
+    if (this.s.act === 'Run' && exitSpeed < this.def.runSpeed) {
+      this.startAnimation('Walk');
+    }
   }
 
   /**
