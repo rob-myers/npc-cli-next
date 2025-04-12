@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
-import { deltaAngle } from "maath/misc";
+import { deltaAngle, lerp } from "maath/misc";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
@@ -82,6 +82,12 @@ export class Npc {
     slowBegin: /** @type {null | number} */ (null),
     spawns: 0,
     target: /** @type {null | THREE.Vector3} */ (null),
+    /**
+     * Used to change offMeshConnection exit speed via `agentAnim.tScale`.
+     * - Starts at time `0 ≤ start ≤ agentAnim.tmax`.
+     * - Approaches `dst` as we exit offMeshConnection.
+     */
+    tScale: /** @type {null | { start: number; dst: number; }} */ (null),
   };
   
   /** @type {null | NPC.CrowdAgent} */
@@ -531,6 +537,11 @@ export class Npc {
       offMesh.seg = 2; // midway in main segment
     }
 
+    if (this.s.tScale !== null) {// approach tScale.dst as t -> tmax
+      const { start, dst } = this.s.tScale;
+      anim.tScale = lerp(1, dst, (anim.t - start) / (anim.tmax - start));
+    }
+
     // look further along the path
     // 🔔 with 0.2 saw jerk when two agents through doorway
     const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
@@ -745,7 +756,8 @@ export class Npc {
     if (this.s.agentState === 2) {// exit offMeshConnection
       if (this.s.offMesh !== null) {
         this.w.events.next({ key: 'exit-off-mesh', npcKey: this.key, offMesh: this.s.offMesh.orig  });
-      } else {// cancelled offMeshConnection before reaching main segment
+      } else {
+        // cancelled offMeshConnection before reaching main segment
         // warn(`${this.key}: exited offMeshConnection but this.s.offMesh already null`);
       }
       return;

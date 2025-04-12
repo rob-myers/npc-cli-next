@@ -38,9 +38,11 @@ export default function useHandleEvents(w) {
       return true;
     },
     clearOffMesh(npc) {
-      // offMeshConnection can happen when `npc.s.offMesh === null`
+      // 🔔 offMeshConnection can happen when `npc.s.offMesh === null`
       // e.g. npc without access near door
       npc.agentAnim?.set_active(false);
+      npc.agentAnim?.set_tScale(1);
+      npc.s.tScale = null;
       
       if (npc.s.offMesh === null) {
         return;

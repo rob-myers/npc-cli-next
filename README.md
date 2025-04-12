@@ -57,26 +57,27 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
 ## Example NPC-CLI shell commands
 
-  ```sh
-  c=0
-  while true; do
-    spawn "rob_${c}" $( click 1 )
-    w e.grantNpcAccess "rob_${c}" .
-    c+=1
-  done
-  
-  # commands work while paused via prefix `ptags=no-pause;`
-  ptags=no-pause events
+```sh
+c=0
+while true; do
+  spawn "rob_${c}" $( click 1 )
+  w e.grantNpcAccess "rob_${c}" .
+  c+=1
+done
 
-  # reset or save control state i.e. current view
-  w view.controls.reset
-  w view.controls.saveState
+# commands work while paused via prefix `ptags=no-pause;`
+ptags=no-pause events
 
-  # this command does not exit until the World is enabled
-  test $( w disabled ) &&
-    events '({ key }) => key === "enabled"' | take 1
+# reset or save control state i.e. current view
+w view.controls.reset
+w view.controls.saveState
 
-  ```
+# this command does not exit until the World is enabled
+test $( w disabled ) &&
+  events '({ key }) => key === "enabled"' | take 1
+
+w n.rob.s | assign '{ tScale: { start: 0, dst: 0.5 } }'
+```
 
 ## Working with a branch of `recast-navigation-js`
 

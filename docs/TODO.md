@@ -60,8 +60,13 @@
 - 🚧 improve motion through doorways (offMeshConnection)
   - ✅ clarify deceleration from `u_0` to `u_1` in fixed distance `|src - dst|`.
     - may not actually use this, but worth working out
-  - 🚧 extend our recast-navigation-js branch with `agentAnim.tScale`
+  - ✅ extend our recast-navigation-js branch with `agentAnim.tScale`
   - 🚧 write code and test it
+    - ✅ `npc.s.tScale.dst` is approached during offMeshConnection
+    - 🚧 should update (exit) speed too
+    - 🚧 update `offMesh.tToDist` as "new current speed"
+    - 🚧 trigger before "small room"
+    - 🚧 trigger when will stop near offMeshConnection dst
   - try to simplify walk smoothing "hacks"
   - avoid dead-stop on enter small room
     - e.g. by slowing down inside doorway (increase tmax)
