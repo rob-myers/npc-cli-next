@@ -253,7 +253,7 @@ export default function Npcs(props) {
       ;
 
       if (npc !== undefined) {// Respawn
-        await npc.cancel();
+        npc.cancel();
         npc.epochMs = Date.now();
 
         npc.def = {

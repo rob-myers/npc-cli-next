@@ -589,7 +589,6 @@ export default function useHandleEvents(w) {
       const { src: enSrc, dst: enDst } = door.entrances[offMesh.aligned === true ? 0 : 1];
       const { src: exSrc, dst: exDst } = door.entrances[offMesh.aligned === true ? 1 : 0];
 
-
       // extend "npcPoint --> corner" in each direction, since
       // offMeshConnections are slightly away from doorway 
       const agSrc = {
