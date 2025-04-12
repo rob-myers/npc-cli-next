@@ -181,6 +181,7 @@ const carouselCss = css`
     flex: 0 0 100%;
     min-width: 0;
     margin-right: var(--slide-spacing);
+    background-color: black;
 
     img {
       margin: 0;
