@@ -902,9 +902,8 @@ export class Npc {
   /**
    * @param {number} deltaMs 
    * @param {NPC.CrowdAgent} agent 
-   * @returns 
    */
-  onTickDetectStuck(deltaMs, agent) {
+  onTickDetectStuck(deltaMs, agent) {// 🔔 customise smallDist and time
     const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
@@ -914,7 +913,7 @@ export class Npc {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < 0.2) {// 200ms
+    if (elapsedTime - this.s.slowBegin < 0.25) {
       return;
     }
     // 🔔 can prevent npc moving is acceleration too low
@@ -940,7 +939,7 @@ export class Npc {
 
     const nei = agent.raw.get_neis(0); // 0th closest
     const other = this.w.npc.byAgId[nei.idx];
-    if (other.s.target === null || nei.dist > 0.5) {// 🔔
+    if (other.s.target === null || nei.dist > 0.4) {// 🔔
       return;
     }
     

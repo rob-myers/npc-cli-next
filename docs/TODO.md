@@ -44,6 +44,9 @@
   - ℹ️ nondeterministic automata language-theoretically
   - summary of pre-existing academic work
 
+- Tabs: debug is global among Tab instances
+  - defunct if we remove debug i.e. always paused when paused
+
 ### World
 
 - 🚧 cuboids have outlines via shader, using UVs
@@ -69,12 +72,12 @@
 - shell should show debugs not errors
 - profile-1 camera target y should always be 1.5?
 - somehow additionally indicate npc is selected by ContextMenu when docked
-- tween: provide many examples
-- can disable zoom independently
-- Tabs: debug is global among Tab instances
 - another model human-1
-
+- tween: provide many examples
 - if lookAt while walking, eventually lookAt once stopMoving
+- saw onTickDetectStuck fire when npc no longer stuck causing bad stop
+  - maybe check if closest neighbour is in front too
+
 - ❌ when w.view.enableControls show "ui disabled icon"
 
 - bug: sh
