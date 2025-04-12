@@ -9,6 +9,8 @@
   - ✅ add a carousel
   - can somehow change tabs from blog
   - more content
+  - mention recent improvements in AI
+    - NPC CLI could use them as tools
 
 - ✅ try carousel
   - https://www.npmjs.com/package/react-multi-carousel
