@@ -63,8 +63,9 @@
   - ✅ extend our recast-navigation-js branch with `agentAnim.tScale`
   - 🚧 write code and test it
     - ✅ `npc.s.tScale.dst` is approached during offMeshConnection
-    - 🚧 should update (exit) speed too
-    - 🚧 update `offMesh.tToDist` as "new current speed"
+    - 🚧 `npc.slowDownOffMeshConnection`
+      - 🚧 should update (exit) speed too
+      - 🚧 update `offMesh.tToDist` as "new current speed"
     - 🚧 trigger before "small room"
     - 🚧 trigger when will stop near offMeshConnection dst
   - try to simplify walk smoothing "hacks"

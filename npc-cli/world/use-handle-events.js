@@ -550,16 +550,24 @@ export default function useHandleEvents(w) {
       }
     },
     onExitOffMeshConnection(e, npc) {
-      npc.s.lookSecs = 0.2;
+      npc.s.lookSecs = 0.2; // 🚧 remove
       state.clearOffMesh(npc);
       
+      if (npc.agent === null) {
+        return; // e.g. npc without access near door
+      }
       if (e.offMesh.dstRoomMeta.small === true) { 
         npc.stopMoving(); // avoid jerk on try pass close neighbour
-      } else if (npc.position.distanceToSquared(npc.lastTarget) < 0.4 ** 2) {
-        // npc.s.permitTurn = false; // avoid short-sharp turn
-      } else if (npc.agent?.maxSpeed === npc.getSlowSpeed()) {// resume speed
-        npc.agent.updateParameters({ maxSpeed: npc.getMaxSpeed() });
-        npc.s.run === true && npc.startAnimation('Run');
+        return;
+      }
+
+      // resume speed
+      const maxSpeed = npc.getMaxSpeed();
+      if (npc.agent.maxSpeed !== maxSpeed) {
+        npc.agent.updateParameters({ maxSpeed });
+      }
+      if (npc.s.run === true && npc.s.act !== 'Run') {
+        npc.startAnimation('Run');
       }
 
       w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.dstGrKey) });
