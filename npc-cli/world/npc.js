@@ -611,8 +611,8 @@ export class Npc {
   isTargetClose(input) {
     input = toXZ(input);
     return (
-      Math.abs(this.lastTarget.x - input.x) < 0.4
-      && Math.abs(this.lastTarget.z - input.y) < 0.4
+      Math.abs(this.lastTarget.x - input.x) < 0.5
+      && Math.abs(this.lastTarget.z - input.y) < 0.5
     );
   }
 
