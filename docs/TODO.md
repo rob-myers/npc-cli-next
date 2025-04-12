@@ -61,7 +61,7 @@
   - ✅ clarify deceleration from `u_0` to `u_1` in fixed distance `|src - dst|`.
     - may not actually use this, but worth working out
   - ✅ extend our recast-navigation-js branch with `agentAnim.tScale`
-  - 🚧 write code and test it
+  - ✅ write code and test it
     - ✅ `npc.s.tScale.dst` is approached during offMeshConnection
     - ✅ `npc.setOffMeshExitSpeed`
       - ✅ should update (exit) speed too
@@ -72,8 +72,8 @@
       - on enter offMeshConnection test for target nearby exit
   - ✅ avoid dead-stop on enter small room
     - by slowing down inside doorway
-  - 🚧 try to simplify walk smoothing "hacks"
-  - prevent intersection when two npcs move diagonally through doorway
+  - ✅ try to simplify walk smoothing "hacks"
+  - 🚧 prevent intersection when two npcs move diagonally through doorway
     - forbid (src,dst)'s intersection
     - forbid dst's close to each other
 
