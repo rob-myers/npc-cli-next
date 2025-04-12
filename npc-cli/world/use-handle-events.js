@@ -465,13 +465,6 @@ export default function useHandleEvents(w) {
       const { offMesh } = e;
       const door = w.door.byKey[offMesh.gdKey];
 
-      // detect blocking npcKey in small room
-      if (offMesh.dstRoomMeta.small === true && Array.from(state.doorToNearbyNpcs[offMesh.gdKey] ?? []).find(npcKey =>
-        npcKey !== e.npcKey && w.n[npcKey].position.distanceToSquared(offMesh.dst) < 0.1 ** 2
-      )) {
-        return npc.stopMoving();
-      }
-
       // try open closed door
       if (door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
