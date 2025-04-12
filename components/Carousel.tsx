@@ -139,8 +139,6 @@ interface Props extends EmblaOptionsType {
   minHeight?: number;
 }
 
-// 🚧 remove hard-coded lengths
-// 🚧 responsive button/label distance from bottom
 const carouselCss = css`
   --slider-max-height: unset;
   --slider-min-height: unset;
@@ -197,7 +195,7 @@ const carouselCss = css`
     bottom: 0;
     display: flex;
     justify-content: space-between;
-    width: calc(100% - 24px * 2);
+    width: calc(100% - 2 * var(--slider-next-button-width));
     margin: 32px 0;
     pointer-events: none;
   }
@@ -229,12 +227,13 @@ const carouselCss = css`
     width: var(--slider-next-icon-width);
     height: var(--slider-next-icon-width);
   }
+
   .slide-label {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: calc(36px + 64px);
-    max-height: calc(36px + 64px);
+    height: calc(3 * var(--slider-next-button-width));
+    /* max-height: calc(3 * var(--slider-next-button-width)); */
     overflow: hidden;
 
     flex: 1;
@@ -242,8 +241,7 @@ const carouselCss = css`
     justify-content: center;
     align-items: center;
 
-    // 🚧
-    padding: 0 calc(64px + 8px);
+    padding: 0 calc(2 * var(--slider-next-button-width) + 8px);
     color: #99a;
     background-color: #00000099;
     border-radius: 0 0 var(--slider-border-radius) var(--slider-border-radius);
