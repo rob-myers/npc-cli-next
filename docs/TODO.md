@@ -68,10 +68,11 @@
       - ✅ update `offMesh.tToDist` as "new current speed"
     - ✅ trigger before "small room"
     - ✅ remove `npc.goSlowOffMesh`
-    - 🚧 trigger when will stop near offMeshConnection dst
+    - ✅ trigger when will stop near offMeshConnection dst
+      - on enter offMeshConnection test for target nearby exit
+  - ✅ avoid dead-stop on enter small room
+    - by slowing down inside doorway
   - try to simplify walk smoothing "hacks"
-  - avoid dead-stop on enter small room
-    - e.g. by slowing down inside doorway (increase tmax)
   - prevent intersection when two npcs move diagonally through doorway
     - forbid (src,dst)'s intersection
     - forbid dst's close to each other

@@ -487,7 +487,6 @@ export class Npc {
     return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
   }
 
-
   /**
    * 1. Step `offMesh.seg` through `[0, 1, 2]`
    * 

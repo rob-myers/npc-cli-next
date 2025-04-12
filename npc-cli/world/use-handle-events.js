@@ -534,6 +534,16 @@ export default function useHandleEvents(w) {
       // slow down as approach small room
       if (offMesh.orig.dstRoomMeta.small === true) { 
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
+        return;
+      }
+      
+      // slow down if final target nearby
+      if (
+        Math.abs(npc.lastTarget.x - offMesh.dst.x) < 0.5
+        && Math.abs(npc.lastTarget.z - offMesh.dst.y) < 0.5
+      ) {
+        npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
+        return;
       }
     },
     onExitDoorCollider(e) {// e.type === 'nearby'
