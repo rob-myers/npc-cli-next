@@ -462,7 +462,6 @@ export default function useHandleEvents(w) {
       }
     },
     onEnterOffMeshConnection(e, npc) {
-      npc.s.lookSecs = 0.2;
       const { offMesh } = e;
       const door = w.door.byKey[offMesh.gdKey];
 
@@ -508,8 +507,6 @@ export default function useHandleEvents(w) {
       w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.srcGrKey) });
     },
     onEnterOffMeshConnectionMain(e, npc) {
-      npc.s.lookSecs = 0.5; // slow down look 🚧 remove?
-      
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
       /**
        * 🔔 on enter main seg
@@ -564,15 +561,13 @@ export default function useHandleEvents(w) {
       }
     },
     onExitOffMeshConnection(e, npc) {
-      npc.s.lookSecs = 0.2; // 🚧 remove
       state.clearOffMesh(npc);
       
       if (npc.agent === null) {
         return; // e.g. npc without access near door
       }
       if (e.offMesh.dstRoomMeta.small === true) { 
-        npc.stopMoving(); // avoid jerk on try pass close neighbour
-        return;
+        return npc.stopMoving(); // avoid jerk on try pass close neighbour
       }
 
       // resume speed

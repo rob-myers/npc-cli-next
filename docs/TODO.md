@@ -72,7 +72,7 @@
       - on enter offMeshConnection test for target nearby exit
   - ✅ avoid dead-stop on enter small room
     - by slowing down inside doorway
-  - try to simplify walk smoothing "hacks"
+  - 🚧 try to simplify walk smoothing "hacks"
   - prevent intersection when two npcs move diagonally through doorway
     - forbid (src,dst)'s intersection
     - forbid dst's close to each other

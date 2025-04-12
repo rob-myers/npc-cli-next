@@ -67,7 +67,7 @@ export class Npc {
     labelY: 0,
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
-    lookSecs: 0.3,
+    lookSecs: 0.5,
     /** An offMeshConnection traversal */
     offMesh: /** @type {null | NPC.OffMeshState} */ (null),
     opacity: 1,
@@ -309,6 +309,17 @@ export class Npc {
       const closest = w.npc.getClosestNavigable(toV3(p));
       if (closest !== null) await this.offMeshDo({...toXZ(closest), meta: { nav: true }});
     }
+  }
+
+  ensureAnimationMixer() {
+    if (this.mixer !== emptyAnimationMixer) {
+      return;
+    }
+    this.mixer = new THREE.AnimationMixer(this.m.group);
+    this.m.toAct = this.m.animations.reduce((agg, a) => helper.isAnimKey(a.name)
+      ? (agg[a.name] = this.mixer.clipAction(a), agg)
+      : (warn(`ignored unexpected animation: ${a.name}`), agg)
+    , /** @type {typeof this['m']['toAct']} */ ({}));
   }
 
   /**
@@ -716,8 +727,7 @@ export class Npc {
    */
   onChangeAgentState(agent, next) {
     if (next === 2) {// enter offMeshConnection
-      // find off-mesh-connection via lookup
-      const offMesh = (
+      const offMesh = (// find off-mesh-connection via lookup
         this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(0), agent.raw.get_cornerVerts(2))]
         ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(3), agent.raw.get_cornerVerts(5))]
         ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(6), agent.raw.get_cornerVerts(8))]
@@ -808,7 +818,7 @@ export class Npc {
       // Resume `w.npc.spawn`
       this.resolve.spawn?.();
       // Ensure non-empty animation mixer
-      this.setupMixer();
+      this.ensureAnimationMixer();
     } else {
       this.m.group = emptyGroup;
       this.position = tmpVectThree1;
@@ -940,19 +950,6 @@ export class Npc {
     this.s.lookAngleDst = this.getEulerAngle(Math.atan2((other.position.z - this.position.z), (other.position.x - this.position.x)));
   }
 
-  setupMixer() {
-    if (this.mixer !== emptyAnimationMixer) {
-      return;
-    }
-
-    this.mixer = new THREE.AnimationMixer(this.m.group);
-
-    this.m.toAct = this.m.animations.reduce((agg, a) => helper.isAnimKey(a.name)
-      ? (agg[a.name] = this.mixer.clipAction(a), agg)
-      : (warn(`ignored unexpected animation: ${a.name}`), agg)
-    , /** @type {typeof this['m']['toAct']} */ ({}));
-  }
-
   /**
    * @param {string | undefined | null} label
    */
@@ -992,23 +989,29 @@ export class Npc {
    */
   setOffMeshExitSpeed(exitSpeed) {
     if (this.s.offMesh === null) {
-      return warn(`${'slowDownOffMesh'}: ${this.key}: s.offMesh is null`);
+      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: s.offMesh is null`);
     }
     if (this.agentAnim === null) {
-      return warn(`${'slowDownOffMesh'}: ${this.key}: no agent`);
+      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: no agent`);
     }
     if (exitSpeed < 0.05) {
-      return warn(`${'slowDownOffMesh'}: ${this.key}: exit speed to slow (${exitSpeed})`);
+      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: exit speed to slow (${exitSpeed})`);
     }
 
+    const maxSpeed = this.getMaxSpeed();
     this.s.tScale = {
       start: this.agentAnim.t,
-      dst: exitSpeed / this.getMaxSpeed(),
+      dst: exitSpeed / maxSpeed,
     };
 
-    /** @type {NPC.CrowdAgent} */ (this.agent).updateParameters({ maxSpeed: exitSpeed });
-    // 🚧 approx e.g. getFurtherAlongOffMesh will be even further
-    this.s.offMesh.tToDist = exitSpeed;
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    agent.updateParameters({ maxSpeed: exitSpeed });
+
+    if (exitSpeed >= maxSpeed) {
+      this.s.offMesh.tToDist = exitSpeed;
+    } else {// 🔔 avoid look flicker when target "before" offMesh.dst
+      this.s.offMesh.tToDist = maxSpeed;
+    }
 
     if (this.s.act === 'Run' && exitSpeed < this.def.runSpeed) {
       this.startAnimation('Walk');
@@ -1065,12 +1068,8 @@ export class Npc {
       return;
     }
 
-    this.s.lookSecs = 0.3;
-    if (this.s.lookAngleDst !== null) {
-      // 🚧 turn a bit more e.g. just after doorway
-      this.s.lookAngleDst = this.rotation.y + deltaAngle(this.rotation.y, this.s.lookAngleDst) / 3;
-    }
-
+    this.s.lookSecs = 0.5;
+    this.s.lookAngleDst = null;
     this.s.permitTurn = true;
     this.s.slowBegin = null;
     this.s.target = null;
