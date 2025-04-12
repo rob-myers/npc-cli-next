@@ -606,6 +606,17 @@ export class Npc {
   }
 
   /**
+   * @param {Geom.VectJson | THREE.Vector3} input 
+   */
+  isTargetClose(input) {
+    input = toXZ(input);
+    return (
+      Math.abs(this.lastTarget.x - input.x) < 0.4
+      && Math.abs(this.lastTarget.z - input.y) < 0.4
+    );
+  }
+
+  /**
    * @param { number | Geom.VectJson | THREE.Vector3Like} input
    * - radians (ccw from east), or
    * - point
@@ -889,10 +900,6 @@ export class Npc {
     this.onTickTurnTarget(agent);
 
     const distance = this.s.target.distanceTo(pos);
-
-    // if (distance < 0.4) {
-    //   this.s.lookSecs = 0.4; // avoid final turn
-    // }
 
     if (distance < 0.15) {// Reached target
       this.stopMoving();

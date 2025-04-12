@@ -322,9 +322,6 @@ export default function useHandleEvents(w) {
           const { npcKey, gmId, roomId, grKey } = e;
           state.npcToRoom.set(npcKey, { gmId, roomId, grKey });
           (state.roomToNpcs[gmId][roomId] ??= new Set()).add(npcKey);
-          // if (npc.s.target !== null && npc.position.distanceTo(npc.s.target) <= 1) {
-          //   npc.s.lookSecs = 0.3; // slower look if stopping soon
-          // }
           break;
         }
         case "exit-room": {
@@ -527,11 +524,8 @@ export default function useHandleEvents(w) {
         return;
       }
       
-      // slow down if final target nearby
-      if (
-        Math.abs(npc.lastTarget.x - offMesh.dst.x) < 0.5
-        && Math.abs(npc.lastTarget.z - offMesh.dst.y) < 0.5
-      ) {
+      // slow down if target nearby
+      if (npc.isTargetClose(offMesh.dst) === true) {
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
         return;
       }
@@ -561,6 +555,10 @@ export default function useHandleEvents(w) {
       }
       if (e.offMesh.dstRoomMeta.small === true) { 
         return npc.stopMoving(); // avoid jerk on try pass close neighbour
+      }
+
+      if (npc.isTargetClose(npc.position) === true) {
+        npc.s.lookSecs = 0.5; // avoid sharp turn around corner from doorway
       }
 
       // resume speed
