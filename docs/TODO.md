@@ -33,6 +33,8 @@
 
 - ✅ fix desktop scroll of grey side area
 
+- start adding cypress
+
 - basic help page
 
 - basic about page
@@ -73,9 +75,14 @@
   - ✅ avoid dead-stop on enter small room
     - by slowing down inside doorway
   - ✅ try to simplify walk smoothing "hacks"
-  - 🚧 prevent intersection when two npcs move diagonally through doorway
-    - forbid (src,dst)'s intersection
-    - forbid dst's close to each other
+  - ❌ prevent intersection when two npcs move diagonally through doorway
+    - ❌ forbid (src,dst)'s intersection
+    - ❌ forbid dst's close to each other
+  - ✅ simplify doorway multi-traversal approach
+    - only permit traversal if every other traversal is in same direction and already half-way there
+  - ✅ fix npc not turning correctly when two npcs traverse offMeshConnection
+    - reset s.lookSecs on enter offMeshConnection
+    - also simplify onTickTurnTarget
 
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?

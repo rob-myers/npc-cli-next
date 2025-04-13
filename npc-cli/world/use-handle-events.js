@@ -462,6 +462,8 @@ export default function useHandleEvents(w) {
       const { offMesh } = e;
       const door = w.door.byKey[offMesh.gdKey];
 
+      npc.s.lookSecs = 0.2;
+
       // try open closed door
       if (door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
@@ -473,7 +475,7 @@ export default function useHandleEvents(w) {
       }
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
-      // avoid flicker      
+      /** avoid flicker when next corner after offMeshConnection is too close */      
       const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.05;
 
       // register adjusted traversal
@@ -498,34 +500,31 @@ export default function useHandleEvents(w) {
     },
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
-      /**
-       * 🔔 on enter main seg
-       * - if another traverses main seg in opposite direction, stop
-       * - if another traverses main seg in same direction, go slowly
-       * 
-       * 🔔 currently ignore intersections (e.g. two diagonals)
-      */
+
+      // on enter main seg...
+      let should = /** @type {null | 'slow-down' | 'stop'} */ (null)
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
-        if (tr.orig.srcGrKey !== offMesh.orig.srcGrKey) {
-          // detected conflicting traversal s.t. tr.seg > 0
-          npc.stopMoving(); // 🔔 now teleport to prevent offMeshConnection
-          /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position);
-        } else {
-          npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
+        if (tr.seg === 2 && tr.orig.srcGrKey === offMesh.orig.srcGrKey) {
+          should = 'slow-down'; // other beyond midway and in same direction
+          continue;
         }
+        should = 'stop';
+        break;
+      }
+
+      if (should === 'stop') {
+        npc.stopMoving(); // also teleport to stop offMeshConnection:
+        /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position); 
         return;
       }
 
-      // slow down as approach small room
-      if (offMesh.orig.dstRoomMeta.small === true) { 
-        npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
-        return;
-      }
-      
-      // slow down if target nearby
-      if (npc.isTargetClose(offMesh.dst) === true) {
+      if (
+        should === 'slow-down'
+        || offMesh.orig.dstRoomMeta.small === true // small room
+        || npc.isTargetClose(offMesh.dst) === true // target nearby
+      ) {
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
         return;
       }

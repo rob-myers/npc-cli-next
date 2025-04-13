@@ -661,7 +661,7 @@ export class Npc {
     }
 
     this.s.permitTurn = true;
-    this.s.lookSecs = 0.15;
+    this.s.lookSecs = 0.2;
 
     this.agent.updateParameters({
       maxAcceleration: movingMaxAcceleration,
@@ -738,8 +738,6 @@ export class Npc {
    */
   onChangeAgentState(agent, next) {
     if (next === 2) {// enter offMeshConnection
-      this.s.lookSecs = 0.2;
-
       const offMesh = (// find off-mesh-connection via lookup
         this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(0), agent.raw.get_cornerVerts(2))]
         ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(3), agent.raw.get_cornerVerts(5))]
@@ -934,8 +932,6 @@ export class Npc {
   /** @param {NPC.CrowdAgent} agent */
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
-    const speedSqr = vel.x ** 2 + vel.z ** 2;
-    this.s.lookSecs = speedSqr < 0.2 ** 2 ? 2 : 0.2; // 🔔 improve and justify
     this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
   }
 
