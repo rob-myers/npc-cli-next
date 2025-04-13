@@ -93,7 +93,8 @@
 - 🚧 distinguish paused some other way
   - ℹ️ World and Tty
   - ❌ inverted filter with modified door lights
-  - 🚧 post-processing effect
+  - ❌ post-processing effect
+  - write "paused" in ViewerControls
 
 - ✅ bug: after initial pause frameloop is still `always`
   - ℹ️ `w r3f.get | map 'x => x.frameloop'`

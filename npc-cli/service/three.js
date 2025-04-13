@@ -41,7 +41,7 @@ export function getQuadGeometryXZ(key, centered = false) {
 }
 
 /**
- * @param {string} colorRep 
+ * @param {string | number} colorRep 
  */
 export function getColor(colorRep) {
   return colorLookup[colorRep] ??= new THREE.Color(colorRep);

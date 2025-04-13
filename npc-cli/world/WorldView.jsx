@@ -1,11 +1,9 @@
 import React from "react";
 import * as THREE from "three";
-import cx from "classnames";
 import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
-// import { Bloom, DepthOfField, EffectComposer, Noise, Vignette } from '@react-three/postprocessing'
 
 import { debug, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -569,7 +567,6 @@ export default function WorldView(props) {
     <Canvas
       ref={state.canvasRef}
       css={rootCss}
-      className={cx({ disabled: w.disabled })}
       frameloop={state.syncRenderMode()}
       resize={{ debounce: 0 }}
       gl={state.glOpts}
@@ -612,9 +609,6 @@ export default function WorldView(props) {
 
       <NpcSpeechBubbles/>
 
-      {/* <EffectComposer>
-        <Noise />
-      </EffectComposer> */}
     </Canvas>
   );
 }
@@ -719,11 +713,6 @@ const rootCss = css`
     transition: filter 1s;
   }
   
-  // 🚧
-  /* transition: filter 1s;
-  &.disabled {
-    filter: invert();
-  } */
 `;
 
 const statsCss = css`
