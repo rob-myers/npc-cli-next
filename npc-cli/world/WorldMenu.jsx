@@ -2,7 +2,6 @@ import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
 import { createPortal } from "react-dom";
-import debounce from "debounce";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { zIndexWorld } from "../service/const";
@@ -10,7 +9,7 @@ import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { faderOverlayCss, pausedControlsCss } from "./overlay-menu-css";
+import { pausedControlsCss } from "./overlay-menu-css";
 import { Draggable } from "../components/Draggable";
 import { PopUp, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 import { globalLoggerLinksRegex, Logger } from "../terminal/Logger";
@@ -28,8 +27,7 @@ export default function WorldMenu(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
 
-    brightness: 5, // [1..10] inducing percentage `50 + 10 * b`
-    debugMode: false,
+    brightness: 8, // [1..10] inducing percentage `50 + 10 * b`
     disconnected: true,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
@@ -41,6 +39,14 @@ export default function WorldMenu(props) {
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
     xRayOpacity: 4, // [1..10]
 
+    applyControlsInitValues() {
+      /** @param {any} value */
+      const toEvent = (value) => /** @type {React.ChangeEvent<any>} */ ({ currentTarget: { value } });
+      state.onChangeBrightness(toEvent(state.brightness))
+      state.onResizeLoggerHeight(toEvent(state.loggerHeight));
+      state.onResizeLoggerWidth(toEvent(state.loggerWidth));
+      state.onChangeXRay(toEvent(state.xRayOpacity));
+    },
     changeLoggerLog(e) {
       state.showDebug = e.currentTarget.checked;
       tryLocalStorageSet(`logger:debug@${w.key}`, `${state.showDebug}`);
@@ -60,9 +66,9 @@ export default function WorldMenu(props) {
         state.durationKeys[msg] = performance.now();
       }
     },
-    onChangeBrightness(e) {// 🔔 overrides canvas.style.filter
+    onChangeBrightness(e) {
       state.brightness = Number(e.currentTarget.value);
-      w.view.canvas.style.filter = `brightness(${50 + 10 * state.brightness}%)`
+      w.view.setCssFilter({ brightness: `${50 + 10 * state.brightness}%` });
     },
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
@@ -107,11 +113,6 @@ export default function WorldMenu(props) {
       );
       state.logger.xterm.scrollToBottom();
     },
-    toggleDebug() {
-      // by hiding overlay we permit user to use camera while World paused
-      state.debugMode = !state.debugMode;
-      update();
-    },
     toggleXRay() {
       state.xRayOpacity = state.xRayOpacity < 10 ? 10 : 5;
       w.wall.setOpacity(state.xRayOpacity / 10);
@@ -135,15 +136,12 @@ export default function WorldMenu(props) {
     obs.observe(w.view.rootEl);
     return () => obs.disconnect();
   }, []);
+  
+  React.useEffect(() => {
+    w.crowd && state.applyControlsInitValues();
+  }, [w.crowd]);
 
   return <>
-    <div
-      css={faderOverlayCss}
-      className={cx({
-        faded: w.disabled && !state.debugMode,
-      })}
-      onPointerUp={state.onOverlayPointerUp}
-    />
 
     {w.disabled && <div css={pausedControlsCss}>
       <button
@@ -153,12 +151,6 @@ export default function WorldMenu(props) {
         enable
       </button>
       <button
-        onClick={state.toggleDebug}
-        className={state.debugMode ? 'text-green' : undefined}
-        >
-        debug
-      </button>
-      <button
         onClick={state.toggleXRay}
         className={state.xRayOpacity < 10 ? 'text-green' : undefined}
       >
@@ -166,7 +158,7 @@ export default function WorldMenu(props) {
       </button>
     </div>}
 
-    {w.view.rootEl && createPortal(
+    {w.view.rootEl !== null && createPortal(
       <Draggable
         css={loggerContainerCss}
         ref={state.ref('draggable')}
@@ -432,7 +424,6 @@ const cssTtyDisconnectedMessage = css`
 /**
  * @typedef State
  * @property {number} brightness
- * @property {boolean} debugMode e.g. camera usable whilst paused and in debugMode
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {boolean} disconnected
@@ -444,6 +435,7 @@ const cssTtyDisconnectedMessage = css`
  * @property {boolean} showDebug
  * @property {number} xRayOpacity In [1..10]
  *
+ * @property {() => void} applyControlsInitValues
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} changeLoggerLog
  * @property {() => void} enableAll
  * @property {(msg: string) => void} measure
@@ -456,6 +448,5 @@ const cssTtyDisconnectedMessage = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerHeight
  * @property {(e?: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerWidth
  * @property {(npcKey: string, line: string) => void} say
- * @property {() => void} toggleDebug
  * @property {() => void} toggleXRay
  */

@@ -56,10 +56,12 @@
   - ℹ️ box geometry has 12 triangles with ordering:
     > right x2, left x2, front x2, back x2, top x2, bottom x2
   - 🚧 fix scaling (non-trivial)
+    - infer cuboid scaling per instance in shader e.g. via transform matrix?
+    - provide uniform with scales (do not vary per instance)
 
 - ✅ bug: pause then reset should show interact message
 
-- 🚧 improve motion through doorways (offMeshConnection)
+- ✅ improve motion through doorways (offMeshConnection)
   - ✅ clarify deceleration from `u_0` to `u_1` in fixed distance `|src - dst|`.
     - may not actually use this, but worth working out
   - ✅ extend our recast-navigation-js branch with `agentAnim.tScale`
@@ -83,6 +85,14 @@
   - ✅ fix npc not turning correctly when two npcs traverse offMeshConnection
     - reset s.lookSecs on enter offMeshConnection
     - also simplify onTickTurnTarget
+
+- ✅ remove "debug" mode from Tabs i.e. either paused or not
+  - ✅ remove from World
+  - ✅ remove from Tty
+- 🚧 distinguish paused some other way
+  - ℹ️ World and Tty
+  - ❌ inverted filter with modified door lights
+  - post-processing effect
 
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?

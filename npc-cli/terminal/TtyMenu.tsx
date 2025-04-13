@@ -12,7 +12,6 @@ export default function TtyMenu(props: Props) {
   const update = useUpdate();
 
   const state = useStateRef(() => ({
-    debugWhilePaused: false,
     xterm: props.session.ttyShell.xterm,
     touchMenuOpen: true,
 
@@ -52,10 +51,6 @@ export default function TtyMenu(props: Props) {
       }
       // xterm.xterm.focus();
     },
-    toggleDebug() {// hiding overlay permits user to use terminal whilst paused
-      state.debugWhilePaused = !state.debugWhilePaused;
-      update();
-    },
     toggleTouchMenu() {
       const next = !state.touchMenuOpen;
       state.touchMenuOpen = next;
@@ -82,17 +77,10 @@ export default function TtyMenu(props: Props) {
 
   return <>
     <div
-      css={faderOverlayCss}
-      className={cx({ faded: props.disabled && !state.debugWhilePaused })}
-      onPointerUp={() => props.setTabsEnabled(true)}
-    />
-
-    <div
       css={menuCss}
-      className={cx({ disabled: props.disabled && !state.debugWhilePaused, open: state.touchMenuOpen })}
+      className={cx({ open: state.touchMenuOpen })}
       onClick={state.onClickMenu}
     >
-
       <div className="toggle-and-paused-controls">
 
         <div className="toggle" onClick={state.toggleTouchMenu}>
@@ -103,12 +91,6 @@ export default function TtyMenu(props: Props) {
           <div css={pausedControlsCss}>
             <button className="text-white" onClick={state.clickEnableAll}>
               enable
-            </button>
-            <button
-              onClick={state.toggleDebug}
-              className={state.debugWhilePaused ? 'text-green' : undefined}
-            >
-              debug
             </button>
           </div>
         )}
@@ -202,11 +184,6 @@ const menuCss = css`
       color: #ddd;
       border: 2px solid #444;
     }
-  }
-
-  &.disabled .touch-menu {
-    filter: brightness(0.4);
-    pointer-events: none;
   }
 
   .icon {

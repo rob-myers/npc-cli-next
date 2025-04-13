@@ -1,5 +1,6 @@
 import React from "react";
 import * as THREE from "three";
+import cx from "classnames";
 import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
@@ -37,6 +38,7 @@ export default function WorldView(props) {
       panSpeed: 2,
       zoomSpeed: 0.5,
     },
+    cssFilter: {},
     down: null,
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
     fov: 40,
@@ -160,10 +162,9 @@ export default function WorldView(props) {
       }
       return e;
     },
-    handleClickInDebugMode(e) {
+    handleClickInDebugMode(e) {// debug <=> paused
       if (
         w.disabled === true
-        && w.menu.debugMode === true
         && state.lastDown !== undefined
         && state.lastDown.longDown === false
         && state.lastDown.screenPoint.distanceTo(getRelativePointer(e)) < 1
@@ -464,6 +465,11 @@ export default function WorldView(props) {
         }
       });
     },
+    setCssFilter(partial) {
+      Object.assign(state.cssFilter, partial);
+      const nextFilter = Object.entries(state.cssFilter).map(([k, v]) => `${k}(${v})`).join(' ');
+      state.canvas.style.filter = nextFilter; // e.g. brightness(50%)
+    },
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
         delete state.dst.look;
@@ -555,6 +561,7 @@ export default function WorldView(props) {
     <Canvas
       ref={state.canvasRef}
       css={rootCss}
+      className={cx({ disabled: w.disabled })}
       frameloop={state.syncRenderMode()}
       resize={{ debounce: 0 }}
       gl={state.glOpts}
@@ -624,6 +631,7 @@ export default function WorldView(props) {
  * }} controls
  * We provide access to `sphericalDelta` via patch.
  * @property {import('@react-three/drei').MapControlsProps} controlsOpts
+ * @property {Partial<Record<'brightness' | 'sepia', string>>} cssFilter
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
  * 
@@ -653,6 +661,7 @@ export default function WorldView(props) {
  * @property {'near' | 'far'} zoomState
  *
  * @property {(enabled?: boolean) => void} enableControls Default `true`
+ * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
  * @property {(e: React.PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
@@ -660,8 +669,6 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
  * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
- * @property {() => boolean} stopFollowing
- * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {(e?: THREE.Event) => void} onChangeControls
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
  * @property {() => void} onControlsEnd
@@ -675,7 +682,9 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
- * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
+ * @property {(partial: State['cssFilter']) => void} setCssFilter
+ * @property {() => boolean} stopFollowing
+ * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
  * @property {(opts: {
@@ -694,7 +703,14 @@ const rootCss = css`
     width: 100%;
     height: 100%;
     background-color: rgba(20, 20, 20, 1);
+    transition: filter 1s;
   }
+  
+  // 🚧
+  /* transition: filter 1s;
+  &.disabled {
+    filter: invert();
+  } */
 `;
 
 const statsCss = css`
