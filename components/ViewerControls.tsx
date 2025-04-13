@@ -151,6 +151,11 @@ export default function ViewerControls({ api }: Props) {
           <FontAwesomeIcon icon={faGrip} size="1x" />
         </div>
       </div>
+
+      <div className="paused-text">
+        {api.tabs.enabled === false && 'PAUSED'}
+      </div>
+
       <button
         title={api.tabs.enabled ? "pause tabs" : "enable tabs"}
         onClick={state.toggleEnabled}
@@ -192,6 +197,21 @@ const buttonsCss = css`
   background-color: #000;
   touch-action: none;
 
+  > .paused-text {
+    height: 100%;
+    padding-right: 12px;
+    
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    
+    font-size: 0.9rem;
+    color: #dda;
+    letter-spacing: 6px;
+    pointer-events: none;
+    user-select: none;
+  }
+
   @media (min-width: ${afterBreakpoint}) {
     width: var(${viewBarSizeCssVar});
     height: 100%;
@@ -199,6 +219,15 @@ const buttonsCss = css`
 
     cursor: col-resize;
     border-right: 1px solid #444;
+    font-size: 1rem;
+
+    > .paused-text {
+      height: unset;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      padding-right: 0;
+      padding-top: 32px;
+    }
   }
 
   @media (max-width: ${breakpoint}) {
