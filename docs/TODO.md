@@ -78,9 +78,9 @@
     - forbid dst's close to each other
 
 - try "turn around before moving" via small acceleration initially
+- profile-1 camera target y should always be 1.5?
 
 - shell should show debugs not errors
-- profile-1 camera target y should always be 1.5?
 - somehow additionally indicate npc is selected by ContextMenu when docked
 - another model human-1
 - tween: provide many examples
