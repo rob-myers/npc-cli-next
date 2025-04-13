@@ -738,19 +738,20 @@ export class Npc {
    */
   onChangeAgentState(agent, next) {
     if (next === 2) {// enter offMeshConnection
+      this.s.lookSecs = 0.2;
+
       const offMesh = (// find off-mesh-connection via lookup
         this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(0), agent.raw.get_cornerVerts(2))]
         ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(3), agent.raw.get_cornerVerts(5))]
         ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(6), agent.raw.get_cornerVerts(8))]
         ?? null
       );
-
       if (offMesh === null) {
         agent.teleport(this.position);
         return error(`${this.key}: bailed out of unknown offMeshConnection: ${JSON.stringify(this.position)}`);
       }
-      
-      // 🔔 this.s.offMesh set in useHandleEvents
+
+      // we set this.s.offMesh in useHandleEvents
       this.w.events.next({ key: 'enter-off-mesh', npcKey: this.key, offMesh });
       return;
     }
