@@ -5,6 +5,7 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
+// import { Bloom, DepthOfField, EffectComposer, Noise, Vignette } from '@react-three/postprocessing'
 
 import { debug, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -60,6 +61,7 @@ export default function WorldView(props) {
     resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
+    tweenWhilePaused: false,
 
     dst: {},
 
@@ -480,10 +482,15 @@ export default function WorldView(props) {
       }
     },
     syncRenderMode() {
-      const tweening = Object.keys(state.resolve).length > 0;
-      const frameloop = w.disabled === true && tweening === false ? 'demand' : 'always';
-      w.r3f?.set({ frameloop });
-      return frameloop;
+      if (w.disabled === true && !(
+        state.tweenWhilePaused === true && Object.keys(state.resolve).length > 0
+      )) {
+        w.r3f?.set({ frameloop: 'demand' });
+        return 'demand';
+      } else {
+        w.r3f?.set({ frameloop: 'always' });
+        return 'always';
+      }
     },
     toDataURL(type, quality) {
       w.r3f.advance(Date.now());
@@ -538,6 +545,7 @@ export default function WorldView(props) {
       }
 
       if (w.disabled === true) {// can tween while paused
+        state.tweenWhilePaused = true;
         state.syncRenderMode();
         w.timer.reset();
         w.onDebugTick();
@@ -603,6 +611,10 @@ export default function WorldView(props) {
       <ContextMenu/>
 
       <NpcSpeechBubbles/>
+
+      {/* <EffectComposer>
+        <Noise />
+      </EffectComposer> */}
     </Canvas>
   );
 }
@@ -658,6 +670,7 @@ export default function WorldView(props) {
  * - follow has `resolve.look` undefined i.e. never resolves
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
+ * @property {boolean} tweenWhilePaused Did we start tweening whilst paused?
  * @property {'near' | 'far'} zoomState
  *
  * @property {(enabled?: boolean) => void} enableControls Default `true`

@@ -334,6 +334,7 @@ export default function World(props) {
     state.view.syncRenderMode();
     if (!state.disabled) {
       state.onTick();
+      state.view.tweenWhilePaused = false;
     }
     state.events.next({ key: state.disabled ? 'disabled' : 'enabled' });
     return () => state.stopTick();

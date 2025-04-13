@@ -89,10 +89,17 @@
 - ✅ remove "debug" mode from Tabs i.e. either paused or not
   - ✅ remove from World
   - ✅ remove from Tty
+
 - 🚧 distinguish paused some other way
   - ℹ️ World and Tty
   - ❌ inverted filter with modified door lights
-  - post-processing effect
+  - 🚧 post-processing effect
+
+- ✅ bug: after initial pause frameloop is still `always`
+  - ℹ️ `w r3f.get | map 'x => x.frameloop'`
+  - ℹ️ after move camera it changes to `demand`
+  - ℹ️ because of "ongoing tweening"
+    - maybe tween must be started whilst paused
 
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?
