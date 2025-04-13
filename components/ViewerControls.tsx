@@ -1,4 +1,5 @@
 import React from "react";
+import cx from "classnames";
 import { css } from "@emotion/react";
 import { shallow } from "zustand/shallow";
 import debounce from "debounce";
@@ -152,8 +153,8 @@ export default function ViewerControls({ api }: Props) {
         </div>
       </div>
 
-      <div className="paused-text">
-        {api.tabs.enabled === false && 'paused'}
+      <div className={cx("paused-text", { paused: !api.tabs.enabled })}>
+        PAUSED
       </div>
 
       <button
@@ -210,8 +211,12 @@ const buttonsCss = css`
     letter-spacing: 5px;
     pointer-events: none;
     user-select: none;
-
+    
     transition: opacity 300ms;
+    opacity: 0;
+  }
+  .paused-text.paused {
+    opacity: 1;
   }
 
   @media (min-width: ${afterBreakpoint}) {
