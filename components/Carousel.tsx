@@ -180,12 +180,12 @@ const carouselCss = css`
     min-width: 0;
     margin-right: var(--slide-spacing);
     background-color: black;
+    border-radius: var(--slider-border-radius);
 
     img {
       margin: 0;
       height: 100%;
       object-fit: cover;
-      border-radius: 16px;
       border-radius: var(--slider-border-radius);
     }
   }
