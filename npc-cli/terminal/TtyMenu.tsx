@@ -6,7 +6,6 @@ import { localStorageKey, zIndexTabs } from "../service/const";
 import type { Session } from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { faderOverlayCss, pausedControlsCss } from "../world/overlay-menu-css";
 
 export default function TtyMenu(props: Props) {
   const update = useUpdate();
@@ -15,10 +14,6 @@ export default function TtyMenu(props: Props) {
     xterm: props.session.ttyShell.xterm,
     touchMenuOpen: true,
 
-    clickEnableAll() {
-      props.setTabsEnabled(true);
-      state.xterm.xterm.focus();
-    },
     async onClickMenu(e: React.MouseEvent) {
       const target = e.target as HTMLElement;
       state.xterm.xterm.scrollToBottom();
@@ -82,18 +77,9 @@ export default function TtyMenu(props: Props) {
       onClick={state.onClickMenu}
     >
       <div className="toggle-and-paused-controls">
-
         <div className="toggle" onClick={state.toggleTouchMenu}>
           {state.touchMenuOpen ? ">" : "<"}
         </div>
-
-        {props.disabled && (// Overlay Buttons
-          <div css={pausedControlsCss}>
-            <button className="text-white" onClick={state.clickEnableAll}>
-              enable
-            </button>
-          </div>
-        )}
       </div>
       
       <div className="touch-menu">

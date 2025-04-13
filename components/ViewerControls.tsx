@@ -153,7 +153,7 @@ export default function ViewerControls({ api }: Props) {
       </div>
 
       <div className="paused-text">
-        {api.tabs.enabled === false && 'PAUSED'}
+        {api.tabs.enabled === false && 'paused'}
       </div>
 
       <button
@@ -207,9 +207,11 @@ const buttonsCss = css`
     
     font-size: 0.9rem;
     color: #dda;
-    letter-spacing: 6px;
+    letter-spacing: 5px;
     pointer-events: none;
     user-select: none;
+
+    transition: opacity 300ms;
   }
 
   @media (min-width: ${afterBreakpoint}) {

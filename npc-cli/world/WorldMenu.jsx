@@ -52,9 +52,6 @@ export default function WorldMenu(props) {
       tryLocalStorageSet(`logger:debug@${w.key}`, `${state.showDebug}`);
       update();
     },
-    enableAll() {
-      props.setTabsEnabled(true);
-    },
     measure(msg) {
       if (state.showDebug === false) {
         return;
@@ -144,12 +141,6 @@ export default function WorldMenu(props) {
   return <>
 
     {w.disabled && <div css={pausedControlsCss}>
-      <button
-        onClick={state.enableAll}
-        className="text-white"
-      >
-        enable
-      </button>
       <button
         onClick={state.toggleXRay}
         className={state.xRayOpacity < 10 ? 'text-green' : undefined}
@@ -437,7 +428,6 @@ const cssTtyDisconnectedMessage = css`
  *
  * @property {() => void} applyControlsInitValues
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} changeLoggerLog
- * @property {() => void} enableAll
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
