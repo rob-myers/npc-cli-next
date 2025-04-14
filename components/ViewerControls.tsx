@@ -205,7 +205,7 @@ const buttonsCss = css`
     
     font-size: 0.9rem;
     color: #dda;
-    letter-spacing: 10px;
+    letter-spacing: 7px;
     pointer-events: none;
     user-select: none;
     
