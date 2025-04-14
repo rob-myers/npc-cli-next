@@ -154,7 +154,7 @@ export default function ViewerControls({ api }: Props) {
       </div>
 
       <div className={cx("paused-text", { paused: !api.tabs.enabled })}>
-        PAUSED
+        paused
       </div>
 
       <button
@@ -198,17 +198,14 @@ const buttonsCss = css`
   background-color: #000;
   touch-action: none;
 
-  > .paused-text {
-    height: 100%;
-    padding-right: 12px;
-    
+  > .paused-text {    
     display: flex;
     justify-content: start;
     align-items: center;
     
     font-size: 0.9rem;
     color: #dda;
-    letter-spacing: 5px;
+    letter-spacing: 10px;
     pointer-events: none;
     user-select: none;
     
@@ -229,10 +226,8 @@ const buttonsCss = css`
     font-size: 1rem;
 
     > .paused-text {
-      height: unset;
       writing-mode: vertical-rl;
       text-orientation: upright;
-      padding-right: 0;
       padding-top: 32px;
     }
   }
@@ -243,6 +238,12 @@ const buttonsCss = css`
 
     cursor: row-resize;
     border-bottom: 1px solid #444;
+
+    > .paused-text {
+      height: 100%;
+      padding-right: 12px;
+      margin-top: 2px;
+    }
   }
 
   .left-or-bottom-group {
