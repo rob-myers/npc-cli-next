@@ -470,7 +470,7 @@ export class Npc {
     const dst = toXZ(input);
     return src.x === dst.x && src.y === dst.y
       ? this.getAngle()
-      : Math.atan2((dst.y - src.y), dst.x - src.x) + Math.PI/2
+      : geom.clockwiseFromNorth(dst.y - src.y, dst.x - src.x)
     ;
   }
 
@@ -550,13 +550,13 @@ export class Npc {
     const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
-    const radians = Math.atan2(dirY, dirX) + Math.PI/2;
+    const radians = geom.clockwiseFromNorth(dirY, dirX);
     this.s.lookAngleDst = this.getEulerAngle(radians);
 
     if (anim.t > anim.tmax - 0.1) {// exit in direction we're looking
-      anim.set_unitExitVel(0, Math.cos(radians));
+      anim.set_unitExitVel(0, Math.cos(radians - Math.PI/2));
       anim.set_unitExitVel(1, 0);
-      anim.set_unitExitVel(2, Math.sin(radians));
+      anim.set_unitExitVel(2, Math.sin(radians - Math.PI/2));
     }
   }
 
@@ -940,7 +940,9 @@ export class Npc {
   /** @param {NPC.CrowdAgent} agent */
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x) + Math.PI/2);
+    this.s.lookAngleDst = this.getEulerAngle(
+      geom.clockwiseFromNorth(vel.z, vel.x)
+    );
   }
 
   /** @param {NPC.CrowdAgent} agent */
@@ -959,7 +961,9 @@ export class Npc {
     }
     
     // turn towards "closest neighbour" if they have a target
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2((other.position.z - this.position.z), (other.position.x - this.position.x)) + Math.PI/2);
+    this.s.lookAngleDst = this.getEulerAngle(
+      geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
+    );
   }
 
   /**

@@ -82,6 +82,15 @@ class geomServiceClass {
   }
 
   /**
+   * Get angle clockwise from north from above.
+   * @param {number} dy 
+   * @param {number} dx 
+   */
+  clockwiseFromNorth(dy, dx) {
+    return Math.atan2(dy, dx) + Math.PI/2;
+  }
+
+  /**
    * @param {number} srcAng radians
    * @param {number} dstAng radians
    * @returns {number} between `0` and `1`, where `1` means equality

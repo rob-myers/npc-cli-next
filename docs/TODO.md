@@ -102,12 +102,14 @@
   - ℹ️ because of "ongoing tweening"
     - maybe tween must be started whilst paused
 
-- 🚧 cleanup angle code
+- ✅ cleanup angle code
   - ✅ meta.orient clockwise from above from north
     - we were already using this convention
   - ✅ npc.angle clockwise from above from north
     - previously we were using "clockwise from above from east"
-  - 🚧 util for `atan2(dy, dx) + Math.PI/2` (clockwise from north)
+  - ✅ util for `atan2(dy, dx) + Math.PI/2` (clockwise from north)
+  - ✅ fix offMeshConnection traversal
+    - saw weirdness which disappeared on reset
   - ℹ️ npc.rotation.y anticlockwise from above from east
     - this is fixed i.e. property of Euler rotation
 
