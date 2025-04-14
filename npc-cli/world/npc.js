@@ -351,7 +351,7 @@ export class Npc {
    * @param {MaybeMeta<Geom.VectJson>} point 
    * @param {object} opts
    * @param {Meta} [opts.meta]
-   * @param {number} [opts.angle]
+   * @param {number} [opts.angle] clockwise from north from above
    * @param {Key.NpcClass} [opts.classKey]
    * @param {boolean} [opts.requireNav]
    */
@@ -375,10 +375,16 @@ export class Npc {
   }
 
   /**
-   * Convert rotation.y back into "clockwise from east, viewed from above".
+   * Convert `rotation.y` into direction npc is facing, using
+   * coordinate system "clockwise from north, viewed from above".
+   * 
+   * Note that:
+   * - in three.js `rotation.y` is counter-clockwise from north viewed from above
+   * - when `rotation.y === 0` npc faces south (Blender setup) thus need
+   *   180° offset to get "direction npc is facing"
    */
   getAngle() {
-    return geom.radRange(Math.PI/2 - this.rotation.y);
+    return geom.radRange(Math.PI - this.rotation.y);
   }
 
   /**
@@ -409,15 +415,17 @@ export class Npc {
   }
 
   /**
-   * @param {number} cwEastAngle
-   * Angle going clockwise starting from east, assuming we look down at the agents from above.
-   * Equivalently, `Math.atan(v3.z, v3.x)` where `v3: Vector3` faces desired direction.
-   * @returns {number} `rotation.y` where:
-   * - euler y rotation has the opposite sense/sign i.e. "counter-clockwise from east"
-   * - +pi/2 because character initially facing along +z
+   * Given angle "clockwise from north looking down from above", construct value of `rotation.y`
+   * which would make the npc face this direction.
+   *
+   * - The Euler angle rotation.y is counter-clockwise from east, which explains the negative sign.
+   * - The additional `Math.PI` is needed because when `rotation.y === 0` the
+   *   npc is facing south (Blender setup).
+   * @param {number} cwNorthAngle
+   * @returns {number}
    */
-  getEulerAngle(cwEastAngle) {
-    return Math.PI/2 - cwEastAngle;
+  getEulerAngle(cwNorthAngle) {
+    return Math.PI - cwNorthAngle;
   }
 
   /**
@@ -453,13 +461,16 @@ export class Npc {
     }
   }
 
-  /** @param {Geom.VectJson | THREE.Vector3Like} input */
+  /**
+   * Get angle "clockwise from north from above".
+   * @param {Geom.VectJson | THREE.Vector3Like} input
+   */
   getLookAngle(input) {
     const src = this.getPoint();
     const dst = toXZ(input);
     return src.x === dst.x && src.y === dst.y
       ? this.getAngle()
-      : Math.atan2((dst.y - src.y), dst.x - src.x)
+      : Math.atan2((dst.y - src.y), dst.x - src.x) + Math.PI/2
     ;
   }
 
@@ -539,7 +550,7 @@ export class Npc {
     const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.position.x;
     const dirY = lookAt.y - this.position.z;
-    const radians = Math.atan2(dirY, dirX);
+    const radians = Math.atan2(dirY, dirX) + Math.PI/2;
     this.s.lookAngleDst = this.getEulerAngle(radians);
 
     if (anim.t > anim.tmax - 0.1) {// exit in direction we're looking
@@ -617,8 +628,8 @@ export class Npc {
   }
 
   /**
-   * @param { number | Geom.VectJson | THREE.Vector3Like} input
-   * - radians (ccw from east), or
+   * @param {number | Geom.VectJson | THREE.Vector3Like} input
+   * - radians (cw from north), or
    * - point
    * @param {number} [ms]
    */
@@ -721,10 +732,10 @@ export class Npc {
           // use direction src --> point if entering navmesh
           ? src.equals(point)
             ? undefined
-            : src.angleTo(point)
+            : src.angleTo(point) + Math.PI/2 // "cw from north"
           // use meta.orient if staying off-mesh
           : typeof meta.orient === 'number'
-            ? meta.orient * (Math.PI / 180) - Math.PI/2 // convert to "cw from east"
+            ? meta.orient * (Math.PI / 180) // meta.orient already "cw from north"
             : undefined,
         // fadeOutMs: opts.fadeOutMs,
         meta,
@@ -784,12 +795,9 @@ export class Npc {
       throw Error('too far away');
     }
 
-    /**
-     * `meta.orient` (degrees) uses "cw from north",
-     * so convert to "cw from east"
-     */
+    // `meta.orient` (degrees) uses "cw from north",
     const dstRadians = typeof meta.orient === 'number'
-      ? (meta.orient * (Math.PI/180)) - Math.PI/2
+      ? meta.orient * (Math.PI/180)
       : undefined
     ;
     
@@ -932,7 +940,7 @@ export class Npc {
   /** @param {NPC.CrowdAgent} agent */
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x));
+    this.s.lookAngleDst = this.getEulerAngle(Math.atan2(vel.z, vel.x) + Math.PI/2);
   }
 
   /** @param {NPC.CrowdAgent} agent */
@@ -951,7 +959,7 @@ export class Npc {
     }
     
     // turn towards "closest neighbour" if they have a target
-    this.s.lookAngleDst = this.getEulerAngle(Math.atan2((other.position.z - this.position.z), (other.position.x - this.position.x)));
+    this.s.lookAngleDst = this.getEulerAngle(Math.atan2((other.position.z - this.position.z), (other.position.x - this.position.x)) + Math.PI/2);
   }
 
   /**
@@ -1132,8 +1140,8 @@ export class Npc {
     this.setUniform('labelY', this.s.labelY);
 
     if (act === 'Lie') {// fix contextmenu position
-      const radians = this.getAngle();
-      this.offsetMenu.set(0.5 * Math.cos(radians), 0, 0.5 * Math.sin(radians));      
+      const clockwiseFromEast = this.getAngle() - Math.PI/2;
+      this.offsetMenu.set(0.5 * Math.cos(clockwiseFromEast), 0, 0.5 * Math.sin(clockwiseFromEast));      
     } else {
       this.offsetMenu.set(0, 0, 0);
     }

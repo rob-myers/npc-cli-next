@@ -102,6 +102,15 @@
   - ℹ️ because of "ongoing tweening"
     - maybe tween must be started whilst paused
 
+- 🚧 cleanup angle code
+  - ✅ meta.orient clockwise from above from north
+    - we were already using this convention
+  - ✅ npc.angle clockwise from above from north
+    - previously we were using "clockwise from above from east"
+  - 🚧 util for `atan2(dy, dx) + Math.PI/2` (clockwise from north)
+  - ℹ️ npc.rotation.y anticlockwise from above from east
+    - this is fixed i.e. property of Euler rotation
+
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?
 

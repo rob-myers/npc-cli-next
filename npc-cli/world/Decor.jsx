@@ -288,7 +288,14 @@ export default function Decor(props) {
           break;
         }
         case "point": {
-          // +90 after transform so bottom-to-top sprite-sheet text "faces" direction
+          /**
+           * +90° converts:
+           * - "clockwise from above from east" (SVG symbol coords) to
+           * - "clockwise from above from north" (easier for users)
+           * 
+           * This also aligns sprite-sheet icons/text correctly, i.e.
+           * decor-arrow points from bottom-to-top of icons/text.
+           */
           const orient = (gm.matrix.transformDegrees(d.orient) + 90) % 360;
           instance = gm.matrix.transformPoint(/** @type {Geomorph.DecorPoint} */ ({ ...d, ...base, orient }));
           instance.x = toPrecision(instance.x);

@@ -246,9 +246,8 @@ export default function Npcs(props) {
 
       let npc = state.npc[opts.npcKey];
 
-      // orient to meta 🚧 remove from elsewhere
       opts.angle ??= typeof p.meta?.orient === 'number'
-        ? (p.meta.orient * (Math.PI / 180)) - Math.PI/2
+        ? p.meta.orient * (Math.PI / 180) // keep using "cw from north"
         : undefined
       ;
 

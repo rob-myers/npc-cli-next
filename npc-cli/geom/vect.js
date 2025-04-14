@@ -58,7 +58,10 @@
 		return this;
 	}
 
-  /** @param {Geom.VectJson} p */
+  /**
+   * Radians, clockwise from east.
+   * @param {Geom.VectJson} p
+   */
   angleTo(p) {
     return Math.atan2(p.y - this.y, p.x - this.x);
   }

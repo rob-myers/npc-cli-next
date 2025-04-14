@@ -77,6 +77,8 @@ test $( w disabled ) &&
   events '({ key }) => key === "enabled"' | take 1
 
 w n.rob.s | assign '{ tScale: { start: 0, dst: 0.5 } }'
+
+click | map xz | w n.rob.getLookAngle -
 ```
 
 ## Working with a branch of `recast-navigation-js`

@@ -9,7 +9,7 @@ declare namespace NPC {
     uid: number;
     /** Specifies the underlying 3D model */
     classKey: Key.NpcClass;
-    /** Radians */
+    /** Radians, cw from north viewed from above */
     angle: number;
     /** World units per second */
     runSpeed: number;
