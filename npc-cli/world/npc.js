@@ -365,7 +365,9 @@ export class Npc {
       const dy = point.y - currPoint.y;
 
       await this.w.npc.spawn({
-        angle: opts.angle ?? (dx === 0 && dy === 0 ? undefined : Math.atan2(dy, dx)),
+        angle: opts.angle ?? (
+          dx === 0 && dy === 0 ? undefined : geom.clockwiseFromNorth(dy, dx)
+        ),
         classKey: opts.classKey,
         npcKey: this.key,
       }, point);
