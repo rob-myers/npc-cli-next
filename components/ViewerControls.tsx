@@ -80,10 +80,7 @@ export default function ViewerControls({ api }: Props) {
     },
     onDrag(e: PointerEvent) {
       if (state.dragOffset !== null) {
-        // // 🚧 fix drag when root-content is not full height e.g. mobile keyboard open
-        // const h = document.getElementById('root-content')?.clientHeight ?? 0;
-        let percent = isSmallView()
-          // ? (100 * (h - (e.clientY + state.dragOffset))) / h
+        const percent = isSmallView()
           ? (100 * (window.innerHeight - (e.clientY + state.dragOffset))) / window.innerHeight
           : (100 * (window.innerWidth - (e.clientX + state.dragOffset))) / (window.innerWidth - getNavWidth())
         ;

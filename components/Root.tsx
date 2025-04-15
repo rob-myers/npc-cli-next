@@ -35,7 +35,6 @@ export default function Root({ children }: React.PropsWithChildren) {
         <Nav />
         <div
           css={rootContentCss}
-          // id="root-content"
           data-testid="root-content"
         >
           <Main>
@@ -72,8 +71,6 @@ const rootContentCss = css`
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  /* height: 100svh; */
-  /* height: 300px; */
 
   
   @media (max-width: ${breakpoint}) {
