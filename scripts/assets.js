@@ -382,7 +382,8 @@ info({ opts });
     );
   }
   pngPaths.length && await labelledSpawn('cwebp',
-    'yarn', 'cwebp-fast', JSON.stringify({ files: pngPaths }), '--quality=50',
+    // 'yarn', 'cwebp-fast', JSON.stringify({ files: pngPaths }), '--quality=50',
+    'npm', 'run', 'cwebp-fast', JSON.stringify({ files: pngPaths }), '--', '--quality=50',
   );
 
   perf('with-webp');
