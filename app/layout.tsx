@@ -29,9 +29,9 @@ export default function RootLayout({
 
         {
           // try fix xterm mobile scrolling with keyboard open (Chrome)
-          // https://www.reddit.com/r/webdev/comments/195vkgu/comment/kht2py0/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+          // https://stackoverflow.com/a/74690082/2917822
         }
-        {/* <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content"/> */}
+        <meta name="viewport" content="width=device-width, interactive-widget=resizes-content"></meta>
       </head>
       <body>
         <Root>

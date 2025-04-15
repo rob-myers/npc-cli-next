@@ -44,10 +44,6 @@ export default function Tty(props: Props) {
         state.base.xterm.setCursor(state.inputOnFocus.cursor);
         state.inputOnFocus = undefined;
       }
-      if (isTouchDevice() === true) {
-        // 🔔 try fix mobile scroll with keyboard open (Chrome)
-        state.base.xterm.xterm.scrollToBottom();
-      }
     },
     pauseRunningProcesses() {
       Object.values(state.base.session.process ?? {})
