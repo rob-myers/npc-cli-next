@@ -33,7 +33,11 @@ export default function Root({ children }: React.PropsWithChildren) {
         data-testid="root"
       >
         <Nav />
-        <div css={rootContentCss} id="root-content" data-testid="root-content">
+        <div
+          css={rootContentCss}
+          // id="root-content"
+          data-testid="root-content"
+        >
           <Main>
             <article>
               {children}
@@ -68,7 +72,7 @@ const rootContentCss = css`
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  height: 100svh;
+  /* height: 100svh; */
   /* height: 300px; */
 
   

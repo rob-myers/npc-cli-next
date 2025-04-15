@@ -175,9 +175,8 @@ const viewerCss = css`
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
     transition: min-height 500ms;
-    // 🚧 mobile with keyboard issue
-    /* min-height: var(${viewerBaseCssVar}); */
-    min-height: calc( min(var(${viewerBaseCssVar}), 100% ));
+    min-height: var(${viewerBaseCssVar});
+    /* min-height: calc( min(var(${viewerBaseCssVar}), 100% )); */
     &.collapsed {
       min-height: 0%;
     }
