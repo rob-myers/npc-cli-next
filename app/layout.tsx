@@ -26,6 +26,10 @@ export default function RootLayout({
           href="/css/flexlayout-react__style__light.css"
           as="style"
         /> */}
+
+        {/* Fix xterm mobile scrolling with keyboard open (Chrome) */}
+        {/* https://www.reddit.com/r/webdev/comments/195vkgu/comment/kht2py0/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
       </head>
       <body>
         <Root>
