@@ -58,7 +58,8 @@ const rootCss = css`
   display: flex;
   flex-direction: row;
   height: 100vh;
-  height: 100dvh;
+  height: 100svh;
+  max-height: 100svh;
 `;
 
 const rootContentCss = css`
@@ -67,6 +68,7 @@ const rootContentCss = css`
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  height: 100%;
   
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
