@@ -58,8 +58,7 @@ const rootCss = css`
   display: flex;
   flex-direction: row;
   height: 100vh;
-  height: 100svh;
-  max-height: 100svh;
+  height: 100dvh;
 `;
 
 const rootContentCss = css`

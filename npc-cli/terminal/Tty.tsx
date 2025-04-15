@@ -39,10 +39,14 @@ export default function Tty(props: Props) {
     pausedPids: {} as Record<number, true>,
 
     onFocus() {
-      if (state.inputOnFocus) {
+      if (state.inputOnFocus !== undefined) {
         state.base.xterm.setInput(state.inputOnFocus.input);
         state.base.xterm.setCursor(state.inputOnFocus.cursor);
         state.inputOnFocus = undefined;
+      }
+      if (isTouchDevice() === true) {
+        // 🔔 try fix mobile scroll with keyboard open (Chrome)
+        state.base.xterm.xterm.scrollToBottom();
       }
     },
     pauseRunningProcesses() {
