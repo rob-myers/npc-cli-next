@@ -16,7 +16,6 @@ import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
 import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
-import Spinner from "@/npc-cli/components/Spinner";
 
 export default function Viewer() {
   const site = useSite(({
@@ -102,7 +101,8 @@ export default function Viewer() {
 
       <div
         css={tabsContainerCss}
-        className={cx({ collapsed })}
+        className={cx({ collapsed, neverEnabled: !state.tabs.everEnabled })}
+        onPointerDown={() => state.tabs.toggleEnabled(true)}
       >
         <Tabs
           ref={state.ref('tabs')}
@@ -114,19 +114,6 @@ export default function Viewer() {
           rootOrientationVertical
           tabs={site.tabsDefs}
         />
-
-        {state.tabs.everEnabled === false && (
-          <button
-            css={interactButtonCss}
-            className={cx({ collapsed })}
-            onPointerDown={() => state.tabs.toggleEnabled(true)}
-          >
-            <div>
-              {site.browserLoaded ? "interact" : <Spinner size={24} />}
-            </div>
-          </button>
-        )}
-
       </div>
     </aside>
   );
@@ -175,10 +162,9 @@ const viewerCss = css`
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
     transition: min-height 500ms;
-    min-height: var(${viewerBaseCssVar});
-    /* min-height: calc( min(var(${viewerBaseCssVar}), 100% )); */
+    min-height: calc( max(var(${viewerBaseCssVar}), ${view.barSize}) );
     &.collapsed {
-      min-height: 0%;
+      min-height: ${view.barSize};
     }
   }
 `;
@@ -186,7 +172,7 @@ const viewerCss = css`
 const tabsContainerCss = css`
   height: 100%;
   width: 100%;
-
+  
   &:not(.collapsed) {
     cursor: auto;
     opacity: 1;
@@ -197,39 +183,14 @@ const tabsContainerCss = css`
     opacity: 0;
     transition: opacity 200ms;
   }
-`;
-
-const interactButtonCss = css`
-  position: absolute;
-  display: flex;
-  &.collapsed {
-    display: none;
-  }
-
-  justify-content: center;
-  align-items: center;
-
-  user-select: none;
-
-  @media (min-width: ${afterBreakpoint}) {
-    left: var(${viewBarSizeCssVar});
-    top: 0;
-    width: calc(100% - var(${viewBarSizeCssVar}));
-    height: 100%;
-  }
-  @media (max-width: ${breakpoint}) {
-    left: 0;
-    top: calc(var(${viewBarSizeCssVar}) + 32px + 4px);
-    width: 100%;
-    height: calc(100% - 2 * var(${viewBarSizeCssVar}));
-  }
-
-  > div {
-    letter-spacing: 2px;
-    pointer-events: all;
-    
+  
+  &.neverEnabled {
     cursor: pointer;
-    font-size: 1rem;
-    color: white;
+    background-image: url(/images/localhost_3000_blog_index.png.webp);
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    filter: sepia() hue-rotate(180deg) brightness(2);
+    opacity: 0.5;
   }
 `;
