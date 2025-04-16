@@ -331,7 +331,7 @@ export default function WorldView(props) {
     onPointerMove(e) {
       state.lastScreenPoint.copy(getRelativePointer(e));
 
-      if (state.controls.enabled === true && state.down !== null && state.getDownDistancePx() > 5) {
+      if (state.controls?.enabled === true && state.down !== null && state.getDownDistancePx() > 5) {
         state.clearTweens(); // won't stop follow
       }
     },
