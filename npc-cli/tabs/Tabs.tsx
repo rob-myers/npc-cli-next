@@ -214,7 +214,6 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 });
 
 export interface Props extends TabsBaseProps {
-  browserLoaded: boolean;
   rootOrientationVertical?: boolean;
   /** Invoked onchange state.enabled */
   onToggled?(next: boolean): void;

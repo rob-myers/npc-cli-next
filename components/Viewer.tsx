@@ -22,8 +22,7 @@ import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
-  const site = useSite(({ browserLoaded, tabset, viewOpen }) => ({
-    browserLoaded,
+  const site = useSite(({ tabset, viewOpen }) => ({
     currentTabset: tabset.current,
     viewOpen,
   }), shallow);
@@ -124,7 +123,6 @@ export default function Viewer() {
         <Tabs
           ref={state.ref('tabs')}
           id="viewer-tabs"
-          browserLoaded={site.browserLoaded}
           initEnabled={false}
           onToggled={update}
           persistLayout

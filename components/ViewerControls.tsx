@@ -27,7 +27,7 @@ import { tryLocalStorageSet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 
 export default function ViewerControls({ api }: Props) {
-  const site = useSite(({ browserLoaded, viewOpen }) => ({ browserLoaded, viewOpen }), shallow);
+  const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
 
   const state = useStateRef(() => ({
     onLongReset() {

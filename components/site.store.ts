@@ -25,7 +25,6 @@ import { type TabsetDef } from "@/npc-cli/tabs/tab-factory";
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
   articlesMeta: allArticlesMeta,
-  browserLoaded: false,
   discussMeta: {},
   draggingView: false,
   pageMetadata: {} as PageMetadata,
@@ -74,7 +73,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       cleanUps.push(() => window.removeEventListener("message", useSite.api.onGiscusMessage));
 
       // ready
-      set(() => ({ browserLoaded: true }), undefined, "browser-load");
 
       // open Nav/Viewer based on localStorage or defaults
       const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
@@ -153,7 +151,6 @@ export type State = {
   articleKey: null | string;
   /** Frontmatter of every article */
   articlesMeta: typeof allArticlesMeta;
-  browserLoaded: boolean;
   discussMeta: { [articleKey: string]: GiscusDiscussionMeta };
   pageMetadata: PageMetadata;
   
