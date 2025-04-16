@@ -34,8 +34,8 @@
         "./npc-cli/*"
       ],
       // // ℹ️ for local RecastDetour c++ development
-      // // 🔔 currently must use webpack i.e. turbopack doesn't support tsconfig paths
-      // //    https://github.com/vercel/next.js/issues/72346
+      // // 🔔 MUST USE webpack: turbopack doesn't support tsconfig paths
+      // //    - https://github.com/vercel/next.js/issues/72346
       // "@recast-navigation/core": ["../recast-navigation-js/packages/recast-navigation-core"],
       // "@recast-navigation/generators": ["../recast-navigation-js/packages/recast-navigation-generators"],
       // "@recast-navigation/three": ["../recast-navigation-js/packages/recast-navigation-three"],
