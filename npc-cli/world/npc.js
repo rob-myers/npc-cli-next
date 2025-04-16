@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
-import { deltaAngle, lerp } from "maath/misc";
+import { lerp } from "maath/misc";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
-import { error, info, testNever, warn } from '../service/generic';
+import { error, info, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
@@ -569,6 +569,8 @@ export class Npc {
   handlePreOffMeshCollision(agent) {
     const nneis  = agent.raw.nneis;
     /** @type {dtCrowdNeighbour} */ let nei;
+    const closeDist = preOffMeshCloseDist * (this.s.run === true ? 2 : 1);
+    const closerDist = preOffMeshCloserDist * (this.s.run === true ? 2 : 1);
 
     for (let i = 0; i < nneis; i++) {
       nei = agent.raw.get_neis(i);
@@ -682,7 +684,7 @@ export class Npc {
       radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
       // radius: helper.defaults.radius * 1.5, // reset
       collisionQueryRange: movingCollisionQueryRange,
-      separationWeight: movingSeparationWeight,
+      separationWeight: movingSeparationWeight ,
       queryFilterType: this.w.lib.queryFilterType.excludeDoors,
     });
 
@@ -1169,14 +1171,12 @@ const movingSeparationWeight = 1;
 const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
-const closeDist = helper.defaults.radius * 1.7;
-const closerDist = helper.defaults.radius * 0.8;
-
-const tmpVect1 = new Vect();
+const preOffMeshCloseDist = helper.defaults.radius * 1.7;
+const preOffMeshCloserDist = helper.defaults.radius * 0.8;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
-  radius: helper.defaults.radius, // 🔔 too large causes jerky collisions
+  radius: 2 * helper.defaults.radius, // 🔔 too large causes jerky collisions
   height: 1.5,
   maxAcceleration: staticMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,
