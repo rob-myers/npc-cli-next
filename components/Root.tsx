@@ -60,8 +60,8 @@ export default function Root({ children }: React.PropsWithChildren) {
 const rootCss = css`
   display: flex;
   flex-direction: row;
-  height: 100vh;
   height: 100svh;
+  height: 100vh;
 `;
 
 const rootContentCss = css`

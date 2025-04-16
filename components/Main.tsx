@@ -118,6 +118,7 @@ const overlayCss = css`
   top: 0;
   width: 100%;
   height: 100dvh;
+  height: 100vh;
 
   pointer-events: none;
   transition: opacity 300ms;

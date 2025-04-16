@@ -169,8 +169,8 @@ const navCss = css`
     // avoid displace <main> on expand
     position: fixed !important;
     z-index: ${zIndexSite.nav};
-    height: 100vh;
     height: 100dvh;
+    height: 100vh;
 
     // only show toggle when collapsed
     &.${sidebarClasses.collapsed} {
