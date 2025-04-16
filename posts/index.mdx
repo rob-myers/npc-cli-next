@@ -29,7 +29,10 @@ Create a video game whose Non-Player Characters behave just like human-controlle
 The underlying problem is related to Turing's _Imitation Game_:
 the Player is the interrogator,
 the questions are video game interactions.
-Can the NPCs fool the Player? <SideNote> A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
+Can the NPCs fool the Player? <SideNote>
+  A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote> <SideNote>
+  Imagine a human hired to "play the part" of an NPC,
+  rather than another human Player.</SideNote>
 
 <Carousel
   items={[
@@ -55,24 +58,30 @@ Racing games restrict interaction to physical collisions.
 Many games only involve aggressive NPCs, constrained by their time-limited existence.
 So let's assume the NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
-(or even comes close). But why haven't game developers solved it?
+(or even comes close). But why?
 
-> Because making video games is hard enough without trying to solve a difficult problem
-they don't have to solve.
+> Because it is not feasible within the confines of a Game Development Cycle.
 
-They don't have to solve it because Players aren't expecting a solution.
-As for difficulty, developers are rightfully wary of state-space explosions. <SideNote>As NPC behavioural complexity increases, so too does the Game's possible number of states.</SideNote>
-Well, maybe we shouldn't be tackling this problem within the confines of a Game Studio.
-Maybe we're trying to run before we can walk.
-Our pursuit of the underlying problem has led us to the following objectives:
-{/* For example, we don't really have a precise way of talking about NPC behaviour. */}
-{/* We don't have to capture the minutiae of any particular video game, we just need enough */}
+Developers are rightfully wary of state-space explosions.
+As NPC behavioural complexity increases, so too does the Game's possible number of states.
+More things go wrong, which means more debugging, which means less time for other important tasks.
+There are so many wrong turns.
+Intelligent behaviour with a time-limited existence may go unnoticed, or be misinterpreted.
+It must be interwoven with the Player's experience, as opposed to being an independent set of "plans".
+
+
+We won't tackle this problem within the confines of a Game Studio.
+We won't try to run before we can walk.
+Our pursuit of the underlying problem has led us to the following intermediate objectives:
 
 <Card id="underlying-problem"> 
 **Our Objectives**
 
-{/* Create a video game whose Non-Player Characters behave just like human-controlled characters. */}
-
 1. Build real-time control systems for NPCs.
-2. Enable a Game Master to act indistinguishably from many humans. <SideNote>A Game Master (aka Dungeon Master) is another human who controls the Game World.</SideNote>
+2. Enable a Game Master to act indistinguishably from many humans. <SideNote>
+  A Game Master (aka Dungeon Master) is another human who controls the Game World.</SideNote>
 </Card>
+
+This is a step towards the Underlying Problem.
+If one human can appear like many different humans-controlled characters,
+maybe we can learn how to simulate his or her behaviour.
