@@ -87,6 +87,7 @@ export default function Viewer() {
   }, []);
 
   const collapsed = !site.viewOpen;
+  const neverEnabled = !state.tabs.everEnabled;
 
   return (
     <aside
@@ -101,8 +102,8 @@ export default function Viewer() {
 
       <div
         css={tabsContainerCss}
-        className={cx({ collapsed, neverEnabled: !state.tabs.everEnabled })}
-        onPointerDown={() => state.tabs.toggleEnabled(true)}
+        className={cx({ collapsed, neverEnabled })}
+        {...neverEnabled && { onPointerDown: () => state.tabs.toggleEnabled(true) }}
       >
         <Tabs
           ref={state.ref('tabs')}
@@ -187,10 +188,10 @@ const tabsContainerCss = css`
   &.neverEnabled {
     cursor: pointer;
     background-image: url(/images/localhost_3000_blog_index.png.webp);
-    background-size: 80%;
+    background-size: 60%;
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    filter: sepia() hue-rotate(180deg) brightness(2);
+    filter: sepia() hue-rotate(180deg) brightness(2) invert();
     opacity: 0.5;
   }
 `;
