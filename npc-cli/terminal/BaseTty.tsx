@@ -90,6 +90,9 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
 
     xterm.open(state.container);
 
+    // 🚧 try improve mobile predictive text e.g. firefox
+    xterm.textarea?.setAttribute('enterkeyhint', 'send');
+
     return () => {
       useSession.api.persistHistory(props.sessionKey);
       useSession.api.persistHome(props.sessionKey);
