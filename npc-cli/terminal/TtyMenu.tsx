@@ -44,7 +44,8 @@ export default function TtyMenu(props: Props) {
       } else if (target.classList.contains("down")) {
         state.xterm.reqHistoryLine(-1);
       }
-      // xterm.xterm.focus();
+      // on mobile avoid close keyboard
+      state.xterm.xterm.focus();
     },
     toggleTouchMenu() {
       const next = !state.touchMenuOpen;
