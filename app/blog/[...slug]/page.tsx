@@ -18,6 +18,14 @@ export default async function BlogPage(props: {
         SideNote: (props: React.ComponentProps<typeof SideNote>) => (
           <SideNote bubbleClassName="not-prose" {...props} />
         ),
+        // 🔔 convert href "/internal/..." to fragment identifier, enacted elsewhere
+        a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+          if (props.href?.startsWith('/internal/')) {
+            return <a {...props} href={`#${props.href}`}>{props.children}</a>
+          } else {
+            return <a {...props}>{props.children}</a>;
+          }
+        },
       },
     })}
 

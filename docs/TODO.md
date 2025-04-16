@@ -7,8 +7,14 @@
 - 🚧 write 1st blog (npc cli)
   - ✅ more content
   - ✅ add a carousel
-  - can somehow change tabs from blog
-  - more content
+  - 🚧 can somehow change tabs from blog
+    - ✅ mechanism for links with href `/internal/...` to trigger code in `<Viewer>`
+    - store tabsets and currentTabset in site.store
+    - can set tabset by clicking link
+    - can add Viewer tab by clicking link
+    - can remove Viewer tab by clicking link
+  - 🚧 more content
+  - mention Starship Geomorphs early
   - mention recent improvements in AI
     - NPC CLI could use them as tools
 
@@ -28,6 +34,8 @@
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
   - 🚧 improve images in first carousel
+    - three images
+    - improve second image
   - clean carousel css e.g. more css variables
   - auto png to webp in public/images
 

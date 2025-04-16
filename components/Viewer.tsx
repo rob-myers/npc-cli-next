@@ -4,9 +4,12 @@ import cx from "classnames";
 import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 
+import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
+
 import { view } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
+import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 
 import { tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
@@ -15,16 +18,11 @@ import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
 import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
-import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 
-import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
 
 export default function Viewer() {
-  const site = useSite(({
-    browserLoaded,
-    tabsDefs,
-    viewOpen,
-  }) => ({
+
+  const site = useSite(({ browserLoaded, tabsDefs, viewOpen }) => ({
     browserLoaded,
     tabsDefs,
     viewOpen,
@@ -58,7 +56,7 @@ export default function Viewer() {
 
   React.useEffect(() => {
 
-    // 🚧 initialize Tabs
+    // 🚧 generic approach
     // 🔔 presence of `profile` triggers full fast-refresh
     useSite.api.setTabsDefs([[
       {
@@ -86,6 +84,17 @@ export default function Viewer() {
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
+  }, []);
+
+  React.useEffect(() => {// 🚧 handle #/internal/foo/bar
+    function onHashChange() {
+      if (location.hash?.startsWith('#/internal/')) {
+        const internalApi = location.hash.slice(1);
+        console.log({ internalApi });
+      }
+    }
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
   const collapsed = !site.viewOpen;
