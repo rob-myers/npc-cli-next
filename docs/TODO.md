@@ -12,6 +12,7 @@
     - ✅ `tabset` has structure `{ key: string; def: TabDef[][]; }`
     - 🚧 store lookup `tabset` and `tabset.current` in site.store
     - can set tabset by clicking link
+    - can reset tabset by clicking link
     - can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
   - 🚧 more content

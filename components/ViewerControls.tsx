@@ -79,11 +79,16 @@ export default function ViewerControls({ api }: Props) {
       }
     },
     onDrag(e: PointerEvent) {
-      if (state.dragOffset !== null) {
-        const percent = isSmallView()
-          ? (100 * (window.innerHeight - (e.clientY + state.dragOffset))) / window.innerHeight
-          : (100 * (window.innerWidth - (e.clientX + state.dragOffset))) / (window.innerWidth - getNavWidth())
-        ;
+      if (state.dragOffset === null) {
+        return;
+      }
+      if (isSmallView() === true) {
+        // 🚧 try fix mobile edge via visualViewport
+        const height = window.visualViewport?.height ?? window.innerHeight;
+        const percent = (100 * (height - (e.clientY + state.dragOffset))) / height;
+        state.setViewerBase(percent);
+      } else {
+        const percent = (100 * (window.innerWidth - (e.clientX + state.dragOffset))) / (window.innerWidth - getNavWidth());
         state.setViewerBase(percent);
       }
     },
