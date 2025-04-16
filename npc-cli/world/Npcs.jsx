@@ -258,7 +258,7 @@ export default function Npcs(props) {
         npc.def = {
           key: opts.npcKey,
           uid: npc.def.uid,
-          angle: opts.angle ?? npc.getAngle() ?? 0, // prev angle fallback
+          angle: opts.angle ?? npc.getAngle(), // prev angle fallback
           classKey: opts.classKey ?? npc.def.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
@@ -273,7 +273,7 @@ export default function Npcs(props) {
         npc = state.npc[opts.npcKey] = new Npc({
           key: opts.npcKey,
           uid: takeFirst(state.freeId),
-          angle: opts.angle ?? 0,
+          angle: opts.angle ?? Math.PI/2, // default face along x axis
           classKey: opts.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
