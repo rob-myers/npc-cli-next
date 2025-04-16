@@ -22,9 +22,9 @@ import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
-  const site = useSite(({ browserLoaded, tabsDefs, viewOpen }) => ({
+  const site = useSite(({ browserLoaded, tabset, viewOpen }) => ({
     browserLoaded,
-    tabsDefs,
+    currentTabset: tabset.current,
     viewOpen,
   }), shallow);
 
@@ -33,6 +33,7 @@ export default function Viewer() {
   const state = useStateRef<State>(() => ({
     rootEl: null as any,
     tabs: {} as TabsState,
+
     onChangeIntersect: debounce((intersects: boolean) => {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
@@ -54,11 +55,10 @@ export default function Viewer() {
     trackVisible: true,
   });
 
-  React.useEffect(() => {
-
+  React.useMemo(() => {
     // 🚧 generic approach
     // 🔔 presence of `profile` triggers full fast-refresh
-    useSite.api.setTabsDefs({
+    useSite.api.setTabset({
       key: 'temp_default',
       def: [[
         {
@@ -83,7 +83,9 @@ export default function Viewer() {
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]],
     });
+  }, []);
 
+  React.useEffect(() => {
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
@@ -127,7 +129,7 @@ export default function Viewer() {
           onToggled={update}
           persistLayout
           rootOrientationVertical
-          tabset={site.tabsDefs}
+          tabset={site.currentTabset}
         />
       </div>
     </aside>

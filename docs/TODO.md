@@ -10,7 +10,8 @@
   - 🚧 can somehow change tabs from blog
     - ✅ mechanism for links with href `/internal/...` to trigger code in `<Viewer>`
     - ✅ `tabset` has structure `{ key: string; def: TabDef[][]; }`
-    - 🚧 store lookup `tabset` and `tabset.current` in site.store
+    - ✅ store lookup `tabset` and `tabset.current` in site.store
+    - fix createOrRestoreJsonModel Error
     - can set tabset by clicking link
     - can reset tabset by clicking link
     - can add Viewer tab by clicking link

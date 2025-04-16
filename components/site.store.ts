@@ -31,7 +31,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   pageMetadata: {} as PageMetadata,
   navOpen: false,
   tabset: { current: { key: 'empty', def: [] } },
-  tabsDefs: { key: 'empty', def: [] }, // 🚧 remove
   viewOpen: false,
 
   api: {
@@ -46,7 +45,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         }, undefined, "set-article-key");
         return pageMetadata;
       } catch (e) {
-        error(`pageMetadata failed: (script#page-metadata-json): using fallback pageMetadata`);
+        error(`pageMetadata failed: script#page-metadata-json: using fallback pageMetadata`);
         console.error(e);
         return { key: 'fallback-page-metadata' } as PageMetadata;
       }
@@ -115,13 +114,14 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
-    // 🚧
-    setTabsDefs(tabset) {
-      set({// flatten tabsets on mobile for better UX
-        tabsDefs: {
+    setTabset(tabset) {
+      set(({ tabset: lookup }) => {
+        const current = {
           key: tabset.key,
+          // 🔔 flatten tabsets on mobile for better UX
           def: isTouchDevice() ? [tabset.def.flatMap(x => x)] : tabset.def,
-        }
+        };
+        return { tabset: { ...lookup, [current.key]: current, current } };
       });
     },
 
@@ -159,8 +159,6 @@ export type State = {
   
   draggingView: boolean;
   tabset: Record<string, TabsetDef> & { current: TabsetDef };
-  /** Tabs is inside Viewer */
-  tabsDefs: TabsetDef; // 🚧 remove
   navOpen: boolean;
   viewOpen: boolean;
 
@@ -171,7 +169,7 @@ export type State = {
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
     getPageMetadataFromScript(): PageMetadata;
-    setTabsDefs(tabsetDef: TabsetDef): void;
+    setTabset(tabsetDef: TabsetDef): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
