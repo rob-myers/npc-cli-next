@@ -139,9 +139,6 @@ const viewerCss = css`
 
   // if never drag or maximise, toggle acts like this
   ${viewerBaseCssVar}: 50%;
-  &.collapsed {
-    ${viewerBaseCssVar}: 0%;
-  }
 
   position: relative;
   display: flex;
@@ -162,7 +159,7 @@ const viewerCss = css`
 
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
-    transition: min-height 500ms;
+    transition: min-height 500ms ease-in-out;
     min-height: calc( max(var(${viewerBaseCssVar}), ${view.barSize}) );
     &.collapsed {
       min-height: ${view.barSize};
