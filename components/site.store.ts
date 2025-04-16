@@ -113,14 +113,15 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     setTabset(tabset) {
-      set(({ tabset: lookup }) => {
-        const current = {
-          key: tabset.key,
-          // 🔔 flatten tabsets on mobile for better UX
-          def: isTouchDevice() ? [tabset.def.flatMap(x => x)] : tabset.def,
-        };
-        return { tabset: { ...lookup, [current.key]: current, current } };
-      });
+      const current = {
+        key: tabset.key,
+        // 🔔 flatten tabsets on mobile for better UX
+        def: isTouchDevice() ? [tabset.def.flatMap(x => x)] : tabset.def,
+      };
+      set(({ tabset: lookup }) => 
+        ({ tabset: { ...lookup, [current.key]: current, current } })
+      );
+      return current;
     },
 
     toggleNav(next) {
@@ -166,7 +167,7 @@ export type State = {
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
     getPageMetadataFromScript(): PageMetadata;
-    setTabset(tabsetDef: TabsetDef): void;
+    setTabset(tabsetDef: TabsetDef): TabsetDef;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;

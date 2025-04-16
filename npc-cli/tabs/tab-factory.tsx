@@ -183,10 +183,11 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       ) {
         return model;
       } else {
-        throw Error(`prev/next ids differ:
-  ${JSON.stringify(prevTabNodeIds)}
-  versus
-  ${JSON.stringify(nextTabNodeIds)}`);
+        throw Error(JSON.stringify({
+          message: 'prev/next ids differ',
+          prevTabNodeIds,
+          nextTabNodeIds,
+        }, undefined, '\t'));
       }
     } catch (e) {
       console.error("createOrRestoreJsonModel", e);

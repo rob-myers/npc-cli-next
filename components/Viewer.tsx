@@ -22,10 +22,7 @@ import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
-  const site = useSite(({ tabset, viewOpen }) => ({
-    currentTabset: tabset.current,
-    viewOpen,
-  }), shallow);
+  const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
 
   const update = useUpdate();
 
@@ -54,10 +51,10 @@ export default function Viewer() {
     trackVisible: true,
   });
 
-  React.useMemo(() => {
-    // 🚧 generic approach
+  // 🚧 generic approach
+  const currentTabset = React.useMemo(() => {
     // 🔔 presence of `profile` triggers full fast-refresh
-    useSite.api.setTabset({
+    return useSite.api.setTabset({
       key: 'temp_default',
       def: [[
         {
@@ -127,7 +124,7 @@ export default function Viewer() {
           onToggled={update}
           persistLayout
           rootOrientationVertical
-          tabset={site.currentTabset}
+          tabset={currentTabset}
         />
       </div>
     </aside>
