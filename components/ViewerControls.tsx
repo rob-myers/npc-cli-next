@@ -83,7 +83,7 @@ export default function ViewerControls({ api }: Props) {
         return;
       }
       if (isSmallView() === true) {
-        // 🚧 try fix mobile edge via visualViewport
+        // try fix mobile edge via visualViewport
         const height = window.visualViewport?.height ?? window.innerHeight;
         const percent = (100 * (height - (e.clientY + state.dragOffset))) / height;
         state.setViewerBase(percent);

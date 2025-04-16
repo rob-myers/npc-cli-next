@@ -61,6 +61,7 @@ const rootCss = css`
   display: flex;
   flex-direction: row;
   height: 100vh;
+  /* needed by edge mobile */
   height: 100svh;
 `;
 
