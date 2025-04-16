@@ -188,10 +188,10 @@ const tabsContainerCss = css`
   &.neverEnabled {
     cursor: pointer;
     background-image: url(/images/localhost_3000_blog_index.png.webp);
-    background-size: 60%;
+    background-size: 100%;
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    filter: sepia() hue-rotate(180deg) brightness(2) invert();
-    opacity: 0.5;
+    filter: brightness(4);
+    opacity: 0.25;
   }
 `;
