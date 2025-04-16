@@ -13,8 +13,8 @@ import { css } from "@emotion/react";
 
 import { detectTabPrevNextShortcut } from "../service/generic";
 import {
-  TabDef,
-  TabsDef,
+  type TabDef,
+  type TabsBaseProps,
   clearModelFromStorage,
   createOrRestoreJsonModel,
   factory,
@@ -144,7 +144,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     },
   }));
   
-  const tabsDefChanged = state.updateHash(JSON.stringify(props.tabs));
+  const tabsDefChanged = state.updateHash(JSON.stringify(props.tabset));
 
   state.model = React.useMemo(() => {
     const output = createOrRestoreJsonModel(props);
@@ -213,7 +213,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
   );
 });
 
-export interface Props extends TabsDef {
+export interface Props extends TabsBaseProps {
   browserLoaded: boolean;
   rootOrientationVertical?: boolean;
   /** Invoked onchange state.enabled */

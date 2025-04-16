@@ -9,7 +9,8 @@
   - ✅ add a carousel
   - 🚧 can somehow change tabs from blog
     - ✅ mechanism for links with href `/internal/...` to trigger code in `<Viewer>`
-    - store tabsets and currentTabset in site.store
+    - ✅ `tabset` has structure `{ key: string; def: TabDef[][]; }`
+    - 🚧 store lookup `tabset` and `tabset.current` in site.store
     - can set tabset by clicking link
     - can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link

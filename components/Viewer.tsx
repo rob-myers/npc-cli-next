@@ -58,28 +58,31 @@ export default function Viewer() {
 
     // 🚧 generic approach
     // 🔔 presence of `profile` triggers full fast-refresh
-    useSite.api.setTabsDefs([[
-      {
-        type: "component",
-        class: "World",
-        filepath: "test-world-1",
-        // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-        props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-      },
-    ],
-    [
-      {
-        type: "terminal",
-        filepath: "tty-1",
-        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
-      },
-      {
-        type: "terminal",
-        filepath: "tty-2",
-        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
-      },
-      { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-    ]]);
+    useSite.api.setTabsDefs({
+      key: 'temp_default',
+      def: [[
+        {
+          type: "component",
+          class: "World",
+          filepath: "test-world-1",
+          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+        },
+      ],
+      [
+        {
+          type: "terminal",
+          filepath: "tty-1",
+          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
+        },
+        {
+          type: "terminal",
+          filepath: "tty-2",
+          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
+        },
+        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+      ]],
+    });
 
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
@@ -124,7 +127,7 @@ export default function Viewer() {
           onToggled={update}
           persistLayout
           rootOrientationVertical
-          tabs={site.tabsDefs}
+          tabset={site.tabsDefs}
         />
       </div>
     </aside>

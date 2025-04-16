@@ -20,7 +20,7 @@ import {
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { type TabDef } from "@/npc-cli/tabs/tab-factory";
+import { type TabsetDef } from "@/npc-cli/tabs/tab-factory";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -30,25 +30,25 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   draggingView: false,
   pageMetadata: {} as PageMetadata,
   navOpen: false,
+  tabset: { current: { key: 'empty', def: [] } },
+  tabsDefs: { key: 'empty', def: [] }, // 🚧 remove
   viewOpen: false,
-  tabsDefs: [],
 
   api: {
-    getPageMetadataFromScript() {
+    getPageMetadataFromScript() {// 🔔 read metadata from <script id="page-metadata-json">
       try {
-        // 🔔 read metadata from <script id="page-metadata-json">
         const script = document.getElementById('page-metadata-json') as HTMLScriptElement;
         const pageMetadata = JSON.parse(JSON.parse(script.innerHTML)) as PageMetadata;
-        console.log({pageMetadata});
+        // console.log({pageMetadata});
         set({
           articleKey: pageMetadata.key ?? null,
-          pageMetadata: pageMetadata,
+          pageMetadata,
         }, undefined, "set-article-key");
         return pageMetadata;
       } catch (e) {
-        error(`frontMatter failed (script#frontmatter-json): using fallback frontMatter`);
+        error(`pageMetadata failed: (script#page-metadata-json): using fallback pageMetadata`);
         console.error(e);
-        return { key: 'fallback-frontmatter' } as PageMetadata;
+        return { key: 'fallback-page-metadata' } as PageMetadata;
       }
     },
 
@@ -88,7 +88,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         set(() => ({ navOpen: topLevel.navOpen }));
       }
 
-      return () => cleanUps.forEach((cleanup) => cleanup());
+      return () => cleanUps.forEach(cleanup => cleanup());
     },
 
     isViewClosed() {
@@ -101,13 +101,9 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         info("giscus meta", discussion);
         const { articleKey } = get();
         if (articleKey) {
-          set(
-            ({ discussMeta: comments }) => ({
-              discussMeta: { ...comments, [articleKey]: discussion },
-            }),
-            undefined,
-            "store-giscus-meta"
-          );
+          set(({ discussMeta: comments }) => ({
+            discussMeta: { ...comments, [articleKey]: discussion },
+          }), undefined, "store-giscus-meta");
           return true;
         }
       }
@@ -119,10 +115,13 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
-    setTabsDefs(tabsDefs) {
-      set({
-        // flatten tabsets on mobile for better UX
-        tabsDefs: isTouchDevice() ? [tabsDefs.flatMap(x => x)] : tabsDefs,
+    // 🚧
+    setTabsDefs(tabset) {
+      set({// flatten tabsets on mobile for better UX
+        tabsDefs: {
+          key: tabset.key,
+          def: isTouchDevice() ? [tabset.def.flatMap(x => x)] : tabset.def,
+        }
       });
     },
 
@@ -159,9 +158,10 @@ export type State = {
   pageMetadata: PageMetadata;
   
   draggingView: boolean;
-  navOpen: boolean;
+  tabset: Record<string, TabsetDef> & { current: TabsetDef };
   /** Tabs is inside Viewer */
-  tabsDefs: TabDef[][];
+  tabsDefs: TabsetDef; // 🚧 remove
+  navOpen: boolean;
   viewOpen: boolean;
 
   api: {
@@ -171,7 +171,7 @@ export type State = {
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
     getPageMetadataFromScript(): PageMetadata;
-    setTabsDefs(tabsDefs: TabDef[][]): void;
+    setTabsDefs(tabsetDef: TabsetDef): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;

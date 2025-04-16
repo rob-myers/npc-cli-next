@@ -30,6 +30,11 @@ export function factory(node: TabNode, api: TabsApi, forceUpdate: boolean) {
   }
 }
 
+export type TabsetDef = {
+  key: string;
+  def: TabDef[][];
+};
+
 export type TabDef = { weight?: number } & (
   | ({
       type: "component";
@@ -46,11 +51,11 @@ export type TabDef = { weight?: number } & (
     }
 );
 
-export interface TabsDef {
+export interface TabsBaseProps {
   /** Required e.g. as identifier */
   id: string;
   /** List of rows each with a single tabset */
-  tabs: TabDef[][];
+  tabset: TabsetDef;
   /** Initially enabled? */
   initEnabled?: boolean;
   persistLayout?: boolean;
@@ -156,7 +161,7 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       const model = Model.fromJson(serializable);
 
       // Overwrite persisted `TabMeta`s with their value from `props`
-      const tabKeyToMeta = props.tabs
+      const tabKeyToMeta = props.tabset.def
         .flatMap((x) => x)
         .reduce(
           (agg, item) => Object.assign(agg, { [getTabIdentifier(item)]: item }),
@@ -171,7 +176,7 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       // Validate i.e. props.tabs must mention same ids
       const prevTabNodeIds = [] as string[];
       model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
-      const nextTabNodeIds = props.tabs.flatMap((x) => x.map(getTabIdentifier));
+      const nextTabNodeIds = props.tabset.def.flatMap((x) => x.map(getTabIdentifier));
       if (
         prevTabNodeIds.length === nextTabNodeIds.length &&
         prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
@@ -191,10 +196,10 @@ export function createOrRestoreJsonModel(props: TabsProps) {
   // Either:
   // (a) no Tabs model found in local storage, or
   // (b) Tabs prop "tabs" has different ids
-  return Model.fromJson(computeJsonModel(props.tabs, props.rootOrientationVertical));
+  return Model.fromJson(computeJsonModel(props.tabset, props.rootOrientationVertical));
 }
 
-function computeJsonModel(tabsDefs: TabDef[][], rootOrientationVertical?: boolean): IJsonModel {
+function computeJsonModel(tabset: TabsetDef, rootOrientationVertical?: boolean): IJsonModel {
   return {
     global: {
       tabEnableRename: false,
@@ -209,7 +214,7 @@ function computeJsonModel(tabsDefs: TabDef[][], rootOrientationVertical?: boolea
     layout: {
       type: "row",
       // One row for each list in `tabs`.
-      children: tabsDefs.map((defs) => ({
+      children: tabset.def.map((defs) => ({
         type: "row",
         weight: defs[0]?.weight,
         // One tabset for each list in `tabs`
