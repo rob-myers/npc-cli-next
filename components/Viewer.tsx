@@ -17,6 +17,8 @@ import useUpdate from "@/npc-cli/hooks/use-update";
 import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 
+import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
+
 export default function Viewer() {
   const site = useSite(({
     browserLoaded,
@@ -184,7 +186,7 @@ const tabsContainerCss = css`
   
   &.neverEnabled {
     cursor: pointer;
-    background-image: url(/images/localhost_3000_blog_index.png.webp);
+    background-image: url(${WorldTwoNpcWebp.src});
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: 50% 50%;
