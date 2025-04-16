@@ -115,6 +115,7 @@
 
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?
+- move "x-ray" into PopUp opts?
 
 - shell should show debugs not errors
 - somehow additionally indicate npc is selected by ContextMenu when docked

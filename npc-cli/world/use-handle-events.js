@@ -210,12 +210,10 @@ export default function useHandleEvents(w) {
         case "changed-zoom": // 'near' or 'far'
           break;
         case "controls-start":
-          w.cm.draggable.el.style.pointerEvents = 'none';
-          w.menu.draggable.el.style.pointerEvents = 'none';
+          w.menu.setPreventDraggable(true);
           break;
         case "controls-end":
-          w.cm.draggable.el.style.pointerEvents = 'auto';
-          w.menu.draggable.el.style.pointerEvents = 'auto';
+          w.menu.setPreventDraggable(false);
           break;
         case "updated-gm-decor":
           // NOOP e.g. physics.worker rebuilds entire world onchange geomorphs

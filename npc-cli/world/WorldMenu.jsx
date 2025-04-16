@@ -36,6 +36,7 @@ export default function WorldMenu(props) {
     loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? defaultLoggerHeightPx / loggerHeightDelta,
     loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? defaultLoggerWidthPx / defaultLoggerWidthDelta,
     loggerWidthDelta: defaultLoggerWidthDelta,
+    preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
     xRayOpacity: 4, // [1..10]
 
@@ -110,6 +111,10 @@ export default function WorldMenu(props) {
       );
       state.logger.xterm.scrollToBottom();
     },
+    setPreventDraggable(shouldPrevent) {
+      state.preventDraggable = !!shouldPrevent;
+      update();
+    },
     toggleXRay() {
       state.xRayOpacity = state.xRayOpacity < 10 ? 10 : 5;
       w.wall.setOpacity(state.xRayOpacity / 10);
@@ -151,7 +156,8 @@ export default function WorldMenu(props) {
 
     {w.view.rootEl !== null && createPortal(
       <Draggable
-        css={loggerContainerCss}
+        css={loggerAndPopUpCss}
+        className={cx({ preventDraggable: state.preventDraggable })}
         ref={state.ref('draggable')}
         container={w.view.rootEl}
         dragClassName={state.dragClassName}
@@ -160,7 +166,7 @@ export default function WorldMenu(props) {
       >
         <PopUp
           label="⋯"
-          css={loggerPopUpCss}
+          css={popUpCss}
           width={300}
         >
           <div className="ranges">
@@ -254,7 +260,7 @@ const defaultLoggerWidthPx = 800;
 const loggerHeightDelta = 20;
 const defaultLoggerWidthDelta = 80;
 
-const loggerContainerCss = css`
+const loggerAndPopUpCss = css`
   position: absolute;
   left: 0;
   top: 0;
@@ -275,9 +281,13 @@ const loggerContainerCss = css`
 
   // avoid blocking World above Logger and right of PopUp
   pointer-events: none !important;
+  
+  &.preventDraggable > * {
+    pointer-events: none !important;
+  }
 `;
 
-const loggerPopUpCss = css`
+const popUpCss = css`
   pointer-events: all;
   // cover Logger scrollbars
   z-index: ${zIndexWorld.loggerPopUp};
@@ -423,6 +433,7 @@ const cssTtyDisconnectedMessage = css`
  * @property {number} loggerHeight
  * @property {number} loggerWidth
  * @property {number} loggerWidthDelta
+ * @property {boolean} preventDraggable
  * @property {boolean} showDebug
  * @property {number} xRayOpacity In [1..10]
  *
@@ -438,5 +449,6 @@ const cssTtyDisconnectedMessage = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerHeight
  * @property {(e?: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerWidth
  * @property {(npcKey: string, line: string) => void} say
+ * @property {(shouldPrevent: boolean) => void} setPreventDraggable
  * @property {() => void} toggleXRay
  */
