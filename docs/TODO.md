@@ -17,8 +17,8 @@
     - 🚧 can reset tabset by clicking link
     - can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
+    - 🚧 fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets
-    - fix createOrRestoreJsonModel Error (?)
     - clean hard-coded initialization in initiateBrowser
   - 🚧 more content
   - mention Starship Geomorphs early

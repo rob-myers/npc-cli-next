@@ -8,6 +8,7 @@ import {
   tryLocalStorageGet,
   tryLocalStorageRemove,
   tryLocalStorageSet,
+  warn,
 } from "../service/generic";
 import { CentredSpinner } from "../components/Spinner";
 import { Props as TabsProps, State as TabsApi } from "./Tabs";
@@ -190,7 +191,7 @@ export function createOrRestoreJsonModel(props: TabsProps) {
         }, undefined, '\t'));
       }
     } catch (e) {
-      console.error("createOrRestoreJsonModel", e);
+      warn("createOrRestoreJsonModel", e);
     }
   }
 
