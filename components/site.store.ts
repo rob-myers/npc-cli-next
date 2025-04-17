@@ -8,6 +8,7 @@ import {
   defaultSiteTopLevelState,
   siteTopLevelKey,
   allArticlesMeta,
+  initialTabsetLookup,
 } from "./const";
 
 import {
@@ -20,7 +21,7 @@ import {
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { type TabsetDef } from "@/npc-cli/tabs/tab-factory";
+import { type TabsetLayout as TabsetLayout } from "@/npc-cli/tabs/tab-factory";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -29,7 +30,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   draggingView: false,
   pageMetadata: {} as PageMetadata,
   navOpen: false,
-  tabset: { current: { key: 'empty', def: [] } },
+  tabset: initialTabsetLookup,
   viewOpen: false,
 
   api: {
@@ -113,14 +114,20 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     setTabset(tabset) {
-      const current = {
+      const current: TabsetLayout = {
         key: tabset.key,
         // 🔔 flatten tabsets on mobile for better UX
-        def: isTouchDevice() ? [tabset.def.flatMap(x => x)] : tabset.def,
+        layout: isTouchDevice() ? [tabset.layout.flatMap(x => x)] : tabset.layout,
       };
-      set(({ tabset: lookup }) => 
-        ({ tabset: { ...lookup, [current.key]: current, current } })
-      );
+
+      set(({ tabset: lookup }) => ({
+        tabset: {
+          ...lookup,
+          ...!(current.key in lookup) && { [`_${current.key}`]: current },
+          [current.key]: current,
+          current,
+        }
+      }));
       return current;
     },
 
@@ -156,7 +163,13 @@ export type State = {
   pageMetadata: PageMetadata;
   
   draggingView: boolean;
-  tabset: Record<string, TabsetDef> & { current: TabsetDef };
+  /**
+   * Tabset layout by `key`.
+   * - `current` is always the current tabset
+   * - `_${key}` is the first layout set against `key`,
+   *   i.e. the tabset we reset to.
+   */
+  tabset: Record<string, TabsetLayout> & { current: TabsetLayout };
   navOpen: boolean;
   viewOpen: boolean;
 
@@ -167,7 +180,7 @@ export type State = {
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
     getPageMetadataFromScript(): PageMetadata;
-    setTabset(tabsetDef: TabsetDef): TabsetDef;
+    setTabset(tabsetDef: TabsetLayout): TabsetLayout;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;

@@ -1,4 +1,5 @@
-import type { ArticleKey, ArticleMeta } from "./site.store";
+import type { ArticleKey, ArticleMeta, State } from "./site.store";
+import type { TabsetLayout } from "@/npc-cli/tabs/tab-factory";
 
 export const afterBreakpoint = "1201px";
 export const breakpoint = "1200px";
@@ -61,3 +62,11 @@ export const zIndexSite = /** @type {const} */ ({
 });
 
 export const sideNoteRootDataAttribute = 'data-side-note-root';
+
+const emptyTabset: TabsetLayout = { key: 'empty', layout: [] };
+
+export const initialTabsetLookup: State['tabset'] = {
+  empty: emptyTabset,
+  _empty: { key: 'empty', layout: [] }, // clone
+  current: emptyTabset, // reference
+};

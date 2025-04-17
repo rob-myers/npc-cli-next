@@ -56,7 +56,7 @@ export default function Viewer() {
     // 🔔 presence of `profile` triggers full fast-refresh
     return useSite.api.setTabset({
       key: 'temp_default',
-      def: [[
+      layout: [[
         {
           type: "component",
           class: "World",
@@ -85,9 +85,8 @@ export default function Viewer() {
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
-  }, []);
 
-  React.useEffect(() => {// 🚧 handle #/internal/foo/bar
+    // 🚧 handle #/internal/foo/bar
     function onHashChange() {
       if (location.hash?.startsWith('#/internal/')) {
         const internalApi = location.hash.slice(1);

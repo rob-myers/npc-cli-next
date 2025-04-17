@@ -30,10 +30,10 @@ export function factory(node: TabNode, api: TabsApi, forceUpdate: boolean) {
   }
 }
 
-export type TabsetDef = {
+export interface TabsetLayout {
   key: string;
-  def: TabDef[][];
-};
+  layout: TabDef[][];
+}
 
 export type TabDef = { weight?: number } & (
   | ({
@@ -55,7 +55,7 @@ export interface TabsBaseProps {
   /** Required e.g. as identifier */
   id: string;
   /** List of rows each with a single tabset */
-  tabset: TabsetDef;
+  tabset: TabsetLayout;
   /** Initially enabled? */
   initEnabled?: boolean;
   persistLayout?: boolean;
@@ -161,7 +161,7 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       const model = Model.fromJson(serializable);
 
       // Overwrite persisted `TabMeta`s with their value from `props`
-      const tabKeyToMeta = props.tabset.def
+      const tabKeyToMeta = props.tabset.layout
         .flatMap((x) => x)
         .reduce(
           (agg, item) => Object.assign(agg, { [getTabIdentifier(item)]: item }),
@@ -176,7 +176,7 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       // Validate i.e. props.tabs must mention same ids
       const prevTabNodeIds = [] as string[];
       model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
-      const nextTabNodeIds = props.tabset.def.flatMap((x) => x.map(getTabIdentifier));
+      const nextTabNodeIds = props.tabset.layout.flatMap((x) => x.map(getTabIdentifier));
       if (
         prevTabNodeIds.length === nextTabNodeIds.length &&
         prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
@@ -200,7 +200,7 @@ export function createOrRestoreJsonModel(props: TabsProps) {
   return Model.fromJson(computeJsonModel(props.tabset, props.rootOrientationVertical));
 }
 
-function computeJsonModel(tabset: TabsetDef, rootOrientationVertical?: boolean): IJsonModel {
+function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
   return {
     global: {
       tabEnableRename: false,
@@ -215,7 +215,7 @@ function computeJsonModel(tabset: TabsetDef, rootOrientationVertical?: boolean):
     layout: {
       type: "row",
       // One row for each list in `tabs`.
-      children: tabset.def.map((defs) => ({
+      children: tabset.layout.map((defs) => ({
         type: "row",
         weight: defs[0]?.weight,
         // One tabset for each list in `tabs`
