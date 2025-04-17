@@ -11,11 +11,15 @@
     - ✅ mechanism for links with href `/internal/...` to trigger code in `<Viewer>`
     - ✅ `tabset` has structure `{ key: string; def: TabDef[][]; }`
     - ✅ store lookup `tabset` and `tabset.current` in site.store
-    - 🚧 can set tabset by clicking link
+    - ✅ can set tabset by clicking link
+    - ✅ avoid idempotence of fragment identifier?
+      - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
     - can reset tabset by clicking link
     - can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
+    - localStorage remembers tabset, including resets
     - fix createOrRestoreJsonModel Error (?)
+    - clean hard-coded initialization in initiateBrowser
   - 🚧 more content
   - mention Starship Geomorphs early
   - mention recent improvements in AI

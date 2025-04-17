@@ -200,7 +200,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       ref={state.ref('rootEl')}
       tabIndex={0}
     >
-      {state.everEnabled && (
+      {state.everEnabled === true && (
         <FlexLayout
           factory={(node) => factory(node, state, tabsDefChanged)}
           model={state.model}

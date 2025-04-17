@@ -22,7 +22,10 @@ import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
-  const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
+  const site = useSite(({ viewOpen, tabset: lookup }) => ({
+    viewOpen,
+    tabset: lookup.current,
+  }), shallow);
 
   const update = useUpdate();
 
@@ -30,13 +33,39 @@ export default function Viewer() {
     rootEl: null as any,
     tabs: {} as TabsState,
 
-    handleInternalApi(internalApiPath: string) {
-      console.log({ internalApiPath });
-    },
     onChangeIntersect: debounce((intersects: boolean) => {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
     }, 1000),
+    onInternalApi(internalApiPath) {
+      const parts = internalApiPath.split('/').slice(2);
+      console.log({ internalApiPath, parts });
+
+      switch (parts[0]) {
+        case 'set-tabs':
+          useSite.api.changeTabset(parts[1]);
+          // 🚧 why is a delayed update needed?
+          setTimeout(update);
+          break;
+        case 'reset-tabs':
+          useSite.api.createTabset({
+            key: parts[1],
+            layout: [],
+          });
+          break;
+        case 'open-tab':
+          // 🚧
+          break;
+        case 'close-tab':
+          // 🚧
+          break;
+        case 'noop':
+        default:
+          return;
+      }
+
+      window.location.hash = '/internal/noop';
+    },
     onKeyDown(e) {
       if (e.key === "Escape" && state.tabs.enabled) {
         state.tabs.toggleEnabled(false);
@@ -54,46 +83,17 @@ export default function Viewer() {
     trackVisible: true,
   });
 
-  // 🚧 generic approach
-  const currentTabset = React.useMemo(() => {
-    // 🔔 presence of `profile` triggers full fast-refresh
-    return useSite.api.setTabset({
-      key: 'temp_tabset',
-      layout: [[
-        {
-          type: "component",
-          class: "World",
-          filepath: "test-world-1",
-          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-        },
-      ],
-      [
-        {
-          type: "terminal",
-          filepath: "tty-1",
-          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
-        },
-        {
-          type: "terminal",
-          filepath: "tty-2",
-          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
-        },
-        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-      ]],
-    });
-  }, []);
-
   React.useEffect(() => {
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
 
-    // 🚧 handle #/internal/foo/bar
+    // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {
       if (location.hash?.startsWith('#/internal/')) {
-        const internalApiPath = location.hash.slice(1);
-        state.handleInternalApi(internalApiPath)
+        state.onInternalApi(
+          `/internal/${location.hash.slice('#/internal/'.length)}`
+        );
       }
     }
     window.addEventListener('hashchange', onHashChange);
@@ -126,7 +126,7 @@ export default function Viewer() {
           onToggled={update}
           persistLayout
           rootOrientationVertical
-          tabset={currentTabset}
+          tabset={site.tabset}
         />
       </div>
     </aside>
@@ -140,7 +140,7 @@ export interface State {
   /**
    * @param pathname e.g. `/internal/set-tabset/empty`
    */
-  handleInternalApi(pathname: `/internal/${string}`): void;
+  onInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
   update(): void;

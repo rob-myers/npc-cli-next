@@ -18,10 +18,13 @@ import {
   info,
   isDevelopment,
   error,
+  deepClone,
+  warn,
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import { type TabsetLayout as TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { profile } from "@/npc-cli/sh/src";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -34,6 +37,52 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   viewOpen: false,
 
   api: {
+
+    changeTabset(tabsetKey) {
+      let next = get().tabset[tabsetKey];
+  
+      if (next !== undefined) {
+        // change current
+        set(({ tabset: lookup }) => ({ tabset: { ...lookup, current: next } }));
+      } else {
+        
+        // create new empty current
+        next = { key: tabsetKey, layout: [] };
+  
+        set(({ tabset: lookup }) => ({
+          tabset: {
+            ...lookup, // reset will be empty without overwrite:
+            [`_${next.key}`]: deepClone(next),
+            [next.key]: next,
+            current: next,
+          },
+        }));
+
+        warn(`${'changeTabset'}: created empty tabset "${tabsetKey}"`);
+      }
+  
+      return next;
+    },
+
+    createTabset(tabset) {
+      const next = {
+        key: tabset.key,
+        // 🔔 flatten tabsets on mobile for better UX
+        layout: isTouchDevice() ? [tabset.layout.flatMap(x => x)] : tabset.layout,
+      };
+
+      set(({ tabset: lookup }) => ({
+        tabset: {
+          ...lookup,
+          [`_${next.key}`]: deepClone(next), // for reset
+          [next.key]: next,
+          current: next,
+        },
+      }));
+
+      return next;
+    },
+
     getPageMetadataFromScript() {// 🔔 read metadata from <script id="page-metadata-json">
       try {
         const script = document.getElementById('page-metadata-json') as HTMLScriptElement;
@@ -73,7 +122,32 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       window.addEventListener("message", useSite.api.onGiscusMessage);
       cleanUps.push(() => window.removeEventListener("message", useSite.api.onGiscusMessage));
 
-      // ready
+      // 🚧 move elsewhere
+      useSite.api.createTabset({
+        key: 'temp_tabset',
+        layout: [[
+          {
+            type: "component",
+            class: "World",
+            filepath: "test-world-1",
+            // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+            props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+          },
+        ],
+        [
+          {
+            type: "terminal",
+            filepath: "tty-1",
+            env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
+          },
+          {
+            type: "terminal",
+            filepath: "tty-2",
+            env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
+          },
+          { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+        ]],
+      });
 
       // open Nav/Viewer based on localStorage or defaults
       const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
@@ -113,22 +187,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
-    setTabset(tabset) {
-      const current: TabsetLayout = {
-        key: tabset.key,
-        // 🔔 flatten tabsets on mobile for better UX
-        layout: isTouchDevice() ? [tabset.layout.flatMap(x => x)] : tabset.layout,
-      };
+    rememberTabset(tabsetKey) {
+      const tabset = get().tabset[tabsetKey];
 
-      set(({ tabset: lookup }) => ({
-        tabset: {
-          ...lookup,
-          ...!(current.key in lookup) && { [`_${current.key}`]: current },
-          [current.key]: current,
-          current,
-        }
-      }));
-      return current;
+      if (tabset) {
+        set(({ tabset: lookup }) => ({
+          tabset: { ...lookup, [`_${tabset.key}`]: deepClone(tabset) },
+        }))
+      } else {
+        warn(`${'setTabsetReset'}: tabset key "${tabsetKey}" does not exist`);
+      }
     },
 
     toggleNav(next) {
@@ -175,12 +243,17 @@ export type State = {
 
   api: {
     // clickToClipboard(e: React.MouseEvent): Promise<void>;
+    /** Change, creating new empty if n'exist pas */
+    changeTabset(tabsetKey: string): TabsetLayout;
+    /** Create, possibly overwriting `${key}` and `_${key}` */
+    createTabset(tabsetDef: TabsetLayout): TabsetLayout;
+    getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
-    getPageMetadataFromScript(): PageMetadata;
-    setTabset(tabsetDef: TabsetLayout): TabsetLayout;
+    /** Remember for future reset */
+    rememberTabset(tabsetKey: string): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
