@@ -457,9 +457,8 @@ export default function WorldView(props) {
         }
       });
       renderList.transparent.forEach(x => {
-        // 🔔 ignore walls, ceilings, doors
         if (w.wall.opacity < 1 && x.object.name in fromXrayInstancedMeshName) {
-          return;
+          return;// if walls not opaque ignore: walls, ceilings, doors
         }
         if (hasObjectPickShaderMaterial(x) === true) {
           state.renderObjectPickItem(gl, scene, camera, x);

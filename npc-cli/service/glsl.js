@@ -1,8 +1,7 @@
 import * as THREE from "three";
 import { extend } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
-import { wallHeight } from "./const";
-import { defaultQuadUvs, emptyDataArrayTexture } from "./three";
+import { emptyDataArrayTexture } from "./three";
 
 /**
  * - Monochrome instanced walls.
@@ -416,7 +415,6 @@ export const instancedMultiTextureShader = {
 
     uniform float alphaTest;
     uniform bool objectPick;
-    uniform bool colorSpace;
     uniform int objectPickRed;
     uniform sampler2DArray atlas;
     uniform vec3 diffuse;
@@ -431,23 +429,22 @@ export const instancedMultiTextureShader = {
     #include <logdepthbuf_pars_fragment>
   
     void main() {
-      gl_FragColor = texture(atlas, vec3(vUv, vTextureId)) * vec4(vColor * diffuse, opacity);
 
-      if (gl_FragColor.a < alphaTest) {
-        discard; // stop transparent pixels taking precedence
-      }
+      vec4 texel = texture(atlas, vec3(vUv, vTextureId));
 
       if (objectPick == true) {
+        if (texel.a < alphaTest) discard;
+
         gl_FragColor = vec4(
           float(objectPickRed) / 255.0,
           float((int(vInstanceId) >> 8) & 255) / 255.0,
           float(int(vInstanceId) & 255) / 255.0,
           1
         );
-      }
-      
-      if (colorSpace == true) {
-        #include <colorspace_fragment>
+      } else {
+        if (texel.a * opacity < alphaTest) discard;
+
+        gl_FragColor = texel * vec4(vColor * diffuse, opacity);
       }
 
       #include <logdepthbuf_fragment>
@@ -492,7 +489,7 @@ export const InstancedMultiTextureMaterial = shaderMaterial(
     // 🔔 map, mapTransform required else can get weird texture
     // map: null,
     // mapTransform: new THREE.Matrix3(),
-    colorSpace: false,
+    // colorSpace: false,
     objectPick: false,
     objectPickRed: 0,
     opacity: 1,

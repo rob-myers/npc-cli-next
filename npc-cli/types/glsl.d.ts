@@ -35,7 +35,6 @@ declare module '@react-three/fiber' {
 
     instancedMultiTextureMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       alphaTest?: number;
-      colorSpace?: boolean;
       diffuse?: Vector3Input;
       atlas: import('three').DataArrayTexture;
       /** Red component in [0..255] used by objectPick rgba */
