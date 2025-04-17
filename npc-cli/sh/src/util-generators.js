@@ -237,7 +237,7 @@ export async function* reduce({ api, args, datum }) {
  */
 export async function* split({ api, args, datum }) {
   let arg = api.parseJsArg( args[0] || "");
-  while ((datum = await api.read()) !== api.eof)
+  while ((datum = await api.read()) !== api.eof) {
     if (datum instanceof Array) {
       // yield* datum
       yield api.dataChunk(datum);
@@ -247,6 +247,7 @@ export async function* split({ api, args, datum }) {
     } else if (datum instanceof Set) {
       yield api.dataChunk(Array.from(datum));
     }
+  }
 }
 
 /**
