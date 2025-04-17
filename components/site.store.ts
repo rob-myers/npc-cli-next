@@ -24,7 +24,6 @@ import {
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import { type TabsetLayout as TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { profile } from "@/npc-cli/sh/src";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -121,33 +120,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       window.addEventListener("message", useSite.api.onGiscusMessage);
       cleanUps.push(() => window.removeEventListener("message", useSite.api.onGiscusMessage));
-
-      // 🚧 move elsewhere
-      useSite.api.createTabset({
-        key: 'temp_tabset',
-        layout: [[
-          {
-            type: "component",
-            class: "World",
-            filepath: "test-world-1",
-            // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-            props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-          },
-        ],
-        [
-          {
-            type: "terminal",
-            filepath: "tty-1",
-            env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
-          },
-          {
-            type: "terminal",
-            filepath: "tty-2",
-            env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
-          },
-          { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-        ]],
-      });
 
       // open Nav/Viewer based on localStorage or defaults
       const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
