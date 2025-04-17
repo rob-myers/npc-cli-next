@@ -610,8 +610,10 @@ export default function WorldView(props) {
       <NpcSpeechBubbles/>
 
       <EffectComposer>
-        <Vignette eskil={false} offset={0.1} darkness={1.2} />
-        <BrightnessContrast brightness={-0.23} contrast={0.} />
+        {w.crowd === null ? <></> : <>
+          <Vignette eskil={false} offset={0.1} darkness={1.2} />
+          <BrightnessContrast brightness={-0.23} contrast={0.} />
+        </>}
       </EffectComposer>
 
     </Canvas>
