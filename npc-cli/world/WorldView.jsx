@@ -612,7 +612,7 @@ export default function WorldView(props) {
 
       <EffectComposer>
         <Vignette eskil={false} offset={0.1} darkness={1.2} />
-        <BrightnessContrast brightness={-0.2} />
+        <BrightnessContrast brightness={-0.22} />
       </EffectComposer>
 
     </Canvas>
