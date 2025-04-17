@@ -30,6 +30,9 @@ export default function Viewer() {
     rootEl: null as any,
     tabs: {} as TabsState,
 
+    handleInternalApi(internalApiPath: string) {
+      console.log({ internalApiPath });
+    },
     onChangeIntersect: debounce((intersects: boolean) => {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
@@ -55,7 +58,7 @@ export default function Viewer() {
   const currentTabset = React.useMemo(() => {
     // 🔔 presence of `profile` triggers full fast-refresh
     return useSite.api.setTabset({
-      key: 'temp_default',
+      key: 'temp_tabset',
       layout: [[
         {
           type: "component",
@@ -89,8 +92,8 @@ export default function Viewer() {
     // 🚧 handle #/internal/foo/bar
     function onHashChange() {
       if (location.hash?.startsWith('#/internal/')) {
-        const internalApi = location.hash.slice(1);
-        console.log({ internalApi });
+        const internalApiPath = location.hash.slice(1);
+        state.handleInternalApi(internalApiPath)
       }
     }
     window.addEventListener('hashchange', onHashChange);
@@ -134,6 +137,10 @@ export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
+  /**
+   * @param pathname e.g. `/internal/set-tabset/empty`
+   */
+  handleInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
   update(): void;
