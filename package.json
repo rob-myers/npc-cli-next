@@ -39,6 +39,7 @@
     "@next/mdx": "^15.2.4",
     "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.1.0",
+    "@react-three/postprocessing": "^3.0.4",
     "@recast-navigation/core": "npm:@rob-myers/recast-navigation__core@0.39.5",
     "@recast-navigation/generators": "npm:@rob-myers/recast-navigation__generators@0.39.5",
     "@recast-navigation/three": "npm:@rob-myers/recast-navigation__three@0.39.5",
