@@ -77,6 +77,7 @@ export default function Carousel(props: Props) {
                 height={img.height}
                 alt={label}
                 style={{ objectPosition }}
+                priority={index === state.currentSlide}
               />
               <div className="slide-label">
                 <div>
