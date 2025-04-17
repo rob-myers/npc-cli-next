@@ -16,6 +16,7 @@ import {
   singleQuotes,
   killProcess,
   handleProcessError,
+  ttyError,
 } from "./util";
 import { cmdService, isTtyAt, sleep } from "./cmd.service";
 import { srcService } from "./parse";
@@ -61,14 +62,14 @@ class semanticsServiceClass {
       // We do not rethrow
       const message = [prefix, e.message].filter(Boolean).join(": ");
       useSession.api.writeMsg(node.meta.sessionKey, message, "error");
-      console.error(`ShError: ${node.meta.sessionKey}: ${message} (${e.exitCode})`);
+      ttyError(`ShError: ${node.meta.sessionKey}: ${message} (${e.exitCode})`);
       node.exitCode = e.exitCode;
     } else {
       // We do not rethrow
       const message = [prefix, e?.message].filter(Boolean).join(": ");
       useSession.api.writeMsg(node.meta.sessionKey, message, "error");
-      console.error(`Internal ShError: ${node.meta.sessionKey}: ${message}`);
-      console.error(e);
+      ttyError(`Internal ShError: ${node.meta.sessionKey}: ${message}`);
+      ttyError(e);
       node.exitCode = 2;
     }
   }
@@ -77,7 +78,7 @@ class semanticsServiceClass {
     if (useSession.api.getSession(e.sessionKey) !== undefined) {
       cmdService.killProcesses(e.sessionKey, [e.pid], { group: true, SIGINT: true });
     } else {
-      return console.error(`session not found: ${e.sessionKey}`);
+      return ttyError(`session not found: ${e.sessionKey}`);
     }
   }
 
@@ -700,7 +701,7 @@ class semanticsServiceClass {
         if (e instanceof ProcessError) {
           this.handleTopLevelProcessError(e);
         } else {
-          console.error("background process error", e);
+          ttyError("background process error", e);
         }
       });
       stmt.exitCode = stmt.Negated ? 1 : 0;

@@ -1,6 +1,6 @@
 import braces from "braces";
 import { ansi } from "./const";
-import { last, parseJsArg } from "../service/generic";
+import { debug, last, parseJsArg } from "../service/generic";
 import { ProcessMeta, ProcessStatus, TtyLinkCtxt } from "./session.store";
 import { SigEnum } from "./io";
 import type * as Sh from "./parse";
@@ -305,6 +305,11 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
     ttyTextKey,
     linkCtxtsFactory,
   };
+}
+
+/** Avoid clogging logs with "pseudo errors" */
+export function ttyError(...args: any[]) {
+  debug('ttyError', ...args);
 }
 
 //#endregion

@@ -2,45 +2,12 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import {
-  Deferred,
-  deepGet,
-  keysDeep,
-  pause,
-  removeFirst,
-  generateSelector,
-  testNever,
-  truncateOneLine,
-  jsStringify,
-  safeJsonCompact,
-} from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsonCompact } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import {
-  addStdinToArgs,
-  computeNormalizedParts,
-  formatLink,
-  handleProcessError,
-  killError,
-  killProcess,
-  normalizeAbsParts,
-  parseTtyMarkdownLinks,
-  ProcessError,
-  resolveNormalized,
-  resolvePath,
-  ShError,
-  stripAnsi,
-} from "./util";
+import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
-import {
-  ReadResult,
-  preProcessRead,
-  dataChunk,
-  isProxy,
-  redirectNode,
-  VoiceCommand,
-  isDataChunk,
-} from "./io";
-import useSession, { ProcessMeta, ProcessStatus, Session } from "./session.store";
+import { type ReadResult, preProcessRead, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk } from "./io";
+import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
 import { cloneParsed, getOpts, parseService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
 
@@ -520,7 +487,7 @@ class cmdServiceClass {
               throw e;
             }
           } else {
-            console.error(e); // Provide JS stack
+            ttyError(e); // Provide JS stack
             node.exitCode = 1;
             throw new ShError(`${(e as Error)?.message ?? e}`, 1);
           }

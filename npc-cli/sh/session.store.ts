@@ -18,6 +18,7 @@ import {
   resolveNormalized,
   ShError,
   stripAnsi,
+  ttyError,
 } from "./util";
 import type { BaseMeta, FileWithMeta, NamedFunction } from "./parse";
 import type { MessageFromShell, MessageFromXterm } from "./io";
@@ -408,8 +409,8 @@ const useStore = create<State>()(
             tryLocalStorageGet(`history@session-${sessionKey}`) || "null"
           );
         } catch (e) {// Can fail in CodeSandbox in Chrome Incognito
-          console.error(`${sessionKey}: rehydrate history failed`);
-          console.error(e);
+          ttyError(`${sessionKey}: rehydrate history failed`);
+          ttyError(e);
         }
 
         const prevValue = tryLocalStorageGet(`var@session-${sessionKey}`) || "null";
@@ -419,8 +420,8 @@ const useStore = create<State>()(
           storedVar = Function(`return ${prevValue.replace(/\n/g, '\\n')}`)();
           // console.log({storedVar})
         } catch (e) {// Can fail in CodeSandbox in Chrome Incognito
-          console.error(`${sessionKey}: rehydrate variables failed: ${prevValue}`);
-          console.error(e);
+          ttyError(`${sessionKey}: rehydrate variables failed: ${prevValue}`);
+          ttyError(e);
         }
 
         return { history: storedHistory, var: storedVar };

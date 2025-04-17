@@ -14,7 +14,7 @@
     - ✅ can set tabset by clicking link
     - ✅ avoid idempotence of fragment identifier?
       - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
-    - can reset tabset by clicking link
+    - 🚧 can reset tabset by clicking link
     - can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
     - localStorage remembers tabset, including resets
@@ -132,7 +132,8 @@
 - profile-1 camera target y should always be 1.5?
 - move "x-ray" into PopUp opts?
 
-- shell should show debugs not errors
+- ✅ shell should show debugs not errors
+  - sometimes still show errors e.g. on mvdan-sh parse error
 - somehow additionally indicate npc is selected by ContextMenu when docked
 - another model human-1
 - tween: provide many examples
