@@ -294,6 +294,8 @@ export default function World(props) {
           texArray.ct.drawImage(img, 0, 0);
           invert && invertCanvas(texArray.ct.canvas, getContext2d('invert-copy'), getContext2d('invert-mask'));
           texArray.updateIndex(texId);
+          // texArray.tex.wrapS = THREE.RepeatWrapping;
+          // texArray.tex.wrapT = THREE.RepeatWrapping;
         }));
 
         texArray.update();

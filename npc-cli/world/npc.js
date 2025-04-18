@@ -168,6 +168,7 @@ export class Npc {
       const offset = 4 * triangleId;
       const target = this.skin[skinPartKey];
       
+      // alpha encodes if skin part rendered during objectPick
       data[offset + 3] = skinPartKey in hideInObjectPick ? 0 : 1;
 
       if (target === undefined) {
@@ -176,7 +177,8 @@ export class Npc {
       }
 
       const dstUvRectKey = /** @type {const} */ (`${target.prefix}_${
-        // 🚧
+        // can refer to other skin part of same size (e.g. body front/back/left/right)
+        // so we don't need to explicitly mention every possibility in SVG uv-map
         target?.otherPart ?? skinPartKey
       }`);
       const src = uvMap[uvRectKey];
@@ -197,6 +199,12 @@ export class Npc {
       data[offset + 1] = dst.y - src.y;
       data[offset + 2] = dstSheetTexId;
 
+      // console.log({
+      //   skinPartKey,
+      //   src: { ...src },
+      //   dst: { ...dst },
+      //   data: data.slice(offset, offset + 4),
+      // });
     }
 
     texNpcAux.updateIndex(this.def.uid, data);
