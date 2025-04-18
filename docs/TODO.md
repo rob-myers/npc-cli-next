@@ -130,7 +130,7 @@
 
 - 🚧 better skins based on minecraft skins
   - ℹ️ use test-body, test-body-overlay
-  - 🚧 fix bug when do:
+  - ✅ fix bug when do:
     ```sh
     w n.rob.skin | assign '{
       "body-overlay-front": { prefix: "base" },
@@ -142,6 +142,15 @@
     }'
     w n.rob.applySkin
     ```
+    - ❌ not handling negatives properly?
+    - ✅ inaccurate 0.00048827999853529036 ~ 1/2048
+    - ✅ inaccuracy elsewhere (heart icon on front) was breaking things,
+         based on our assumption of "perfect grids"
+    - ℹ️ needs to change x ordinate 127 -> 128
+  
+  - 🚧 more stable approach to skinning
+    - report overlap of "x columns" and fallback to "test against every rectangle" approach
+
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
   - https://namemc.com/minecraft-skins/tag/scientist
