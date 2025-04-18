@@ -173,10 +173,10 @@ export default function Npcs(props) {
         const meta = npcClassToMeta[npcClassKey];
 
         const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
-        // get sheetId from orig material name e.g. human-0.0.tex.png
+        // get initial sheetId from orig material name e.g. human-0.0.tex.png
         const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (mesh.material);
         const matBaseName = origMaterial.map?.name ?? null;
-        const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
+        const initSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
 
         const {
           uvMap: {[meta.npcClassKey]: uvMap},
@@ -185,7 +185,7 @@ export default function Npcs(props) {
 
         state.sheetAux[npcClassKey] = {
           npcClassKey: meta.npcClassKey,
-          sheetId: skinSheetId,
+          sheetId: initSheetId,
           sheetTexIds,
           uvMap,
         };
@@ -196,7 +196,7 @@ export default function Npcs(props) {
         }
 
         // 🔔 always recompute: either mesh or sheet might have changed
-        const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
+        const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, initSheetId);
         const labelUvRect = uvMap.default_label;
 
         state.gltfAux[npcClassKey] = {

@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { LineMaterial } from "three-stdlib";
 import { damp } from "maath/easing";
 
+import { skinsTextureDimension } from "./const";
 import { range, warn } from "./generic";
 import { Rect, Vect } from "../geom";
 import packRectangles from "./rects-packer";
@@ -498,31 +499,57 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
 }
 
 /**
+ * Compute:
+ * - mapping from SkinnedMesh's triangles to uv rectangles.
+ * - base mapping from skin part to uv rect.
+ * - the two triangle ids corresponding to the label
  * @param {import('three').SkinnedMesh} skinnedMesh
  * @param {Geomorph.UvRectLookup} uvMap
- * @param {number} skinSheetId
+ * @param {number} initSheetId Which sheet was used when we exported from Blender
  * @returns {{ triToUvKeys: NPC.TriToUvKeys; partToUvRect: NPC.SkinPartToUvRect; labelTriIds: number[]; }}
  */
-export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
+export function computeMeshUvMappings(skinnedMesh, uvMap, initSheetId) {
   const triToUvKeys = /** @type {NPC.TriToUvKeys} */ ([]);
   const partToUvRect = /** @type {NPC.SkinPartToUvRect} */ ({});
 
   if (skinnedMesh.geometry.index !== null) {
-    // 🔔 geometry must be un-welded i.e. triangles pairwise disjoint,
+    // geometry must be un-welded i.e. triangles pairwise-disjoint,
     // so we can detect current triangleId in fragment shader
-    throw Error(`skinnedMesh "${skinnedMesh.name}" must satisfy \`geometry.index === null\`: use geometry.toNonIndexed()`);
+    throw Error(`${'computeMeshUvMappings'}: ${skinnedMesh.name}: expected \`geometry.index === null\``);
   }
-
-  // arrange uvMap as sorted list of lists for fast querying
-  // 🔔 assume it defines a grid, where rows/cols can have different widths/heights
+  
+  // 🔔 arrange uvMap as sorted list-of-lists for fast-querying
+  // - this requires uv rects to be arranged as non-overlapping columns
+  // - if the columns overlap, we warn and 🚧 fall back to a slower procedure
+  // - it's worth satisfying the constraint because it keeps the data clean
   const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
-    if (sheetId === skinSheetId) {
-      (agg[x] ??= [x + width, []])[1].push([y + height, uvRectKey]);
+    if (sheetId === initSheetId) {
+      (agg[x] ??= [x, x + width, []])[2].push([y + height, uvRectKey]);
     }
     return agg;
-  }, /** @type {Record<number, [maxX: number, [maxY: number, uvRectKey: string][]]>} */ ([]));
-  const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
-  sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
+  }, /** @type {Record<number, [minX: Number, maxX: number, [maxY: number, uvRectKey: string][]]>} */ ([]));
+  
+  const sorted = Object.values(mapping).sort((a, b) => a[1] < b[1] ? -1 : 1);
+  
+  // Check if uv rects are arranged as non-overlapping columns
+  const colOverlapId = sorted.findIndex(([_minX, maxX], i) => sorted[i + 1]?.[0] < maxX);
+  if (colOverlapId !== -1) {
+    warn(`${'computeMeshUvMappings'}: ${skinnedMesh.name}: uv-map columns overlap: ${
+      JSON.stringify({
+        col1: {
+          mx: sorted[colOverlapId][0] * skinsTextureDimension,
+          Mx: sorted[colOverlapId][1] * skinsTextureDimension,
+        },
+        col2: {
+          mx: sorted[colOverlapId + 1][0] * skinsTextureDimension,
+          Mx: sorted[colOverlapId + 1][1] * skinsTextureDimension,
+        },
+      }, undefined, '  ')
+    }`);
+    // 🚧 fallback to "slow method"
+  }
+  
+  sorted.forEach(([ , , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
 
   const uvs = getGeometryUvs(skinnedMesh.geometry);
   const numVerts = skinnedMesh.geometry.getAttribute('position').count;
@@ -535,8 +562,8 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
   // find uvRect fast via sorted rects
   // also compute labelTriIds and label uv min/max
   for (const [triId, center] of centers.entries()) {
-    const inner = sorted.find(([maxX]) => center.x < maxX);
-    const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
+    const inner = sorted.find(([, maxX]) => center.x < maxX);
+    const found = inner === undefined ? undefined : inner[2].find(([maxY]) => center.y < maxY);
     const vertexIds = tris[triId];
     if (found === undefined) {
       warn(`triangle not contained in any uv-rect: ${JSON.stringify({ triId, vertexIds })}`);
