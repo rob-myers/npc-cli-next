@@ -10,18 +10,26 @@ selectedNpcKey="rob"
 # re-skin rob
 w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
 w n.rob.skin | assign '{
+  "head-front": { prefix: "test-head" },
+  "head-back": { prefix: "test-head" },
+  "head-left": { prefix: "test-head" },
+  "head-right": { prefix: "test-head" },
+  "head-top": { prefix: "test-head" },
+  "head-bottom": { prefix: "test-head" },
+  //
   "body-front": { prefix: "test-body" },
   "body-back": { prefix: "test-body" },
   "body-left": { prefix: "test-body" },
   "body-right": { prefix: "test-body" },
   "body-top": { prefix: "test-body" },
   "body-bottom": { prefix: "test-body" },
-  // "body-overlay-front": { prefix: "test-body-overlay" },
-  // "body-overlay-back": { prefix: "test-body-overlay" },
-  // "body-overlay-left": { prefix: "test-body-overlay" },
-  // "body-overlay-right": { prefix: "test-body-overlay" },
-  // "body-overlay-top": { prefix: "test-body-overlay" },
-  // "body-overlay-bottom": { prefix: "test-body-overlay" },
+  //
+  "body-overlay-front": { prefix: "test-body-overlay" },
+  "body-overlay-back": { prefix: "test-body-overlay" },
+  "body-overlay-left": { prefix: "test-body-overlay" },
+  "body-overlay-right": { prefix: "test-body-overlay" },
+  "body-overlay-top": { prefix: "test-body-overlay" },
+  "body-overlay-bottom": { prefix: "test-body-overlay" },
 }'
 w n.rob.applySkin
 

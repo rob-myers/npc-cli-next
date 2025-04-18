@@ -129,7 +129,6 @@
     - this is fixed i.e. property of Euler rotation
 
 - 🚧 better skins based on minecraft skins
-  - ℹ️ use test-body, test-body-overlay
   - ✅ fix bug when do:
     ```sh
     w n.rob.skin | assign '{
@@ -151,6 +150,9 @@
   - ✅ more stable approach to skinning
     - ✅ report overlap of "x columns"
     - ✅ fallback to "test against every rectangle" approach
+
+  - 🚧 temp: profile-1
+    - apply test-head, test-body, test-body-overlay to rob
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e

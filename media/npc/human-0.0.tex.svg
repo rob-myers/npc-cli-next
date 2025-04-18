@@ -170,15 +170,6 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="1184">
         <title>back</title>
       </rect>
-      <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="992" cy="65.064" rx="48" ry="44.936">
-        <title>_ellipse</title>
-      </ellipse>
-      <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="861" cy="188.936" rx="48" ry="44.936">
-        <title>_ellipse</title>
-      </ellipse>
-      <ellipse style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 4px;" cx="1122" cy="188.936" rx="48" ry="44.936">
-        <title>_ellipse</title>
-      </ellipse>
     </g>
     <g>
       <title>test-body-overlay_body-overlay</title>
@@ -200,11 +191,32 @@
       <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill-opacity: 0.3; fill: none;" y="544" x="1184">
         <title>back</title>
       </rect>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0); fill-opacity: 0.25;" y="560" x="816">
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0); fill-opacity: 0.25; visibility: hidden;" y="560" x="816">
         <title>_front</title>
       </rect>
-      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0); fill-opacity: 0.25;" y="560" x="1072">
+      <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0); fill-opacity: 0.25; visibility: hidden;" y="560" x="1072">
         <title>_front</title>
+      </rect>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 832, 0)">
+      <title>test-head_head</title>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="512">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); fill: rgb(102, 102, 102); stroke-width: 16px;" x="640">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" y="128" x="512">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="640" y="128">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); fill: rgb(102, 102, 102); stroke-width: 16px;" x="512" y="256">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="640" y="256">
+        <title>bottom</title>
       </rect>
     </g>
     <g transform="matrix(1, 0, 0, 1, -128, 448)">

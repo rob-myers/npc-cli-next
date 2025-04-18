@@ -40169,11 +40169,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -1118186859},
-    "imagesHash": -72967624
+    "imagesHash": -452626093
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-156023594, 1474634897]},
+    "svgHashes": {"human-0": [-925444679, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -40504,6 +40504,54 @@
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
+        },
+        "test-head_head-front": {
+          "key": "test-head_head-front",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-head_head-back": {
+          "key": "test-head_head-back",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-head_head-left": {
+          "key": "test-head_head-left",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-head_head-right": {
+          "key": "test-head_head-right",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-head_head-top": {
+          "key": "test-head_head-top",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "test-head_head-bottom": {
+          "key": "test-head_head-bottom",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.125,
+          "width": 0.0625,
+          "height": 0.0625
         },
         "robot-icon_body-overlay-front": {
           "key": "robot-icon_body-overlay-front",
