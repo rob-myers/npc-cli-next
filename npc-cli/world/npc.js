@@ -5,7 +5,7 @@ import { lerp } from "maath/misc";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
-import { error, info, warn } from '../service/generic';
+import { error, info, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
@@ -968,6 +968,11 @@ export class Npc {
     this.s.lookAngleDst = this.getEulerAngle(
       geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
     );
+  }
+
+  resetSkin() {
+    keys(this.skin).forEach(key => delete this.skin[key]);
+    this.applySkin();
   }
 
   /**

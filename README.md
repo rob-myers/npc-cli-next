@@ -79,6 +79,9 @@ test $( w disabled ) &&
 # modify npc rob's skin
 w n.rob.skin | assign '{ "body-overlay-front": { prefix: "plus-icon" }}'
 
+# reset npc rob's skin
+w n.rob.resetSkin
+
 # - tell npc rob to change speed by factor `dst` onenter next offMeshConnection
 # - onexit speed will suddenly increase unless we set agent maxSpeed whilst traversing
 w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'

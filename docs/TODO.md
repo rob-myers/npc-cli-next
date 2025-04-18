@@ -128,7 +128,20 @@
   - ℹ️ npc.rotation.y anticlockwise from above from east
     - this is fixed i.e. property of Euler rotation
 
--  better skins based on minecraft skins
+- 🚧 better skins based on minecraft skins
+  - ℹ️ use test-body, test-body-overlay
+  - 🚧 fix bug when do:
+    ```sh
+    w n.rob.skin | assign '{
+      "body-overlay-front": { prefix: "base" },
+      "body-overlay-back": { prefix: "base" },
+      "body-overlay-left": { prefix: "base" },
+      "body-overlay-right": { prefix: "base" },
+      "body-overlay-top": { prefix: "base" },
+      "body-overlay-bottom": { prefix: "base" },
+    }'
+    w n.rob.applySkin
+    ```
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
   - https://namemc.com/minecraft-skins/tag/scientist
