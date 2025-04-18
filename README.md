@@ -76,8 +76,14 @@ w view.controls.saveState
 test $( w disabled ) &&
   events '({ key }) => key === "enabled"' | take 1
 
-w n.rob.s | assign '{ tScale: { start: 0, dst: 0.5 } }'
+# modify npc rob's skin
+w n.rob.skin | assign '{ "body-overlay-front": { prefix: "plus-icon" }}'
 
+# - tell npc rob to change speed by factor `dst` onenter next offMeshConnection
+# - onexit speed will suddenly increase unless we set agent maxSpeed whilst traversing
+w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'
+
+# pass from Vector3 to Vect for an internal function which only supports the latter
 click | map xz | w n.rob.getLookAngle -
 ```
 
@@ -196,6 +202,10 @@ ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=60" -b:v 0 -c
 
 ### Deceleration in terms of time
 
+> We originally calculated the following in order to simulate slow-down inside offMeshConnections.
+> However we decided upon a simpler approach
+> i.e. add time scaling factor `tScale` to `dtCrowdAnimation` and tween it.
+
 - Suppose move in 1D with:
   - init/final position `x(0) := 0`, `x(t_1) := x_1` where `t_1` unknown.
   - init/final velocity `v(0) := u_0`, `v(t_1) := u_1`.
@@ -214,3 +224,21 @@ Sanity check: if `u_1 = 0` then `x_1 = 0.5 . 1/|a| . u_0^2`
 Then we know:
 - the deceleration `|a| = 0.5 . (1 / x_1) . (u_0 - u_1) . (u_0 + u_1)`.
 - the time `t_1 = (u_0 - u_1) / |a| = 2 * x_1 * (1 / (u_0 + u_1))`
+
+## Towards better skins
+
+We'll try to re-map publicly available Minecraft Skins.
+
+- https://namemc.com/minecraft-skins/tag/soldier
+  - https://namemc.com/skin/45461862ef51524e
+- https://namemc.com/minecraft-skins/tag/scientist
+  - https://namemc.com/skin/7161dce64d6b12be
+  - https://namemc.com/skin/3a335a2ec786efdb
+- https://namemc.com/minecraft-skins/tag/general
+- https://namemc.com/minecraft-skins/tag/medic
+- https://namemc.com/minecraft-skins/tag/suit
+- https://namemc.com/minecraft-skins/tag/engineer
+- https://namemc.com/minecraft-skins/tag/assassin
+- https://namemc.com/minecraft-skins/tag/politician
+- https://namemc.com/minecraft-skins/tag/monk
+- https://namemc.com/minecraft-skins/tag/priest

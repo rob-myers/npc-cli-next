@@ -128,6 +128,21 @@
   - ℹ️ npc.rotation.y anticlockwise from above from east
     - this is fixed i.e. property of Euler rotation
 
+-  better skins based on minecraft skins
+  - https://namemc.com/minecraft-skins/tag/soldier
+    - https://namemc.com/skin/45461862ef51524e
+  - https://namemc.com/minecraft-skins/tag/scientist
+    - https://namemc.com/skin/7161dce64d6b12be
+    - https://namemc.com/skin/3a335a2ec786efdb
+  - https://namemc.com/minecraft-skins/tag/general
+  - https://namemc.com/minecraft-skins/tag/medic
+  - https://namemc.com/minecraft-skins/tag/suit
+  - https://namemc.com/minecraft-skins/tag/engineer
+  - https://namemc.com/minecraft-skins/tag/assassin
+  - https://namemc.com/minecraft-skins/tag/politician
+  - https://namemc.com/minecraft-skins/tag/monk
+  - https://namemc.com/minecraft-skins/tag/priest
+
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?
 - move "x-ray" into PopUp opts?
