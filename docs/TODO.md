@@ -148,9 +148,9 @@
          based on our assumption of "perfect grids"
     - ℹ️ needs to change x ordinate 127 -> 128
   
-  - 🚧 more stable approach to skinning
+  - ✅ more stable approach to skinning
     - ✅ report overlap of "x columns"
-    - 🚧 fallback to "test against every rectangle" approach
+    - ✅ fallback to "test against every rectangle" approach
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e

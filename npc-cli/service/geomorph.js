@@ -1184,6 +1184,7 @@ class GeomorphService {
         const extendedName = folderStack.slice(1).concat(baseName).join('-');
         const uvRectKey = extendedName; // e.g. `base-head-right`
         output.uvMap[uvRectKey] = {
+          key: uvRectKey,
           sheetId,
           ...poly.rect.scale(1 / output.width, 1 / output.height).precision(8).json,
         };

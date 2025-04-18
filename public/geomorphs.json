@@ -40178,6 +40178,7 @@
     "uvMap": {
       "human-0": {
         "base_head-front": {
+          "key": "base_head-front",
           "sheetId": 0,
           "x": 0.25,
           "y": 0,
@@ -40185,6 +40186,7 @@
           "height": 0.0625
         },
         "base_head-back": {
+          "key": "base_head-back",
           "sheetId": 0,
           "x": 0.3125,
           "y": 0,
@@ -40192,6 +40194,7 @@
           "height": 0.0625
         },
         "base_head-left": {
+          "key": "base_head-left",
           "sheetId": 0,
           "x": 0.25,
           "y": 0.0625,
@@ -40199,6 +40202,7 @@
           "height": 0.0625
         },
         "base_head-right": {
+          "key": "base_head-right",
           "sheetId": 0,
           "x": 0.3125,
           "y": 0.0625,
@@ -40206,6 +40210,7 @@
           "height": 0.0625
         },
         "base_head-top": {
+          "key": "base_head-top",
           "sheetId": 0,
           "x": 0.25,
           "y": 0.125,
@@ -40213,6 +40218,7 @@
           "height": 0.0625
         },
         "base_head-bottom": {
+          "key": "base_head-bottom",
           "sheetId": 0,
           "x": 0.3125,
           "y": 0.125,
@@ -40220,6 +40226,7 @@
           "height": 0.0625
         },
         "base_body-top": {
+          "key": "base_body-top",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0,
@@ -40227,6 +40234,7 @@
           "height": 0.0625
         },
         "base_body-bottom": {
+          "key": "base_body-bottom",
           "sheetId": 0,
           "x": 0.125,
           "y": 0,
@@ -40234,6 +40242,7 @@
           "height": 0.0625
         },
         "base_body-left": {
+          "key": "base_body-left",
           "sheetId": 0,
           "x": 0,
           "y": 0.0625,
@@ -40241,6 +40250,7 @@
           "height": 0.125
         },
         "base_body-front": {
+          "key": "base_body-front",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.0625,
@@ -40248,6 +40258,7 @@
           "height": 0.125
         },
         "base_body-right": {
+          "key": "base_body-right",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.0625,
@@ -40255,6 +40266,7 @@
           "height": 0.125
         },
         "base_body-back": {
+          "key": "base_body-back",
           "sheetId": 0,
           "x": 0.1875,
           "y": 0.0625,
@@ -40262,6 +40274,7 @@
           "height": 0.125
         },
         "base_head-overlay-front": {
+          "key": "base_head-overlay-front",
           "sheetId": 0,
           "x": 0.25,
           "y": 0.203125,
@@ -40269,6 +40282,7 @@
           "height": 0.0625
         },
         "base_head-overlay-back": {
+          "key": "base_head-overlay-back",
           "sheetId": 0,
           "x": 0.3125,
           "y": 0.203125,
@@ -40276,6 +40290,7 @@
           "height": 0.0625
         },
         "base_head-overlay-left": {
+          "key": "base_head-overlay-left",
           "sheetId": 0,
           "x": 0.25,
           "y": 0.265625,
@@ -40283,6 +40298,7 @@
           "height": 0.0625
         },
         "base_head-overlay-right": {
+          "key": "base_head-overlay-right",
           "sheetId": 0,
           "x": 0.3125,
           "y": 0.265625,
@@ -40290,6 +40306,7 @@
           "height": 0.0625
         },
         "base_head-overlay-top": {
+          "key": "base_head-overlay-top",
           "sheetId": 0,
           "x": 0.25,
           "y": 0.328125,
@@ -40297,6 +40314,7 @@
           "height": 0.0625
         },
         "base_head-overlay-bottom": {
+          "key": "base_head-overlay-bottom",
           "sheetId": 0,
           "x": 0.3125,
           "y": 0.328125,
@@ -40304,6 +40322,7 @@
           "height": 0.0625
         },
         "base_body-overlay-top": {
+          "key": "base_body-overlay-top",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.203125,
@@ -40311,6 +40330,7 @@
           "height": 0.0625
         },
         "base_body-overlay-bottom": {
+          "key": "base_body-overlay-bottom",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.203125,
@@ -40318,6 +40338,7 @@
           "height": 0.0625
         },
         "base_body-overlay-left": {
+          "key": "base_body-overlay-left",
           "sheetId": 0,
           "x": 0,
           "y": 0.265625,
@@ -40325,6 +40346,7 @@
           "height": 0.125
         },
         "base_body-overlay-front": {
+          "key": "base_body-overlay-front",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.265625,
@@ -40332,6 +40354,7 @@
           "height": 0.125
         },
         "base_body-overlay-right": {
+          "key": "base_body-overlay-right",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.265625,
@@ -40339,6 +40362,7 @@
           "height": 0.125
         },
         "base_body-overlay-back": {
+          "key": "base_body-overlay-back",
           "sheetId": 0,
           "x": 0.1875,
           "y": 0.265625,
@@ -40346,6 +40370,7 @@
           "height": 0.125
         },
         "default_selector": {
+          "key": "default_selector",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.40625,
@@ -40353,6 +40378,7 @@
           "height": 0.0625
         },
         "default_breath": {
+          "key": "default_breath",
           "sheetId": 0,
           "x": 0.1875,
           "y": 0.40625,
@@ -40360,6 +40386,7 @@
           "height": 0.0625
         },
         "default_label": {
+          "key": "default_label",
           "sheetId": 0,
           "x": 0,
           "y": 0.984375,
@@ -40367,6 +40394,7 @@
           "height": 0.015625
         },
         "confused_head-overlay-front": {
+          "key": "confused_head-overlay-front",
           "sheetId": 0,
           "x": 0.390625,
           "y": 0.40625,
@@ -40374,6 +40402,7 @@
           "height": 0.0625
         },
         "small-eyes_head-overlay-front": {
+          "key": "small-eyes_head-overlay-front",
           "sheetId": 0,
           "x": 0.3125,
           "y": 0.40625,
@@ -40381,6 +40410,7 @@
           "height": 0.0625
         },
         "test-body_body-top": {
+          "key": "test-body_body-top",
           "sheetId": 0,
           "x": 0.453125,
           "y": 0,
@@ -40388,6 +40418,7 @@
           "height": 0.0625
         },
         "test-body_body-bottom": {
+          "key": "test-body_body-bottom",
           "sheetId": 0,
           "x": 0.515625,
           "y": 0,
@@ -40395,6 +40426,7 @@
           "height": 0.0625
         },
         "test-body_body-left": {
+          "key": "test-body_body-left",
           "sheetId": 0,
           "x": 0.390625,
           "y": 0.0625,
@@ -40402,6 +40434,7 @@
           "height": 0.125
         },
         "test-body_body-front": {
+          "key": "test-body_body-front",
           "sheetId": 0,
           "x": 0.453125,
           "y": 0.0625,
@@ -40409,6 +40442,7 @@
           "height": 0.125
         },
         "test-body_body-right": {
+          "key": "test-body_body-right",
           "sheetId": 0,
           "x": 0.515625,
           "y": 0.0625,
@@ -40416,6 +40450,7 @@
           "height": 0.125
         },
         "test-body_body-back": {
+          "key": "test-body_body-back",
           "sheetId": 0,
           "x": 0.578125,
           "y": 0.0625,
@@ -40423,6 +40458,7 @@
           "height": 0.125
         },
         "test-body-overlay_body-overlay-top": {
+          "key": "test-body-overlay_body-overlay-top",
           "sheetId": 0,
           "x": 0.453125,
           "y": 0.203125,
@@ -40430,6 +40466,7 @@
           "height": 0.0625
         },
         "test-body-overlay_body-overlay-bottom": {
+          "key": "test-body-overlay_body-overlay-bottom",
           "sheetId": 0,
           "x": 0.515625,
           "y": 0.203125,
@@ -40437,6 +40474,7 @@
           "height": 0.0625
         },
         "test-body-overlay_body-overlay-left": {
+          "key": "test-body-overlay_body-overlay-left",
           "sheetId": 0,
           "x": 0.390625,
           "y": 0.265625,
@@ -40444,6 +40482,7 @@
           "height": 0.125
         },
         "test-body-overlay_body-overlay-front": {
+          "key": "test-body-overlay_body-overlay-front",
           "sheetId": 0,
           "x": 0.453125,
           "y": 0.265625,
@@ -40451,6 +40490,7 @@
           "height": 0.125
         },
         "test-body-overlay_body-overlay-right": {
+          "key": "test-body-overlay_body-overlay-right",
           "sheetId": 0,
           "x": 0.515625,
           "y": 0.265625,
@@ -40458,6 +40498,7 @@
           "height": 0.125
         },
         "test-body-overlay_body-overlay-back": {
+          "key": "test-body-overlay_body-overlay-back",
           "sheetId": 0,
           "x": 0.578125,
           "y": 0.265625,
@@ -40465,6 +40506,7 @@
           "height": 0.125
         },
         "robot-icon_body-overlay-front": {
+          "key": "robot-icon_body-overlay-front",
           "sheetId": 0,
           "x": 0,
           "y": 0.484375,
@@ -40472,6 +40514,7 @@
           "height": 0.125
         },
         "heart-icon_body-overlay-front": {
+          "key": "heart-icon_body-overlay-front",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.484375,
@@ -40479,6 +40522,7 @@
           "height": 0.125
         },
         "plus-icon_body-overlay-front": {
+          "key": "plus-icon_body-overlay-front",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.484375,
@@ -40486,6 +40530,7 @@
           "height": 0.125
         },
         "test-head-front": {
+          "key": "test-head-front",
           "sheetId": 1,
           "x": 0.25,
           "y": 0,
@@ -40493,6 +40538,7 @@
           "height": 0.0625
         },
         "test-head-back": {
+          "key": "test-head-back",
           "sheetId": 1,
           "x": 0.3125,
           "y": 0,
@@ -40500,6 +40546,7 @@
           "height": 0.0625
         },
         "test-head-left": {
+          "key": "test-head-left",
           "sheetId": 1,
           "x": 0.25,
           "y": 0.0625,
@@ -40507,6 +40554,7 @@
           "height": 0.0625
         },
         "test-head-right": {
+          "key": "test-head-right",
           "sheetId": 1,
           "x": 0.3125,
           "y": 0.0625,
@@ -40514,6 +40562,7 @@
           "height": 0.0625
         },
         "test-head-top": {
+          "key": "test-head-top",
           "sheetId": 1,
           "x": 0.25,
           "y": 0.125,
@@ -40521,6 +40570,7 @@
           "height": 0.0625
         },
         "test-head-bottom": {
+          "key": "test-head-bottom",
           "sheetId": 1,
           "x": 0.3125,
           "y": 0.125,
@@ -40528,6 +40578,7 @@
           "height": 0.0625
         },
         "test-body-top": {
+          "key": "test-body-top",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0,
@@ -40535,6 +40586,7 @@
           "height": 0.0625
         },
         "test-body-bottom": {
+          "key": "test-body-bottom",
           "sheetId": 1,
           "x": 0.125,
           "y": 0,
@@ -40542,6 +40594,7 @@
           "height": 0.0625
         },
         "test-body-left": {
+          "key": "test-body-left",
           "sheetId": 1,
           "x": 0,
           "y": 0.0625,
@@ -40549,6 +40602,7 @@
           "height": 0.125
         },
         "test-body-front": {
+          "key": "test-body-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.0625,
@@ -40556,6 +40610,7 @@
           "height": 0.125
         },
         "test-body-right": {
+          "key": "test-body-right",
           "sheetId": 1,
           "x": 0.125,
           "y": 0.0625,
@@ -40563,6 +40618,7 @@
           "height": 0.125
         },
         "test-body-back": {
+          "key": "test-body-back",
           "sheetId": 1,
           "x": 0.1875,
           "y": 0.0625,
@@ -40570,6 +40626,7 @@
           "height": 0.125
         },
         "shitty-face_head-overlay-front": {
+          "key": "shitty-face_head-overlay-front",
           "sheetId": 1,
           "x": 0,
           "y": 0.203125,
@@ -40577,6 +40634,7 @@
           "height": 0.0625
         },
         "another-shitty-face_head-overlay-front": {
+          "key": "another-shitty-face_head-overlay-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.203125,
