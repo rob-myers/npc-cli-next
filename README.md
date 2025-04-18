@@ -78,6 +78,7 @@ test $( w disabled ) &&
 
 # modify npc rob's skin
 w n.rob.skin | assign '{ "body-overlay-front": { prefix: "plus-icon" }}'
+w n.rob.applySkin
 
 # reset npc rob's skin
 w n.rob.resetSkin
