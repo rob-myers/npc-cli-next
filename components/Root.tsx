@@ -15,6 +15,7 @@ import Nav from "./Nav";
 import Main from "./Main";
 import Comments from "./Comments";
 import Viewer from "./Viewer";
+import { profile } from "@/npc-cli/sh/src";
 
 export default function Root({ children }: React.PropsWithChildren) {
 
@@ -22,7 +23,37 @@ export default function Root({ children }: React.PropsWithChildren) {
   const pathname = usePathname();
   React.useEffect(() => void useSite.api.getPageMetadataFromScript(), [pathname]);
   
-  React.useEffect(() => useSite.api.initiateBrowser(), []);
+  React.useEffect(() => {
+
+    // 🚧 move elsewhere
+    useSite.api.createTabset({
+      key: 'temp_tabset',
+      layout: [[
+        {
+          type: "component",
+          class: "World",
+          filepath: "test-world-1",
+          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+        },
+      ],
+      [
+        {
+          type: "terminal",
+          filepath: "tty-1",
+          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
+        },
+        {
+          type: "terminal",
+          filepath: "tty-2",
+          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
+        },
+        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+      ]],
+    });
+
+    useSite.api.initiateBrowser();
+  }, []);
   useOnResize(); // Update matchMedia computations
   useBeforeunload(() => void useSite.api.onTerminate());
 

@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 import { EffectComposer, Noise, Vignette, BrightnessContrast } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
 
 import { debug, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -611,8 +612,16 @@ export default function WorldView(props) {
 
       <EffectComposer>
         {w.crowd === null ? <></> : <>
-          <Vignette eskil={false} offset={0.1} darkness={1.2} />
-          <BrightnessContrast brightness={-0.23} contrast={0.} />
+          <Vignette
+            eskil={false}
+            offset={0.}
+            darkness={1}
+            blendFunction={BlendFunction.NORMAL}
+          />
+          <BrightnessContrast
+            brightness={-0.23}
+            contrast={0.}
+          />
         </>}
       </EffectComposer>
 
