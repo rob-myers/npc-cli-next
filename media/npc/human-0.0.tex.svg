@@ -30,6 +30,13 @@
       <feComposite in="SourceGraphic" in2="a" operator="in"/>
       <feMorphology operator="dilate" radius="5"/>
     </filter>
+    <filter id="pixelete-filter-3" bx:preset="pixelete 1 10" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feFlood height="2" width="2"/>
+      <feComposite width="10" height="10"/>
+      <feTile result="a"/>
+      <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      <feMorphology operator="dilate" radius="5"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -53,7 +60,6 @@
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="640" y="256">
         <title>bottom</title>
       </rect>
-      <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 28px; font-weight: 700; white-space: pre;" x="666.003" y="73.438">BACK</text>
     </g>
     <g>
       <title>base_body</title>
@@ -202,10 +208,10 @@
       <rect width="128" height="128" style="stroke-width: 16px;" x="640" y="128">
         <title>right</title>
       </rect>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); fill: rgb(102, 102, 102); stroke-width: 16px;" x="512" y="256">
+      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px;" x="512" y="256">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="640" y="256">
+      <rect width="128" height="128" style="stroke-width: 16px;" x="640" y="256">
         <title>bottom</title>
       </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAuElEQVQYGXWMvQrCQBCE59SYBBMbAxHBIo1WljY+oU9gJ1haBR8hraVYCAFJYaOFiPkxl6RY3bWxcWD3vp25XbWYT8lxLDg9G5ZlgqV1hbwokecaCMOQWFEUyfvLnKkgCMgwDHC5risXsixD0zRSyvM8EvdfO2xXlCQJf6L9ekmn3UaYPc4Um/3BEF3bxi0+wp/M5FZdlkjvV7R4qvULbNRtE5dz/OWPx+pUz4cAN380FuYFXaTg7A3Io28UJYiXvQAAAABJRU5ErkJggg==" width="128" height="128" x="512" style="filter: url(&quot;#pixelete-filter-1&quot;);">
@@ -219,6 +225,9 @@
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAnklEQVQYGU2PUQrDIBBEx6CNafWjAQ/gV0/Qnx7aiwVSqBYNIVh309Au7DK+GYQRj/utGqNhLgO07kFTyoL0zkipQIQQKsFxHOGcI4lpmjDPM2vhva9KKdBaaxnGGLGuK6/sSsJWgK1ZKr84UHIDbbq20g6aH3ROSrK2+DF5QHLMN5yw/0BMHvDaWthhbxHzgmdrwQEyaMg894r1//kAXuwwnl41yUEAAAAASUVORK5CYII=" width="128" height="128" x="640" style="filter: url(&quot;#pixelete-filter-2&quot;);">
         <title>_back-head-image</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAZElEQVQYGWWPQQqAQAhFLYQcxs7RCdp0/xuljK0KBwSxvxDx+eW7XOfxMhNwb0C0gcvsAdEBIgaYYe80F3LBcDrkvWU2e/SzFebF9WcpA/RAoXDKPUDVZlj0tFUBnaG/UpXf/ABeHS7eq9ZUzAAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="256" style="filter: url(&quot;#pixelete-filter-3&quot;);">
+        <title>_top-head-image</title>
       </image>
     </g>
     <g style="filter: none;">
