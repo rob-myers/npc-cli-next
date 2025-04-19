@@ -151,8 +151,17 @@
     - ✅ report overlap of "x columns"
     - ✅ fallback to "test against every rectangle" approach
 
-  - 🚧 temp: profile-1
-    - apply test-head, test-body, test-body-overlay to rob
+  - 🚧 experiment with minecraft skin migration
+    - ✅ temp: profile-1: apply test-head, test-body, test-body-overlay to rob
+    - 🚧 try copy soldier head into test-head
+      - soldier https://namemc.com/skin/45461862ef51524e
+      - head-left means "right-side-of-head from character perspective"
+      - boxy-svg try compositing > filter > pixelated
+      - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
+        - seems unsupported
+      - ✅ try `skia-canvas` too
+        - seems unsupported
+      - 🚧 try manually drawing head, using image as backdrop
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
