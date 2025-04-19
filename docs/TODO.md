@@ -153,17 +153,17 @@
 
   - 🚧 experiment with minecraft skin migration
     - ✅ temp: profile-1: apply test-head, test-body, test-body-overlay to rob
-    - 🚧 try copy soldier head into test-head
-      - soldier https://namemc.com/skin/45461862ef51524e
-      - head-left means "right-side-of-head from character perspective"
-      - boxy-svg try compositing > filter > pixelated (pixel size 18)
     - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
       - seems unsupported
     - ✅ try `skia-canvas` too
       - seems unsupported
     - ❌ try manually drawing head, using image as backdrop
       - too much work
-    - move "node-canvas solution" into scripts/assets
+    - ✅ move "node-canvas solution" into scripts/assets
+    - 🚧 try copy soldier head into test-head
+      - soldier https://namemc.com/skin/45461862ef51524e
+      - head-left means "right-side-of-head from character perspective"
+      - boxy-svg try compositing > filter > pixelated (pixel size 18)
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism

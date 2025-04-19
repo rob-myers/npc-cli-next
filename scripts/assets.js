@@ -19,14 +19,16 @@
  */
 /// <reference path="./deps.d.ts"/>
 
+import childProcess from "child_process";
 import fs from "fs";
 import path from "path";
-import childProcess from "child_process";
+import { promises as stream } from 'stream';
 import { performance, PerformanceObserver } from 'perf_hooks'
 //@ts-ignore
 import getopts from 'getopts';
 import stringify from "json-stringify-pretty-compact";
 import { Canvas, loadImage } from '@napi-rs/canvas';
+import nodeCanvas from 'canvas';
 import PQueue from "p-queue-compat";
 
 // relative urls for sucrase-node
@@ -243,8 +245,6 @@ info({ opts });
 
   if (!prev.skipDecor) {
     perf('decor', 'creating decor sprite-sheet');
-    // 🚧 skia-canvas: non-local iri references not currently supported
-    // 🚧 skia-canvas: cannot append child nodes to an SVG shape.
     const toDecorImg = await createDecorSheetJson(assetsJson, prev);
     await drawDecorSheet(assetsJson, toDecorImg, prev);
     perf('decor');
@@ -254,7 +254,6 @@ info({ opts });
 
   if (!prev.skipNpcTex) {
     perf('createNpcTexAndUv', 'creating npc textures and uv meta');
-    // 🚧 skia-canvas: cannot append child nodes to an SVG shape.
     await createNpcTexAndUv(assetsJson, prev);
     perf('createNpcTexAndUv');
   } else {
@@ -873,7 +872,7 @@ async function createNpcTexAndUv(assets, prev) {
   const prevSvgHash = skin.svgHashes;
   
   // group by npcClassKey
-  const bySkinClass = mapValues(helper.fromNpcClassKey, (_, npcClassKey) => {
+  const byNpcClass = mapValues(helper.fromNpcClassKey, (_, npcClassKey) => {
     const npcTexMetas = prev.npcTexMetas.filter(x => x.npcClassKey === npcClassKey);
     return {
       npcClassKey,
@@ -882,7 +881,7 @@ async function createNpcTexAndUv(assets, prev) {
     };
   });
 
-  for (const { npcClassKey, canSkip, npcTexMetas } of Object.values(bySkinClass)) {
+  for (const { npcClassKey, canSkip, npcTexMetas } of Object.values(byNpcClass)) {
     if (canSkip) {
       // console.log('🔔 skipping', npcClassKey);
       continue; // reuse e.g. skins.uvMap[npcClassKey]
@@ -908,10 +907,11 @@ async function createNpcTexAndUv(assets, prev) {
       skin.svgHashes[npcClassKey].push(hashText(svgContents));
       
       // convert SVG to PNG
-      const image = await loadImage(svgPath);
-      const canvas = new Canvas(image.width, image.height);
-      canvas.getContext('2d').drawImage(image, 0, 0);
-      await saveCanvasAsFile(canvas, pngPath);
+      // const image = await loadImage(svgPath);
+      // const canvas = new Canvas(image.width, image.height);
+      // canvas.getContext('2d').drawImage(image, 0, 0);
+      // await saveCanvasAsFile(canvas, pngPath);
+      await convertSvgToPng(svgPath, pngPath, 'node-canvas');
     }
   }
 
@@ -990,4 +990,21 @@ async function tryLoadImage(filePath) {
 async function saveCanvasAsFile(canvas, outputPath) {
   const pngData = await canvas.encode('png');
   await fs.promises.writeFile(outputPath, pngData);
+}
+/**
+ * 
+ * @param {string} svgPath
+ * @param {string} pngPath
+ * @param {'node-canvas'} using or 🚧 @napi-rs/canvas in case of nondeterminism
+ */
+async function convertSvgToPng(svgPath, pngPath, using) {
+  const image = await nodeCanvas.loadImage(svgPath);
+  const canvas = new nodeCanvas.Canvas(image.width, image.height);
+  canvas.getContext('2d').drawImage(image, 0, 0);
+  await stream.pipeline(
+    canvas.createPNGStream({
+      // ...
+    }),
+    fs.createWriteStream(pngPath),
+  );
 }
