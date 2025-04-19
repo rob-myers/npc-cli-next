@@ -29,12 +29,12 @@ export default function WorldView(props) {
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
-    controlsOpts: {
+    ctrlOpts: {
       minAzimuthAngle: -Infinity,
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 5,
+      minDistance: 2,
       maxDistance: w.smallViewport ? 20 : 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
@@ -552,7 +552,7 @@ export default function WorldView(props) {
 
       await Promise.all(promises);
     },
-  }), { reset: { controlsOpts: false } });
+  }), { reset: { ctrlOpts: false } });
 
   w.view = state;
 
@@ -601,7 +601,7 @@ export default function WorldView(props) {
         domElement={state.canvas}
         onStart={state.onControlsStart}
         onEnd={state.onControlsEnd}
-        {...state.controlsOpts}
+        {...state.ctrlOpts}
         //@ts-ignore see three-stdlib patch
         minPanDistance={w.smallViewport ? 0.05 : 0}
       />
@@ -652,7 +652,7 @@ export default function WorldView(props) {
  *   zoomToConstant: null | THREE.Vector3;
  * }} controls
  * We provide access to `sphericalDelta` via patch.
- * @property {import('@react-three/drei').MapControlsProps} controlsOpts
+ * @property {import('@react-three/drei').MapControlsProps} ctrlOpts
  * @property {Partial<Record<'brightness' | 'sepia', string>>} cssFilter
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.

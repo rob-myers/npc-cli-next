@@ -8,7 +8,9 @@ w n.rob.showSelector true
 selectedNpcKey="rob"
 
 # re-skin rob
-w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
+# w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
+w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }'
+
 w n.rob.skin | assign '{
   "head-front": { prefix: "test-head" },
   "head-back": { prefix: "test-head" },
@@ -88,11 +90,11 @@ w update 'async w => {
 }'
 
 # fix camera angle and reduce maxDistance
-w update 'w => {
-  w.view.controlsOpts.minAzimuthAngle = Math.PI/4;
-  w.view.controlsOpts.maxAzimuthAngle = Math.PI/4;
-  w.view.controlsOpts.maxPolarAngle = Math.PI/4;
-  w.view.controlsOpts.maxDistance = 20;
-}'
+# w update 'w => {
+#   w.view.ctrlOpts.minAzimuthAngle = Math.PI/4;
+#   w.view.ctrlOpts.maxAzimuthAngle = Math.PI/4;
+#   w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
+#   w.view.ctrlOpts.maxDistance = 20;
+# }'
 
 w e.lookAt rob
