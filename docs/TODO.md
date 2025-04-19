@@ -163,13 +163,14 @@
       - seems unsupported
     - ❌ try manually drawing head, using image as backdrop
       - too much work
+    - move "node-canvas solution" into scripts/assets
 
-  - 🚧 IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
+  - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
     - ℹ️ e.g. SVG -> `canvas` loadImage -> data url -> `@napi-rs/canvas` 
     - ✅ try importing and drawing using `canvas` first
     - ✅ try save as data-url and pass into `@napi-rs/canvas` 
-    - 🚧 clean up solution!
+    - ✅ clean up solution!
       - seems `canvas` now works with `bun`
       - unsure whether nondeterministic output behaviour persists in latest version of `canvas`
       - use `@napi-rs/canvas` to output, but make it easy to comment out, so we can test if nondet arises

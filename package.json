@@ -83,7 +83,6 @@
     "recast-navigation": "^0.39.0",
     "rxjs": "^7.8.1",
     "safe-stable-stringify": "^2.5.0",
-    "skia-canvas": "^2.0.2",
     "svg-path-parser": "^1.1.0",
     "three": "^0.174.0",
     "three-stdlib": "^2.33.0",
