@@ -63,15 +63,15 @@ Under this assumption, no known game solves the underlying problem
 > Because it's too damn hard!
 
 {/* Developers are wary of state-space explosions. */}
-As behavioural complexity increases, the Game's state space explodes.
-More things go wrong, which means more debugging, which means less time for other important tasks.
-The state space becomes so large that it cannot be effectively explored and debugged.
-How can composite behaviour be resolved when the developer has never encountered it?
-Also, behaviour with a time-limited existence may go unnoticed or be misinterpreted by the Player.
-We shouldn't forget we are entertaining the Player.
-We are not creating a World in which the Player is situated.
-We are creating a World _around_ the Player.
+As behavioural complexity increases, the Game's state-space explodes.
+More things go wrong, meaning more debugging, meaning less time for other important tasks.
+The number of states becomes so large it cannot be effectively explored and debugged.
+How can composite behaviour be resolved if the developer has never encountered it?
+Even if we've taken it into account, time-limited behaviour may go unnoticed or be misinterpreted by the Player.
+We shouldn't forget we're entertaining the Player,
+rather than creating a World in which the Player is situated.
 This leads us to intermediate objectives:
+{/* We are creating a World _around_ the Player. */}
 {/* It must be interwoven with the Player's experience, not an independent set of "plans". */}
 
 <Card id="underlying-problem"> 
