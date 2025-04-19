@@ -168,7 +168,11 @@
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
     - ℹ️ e.g. SVG -> `canvas` loadImage -> data url -> `@napi-rs/canvas` 
     - ✅ try importing and drawing using `canvas` first
-    - 🚧 try save as data-url and pass into `@napi-rs/canvas` 
+    - ✅ try save as data-url and pass into `@napi-rs/canvas` 
+    - 🚧 clean up solution!
+      - seems `canvas` now works with `bun`
+      - unsure whether nondeterministic output behaviour persists in latest version of `canvas`
+      - use `@napi-rs/canvas` to output, but make it easy to comment out, so we can test if nondet arises
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e

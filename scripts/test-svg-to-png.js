@@ -1,5 +1,6 @@
 /**
  * Usage:
+ * - npm run test-svg-to-png-fast media/debug/minecraft-testing.svg
  * - npm run test-svg-to-png media/debug/minecraft-testing.svg
  * - npm run test-svg-to-png media/debug/test-human-0.0.tex.svg
  * - npm run test-svg-to-png media/debug/test-gradient-fill.svg
@@ -7,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promises as stream } from 'stream';
-// import napiRsCanvas from '@napi-rs/canvas';
+import napiRsCanvas from '@napi-rs/canvas';
 // import skiaCanvas from 'skia-canvas';
 import nodeCanvas from 'canvas';
 
@@ -51,20 +52,33 @@ const approach = /** @type {'default' | 'with-fix'} */ (
     height: image.height,
   });
 
-  const canvas = new nodeCanvas.Canvas(image.width, image.height);
-  canvas.getContext('2d').drawImage(image, 0, 0);
-
   // // @napi-rs/canvas
+  // const canvas = new napiRsCanvas.Canvas(image.width, image.height);
+  // canvas.getContext('2d').drawImage(image, 0, 0);
   // const pngData = await canvas.encode('png');
   // fs.writeFileSync(outputSvgFilePath, pngData);
 
   // // skia-canvas
+  // const canvas = new skiaCanvas.Canvas(image.width, image.height);
+  // canvas.getContext('2d').drawImage(image, 0, 0);
   // await canvas.saveAs(outputSvgFilePath, {  });
 
-  // canvas (node-canvas)
-  await stream.pipeline(
-    canvas.createPNGStream({}), 
-    fs.createWriteStream(outputSvgFilePath),
-  );
+  // // canvas (node-canvas)
+  // const canvas = new nodeCanvas.Canvas(image.width, image.height);
+  // canvas.getContext('2d').drawImage(image, 0, 0);
+  // await stream.pipeline(
+  //   canvas.createPNGStream({}), 
+  //   fs.createWriteStream(outputSvgFilePath),
+  // );
+
+  // canvas -> @napi-rs/canvas
+  const canvas = new nodeCanvas.Canvas(image.width, image.height);
+  canvas.getContext('2d').drawImage(image, 0, 0);
+  const dataUrl = canvas.toDataURL();
+  const napiRsImage = await napiRsCanvas.loadImage(dataUrl);
+  const canvas2 = new napiRsCanvas.Canvas(napiRsImage.width, napiRsImage.height);
+  canvas2.getContext('2d').drawImage(napiRsImage, 0, 0);
+  const pngData = await canvas2.encode('png');
+  fs.writeFileSync(outputSvgFilePath, pngData);
 
 })();
