@@ -162,7 +162,7 @@
     - ✅ move "node-canvas solution" into scripts/assets
     - 🚧 try copy soldier head into test-head
       - soldier https://namemc.com/skin/45461862ef51524e
-      - head-left means "right-side-of-head from character perspective"
+      - head-left means from perspective of onlooker (not from character perspective)
       - boxy-svg try compositing > filter > pixelated (pixel size 18)
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
