@@ -53,25 +53,26 @@ Can the NPCs fool the Player? <SideNote>
 />
 
 This problem is often side-stepped.
-Abstract puzzle games restrict the possible moves.
+Puzzle games restrict the possible moves.
 Racing games restrict interaction to physical collisions.
 Many games only involve aggressive NPCs, constrained by their time-limited existence.
 So let's assume the NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
 (or even comes close). But why?
 
-> Because it is not feasible within the confines of a Game Development Cycle.
+> Because it's too damn hard!
 
-Developers are rightfully wary of state-space explosions.
-As behavioural complexity increases, so too does the Game's number of states.
+{/* Developers are wary of state-space explosions. */}
+As behavioural complexity increases, the Game's state space explodes.
 More things go wrong, which means more debugging, which means less time for other important tasks.
-There are so many wrong turns.
-Intelligent behaviour with a time-limited existence may go unnoticed, or be misinterpreted.
-It must be interwoven with the Player's experience, not an independent set of "plans".
-
-We won't tackle this problem within the confines of a Game Studio.
-We won't try to run before we can walk.
-Our pursuit of the underlying problem has led us to the following intermediate objectives:
+The state space becomes so large that it cannot be effectively explored and debugged.
+How can composite behaviour be resolved when the developer has never encountered it?
+Also, behaviour with a time-limited existence may go unnoticed or be misinterpreted by the Player.
+We shouldn't forget we are entertaining the Player.
+We are not creating a World in which the Player is situated.
+We are creating a World _around_ the Player.
+This leads us to intermediate objectives:
+{/* It must be interwoven with the Player's experience, not an independent set of "plans". */}
 
 <Card id="underlying-problem"> 
 **Our Objectives**
@@ -81,7 +82,7 @@ Our pursuit of the underlying problem has led us to the following intermediate o
   A Game Master (aka Dungeon Master) is another human who controls the Game World.</SideNote>
 </Card>
 
-This is a step towards the Underlying Problem.
+They are a step towards the Underlying Problem.
 If one human can appear as many,
 we can try to learn how to simulate his/her behaviour.
 Let's begin by seeing the system in action.
