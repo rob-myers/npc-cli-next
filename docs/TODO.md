@@ -156,12 +156,14 @@
     - 🚧 try copy soldier head into test-head
       - soldier https://namemc.com/skin/45461862ef51524e
       - head-left means "right-side-of-head from character perspective"
-      - boxy-svg try compositing > filter > pixelated
-      - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
-        - seems unsupported
-      - ✅ try `skia-canvas` too
-        - seems unsupported
-      - 🚧 try manually drawing head, using image as backdrop
+      - boxy-svg try compositing > filter > pixelated (pixel size 18)
+    - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
+      - seems unsupported
+    - ✅ try `skia-canvas` too
+      - seems unsupported
+    - ❌ try manually drawing head, using image as backdrop
+      - too much work
+    - 🚧 try `skia-canvas` again
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e

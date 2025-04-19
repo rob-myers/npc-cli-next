@@ -1,6 +1,13 @@
+/**
+ * Usage:
+ * - npm run test-svg-to-png media/debug/minecraft-testing.svg
+ * - npm run test-svg-to-png media/debug/test-human-0.0.tex.svg
+ * - npm run test-svg-to-png media/debug/test-gradient-fill.svg
+ */
 import fs from 'fs';
 import path from 'path';
-import { Canvas, loadImage, Image } from '@napi-rs/canvas';
+// import { Canvas, loadImage, Image } from '@napi-rs/canvas';
+import { Canvas, loadImage, Image } from 'skia-canvas';
 
 const [ ,, ...args] = process.argv;
 
@@ -9,11 +16,6 @@ const approach = /** @type {'default' | 'with-fix'} */ (
   // 'with-fix'
 );
 
-/**
- * Usage:
- * - npm run test-svg-to-png media/debug/test-gradient-fill.svg
- * - npm run test-svg-to-png media/debug/test-human-0.0.tex.svg
- */
 (async function main() {
 
   const [inputSvgFilePath] = args;
@@ -43,11 +45,11 @@ const approach = /** @type {'default' | 'with-fix'} */ (
   const canvas = new Canvas(image.width, image.height);
   canvas.getContext('2d').drawImage(image, 0, 0);
 
-  // @napi-rs/canvas
-  const pngData = await canvas.encode('png');
-  fs.writeFileSync(outputSvgFilePath, pngData);
+  // // @napi-rs/canvas
+  // const pngData = await canvas.encode('png');
+  // fs.writeFileSync(outputSvgFilePath, pngData);
 
   // skia-canvas
-  // await canvas.saveAs(outputSvgFilePath, {  });
+  await canvas.saveAs(outputSvgFilePath, {  });
 
 })();
