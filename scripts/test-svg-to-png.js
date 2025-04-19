@@ -6,8 +6,10 @@
  */
 import fs from 'fs';
 import path from 'path';
-// import { Canvas, loadImage, Image } from '@napi-rs/canvas';
-import { Canvas, loadImage, Image } from 'skia-canvas';
+import { promises as stream } from 'stream';
+// import napiRsCanvas from '@napi-rs/canvas';
+// import skiaCanvas from 'skia-canvas';
+import nodeCanvas from 'canvas';
 
 const [ ,, ...args] = process.argv;
 
@@ -23,11 +25,11 @@ const approach = /** @type {'default' | 'with-fix'} */ (
 
   const svgPath = path.resolve(process.cwd(), inputSvgFilePath);
   
-  /** @type {Image} */ let image;
+  /** @type {nodeCanvas.Image} */ let image;
 
   if (approach === 'default') {
 
-    image = await loadImage(svgPath);
+    image = await nodeCanvas.loadImage(svgPath);
 
   } else {
 
@@ -35,21 +37,34 @@ const approach = /** @type {'default' | 'with-fix'} */ (
     // https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
     const contents = fs.readFileSync(svgPath).toString();
     const dataUrl = `data:image/svg+xml;utf8,${
-      // contents
-      contents.replace(/url\(&quot;(.+)&quot;\)/g, 'url($1)')
+      contents
+      // contents.replace(/url\(&quot;(.+)&quot;\)/g, 'url($1)')
+      // contents.replace(/url\(&quot;(.+)&quot;\)/g, "url($1)")
     }`;
-    image = await loadImage(dataUrl);
+    image = await nodeCanvas.loadImage(dataUrl);
 
   }
   
-  const canvas = new Canvas(image.width, image.height);
+  // 🔔 easy to forget to explicitly add svg.{width,height} in BoxySVG
+  console.log({
+    width: image.width,
+    height: image.height,
+  });
+
+  const canvas = new nodeCanvas.Canvas(image.width, image.height);
   canvas.getContext('2d').drawImage(image, 0, 0);
 
   // // @napi-rs/canvas
   // const pngData = await canvas.encode('png');
   // fs.writeFileSync(outputSvgFilePath, pngData);
 
-  // skia-canvas
-  await canvas.saveAs(outputSvgFilePath, {  });
+  // // skia-canvas
+  // await canvas.saveAs(outputSvgFilePath, {  });
+
+  // canvas (node-canvas)
+  await stream.pipeline(
+    canvas.createPNGStream({}), 
+    fs.createWriteStream(outputSvgFilePath),
+  );
 
 })();

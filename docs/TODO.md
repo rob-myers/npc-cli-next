@@ -163,7 +163,12 @@
       - seems unsupported
     - ❌ try manually drawing head, using image as backdrop
       - too much work
-    - 🚧 try `skia-canvas` again
+
+  - 🚧 IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
+    - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
+    - ℹ️ e.g. SVG -> `canvas` loadImage -> data url -> `@napi-rs/canvas` 
+    - ✅ try importing and drawing using `canvas` first
+    - 🚧 try save as data-url and pass into `@napi-rs/canvas` 
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
