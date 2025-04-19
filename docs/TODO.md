@@ -178,8 +178,10 @@
 - another model human-1
 - tween: provide many examples
 - if lookAt while walking, eventually lookAt once stopMoving
-- saw onTickDetectStuck fire when npc no longer stuck causing bad stop
+- onTickDetectStuck more general approach
+  - saw fire when npc no longer stuck causing bad stop
   - maybe check if closest neighbour is in front too
+
 
 - ❌ when w.view.enableControls show "ui disabled icon"
 

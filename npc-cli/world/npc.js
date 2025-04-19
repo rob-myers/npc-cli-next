@@ -942,7 +942,7 @@ export class Npc {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < 0.25) {
+    if (elapsedTime - this.s.slowBegin < 0.3) {
       return;
     }
     // 🔔 can prevent npc moving is acceleration too low
