@@ -569,7 +569,7 @@ export default function WorldView(props) {
       ref={state.canvasRef}
       css={rootCss}
       frameloop={state.syncRenderMode()}
-      resize={{ debounce: 0 }}
+      resize={{ debounce: 30 }}
       gl={state.glOpts}
       onCreated={state.onCreated}
       onPointerDown={w.r3f ? state.onPointerDown : undefined}
@@ -729,6 +729,12 @@ const rootCss = css`
     transition: filter 1s;
   }
   
+  /* center canvas during resize */
+  > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 const statsCss = css`
