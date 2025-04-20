@@ -166,7 +166,9 @@
       - boxy-svg try compositing > filter > pixelated (pixel size 18)
     - 🚧 try copy soldier body into test-body
       - ❌ try direct copy
-      - 🚧 try sketch features onto black-with-white-outline body
+      - 🚧 try sketch features onto "black body"
+        - ✅ belt + back strap
+        - 🚧 medal ribbon
     - try copy soldier overlay into test-body-overlay
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
