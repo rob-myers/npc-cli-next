@@ -164,6 +164,8 @@
       - soldier https://namemc.com/skin/45461862ef51524e
       - head-left means from perspective of onlooker (not from character perspective)
       - boxy-svg try compositing > filter > pixelated (pixel size 18)
+    - 🚧 try copy soldier body into test-body
+    - try copy soldier overlay into test-body-overlay
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism

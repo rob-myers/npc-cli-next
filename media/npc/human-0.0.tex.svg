@@ -12,6 +12,13 @@
     <filter id="saturate-filter-0" bx:preset="saturate 1 1.81" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feColorMatrix type="saturate" values="1.81"/>
     </filter>
+    <filter id="pixelete-filter-0" bx:preset="pixelete 1 18" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feFlood height="2" width="2"/>
+      <feComposite width="18" height="18"/>
+      <feTile result="a"/>
+      <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      <feMorphology operator="dilate" radius="9"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -225,6 +232,7 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="1184">
         <title>back</title>
       </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAvklEQVQYGV2QzQ6CMBCEF1JqRa+aaJQb8WCID+DF938OEo0ePPBXiwnuLLQh7qFs55slnY1u1/NAXM59yfU9WtJJQsR91VhSImj5CPR3b1aa4Xq1pJq6YHBNJ9O7w4Zi/LpmASaY5xAsDmPc1O9KJvNTFuRgeJRPgcUlDxCNvO5evkT8hxCjIt8PqdFiSA3H42rtGLe1jpS/CJkOABSYOmZbeT1SGLMQYO1HkiGFwoGa7wGxoY+Gab1zk4fY5g9rTmr19x9KdAAAAABJRU5ErkJggg==" width="128" height="192" x="1184" y="128" style="filter: url(&quot;#pixelete-filter-0&quot;);"/>
     </g>
     <g>
       <title>test-body-overlay_body-overlay</title>
