@@ -749,7 +749,7 @@ const statsCss = css`
   right: 0px;
 
   &.disabled {
-    filter: grayscale(1) brightness(0.5);
+    filter: grayscale(1) brightness(0.75);
   }
 `;
 

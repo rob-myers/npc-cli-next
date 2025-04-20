@@ -499,7 +499,7 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.6, .6, .6]}
+          diffuse={[.5, .5, .5]}
 
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}
