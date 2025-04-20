@@ -735,7 +735,7 @@ const rootCss = css`
   }
   
   /* center canvas during resize */
-  > div:first-child {
+  > div:first-of-type {
     display: flex;
     align-items: center;
     justify-content: center;
