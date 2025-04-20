@@ -19,6 +19,38 @@
       <feComposite in="SourceGraphic" in2="a" operator="in"/>
       <feMorphology operator="dilate" radius="9"/>
     </filter>
+    <filter id="pixelete-filter-1" bx:preset="pixelete 1 18" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feFlood height="2" width="2"/>
+      <feComposite width="18" height="18"/>
+      <feTile result="a"/>
+      <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      <feMorphology operator="dilate" radius="9"/>
+    </filter>
+    <filter id="pixelete-filter-4" bx:preset="pixelete 1 10" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feFlood height="2" width="2"/>
+      <feComposite width="10" height="10"/>
+      <feTile result="a"/>
+      <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      <feMorphology operator="dilate" radius="5"/>
+    </filter>
+    <filter id="filter-1" bx:preset="pixelete 1 10" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feFlood height="2" width="2"/>
+      <feComposite width="10" height="10"/>
+      <feTile result="a"/>
+      <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      <feMorphology operator="dilate" radius="5"/>
+    </filter>
+    <filter id="inner-shadow-filter-0" bx:preset="inner-shadow 1 0 0 40 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="40"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -214,25 +246,39 @@
     </g>
     <g style="filter: none;">
       <title>test-body_body</title>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="928">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAABHElEQVQYGVVQv0vDYBB9CUmoaQVFKJKtQ12kZnERHVSKkkn8A1zc3MTJVfw7/BPE0cXJwVXoovEHpVWbRCs1mKYhUWLedakP7u777r37vrtTGnUrX2vu4OLyCucHDsyqBefkDLtOE3etaygUTJdLsFe2RYQCJJ/vb5CmP1C2Nuzce/0ARdB1GIYmVilPIRqOoPrBFw6PTxGlv0CWCcncUzgDRmV9dTFnFSse3a68ZCk6Hio1LERtqPyz1Y4ZMFedxfcwQS/PMK956JvaWLBUM0VA17DrImJfhPr5PkDYD/HW8bG3fwSv04NZMsTIaXGSiZLOdV3wHiep5Hj+16QfDGAvbyJ4uZURuQeNjogwkjhJjgXF7JPgckiIFdwflmGQDuiqptQAAAAASUVORK5CYII=" width="128" height="192" x="928" y="128" style="filter: url(&quot;#pixelete-filter-1&quot;);">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAvklEQVQYGV2QzQ6CMBCEF1JqRa+aaJQb8WCID+DF938OEo0ePPBXiwnuLLQh7qFs55slnY1u1/NAXM59yfU9WtJJQsR91VhSImj5CPR3b1aa4Xq1pJq6YHBNJ9O7w4Zi/LpmASaY5xAsDmPc1O9KJvNTFuRgeJRPgcUlDxCNvO5evkT8hxCjIt8PqdFiSA3H42rtGLe1jpS/CJkOABSYOmZbeT1SGLMQYO1HkiGFwoGa7wGxoY+Gab1zk4fY5g9rTmr19x9KdAAAAABJRU5ErkJggg==" width="128" height="192" x="1184" y="128" style="filter: url(&quot;#pixelete-filter-0&quot;);">
+        <title>_back</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAYklEQVQIHWPUVZX6z8vNwQACn7/+YGABMdi4OUEUAwNIQFJGFMIBkiA2y69ff+AC795/YWCC84AMIUEeVAGQJIoKkADL21fvQTQcsHz78RvOATFYZOXEUAWQrQWr+PUbVQsAvfAY/iJSZEYAAAAASUVORK5CYII=" width="85.333" height="256" x="800" y="128" style="filter: url(&quot;#pixelete-filter-4&quot;);" transform="matrix(1.500006, 0, 0, 0.75, -400.0047, 32)">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAYklEQVQIHWPUVZX6z8vNwQACn7/+YGABMdi4OUEUAwNIQFJGFMIBkiA2y69ff+AC795/YWCC84AMIUEeVAGQJIoKkADL21fvQTQcsHz78RvOATFYZOXEUAWQrQWr+PUbVQsAvfAY/iJSZEYAAAAASUVORK5CYII=" width="85.333" height="256" x="800" y="128" style="filter: url(&quot;#filter-1&quot;);" transform="matrix(1.500006, 0, 0, 0.75, -144.004776, 32)">
+        <title>_right</title>
+      </image>
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(0, 0, 0);" x="928">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" x="1056">
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(0, 0, 0);" x="1056">
         <title>bottom</title>
       </rect>
-      <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="800">
+      <rect width="128" height="256" style="stroke-width: 12px; fill: none; stroke: rgb(0, 0, 0);" y="128" x="800">
         <title>left</title>
       </rect>
-      <rect width="128" height="256" style="stroke : rgb(255, 255, 255); stroke-width : 12px; alignment-baseline : initial;" y="128" x="928">
+      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; fill: none; stroke: rgb(0, 0, 0);" y="128" x="928">
         <title>front</title>
       </rect>
-      <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="1056">
+      <rect width="128" height="256" style="stroke-width: 12px; fill: none; stroke: rgb(0, 0, 0);" y="128" x="1056">
         <title>right</title>
       </rect>
-      <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 12px;" y="128" x="1184">
+      <rect width="128" height="256" style="stroke-width: 12px; fill: none; stroke: rgb(0, 0, 0);" y="128" x="1184">
         <title>back</title>
       </rect>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAvklEQVQYGV2QzQ6CMBCEF1JqRa+aaJQb8WCID+DF938OEo0ePPBXiwnuLLQh7qFs55slnY1u1/NAXM59yfU9WtJJQsR91VhSImj5CPR3b1aa4Xq1pJq6YHBNJ9O7w4Zi/LpmASaY5xAsDmPc1O9KJvNTFuRgeJRPgcUlDxCNvO5evkT8hxCjIt8PqdFiSA3H42rtGLe1jpS/CJkOABSYOmZbeT1SGLMQYO1HkiGFwoGa7wGxoY+Gab1zk4fY5g9rTmr19x9KdAAAAABJRU5ErkJggg==" width="128" height="192" x="1184" y="128" style="filter: url(&quot;#pixelete-filter-0&quot;);"/>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAZElEQVQYGWWPQQqAQAhFLYQcxs7RCdp0/xuljK0KBwSxvxDx+eW7XOfxMhNwb0C0gcvsAdEBIgaYYe80F3LBcDrkvWU2e/SzFebF9WcpA/RAoXDKPUDVZlj0tFUBnaG/UpXf/ABeHS7eq9ZUzAAAAABJRU5ErkJggg==" width="128" height="128" x="928" style="filter: url(&quot;#pixelete-filter-3&quot;) url(&quot;#inner-shadow-filter-0&quot;);">
+        <title>_top-head-image</title>
+      </image>
     </g>
     <g>
       <title>test-body-overlay_body-overlay</title>
