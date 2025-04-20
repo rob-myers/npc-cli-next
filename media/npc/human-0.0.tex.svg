@@ -256,13 +256,13 @@
         <rect x="1062" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
           <title>belt</title>
         </rect>
-        <path d="M 1190 240 L 1200 240 L 1306 134 L 1306 158 L 1225 240 L 1306 240 L 1306 256 L 1190 256 L 1190 240 Z" style="fill: rgb(157, 149, 138);">
+        <path d="M 1190 240 L 1296 134 L 1306 134 L 1305.952 148.025 L 1215 240 L 1306 240 L 1306 256 L 1190 256 L 1190 240 Z" style="fill: rgb(157, 149, 138);">
           <title>belt</title>
         </path>
         <path d="M 1190 256 H 1306 V 272 H 1190 V 256 Z" style="fill: rgb(116, 109, 115);">
           <title>belt</title>
         </path>
-        <path d="M 1240 240 L 1225 240 L 1305.6 158 L 1306 173 L 1240 240 Z" style="fill: rgb(116, 109, 115);">
+        <path d="M 1230 240 L 1215 240 L 1306 148 L 1306 163 L 1230 240 Z" style="fill: rgb(116, 109, 115);">
           <title>belt</title>
         </path>
       </g>
