@@ -218,45 +218,45 @@
     </g>
     <g style="filter: none;">
       <title>test-body_body</title>
-      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" x="928">
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 68, 0);" x="928">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" x="1056">
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 68, 0);" x="1056">
         <title>bottom</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="800">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 68, 0);" y="128" x="800">
         <title>left</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; stroke: rgb(255, 255, 255);" y="128" x="928">
+      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; stroke: rgb(255, 255, 255); fill: rgb(34, 68, 0);" y="128" x="928">
         <title>front</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1056">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 68, 0);" y="128" x="1056">
         <title>right</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1184">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 68, 0);" y="128" x="1184">
         <title>back</title>
       </rect>
       <g>
         <title>_belt</title>
-        <rect x="934" y="240" width="116" height="16" style="fill: rgb(157, 149, 138);">
+        <rect x="934" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
           <title>belt</title>
         </rect>
         <rect x="934" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
           <title>belt</title>
         </rect>
-        <rect x="806" y="240" width="116" height="16" style="fill: rgb(157, 149, 138);">
+        <rect x="806" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
           <title>belt</title>
         </rect>
         <rect x="806" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
           <title>belt</title>
         </rect>
-        <rect x="1062" y="240" width="116" height="16" style="fill: rgb(157, 149, 138);">
+        <rect x="1062" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
           <title>belt</title>
         </rect>
         <rect x="1062" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
           <title>belt</title>
         </rect>
-        <path d="M 1190 240 L 1296 134 L 1306 134 L 1305.952 148.025 L 1215 240 L 1306 240 L 1306 256 L 1190 256 L 1190 240 Z" style="fill: rgb(157, 149, 138);">
+        <path d="M 1190 240 L 1296 134 L 1306 134 L 1305.952 148.025 L 1215 240 L 1306 240 L 1306 256 L 1190 256 L 1190 240 Z" style="fill: rgb(212, 240, 200);">
           <title>belt</title>
         </path>
         <path d="M 1190 256 H 1306 V 272 H 1190 V 256 Z" style="fill: rgb(116, 109, 115);">
