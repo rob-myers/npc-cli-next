@@ -582,8 +582,13 @@ export default function WorldView(props) {
     >
       {props.children}
 
-      {props.stats && state.rootEl &&
-        <Stats showPanel={0} css={statsCss} parent={{ current: state.rootEl }} />
+      {props.stats === true && state.rootEl !== null &&
+        <Stats
+          showPanel={0}
+          className={w.disabled === true ? 'disabled' : undefined}
+          css={statsCss}
+          parent={{ current: state.rootEl }}
+        />
       }
 
       <PerspectiveCamera
@@ -742,6 +747,10 @@ const statsCss = css`
   z-index: ${zIndexWorld.stats} !important;
   left: unset !important;
   right: 0px;
+
+  &.disabled {
+    filter: grayscale(1) brightness(0.5);
+  }
 `;
 
 /**
