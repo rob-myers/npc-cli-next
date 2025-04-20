@@ -1132,6 +1132,7 @@ class GeomorphService {
     });
     const tagStack = /** @type {HtmlParser2Tag[]} */ ([]);
     const folderStack = /** @type {string[]} */ ([]);
+    let insideIgnoredFolder = false;
     
     /** Matrices of transforms arising from `g.transform`s */
     const matrixStack = /** @type {Mat[]} */ ([]);
@@ -1153,6 +1154,7 @@ class GeomorphService {
         
         if (parent.tagName === "g") {// track folders, transforms
           folderStack.push(contents);
+          insideIgnoredFolder = folderStack.some(x => x.startsWith('_'));
           if ('transform' in parent.attributes) {
             matrixStack.push(new Mat().setMatrixValue(parent.attributes.transform));
           }
@@ -1161,6 +1163,9 @@ class GeomorphService {
         
         if (folderStack[0] !== 'uv-map') {
           return; // must be inside root folder "uv-map"
+        }
+        if (insideIgnoredFolder === true) {
+          return; // must not be inside some folder "_foo"
         }
 
         const baseName = contents;
@@ -1193,6 +1198,7 @@ class GeomorphService {
         const tag = /** @type {HtmlParser2Tag} */ (tagStack.pop());
         if (tagName === "g") {
           folderStack.pop();
+          insideIgnoredFolder = folderStack.some(x => x.startsWith('_'));
           if ('transform' in tag.attributes) {
             matrixStack.pop();
           }
