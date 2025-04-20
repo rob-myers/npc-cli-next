@@ -218,22 +218,22 @@
     </g>
     <g style="filter: none;">
       <title>test-body_body</title>
-      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 51, 0);" x="928">
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" x="928">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 51, 0);" x="1056">
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" x="1056">
         <title>bottom</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 51, 0);" y="128" x="800">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="800">
         <title>left</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; stroke: rgb(255, 255, 255); fill: rgb(34, 51, 0);" y="128" x="928">
+      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; stroke: rgb(255, 255, 255);" y="128" x="928">
         <title>front</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 51, 0);" y="128" x="1056">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1056">
         <title>right</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(34, 51, 0);" y="128" x="1184">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1184">
         <title>back</title>
       </rect>
       <g transform="matrix(1, 0, 0, 1, 0, 50)">
