@@ -84,7 +84,7 @@ setupOnSlowNpc
 # transition to fixed camera angle
 w update 'async w => {
   w.view.enableControls(false);
-  await w.view.tween({ azimuthal: Math.PI/4, polar: Math.PI * 1/5 });
+  await w.view.tween({ azimuthal: Math.PI/4, polar: Math.PI/4 });
   w.view.enableControls(true);
   await w.view.tween({ distance: 24 });
 }'
