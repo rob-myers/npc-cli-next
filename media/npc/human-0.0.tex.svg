@@ -182,24 +182,6 @@
     </g>
     <g transform="matrix(1, 0, 0, 1, 832, 0)">
       <title>test-head_head</title>
-      <rect width="128" height="128" style="stroke-width: 16px; fill: none;" x="512">
-        <title>front</title>
-      </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; fill: none;" x="640">
-        <title>back</title>
-      </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; fill: none;" y="128" x="512">
-        <title>left</title>
-      </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; fill: none;" x="640" y="128">
-        <title>right</title>
-      </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; fill: none;" x="512" y="256">
-        <title>top</title>
-      </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; filter: url(&quot;#pixelete-filter-3&quot;) url(&quot;#saturate-filter-0&quot;);" x="640" y="256">
-        <title>bottom</title>
-      </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAuElEQVQYGXWMvQrCQBCE59SYBBMbAxHBIo1WljY+oU9gJ1haBR8hraVYCAFJYaOFiPkxl6RY3bWxcWD3vp25XbWYT8lxLDg9G5ZlgqV1hbwokecaCMOQWFEUyfvLnKkgCMgwDHC5risXsixD0zRSyvM8EvdfO2xXlCQJf6L9ekmn3UaYPc4Um/3BEF3bxi0+wp/M5FZdlkjvV7R4qvULbNRtE5dz/OWPx+pUz4cAN380FuYFXaTg7A3Io28UJYiXvQAAAABJRU5ErkJggg==" width="128" height="128" x="512" style="filter: url(&quot;#pixelete-filter-3&quot;) url(&quot;#saturate-filter-0&quot;) url(&quot;#inner-shadow-filter-1&quot;);">
         <title>_front-head-image</title>
       </image>
@@ -215,6 +197,24 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAZElEQVQYGWWPQQqAQAhFLYQcxs7RCdp0/xuljK0KBwSxvxDx+eW7XOfxMhNwb0C0gcvsAdEBIgaYYe80F3LBcDrkvWU2e/SzFebF9WcpA/RAoXDKPUDVZlj0tFUBnaG/UpXf/ABeHS7eq9ZUzAAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="256" style="filter: url(&quot;#pixelete-filter-3&quot;) url(&quot;#saturate-filter-0&quot;) url(&quot;#inner-shadow-filter-1&quot;);">
         <title>_top-head-image</title>
       </image>
+      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(0, 0, 0); fill: none;" x="512">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(0, 0, 0); fill: none;" x="640">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(0, 0, 0); fill: none;" y="128" x="512">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(0, 0, 0); fill: none;" x="640" y="128">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(0, 0, 0); fill: none;" x="512" y="256">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="stroke-width: 16px; filter: url(&quot;#pixelete-filter-3&quot;) url(&quot;#saturate-filter-0&quot;); stroke: rgb(0, 0, 0); fill: none;" x="640" y="256">
+        <title>bottom</title>
+      </rect>
     </g>
     <g style="filter: none;">
       <title>test-body_body</title>
