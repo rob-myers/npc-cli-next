@@ -177,6 +177,7 @@
       - 🚧 body overlay further out
       - add test-head-overlay
     - head needs base, visible while lie
+    - try only use minecraft as guide: migrate head to SVG shapes
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism

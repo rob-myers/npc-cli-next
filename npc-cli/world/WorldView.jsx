@@ -25,7 +25,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 24, 0],
+    camInitPos: [0, 30, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -637,7 +637,7 @@ export default function WorldView(props) {
             blendFunction={BlendFunction.NORMAL}
           />
           <BrightnessContrast
-            brightness={-0.23}
+            brightness={-0.22}
             contrast={0.}
           />
         </>}
