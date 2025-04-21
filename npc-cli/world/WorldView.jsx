@@ -25,7 +25,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 20, 0],
+    camInitPos: [0, 24, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -632,13 +632,13 @@ export default function WorldView(props) {
         {w.crowd === null ? [] : <>
           <Vignette
             eskil={false}
-            offset={0.2}
-            darkness={1.0}
+            offset={0.1}
+            darkness={1.1}
             blendFunction={BlendFunction.NORMAL}
           />
           <BrightnessContrast
-            brightness={-0.2}
-            contrast={0.0}
+            brightness={-0.23}
+            contrast={0.}
           />
         </>}
       </EffectComposer>
