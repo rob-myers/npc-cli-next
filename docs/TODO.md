@@ -208,6 +208,11 @@
 - profile-1 camera target y should always be 1.5?
 - move "x-ray" into PopUp opts?
 
+- 🚧 post-processing api
+  - ✅ can manually load effects via `w view.extractPostEffects`
+  - can enable/disable post-processing
+  - can animate post-processing i.e. set uniform on Vignette
+
 - ✅ shell should show debugs not errors
   - sometimes still show errors e.g. on mvdan-sh parse error
 - somehow additionally indicate npc is selected by ContextMenu when docked

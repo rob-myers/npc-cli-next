@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 import { EffectComposer, Noise, Vignette, BrightnessContrast } from '@react-three/postprocessing'
-import { BlendFunction } from 'postprocessing'
+import { BlendFunction, Effect } from 'postprocessing'
 
 import { debug, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -41,6 +41,7 @@ export default function WorldView(props) {
     },
     cssFilter: {},
     down: null,
+    dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
     fov: 20,
     glOpts: {
@@ -57,13 +58,12 @@ export default function WorldView(props) {
       indices: new THREE.Vector3(),
       mat3: new THREE.Matrix3(),
     },
+    post: { enabled: true, ref: null, effect: {} },
     raycaster: new THREE.Raycaster(),
     resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
     tweenWhilePaused: false,
-
-    dst: {},
 
     zoomState: 'near', // 🚧 finer-grained
 
@@ -116,8 +116,19 @@ export default function WorldView(props) {
       output.applyNormalMatrix(normalMatrix);
       return output;
     },
+    effectComposerRef(ref) {
+      state.post.ref = ref;
+    },
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
+    },
+    extractPostEffects() {
+      Object.keys(state.post.effect).forEach(name => delete state.post.effect[name]);
+      if (state.post.ref !== null) {
+        const effectPass = /** @type {*} */ (state.post.ref.passes[1]);
+        const effects = /** @type {Effect[]} */ (effectPass?.effects);
+        effects?.forEach(effect => state.post.effect[effect.name] = effect);
+      }
     },
     followPosition(dst, opts = { smoothTime: 0.8, y: 1.5 }) {
       // lock zoom
@@ -615,17 +626,20 @@ export default function WorldView(props) {
 
       <NpcSpeechBubbles/>
 
-      <EffectComposer>
+      <EffectComposer
+        ref={state.effectComposerRef}
+        enabled={state.post.enabled}
+      >
         {w.crowd === null ? <></> : <>
           <Vignette
             eskil={false}
-            offset={0.}
-            darkness={1}
+            offset={0.2}
+            darkness={1.0}
             blendFunction={BlendFunction.NORMAL}
           />
           <BrightnessContrast
             brightness={-0.2}
-            contrast={0.}
+            contrast={0.0}
           />
         </>}
       </EffectComposer>
@@ -661,6 +675,11 @@ export default function WorldView(props) {
  * @property {Partial<Record<'brightness' | 'sepia', string>>} cssFilter
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
+ * @property {{
+ *   ref: import('postprocessing').EffectComposer | null;
+ *   enabled: boolean;
+ *   effect: Record<string, import('postprocessing').Effect>
+ * }} post EffectComposer
  * 
  * @property {{
  *   azimuthal?: number;
@@ -688,7 +707,9 @@ export default function WorldView(props) {
  * @property {boolean} tweenWhilePaused Did we start tweening whilst paused?
  * @property {'near' | 'far'} zoomState
  *
+ * @property {(x: import('postprocessing').EffectComposer | null) => void} effectComposerRef
  * @property {(enabled?: boolean) => void} enableControls Default `true`
+ * @property {() => void} extractPostEffects
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
