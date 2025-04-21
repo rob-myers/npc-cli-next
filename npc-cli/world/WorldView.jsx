@@ -630,15 +630,15 @@ export default function WorldView(props) {
         {...w.crowd === null && { key: '' }}
       >
         {w.crowd === null ? [] : <>
+          <BrightnessContrast
+            brightness={-0.2}
+            contrast={0.05}
+          />
           <Vignette
             eskil={false}
-            offset={0.2}
-            darkness={1.1}
+            offset={0.3}
+            darkness={1.3}
             blendFunction={BlendFunction.NORMAL}
-          />
-          <BrightnessContrast
-            brightness={-0.23}
-            contrast={0.0}
           />
         </>}
       </EffectComposer>
