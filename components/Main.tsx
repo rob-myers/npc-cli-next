@@ -18,7 +18,7 @@ export default function Main(props: React.PropsWithChildren) {
       className={cx("scroll-container", { draggingView: site.draggingView })}
     >
       <section
-        className="prose max-w-screen-lg prose-headings:font-light"
+        className="prose max-w-screen-lg prose-headings:font-light dark:prose-invert"
         data-testid="main"
         {...{ [sideNoteRootDataAttribute]: true }}
       >
@@ -77,8 +77,10 @@ const mainHeaderCss = css`
   justify-content: right;
   align-items: center;
 
+  /* 🚧 dark mode issue */
   background-color: #fff;
   color: #444;
+
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
@@ -98,6 +100,7 @@ const mainHeaderCss = css`
 `;
 
 const mainMainCss = css`
+  /* 🚧 dark mode issue */
   background-color: #fff;
   padding-top: 2rem;
 

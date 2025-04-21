@@ -109,6 +109,7 @@ const rootContentCss = css`
     flex-direction: column;
   }
   @media (min-width: ${afterBreakpoint}) {
+    /* 🚧 dark mode issue */
     background-color: #ccc;
   }
 `;

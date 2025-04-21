@@ -5,6 +5,8 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: ['class'],
+  safelist: ['dark'],
   theme: {
     extend: {
       typography: {
