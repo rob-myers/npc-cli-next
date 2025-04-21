@@ -637,7 +637,7 @@ export default function WorldView(props) {
             blendFunction={BlendFunction.NORMAL}
           />
           <BrightnessContrast
-            brightness={-0.22}
+            brightness={-0.23}
             contrast={0.0}
           />
         </>}
