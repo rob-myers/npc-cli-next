@@ -211,7 +211,7 @@
 - 🚧 post-processing api
   - ✅ can manually load effects via `w view.extractPostEffects`
   - ✅ auto load effects via `w view.extractPostEffects`
-  - can enable/disable post-processing
+  - ✅ can enable/disable post-processing
   - can animate post-processing i.e. set uniform on Vignette
 
 - ✅ shell should show debugs not errors

@@ -38,6 +38,7 @@ export default function WorldMenu(props) {
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
+    showPostProcessing: w.view.post.enabled,
     xRayOpacity: 4, // [1..10]
 
     applyControlsInitValues() {
@@ -52,6 +53,10 @@ export default function WorldMenu(props) {
       state.showDebug = e.currentTarget.checked;
       tryLocalStorageSet(`logger:debug@${w.key}`, `${state.showDebug}`);
       update();
+    },
+    changePostProcessing(e) {
+      w.view.post.enabled = e.currentTarget.checked;
+      w.update();
     },
     measure(msg) {
       if (state.showDebug === false) {
@@ -167,7 +172,7 @@ export default function WorldMenu(props) {
         <PopUp
           label="⋯"
           css={popUpCss}
-          width={300}
+          width={350}
         >
           <div className="ranges">
             <label>
@@ -217,14 +222,24 @@ export default function WorldMenu(props) {
               <div>☀️</div>
             </label>
           </div>
-          <label>
-            debug
-            <input
-              type="checkbox"
-              defaultChecked={state.showDebug}
-              onChange={state.changeLoggerLog}
-            />
-          </label>
+          <div className="checkboxes">
+            <label>
+              debug
+              <input
+                type="checkbox"
+                defaultChecked={state.showDebug}
+                onChange={state.changeLoggerLog}
+              />
+            </label>
+            <label>
+              effects
+              <input
+                type="checkbox"
+                defaultChecked={state.showPostProcessing}
+                onChange={state.changePostProcessing}
+              />
+            </label>
+          </div>
         </PopUp>
 
         <Logger
@@ -350,6 +365,12 @@ const popUpCss = css`
       }
     }
 
+    .checkboxes {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
     label {
       display: flex;
       align-items: center;
@@ -435,10 +456,12 @@ const cssTtyDisconnectedMessage = css`
  * @property {number} loggerWidthDelta
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
+ * @property {boolean} showPostProcessing
  * @property {number} xRayOpacity In [1..10]
  *
  * @property {() => void} applyControlsInitValues
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} changeLoggerLog
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} changePostProcessing
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
