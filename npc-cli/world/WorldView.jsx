@@ -35,7 +35,7 @@ export default function WorldView(props) {
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
       minDistance: 4,
-      maxDistance: w.smallViewport ? 20 : 32,
+      maxDistance: 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
     },
@@ -632,13 +632,13 @@ export default function WorldView(props) {
         {w.crowd === null ? [] : <>
           <Vignette
             eskil={false}
-            offset={0.1}
+            offset={0.2}
             darkness={1.1}
             blendFunction={BlendFunction.NORMAL}
           />
           <BrightnessContrast
             brightness={-0.22}
-            contrast={0.}
+            contrast={0.0}
           />
         </>}
       </EffectComposer>
