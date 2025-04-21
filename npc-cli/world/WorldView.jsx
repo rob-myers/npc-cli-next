@@ -118,17 +118,15 @@ export default function WorldView(props) {
     },
     effectComposerRef(ref) {
       state.post.ref = ref;
-    },
-    enableControls(enabled = true) {
-      state.controls.enabled = !!enabled;
-    },
-    extractPostEffects() {
       Object.keys(state.post.effect).forEach(name => delete state.post.effect[name]);
       if (state.post.ref !== null) {
         const effectPass = /** @type {*} */ (state.post.ref.passes[1]);
         const effects = /** @type {Effect[]} */ (effectPass?.effects);
         effects?.forEach(effect => state.post.effect[effect.name] = effect);
       }
+    },
+    enableControls(enabled = true) {
+      state.controls.enabled = !!enabled;
     },
     followPosition(dst, opts = { smoothTime: 0.8, y: 1.5 }) {
       // lock zoom
@@ -629,8 +627,9 @@ export default function WorldView(props) {
       <EffectComposer
         ref={state.effectComposerRef}
         enabled={state.post.enabled}
+        {...w.crowd === null && { key: '' }}
       >
-        {w.crowd === null ? <></> : <>
+        {w.crowd === null ? [] : <>
           <Vignette
             eskil={false}
             offset={0.2}
@@ -709,7 +708,6 @@ export default function WorldView(props) {
  *
  * @property {(x: import('postprocessing').EffectComposer | null) => void} effectComposerRef
  * @property {(enabled?: boolean) => void} enableControls Default `true`
- * @property {() => void} extractPostEffects
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
