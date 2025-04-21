@@ -1,6 +1,6 @@
 awaitWorld
 
-spawn rob '{ x: 0.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+spawn rob '{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 spawn will '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 spawn '{ npcKey: "kate", angle: Math.PI }' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
@@ -84,7 +84,7 @@ setupOnSlowNpc
 # transition to fixed camera angle
 w update 'async w => {
   w.view.enableControls(false);
-  await w.view.tween({ azimuthal: Math.PI/4, polar: Math.PI/4 });
+  await w.view.tween({ azimuthal: Math.PI/4, polar: Math.PI * 1/5 });
   w.view.enableControls(true);
   await w.view.tween({ distance: 24 });
 }'
