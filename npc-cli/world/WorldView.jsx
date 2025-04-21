@@ -43,7 +43,7 @@ export default function WorldView(props) {
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 40,
+    fov: 30,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
