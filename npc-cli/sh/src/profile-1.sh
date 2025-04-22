@@ -22,8 +22,11 @@ w n.rob.applySkin
 # w n.rob.applyTint
 w n.rob.resetTint
 
+# re-skin will
 w n.will.skin | assign '{
-  "body-{front,back,left,right,top,bottom}": { prefix: "test" }
+  "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
+  "head-overlay-front": { prefix: "empty", otherPart: "body-front" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "test" },
 }' > /dev/null
 w n.will.applySkin
 

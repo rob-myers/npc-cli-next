@@ -1291,11 +1291,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": 766313552},
-    "imagesHash": -1725998318
+    "imagesHash": 554823844
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [1639686490, 1474634897]},
+    "svgHashes": {"human-0": [-1538046052, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -1683,6 +1683,54 @@
           "width": 0.0625,
           "height": 0.125
         },
+        "scientist-0_head-front": {
+          "key": "scientist-0_head-front",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-back": {
+          "key": "scientist-0_head-back",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-left": {
+          "key": "scientist-0_head-left",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-right": {
+          "key": "scientist-0_head-right",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-top": {
+          "key": "scientist-0_head-top",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.53125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-bottom": {
+          "key": "scientist-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.53125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
         "test_body-top": {
           "key": "test_body-top",
           "sheetId": 0,
@@ -1750,7 +1798,7 @@
         "plus-icon_body-overlay-front": {
           "key": "plus-icon_body-overlay-front",
           "sheetId": 0,
-          "x": 0.921875,
+          "x": 0.9375,
           "y": 0,
           "width": 0.0625,
           "height": 0.125

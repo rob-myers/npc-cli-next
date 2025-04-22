@@ -192,8 +192,8 @@
   
   - 🚧 start another minecraft migration i.e. scientist-0
     - https://namemc.com/skin/7161dce64d6b12be
-    - 🚧 scientist-0-head
-    - scientist-0-head-overlay
+    - ✅ scientist-0-head
+    - 🚧 scientist-0-head-overlay
     - scientist-0-body-overlay
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
