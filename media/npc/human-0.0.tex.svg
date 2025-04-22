@@ -243,57 +243,6 @@
       <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1184">
         <title>back</title>
       </rect>
-      <g transform="matrix(1, 0, 0, 1, 0, 50)">
-        <title>_belt</title>
-        <rect x="934" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
-          <title>belt</title>
-        </rect>
-        <rect x="934" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
-          <title>belt</title>
-        </rect>
-        <rect x="806" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
-          <title>belt</title>
-        </rect>
-        <rect x="806" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
-          <title>belt</title>
-        </rect>
-        <rect x="1062" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
-          <title>belt</title>
-        </rect>
-        <rect x="1062" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
-          <title>belt</title>
-        </rect>
-        <path d="M 1190 240 L 1296 84 L 1306 84 L 1305.952 98.025 L 1209 240 L 1306 240 L 1306 256 L 1190 256 L 1190 240 Z" style="fill: rgb(212, 240, 200);">
-          <title>belt</title>
-        </path>
-        <path d="M 1190 256 H 1306 V 272 H 1190 V 256 Z" style="fill: rgb(116, 109, 115);">
-          <title>belt</title>
-        </path>
-        <path d="M 1226 240 L 1209 240 L 1305.626 96 L 1306 122 L 1226 240 Z" style="fill: rgb(116, 109, 115);">
-          <title>belt</title>
-        </path>
-      </g>
-      <g style="filter: none;" transform="matrix(0.333333, 0, 0, 0.5, 666.000305, 92)">
-        <title>_medal</title>
-        <rect x="1008" y="176" width="48" height="32" style="fill: rgb(153, 0, 0);">
-          <title>medal</title>
-        </rect>
-        <rect x="1104" y="176" width="48" height="32" style="fill: rgb(153, 0, 0);">
-          <title>medal</title>
-        </rect>
-        <rect x="1056" y="176" width="48" height="32" style="fill: rgb(68, 68, 153);">
-          <title>medal</title>
-        </rect>
-        <rect x="1056" y="144" width="48" height="32" style="fill: rgb(153, 153, 119);">
-          <title>medal</title>
-        </rect>
-        <rect x="1008" y="144" width="48" height="32" style="fill: rgb(34, 119, 34);">
-          <title>medal</title>
-        </rect>
-        <rect x="1104" y="144" width="48" height="32" style="fill: rgb(34, 119, 34);">
-          <title>medal</title>
-        </rect>
-      </g>
     </g>
     <g transform="matrix(1, 0, 0, 1, 832, 0)">
       <title>test-head-overlay_head-overlay</title>
@@ -351,6 +300,57 @@
       <rect width="128" height="256" style="stroke: rgb(0, 0, 0); fill-opacity: 0.3; fill: none;" y="544" x="1184">
         <title>back</title>
       </rect>
+      <g transform="matrix(1, 0, 0, 1, 0, 466)">
+        <title>_belt</title>
+        <rect x="934" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
+          <title>belt</title>
+        </rect>
+        <rect x="934" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
+          <title>belt</title>
+        </rect>
+        <rect x="806" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
+          <title>belt</title>
+        </rect>
+        <rect x="806" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
+          <title>belt</title>
+        </rect>
+        <rect x="1062" y="240" width="116" height="16" style="fill: rgb(212, 240, 200);">
+          <title>belt</title>
+        </rect>
+        <rect x="1062" y="256" width="116" height="16" style="fill: rgb(116, 109, 115);">
+          <title>belt</title>
+        </rect>
+        <path d="M 1190 240 L 1296 84 L 1306 84 L 1305.952 98.025 L 1209 240 L 1306 240 L 1306 256 L 1190 256 L 1190 240 Z" style="fill: rgb(212, 240, 200);">
+          <title>belt</title>
+        </path>
+        <path d="M 1190 256 H 1306 V 272 H 1190 V 256 Z" style="fill: rgb(116, 109, 115);">
+          <title>belt</title>
+        </path>
+        <path d="M 1226 240 L 1209 240 L 1305.626 96 L 1306 122 L 1226 240 Z" style="fill: rgb(116, 109, 115);">
+          <title>belt</title>
+        </path>
+      </g>
+      <g style="filter: none;" transform="matrix(0.333333, 0, 0, 0.5, 666.000305, 508)">
+        <title>_medal</title>
+        <rect x="1008" y="176" width="48" height="32" style="fill: rgb(153, 0, 0);">
+          <title>medal</title>
+        </rect>
+        <rect x="1104" y="176" width="48" height="32" style="fill: rgb(153, 0, 0);">
+          <title>medal</title>
+        </rect>
+        <rect x="1056" y="176" width="48" height="32" style="fill: rgb(68, 68, 153);">
+          <title>medal</title>
+        </rect>
+        <rect x="1056" y="144" width="48" height="32" style="fill: rgb(153, 153, 119);">
+          <title>medal</title>
+        </rect>
+        <rect x="1008" y="144" width="48" height="32" style="fill: rgb(34, 119, 34);">
+          <title>medal</title>
+        </rect>
+        <rect x="1104" y="144" width="48" height="32" style="fill: rgb(34, 119, 34);">
+          <title>medal</title>
+        </rect>
+      </g>
       <rect width="96" height="64" style="stroke: rgb(255, 255, 255); alignment-baseline: initial; stroke-width: 4px; fill: rgb(255, 0, 0); fill-opacity: 0.25; visibility: hidden;" y="560" x="816">
         <title>_front</title>
       </rect>
