@@ -483,8 +483,7 @@ function NPC({ npc }) {
         skeleton={mesh.skeleton}
         userData={mesh.userData}
 
-        // 🔔 keep shader up-to-date
-        // 🔔 update onchange gltf
+        // 🔔 keep shader up-to-date e.g. onchange gltf
         key={`${HumanZeroMaterial.key} ${mesh.uuid}`}
         onUpdate={(skinnedMesh) => {
           npc.m.mesh = skinnedMesh; 
@@ -500,6 +499,7 @@ function NPC({ npc }) {
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
           diffuse={[.5, .5, .5]}
+          side={THREE.DoubleSide} // 🚧 temp: should make overlays double-sided in Blender
 
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}

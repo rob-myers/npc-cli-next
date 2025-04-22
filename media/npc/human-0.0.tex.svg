@@ -43,6 +43,9 @@
     <filter id="saturate-filter-2" bx:preset="saturate 1 1.5" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feColorMatrix type="saturate" values="1.5"/>
     </filter>
+    <filter id="filter-1" bx:preset="saturate 1 1.5" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="saturate" values="1.5"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -385,6 +388,42 @@
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; filter: none; stroke-width: 8px;" x="640" y="256">
         <title>bottom</title>
       </rect>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 832, 832)" style="filter: url(&quot;#filter-1&quot;);">
+      <title>scientist-0_head-overlay</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="416">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="512">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="544">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="672">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
+        <title>bottom</title>
+      </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAN0lEQVQYGWNkAAJbbdn/IBoEDl99zAhhYSFhCmE0FiVkCDF+3alQj08fE7Ikt/uDRhBGFqOcDQCvQwzArHS7mgAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQklEQVQYGWNgAAJbbdn/IAxigwAynwUk8OfvXwYWZmawBIh/+OpjRksNKbAGRpAACIAEQIpAikHg+I1ncDmwwGAmAN4EFZCa0gpyAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="416" style="image-rendering: pixelated;">
+        <title>_back</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAIUlEQVQYGWNgGHjAiM0J8vLy/9nY2LBJMTCAJLHLkCsKAAi3Asy93578AAAAAElFTkSuQmCC" width="128" height="128" x="512" y="544" style="image-rendering: pixelated;">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAKElEQVQYGWNgGHjAqKqq+h/kjF+/fjE8fPiQEa+T5OXlwYrxKiJZEgDIJwhe4Vg/RAAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="544" style="image-rendering: pixelated;">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXElEQVQYGWNgAAJbbdn/lhpS/2FsEB/EBgFGGOfP379ggeM3nqGIMR2++pgRLAMkWJiZwaYhi4Hl0K2AWQeSZAKrgBIghTDdMEUoCpAVg6zDADAHw2gMBTABZAUAqIgoGqncSp8AAAAASUVORK5CYII=" width="128" height="128" x="512" y="672" style="image-rendering: pixelated;">
+        <title>_top</title>
+      </image>
     </g>
     <g style="filter: url(&quot;#duotone-filter-0&quot;);">
       <title>test_body</title>
