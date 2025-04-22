@@ -19,13 +19,6 @@ w n.rob.skin | assign '{
   "head-top": { prefix: "test-head" },
   "head-bottom": { prefix: "test-head" },
   //
-  "body-front": { prefix: "test-body" },
-  "body-back": { prefix: "test-body" },
-  "body-left": { prefix: "test-body" },
-  "body-right": { prefix: "test-body" },
-  "body-top": { prefix: "test-body" },
-  "body-bottom": { prefix: "test-body" },
-  //
   "head-overlay-front": { prefix: "test-head-overlay" },
   "head-overlay-back": { prefix: "test-head-overlay" },
   "head-overlay-left": { prefix: "test-head-overlay" },
