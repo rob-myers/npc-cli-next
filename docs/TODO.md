@@ -175,9 +175,9 @@
         - currently `0.42 / 0.4` i.e. `1.05` larger
         - to match Minecraft use "half a pixel" i.e. `0.5 * (.4 / 8) = 0.025`
       - 🚧 body overlay further out
-      - add test-head-overlay
+      - 🚧 add test-head-overlay
     - head needs base, visible while lie
-    - try only use minecraft as guide: migrate head to SVG shapes
+    - ❌ SVG shapes for head instead of minecraft pixels?
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
@@ -190,6 +190,11 @@
       - use `@napi-rs/canvas` to output, but make it easy to comment out, so we can test if nondet arises
 
   - BUG: pause during profile load doesn't stop rendering
+    - repro?
+
+  - ✅ BUG: while paused `kill --all; source PROFILE` gets stuck at `awaitWorld`
+    - fixed by removing setTimeout from killProcesses
+    - setTimeout apparently had something to do with `sleep`
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e

@@ -706,7 +706,7 @@ class cmdServiceClass {
       ;
 
       // onSuspend onResume are "first-in first-invoked"
-      processes.forEach((p) => {
+      for (const p of processes) {
         if (opts.STOP) {
           p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend());
           p.status = ProcessStatus.Suspended;
@@ -716,9 +716,10 @@ class cmdServiceClass {
         } else {
           p.status = ProcessStatus.Killed;
           // Avoid immediate clean because it stops `sleep` (??)
-          window.setTimeout(() => killProcess(p, opts.SIGINT));
+          // window.setTimeout(() => killProcess(p, opts.SIGINT));
+          killProcess(p, opts.SIGINT);
         }
-      });
+      }
     }
   }
 
