@@ -12,26 +12,9 @@ selectedNpcKey="rob"
 w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }' > /dev/null
 
 w n.rob.skin | assign '{
-  "head-front": { prefix: "soldier-0" },
-  "head-back": { prefix: "soldier-0" },
-  "head-left": { prefix: "soldier-0" },
-  "head-right": { prefix: "soldier-0" },
-  "head-top": { prefix: "soldier-0" },
-  "head-bottom": { prefix: "soldier-0" },
-  //
-  "head-overlay-front": { prefix: "soldier-0" },
-  "head-overlay-back": { prefix: "soldier-0" },
-  "head-overlay-left": { prefix: "soldier-0" },
-  "head-overlay-right": { prefix: "soldier-0" },
-  "head-overlay-top": { prefix: "soldier-0" },
-  "head-overlay-bottom": { prefix: "soldier-0" },
-  //
-  "body-overlay-front": { prefix: "soldier-0" },
-  "body-overlay-back": { prefix: "soldier-0" },
-  "body-overlay-left": { prefix: "soldier-0" },
-  "body-overlay-right": { prefix: "soldier-0" },
-  "body-overlay-top": { prefix: "soldier-0" },
-  "body-overlay-bottom": { prefix: "soldier-0" },
+  "head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
+  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
+  "body-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
 }' > /dev/null
 w n.rob.applySkin
 

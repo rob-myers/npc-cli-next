@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
 import { lerp } from "maath/misc";
+import braces from "braces";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
@@ -150,10 +151,13 @@ export class Npc {
     const { sheetId: initSheetId, uvMap, sheetTexIds } = sheetAux[classKey];
     const { triToKey } = skinAux[classKey];
 
+    this.normalizeSkin();
+
     /** Index in DataTextureArray of this model's `initSheetId` sheet */
     const initSheetTexId = sheetTexIds[initSheetId];
 
     // 🔔 texture.type THREE.FloatType to handle negative uv offsets
+    // 🔔 skin is 1st row, tint is 2nd row
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
     const defaultPixel = [0, 0, initSheetTexId];
 
@@ -719,6 +723,22 @@ export class Npc {
       await this.waitUntilStopped();
     } catch (e) {
       this.stopMoving();
+    }
+  }
+
+  /**
+   * Brace expansion of keys
+   * > e.g. `'head-{front,back}'` -> `['head-front', 'head-back']`
+   */
+  normalizeSkin() {
+    for (const [k, v] of Object.entries(this.skin)) {
+      if (k.includes('{') === false) {
+        continue;
+      }
+      braces(k, { expand: true }).forEach(expanded => {
+        if (helper.isSkinPart(expanded) === true) this.skin[expanded] = v;
+        else warn(`${'normalizeSkin'}: ${this.key}: ignored invalid skinPart "${expanded}"`);
+      });
     }
   }
 

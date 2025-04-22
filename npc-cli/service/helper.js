@@ -80,6 +80,40 @@ export const helper = {
     Walk: true,
   },
 
+  fromSkinPart: /** @type {const} */ ({
+    'head-front': true,
+    'head-back': true,
+    'head-left': true,
+    'head-right': true,
+    'head-top': true,
+    'head-bottom': true,
+  
+    'body-top': true,
+    'body-bottom': true,
+    'body-left': true,
+    'body-front': true,
+    'body-right': true,
+    'body-back': true,
+  
+    'head-overlay-front': true,
+    'head-overlay-back': true,
+    'head-overlay-left': true,
+    'head-overlay-right': true,
+    'head-overlay-top': true,
+    'head-overlay-bottom': true,
+  
+    'body-overlay-top': true,
+    'body-overlay-bottom': true,
+    'body-overlay-left': true,
+    'body-overlay-front': true,
+    'body-overlay-right': true,
+    'body-overlay-back': true,
+    
+    'selector': true,
+    'breath': true,
+    'label': true,
+  }),
+
   /**
    * Try construct degenerate "id" from partial.
    * @param {Partial<Geomorph.GmDoorId>} meta 
@@ -167,6 +201,14 @@ export const helper = {
    */
   isAnimKey(input) {
     return input in helper.fromAnimKey;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.SkinPart}
+   */
+  isSkinPart(input) {
+    return input in helper.fromSkinPart;
   },
 
 };

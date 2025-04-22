@@ -187,8 +187,12 @@
     - ✅ no need for body remap (only head, head-overlay, body-overlay)
     - ✅ rename test-{head,body,head-overlay} as soldier-0-*
   
-  - start another minecraft migration i.e. scientist-0
+  - ✅ more succinct skin specifications
+    - brace-expansion of keys during `npc.normalizeSkin`
+  
+  - 🚧 start another minecraft migration i.e. scientist-0
     - https://namemc.com/skin/7161dce64d6b12be
+
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
