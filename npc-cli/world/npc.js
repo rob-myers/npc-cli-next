@@ -983,6 +983,15 @@ export class Npc {
     this.applySkin();
   }
 
+  resetTint() {
+    const texNpcAux = this.w.texNpcAux;
+    const data = new Float32Array(
+      (new Array(4 * texNpcAux.opts.width * 1)).fill(1)
+    );
+    // tint is defined in 2nd row
+    texNpcAux.updateIndex(this.def.uid, data, 1);
+  }
+
   /**
    * @param {string | undefined | null} label
    */

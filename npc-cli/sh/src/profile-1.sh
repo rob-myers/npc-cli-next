@@ -9,7 +9,7 @@ selectedNpcKey="rob"
 
 # re-skin rob
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
-w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }'
+w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }' > /dev/null
 
 w n.rob.skin | assign '{
   "head-front": { prefix: "test-head" },
@@ -26,18 +26,26 @@ w n.rob.skin | assign '{
   "body-top": { prefix: "test-body" },
   "body-bottom": { prefix: "test-body" },
   //
+  "head-overlay-front": { prefix: "test-head-overlay" },
+  "head-overlay-back": { prefix: "test-head-overlay" },
+  "head-overlay-left": { prefix: "test-head-overlay" },
+  "head-overlay-right": { prefix: "test-head-overlay" },
+  "head-overlay-top": { prefix: "test-head-overlay" },
+  "head-overlay-bottom": { prefix: "test-head-overlay" },
+  //
   "body-overlay-front": { prefix: "test-body-overlay" },
   "body-overlay-back": { prefix: "test-body-overlay" },
   "body-overlay-left": { prefix: "test-body-overlay" },
   "body-overlay-right": { prefix: "test-body-overlay" },
   "body-overlay-top": { prefix: "test-body-overlay" },
   "body-overlay-bottom": { prefix: "test-body-overlay" },
-}'
+}' > /dev/null
 w n.rob.applySkin
 
 # tint rob
-w n.rob.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
-w n.rob.applyTint
+# w n.rob.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
+# w n.rob.applyTint
+w n.rob.resetTint
 
 w e.grantNpcAccess rob .
 # temp debug doors:

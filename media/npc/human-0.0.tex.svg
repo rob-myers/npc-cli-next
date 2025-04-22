@@ -80,15 +80,6 @@
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
         <title>front</title>
       </rect>
-      <g transform="matrix(1, 0, 0, 1, 350.829986572266, -153.599975585937)">
-        <title>eyes</title>
-        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
-          <title>_left</title>
-        </circle>
-        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="12">
-          <title>_right</title>
-        </circle>
-      </g>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="416">
         <title>back</title>
       </rect>
@@ -104,6 +95,15 @@
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
         <title>bottom</title>
       </rect>
+      <g transform="matrix(1, 0, 0, 1, 350.829986572266, -153.599975585937)">
+        <title>_eyes</title>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
+          <title>_left</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="12">
+          <title>_right</title>
+        </circle>
+      </g>
     </g>
     <g>
       <title>base_body-overlay</title>
@@ -293,6 +293,36 @@
         <rect x="1104" y="144" width="48" height="32" style="fill: rgb(34, 119, 34);">
           <title>medal</title>
         </rect>
+      </g>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 832, 0)">
+      <title>test-head-overlay_head-overlay</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="416">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="512">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="544">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="672">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
+        <title>bottom</title>
+      </rect>
+      <g transform="matrix(1, 0, 0, 1, 350.829986572266, -153.599975585937)">
+        <title>_eyes</title>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
+          <title>_left</title>
+        </circle>
+        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="12">
+          <title>_right</title>
+        </circle>
       </g>
     </g>
     <g>

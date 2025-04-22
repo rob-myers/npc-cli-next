@@ -174,8 +174,8 @@
       - ✅ head overlay further out
         - currently `0.42 / 0.4` i.e. `1.05` larger
         - to match Minecraft use "half a pixel" i.e. `0.5 * (.4 / 8) = 0.025`
+      - ✅ add test-head-overlay
       - 🚧 body overlay further out
-      - 🚧 add test-head-overlay
     - head needs base, visible while lie
     - ❌ SVG shapes for head instead of minecraft pixels?
 
