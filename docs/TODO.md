@@ -192,7 +192,9 @@
   
   - 🚧 start another minecraft migration i.e. scientist-0
     - https://namemc.com/skin/7161dce64d6b12be
-
+    - 🚧 scientist-0-head
+    - scientist-0-head-overlay
+    - scientist-0-body-overlay
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
@@ -210,6 +212,14 @@
   - ✅ BUG: while paused `kill --all; source PROFILE` gets stuck at `awaitWorld`
     - fixed by removing setTimeout from killProcesses
     - setTimeout apparently had something to do with `sleep`
+
+- cleanup human-0 skin
+  - Blender: space out initial skin: separate head from body along x-axis
+  - can redirect head-overlay and body-overlay to "empty"
+  - base_head-overlay -> robot_head-overlay (with more detail)
+  - base_body-overlay -> robot_body-overlay (with more detail)
+  - small-eyes -> robot-face-0
+  - confused -> robot-face-1
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
