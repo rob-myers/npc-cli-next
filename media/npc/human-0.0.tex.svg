@@ -300,33 +300,7 @@
       </rect>
       <g transform="matrix(1, 0, 0, 1, 0, 466)">
         <title>_belt</title>
-        <rect x="928" y="214.948" width="128" height="13.526" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 2px;">
-          <title>belt</title>
-        </rect>
-        <rect x="928" y="228.474" width="128" height="13.526" style="fill: rgb(89, 89, 89);">
-          <title>belt</title>
-        </rect>
-        <rect x="800" y="214.948" width="128" height="13.526" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 2px;">
-          <title>belt</title>
-        </rect>
-        <rect x="800" y="228.474" width="128" height="13.526" style="fill: rgb(89, 89, 89);">
-          <title>belt</title>
-        </rect>
-        <rect x="1056" y="214.948" width="128" height="13.526" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 2px;">
-          <title>belt</title>
-        </rect>
-        <rect x="1056" y="228.474" width="128" height="13.526" style="fill: rgb(89, 89, 89);">
-          <title>belt</title>
-        </rect>
-        <path d="M 1183 215.091 L 1196 214.948 L 1290.258 87.667 L 1300.258 87.667 L 1300.208 98.678 L 1214 214.948 L 1231.06 214.948 L 1312 214.948 L 1312 228.474 L 1183 228.474 L 1183 214.948 L 1183 215.091 Z" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 2px;">
-          <title>belt</title>
-        </path>
-        <path d="M 1184 228.474 L 1312 228.474 L 1312 242 L 1184 242 L 1184 228.474 Z" style="fill: rgb(89, 89, 89);">
-          <title>belt</title>
-        </path>
-        <path d="M 1232 215.371 L 1214 215.451 L 1299.411 100.053 L 1298.943 118.604 L 1232 215.371 Z" style="fill: rgb(89, 89, 89);">
-          <title>belt</title>
-        </path>
+        <path d="M 1299.411 100.053 L 1298.943 118.604 L 1232.293 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 L 1184 214.948 L 1184 215.08 L 1196 214.948 L 1290.258 87.667 L 1300.258 87.667 L 1300.208 98.678 L 1299.411 100.053 Z" style="fill: rgb(238, 238, 238); stroke: rgb(0, 0, 0); stroke-width: 4px;"/>
       </g>
       <g style="filter: none;" transform="matrix(0.333333, 0, 0, 0.5, 666.000305, 508)">
         <title>_medal</title>
@@ -409,16 +383,16 @@
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
         <title>bottom</title>
       </rect>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAN0lEQVQYGWNkAAJbbdn/IBoEDl99zAhhYSFhCmE0FiVkCDF+3alQj08fE7Ikt/uDRhBGFqOcDQCvQwzArHS7mgAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAN0lEQVQYGWNkAAJbbdn/IBoEDl99zAhhYSFhCmE0FiVkCDF+3alQj08fE7Ikt/uDRhBGFqOcDQCvQwzArHS7mgAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="406" style="image-rendering: pixelated;">
         <title>_front</title>
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQklEQVQYGWNgAAJbbdn/IAxigwAynwUk8OfvXwYWZmawBIh/+OpjRksNKbAGRpAACIAEQIpAikHg+I1ncDmwwGAmAN4EFZCa0gpyAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="416" style="image-rendering: pixelated;">
         <title>_back</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAIUlEQVQYGWNgGHjAiM0J8vLy/9nY2LBJMTCAJLHLkCsKAAi3Asy93578AAAAAElFTkSuQmCC" width="128" height="128" x="512" y="544" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAIUlEQVQYGWNgGHjAiM0J8vLy/9nY2LBJMTCAJLHLkCsKAAi3Asy93578AAAAAElFTkSuQmCC" width="128" height="128" x="512" y="534" style="image-rendering: pixelated;">
         <title>_left</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAKElEQVQYGWNgGHjAqKqq+h/kjF+/fjE8fPiQEa+T5OXlwYrxKiJZEgDIJwhe4Vg/RAAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="544" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAKElEQVQYGWNgGHjAqKqq+h/kjF+/fjE8fPiQEa+T5OXlwYrxKiJZEgDIJwhe4Vg/RAAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="534" style="image-rendering: pixelated;">
         <title>_right</title>
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXElEQVQYGWNgAAJbbdn/lhpS/2FsEB/EBgFGGOfP379ggeM3nqGIMR2++pgRLAMkWJiZwaYhi4Hl0K2AWQeSZAKrgBIghTDdMEUoCpAVg6zDADAHw2gMBTABZAUAqIgoGqncSp8AAAAASUVORK5CYII=" width="128" height="128" x="512" y="672" style="image-rendering: pixelated;">

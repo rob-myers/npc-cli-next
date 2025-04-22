@@ -40168,12 +40168,12 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "glbHash": {"human-0": -1338702833},
-    "imagesHash": -615474957
+    "glbHash": {"human-0": -1215397697},
+    "imagesHash": 2147387093
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-648313275, 1474634897]},
+    "svgHashes": {"human-0": [-708880613, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
