@@ -151,7 +151,7 @@
     - ✅ report overlap of "x columns"
     - ✅ fallback to "test against every rectangle" approach
 
-  - 🚧 experiment with minecraft skin migration
+  - ✅ experiment with minecraft skin migration
     - https://namemc.com/skin/45461862ef51524e
     - ✅ temp: profile-1: apply test-head, test-body, test-body-overlay to rob
     - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
@@ -170,7 +170,7 @@
         - ✅ belt + back strap
         - ❌ trouser line
         - ✅ medal ribbon
-    - 🚧 try copy soldier overlay into test-head-overlay test-body-overlay
+    - ✅ try copy soldier overlay into test-head-overlay test-body-overlay
       - ✅ head overlay further out
         - currently `0.42 / 0.4` i.e. `1.05` larger
         - to match Minecraft use "half a pixel" i.e. `0.5 * (.4 / 8) = 0.025`
@@ -178,9 +178,7 @@
       - ✅ copy over head-overlay
       - ✅ move belt and body into test-body-overlay
       - Blender: fix head-overlay-back uv
-    - 🚧 Blender:
-      - ✅ head overlay further out: `0.025`
-      - body overlay further out: `0.025`
+    - ✅ Blender: head overlay further out: `0.025`
     - head needs base, visible while lie
       - Blender: fix head-bottom uv
     - ❌ SVG shapes for head instead of minecraft pixels?
@@ -213,16 +211,19 @@
     - fixed by removing setTimeout from killProcesses
     - setTimeout apparently had something to do with `sleep`
 
+  - improve body and overlay
+    - simpler colours
+    - more detailed
 
-- cleanup human-0 skin
-  - Blender: overlays are double-sided
-    - then can remove `Side={THREE.DoubleSide}`
-  - Blender: space out initial skin: separate head from body along x-axis
-  - can redirect head-overlay and body-overlay to "empty"
-  - base_head-overlay -> robot_head-overlay (with more detail)
-  - base_body-overlay -> robot_body-overlay (with more detail)
-  - small-eyes -> robot-face-0
-  - confused -> robot-face-1
+  - 🚧 cleanup human-0 skin
+    - ✅ Blender: overlays are double-sided
+      - then can remove `Side={THREE.DoubleSide}`
+    - Blender: space out initial skin: separate head from body along x-axis
+    - can redirect head-overlay and body-overlay to "empty"
+    - base_head-overlay -> robot_head-overlay (with more detail)
+    - base_body-overlay -> robot_body-overlay (with more detail)
+    - small-eyes -> robot-face-0
+    - confused -> robot-face-1
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
