@@ -199,13 +199,19 @@ const tabsContainerCss = css`
     transition: opacity 200ms;
   }
   
+  
   &.neverEnabled {
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 0.25; }
+    }
+    animation: fadeIn 2s forwards;
+    
     cursor: pointer;
     background-image: url(${WorldTwoNpcWebp.src});
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: 50% 50%;
     filter: brightness(4);
-    opacity: 0.25;
   }
 `;
