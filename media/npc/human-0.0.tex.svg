@@ -315,15 +315,21 @@
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
         <title>bottom</title>
       </rect>
-      <g transform="matrix(1, 0, 0, 1, 350.829986572266, -153.599975585937)">
-        <title>_eyes</title>
-        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
-          <title>_left</title>
-        </circle>
-        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="12">
-          <title>_right</title>
-        </circle>
-      </g>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASElEQVQYGWNkgIIgH4v/HBzsYN6PHz8Z1m05wQjiMFqZqv9nY2NhAGFpBSMGMTExhvOndjD8+vUHjKH6cVOMIiIi/3FLDw4ZABl1EtTlOHMlAAAAAElFTkSuQmCC" width="128" height="128" x="512" y="416" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAARUlEQVQYGWNkgIIgH4v/HBzsYN6PHz8Z1m05wQjiMFqZqv9nY2NhAGEebk6wgi9fvzP8+vUHjMECMMLCwuI/CMP4Q4YGAKRUFObtmcKYAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="416" style="image-rendering: pixelated;">
+        <title>_back</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAVklEQVQYGWNkgIIgH4v/HBzsYN6PHz8Z1m05wQjiMFqZqv9nY2NhAGEebk6wgi9fvzP8+vUHjMGqwKJAwsLC4j+I/fLlS4b79+9D5ERERP6DMEzRYKQBqNgbDx/I4lgAAAAASUVORK5CYII=" width="128" height="128" x="512" y="544" style="image-rendering: pixelated;">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWElEQVQYGWNkgIIgH4v/HBzsYN6PHz8Z1m05wQjiMFqZqv9nY2NhAGEebk6wgi9fvzP8+vUHjMGqQKKKior/xcXFwQpOnIDoBnHgCsAySISIiMh/JO6AMgHKIRbVyeaYQgAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="544" style="image-rendering: pixelated;">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAbUlEQVQYGWNkgIIgH4v/HBzsYN6PHz8Z1m05wQjisEDlGUCS3NwcMC6cZoTpBEny8HKCJb58/s7w9esPBpBJLDCdMEmQCmQ2E9wsHAwWkDEwANOJbAXYpSAFUSH2/2GOBNm/bM1BVF8gm4TMBgDmMisfZJ4M6gAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="672" style="image-rendering: pixelated;">
+        <title>_top</title>
+      </image>
     </g>
     <g>
       <title>test-body-overlay_body-overlay</title>

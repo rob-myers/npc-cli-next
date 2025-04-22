@@ -175,7 +175,12 @@
         - currently `0.42 / 0.4` i.e. `1.05` larger
         - to match Minecraft use "half a pixel" i.e. `0.5 * (.4 / 8) = 0.025`
       - ✅ add test-head-overlay
-      - 🚧 body overlay further out
+      - ✅ copy over head-overlay
+      - 🚧 move belt and body into test-body-overlay
+    - Blender:
+      - ✅ head overlay further out: should be `0.025`
+      - body overlay further out: should be `0.025`
+      - fix head-overlay-back uv
     - head needs base, visible while lie
     - ❌ SVG shapes for head instead of minecraft pixels?
 
