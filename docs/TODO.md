@@ -193,7 +193,8 @@
     - ✅ scientist-0-head
     - ✅ scientist-0-head-overlay
     - 🚧 scientist-0-body-overlay
-
+      - possibly needs non-standard body too
+  
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
     - ℹ️ e.g. SVG -> `canvas` loadImage -> data url -> `@napi-rs/canvas` 
@@ -211,9 +212,6 @@
     - fixed by removing setTimeout from killProcesses
     - setTimeout apparently had something to do with `sleep`
 
-  - improve body and overlay
-    - simpler colours
-    - more detailed
 
   - 🚧 cleanup human-0 skin
     - ✅ Blender: overlays are double-sided
