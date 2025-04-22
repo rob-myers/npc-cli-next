@@ -30,6 +30,9 @@
       <feComposite in="SourceGraphic" in2="a" operator="in"/>
       <feMorphology operator="dilate" radius="9"/>
     </filter>
+    <filter id="saturate-filter-1" bx:preset="saturate 1 1.81" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="saturate" values="1.81"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -222,6 +225,7 @@
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; filter: url(&quot;#pixelete-filter-0&quot;) url(&quot;#saturate-filter-0&quot;); stroke-width: 8px;" x="640" y="256">
         <title>bottom</title>
       </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAgUlEQVQYGW2NTQqEMAxG4xD7o+iMV5mt4AFm6w28P4iK1urC8Qu0dGCyKF/yXtKsb98X3VVZTYXOEWnzJy3OS2YAFODLKsnp8/gHIYZrPHw6WdDPJl0kP43ScwCmrEmZQobHvkWZA1DWxiEyZIi8r/MPQHM4JxCMw1/RgnBvAoJ9AVTHKlHZ/F26AAAAAElFTkSuQmCC" width="128" height="128" x="640" y="256" style="filter: url(&quot;#saturate-filter-1&quot;); image-rendering: pixelated;"/>
     </g>
     <g style="filter: none;">
       <title>test-body_body</title>

@@ -177,11 +177,12 @@
       - ✅ add test-head-overlay
       - ✅ copy over head-overlay
       - ✅ move belt and body into test-body-overlay
+      - Blender: fix head-overlay-back uv
     - 🚧 Blender:
-      - ✅ head overlay further out: should be `0.025`
-      - body overlay further out: should be `0.025`
-      - fix head-overlay-back uv
+      - ✅ head overlay further out: `0.025`
+      - body overlay further out: `0.025`
     - head needs base, visible while lie
+      - Blender: fix head-bottom uv
     - ❌ SVG shapes for head instead of minecraft pixels?
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
