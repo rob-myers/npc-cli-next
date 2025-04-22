@@ -205,12 +205,14 @@
       - unsure whether nondeterministic output behaviour persists in latest version of `canvas`
       - use `@napi-rs/canvas` to output, but make it easy to comment out, so we can test if nondet arises
 
-  - BUG: pause during profile load doesn't stop rendering
-    - repro?
+  - ❌ BUG: pause during profile load doesn't stop rendering
 
   - ✅ BUG: while paused `kill --all; source PROFILE` gets stuck at `awaitWorld`
     - fixed by removing setTimeout from killProcesses
     - setTimeout apparently had something to do with `sleep`
+
+  - fix npc fading, now overlay (head/body) are 2-sided
+    - e.g. bake weighting (0.5 or 1) into texture
 
   - 🚧 cleanup human-0 skin
     - ✅ Blender: overlays are double-sided
