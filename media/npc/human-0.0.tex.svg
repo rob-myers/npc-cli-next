@@ -33,6 +33,20 @@
     <filter id="saturate-filter-1" bx:preset="saturate 1 1.81" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feColorMatrix type="saturate" values="1.81"/>
     </filter>
+    <filter id="duotone-filter-0" bx:preset="duotone 1 #0b35bd #0db5fc 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="matrix" result="grayscale" values="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 0"/>
+      <feComponentTransfer color-interpolation-filters="sRGB">
+        <feFuncR type="gamma" exponent="1.5" amplitude="1" offset="0"/>
+        <feFuncG type="gamma" exponent="1.5" amplitude="1" offset="0"/>
+        <feFuncB type="gamma" exponent="1.5" amplitude="1" offset="0"/>
+      </feComponentTransfer>
+      <feComponentTransfer color-interpolation-filters="sRGB" result="duotone">
+        <feFuncR type="table" tableValues="0.043 0.051"/>
+        <feFuncG type="table" tableValues="0.208 0.71"/>
+        <feFuncB type="table" tableValues="0.741 0.988"/>
+        <feFuncA type="table" tableValues="0 1"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -337,24 +351,24 @@
         </rect>
       </g>
     </g>
-    <g style="filter: none;">
-      <title>test-body_body</title>
-      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" x="928">
+    <g style="filter: url(&quot;#duotone-filter-0&quot;);">
+      <title>test_body</title>
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(68, 68, 68);" x="928">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" x="1056">
+      <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(68, 68, 68);" x="1056">
         <title>bottom</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="800">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(68, 68, 68);" y="128" x="800">
         <title>left</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; stroke: rgb(255, 255, 255);" y="128" x="928">
+      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; stroke: rgb(255, 255, 255); fill: rgb(68, 68, 68);" y="128" x="928">
         <title>front</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1056">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(68, 68, 68);" y="128" x="1056">
         <title>right</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1184">
+      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(68, 68, 68);" y="128" x="1184">
         <title>back</title>
       </rect>
     </g>

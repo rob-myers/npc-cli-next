@@ -1291,11 +1291,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": 766313552},
-    "imagesHash": -1253060580
+    "imagesHash": -1694583693
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [1468280166, 1474634897]},
+    "svgHashes": {"human-0": [1255738449, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -1683,48 +1683,48 @@
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body_body-top": {
-          "key": "test-body_body-top",
+        "test_body-top": {
+          "key": "test_body-top",
           "sheetId": 0,
           "x": 0.453125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body_body-bottom": {
-          "key": "test-body_body-bottom",
+        "test_body-bottom": {
+          "key": "test_body-bottom",
           "sheetId": 0,
           "x": 0.515625,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body_body-left": {
-          "key": "test-body_body-left",
+        "test_body-left": {
+          "key": "test_body-left",
           "sheetId": 0,
           "x": 0.390625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body_body-front": {
-          "key": "test-body_body-front",
+        "test_body-front": {
+          "key": "test_body-front",
           "sheetId": 0,
           "x": 0.453125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body_body-right": {
-          "key": "test-body_body-right",
+        "test_body-right": {
+          "key": "test_body-right",
           "sheetId": 0,
           "x": 0.515625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body_body-back": {
-          "key": "test-body_body-back",
+        "test_body-back": {
+          "key": "test_body-back",
           "sheetId": 0,
           "x": 0.578125,
           "y": 0.0625,

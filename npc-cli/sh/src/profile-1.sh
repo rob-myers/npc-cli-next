@@ -9,8 +9,7 @@ selectedNpcKey="rob"
 
 # re-skin rob
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
-w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }' > /dev/null
-
+# w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }'
 w n.rob.skin | assign '{
   "head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
@@ -22,6 +21,11 @@ w n.rob.applySkin
 # w n.rob.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
 # w n.rob.applyTint
 w n.rob.resetTint
+
+w n.will.skin | assign '{
+  "body-{front,back,left,right,top,bottom}": { prefix: "test" }
+}' > /dev/null
+w n.will.applySkin
 
 w e.grantNpcAccess rob .
 # temp debug doors:
