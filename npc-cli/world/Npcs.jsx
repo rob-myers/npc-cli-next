@@ -120,15 +120,16 @@ export default function Npcs(props) {
     },
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
-      for (const npc of npcs) {
-        state.removeAgent(npc);
-      }
+      const animKeys = npcs.map(x => x.s.act);
+      npcs.forEach(npc => state.removeAgent(npc));
+
       await pause();
-      for(const npc of npcs ) {
+
+      for(const [i, npc] of npcs.entries()) {
         const agent = state.attachAgent(npc);
         const closest = state.getClosestNavigable(npc.position);
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
-          npc.startAnimation('Idle');
+          npc.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
           npc.moveTo(toXZ(npc.s.target));
         } else {// so they'll move "out of the way" of other npcs
@@ -499,7 +500,6 @@ function NPC({ npc }) {
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
           diffuse={[.5, .5, .5]}
-          side={THREE.DoubleSide} // 🚧 temp: should make overlays double-sided in Blender
 
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}
