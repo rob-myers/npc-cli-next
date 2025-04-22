@@ -258,14 +258,23 @@ class cmdServiceClass {
       case "kill": {
         const { opts, operands } = getOpts(args, {
           boolean: [
+            "all"  /** --all all processes */,
+            "ALL"  /** --ALL all processes */,
             "STOP" /** --STOP pauses a process */,
             "CONT" /** --CONT continues a paused process */,
           ],
         });
 
-        const pids = operands
-          .map((x) => parseJsonArg(x))
-          .filter((x): x is number => Number.isFinite(x));
+        let pids = [] as number[];
+
+        if (opts.all === true || opts.ALL === true) {
+          const session = useSession.api.getSession(meta.sessionKey)
+          pids = Object.keys(session.process).map(Number);
+        } else {
+          pids = operands.map((x) => parseJsonArg(x)).filter(
+            (x): x is number => Number.isFinite(x)
+          );
+        }
 
         this.killProcesses(meta.sessionKey, pids, { STOP: opts.STOP, CONT: opts.CONT });
         break;
@@ -685,14 +694,16 @@ class cmdServiceClass {
     const session = useSession.api.getSession(sessionKey);
     for (const pid of pids) {
       const { [pid]: process } = session.process;
+
       if (!process) {
         continue; // Already killed
       }
-      const processes =
-        process.pgid === pid || opts.group
-          ? // Apply command to whole process group __in reverse__
-            useSession.api.getProcesses(sessionKey, process.pgid).reverse()
-          : [process]; // Apply command to exactly one process
+
+      const processes = process.pgid === pid || opts.group
+        ? // Apply command to whole process group __in reverse__
+          useSession.api.getProcesses(sessionKey, process.pgid).reverse()
+        : [process] // Apply command to exactly one process
+      ;
 
       // onSuspend onResume are "first-in first-invoked"
       processes.forEach((p) => {
