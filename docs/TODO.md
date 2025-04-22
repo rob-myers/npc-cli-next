@@ -212,7 +212,6 @@
     - fixed by removing setTimeout from killProcesses
     - setTimeout apparently had something to do with `sleep`
 
-
   - 🚧 cleanup human-0 skin
     - ✅ Blender: overlays are double-sided
       - then can remove `Side={THREE.DoubleSide}`
@@ -236,6 +235,8 @@
   - https://namemc.com/minecraft-skins/tag/politician
   - https://namemc.com/minecraft-skins/tag/monk
   - https://namemc.com/minecraft-skins/tag/priest
+
+- consider "camera hot keys" e.g. 1, 2, 3 shows cameras with different constraints
 
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?
