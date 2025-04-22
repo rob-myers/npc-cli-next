@@ -1291,11 +1291,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": 766313552},
-    "imagesHash": 2121291948
+    "imagesHash": -1253060580
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-1766040016, 1474634897]},
+    "svgHashes": {"human-0": [1468280166, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -1539,53 +1539,149 @@
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head_head-front": {
-          "key": "test-head_head-front",
+        "soldier-0_head-front": {
+          "key": "soldier-0_head-front",
           "sheetId": 0,
           "x": 0.65625,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head_head-back": {
-          "key": "test-head_head-back",
+        "soldier-0_head-back": {
+          "key": "soldier-0_head-back",
           "sheetId": 0,
           "x": 0.71875,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head_head-left": {
-          "key": "test-head_head-left",
+        "soldier-0_head-left": {
+          "key": "soldier-0_head-left",
           "sheetId": 0,
           "x": 0.65625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head_head-right": {
-          "key": "test-head_head-right",
+        "soldier-0_head-right": {
+          "key": "soldier-0_head-right",
           "sheetId": 0,
           "x": 0.71875,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head_head-top": {
-          "key": "test-head_head-top",
+        "soldier-0_head-top": {
+          "key": "soldier-0_head-top",
           "sheetId": 0,
           "x": 0.65625,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head_head-bottom": {
-          "key": "test-head_head-bottom",
+        "soldier-0_head-bottom": {
+          "key": "soldier-0_head-bottom",
           "sheetId": 0,
           "x": 0.71875,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
+        },
+        "soldier-0_head-overlay-front": {
+          "key": "soldier-0_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-back": {
+          "key": "soldier-0_head-overlay-back",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-left": {
+          "key": "soldier-0_head-overlay-left",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-right": {
+          "key": "soldier-0_head-overlay-right",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-top": {
+          "key": "soldier-0_head-overlay-top",
+          "sheetId": 0,
+          "x": 0.65625,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-bottom": {
+          "key": "soldier-0_head-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.71875,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_body-overlay-top": {
+          "key": "soldier-0_body-overlay-top",
+          "sheetId": 0,
+          "x": 0.453125,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_body-overlay-bottom": {
+          "key": "soldier-0_body-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.515625,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_body-overlay-left": {
+          "key": "soldier-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.390625,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "soldier-0_body-overlay-front": {
+          "key": "soldier-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.453125,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "soldier-0_body-overlay-right": {
+          "key": "soldier-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.515625,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "soldier-0_body-overlay-back": {
+          "key": "soldier-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.578125,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
         },
         "test-body_body-top": {
           "key": "test-body_body-top",
@@ -1632,102 +1728,6 @@
           "sheetId": 0,
           "x": 0.578125,
           "y": 0.0625,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "test-head-overlay_head-overlay-front": {
-          "key": "test-head-overlay_head-overlay-front",
-          "sheetId": 0,
-          "x": 0.65625,
-          "y": 0.203125,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-head-overlay_head-overlay-back": {
-          "key": "test-head-overlay_head-overlay-back",
-          "sheetId": 0,
-          "x": 0.71875,
-          "y": 0.203125,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-head-overlay_head-overlay-left": {
-          "key": "test-head-overlay_head-overlay-left",
-          "sheetId": 0,
-          "x": 0.65625,
-          "y": 0.265625,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-head-overlay_head-overlay-right": {
-          "key": "test-head-overlay_head-overlay-right",
-          "sheetId": 0,
-          "x": 0.71875,
-          "y": 0.265625,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-head-overlay_head-overlay-top": {
-          "key": "test-head-overlay_head-overlay-top",
-          "sheetId": 0,
-          "x": 0.65625,
-          "y": 0.328125,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-head-overlay_head-overlay-bottom": {
-          "key": "test-head-overlay_head-overlay-bottom",
-          "sheetId": 0,
-          "x": 0.71875,
-          "y": 0.328125,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-body-overlay_body-overlay-top": {
-          "key": "test-body-overlay_body-overlay-top",
-          "sheetId": 0,
-          "x": 0.453125,
-          "y": 0.203125,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-body-overlay_body-overlay-bottom": {
-          "key": "test-body-overlay_body-overlay-bottom",
-          "sheetId": 0,
-          "x": 0.515625,
-          "y": 0.203125,
-          "width": 0.0625,
-          "height": 0.0625
-        },
-        "test-body-overlay_body-overlay-left": {
-          "key": "test-body-overlay_body-overlay-left",
-          "sheetId": 0,
-          "x": 0.390625,
-          "y": 0.265625,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "test-body-overlay_body-overlay-front": {
-          "key": "test-body-overlay_body-overlay-front",
-          "sheetId": 0,
-          "x": 0.453125,
-          "y": 0.265625,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "test-body-overlay_body-overlay-right": {
-          "key": "test-body-overlay_body-overlay-right",
-          "sheetId": 0,
-          "x": 0.515625,
-          "y": 0.265625,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "test-body-overlay_body-overlay-back": {
-          "key": "test-body-overlay_body-overlay-back",
-          "sheetId": 0,
-          "x": 0.578125,
-          "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },

@@ -12,26 +12,26 @@ selectedNpcKey="rob"
 w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }' > /dev/null
 
 w n.rob.skin | assign '{
-  "head-front": { prefix: "test-head" },
-  "head-back": { prefix: "test-head" },
-  "head-left": { prefix: "test-head" },
-  "head-right": { prefix: "test-head" },
-  "head-top": { prefix: "test-head" },
-  "head-bottom": { prefix: "test-head" },
+  "head-front": { prefix: "soldier-0" },
+  "head-back": { prefix: "soldier-0" },
+  "head-left": { prefix: "soldier-0" },
+  "head-right": { prefix: "soldier-0" },
+  "head-top": { prefix: "soldier-0" },
+  "head-bottom": { prefix: "soldier-0" },
   //
-  "head-overlay-front": { prefix: "test-head-overlay" },
-  "head-overlay-back": { prefix: "test-head-overlay" },
-  "head-overlay-left": { prefix: "test-head-overlay" },
-  "head-overlay-right": { prefix: "test-head-overlay" },
-  "head-overlay-top": { prefix: "test-head-overlay" },
-  "head-overlay-bottom": { prefix: "test-head-overlay" },
+  "head-overlay-front": { prefix: "soldier-0" },
+  "head-overlay-back": { prefix: "soldier-0" },
+  "head-overlay-left": { prefix: "soldier-0" },
+  "head-overlay-right": { prefix: "soldier-0" },
+  "head-overlay-top": { prefix: "soldier-0" },
+  "head-overlay-bottom": { prefix: "soldier-0" },
   //
-  "body-overlay-front": { prefix: "test-body-overlay" },
-  "body-overlay-back": { prefix: "test-body-overlay" },
-  "body-overlay-left": { prefix: "test-body-overlay" },
-  "body-overlay-right": { prefix: "test-body-overlay" },
-  "body-overlay-top": { prefix: "test-body-overlay" },
-  "body-overlay-bottom": { prefix: "test-body-overlay" },
+  "body-overlay-front": { prefix: "soldier-0" },
+  "body-overlay-back": { prefix: "soldier-0" },
+  "body-overlay-left": { prefix: "soldier-0" },
+  "body-overlay-right": { prefix: "soldier-0" },
+  "body-overlay-top": { prefix: "soldier-0" },
+  "body-overlay-bottom": { prefix: "soldier-0" },
 }' > /dev/null
 w n.rob.applySkin
 

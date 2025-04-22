@@ -152,6 +152,7 @@
     - ✅ fallback to "test against every rectangle" approach
 
   - 🚧 experiment with minecraft skin migration
+    - https://namemc.com/skin/45461862ef51524e
     - ✅ temp: profile-1: apply test-head, test-body, test-body-overlay to rob
     - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
       - seems unsupported
@@ -161,7 +162,6 @@
       - too much work
     - ✅ move "node-canvas solution" into scripts/assets
     - ✅ try copy soldier head into test-head
-      - soldier https://namemc.com/skin/45461862ef51524e
       - head-left means from perspective of onlooker (not from character perspective)
       - boxy-svg try compositing > filter > pixelated (pixel size 18)
     - ✅ try copy soldier body into test-body
@@ -185,6 +185,10 @@
       - Blender: fix head-bottom uv
     - ❌ SVG shapes for head instead of minecraft pixels?
     - ✅ no need for body remap (only head, head-overlay, body-overlay)
+    - ✅ rename test-{head,body,head-overlay} as soldier-0-*
+  
+  - start another minecraft migration i.e. scientist-0
+    - https://namemc.com/skin/7161dce64d6b12be
 
   - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
     - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
