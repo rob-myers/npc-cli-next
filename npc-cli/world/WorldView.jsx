@@ -34,7 +34,7 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 4,
+      minDistance: 2,
       maxDistance: 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
@@ -627,7 +627,7 @@ export default function WorldView(props) {
       <EffectComposer
         ref={state.effectComposerRef}
         enabled={state.post.enabled}
-        {...w.crowd === null && { key: '' }}
+        key={w.crowd === null ? 'empty' : 'non-empty'}
       >
         {w.crowd === null ? [] : <>
           <BrightnessContrast
