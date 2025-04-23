@@ -79,7 +79,7 @@ w update 'async w => {
 
 # fix camera angle and reduce maxDistance
 w update 'w => {
-  w.view.ctrlOpts.minAzimuthAngle = Math.PI/4;
+  w.view.ctrlOpts.minAzimuthAngle = 0;
   w.view.ctrlOpts.maxAzimuthAngle = Math.PI/4;
   w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
   w.view.ctrlOpts.maxDistance = 30;
