@@ -284,6 +284,11 @@ export default function Npcs(props) {
         npc.initialize(state.gltf[npc.def.classKey]);
       }
 
+      if (opts.skin !== undefined) {
+        Object.assign(npc.skin, opts.skin);
+        npc.applySkin();
+      }
+
       if (npc.s.spawns === 0) {
         await new Promise(resolve => {
           npc.resolve.spawn = resolve;

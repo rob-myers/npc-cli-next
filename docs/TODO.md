@@ -217,7 +217,7 @@
   - 🚧 cleanup human-0 skin
     - ✅ Blender: overlays are double-sided
       - then can remove `Side={THREE.DoubleSide}`
-    - Blender: space out initial skin: separate head from body along x-axis
+    - ✅ Blender: space out initial skin: separate head from body along x-axis
     - can redirect head-overlay and body-overlay to "empty"
     - base_head-overlay -> robot_head-overlay (with more detail)
     - base_body-overlay -> robot_body-overlay (with more detail)

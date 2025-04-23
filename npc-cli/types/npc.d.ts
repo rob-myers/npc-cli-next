@@ -80,6 +80,7 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
+    skin?: NPC.SkinReMap;
   }
 
   type Event = (
@@ -361,6 +362,10 @@ declare namespace NPC {
 
   type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
   
+  /**
+   * We also permit brace expansion in keys, e.g.
+   * > `"head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },`
+   */
   type SkinReMap = Partial<Record<Key.SkinPart, {
     /**
      * For example `base`, where `base_{skinPart}` is in this npc's class's uv map.

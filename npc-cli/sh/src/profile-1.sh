@@ -1,7 +1,11 @@
 awaitWorld
 
-spawn rob '{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
-spawn will '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
+spawn '{ npcKey: "rob" }' '{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+spawn '{ npcKey: "will", skin: {
+  "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
+  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "test" },
+}}' '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 spawn '{ npcKey: "kate", angle: Math.PI }' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
 w n.rob.showSelector true
@@ -21,14 +25,6 @@ w n.rob.applySkin
 # w n.rob.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
 # w n.rob.applyTint
 w n.rob.resetTint
-
-# re-skin will
-w n.will.skin | assign '{
-  "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
-  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
-  "body-{front,back,left,right,top,bottom}": { prefix: "test" },
-}' > /dev/null
-w n.will.applySkin
 
 w e.grantNpcAccess rob .
 # temp debug doors:
