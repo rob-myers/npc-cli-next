@@ -7,9 +7,9 @@ import { damp, damp3 } from "maath/easing";
 import { EffectComposer, Noise, Vignette, BrightnessContrast } from '@react-three/postprocessing'
 import { BlendFunction, Effect } from 'postprocessing'
 
-import { debug, keys } from "../service/generic.js";
+import { debug, keys, tryLocalStorageGetParsed } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
-import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isTouchDevice } from "../service/dom.js";
+import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isSmallViewport, isTouchDevice } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
 import { dampXZ, emptySceneForPicking, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, toXZ, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
@@ -58,7 +58,11 @@ export default function WorldView(props) {
       indices: new THREE.Vector3(),
       mat3: new THREE.Matrix3(),
     },
-    post: { enabled: true, ref: null, effect: {} },
+    post: {
+      enabled: tryLocalStorageGetParsed(`post-processing:enabled@${w.key}`) ?? (isSmallViewport() === false),
+      ref: null,
+      effect: {},
+    },
     raycaster: new THREE.Raycaster(),
     resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { zIndexWorld } from "../service/const";
+import { isSmallViewport } from "../service/dom";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -43,20 +44,12 @@ export default function WorldMenu(props) {
 
     applyControlsInitValues() {
       /** @param {any} value */
-      const toEvent = (value) => /** @type {React.ChangeEvent<any>} */ ({ currentTarget: { value } });
+      const toEvent = (value) => /** @type {React.ChangeEvent<HTMLInputElement>} */ ({ currentTarget: { value, checked: value } });
       state.onChangeBrightness(toEvent(state.brightness))
+      state.onChangeXRay(toEvent(state.xRayOpacity));
+      state.onChangePostProcessing(toEvent(state.showPostProcessing));
       state.onResizeLoggerHeight(toEvent(state.loggerHeight));
       state.onResizeLoggerWidth(toEvent(state.loggerWidth));
-      state.onChangeXRay(toEvent(state.xRayOpacity));
-    },
-    changeLoggerLog(e) {
-      state.showDebug = e.currentTarget.checked;
-      tryLocalStorageSet(`logger:debug@${w.key}`, `${state.showDebug}`);
-      update();
-    },
-    changePostProcessing(e) {
-      w.view.post.enabled = e.currentTarget.checked;
-      w.update();
     },
     measure(msg) {
       if (state.showDebug === false) {
@@ -72,6 +65,16 @@ export default function WorldMenu(props) {
     onChangeBrightness(e) {
       state.brightness = Number(e.currentTarget.value);
       w.view.setCssFilter({ brightness: `${50 + 10 * state.brightness}%` });
+    },
+    onChangeLoggerLog(e) {
+      state.showDebug = e.currentTarget.checked;
+      tryLocalStorageSet(`logger:debug@${w.key}`, `${state.showDebug}`);
+      update();
+    },
+    onChangePostProcessing(e) {
+      state.showPostProcessing = w.view.post.enabled = e.currentTarget.checked;
+      tryLocalStorageSet(`post-processing:enabled@${w.key}`, `${state.showPostProcessing}`);
+      w.update();
     },
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
@@ -228,7 +231,7 @@ export default function WorldMenu(props) {
               <input
                 type="checkbox"
                 defaultChecked={state.showDebug}
-                onChange={state.changeLoggerLog}
+                onChange={state.onChangeLoggerLog}
               />
             </label>
             <label>
@@ -236,7 +239,7 @@ export default function WorldMenu(props) {
               <input
                 type="checkbox"
                 defaultChecked={state.showPostProcessing}
-                onChange={state.changePostProcessing}
+                onChange={state.onChangePostProcessing}
               />
             </label>
           </div>
@@ -460,8 +463,8 @@ const cssTtyDisconnectedMessage = css`
  * @property {number} xRayOpacity In [1..10]
  *
  * @property {() => void} applyControlsInitValues
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} changeLoggerLog
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} changePostProcessing
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangePostProcessing
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
