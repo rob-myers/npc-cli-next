@@ -275,7 +275,7 @@ export const setupOnSlowNpc = ({ w, args }) => {
       case 'noop': // do nothing
         break;
       default: // both stop
-        npc.stopMoving(true);
+        npc.stopMoving();
         break;
     }
   };

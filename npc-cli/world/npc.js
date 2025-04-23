@@ -598,7 +598,7 @@ export class Npc {
         if (other.s.target === null && !(nei.dist < closerDist)) {
           continue;
         }
-        this.stopMoving(true);
+        this.stopMoving();
         break;
       }
     }
@@ -1122,25 +1122,23 @@ export class Npc {
 
   /**
    * Start animation via key or meta
-   * 🚧 try remove scaleFade
    * @param {Key.Anim | Meta} input
-   * @param {number} [scaleFade]
    */
-  startAnimation(input, scaleFade = 1) {
+  startAnimation(input) {
     if (typeof input !== 'string') {
       input = this.getAnimKeyFromMeta(input);
     }
     const curr = this.m.toAct[this.s.act];
     const next = this.m.toAct[input];
-    curr.fadeOut(glbFadeOut[this.s.act][input] * scaleFade);
-    next.reset().fadeIn(glbFadeIn[this.s.act][input] * scaleFade).play();
+    curr.fadeOut(glbFadeOut[this.s.act][input]);
+    next.reset().fadeIn(glbFadeIn[this.s.act][input]).play();
     this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
     this.s.act = input;
 
     this.updateLabelOffsets();
   }
 
-  stopMoving(suddenly = false) {
+  stopMoving() {
     if (this.agent === null || this.s.target === null) {
       return;
     }
@@ -1162,7 +1160,7 @@ export class Npc {
       // updateFlags: 1,
     });
     
-    this.startAnimation('Idle', suddenly ? 1/3 : 1);
+    this.startAnimation('Idle');
 
     const pos = this.agent.position(); // reset small motions:
     const position = this.lastStart.distanceTo(pos) <= 0.05 ? this.lastStart : pos;
