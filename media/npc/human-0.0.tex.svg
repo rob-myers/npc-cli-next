@@ -49,7 +49,7 @@
   </defs>
   <g style="">
     <title>uv-map</title>
-    <g>
+    <g transform="matrix(1, 0, 0, 1, 32, 0)">
       <title>base_head</title>
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="512">
         <title>front</title>
@@ -91,7 +91,7 @@
         <title>back</title>
       </rect>
     </g>
-    <g>
+    <g transform="matrix(1, 0, 0, 1, 32, 0)">
       <title>base_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
         <title>front</title>
@@ -173,7 +173,7 @@
         <title>front</title>
       </rect>
     </g>
-    <g>
+    <g transform="matrix(1, 0, 0, 1, -128, 160)">
       <title>confused_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="800" y="832">
         <title>front</title>
@@ -188,7 +188,7 @@
         </circle>
       </g>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 128, 32)">
+    <g transform="matrix(1, 0, 0, 1, 160, 32)">
       <title>small-eyes_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="800">
         <title>front</title>
@@ -203,7 +203,7 @@
         </circle>
       </g>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 832, 0)">
+    <g transform="matrix(1, 0, 0, 1, 864, 0)">
       <title>soldier-0_head</title>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAuElEQVQYGXWMvQrCQBCE59SYBBMbAxHBIo1WljY+oU9gJ1haBR8hraVYCAFJYaOFiPkxl6RY3bWxcWD3vp25XbWYT8lxLDg9G5ZlgqV1hbwokecaCMOQWFEUyfvLnKkgCMgwDHC5risXsixD0zRSyvM8EvdfO2xXlCQJf6L9ekmn3UaYPc4Um/3BEF3bxi0+wp/M5FZdlkjvV7R4qvULbNRtE5dz/OWPx+pUz4cAN380FuYFXaTg7A3Io28UJYiXvQAAAABJRU5ErkJggg==" width="128" height="128" x="511" style="filter: url(&quot;#pixelete-filter-3&quot;) url(&quot;#saturate-filter-0&quot;) url(&quot;#inner-shadow-filter-1&quot;);">
         <title>_front</title>
@@ -242,7 +242,7 @@
         <title>bottom</title>
       </rect>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 832, 0)" style="filter: url(&quot;#saturate-filter-2&quot;);">
+    <g transform="matrix(1, 0, 0, 1, 864, 0)" style="filter: url(&quot;#saturate-filter-2&quot;);">
       <title>soldier-0_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
         <title>front</title>
@@ -278,7 +278,7 @@
         <title>_top</title>
       </image>
     </g>
-    <g>
+    <g transform="matrix(1, 0, 0, 1, 32, 0)">
       <title>soldier-0_body-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill-opacity: 0.3; fill: none;" x="928" y="416">
         <title>top</title>
@@ -324,7 +324,7 @@
         </rect>
       </g>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 832, 832)">
+    <g transform="matrix(1, 0, 0, 1, 864, 832)">
       <title>scientist-0_head</title>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAlklEQVQYGWOMdjP7//TFS4afv/4wsDAzMfz5+w9MMwPZMpISDEyMjIxgBjsbCwMIgBSBAEgSBFgS7XXBDAYGGA3lQimw8uYVuxlAGAaQ+WAF+y8+YDhw6SFMHswGiYEA4962lP8gxr5rCAUgvpOWPIhiYDl48zHDX6DL//77x6AiwgcWvPPmE1gDyCcQp4OFGRhAEugAAA9wNEg89gl3AAAAAElFTkSuQmCC" width="128" height="128" x="510" style="image-rendering: pixelated;">
         <title>_front</title>
@@ -363,7 +363,7 @@
         <title>bottom</title>
       </rect>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 832, 832)" style="filter: url(&quot;#filter-1&quot;);">
+    <g transform="matrix(1, 0, 0, 1, 864, 832)" style="filter: url(&quot;#filter-1&quot;);">
       <title>scientist-0_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
         <title>front</title>
@@ -399,7 +399,7 @@
         <title>_top</title>
       </image>
     </g>
-    <g style="filter: url(&quot;#duotone-filter-0&quot;);">
+    <g style="filter: url(&quot;#duotone-filter-0&quot;);" transform="matrix(1, 0, 0, 1, 32, 0)">
       <title>test_body</title>
       <rect width="128" height="128" style="stroke-width: 12px; stroke: rgb(255, 255, 255); fill: rgb(68, 68, 68);" x="928">
         <title>top</title>
@@ -420,7 +420,7 @@
         <title>back</title>
       </rect>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 1504, -544)">
+    <g transform="matrix(1, 0, 0, 1, 1536, -544)">
       <title>robot-icon_body-overlay</title>
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
         <title>front</title>
@@ -430,7 +430,7 @@
         <path d="M 50 18.451 C 52.043 18.451 53.694 20.101 53.694 22.145 L 53.694 29.532 L 67.545 29.532 C 72.139 29.532 75.856 33.249 75.856 37.843 L 75.856 69.239 C 75.856 73.834 72.139 77.55 67.545 77.55 L 32.455 77.55 C 27.861 77.55 24.144 73.834 24.144 69.239 L 24.144 37.843 C 24.144 33.249 27.861 29.532 32.455 29.532 L 46.307 29.532 L 46.307 22.145 C 46.307 20.101 47.957 18.451 50 18.451 Z M 61.081 52.618 C 64.635 52.618 66.857 48.77 65.079 45.692 C 64.255 44.264 62.731 43.383 61.081 43.383 C 57.527 43.383 55.306 47.231 57.082 50.309 C 57.907 51.738 59.431 52.618 61.081 52.618 Z M 43.536 48 C 43.536 44.447 39.689 42.225 36.61 44.001 C 35.182 44.827 34.302 46.351 34.302 48 C 34.302 51.554 38.149 53.776 41.227 51.999 C 42.656 51.174 43.536 49.65 43.536 48 Z M 59.234 62.775 C 58.218 62.775 57.387 63.605 57.387 64.622 C 57.387 65.637 58.218 66.469 59.234 66.469 L 62.928 66.469 C 63.944 66.469 64.774 65.637 64.774 64.622 C 64.774 63.605 63.944 62.775 62.928 62.775 L 59.234 62.775 Z M 48.153 62.775 C 47.137 62.775 46.307 63.605 46.307 64.622 C 46.307 65.637 47.137 66.469 48.153 66.469 L 51.846000000000004 66.469 C 52.862 66.469 53.694 65.637 53.694 64.622 C 53.694 63.605 52.862 62.775 51.846000000000004 62.775 L 48.153 62.775 Z M 37.072 62.775 C 36.056 62.775 35.225 63.605 35.225 64.622 C 35.225 65.637 36.056 66.469 37.072 66.469 L 40.766 66.469 C 41.782 66.469 42.612 65.637 42.612 64.622 C 42.612 63.605 41.782 62.775 40.766 62.775 L 37.072 62.775 Z" style="text-wrap-mode: nowrap; filter: url(&quot;#outline-filter-0&quot;); stroke-width: 1.54496px; fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);"/>
       </g>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 1632, -544)">
+    <g transform="matrix(1, 0, 0, 1, 1664, -544)">
       <title>heart-icon_body-overlay</title>
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
         <title>front</title>
