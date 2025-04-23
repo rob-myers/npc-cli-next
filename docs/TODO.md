@@ -25,19 +25,6 @@
   - mention recent improvements in AI
     - NPC CLI could use them as tools
 
-- ✅ try carousel
-  - https://www.npmjs.com/package/react-multi-carousel
-  - ✅ mount carousel
-  - ✅ initial test pics after first `<Card>`
-- ✅ try another carousel
-  - https://www.npmjs.com/package/pure-react-carousel
-  - ✅ patch carousel
-  - ✅ mount carousel
-  - ✅ initial test pics after first `<Card>`
-- ✅ try yet another carousel
-  - https://www.npmjs.com/package/embla-carousel
-- ✅ remove prev Carousel (pure-react-carousel)
-
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
   - 🚧 improve images in first carousel
@@ -46,21 +33,14 @@
   - clean carousel css e.g. more css variables
   - auto png to webp in public/images
 
-- ✅ fix desktop scroll of grey side area
-
 - start adding cypress
-
 - basic help page
-
 - basic about page
-
 - write 1st dev blog
   - ℹ️ aligned to npc cli too i.e. focus on how various subsystems were built
-
 - sketch 1st automata blog
   - ℹ️ nondeterministic automata language-theoretically
   - summary of pre-existing academic work
-
 - Tabs: debug is global among Tab instances
   - defunct if we remove debug i.e. always paused when paused
 
@@ -73,60 +53,6 @@
   - 🚧 fix scaling (non-trivial)
     - infer cuboid scaling per instance in shader e.g. via transform matrix?
     - provide uniform with scales (do not vary per instance)
-
-- ✅ bug: pause then reset should show interact message
-
-- ✅ improve motion through doorways (offMeshConnection)
-  - ✅ clarify deceleration from `u_0` to `u_1` in fixed distance `|src - dst|`.
-    - may not actually use this, but worth working out
-  - ✅ extend our recast-navigation-js branch with `agentAnim.tScale`
-  - ✅ write code and test it
-    - ✅ `npc.s.tScale.dst` is approached during offMeshConnection
-    - ✅ `npc.setOffMeshExitSpeed`
-      - ✅ should update (exit) speed too
-      - ✅ update `offMesh.tToDist` as "new current speed"
-    - ✅ trigger before "small room"
-    - ✅ remove `npc.goSlowOffMesh`
-    - ✅ trigger when will stop near offMeshConnection dst
-      - on enter offMeshConnection test for target nearby exit
-  - ✅ avoid dead-stop on enter small room
-    - by slowing down inside doorway
-  - ✅ try to simplify walk smoothing "hacks"
-  - ❌ prevent intersection when two npcs move diagonally through doorway
-    - ❌ forbid (src,dst)'s intersection
-    - ❌ forbid dst's close to each other
-  - ✅ simplify doorway multi-traversal approach
-    - only permit traversal if every other traversal is in same direction and already half-way there
-  - ✅ fix npc not turning correctly when two npcs traverse offMeshConnection
-    - reset s.lookSecs on enter offMeshConnection
-    - also simplify onTickTurnTarget
-
-- ✅ remove "debug" mode from Tabs i.e. either paused or not
-  - ✅ remove from World
-  - ✅ remove from Tty
-
-- ✅ distinguish paused some other way
-  - ℹ️ World and Tty
-  - ❌ inverted filter with modified door lights
-  - ❌ post-processing effect
-  - ✅ write "paused" in ViewerControls
-
-- ✅ bug: after initial pause frameloop is still `always`
-  - ℹ️ `w r3f.get | map 'x => x.frameloop'`
-  - ℹ️ after move camera it changes to `demand`
-  - ℹ️ because of "ongoing tweening"
-    - maybe tween must be started whilst paused
-
-- ✅ cleanup angle code
-  - ✅ meta.orient clockwise from above from north
-    - we were already using this convention
-  - ✅ npc.angle clockwise from above from north
-    - previously we were using "clockwise from above from east"
-  - ✅ util for `atan2(dy, dx) + Math.PI/2` (clockwise from north)
-  - ✅ fix offMeshConnection traversal
-    - saw weirdness which disappeared on reset
-  - ℹ️ npc.rotation.y anticlockwise from above from east
-    - this is fixed i.e. property of Euler rotation
 
 - 🚧 better skins based on minecraft skins
   - ✅ fix bug when do:
@@ -194,35 +120,6 @@
     - ✅ scientist-0-head-overlay
     - 🚧 scientist-0-body-overlay
       - possibly needs non-standard body too
-  
-  - ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
-    - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
-    - ℹ️ e.g. SVG -> `canvas` loadImage -> data url -> `@napi-rs/canvas` 
-    - ✅ try importing and drawing using `canvas` first
-    - ✅ try save as data-url and pass into `@napi-rs/canvas` 
-    - ✅ clean up solution!
-      - seems `canvas` now works with `bun`
-      - unsure whether nondeterministic output behaviour persists in latest version of `canvas`
-      - use `@napi-rs/canvas` to output, but make it easy to comment out, so we can test if nondet arises
-
-  - ❌ BUG: pause during profile load doesn't stop rendering
-
-  - ✅ BUG: while paused `kill --all; source PROFILE` gets stuck at `awaitWorld`
-    - fixed by removing setTimeout from killProcesses
-    - setTimeout apparently had something to do with `sleep`
-
-  - fix npc fading, now overlay (head/body) are 2-sided
-    - e.g. bake weighting (0.5 or 1) into texture
-
-  - 🚧 cleanup human-0 skin
-    - ✅ Blender: overlays are double-sided
-      - then can remove `Side={THREE.DoubleSide}`
-    - ✅ Blender: space out initial skin: separate head from body along x-axis
-    - can redirect head-overlay and body-overlay to "empty"
-    - base_head-overlay -> robot_head-overlay (with more detail)
-    - base_body-overlay -> robot_body-overlay (with more detail)
-    - small-eyes -> robot-face-0
-    - confused -> robot-face-1
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
@@ -238,8 +135,19 @@
   - https://namemc.com/minecraft-skins/tag/monk
   - https://namemc.com/minecraft-skins/tag/priest
 
-- consider "camera hot keys" e.g. 1, 2, 3 shows cameras with different constraints
+- BUG: if double-click room when near doorway, rotates wrong way when going through doorway
 
+- 🚧 cleanup human-0 skin
+  - ✅ Blender: overlays are double-sided
+    - then can remove `Side={THREE.DoubleSide}`
+  - ✅ Blender: space out initial skin: separate head from body along x-axis
+  - can redirect head-overlay and body-overlay to "empty"
+  - base_head-overlay -> robot_head-overlay (with more detail)
+  - base_body-overlay -> robot_body-overlay (with more detail)
+  - small-eyes -> robot-face-0
+  - confused -> robot-face-1
+
+- consider "camera hot keys" e.g. 1, 2, 3 shows cameras with different constraints
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?
 - move "x-ray" into PopUp opts?
@@ -844,6 +752,23 @@
   - ✅ set initial tabsDefs somewhere
   - ✅ clarify Viewer styles
 
+
+- ✅ try carousel
+  - https://www.npmjs.com/package/react-multi-carousel
+  - ✅ mount carousel
+  - ✅ initial test pics after first `<Card>`
+- ✅ try another carousel
+  - https://www.npmjs.com/package/pure-react-carousel
+  - ✅ patch carousel
+  - ✅ mount carousel
+  - ✅ initial test pics after first `<Card>`
+- ✅ try yet another carousel
+  - https://www.npmjs.com/package/embla-carousel
+- ✅ remove prev Carousel (pure-react-carousel)
+
+- ✅ fix desktop scroll of grey side area
+
+
 ### World
 
 - ✅ sh: fix `echo What\'s`
@@ -858,3 +783,74 @@
     - 4.8 Gb
   - ℹ️ `expr window | json` takes about 10 secs to fail
   - ℹ️ `w | pretty` is huge
+
+
+
+- ✅ bug: pause then reset should show interact message
+
+- ✅ improve motion through doorways (offMeshConnection)
+  - ✅ clarify deceleration from `u_0` to `u_1` in fixed distance `|src - dst|`.
+    - may not actually use this, but worth working out
+  - ✅ extend our recast-navigation-js branch with `agentAnim.tScale`
+  - ✅ write code and test it
+    - ✅ `npc.s.tScale.dst` is approached during offMeshConnection
+    - ✅ `npc.setOffMeshExitSpeed`
+      - ✅ should update (exit) speed too
+      - ✅ update `offMesh.tToDist` as "new current speed"
+    - ✅ trigger before "small room"
+    - ✅ remove `npc.goSlowOffMesh`
+    - ✅ trigger when will stop near offMeshConnection dst
+      - on enter offMeshConnection test for target nearby exit
+  - ✅ avoid dead-stop on enter small room
+    - by slowing down inside doorway
+  - ✅ try to simplify walk smoothing "hacks"
+  - ❌ prevent intersection when two npcs move diagonally through doorway
+    - ❌ forbid (src,dst)'s intersection
+    - ❌ forbid dst's close to each other
+  - ✅ simplify doorway multi-traversal approach
+    - only permit traversal if every other traversal is in same direction and already half-way there
+  - ✅ fix npc not turning correctly when two npcs traverse offMeshConnection
+    - reset s.lookSecs on enter offMeshConnection
+    - also simplify onTickTurnTarget
+
+- ✅ remove "debug" mode from Tabs i.e. either paused or not
+  - ✅ remove from World
+  - ✅ remove from Tty
+
+- ✅ distinguish paused some other way
+  - ℹ️ World and Tty
+  - ❌ inverted filter with modified door lights
+  - ❌ post-processing effect
+  - ✅ write "paused" in ViewerControls
+
+- ✅ bug: after initial pause frameloop is still `always`
+  - ℹ️ `w r3f.get | map 'x => x.frameloop'`
+  - ℹ️ after move camera it changes to `demand`
+  - ℹ️ because of "ongoing tweening"
+    - maybe tween must be started whilst paused
+
+- ✅ cleanup angle code
+  - ✅ meta.orient clockwise from above from north
+    - we were already using this convention
+  - ✅ npc.angle clockwise from above from north
+    - previously we were using "clockwise from above from east"
+  - ✅ util for `atan2(dy, dx) + Math.PI/2` (clockwise from north)
+  - ✅ fix offMeshConnection traversal
+    - saw weirdness which disappeared on reset
+  - ℹ️ npc.rotation.y anticlockwise from above from east
+    - this is fixed i.e. property of Euler rotation
+- ✅ IDEA load SVG using `canvas` and somehow convert it into `@napi-rs/canvas` (or `skia-canvas`) format
+  - ℹ️ we're avoiding node-canvas _output_ because of nondeterminism
+  - ℹ️ e.g. SVG -> `canvas` loadImage -> data url -> `@napi-rs/canvas` 
+  - ✅ try importing and drawing using `canvas` first
+  - ✅ try save as data-url and pass into `@napi-rs/canvas` 
+  - ✅ clean up solution!
+    - seems `canvas` now works with `bun`
+    - unsure whether nondeterministic output behaviour persists in latest version of `canvas`
+    - use `@napi-rs/canvas` to output, but make it easy to comment out, so we can test if nondet arises
+
+- ❌ BUG: pause during profile load doesn't stop rendering
+
+- ✅ BUG: while paused `kill --all; source PROFILE` gets stuck at `awaitWorld`
+  - fixed by removing setTimeout from killProcesses
+  - setTimeout apparently had something to do with `sleep`
