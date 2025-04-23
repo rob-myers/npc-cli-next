@@ -1291,11 +1291,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": 76974222},
-    "imagesHash": -1823696356
+    "imagesHash": -1394038140
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [1523171714, 1474634897]},
+    "svgHashes": {"human-0": [-1576983772, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -1848,6 +1848,54 @@
           "sheetId": 0,
           "x": 0.9375,
           "y": 0,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "scientist-0_body-overlay-top": {
+          "key": "scientist-0_body-overlay-top",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_body-overlay-bottom": {
+          "key": "scientist-0_body-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_body-overlay-left": {
+          "key": "scientist-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.40625,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "scientist-0_body-overlay-front": {
+          "key": "scientist-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "scientist-0_body-overlay-right": {
+          "key": "scientist-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "scientist-0_body-overlay-back": {
+          "key": "scientist-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.59375,
+          "y": 0.46875,
           "width": 0.0625,
           "height": 0.125
         },
