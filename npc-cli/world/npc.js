@@ -554,6 +554,11 @@ export class Npc {
       this.w.events.next({ key: 'enter-off-mesh-main', npcKey: this.key });
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
+
+      if (this.isTargetClose(this.position) === true) {
+        // 🔔 fix sharp final turn just after offMeshConnection
+        this.s.lookSecs = 0.8;
+      }
     }
 
     if (this.s.tScale !== null) {// approach tScale.dst as t -> tmax
@@ -659,6 +664,7 @@ export class Npc {
       throw new Error(`${'look'}: 1st arg must be radians or point`);
     }
 
+    this.s.permitTurn = true;
     this.s.lookAngleDst = this.getEulerAngle(input);
     this.s.lookSecs = ms / 1000;
 

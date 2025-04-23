@@ -554,10 +554,6 @@ export default function useHandleEvents(w) {
         return npc.stopMoving(); // avoid jerk on try pass close neighbour
       }
 
-      if (npc.isTargetClose(npc.position) === true) {
-        npc.s.lookSecs = 0.5; // avoid sharp turn around corner from doorway
-      }
-
       // resume speed
       const maxSpeed = npc.getMaxSpeed();
       if (npc.agent.maxSpeed !== maxSpeed) {
