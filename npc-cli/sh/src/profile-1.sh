@@ -21,10 +21,10 @@ w n.rob.skin | assign '{
 }' > /dev/null
 w n.rob.applySkin
 
-# tint rob
-# w n.rob.tint | assign '{ "head-overlay-front": [1, 0, 0, 1] }'
+# w n.rob.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
+# w n.will.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
 # w n.rob.applyTint
-w n.rob.resetTint
+# w n.rob.resetTint
 
 w e.grantNpcAccess rob .
 # temp debug doors:

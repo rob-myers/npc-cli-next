@@ -151,7 +151,7 @@ export class Npc {
     const { sheetId: initSheetId, uvMap, sheetTexIds } = sheetAux[classKey];
     const { triToKey } = skinAux[classKey];
 
-    this.normalizeSkin();
+    this.expandSkinMap('skin');
 
     /** Index in DataTextureArray of this model's `initSheetId` sheet */
     const initSheetTexId = sheetTexIds[initSheetId];
@@ -223,6 +223,8 @@ export class Npc {
     const texNpcAux = this.w.texNpcAux;
     const classKey = this.def.classKey;
     const { triToKey } = this.w.npc.gltfAux[classKey];
+
+    this.expandSkinMap('tint');
 
     // THREE.FloatType handle negative uv offsets in applySkin
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
@@ -727,17 +729,22 @@ export class Npc {
   }
 
   /**
-   * Brace expansion of keys
-   * > e.g. `'head-{front,back}'` -> `['head-front', 'head-back']`
+   * Brace expansion of keys of `this.skin` or `this.tint`, e.g.
+   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
+   * @param {'skin' | 'tint'} type
    */
-  normalizeSkin() {
-    for (const [k, v] of Object.entries(this.skin)) {
+  expandSkinMap(type) {
+    const lookup = this[type];
+    for (const k of keys(lookup)) {
       if (k.includes('{') === false) {
         continue;
       }
       braces(k, { expand: true }).forEach(expanded => {
-        if (helper.isSkinPart(expanded) === true) this.skin[expanded] = v;
-        else warn(`${'normalizeSkin'}: ${this.key}: ignored invalid skinPart "${expanded}"`);
+        if (helper.isSkinPart(expanded) === true) {
+          lookup[expanded] = lookup[k];
+        } else {
+          warn(`${'expandSkinMap'}: ${type}: ${this.key}: ignored invalid skinPart "${expanded}"`);
+        }
       });
     }
   }
@@ -1004,12 +1011,14 @@ export class Npc {
   }
 
   resetTint() {
-    const texNpcAux = this.w.texNpcAux;
-    const data = new Float32Array(
-      (new Array(4 * texNpcAux.opts.width * 1)).fill(1)
-    );
-    // tint is defined in 2nd row
-    texNpcAux.updateIndex(this.def.uid, data, 1);
+    /** @type {Partial<Record<Key.SkinPart, true>>} */
+    const remember = { 'breath': true, 'label': true, 'selector': true, }
+    
+    for (const skinPartKey of keys(this.tint)) {
+      !(skinPartKey in remember) && delete this.tint[skinPartKey];
+    }
+
+    this.applyTint();
   }
 
   /**
