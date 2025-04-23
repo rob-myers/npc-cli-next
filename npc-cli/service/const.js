@@ -345,7 +345,7 @@ export const npcClassToMeta = {
     npcClassKey: 'human-0',
     modelRadius: 0.5,
     runSpeed: 4,
-    scale: 0.6,
+    scale: 0.65,
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
     walkSpeed: 2.5,
   },
