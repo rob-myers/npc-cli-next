@@ -52,10 +52,9 @@ Can the NPCs fool the Player? <SideNote>
   minHeight={400}
 />
 
-This problem is often side-stepped.
-Puzzle games restrict the possible moves.
-Racing games restrict interaction to physical collisions.
-Many games only involve aggressive NPCs, constrained by their time-limited existence.
+This problem can be side-stepped.
+Many games restrict interaction e.g. racing games only permit physical collisions.
+Many more only involve aggressive NPCs, constrained by their time-limited existence.
 So let's assume the NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
 (or even comes close). But why?
@@ -63,7 +62,7 @@ Under this assumption, no known game solves the underlying problem
 > Because it's too damn hard!
 
 {/* Developers are wary of state-space explosions. */}
-As behavioural complexity increases, the Game's state-space explodes.
+As behaviours become more complex, the Game's state-space explodes.
 More things go wrong, meaning more debugging, meaning less time for other important tasks.
 The number of states becomes so large it cannot be effectively explored and debugged.
 How can composite behaviour be resolved if the developer has never encountered it?
