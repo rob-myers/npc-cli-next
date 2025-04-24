@@ -99,7 +99,8 @@
 
 - 🚧 BUG: after multiple invokes of e.g. `w view.tween '{ fov: 30 }'`,
   agents stop moving, and start to animate very slowly
-  - can fix by pausing that `w stopTick` then playing
+  - ℹ️ can fix by pausing that `w stopTick` then playing
+  - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
 
 - three more minecraft skin migrations (total 5)
 
