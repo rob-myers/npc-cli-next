@@ -121,22 +121,27 @@
     - 🚧 scientist-0-body-overlay
     - 🚧 scientist-0-body
 
-  - https://namemc.com/minecraft-skins/tag/soldier
-    - https://namemc.com/skin/45461862ef51524e
-  - https://namemc.com/minecraft-skins/tag/scientist
-    - https://namemc.com/skin/7161dce64d6b12be
-    - https://namemc.com/skin/3a335a2ec786efdb
-  - https://namemc.com/minecraft-skins/tag/general
-  - https://namemc.com/minecraft-skins/tag/medic
-  - https://namemc.com/minecraft-skins/tag/suit
-  - https://namemc.com/minecraft-skins/tag/engineer
-  - https://namemc.com/minecraft-skins/tag/assassin
-  - https://namemc.com/minecraft-skins/tag/politician
-  - https://namemc.com/minecraft-skins/tag/monk
-  - https://namemc.com/minecraft-skins/tag/priest
+  - ℹ️ minecraft skin examples
+    - https://namemc.com/minecraft-skins/tag/soldier
+      - https://namemc.com/skin/45461862ef51524e
+    - https://namemc.com/minecraft-skins/tag/scientist
+      - https://namemc.com/skin/7161dce64d6b12be
+      - https://namemc.com/skin/3a335a2ec786efdb
+    - https://namemc.com/minecraft-skins/tag/general
+    - https://namemc.com/minecraft-skins/tag/medic
+    - https://namemc.com/minecraft-skins/tag/suit
+    - https://namemc.com/minecraft-skins/tag/engineer
+    - https://namemc.com/minecraft-skins/tag/assassin
+    - https://namemc.com/minecraft-skins/tag/politician
+    - https://namemc.com/minecraft-skins/tag/monk
+    - https://namemc.com/minecraft-skins/tag/priest
 
 - ✅ fix mobile pan conflict with ContextMenu
-- 🚧 BUG: if double-click room when near doorway, rotates wrong way when going through doorway
+
+- ✅ BUG: agent using wrong angle when going through doorway if "click room again"
+  - seems we `enter-off-mesh` but do not `enter-off-mesh-main`
+  - seems we `clear-off-mesh` so that `npc.s.offMesh` is null
+  - ✅ force re-invoke `onChangeAgentState`
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlays are double-sided

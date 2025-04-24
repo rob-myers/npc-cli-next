@@ -711,8 +711,11 @@ export class Npc {
     this.lastStart.copy(this.position);
     this.s.target = this.lastTarget.copy(closest);
 
-    if (this.tryStopOffMesh()) {
+    if (this.tryStopOffMesh() === true) {
       this.agent.teleport(this.position);
+      if (this.s.agentState === 2) {// in case of immediate new offMeshConnection
+        this.s.agentState = -1;
+      }
     }
     this.agent.requestMoveTarget(closest);
 
@@ -800,12 +803,12 @@ export class Npc {
         ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(6), agent.raw.get_cornerVerts(8))]
         ?? null
       );
+
       if (offMesh === null) {
         agent.teleport(this.position);
         return error(`${this.key}: bailed out of unknown offMeshConnection: ${JSON.stringify(this.position)}`);
       }
-
-      // we set this.s.offMesh in useHandleEvents
+      // set this.s.offMesh
       this.w.events.next({ key: 'enter-off-mesh', npcKey: this.key, offMesh });
       return;
     }
