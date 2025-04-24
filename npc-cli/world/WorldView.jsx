@@ -110,10 +110,12 @@ export default function WorldView(props) {
     computeNormal(mesh, intersection) {// 🚧
       const { indices, mat3, tri } = state.normal;
       const output = new THREE.Vector3();
-      indices.fromArray(
-        /** @type {THREE.BufferAttribute} */ (mesh.geometry.index).array,
-        /** @type {number} */ (intersection.faceIndex) * 3,
-      );
+      const offset = /** @type {number} */ (intersection.faceIndex) * 3;
+      if (mesh.geometry.index === null) {
+        indices.set(offset, offset + 1, offset + 2);
+      } else {
+        indices.fromArray(mesh.geometry.index.array, offset);
+      }
       tri.setFromAttributeAndIndices(mesh.geometry.attributes.position, indices.x, indices.y, indices.z);
       tri.getNormal(output);
       const normalMatrix = mat3.getNormalMatrix(mesh.matrixWorld);
