@@ -84,18 +84,7 @@
       - [0,1],[0,0],[1,1]
       - [0,0],[1,0],[1,1]
     - Comparing uvs and respective vertices, we can infer the dimensions of uv-space:
-      - [dz,dy]
-      - [dz,dy]
-      - [dz,dy]
-      - [dz,dy]
-      - [dx,dz]
-      - [dx,dz]
-      - [dx,dz]
-      - [dx,dz]
-      - [dx,dy]
-      - [dx,dy]
-      - [dx,dy]
-      - [dx,dy]
+      - [dz,dy], [dz,dy], [dz,dy], [dz,dy], [dx,dz], [dx,dz], [dx,dz], [dx,dz], [dx,dy], [dx,dy], [dx,dy], [dx,dy]
 
 - 🚧 BUG: after multiple invokes of e.g. `w view.tween '{ fov: 30 }'`,
   agents stop moving, and start to animate very slowly
