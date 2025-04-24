@@ -127,12 +127,10 @@ const instancedLabelsShader = {
 };
 
 /**
+ * Used by cuboids i.e. Decor and Lock-Lights
+ * 
  * - Shade color `diffuse` by light whose direction is always the camera's direction.
  * - Assumes InstancedMesh and supports USE_INSTANCING_COLOR
- * - Supports a single texture.
- * - We're using this as a guide:
- *   - https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/meshphong.glsl.js
- *   - https://ycw.github.io/three-shaderlib-skim/dist/#/latest/basic/vertex
  */
 export const instancedFlatShader = {
   Vert: /*glsl*/`
@@ -141,6 +139,7 @@ export const instancedFlatShader = {
   varying vec3 vColor;
   flat varying uint vInstanceId;
   varying vec2 vUv;
+  // varying vec2 vUvInset;
 
   attribute uint instanceIds;
 
@@ -152,6 +151,10 @@ export const instancedFlatShader = {
     #include <uv_vertex>
     vInstanceId = instanceIds;
     vUv = uv;
+
+    // // 🚧 uv in {0,1}²
+    // vUvInset.x = uv.x == 0.0 ? 0.1 : 0.9;
+    // vUvInset.y = uv.y == 0.0 ? 0.1 : 0.9;
 
     vec3 objectNormal = vec3(normal);
     vec3 transformed = vec3(position);

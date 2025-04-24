@@ -229,10 +229,12 @@ export function buildObject3DLookup(object) {
 }
 
 /**
- * 12 triangles.
- * 
- * - Pre un-weld: right x2, left x2, front x2, back x2, top x2, bottom x2.
- * - Post un-weld: ...
+ * - Pre un-weld:
+ *   - 24 vertices
+ *   - 12 triangles: right x2, left x2, front x2, back x2, top x2, bottom x2.
+ * - Post un-weld:
+ *   - 34 vertices (12 * 3)
+ *   - 12 triangles: right-{upper,lower}, left-{upper,lower}, top-{back,front}, bottom-{front,back}, front-{top,bottom}, back-{top,bottom}
  */
 export const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1).toNonIndexed();
 

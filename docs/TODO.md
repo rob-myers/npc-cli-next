@@ -49,13 +49,53 @@
 - 🚧 cuboids have outlines via shader, using UVs
   - ✅ can see outlines on decor cuboids
   - ✅ un-weld geometry i.e. 12 tris (as before) but 3 * 12 = 36 verts
-    - in three.js this means `index` is [0..36]
-  - 🚧 infer face-ordering from vertices
+    - in three.js this means `index` is [0..35]
+  - ✅ infer face-ordering from vertices
     - `w decor.cuboidInst.geometry.attributes.position | map 'x => Array.from(x.array)'`
-    - `a.reduce((agg,x,i) => (i > 0 && i % 3 === 0 && agg.push(a.slice(i - 3, i)), agg), [])`
-    ```json
-    [[0.5,0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,-0.5],[0.5,-0.5,0.5],[0.5,-0.5,-0.5],[0.5,0.5,-0.5],[-0.5,0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,0.5],[-0.5,-0.5,-0.5],[-0.5,-0.5,0.5],[-0.5,0.5,0.5],[-0.5,0.5,-0.5],[-0.5,0.5,0.5],[0.5,0.5,-0.5],[-0.5,0.5,0.5],[0.5,0.5,0.5],[0.5,0.5,-0.5],[-0.5,-0.5,0.5],[-0.5,-0.5,-0.5],[0.5,-0.5,0.5],[-0.5,-0.5,-0.5],[0.5,-0.5,-0.5],[0.5,-0.5,0.5],[-0.5,0.5,0.5],[-0.5,-0.5,0.5],[0.5,0.5,0.5],[-0.5,-0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,0.5],[0.5,0.5,-0.5],[0.5,-0.5,-0.5],[-0.5,0.5,-0.5],[0.5,-0.5,-0.5],[-0.5,-0.5,-0.5]]
-    ```
+    - `a.reduce((agg,x,i) => (i % 3 === 2 && agg.push(a.slice(i - 2, i + 1)), agg), [])`
+    - vertices:
+      - [0.5,0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,-0.5]
+      - [0.5,-0.5,0.5],[0.5,-0.5,-0.5],[0.5,0.5,-0.5]
+      - [-0.5,0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,0.5]
+      - [-0.5,-0.5,-0.5],[-0.5,-0.5,0.5],[-0.5,0.5,0.5]
+      - [-0.5,0.5,-0.5],[-0.5,0.5,0.5],[0.5,0.5,-0.5]
+      - [-0.5,0.5,0.5],[0.5,0.5,0.5],[0.5,0.5,-0.5]
+      - [-0.5,-0.5,0.5],[-0.5,-0.5,-0.5],[0.5,-0.5,0.5]
+      - [-0.5,-0.5,-0.5],[0.5,-0.5,-0.5],[0.5,-0.5,0.5]
+      - [-0.5,0.5,0.5],[-0.5,-0.5,0.5],[0.5,0.5,0.5]
+      - [-0.5,-0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,0.5]
+      - [0.5,0.5,-0.5],[0.5,-0.5,-0.5],[-0.5,0.5,-0.5]
+      - [0.5,-0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,-0.5]
+    - right-{upper,lower}, left-{upper,lower}, top-{back,front}, bottom-{front,back}, front-{top,bottom}, back-{top,bottom}
+  - ✅ understand uvs too
+    - `w decor.cuboidInst.geometry.attributes.uv | map 'x => Array.from(x.array)'`
+    - `a.reduce((agg,x,i) => (i % 2 === 1 && agg.push(a.slice(i - 1, i + 1)), agg), [])`
+    - uvs:
+      - [0,1],[0,0],[1,1]
+      - [0,0],[1,0],[1,1]
+      - [0,1],[0,0],[1,1]
+      - [0,0],[1,0],[1,1]
+      - [0,1],[0,0],[1,1]
+      - [0,0],[1,0],[1,1]
+      - [0,1],[0,0],[1,1]
+      - [0,0],[1,0],[1,1]
+      - [0,1],[0,0],[1,1]
+      - [0,0],[1,0],[1,1]
+      - [0,1],[0,0],[1,1]
+      - [0,0],[1,0],[1,1]
+    - Comparing uvs and respective vertices, we can infer the dimensions of uv-space:
+      - [dz,dy]
+      - [dz,dy]
+      - [dz,dy]
+      - [dz,dy]
+      - [dx,dz]
+      - [dx,dz]
+      - [dx,dz]
+      - [dx,dz]
+      - [dx,dy]
+      - [dx,dy]
+      - [dx,dy]
+      - [dx,dy]
 
 - ✅ better skins based on minecraft skins
   - ✅ fix bug when do:
@@ -82,7 +122,8 @@
 
   - ✅ experiment with minecraft skin migration
     - https://namemc.com/skin/45461862ef51524e
-    - ✅ temp: profile-1: apply test-head, test-body, test-body-overlay to rob
+    - ✅ temp: profile-1: apply test-head
+    - test-body, test-body-overlay to rob
     - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
       - seems unsupported
     - ✅ try `skia-canvas` too
