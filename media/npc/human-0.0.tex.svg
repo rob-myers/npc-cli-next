@@ -602,9 +602,9 @@
       <rect x="1056" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
       <rect x="1136" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
       <rect x="1184" y="544" width="128" height="256" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-8&quot;);"/>
-      <g transform="matrix(1, 0, 0, 1, 0, 478)">
+      <g transform="matrix(0.34375, 0, 0, 1, 525, 478)" style="">
         <title>_belt</title>
-        <path d="M 800 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 Z" style="fill: rgb(238, 238, 238); stroke: rgb(0, 0, 0); stroke-width: 4px;"/>
+        <path d="M 800 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(136, 136, 153);"/>
       </g>
       <rect x="848" y="544" width="32" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
       <rect x="1104" y="544" width="32" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
@@ -614,6 +614,10 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAqADAAQAAAABAAAAAgAAAADtGLyqAAAAGElEQVQIHWOccLrl//fL/xmYQASnLiMDAGGsCKufFtqrAAAAAElFTkSuQmCC" width="32" height="32" x="848" y="640" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;) url(&quot;#outline-filter-0&quot;);">
         <title>_badge</title>
       </image>
+      <g transform="matrix(0.589844, 0, 0, 1, 538.125, 478)" style="">
+        <title>_belt</title>
+        <path d="M 800 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(136, 136, 153);"/>
+      </g>
     </g>
   </g>
 </svg>
