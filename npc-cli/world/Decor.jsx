@@ -625,7 +625,7 @@ export default function Decor(props) {
  * @property {Record<string, Geomorph.Decor>} byKey
  * @property {Geomorph.RoomDecor[][]} byRoom
  * Decor organised by `byRoom[gmId][roomId]` where (`gmId`, `roomId`) are unique
- * @property {THREE.BoxGeometry} cuboidGeom
+ * @property {THREE.BufferGeometry} cuboidGeom
  * @property {Geomorph.DecorCuboid[]} cuboids
  * @property {THREE.InstancedMesh} cuboidInst
  * @property {Geomorph.DecorPoint[]} labels

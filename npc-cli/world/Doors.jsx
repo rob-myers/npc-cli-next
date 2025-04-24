@@ -354,7 +354,7 @@ export default function Doors(props) {
  * @property {{ [center in `${number},${number}`]: Geomorph.DoorState }} byPos
  * @property {THREE.InstancedMesh} inst
  * @property {THREE.BufferGeometry} quad
- * @property {THREE.BoxGeometry} lockSigGeom
+ * @property {THREE.BufferGeometry} lockSigGeom
  * @property {THREE.InstancedMesh} lockSigInst
  * @property {Map<number, Geomorph.DoorState>} movingDoors To be animated until they open/close.
  * @property {number} opacity

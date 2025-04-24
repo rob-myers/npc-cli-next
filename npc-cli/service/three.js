@@ -229,17 +229,19 @@ export function buildObject3DLookup(object) {
 }
 
 /**
- * 12 triangles:
- * > right x2, left x2, front x2, back x2, top x2, bottom x2
+ * 12 triangles.
+ * 
+ * - Pre un-weld: right x2, left x2, front x2, back x2, top x2, bottom x2.
+ * - Post un-weld: ...
  */
-export const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+export const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1).toNonIndexed();
 
 /** @param {string} key */
 export function getBoxGeometry(key) {
   return boxGeomLookup[key] ??= boxGeometry.clone();
 }
 
-const boxGeomLookup = /** @type {Record<string, THREE.BoxGeometry>} */ ({});
+const boxGeomLookup = /** @type {Record<string, THREE.BufferGeometry>} */ ({});
 
 export const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 32, 1);
 

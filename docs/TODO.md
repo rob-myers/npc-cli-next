@@ -48,11 +48,14 @@
 
 - 🚧 cuboids have outlines via shader, using UVs
   - ✅ can see outlines on decor cuboids
-  - ℹ️ box geometry has 12 triangles with ordering:
-    > right x2, left x2, front x2, back x2, top x2, bottom x2
-  - 🚧 fix scaling (non-trivial)
-    - infer cuboid scaling per instance in shader e.g. via transform matrix?
-    - provide uniform with scales (do not vary per instance)
+  - ✅ un-weld geometry i.e. 12 tris (as before) but 3 * 12 = 36 verts
+    - in three.js this means `index` is [0..36]
+  - 🚧 infer face-ordering from vertices
+    - `w decor.cuboidInst.geometry.attributes.position | map 'x => Array.from(x.array)'`
+    - `a.reduce((agg,x,i) => (i > 0 && i % 3 === 0 && agg.push(a.slice(i - 3, i)), agg), [])`
+    ```json
+    [[0.5,0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,-0.5],[0.5,-0.5,0.5],[0.5,-0.5,-0.5],[0.5,0.5,-0.5],[-0.5,0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,0.5],[-0.5,-0.5,-0.5],[-0.5,-0.5,0.5],[-0.5,0.5,0.5],[-0.5,0.5,-0.5],[-0.5,0.5,0.5],[0.5,0.5,-0.5],[-0.5,0.5,0.5],[0.5,0.5,0.5],[0.5,0.5,-0.5],[-0.5,-0.5,0.5],[-0.5,-0.5,-0.5],[0.5,-0.5,0.5],[-0.5,-0.5,-0.5],[0.5,-0.5,-0.5],[0.5,-0.5,0.5],[-0.5,0.5,0.5],[-0.5,-0.5,0.5],[0.5,0.5,0.5],[-0.5,-0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,0.5],[0.5,0.5,-0.5],[0.5,-0.5,-0.5],[-0.5,0.5,-0.5],[0.5,-0.5,-0.5],[-0.5,-0.5,-0.5]]
+    ```
 
 - ✅ better skins based on minecraft skins
   - ✅ fix bug when do:
