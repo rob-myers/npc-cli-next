@@ -638,7 +638,7 @@ export default function WorldView(props) {
         {w.crowd === null ? [] : <>
           <BrightnessContrast
             brightness={-0.2}
-            contrast={0.05}
+            contrast={0.1}
           />
           <Vignette
             eskil={false}
