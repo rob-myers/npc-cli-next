@@ -211,9 +211,11 @@ export default function useHandleEvents(w) {
           break;
         case "controls-start":
           w.menu.setPreventDraggable(true);
+          w.cm.draggable.el.style.pointerEvents = 'none';
           break;
         case "controls-end":
           w.menu.setPreventDraggable(false);
+          w.cm.draggable.el.style.pointerEvents = 'auto';
           break;
         case "updated-gm-decor":
           // NOOP e.g. physics.worker rebuilds entire world onchange geomorphs

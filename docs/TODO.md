@@ -119,7 +119,7 @@
     - ✅ scientist-0-head
     - ✅ scientist-0-head-overlay
     - 🚧 scientist-0-body-overlay
-      - possibly needs non-standard body too
+    - 🚧 scientist-0-body
 
   - https://namemc.com/minecraft-skins/tag/soldier
     - https://namemc.com/skin/45461862ef51524e
@@ -135,7 +135,8 @@
   - https://namemc.com/minecraft-skins/tag/monk
   - https://namemc.com/minecraft-skins/tag/priest
 
-- BUG: if double-click room when near doorway, rotates wrong way when going through doorway
+- ✅ fix mobile pan conflict with ContextMenu
+- 🚧 BUG: if double-click room when near doorway, rotates wrong way when going through doorway
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlays are double-sided
