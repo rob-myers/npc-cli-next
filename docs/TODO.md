@@ -54,7 +54,7 @@
     - infer cuboid scaling per instance in shader e.g. via transform matrix?
     - provide uniform with scales (do not vary per instance)
 
-- 🚧 better skins based on minecraft skins
+- ✅ better skins based on minecraft skins
   - ✅ fix bug when do:
     ```sh
     w n.rob.skin | assign '{
@@ -114,12 +114,12 @@
   - ✅ more succinct skin specifications
     - brace-expansion of keys during `npc.normalizeSkin`
   
-  - 🚧 start another minecraft migration i.e. scientist-0
+  - ✅ start another minecraft migration i.e. scientist-0
     - https://namemc.com/skin/7161dce64d6b12be
     - ✅ scientist-0-head
     - ✅ scientist-0-head-overlay
-    - 🚧 scientist-0-body-overlay
-    - 🚧 scientist-0-body
+    - ✅ scientist-0-body-overlay
+    - ✅ top-skin-only_body
 
   - ℹ️ minecraft skin examples
     - https://namemc.com/minecraft-skins/tag/soldier
@@ -135,13 +135,16 @@
     - https://namemc.com/minecraft-skins/tag/politician
     - https://namemc.com/minecraft-skins/tag/monk
     - https://namemc.com/minecraft-skins/tag/priest
-
+  - ℹ️ hyper-casual examples
+    - https://assetstore.unity.com/packages/3d/characters/hyper-casual-low-poly-simple-people-175599?srsltid=AfmBOoqLMjV7_LitkXfLkWOdi49sIoj9_IdWld-OwbKn__LueOGdZliU
 - ✅ fix mobile pan conflict with ContextMenu
 
 - ✅ BUG: agent using wrong angle when going through doorway if "click room again"
   - seems we `enter-off-mesh` but do not `enter-off-mesh-main`
   - seems we `clear-off-mesh` so that `npc.s.offMesh` is null
   - ✅ force re-invoke `onChangeAgentState`
+
+- three more minecraft skin migrations (total 5)
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlays are double-sided
@@ -174,6 +177,8 @@
   - saw fire when npc no longer stuck causing bad stop
   - maybe check if closest neighbour is in front too
 
+- consider CSS vignette instead of post-processing
+  - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
 
 - ❌ when w.view.enableControls show "ui disabled icon"
 

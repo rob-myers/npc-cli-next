@@ -5,7 +5,8 @@ spawn '{ npcKey: "will", skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
-  "body-{front,back,left,right,top,bottom}": { prefix: "test" },
+  // "body-overlay-{front,back,left,right,top,bottom}": { prefix: "empty", otherPath: "body-front" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
 }}' '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 spawn '{ npcKey: "kate", angle: Math.PI }' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 

@@ -40169,11 +40169,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": 1893796843},
-    "imagesHash": -1394038140
+    "imagesHash": -99875379
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-1576983772, 1474634897]},
+    "svgHashes": {"human-0": [-1160548765, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -40657,48 +40657,48 @@
           "width": 0.0625,
           "height": 0.0625
         },
-        "test_body-top": {
-          "key": "test_body-top",
+        "top-skin-only_body-top": {
+          "key": "top-skin-only_body-top",
           "sheetId": 0,
           "x": 0.46875,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test_body-bottom": {
-          "key": "test_body-bottom",
+        "top-skin-only_body-bottom": {
+          "key": "top-skin-only_body-bottom",
           "sheetId": 0,
           "x": 0.53125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test_body-left": {
-          "key": "test_body-left",
+        "top-skin-only_body-left": {
+          "key": "top-skin-only_body-left",
           "sheetId": 0,
           "x": 0.40625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test_body-front": {
-          "key": "test_body-front",
+        "top-skin-only_body-front": {
+          "key": "top-skin-only_body-front",
           "sheetId": 0,
           "x": 0.46875,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test_body-right": {
-          "key": "test_body-right",
+        "top-skin-only_body-right": {
+          "key": "top-skin-only_body-right",
           "sheetId": 0,
           "x": 0.53125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test_body-back": {
-          "key": "test_body-back",
+        "top-skin-only_body-back": {
+          "key": "top-skin-only_body-back",
           "sheetId": 0,
           "x": 0.59375,
           "y": 0.0625,
