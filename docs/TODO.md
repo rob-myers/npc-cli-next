@@ -97,96 +97,9 @@
       - [dx,dy]
       - [dx,dy]
 
-- ✅ better skins based on minecraft skins
-  - ✅ fix bug when do:
-    ```sh
-    w n.rob.skin | assign '{
-      "body-overlay-front": { prefix: "base" },
-      "body-overlay-back": { prefix: "base" },
-      "body-overlay-left": { prefix: "base" },
-      "body-overlay-right": { prefix: "base" },
-      "body-overlay-top": { prefix: "base" },
-      "body-overlay-bottom": { prefix: "base" },
-    }'
-    w n.rob.applySkin
-    ```
-    - ❌ not handling negatives properly?
-    - ✅ inaccurate 0.00048827999853529036 ~ 1/2048
-    - ✅ inaccuracy elsewhere (heart icon on front) was breaking things,
-         based on our assumption of "perfect grids"
-    - ℹ️ needs to change x ordinate 127 -> 128
-  
-  - ✅ more stable approach to skinning
-    - ✅ report overlap of "x columns"
-    - ✅ fallback to "test against every rectangle" approach
-
-  - ✅ experiment with minecraft skin migration
-    - https://namemc.com/skin/45461862ef51524e
-    - ✅ temp: profile-1: apply test-head
-    - test-body, test-body-overlay to rob
-    - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
-      - seems unsupported
-    - ✅ try `skia-canvas` too
-      - seems unsupported
-    - ❌ try manually drawing head, using image as backdrop
-      - too much work
-    - ✅ move "node-canvas solution" into scripts/assets
-    - ✅ try copy soldier head into test-head
-      - head-left means from perspective of onlooker (not from character perspective)
-      - boxy-svg try compositing > filter > pixelated (pixel size 18)
-    - ✅ try copy soldier body into test-body
-      - ❌ try direct copy
-      - ✅ try sketch features onto "black body"
-        - ✅ belt + back strap
-        - ❌ trouser line
-        - ✅ medal ribbon
-    - ✅ try copy soldier overlay into test-head-overlay test-body-overlay
-      - ✅ head overlay further out
-        - currently `0.42 / 0.4` i.e. `1.05` larger
-        - to match Minecraft use "half a pixel" i.e. `0.5 * (.4 / 8) = 0.025`
-      - ✅ add test-head-overlay
-      - ✅ copy over head-overlay
-      - ✅ move belt and body into test-body-overlay
-      - Blender: fix head-overlay-back uv
-    - ✅ Blender: head overlay further out: `0.025`
-    - head needs base, visible while lie
-      - Blender: fix head-bottom uv
-    - ❌ SVG shapes for head instead of minecraft pixels?
-    - ✅ no need for body remap (only head, head-overlay, body-overlay)
-    - ✅ rename test-{head,body,head-overlay} as soldier-0-*
-  
-  - ✅ more succinct skin specifications
-    - brace-expansion of keys during `npc.normalizeSkin`
-  
-  - ✅ start another minecraft migration i.e. scientist-0
-    - https://namemc.com/skin/7161dce64d6b12be
-    - ✅ scientist-0-head
-    - ✅ scientist-0-head-overlay
-    - ✅ scientist-0-body-overlay
-    - ✅ top-skin-only_body
-
-  - ℹ️ minecraft skin examples
-    - https://namemc.com/minecraft-skins/tag/soldier
-      - https://namemc.com/skin/45461862ef51524e
-    - https://namemc.com/minecraft-skins/tag/scientist
-      - https://namemc.com/skin/7161dce64d6b12be
-      - https://namemc.com/skin/3a335a2ec786efdb
-    - https://namemc.com/minecraft-skins/tag/general
-    - https://namemc.com/minecraft-skins/tag/medic
-    - https://namemc.com/minecraft-skins/tag/suit
-    - https://namemc.com/minecraft-skins/tag/engineer
-    - https://namemc.com/minecraft-skins/tag/assassin
-    - https://namemc.com/minecraft-skins/tag/politician
-    - https://namemc.com/minecraft-skins/tag/monk
-    - https://namemc.com/minecraft-skins/tag/priest
-  - ℹ️ hyper-casual examples
-    - https://assetstore.unity.com/packages/3d/characters/hyper-casual-low-poly-simple-people-175599?srsltid=AfmBOoqLMjV7_LitkXfLkWOdi49sIoj9_IdWld-OwbKn__LueOGdZliU
-- ✅ fix mobile pan conflict with ContextMenu
-
-- ✅ BUG: agent using wrong angle when going through doorway if "click room again"
-  - seems we `enter-off-mesh` but do not `enter-off-mesh-main`
-  - seems we `clear-off-mesh` so that `npc.s.offMesh` is null
-  - ✅ force re-invoke `onChangeAgentState`
+- 🚧 BUG: after multiple invokes of e.g. `w view.tween '{ fov: 30 }'`,
+  agents stop moving, and start to animate very slowly
+  - can fix by pausing that `w stopTick` then playing
 
 - three more minecraft skin migrations (total 5)
 
@@ -839,8 +752,6 @@
   - ℹ️ `expr window | json` takes about 10 secs to fail
   - ℹ️ `w | pretty` is huge
 
-
-
 - ✅ bug: pause then reset should show interact message
 
 - ✅ improve motion through doorways (offMeshConnection)
@@ -909,3 +820,95 @@
 - ✅ BUG: while paused `kill --all; source PROFILE` gets stuck at `awaitWorld`
   - fixed by removing setTimeout from killProcesses
   - setTimeout apparently had something to do with `sleep`
+
+
+- ✅ better skins based on minecraft skins
+  - ✅ fix bug when do:
+    ```sh
+    w n.rob.skin | assign '{
+      "body-overlay-front": { prefix: "base" },
+      "body-overlay-back": { prefix: "base" },
+      "body-overlay-left": { prefix: "base" },
+      "body-overlay-right": { prefix: "base" },
+      "body-overlay-top": { prefix: "base" },
+      "body-overlay-bottom": { prefix: "base" },
+    }'
+    w n.rob.applySkin
+    ```
+    - ❌ not handling negatives properly?
+    - ✅ inaccurate 0.00048827999853529036 ~ 1/2048
+    - ✅ inaccuracy elsewhere (heart icon on front) was breaking things,
+         based on our assumption of "perfect grids"
+    - ℹ️ needs to change x ordinate 127 -> 128
+  
+  - ✅ more stable approach to skinning
+    - ✅ report overlap of "x columns"
+    - ✅ fallback to "test against every rectangle" approach
+
+  - ✅ experiment with minecraft skin migration
+    - https://namemc.com/skin/45461862ef51524e
+    - ✅ temp: profile-1: apply test-head
+    - test-body, test-body-overlay to rob
+    - ✅ investigate support of `<image href="data:image/png` by `@napi-rs/canvas`
+      - seems unsupported
+    - ✅ try `skia-canvas` too
+      - seems unsupported
+    - ❌ try manually drawing head, using image as backdrop
+      - too much work
+    - ✅ move "node-canvas solution" into scripts/assets
+    - ✅ try copy soldier head into test-head
+      - head-left means from perspective of onlooker (not from character perspective)
+      - boxy-svg try compositing > filter > pixelated (pixel size 18)
+    - ✅ try copy soldier body into test-body
+      - ❌ try direct copy
+      - ✅ try sketch features onto "black body"
+        - ✅ belt + back strap
+        - ❌ trouser line
+        - ✅ medal ribbon
+    - ✅ try copy soldier overlay into test-head-overlay test-body-overlay
+      - ✅ head overlay further out
+        - currently `0.42 / 0.4` i.e. `1.05` larger
+        - to match Minecraft use "half a pixel" i.e. `0.5 * (.4 / 8) = 0.025`
+      - ✅ add test-head-overlay
+      - ✅ copy over head-overlay
+      - ✅ move belt and body into test-body-overlay
+      - Blender: fix head-overlay-back uv
+    - ✅ Blender: head overlay further out: `0.025`
+    - head needs base, visible while lie
+      - Blender: fix head-bottom uv
+    - ❌ SVG shapes for head instead of minecraft pixels?
+    - ✅ no need for body remap (only head, head-overlay, body-overlay)
+    - ✅ rename test-{head,body,head-overlay} as soldier-0-*
+  
+  - ✅ more succinct skin specifications
+    - brace-expansion of keys during `npc.normalizeSkin`
+  
+  - ✅ start another minecraft migration i.e. scientist-0
+    - https://namemc.com/skin/7161dce64d6b12be
+    - ✅ scientist-0-head
+    - ✅ scientist-0-head-overlay
+    - ✅ scientist-0-body-overlay
+    - ✅ top-skin-only_body
+
+  - ℹ️ minecraft skin examples
+    - https://namemc.com/minecraft-skins/tag/soldier
+      - https://namemc.com/skin/45461862ef51524e
+    - https://namemc.com/minecraft-skins/tag/scientist
+      - https://namemc.com/skin/7161dce64d6b12be
+      - https://namemc.com/skin/3a335a2ec786efdb
+    - https://namemc.com/minecraft-skins/tag/general
+    - https://namemc.com/minecraft-skins/tag/medic
+    - https://namemc.com/minecraft-skins/tag/suit
+    - https://namemc.com/minecraft-skins/tag/engineer
+    - https://namemc.com/minecraft-skins/tag/assassin
+    - https://namemc.com/minecraft-skins/tag/politician
+    - https://namemc.com/minecraft-skins/tag/monk
+    - https://namemc.com/minecraft-skins/tag/priest
+  - ℹ️ hyper-casual examples
+    - https://assetstore.unity.com/packages/3d/characters/hyper-casual-low-poly-simple-people-175599?srsltid=AfmBOoqLMjV7_LitkXfLkWOdi49sIoj9_IdWld-OwbKn__LueOGdZliU
+- ✅ fix mobile pan conflict with ContextMenu
+
+- ✅ BUG: agent using wrong angle when going through doorway if "click room again"
+  - seems we `enter-off-mesh` but do not `enter-off-mesh-main`
+  - seems we `clear-off-mesh` so that `npc.s.offMesh` is null
+  - ✅ force re-invoke `onChangeAgentState`
