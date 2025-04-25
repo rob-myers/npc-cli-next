@@ -46,36 +46,17 @@
 
 ### World
 
-- ✅ cuboids have outlines via shader, using UVs
-  - ✅ can see outlines on decor cuboids
-  - ✅ un-weld geometry i.e. 12 tris (as before) but 3 * 12 = 36 verts
-    - in three.js this means `index` is [0..35]
-  - ✅ infer face-ordering from vertices
-    - `w decor.cuboidInst.geometry.attributes.position | map 'x => Array.from(x.array)'`
-    - `a.reduce((agg,x,i) => (i % 3 === 2 && agg.push(a.slice(i - 2, i + 1)), agg), [])`
-    - vertices:
-      - [0.5,0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,-0.5], [0.5,-0.5,0.5],[0.5,-0.5,-0.5],[0.5,0.5,-0.5], [-0.5,0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,0.5], [-0.5,-0.5,-0.5],[-0.5,-0.5,0.5],[-0.5,0.5,0.5], [-0.5,0.5,-0.5],[-0.5,0.5,0.5],[0.5,0.5,-0.5], [-0.5,0.5,0.5],[0.5,0.5,0.5],[0.5,0.5,-0.5], [-0.5,-0.5,0.5],[-0.5,-0.5,-0.5],[0.5,-0.5,0.5], [-0.5,-0.5,-0.5],[0.5,-0.5,-0.5],[0.5,-0.5,0.5], [-0.5,0.5,0.5],[-0.5,-0.5,0.5],[0.5,0.5,0.5], [-0.5,-0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,0.5], [0.5,0.5,-0.5],[0.5,-0.5,-0.5],[-0.5,0.5,-0.5], [0.5,-0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,-0.5]
-    - right-{upper,lower}, left-{upper,lower}, top-{back,front}, bottom-{front,back}, front-{top,bottom}, back-{top,bottom}
-  - ✅ understand uvs too
-    - `w decor.cuboidInst.geometry.attributes.uv | map 'x => Array.from(x.array)'`
-    - `a.reduce((agg,x,i) => (i % 2 === 1 && agg.push(a.slice(i - 1, i + 1)), agg), [])`
-    - uvs:
-      - [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1]
-    - Comparing uvs and respective vertices, we can infer the dimensions of uv-space:
-      - [dz,dy], [dz,dy], [dz,dy], [dz,dy], [dx,dz], [dx,dz], [dx,dz], [dx,dz], [dx,dy], [dx,dy], [dx,dy], [dx,dy]
-  - ✅ compute scale factors from instancedMatrix in vertex shader
-  - ✅ send scaled uv dimensions e.g. `[sz, sy]` from vertex shader to fragment shader
-
 - 🚧 BUG: after multiple invokes of e.g. `w view.tween '{ fov: 30 }'`,
   agents stop moving, and start to animate very slowly
   - ℹ️ can fix by pausing that `w stopTick` then playing
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
   - `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
-- three more minecraft skin migrations (total 5)
+- 🚧 three more minecraft skin migrations (total 5)
+  - 
 
 - 🚧 cleanup human-0 skin
-  - ✅ Blender: overlays are double-sided
+  - ✅ Blender: overlay cuboids should be double-sided
     - then can remove `Side={THREE.DoubleSide}`
   - ✅ Blender: space out initial skin: separate head from body along x-axis
   - can redirect head-overlay and body-overlay to "empty"
@@ -84,16 +65,16 @@
   - small-eyes -> robot-face-0
   - confused -> robot-face-1
 
-- consider "camera hot keys" e.g. 1, 2, 3 shows cameras with different constraints
-- try "turn around before moving" via small acceleration initially
-- profile-1 camera target y should always be 1.5?
-- move "x-ray" into PopUp opts?
-
 - 🚧 post-processing api
   - ✅ can manually load effects via `w view.extractPostEffects`
   - ✅ auto load effects via `w view.extractPostEffects`
   - ✅ can enable/disable post-processing
   - can animate post-processing i.e. set uniform on Vignette
+
+- consider "camera hot keys" e.g. 1, 2, 3 shows cameras with different constraints
+- try "turn around before moving" via small acceleration initially
+- profile-1 camera target y should always be 1.5?
+- move "x-ray" into PopUp opts?
 
 - ✅ shell should show debugs not errors
   - sometimes still show errors e.g. on mvdan-sh parse error
@@ -861,20 +842,6 @@
     - ✅ scientist-0-body-overlay
     - ✅ top-skin-only_body
 
-  - ℹ️ minecraft skin examples
-    - https://namemc.com/minecraft-skins/tag/soldier
-      - https://namemc.com/skin/45461862ef51524e
-    - https://namemc.com/minecraft-skins/tag/scientist
-      - https://namemc.com/skin/7161dce64d6b12be
-      - https://namemc.com/skin/3a335a2ec786efdb
-    - https://namemc.com/minecraft-skins/tag/general
-    - https://namemc.com/minecraft-skins/tag/medic
-    - https://namemc.com/minecraft-skins/tag/suit
-    - https://namemc.com/minecraft-skins/tag/engineer
-    - https://namemc.com/minecraft-skins/tag/assassin
-    - https://namemc.com/minecraft-skins/tag/politician
-    - https://namemc.com/minecraft-skins/tag/monk
-    - https://namemc.com/minecraft-skins/tag/priest
   - ℹ️ hyper-casual examples
     - https://assetstore.unity.com/packages/3d/characters/hyper-casual-low-poly-simple-people-175599?srsltid=AfmBOoqLMjV7_LitkXfLkWOdi49sIoj9_IdWld-OwbKn__LueOGdZliU
 - ✅ fix mobile pan conflict with ContextMenu
@@ -883,3 +850,23 @@
   - seems we `enter-off-mesh` but do not `enter-off-mesh-main`
   - seems we `clear-off-mesh` so that `npc.s.offMesh` is null
   - ✅ force re-invoke `onChangeAgentState`
+
+- ✅ cuboids have outlines via shader, using UVs
+  - ✅ can see outlines on decor cuboids
+  - ✅ un-weld geometry i.e. 12 tris (as before) but 3 * 12 = 36 verts
+    - in three.js this means `index` is [0..35]
+  - ✅ infer face-ordering from vertices
+    - `w decor.cuboidInst.geometry.attributes.position | map 'x => Array.from(x.array)'`
+    - `a.reduce((agg,x,i) => (i % 3 === 2 && agg.push(a.slice(i - 2, i + 1)), agg), [])`
+    - vertices:
+      - [0.5,0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,-0.5], [0.5,-0.5,0.5],[0.5,-0.5,-0.5],[0.5,0.5,-0.5], [-0.5,0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,0.5], [-0.5,-0.5,-0.5],[-0.5,-0.5,0.5],[-0.5,0.5,0.5], [-0.5,0.5,-0.5],[-0.5,0.5,0.5],[0.5,0.5,-0.5], [-0.5,0.5,0.5],[0.5,0.5,0.5],[0.5,0.5,-0.5], [-0.5,-0.5,0.5],[-0.5,-0.5,-0.5],[0.5,-0.5,0.5], [-0.5,-0.5,-0.5],[0.5,-0.5,-0.5],[0.5,-0.5,0.5], [-0.5,0.5,0.5],[-0.5,-0.5,0.5],[0.5,0.5,0.5], [-0.5,-0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,0.5], [0.5,0.5,-0.5],[0.5,-0.5,-0.5],[-0.5,0.5,-0.5], [0.5,-0.5,-0.5],[-0.5,-0.5,-0.5],[-0.5,0.5,-0.5]
+    - right-{upper,lower}, left-{upper,lower}, top-{back,front}, bottom-{front,back}, front-{top,bottom}, back-{top,bottom}
+  - ✅ understand uvs too
+    - `w decor.cuboidInst.geometry.attributes.uv | map 'x => Array.from(x.array)'`
+    - `a.reduce((agg,x,i) => (i % 2 === 1 && agg.push(a.slice(i - 1, i + 1)), agg), [])`
+    - uvs:
+      - [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1], [0,1],[0,0],[1,1], [0,0],[1,0],[1,1]
+    - Comparing uvs and respective vertices, we can infer the dimensions of uv-space:
+      - [dz,dy], [dz,dy], [dz,dy], [dz,dy], [dx,dz], [dx,dz], [dx,dz], [dx,dz], [dx,dy], [dx,dy], [dx,dy], [dx,dy]
+  - ✅ compute scale factors from instancedMatrix in vertex shader
+  - ✅ send scaled uv dimensions e.g. `[sz, sy]` from vertex shader to fragment shader

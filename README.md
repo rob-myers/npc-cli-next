@@ -252,9 +252,25 @@ We'll try to re-map publicly available Minecraft Skins.
   - https://namemc.com/skin/3a335a2ec786efdb
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/medic
+  - https://namemc.com/skin/194c3366860674c0
 - https://namemc.com/minecraft-skins/tag/suit
+- https://namemc.com/minecraft-skins/tag/business
+  - https://namemc.com/skin/7065f5c6d21f8df9
 - https://namemc.com/minecraft-skins/tag/engineer
+  - https://namemc.com/skin/5040062e039888a2
 - https://namemc.com/minecraft-skins/tag/assassin
 - https://namemc.com/minecraft-skins/tag/politician
 - https://namemc.com/minecraft-skins/tag/monk
+  - https://namemc.com/skin/a5f66f97d8382dc9
+  - https://namemc.com/skin/b84f86d6ab682a38
 - https://namemc.com/minecraft-skins/tag/priest
+- https://namemc.com/minecraft-skins/tag/scary
+  - https://namemc.com/skin/aa774a19c9ce5fc9
+- https://namemc.com/minecraft-skins/tag/police
+  - https://namemc.com/skin/c06caf409cd8427e
+- https://namemc.com/minecraft-skins/tag/star-wars
+  - https://namemc.com/skin/c4e6ff045b7ab219
+- https://namemc.com/minecraft-skins/tag/knight
+  - https://namemc.com/skin/5fd193f91ecc3e2e
+- https://namemc.com/minecraft-skins/tag/skeleton
+  - https://namemc.com/skin/4c15a5af6a583cc9
