@@ -726,24 +726,6 @@
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 832)" style="">
       <title>medic-0_body-overlay</title>
-      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" x="928" y="416">
-        <title>top</title>
-      </rect>
-      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" x="1056" y="416">
-        <title>bottom</title>
-      </rect>
-      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="800">
-        <title>left</title>
-      </rect>
-      <rect width="128" height="256" style="transform-origin: 992px 672px; fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="928">
-        <title>front</title>
-      </rect>
-      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="1056">
-        <title>right</title>
-      </rect>
-      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="1184">
-        <title>back</title>
-      </rect>
       <g style="filter: url(&quot;#inner-shadow-filter-11&quot;) url(&quot;#saturate-filter-8&quot;);">
         <title>_front-and-top</title>
         <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAJklEQVQIHWM8/ejRfxZmZgZs4M/fvwxM2CSQxUhToM/+jwGEkQEAKQII/tKfN6sAAAAASUVORK5CYII=" width="128" height="64" x="928" y="478" style="image-rendering: pixelated; opacity: 0.9;" transform="matrix(1, 0, 0, 1.96875, 0, -525.0625)">
@@ -759,7 +741,27 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAMCAYAAACqYHctAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABaADAAQAAAABAAAADAAAAAByun6AAAAAOUlEQVQIHWM8//TpfwYk8O/bNwYmJD6cycTIyAjnwBhM//+j6AaLY9XOws3CAtMFpj8DSawq6SYIAPAhCqI1S+Z3AAAAAElFTkSuQmCC" width="128" height="307.2" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-12&quot;);" transform="matrix(-1, 0, 0, 0.625, 1984, 204.000076)">
         <title>_right</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAATUlEQVQYGWM8//Tpf25mZgZs4OvfvwwsIAleAQEGTiYmFDXf//1j+Pr2LQOqKIoSCIdyBSwgB7IBTWNmATsHbgnbr18MIDnKrRgMJgAAhNAO3T+CiXMAAAAASUVORK5CYII=" width="128" height="192" x="1184" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-13&quot;);"/>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAATUlEQVQYGWM8//Tpf25mZgZs4OvfvwwsIAleAQEGTiYmFDXf//1j+Pr2LQOqKIoSCIdyBSwgB7IBTWNmATsHbgnbr18MIDnKrRgMJgAAhNAO3T+CiXMAAAAASUVORK5CYII=" width="128" height="192" x="1184" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-13&quot;);">
+        <title>_bak</title>
+      </image>
+      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" x="928" y="416">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" x="1056" y="416">
+        <title>bottom</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="800">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="256" style="transform-origin: 992px 672px; fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="928">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="1056">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="1184">
+        <title>back</title>
+      </rect>
       <g>
         <title>_right-lapel</title>
         <rect x="1056" y="544" width="128" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
