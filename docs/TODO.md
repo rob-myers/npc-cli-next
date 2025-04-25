@@ -82,6 +82,8 @@
 
 - ✅ shell should show debugs not errors
   - sometimes still show errors e.g. on mvdan-sh parse error
+- avoid "speed up before collision" near door
+  - seems related to enter offMeshConnection
 - somehow additionally indicate npc is selected by ContextMenu when docked
 - another model human-1
 - tween: provide many examples

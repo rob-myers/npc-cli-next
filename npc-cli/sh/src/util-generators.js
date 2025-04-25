@@ -152,28 +152,6 @@ export async function* map(ctxt) {
     }
 
   }
-
-  while ((datum = await api.read(true)) !== api.eof) {
-    try {
-      if (api.isDataChunk(datum) === true) {
-        if (isAsync === true) {// unwind chunks:
-          for (const item of datum.items) {
-            yield await (isNativeCode ? func(item) : func(item, ctxt, count++));
-          }
-        } else {// fast on chunks:
-          yield api.dataChunk(datum.items.map(isNativeCode ? func : x => func(x, ctxt, count++)));
-        }
-      } else {
-        yield await (isNativeCode ? func(datum) : func(datum, ctxt, count++));
-      }
-    } catch (e) {
-      if (opts.forever === true) {
-        api.error(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
-      } else {
-        throw e;
-      }
-    }
-  }
 }
 
 /**
