@@ -148,15 +148,18 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <filter id="outline-filter-1" bx:preset="outline 1 4 #bada55" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+    <filter id="outline-filter-1" bx:preset="outline 1 4 #000" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="4"/>
-      <feFlood flood-color="#bada55" result="flood"/>
+      <feFlood flood-color="#000" result="flood"/>
       <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
       <feMerge>
         <feMergeNode in="outline"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <bx:export>
+      <bx:file format="svg"/>
+    </bx:export>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -411,7 +414,7 @@
       </rect>
       <g transform="matrix(1, 0, 0, 1, 0, 466)">
         <title>_belt</title>
-        <path d="M 1299.411 100.053 L 1298.943 118.604 L 1232.293 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 L 1184 214.948 L 1184 215.08 L 1196 214.948 L 1290.258 87.667 L 1300.258 87.667 L 1300.208 98.678 L 1299.411 100.053 Z" style="fill: rgb(238, 238, 238); stroke: rgb(0, 0, 0); stroke-width: 4px;"/>
+        <path d="M 1300.258 87.667 L 1300 118.6 L 1232.293 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214 L 1196 214 L 1290.258 87.667 L 1300 87.7 L 1300.258 87.667 Z" style="fill: rgb(238, 238, 238); stroke: rgb(0, 0, 0); stroke-width: 4px;"/>
       </g>
       <g style="filter: none;" transform="matrix(0.333333, 0, 0, 0.5, 666.000305, 508)">
         <title>_medal</title>
