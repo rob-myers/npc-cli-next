@@ -106,9 +106,10 @@ export default function World(props) {
       return ready;
     },
     onDebugTick() {
+      // 🚧 move to w.view.onPausedTick
       state.timer.update();
-      // Animate camera while paused
       if (
+        state.view.tweenWhilePaused === true &&
         Object.keys(state.view.dst).length > 0 // 🚧
       ) {
         state.view.onTick(state.timer.getDelta());

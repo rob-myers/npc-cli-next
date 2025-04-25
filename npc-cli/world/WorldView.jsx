@@ -379,7 +379,7 @@ export default function WorldView(props) {
       if (state.dst.fov !== undefined) {// change fov
         camera.fov = state.fov;
         camera.updateProjectionMatrix();
-        if (damp(state, 'fov', state.dst.fov, 0.4, deltaMs, undefined, undefined, 1) === false) {
+        if (damp(state, 'fov', state.dst.fov, 0.4, deltaMs, undefined, undefined, 0.1) === false) {
           delete state.dst.fov;
           state.resolve.fov?.();
         }
