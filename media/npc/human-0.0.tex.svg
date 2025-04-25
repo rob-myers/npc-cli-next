@@ -281,7 +281,7 @@
       </circle>
       <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; white-space: pre;" x="5.428" y="2038.69"><title>_label-test-text</title>label-test-text</text>
     </g>
-    <g style="pointer-events: none;">
+    <g style="">
       <title>empty_body</title>
       <rect width="128" height="256" style="fill: none; stroke-width: 4px;" y="1792" x="1920">
         <title>front</title>
@@ -316,6 +316,48 @@
           <title>_right</title>
         </circle>
       </g>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 416, 288.000031)" style="">
+      <title>plus-icon_body-overlay</title>
+      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
+        <title>front</title>
+      </rect>
+      <g id="SVGRepo_iconCarrier" transform="matrix(3.55555, 0, 0, 3.55555, 149.333, 604.958)" style="">
+        <title>icon/24/health</title>
+        <desc>Created with Sketch.</desc>
+        <path d="M 19 3 L 5 3 C 3.9 3 3.01 3.9 3.01 5 L 3 19 C 3 20.1 3.9 21 5 21 L 19 21 C 20.1 21 21 20.1 21 19 L 21 5 C 21 3.9 20.1 3 19 3 Z" id="path-1" transform="matrix(1, 0, 0, 1, 0, 0.001)" style="stroke: rgb(255, 255, 255); stroke-width: 1.6875px; fill: rgb(0, 255, 0);"/>
+        <path d="M19,3 L5,3 C3.9,3 3.01,3.9 3.01,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 L19,3 Z M18,14 L14,14 L14,18 L10,18 L10,14 L6,14 L6,10 L10,10 L10,6 L14,6 L14,10 L18,10 L18,14 L18,14 Z" id="path" fill="#000000"/>
+      </g>
+    </g>
+    <g style="filter: none;" transform="matrix(1, 0, 0, 1, 32, 0)">
+      <title>top-skin-only_body</title>
+      <rect width="128" height="128" style="stroke-width: 4px; stroke: rgb(170, 170, 170);" x="928">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="stroke-width: 12px;" x="1056">
+        <title>bottom</title>
+      </rect>
+      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="800">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial;" y="128" x="928">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="1056">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="1184">
+        <title>back</title>
+      </rect>
+      <path d="M 976 128 L 976 192 L 928 128 L 976 128 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;">
+        <title>_triangle</title>
+      </path>
+      <path d="M 1008 128 L 1008 192 L 1056 128 L 1008 128 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-origin: 1032px 160px; visibility: hidden;">
+        <title>_triangle</title>
+      </path>
+      <path d="M 928 0 L 1056 0 L 1056 128 L 1008 128 L 1008 160 L 976 160 L 976 128 L 928 128 Z" style="stroke-width: 12px; alignment-baseline: initial; fill: rgb(186, 127, 85); filter: url(&quot;#inner-shadow-filter-5&quot;);">
+        <title>_skin</title>
+      </path>
     </g>
     <g transform="matrix(1, 0, 0, 1, 864, 0)">
       <title>soldier-0_head</title>
@@ -512,48 +554,6 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXElEQVQYGWNgAAJbbdn/lhpS/2FsEB/EBgFGGOfP379ggeM3nqGIMR2++pgRLAMkWJiZwaYhi4Hl0K2AWQeSZAKrgBIghTDdMEUoCpAVg6zDADAHw2gMBTABZAUAqIgoGqncSp8AAAAASUVORK5CYII=" width="128" height="128" x="512" y="672" style="image-rendering: pixelated;">
         <title>_top</title>
       </image>
-    </g>
-    <g style="filter: none;" transform="matrix(1, 0, 0, 1, 32, 0)">
-      <title>top-skin-only_body</title>
-      <rect width="128" height="128" style="stroke-width: 4px; stroke: rgb(170, 170, 170);" x="928">
-        <title>top</title>
-      </rect>
-      <rect width="128" height="128" style="stroke-width: 12px;" x="1056">
-        <title>bottom</title>
-      </rect>
-      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="800">
-        <title>left</title>
-      </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial;" y="128" x="928">
-        <title>front</title>
-      </rect>
-      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="1056">
-        <title>right</title>
-      </rect>
-      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="1184">
-        <title>back</title>
-      </rect>
-      <path d="M 976 128 L 976 192 L 928 128 L 976 128 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;">
-        <title>_triangle</title>
-      </path>
-      <path d="M 1008 128 L 1008 192 L 1056 128 L 1008 128 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-origin: 1032px 160px; visibility: hidden;">
-        <title>_triangle</title>
-      </path>
-      <path d="M 928 0 L 1056 0 L 1056 128 L 1008 128 L 1008 160 L 976 160 L 976 128 L 928 128 Z" style="stroke-width: 12px; alignment-baseline: initial; fill: rgb(186, 127, 85); filter: url(&quot;#inner-shadow-filter-5&quot;);">
-        <title>_skin</title>
-      </path>
-    </g>
-    <g transform="matrix(1, 0, 0, 1, 416, 288.000031)" style="">
-      <title>plus-icon_body-overlay</title>
-      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
-        <title>front</title>
-      </rect>
-      <g id="SVGRepo_iconCarrier" transform="matrix(3.55555, 0, 0, 3.55555, 149.333, 604.958)" style="">
-        <title>icon/24/health</title>
-        <desc>Created with Sketch.</desc>
-        <path d="M 19 3 L 5 3 C 3.9 3 3.01 3.9 3.01 5 L 3 19 C 3 20.1 3.9 21 5 21 L 19 21 C 20.1 21 21 20.1 21 19 L 21 5 C 21 3.9 20.1 3 19 3 Z" id="path-1" transform="matrix(1, 0, 0, 1, 0, 0.001)" style="stroke: rgb(255, 255, 255); stroke-width: 1.6875px; fill: rgb(0, 255, 0);"/>
-        <path d="M19,3 L5,3 C3.9,3 3.01,3.9 3.01,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 L19,3 Z M18,14 L14,14 L14,18 L10,18 L10,14 L6,14 L6,10 L10,10 L10,6 L14,6 L14,10 L18,10 L18,14 L18,14 Z" id="path" fill="#000000"/>
-      </g>
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 416)" style="">
       <title>scientist-0_body-overlay</title>
