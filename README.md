@@ -255,6 +255,8 @@ We'll try to re-map publicly available Minecraft Skins.
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/medic
   - 🚧 https://namemc.com/skin/194c3366860674c0
+- https://namemc.com/minecraft-skins/tag/knight
+  - 🚧 https://namemc.com/skin/5fd193f91ecc3e2e
 - https://namemc.com/minecraft-skins/tag/suit
 - https://namemc.com/minecraft-skins/tag/business
   - https://namemc.com/skin/7065f5c6d21f8df9
@@ -272,7 +274,5 @@ We'll try to re-map publicly available Minecraft Skins.
   - https://namemc.com/skin/c06caf409cd8427e
 - https://namemc.com/minecraft-skins/tag/star-wars
   - https://namemc.com/skin/c4e6ff045b7ab219
-- https://namemc.com/minecraft-skins/tag/knight
-  - https://namemc.com/skin/5fd193f91ecc3e2e
 - https://namemc.com/minecraft-skins/tag/skeleton
   - https://namemc.com/skin/4c15a5af6a583cc9
