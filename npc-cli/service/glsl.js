@@ -135,11 +135,13 @@ const instancedLabelsShader = {
 export const instancedFlatShader = {
   Vert: /*glsl*/`
 
+  uniform bool quadOutlines;
+
   varying float dotProduct;
   varying vec3 vColor;
   flat varying uint vInstanceId;
   varying vec2 vUv;
-  // varying vec2 vUvInset;
+  varying vec2 vUvScale;
 
   attribute uint instanceIds;
 
@@ -152,9 +154,21 @@ export const instancedFlatShader = {
     vInstanceId = instanceIds;
     vUv = uv;
 
-    // // 🚧 uv in {0,1}²
-    // vUvInset.x = uv.x == 0.0 ? 0.1 : 0.9;
-    // vUvInset.y = uv.y == 0.0 ? 0.1 : 0.9;
+    if (quadOutlines == true) {
+      float edgeWidth = 0.025; // relative to unit cuboid
+      int triangleId = int(gl_VertexID / 3);
+      if (triangleId < 4) {// [dz, dy]
+        vUvScale.x = edgeWidth * (1.0 / length(instanceMatrix[2]));
+        vUvScale.y = edgeWidth * (1.0 / length(instanceMatrix[1]));
+      } else if (triangleId < 8) {// [dx,dz]
+        vUvScale.x = edgeWidth * (1.0 / length(instanceMatrix[0]));
+        vUvScale.y = edgeWidth * (1.0 / length(instanceMatrix[2]));
+      } else {// [dx, dy]
+        vUvScale.x = edgeWidth * (1.0 / length(instanceMatrix[0]));
+        vUvScale.y = edgeWidth * (1.0 / length(instanceMatrix[1]));
+      }
+    }
+
 
     vec3 objectNormal = vec3(normal);
     vec3 transformed = vec3(position);
@@ -192,6 +206,7 @@ export const instancedFlatShader = {
 
   flat varying uint vInstanceId;
   varying vec2 vUv;
+  varying vec2 vUvScale;
 	varying float dotProduct;
   varying vec3 vColor;
 
@@ -209,8 +224,7 @@ export const instancedFlatShader = {
     float normalLight = 0.7;
 
     if (quadOutlines == true) {
-      // 🚧 take account of scaling
-      float dx = 0.025, dy = 0.025;
+      float dx = vUvScale.x, dy = vUvScale.y;
       if (
         vUv.x <= dx
         || vUv.x >= 1.0 - dx
