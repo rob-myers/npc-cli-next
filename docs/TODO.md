@@ -128,6 +128,9 @@
   - ✅ use loadImage of svgPath instead of data-url
   - 🚧 faster run onchange skin
 
+- 🚧 support transform + transform-box fill-box inside e.g. human-0.0.tex.svg
+  - https://github.com/Automattic/node-canvas/issues/2507
+
 - blog/index -> /blog/home
   - observed caching of local build sending /blog/index -> /blog/ and received 404
   - alternatively could handle /blog/

@@ -1,5 +1,6 @@
 /**
  * Usage:
+ * - npm run test-svg-to-png-fast media/debug/node-canvas-bug.svg
  * - npm run test-svg-to-png-fast media/debug/minecraft-testing.svg
  * - npm run test-svg-to-png media/debug/minecraft-testing.svg
  * - npm run test-svg-to-png media/debug/test-human-0.0.tex.svg
