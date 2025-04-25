@@ -1239,7 +1239,7 @@ export class Npc {
 const staticMaxAcceleration = 4;
 const movingMaxAcceleration = 6;
 const staticSeparationWeight = 1.5;
-const movingSeparationWeight = 1;
+const movingSeparationWeight = 0.5;
 // const movingSeparationWeight = 0.4;
 const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
