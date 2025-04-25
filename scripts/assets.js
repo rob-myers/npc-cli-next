@@ -19,17 +19,17 @@
  */
 /// <reference path="./deps.d.ts"/>
 
-import childProcess from "child_process";
-import fs from "fs";
-import path from "path";
+import childProcess from 'child_process';
+import fs from 'fs';
+import path from 'path';
 import { promises as stream } from 'stream';
 import { performance, PerformanceObserver } from 'perf_hooks'
 //@ts-ignore
 import getopts from 'getopts';
-import stringify from "json-stringify-pretty-compact";
+import stringify from 'json-stringify-pretty-compact';
 import { Canvas, loadImage } from '@napi-rs/canvas';
 import nodeCanvas from 'canvas';
-import PQueue from "p-queue-compat";
+import PQueue from 'p-queue-compat';
 
 // relative urls for sucrase-node
 import { Poly } from "../npc-cli/geom";
@@ -998,7 +998,13 @@ async function saveCanvasAsFile(canvas, outputPath) {
  * @param {'node-canvas'} using or 🚧 @napi-rs/canvas in case of nondeterminism
  */
 async function convertSvgToPng(svgPath, pngPath, using) {
+  // 🚧 try normalize SVG to support e.g. rect with transform-box fill
+  // let contents = (await fs.promises.readFile(svgPath)).toString();
+  // const dataUrl = `data:image/svg+xml;utf8,${contents}`;
+  // const image = await nodeCanvas.loadImage(dataUrl);
+
   const image = await nodeCanvas.loadImage(svgPath);
+
   const canvas = new nodeCanvas.Canvas(image.width, image.height);
   canvas.getContext('2d').drawImage(image, 0, 0);
   await stream.pipeline(
