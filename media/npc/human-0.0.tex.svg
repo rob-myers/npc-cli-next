@@ -575,32 +575,32 @@
       <rect width="128" height="256" style="fill-opacity: 0.3; fill: none;" y="544" x="1184">
         <title>back</title>
       </rect>
-      <path d="M 928 496 L 960 496 L 960 608 L 976 608 L 976 800 L 928 800 Z M 1008 608 L 1024 608 L 1024 496 L 1056 496 L 1056 800 L 1008 800 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
-      <rect x="800" y="608" width="128" height="192" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-7&quot;);"/>
-      <rect x="1056" y="608" width="128" height="192" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-6&quot;);"/>
-      <rect x="880" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
-      <rect x="800" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
-      <rect x="928" y="416" width="48" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-9&quot;);"/>
-      <rect x="1008" y="416" width="48" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-9&quot;);"/>
-      <rect x="1056" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
-      <rect x="1136" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
-      <rect x="1184" y="544" width="128" height="256" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-8&quot;);"/>
+      <g>
+        <title>_lab-coat</title>
+        <path d="M 928 496 L 960 496 L 960 608 L 976 608 L 976 800 L 928 800 Z M 1008 608 L 1024 608 L 1024 496 L 1056 496 L 1056 800 L 1008 800 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
+        <rect x="800" y="608" width="128" height="192" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-7&quot;);"/>
+        <rect x="1056" y="608" width="128" height="192" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-6&quot;);"/>
+        <rect x="880" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
+        <rect x="800" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
+        <rect x="928" y="416" width="48" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-9&quot;);"/>
+        <rect x="1008" y="416" width="48" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-9&quot;);"/>
+        <rect x="1056" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
+        <rect x="1136" y="544" width="48" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
+        <rect x="1184" y="544" width="128" height="256" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8; filter: url(&quot;#inner-shadow-filter-8&quot;);"/>
+        <rect x="848" y="544" width="32" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
+        <rect x="1104" y="544" width="32" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
+      </g>
       <g transform="matrix(0.34375, 0, 0, 1, 525, 478)" style="">
         <title>_belt</title>
         <path d="M 800 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(136, 136, 153);"/>
+        <path d="M 1410.91 214.948 L 2289.46 214.948 L 2289.46 242 L 1410.91 242 L 1410.91 214.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(136, 136, 153);"/>
       </g>
-      <rect x="848" y="544" width="32" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
-      <rect x="1104" y="544" width="32" height="64" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.8;"/>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAqADAAQAAAABAAAAAgAAAADtGLyqAAAAGElEQVQIHWOccLrl//fL/xmYQASnLiMDAGGsCKufFtqrAAAAAElFTkSuQmCC" width="32" height="32" x="1104" y="640" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;) url(&quot;#outline-filter-0&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAqADAAQAAAABAAAAAgAAAADtGLyqAAAAGElEQVQIHWOccLrl//fL/xmYQASnLiMDAGGsCKufFtqrAAAAAElFTkSuQmCC" width="32" height="32" x="1104" y="560" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;) url(&quot;#outline-filter-0&quot;);">
         <title>_badge</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAqADAAQAAAABAAAAAgAAAADtGLyqAAAAGElEQVQIHWOccLrl//fL/xmYQASnLiMDAGGsCKufFtqrAAAAAElFTkSuQmCC" width="32" height="32" x="848" y="640" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;) url(&quot;#outline-filter-0&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAqADAAQAAAABAAAAAgAAAADtGLyqAAAAGElEQVQIHWOccLrl//fL/xmYQASnLiMDAGGsCKufFtqrAAAAAElFTkSuQmCC" width="32" height="32" x="848" y="560" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;) url(&quot;#outline-filter-0&quot;);">
         <title>_badge</title>
       </image>
-      <g transform="matrix(0.589844, 0, 0, 1, 538.125, 478)" style="">
-        <title>_belt</title>
-        <path d="M 800 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(136, 136, 153);"/>
-      </g>
     </g>
     <g transform="matrix(1, 0, 0, 1, 866, 1664)">
       <title>medic-0_head</title>
