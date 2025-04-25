@@ -12,7 +12,7 @@ spawn '{ npcKey: "will", skin: {
 
 spawn '{ npcKey: "kate", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
-  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "empty", otherPart: "body-front" },
+  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
 }}' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
 w n.rob.showSelector true

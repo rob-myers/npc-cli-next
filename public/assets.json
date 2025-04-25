@@ -1291,11 +1291,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -695425576},
-    "imagesHash": -502063673
+    "imagesHash": -227211704
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-371354337, 1474634897]},
+    "svgHashes": {"human-0": [1834203022, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -1928,6 +1928,54 @@
           "sheetId": 0,
           "x": 0.734375,
           "y": 0.9375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-front": {
+          "key": "medic-0_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-back": {
+          "key": "medic-0_head-overlay-back",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-left": {
+          "key": "medic-0_head-overlay-left",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-right": {
+          "key": "medic-0_head-overlay-right",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-top": {
+          "key": "medic-0_head-overlay-top",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-bottom": {
+          "key": "medic-0_head-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },

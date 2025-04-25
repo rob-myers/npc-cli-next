@@ -543,7 +543,7 @@
         <title>_skin</title>
       </path>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 416, 288.000031)" style="pointer-events: none;">
+    <g transform="matrix(1, 0, 0, 1, 416, 288.000031)" style="">
       <title>plus-icon_body-overlay</title>
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
         <title>front</title>
@@ -639,6 +639,42 @@
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAV0lEQVQYGWPcleb4nwEPYAHJPfn4DasSGX4uBpbrch5YJUGC14GYKcaMH6cCkBzYCpAKC2sjFIUnjp4D85mwSSKLMRLyBeOSG/f+y4hxoBgP4zx59YMBABOqFc39A0BKAAAAAElFTkSuQmCC" width="128" height="128" x="638" y="256" style="image-rendering: pixelated;">
         <title>_bottom</title>
+      </image>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 1154, 0)">
+      <title>medic-0_head-overlay</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="510">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="638">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" y="128" x="510">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="638" y="128">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="510" y="256">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; filter: none;" x="638" y="256">
+        <title>bottom</title>
+      </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAVElEQVQYGWNgAIJdaY7/QRjEhgEYnxHEcJu1nxEmAaJhkiA2WAGIgQzQNSDL0YDNuOTGvf8yYhxgo/m5+MD0x2+fwPSTVz8Y4K5HVgiSiNFQAssBAJmzId51mZwwAAAAAElFTkSuQmCC" width="128" height="128" x="510" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAOklEQVQYGWNkQAK70hz/g7hus/YzwthI0phMohRhakMTYUTjw7kw45ngIjgYcNeCXA5SA9OJQz2mMABIfhGG67KaCwAAAABJRU5ErkJggg==" width="128" height="128" x="638" style="image-rendering: pixelated;">
+        <title>_back</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAATUlEQVQYGWNgIAAY0eV3pTn+RxZjQuZgY7OABGG63Gbth5sIYzPCJJF1wyRBYmATQAxkQZCmV0VzGWI0lOAmgtRggCU37qE4GEMBSAAArjsWBq9v0oAAAAAASUVORK5CYII=" width="128" height="128" x="510" y="128" style="image-rendering: pixelated;">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAANUlEQVQYGWNgIAR2pTn+B2GQOhiNoQdZEYYkTIBoRTANKPSSG/fAbkARhHHwSeJ0NEwziAYAAhAcE5iEVrIAAAAASUVORK5CYII=" width="128" height="128" x="638" y="128" style="image-rendering: pixelated;">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAI0lEQVQYGWNgQAK70hz/gzCS0NBgMsKcic31brP2Q+TxeQ8AycENgqUT79EAAAAASUVORK5CYII=" width="128" height="128" x="510" y="256" style="image-rendering: pixelated;">
+        <title>_top</title>
       </image>
     </g>
   </g>
