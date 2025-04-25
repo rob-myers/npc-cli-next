@@ -43,13 +43,18 @@ export class Npc {
   delta = new THREE.Vector3();
 
   /**
-   * `skin` amounts to a "uv re-mapping".
+   * Amounts to "uv re-mapping".
    * 
-   * Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
-   * where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
+   * - Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
+   *   where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
+   * - We overwrite this object.
    */
   skin = /** @type {NPC.SkinReMap} */ ({});
 
+  /**
+   * Tint skin parts.
+   * - We overwrite this object.
+   */
   tint = /** @type {NPC.SkinTint} */ ({
     selector: [1, 1, 1, 0],
   });
@@ -740,22 +745,32 @@ export class Npc {
   /**
    * Brace expansion of keys of `this.skin` or `this.tint`, e.g.
    * > `'head-{front,back}'` -> `['head-front', 'head-back']`
-   * @param {'skin' | 'tint'} type
+   * 
+   * - Any keys with braces will be expanded and removed.
+   * - Later keys override earlier ones.
+   * @template {'skin' | 'tint'} T
+   * @param {T} type
    */
   expandSkinMap(type) {
     const lookup = this[type];
+    const pending = /** @type {typeof lookup} */ ({});
+
     for (const k of keys(lookup)) {
+      const v = lookup[k];
       if (k.includes('{') === false) {
-        continue;
+        pending[k] = v;
+      } else {
+        braces(k, { expand: true }).forEach(expanded => {
+          if (helper.isSkinPart(expanded) === true) {
+            pending[expanded] = v;
+          } else {
+            warn(`${'expandSkinMap'}: ${type}: ${this.key}: ignored invalid skinPart "${expanded}"`);
+          }
+        });
       }
-      braces(k, { expand: true }).forEach(expanded => {
-        if (helper.isSkinPart(expanded) === true) {
-          lookup[expanded] = lookup[k];
-        } else {
-          warn(`${'expandSkinMap'}: ${type}: ${this.key}: ignored invalid skinPart "${expanded}"`);
-        }
-      });
     }
+
+    this[type] = pending;
   }
 
   /**
@@ -1015,7 +1030,7 @@ export class Npc {
   }
 
   resetSkin() {
-    keys(this.skin).forEach(key => delete this.skin[key]);
+    this.skin = {};
     this.applySkin();
   }
 
