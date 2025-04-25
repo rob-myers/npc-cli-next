@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com" width="2048" height="2048" viewBox="0 0 2048 2048">
   <defs>
-    <bx:grid x="0" y="0" width="16" height="16"/>
+    <bx:grid x="0" y="0" width="16" height="16" color="rgba(0,255,0,0.2)"/>
     <filter id="saturate-filter-1" bx:preset="saturate 1 1.81" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feColorMatrix type="saturate" values="1.81"/>
     </filter>
