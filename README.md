@@ -101,6 +101,8 @@ w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'
 
 # pass from Vector3 to Vect for an internal function which only supports the latter
 click | map xz | w n.rob.getLookAngle -
+
+w view.controls | assign '{minDistance:1}'
 ```
 
 ## Working with a branch of `recast-navigation-js`

@@ -53,8 +53,9 @@
   - `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
 - 🚧 three more minecraft skin migrations (total 5)
-  - 🚧 medic
+  - ✅ medic
     - https://namemc.com/skin/194c3366860674c0
+  - 🚧 ...
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlay cuboids should be double-sided

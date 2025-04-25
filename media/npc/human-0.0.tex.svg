@@ -160,6 +160,53 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <filter id="inner-shadow-filter-10" bx:preset="inner-shadow 1 0 0 24 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="24"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
+    <filter id="inner-shadow-filter-11" bx:preset="inner-shadow 1 0 0 21 0.61 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="21"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1.22"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
+    <filter id="saturate-filter-8" bx:preset="saturate 1 0.84" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="saturate" values="0.84"/>
+    </filter>
+    <filter id="inner-shadow-filter-12" bx:preset="inner-shadow 1 0 0 40 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="40"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
+    <filter id="inner-shadow-filter-13" bx:preset="inner-shadow 1 0 0 40 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="40"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -622,7 +669,7 @@
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; filter: none; stroke-width: 8px;" x="638" y="256">
         <title>bottom</title>
       </rect>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWklEQVQYGWPcleb4nwEPYIHJcQixwZgMP979grMZ/99cjWLC4flzwJK2iSkMu3unMTCAFHgZWP0H0cgYJsYENwsHA8MKdHUETWBZ+t+YQUaMA10jmP/k1Q8GAK5OLpvVY5s4AAAAAElFTkSuQmCC" width="128" height="128" x="510" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWklEQVQYGWPcleb4nwEPYIHJcQixwZgMP979grMZ/99cjWLC4flzwJK2iSkMu3unMTCAFHgZWP0H0cgYJsYENwsHA8MKdHUETWBZ+t+YQUaMA10jmP/k1Q8GAK5OLpvVY5s4AAAAAElFTkSuQmCC" width="128" height="128" x="510" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-10&quot;);">
         <title>_front</title>
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAMUlEQVQYGWPcleb4nwEPYMIjB5aiggJGrr9go2A0iIPMJmzF/2/MYBNgNIiDzCZoAgAufgtwcb2X0gAAAABJRU5ErkJggg==" width="128" height="128" x="638" style="image-rendering: pixelated;">
@@ -676,6 +723,61 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAI0lEQVQYGWNgQAK70hz/gzCS0NBgMsKcic31brP2Q+TxeQ8AycENgqUT79EAAAAASUVORK5CYII=" width="128" height="128" x="510" y="256" style="image-rendering: pixelated;">
         <title>_top</title>
       </image>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 32, 832)" style="">
+      <title>medic-0_body-overlay</title>
+      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" x="928" y="416">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" x="1056" y="416">
+        <title>bottom</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="800">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="256" style="transform-origin: 992px 672px; fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="928">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="1056">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0);" y="544" x="1184">
+        <title>back</title>
+      </rect>
+      <g style="filter: url(&quot;#inner-shadow-filter-11&quot;) url(&quot;#saturate-filter-8&quot;);">
+        <title>_front-and-top</title>
+        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAJklEQVQIHWM8/ejRfxZmZgZs4M/fvwxM2CSQxUhToM/+jwGEkQEAKQII/tKfN6sAAAAASUVORK5CYII=" width="128" height="64" x="928" y="478" style="image-rendering: pixelated; opacity: 0.9;" transform="matrix(1, 0, 0, 1.96875, 0, -525.0625)">
+          <title>_top</title>
+        </image>
+        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAqElEQVQYGWWPMQ7DIAxFTYrUjUNk6UmyMnCAjJyKKdfIGbp2SC7RkSJXVN/UqKiWwN/2w8Z0P8/6LKV67yszy4FGDjVLX4sxUgiBjDEEfbGtNCngnFNJ0I95llgApfEadl1X8bwsJMCbWRJ6vbZNpN33Bmjh19+Oo0G4MSLnTLVWSULr2L5FKaUD0GryBwQpJVkRH4VWE6A11tToZQSWm6bebNQj/x99ALAvQMvDZIKKAAAAAElFTkSuQmCC" width="128" height="192" x="928" y="544" style="image-rendering: pixelated; filter: none;">
+          <title>_front-1</title>
+        </image>
+        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAABAAAAADFbP4CAAAAI0lEQVQIHWM4e/v2/8///sExEwMaYIHxE0JCGf7++8uAoQIA4OUTVsYij0cAAAAASUVORK5CYII=" width="64" height="64" x="928" y="736" style="image-rendering: pixelated; opacity: 0.8;">
+          <title>_front-2</title>
+        </image>
+        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAABAAAAADFbP4CAAAAI0lEQVQIHWM4e/v2/8///sExEwMaYIHxE0JCGf7++8uAoQIA4OUTVsYij0cAAAAASUVORK5CYII=" width="64" height="64" x="-1056" y="736" style="image-rendering: pixelated; opacity: 0.8;" transform="matrix(-1, 0, 0, 1, 0, 0)">
+          <title>_front-3</title>
+        </image>
+      </g>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAMCAYAAACqYHctAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABaADAAQAAAABAAAADAAAAAByun6AAAAAOUlEQVQIHWM8//TpfwYk8O/bNwYmJD6cycTIyAjnwBhM//+j6AaLY9XOws3CAtMFpj8DSawq6SYIAPAhCqI1S+Z3AAAAAElFTkSuQmCC" width="128" height="307.2" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-12&quot;);" transform="matrix(1, 0, 0, 0.625, 0, 203.999908)">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAMCAYAAACqYHctAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABaADAAQAAAABAAAADAAAAAByun6AAAAAOUlEQVQIHWM8//TpfwYk8O/bNwYmJD6cycTIyAjnwBhM//+j6AaLY9XOws3CAtMFpj8DSawq6SYIAPAhCqI1S+Z3AAAAAElFTkSuQmCC" width="128" height="307.2" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-12&quot;);" transform="matrix(-1, 0, 0, 0.625, 1984, 204.000076)">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAATUlEQVQYGWM8//Tpf25mZgZs4OvfvwwsIAleAQEGTiYmFDXf//1j+Pr2LQOqKIoSCIdyBSwgB7IBTWNmATsHbgnbr18MIDnKrRgMJgAAhNAO3T+CiXMAAAAASUVORK5CYII=" width="128" height="192" x="1184" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-13&quot;);"/>
+      <g>
+        <title>_right-lapel</title>
+        <rect x="1056" y="544" width="128" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
+        <rect x="1104" y="544" width="32" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
+        <rect x="1024" y="464" width="32" height="32" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
+      </g>
+      <g>
+        <title>_left-lapel</title>
+        <rect x="800" y="544" width="128" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
+        <rect x="848" y="544" width="32" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
+        <rect x="928" y="464" width="32" height="32" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
+      </g>
     </g>
   </g>
 </svg>
