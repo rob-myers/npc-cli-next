@@ -53,7 +53,8 @@
   - `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
 - 🚧 three more minecraft skin migrations (total 5)
-  - 
+  - 🚧 medic
+    - https://namemc.com/skin/194c3366860674c0
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlay cuboids should be double-sided
@@ -71,7 +72,9 @@
   - ✅ can enable/disable post-processing
   - can animate post-processing i.e. set uniform on Vignette
 
-- consider "camera hot keys" e.g. 1, 2, 3 shows cameras with different constraints
+- consider "hot keys" e.g. 1, 2, 3, also tapable
+  - could use to change camera settings
+  - could use to change input settings e.g. drag select
 - try "turn around before moving" via small acceleration initially
 - profile-1 camera target y should always be 1.5?
 - move "x-ray" into PopUp opts?

@@ -148,8 +148,11 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <filter id="outline-filter-1" bx:preset="outline 1 4 #000" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
-      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="4"/>
+    <bx:export>
+      <bx:file format="svg"/>
+    </bx:export>
+    <filter id="outline-filter-1" bx:preset="outline 1 2 #000" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="2"/>
       <feFlood flood-color="#000" result="flood"/>
       <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
       <feMerge>
@@ -157,9 +160,6 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <bx:export>
-      <bx:file format="svg"/>
-    </bx:export>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -249,15 +249,15 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
         <title>front</title>
       </rect>
-      <path d="M 192 608 C 195.911 608 199.111 612.32 199.111 617.599 C 199.111 622.88 195.911 627.2 192 627.2 C 188.089 627.2 184.889 622.88 184.889 617.599 C 184.889 612.32 188.089 608 192 608 Z M 224 641.6 L 202.667 641.6 L 202.667 704 L 195.555 704 L 195.555 675.2 L 188.445 675.2 L 188.445 704 L 181.334 704 L 181.334 641.6 L 160 641.6 L 160 632 L 224 632 L 224 641.6 Z" style="fill: rgb(255, 255, 255); stroke-width: 0.387837px; transform-origin: 192px 628.419px;">
-        <title>_demo-icon</title>
-      </path>
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="256">
         <title>right</title>
       </rect>
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
         <title>back</title>
       </rect>
+      <path d="M 191.816 607.493 C 194.46 607.493 196.598 609.629 196.598 612.275 L 196.598 621.838 L 214.528 621.838 C 220.475 621.838 225.287 626.65 225.287 632.597 L 225.287 673.24 C 225.287 679.188 220.475 683.999 214.528 683.999 L 169.103 683.999 C 163.156 683.999 158.344 679.188 158.344 673.24 L 158.344 632.597 C 158.344 626.65 163.156 621.838 169.103 621.838 L 187.035 621.838 L 187.035 612.275 C 187.035 609.629 189.171 607.493 191.816 607.493 Z M 206.16 651.724 C 210.761 651.724 213.637 646.742 211.336 642.758 C 210.269 640.909 208.296 639.769 206.16 639.769 C 201.559 639.769 198.684 644.75 200.983 648.734 C 202.051 650.584 204.024 651.724 206.16 651.724 Z M 183.448 645.745 C 183.448 641.146 178.468 638.27 174.482 640.569 C 172.633 641.638 171.494 643.611 171.494 645.745 C 171.494 650.346 176.474 653.223 180.459 650.922 C 182.308 649.854 183.448 647.881 183.448 645.745 Z M 203.769 664.872 C 202.454 664.872 201.378 665.947 201.378 667.263 C 201.378 668.577 202.454 669.654 203.769 669.654 L 208.551 669.654 C 209.866 669.654 210.941 668.577 210.941 667.263 C 210.941 665.947 209.866 664.872 208.551 664.872 L 203.769 664.872 Z M 189.425 664.872 C 188.109 664.872 187.035 665.947 187.035 667.263 C 187.035 668.577 188.109 669.654 189.425 669.654 L 194.205 669.654 C 195.52 669.654 196.598 668.577 196.598 667.263 C 196.598 665.947 195.52 664.872 194.205 664.872 L 189.425 664.872 Z M 175.08 664.872 C 173.765 664.872 172.689 665.947 172.689 667.263 C 172.689 668.577 173.765 669.654 175.08 669.654 L 179.862 669.654 C 181.177 669.654 182.252 668.577 182.252 667.263 C 182.252 665.947 181.177 664.872 179.862 664.872 L 175.08 664.872 Z" style="text-wrap-mode: nowrap; stroke-width: 1.54496px; fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); filter: url(&quot;#outline-filter-1&quot;);">
+        <title>_robot-icon</title>
+      </path>
     </g>
     <rect width="128" height="128" style="fill: none;" x="384" y="832">
       <title>default_breath</title>
@@ -287,7 +287,7 @@
         <title>front</title>
       </rect>
     </g>
-    <g transform="matrix(1, 0, 0, 1, -128, 160)">
+    <g transform="matrix(1, 0, 0, 1, -127.999992, 128)">
       <title>confused_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="800" y="832">
         <title>front</title>
@@ -543,27 +543,7 @@
         <title>_skin</title>
       </path>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 1536, -544)">
-      <title>robot-icon_body-overlay</title>
-      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
-        <title>front</title>
-      </rect>
-      <g style="filter: none;" transform="matrix(1.29453, 0, 0, 1.29453, 127.089, 583.608)">
-        <title>_robot-icon</title>
-        <path d="M 50 18.451 C 52.043 18.451 53.694 20.101 53.694 22.145 L 53.694 29.532 L 67.545 29.532 C 72.139 29.532 75.856 33.249 75.856 37.843 L 75.856 69.239 C 75.856 73.834 72.139 77.55 67.545 77.55 L 32.455 77.55 C 27.861 77.55 24.144 73.834 24.144 69.239 L 24.144 37.843 C 24.144 33.249 27.861 29.532 32.455 29.532 L 46.307 29.532 L 46.307 22.145 C 46.307 20.101 47.957 18.451 50 18.451 Z M 61.081 52.618 C 64.635 52.618 66.857 48.77 65.079 45.692 C 64.255 44.264 62.731 43.383 61.081 43.383 C 57.527 43.383 55.306 47.231 57.082 50.309 C 57.907 51.738 59.431 52.618 61.081 52.618 Z M 43.536 48 C 43.536 44.447 39.689 42.225 36.61 44.001 C 35.182 44.827 34.302 46.351 34.302 48 C 34.302 51.554 38.149 53.776 41.227 51.999 C 42.656 51.174 43.536 49.65 43.536 48 Z M 59.234 62.775 C 58.218 62.775 57.387 63.605 57.387 64.622 C 57.387 65.637 58.218 66.469 59.234 66.469 L 62.928 66.469 C 63.944 66.469 64.774 65.637 64.774 64.622 C 64.774 63.605 63.944 62.775 62.928 62.775 L 59.234 62.775 Z M 48.153 62.775 C 47.137 62.775 46.307 63.605 46.307 64.622 C 46.307 65.637 47.137 66.469 48.153 66.469 L 51.846000000000004 66.469 C 52.862 66.469 53.694 65.637 53.694 64.622 C 53.694 63.605 52.862 62.775 51.846000000000004 62.775 L 48.153 62.775 Z M 37.072 62.775 C 36.056 62.775 35.225 63.605 35.225 64.622 C 35.225 65.637 36.056 66.469 37.072 66.469 L 40.766 66.469 C 41.782 66.469 42.612 65.637 42.612 64.622 C 42.612 63.605 41.782 62.775 40.766 62.775 L 37.072 62.775 Z" style="text-wrap-mode: nowrap; stroke-width: 1.54496px; fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); filter: url(&quot;#outline-filter-1&quot;);"/>
-      </g>
-    </g>
-    <g transform="matrix(1, 0, 0, 1, 1664, -544)">
-      <title>heart-icon_body-overlay</title>
-      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
-        <title>front</title>
-      </rect>
-      <g style="filter: none;" transform="matrix(1.29453, 0, 0, 1.29453, 127.089, 593.608)">
-        <title>_heart-icon</title>
-        <path d="M 47.278 64.513 L 47.036 64.273 L 30.078 47.397 C 27.107 44.44 25.423 40.29 25.423 35.945 L 25.423 35.605 C 25.423 28.302 30.263 22.036 36.96 20.664 C 40.773 19.877 44.675 20.824 47.781 23.164 C 48.652 23.829 49.465 24.6 50.201 25.478 C 50.608 24.983 51.043 24.526 51.508 24.1 C 51.866 23.771 52.234 23.456 52.62 23.164 C 52.62 23.164 52.62 23.164 52.62 23.164 C 55.728 20.824 59.629 19.877 63.442 20.653 C 70.14 22.025 74.979 28.302 74.979 35.605 L 74.979 35.945 C 74.979 40.29 73.295 44.44 70.324 47.397 L 53.366 64.273 L 53.124 64.513 C 52.33 65.3 51.285 65.747 50.201 65.747 C 49.117 65.747 48.072 65.311 47.278 64.513 Z" style="stroke-width: 2.31744px; stroke: rgb(255, 255, 255); fill: rgb(255, 136, 136);"/>
-      </g>
-    </g>
-    <g transform="matrix(1, 0, 0, 1, 1792, -544)">
+    <g transform="matrix(1, 0, 0, 1, 416, 288.000031)" style="pointer-events: none;">
       <title>plus-icon_body-overlay</title>
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
         <title>front</title>
@@ -621,6 +601,45 @@
         <title>_belt</title>
         <path d="M 800 214.948 L 1312 214.948 L 1312 242 L 800 242 L 800 214.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(136, 136, 153);"/>
       </g>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 866, 1664)">
+      <title>medic-0_head</title>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="510">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="638">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" y="128" x="510">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="638" y="128">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="510" y="256">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; filter: none; stroke-width: 8px;" x="638" y="256">
+        <title>bottom</title>
+      </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWklEQVQYGWPcleb4nwEPYIHJcQixwZgMP979grMZ/99cjWLC4flzwJK2iSkMu3unMTCAFHgZWP0H0cgYJsYENwsHA8MKdHUETWBZ+t+YQUaMA10jmP/k1Q8GAK5OLpvVY5s4AAAAAElFTkSuQmCC" width="128" height="128" x="510" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAMUlEQVQYGWPcleb4nwEPYMIjB5aiggJGrr9go2A0iIPMJmzF/2/MYBNgNIiDzCZoAgAufgtwcb2X0gAAAABJRU5ErkJggg==" width="128" height="128" x="638" style="image-rendering: pixelated;">
+        <title>_back</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXklEQVQYGWPcleb4nwEPYALJMfH8A2Ns6sAKQBL/vsCZKOrgoiBTYEDS1JFBVMcMzAUrQNf95/tXBgN3E4QCmE4Y/frKKTDTtTiLAW4Fuim7e6cxLP1vjFAA041OAwB0EBdpZj+/dwAAAABJRU5ErkJggg==" width="128" height="128" x="510" y="128" style="image-rendering: pixelated;">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAX0lEQVQYGWPcleb4nwEPYMImx8TzjwGEQQCrgn9fEMJglqiOGYOkqSPcMJhuuAkG7iYMf75/hSsAMWCmMLkWZ4ElXl85haIAxmFZ+t+YQawvGcYH0zDdIA7CNShKEBwAlPoWlIhrQ1kAAAAASUVORK5CYII=" width="128" height="128" x="638" y="128" style="image-rendering: pixelated;">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAZklEQVQYGWPcleb4nwEPYEGW4xTlROYyfH/9nQFFwd9fP8EKfn38B1fIBGKBdLLxg5kMv3//BrNhpoFNABkFAoxcfxlYWVkZICZAxCDawNIQAmQCMgCbANKJDGD8/9+YIY4EMXABAE/0H4GZ6bmcAAAAAElFTkSuQmCC" width="128" height="128" x="510" y="256" style="image-rendering: pixelated;">
+        <title>_top</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAV0lEQVQYGWPcleb4nwEPYAHJPfn4DasSGX4uBpbrch5YJUGC14GYKcaMH6cCkBzYCpAKC2sjFIUnjp4D85mwSSKLMRLyBeOSG/f+y4hxoBgP4zx59YMBABOqFc39A0BKAAAAAElFTkSuQmCC" width="128" height="128" x="638" y="256" style="image-rendering: pixelated;">
+        <title>_bottom</title>
+      </image>
     </g>
   </g>
 </svg>

@@ -40169,11 +40169,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -695425576},
-    "imagesHash": -1820970163
+    "imagesHash": -502063673
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [1868410683, 1474634897]},
+    "svgHashes": {"human-0": [-371354337, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -40405,7 +40405,7 @@
           "key": "confused_head-overlay-front",
           "sheetId": 0,
           "x": 0.328125,
-          "y": 0.484375,
+          "y": 0.46875,
           "width": 0.0625,
           "height": 0.0625
         },
@@ -40705,27 +40705,11 @@
           "width": 0.0625,
           "height": 0.125
         },
-        "robot-icon_body-overlay-front": {
-          "key": "robot-icon_body-overlay-front",
-          "sheetId": 0,
-          "x": 0.8125,
-          "y": 0,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "heart-icon_body-overlay-front": {
-          "key": "heart-icon_body-overlay-front",
-          "sheetId": 0,
-          "x": 0.875,
-          "y": 0,
-          "width": 0.0625,
-          "height": 0.125
-        },
         "plus-icon_body-overlay-front": {
           "key": "plus-icon_body-overlay-front",
           "sheetId": 0,
-          "x": 0.9375,
-          "y": 0,
+          "x": 0.265625,
+          "y": 0.40625,
           "width": 0.0625,
           "height": 0.125
         },
@@ -40776,6 +40760,54 @@
           "y": 0.46875,
           "width": 0.0625,
           "height": 0.125
+        },
+        "medic-0_head-front": {
+          "key": "medic-0_head-front",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-back": {
+          "key": "medic-0_head-back",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-left": {
+          "key": "medic-0_head-left",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-right": {
+          "key": "medic-0_head-right",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-top": {
+          "key": "medic-0_head-top",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.9375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-bottom": {
+          "key": "medic-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.9375,
+          "width": 0.0625,
+          "height": 0.0625
         },
         "test-head-front": {
           "key": "test-head-front",

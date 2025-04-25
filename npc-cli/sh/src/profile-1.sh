@@ -1,14 +1,19 @@
 awaitWorld
 
 spawn '{ npcKey: "rob" }' '{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+
 spawn '{ npcKey: "will", skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
-  // "body-overlay-{front,back,left,right,top,bottom}": { prefix: "empty", otherPath: "body-front" },
+  // "body-overlay-{front,back,left,right,top,bottom}": { prefix: "empty", otherPart: "body-front" },
   "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
 }}' '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
-spawn '{ npcKey: "kate", angle: Math.PI }' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
+
+spawn '{ npcKey: "kate", angle: Math.PI, skin: {
+  "head-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
+  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "empty", otherPart: "body-front" },
+}}' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
 w n.rob.showSelector true
 selectedNpcKey="rob"
@@ -18,6 +23,7 @@ selectedNpcKey="rob"
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }'
 w n.rob.skin | assign '{
   "head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
+  // "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
 }' > /dev/null
