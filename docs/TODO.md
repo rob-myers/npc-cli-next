@@ -52,8 +52,10 @@
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
   - `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
+- bug: sit on chair, get off it, right click decor point: its meta should not be mutated
+
 - 🚧 three more minecraft skin migrations (total 5)
-  - ✅ medic
+  - ✅ medic-0
     - https://namemc.com/skin/194c3366860674c0
   - 🚧 ...
 
