@@ -156,8 +156,13 @@ export function createOrRestoreJsonModel(props: TabsProps) {
   if (props.persistLayout && jsonModelString) {
     try {
       const serializable = JSON.parse(jsonModelString) as IJsonModel;
-      (serializable.global ?? {}).splitterExtra = 12; // Larger splitter hit test area
-      (serializable.global ?? {}).splitterSize = 2;
+
+      if (serializable.global) {
+        serializable.global.splitterExtra = 12; // Larger splitter hit test area
+        serializable.global.splitterSize = 2;
+        serializable.global.tabSetEnableDivide = !isTouchDevice();
+        serializable.global.enableEdgeDock = !isTouchDevice();
+      }
 
       const model = Model.fromJson(serializable);
 
@@ -251,7 +256,6 @@ function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolea
       enableEdgeDock: !isTouchDevice(),
       splitterExtra: 12,
       splitterSize: 2,
-      // enableUseVisibility: true, 🔔 no longer available
     },
     layout: tabset.layout,
   };

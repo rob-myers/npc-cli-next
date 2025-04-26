@@ -71,6 +71,10 @@ export default function Viewer() {
         state.tabs.toggleEnabled(true);
       }
     },
+    onModelChange(jsonModel) {
+      // 🚧 save to site.store
+      console.log('onModelChange', { jsonModel });
+    },
     update,
   }));
 
@@ -120,6 +124,7 @@ export default function Viewer() {
           ref={state.ref('tabs')}
           id="viewer-tabs"
           initEnabled={false}
+          onModelChange={state.onModelChange}
           onToggled={update}
           persistLayout
           rootOrientationVertical
@@ -140,6 +145,7 @@ export interface State {
   onInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
+  onModelChange(jsonModel: import('flexlayout-react').IJsonModel): void;
   update(): void;
 }
 

@@ -4,6 +4,7 @@ import {
   Actions,
   Layout as FlexLayout,
   Model,
+  type IJsonModel,
   type TabNode,
   type TabSetNode,
 } from "flexlayout-react";
@@ -24,6 +25,7 @@ import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 
 export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
+
   const state = useStateRef((): State => ({
     enabled: false,
     everEnabled: false,
@@ -94,6 +96,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     // 🔔 saw "Debounced method called with different contexts" for 300ms
     onModelChange: debounce((() => {
       storeModelAsJson(props.id, state.model);
+      props.onModelChange?.(state.model.toJson());
     }), 30),
     reset() {
       state.tabsState = {};
@@ -217,6 +220,7 @@ export interface Props extends TabsBaseProps {
   rootOrientationVertical?: boolean;
   /** Invoked onchange state.enabled */
   onToggled?(next: boolean): void;
+  onModelChange?(jsonModel: IJsonModel): void;
 }
 
 export interface State {
