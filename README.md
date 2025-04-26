@@ -46,7 +46,8 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 ## Gotchas
 
-1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle `<path>` such as:
+1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle both `transform` and `transform-box`.
+   > https://github.com/Automattic/node-canvas/issues/2507
 
   ```xml
   <path d="M 1088 192 L 1088 128 L 1040 192 L 1088 192 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(-1, 0, 0, -1, 0, 0)">
@@ -54,7 +55,7 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
   </path>
   ```
 
-  In BoxySVG we can `Object > transform > Reduce Transform`
+  In BoxySVG we can `Object > transform > Reduce Transform`.
 
 
 ## Development only routes
@@ -255,11 +256,10 @@ We'll try to re-map publicly available Minecraft Skins.
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/medic
   - 🚧 https://namemc.com/skin/194c3366860674c0
-- https://namemc.com/minecraft-skins/tag/knight
-  - 🚧 https://namemc.com/skin/5fd193f91ecc3e2e
 - https://namemc.com/minecraft-skins/tag/suit
+  - 🚧 https://namemc.com/skin/7271372bc0b9bc89
 - https://namemc.com/minecraft-skins/tag/business
-  - https://namemc.com/skin/7065f5c6d21f8df9
+  - https://namemc.com/skin/9ec38f8ce7f8498d
 - https://namemc.com/minecraft-skins/tag/engineer
   - https://namemc.com/skin/5040062e039888a2
 - https://namemc.com/minecraft-skins/tag/assassin
@@ -276,3 +276,5 @@ We'll try to re-map publicly available Minecraft Skins.
   - https://namemc.com/skin/c4e6ff045b7ab219
 - https://namemc.com/minecraft-skins/tag/skeleton
   - https://namemc.com/skin/4c15a5af6a583cc9
+- https://namemc.com/minecraft-skins/tag/knight
+  - https://namemc.com/skin/5fd193f91ecc3e2e

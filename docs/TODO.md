@@ -57,7 +57,8 @@
 - 🚧 three more minecraft skin migrations (total 5)
   - ✅ medic-0
     - https://namemc.com/skin/194c3366860674c0
-  - 🚧 ...
+  - 🚧 suit-0
+    - https://namemc.com/skin/7271372bc0b9bc89
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlay cuboids should be double-sided

@@ -781,5 +781,44 @@
       <rect x="1184" y="648.614" width="32" height="48" style="fill: rgba(119, 119, 119, 0.404);"/>
       <rect x="1284" y="648.614" width="32" height="48" style="fill: rgba(119, 119, 119, 0.404);"/>
     </g>
+    <g transform="matrix(1, 0, 0, 1, 1152, 416)">
+      <title>suit-0_head</title>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" x="512">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" x="640">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" y="128" x="512">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" x="640" y="128">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" x="512" y="256">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; filter: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" x="640" y="256">
+        <title>bottom</title>
+      </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAwElEQVQYGWOU1zL+//vbVwYQ+Pf7J8Pf3z8YmFk5GJhY2cFiLCCSlYub4c+vnwzMLGAuAzMnNwMLG1TBz4/vwCpBBEgCBr69eQY2iQVk5KnGJJg4Azs/L5ytXzCRgZGfX+A/TOT24maG/z+/M6iltMGEGJiuT69gWLPlAIMGrwTDny9fGb69+Qhmg8RAciwsPNwMZsYKDA6aogzcUpJgDGKDxH6+52ZgfLas4z+XiAADIxsn3FgQ4/+v70DTPjAAABfMPKCH+ckmAAAAAElFTkSuQmCC" width="128" height="128" x="512" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAfUlEQVQYGW2OwQ6DMAxDQ0kBjT/Yacf9/4dN2mGwUhjrM3SnWUpjJ47q5nq775+cDGz5bW0cxEPs1b1xt7bUvq6/BTM0PUC86w9RrhiCeBllClLlwQToVHo+ZHL+z5NZzQGvyNPLnGAV/3hY0qz0mOAAY50rEaLT6lieVKYvW3tGzXwUj7QAAAAASUVORK5CYII=" width="128" height="128" x="640" style="image-rendering: pixelated;">
+        <title>_back</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAm0lEQVQYGT1OWwrCMBCc5kHVQP9V8MtPwaN4lHoUPZpfgocoWKxtmrS1sxoHkp2dmd0k2+4P0xQjxuBBDKGDtgvheulgyOzKIbyBzEgLZXPR6ClOx96LQE6kbf5ZwbBRs0iLnE8QNMllZwpRuF1KCRzPV/S+hUkTov6uYdT/4PdXs8EgJ9xmDV/XyItCqqLIk7A7lWJW9wfiq8EHY5tV8yadUn0AAAAASUVORK5CYII=" width="128" height="128" x="512" style="image-rendering: pixelated;" y="128">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAp0lEQVQYGT1OQQ6CQBAr68CqKCTe1MSTR//iMzxy9Q9evPkrE04kPgIjQnAFRDsJNplpk3Y76623u76rK3TNCyN/DML4VplLJLDguEeuhieiZt+2yoYGYeMFPo1TzcWgPw0hrB5C1ATDA8zb1Xr/ejogPSeqhwdkyS7HX8NTx8bz/0dpslFkFiJcLeGKAjaKUJd3BHaiQbabtqyQZzc1N/tETd5nkPgCne9O0Vg31SUAAAAASUVORK5CYII=" width="128" height="128" x="640" y="128" style="image-rendering: pixelated;">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAhElEQVQYGWVPyw6EIAwcFWQfBxOvXj36/5+l2WQ3LIqPTiPExEmg0zKdlqLrhx2CPUZsSyDNqJ5vlMxM7WBfkliHdflrJGeTyXIhdJiDR2UfcE2rT2b1P+iRzgS6hM+oIsM5HEGwiItDnAOyAwXsJPx30sjr5lBLMe1AB/1Flp8kLcj0AA1kPI72H2KiAAAAAElFTkSuQmCC" width="128" height="128" x="512" y="256" style="image-rendering: pixelated;">
+        <title>_top</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAkUlEQVQYGWPk5xf4zwAEbOycIIrh18/vYDaIBgEWkAQrFz+Y8+/3TwY2IIuZlYOBGyj2+9tHBhYQh5GFheF0UwxYEYwwqVrAwMYnzMAEErg2pxQmDqevL6hk+Pv9K0QBXBQLg/HjgYVgR3599hxFmltKEsxn+f/7BwMjyFFQAWRVIDmmb6/fM4AYyADEB2GQHAB55zJyQXRwHAAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="256" style="image-rendering: pixelated;">
+        <title>_bottom</title>
+      </image>
+    </g>
   </g>
 </svg>

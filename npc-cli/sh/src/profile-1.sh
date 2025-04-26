@@ -17,6 +17,11 @@ spawn '{ npcKey: "kate", angle: Math.PI, skin: {
   "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
 }}' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
+spawn '{ npcKey: "suit-guy", angle: Math.PI, skin: {
+  "head-{front,back,left,right,top,bottom}": { prefix: "suit-0" },
+  "head-overlay-front": { prefix: "empty", otherPart: "body-front" },
+}}' '{ x: 0.5 * 1.5, y: 5 * 1.5 }'
+
 w n.rob.showSelector true
 selectedNpcKey="rob"
 
