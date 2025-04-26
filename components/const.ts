@@ -63,10 +63,10 @@ export const zIndexSite = /** @type {const} */ ({
 
 export const sideNoteRootDataAttribute = 'data-side-note-root';
 
-const emptyTabset: TabsetLayout = { key: 'empty', layout: [] };
+const emptyTabset: TabsetLayout = { key: 'empty', layout: { type: 'row', children: [] } };
 
 export const initialTabsetLookup: State['tabset'] = {
   empty: emptyTabset,
-  _empty: { key: 'empty', layout: [] }, // clone
+  _empty: { key: 'empty', layout: { type: 'row', children: [] } }, // clone
   current: emptyTabset, // reference
 };

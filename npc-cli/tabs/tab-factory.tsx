@@ -1,6 +1,6 @@
 import React from "react";
 import loadable from "@loadable/component";
-import { IJsonModel, Model, TabNode } from "flexlayout-react";
+import { type IJsonModel, type IJsonRowNode, IJsonTabNode, Model, TabNode } from "flexlayout-react";
 
 import type ActualTerminal from "../terminal/TtyWithFunctions";
 import {
@@ -33,7 +33,7 @@ export function factory(node: TabNode, api: TabsApi, forceUpdate: boolean) {
 
 export interface TabsetLayout {
   key: string;
-  layout: TabDef[][];
+  layout: IJsonRowNode;
 }
 
 export type TabDef = { weight?: number } & (
@@ -162,12 +162,11 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       const model = Model.fromJson(serializable);
 
       // Overwrite persisted `TabMeta`s with their value from `props`
-      const tabKeyToMeta = props.tabset.layout
-        .flatMap((x) => x)
-        .reduce(
-          (agg, item) => Object.assign(agg, { [getTabIdentifier(item)]: item }),
-          {} as Record<string, TabDef>
-        );
+      
+      const tabKeyToMeta = extractTabNodes(props.tabset.layout).reduce(
+        (agg, item) => Object.assign(agg, { [item.id as string]: item.config }),
+        {} as Record<string, TabDef>
+      );
       model.visitNodes(
         (x) =>
           x.getType() === "tab" &&
@@ -177,7 +176,7 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       // Validate i.e. props.tabs must mention same ids
       const prevTabNodeIds = [] as string[];
       model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
-      const nextTabNodeIds = props.tabset.layout.flatMap((x) => x.map(getTabIdentifier));
+      const nextTabNodeIds = extractTabNodes(props.tabset.layout).map((x) => x.id);
       if (
         prevTabNodeIds.length === nextTabNodeIds.length &&
         prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
@@ -198,8 +197,49 @@ export function createOrRestoreJsonModel(props: TabsProps) {
   // Either:
   // (a) no Tabs model found in local storage, or
   // (b) Tabs prop "tabs" has different ids
-  return Model.fromJson(computeJsonModel(props.tabset, props.rootOrientationVertical));
+  return Model.fromJson(
+    computeJsonModel(props.tabset, props.rootOrientationVertical)
+  );
 }
+
+export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
+  return layout.children.flatMap(child => {
+    if (child.type === 'row') {
+      return extractTabNodes(child);
+    } else {
+      return child.children.flatMap(x=> x);
+    }
+  });
+}
+
+export function createLayoutFromBasicLayout(
+  basicLayout: TabDef[][],
+): IJsonRowNode {
+  return {
+    type: "row",
+    // One row for each list in `tabs`.
+    children: basicLayout.map((defs) => ({
+      type: "row",
+      weight: defs[0]?.weight,
+      // One tabset for each list in `tabs`
+      children: [
+        {
+          type: "tabset",
+          // One tab for each def in `defs`
+          children: defs.map((def) => ({
+            type: "tab",
+            // Tabs must not be duplicated within same `Tabs`,
+            // for otherwise this internal `id` will conflict.
+            id: getTabIdentifier(def),
+            name: getTabIdentifier(def),
+            config: deepClone(def),
+          })),
+        },
+      ],
+    })),
+  };
+}
+
 
 function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
   return {
@@ -213,29 +253,7 @@ function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolea
       splitterSize: 2,
       // enableUseVisibility: true, 🔔 no longer available
     },
-    layout: {
-      type: "row",
-      // One row for each list in `tabs`.
-      children: tabset.layout.map((defs) => ({
-        type: "row",
-        weight: defs[0]?.weight,
-        // One tabset for each list in `tabs`
-        children: [
-          {
-            type: "tabset",
-            // One tab for each def in `defs`
-            children: defs.map((def) => ({
-              type: "tab",
-              // Tabs must not be duplicated within same `Tabs`,
-              // for otherwise this internal `id` will conflict.
-              id: getTabIdentifier(def),
-              name: getTabIdentifier(def),
-              config: deepClone(def),
-            })),
-          },
-        ],
-      })),
-    },
+    layout: tabset.layout,
   };
 }
 

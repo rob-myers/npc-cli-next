@@ -47,10 +47,8 @@ export default function Viewer() {
           setTimeout(update);
           break;
         case 'reset-tabs':
-          useSite.api.createTabset({
-            key: parts[1],
-            layout: [],
-          });
+          useSite.api.revertTabset(parts[1]);
+          setTimeout(update);
           break;
         case 'open-tab':
           // 🚧

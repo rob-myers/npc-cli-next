@@ -23,7 +23,7 @@ import {
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { type TabsetLayout as TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { extractTabNodes, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -46,7 +46,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } else {
         
         // create new empty current
-        next = { key: tabsetKey, layout: [] };
+        next = { key: tabsetKey, layout: { type: 'row', children: [] } };
   
         set(({ tabset: lookup }) => ({
           tabset: {
@@ -64,16 +64,23 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     createTabset(tabset) {
-      const next = {
+      const next: TabsetLayout = {
         key: tabset.key,
-        // 🔔 flatten tabsets on mobile for better UX
-        layout: isTouchDevice() ? [tabset.layout.flatMap(x => x)] : tabset.layout,
+        layout: isTouchDevice()
+        ? {
+            type: 'row',
+            // 🔔 flatten tabsets on mobile for better UX
+            children: [
+              { type: 'tabset', children: extractTabNodes(tabset.layout) }
+            ]}
+          : tabset.layout
+        ,
       };
 
       set(({ tabset: lookup }) => ({
         tabset: {
           ...lookup,
-          [`_${next.key}`]: deepClone(next), // for reset
+          [`_${next.key}`]: deepClone(next), // for revert
           [next.key]: next,
           current: next,
         },
@@ -162,12 +169,26 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     rememberTabset(tabsetKey) {
       const tabset = get().tabset[tabsetKey];
 
-      if (tabset) {
+      if (tabset !== undefined) {
         set(({ tabset: lookup }) => ({
           tabset: { ...lookup, [`_${tabset.key}`]: deepClone(tabset) },
         }))
       } else {
         warn(`${'setTabsetReset'}: tabset key "${tabsetKey}" does not exist`);
+      }
+    },
+    
+    revertTabset(tabsetKey) {
+      const lookup = get().tabset;
+  
+      if (tabsetKey === 'current') {
+        const tabset = lookup.current;
+        const reverted = deepClone(lookup[`_${tabset.key}`]);
+        set({ tabset: { ...lookup, current: reverted, [tabset.key]: reverted }});
+      } else if (tabsetKey in lookup) {
+        set({ tabset: { ...lookup, [tabsetKey]: deepClone(lookup[`_${tabsetKey}`]) } });
+      } else {
+        warn(`${'revertTabset'}: tabset key "${tabsetKey}" does not exist`);
       }
     },
 
@@ -226,6 +247,8 @@ export type State = {
     onTerminate(): void;
     /** Remember for future reset */
     rememberTabset(tabsetKey: string): void;
+    /** Revert to last remembered, or noop */
+    revertTabset(tabsetKey: string): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;

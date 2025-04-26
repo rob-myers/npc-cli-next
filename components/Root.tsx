@@ -15,7 +15,10 @@ import Nav from "./Nav";
 import Main from "./Main";
 import Comments from "./Comments";
 import Viewer from "./Viewer";
+
+// 🚧 remove below
 import { profile } from "@/npc-cli/sh/src";
+import { createLayoutFromBasicLayout } from "@/npc-cli/tabs/tab-factory";
 
 export default function Root({ children }: React.PropsWithChildren) {
 
@@ -28,7 +31,7 @@ export default function Root({ children }: React.PropsWithChildren) {
     // 🚧 move elsewhere
     useSite.api.createTabset({
       key: 'temp_tabset',
-      layout: [[
+      layout: createLayoutFromBasicLayout([[
         {
           type: "component",
           class: "World",
@@ -49,7 +52,7 @@ export default function Root({ children }: React.PropsWithChildren) {
           env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-      ]],
+      ]]),
     });
 
     useSite.api.initiateBrowser();
