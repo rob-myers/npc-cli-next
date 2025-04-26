@@ -54,12 +54,12 @@
 
 - bug: sit on chair, get off it, right click decor point: its meta should not be mutated
 
-- 🚧 three more minecraft skin migrations (total 5)
+- ✅ three more minecraft skin migrations (total 5)
   - ✅ medic-0
     - https://namemc.com/skin/194c3366860674c0
   - ✅ suit-0
     - https://namemc.com/skin/7271372bc0b9bc89
-  - 🚧 police-0
+  - ✅ police-0
     - https://namemc.com/skin/c06caf409cd8427e
 
 - 🚧 cleanup human-0 skin
