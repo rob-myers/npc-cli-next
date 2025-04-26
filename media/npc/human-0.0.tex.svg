@@ -1004,6 +1004,15 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
         <title>back</title>
       </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAA1ElEQVQYGV2OMQ6CQBBFh82CYGIIjdYewNhYeBpvYOUV9Bba2Fl4AaOxtaDxGJIYQxBkAUX+JEOMkyyZ+e/PH6zj5VpHt5j8cEtJXhCq5zoUT2bUH/iklpuQGwgAAkfjIYGp0ry4gRDtTpTsz7wwXx0ITNVVxrEQsoro/al5ASKYqirDTgimgUXzpMCUDIgLHIs83UqMtNYdsjseD+vpgmOtxiwan5AU3LR0l0ckYlljKtJ7C2QTBlR7ENu/PyxGbcyTnfhIX+YPst2AdU4Q8G9Km9NfEvd1thW/qJgAAAAASUVORK5CYII=" width="128" height="192" x="128" y="544" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAANElEQVQIHWPU9y//zwAE7Ow8IAoF/Pz5hYEJJgLigDAMwNgsMAGYCTAJmDjYBHRJGB+kCADKvxPKdFWkWQAAAABJRU5ErkJggg==" width="128" height="64" x="256" y="480" style="" transform="matrix(1, 0, 0, 2, 0, -544)"/>
+      <path d="M 128 448 L 256 448 L 256 544 L 240 544 L 240 467.2 L 144 467.2 L 144 544 L 128 544 L 128 448 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+      <ellipse style="fill-opacity: 0.3;" cx="192" cy="512" rx="32" ry="32"/>
+      <path d="M 144 464 L 240 464 L 240 544 L 228 544 L 228 480 L 156 480 L 156 544 L 144 544 L 144 464 Z" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);"/>
+      <rect x="128" y="416" width="128" height="32" style="stroke: rgb(0, 0, 0); fill: rgb(56, 89, 138);"/>
+      <rect x="144" y="416" width="96" height="32" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
     </g>
   </g>
 </svg>
