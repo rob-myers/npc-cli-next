@@ -49,6 +49,7 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle both `transform` and `transform-box`.
    > https://github.com/Automattic/node-canvas/issues/2507
 
+  
   ```xml
   <path d="M 1088 192 L 1088 128 L 1040 192 L 1088 192 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(-1, 0, 0, -1, 0, 0)">
     <bx:title>_debug-path-transform</bx:title>
@@ -57,6 +58,7 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
   In BoxySVG we can `Object > transform > Reduce Transform`.
 
+2. Similar for transform on `<image>` e.g. scale.
 
 ## Development only routes
 

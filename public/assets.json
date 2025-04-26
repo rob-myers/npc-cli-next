@@ -1291,11 +1291,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -695425576},
-    "imagesHash": -71743712
+    "imagesHash": 1095605813
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [2116003564, 1474634897]},
+    "svgHashes": {"human-0": [-1955847935, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -1979,6 +1979,38 @@
           "width": 0.0625,
           "height": 0.0625
         },
+        "medic-0_body-overlay-front": {
+          "key": "medic-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_body-overlay-back": {
+          "key": "medic-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.59375,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_body-overlay-left": {
+          "key": "medic-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.40625,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_body-overlay-right": {
+          "key": "medic-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
         "medic-0_body-overlay-top": {
           "key": "medic-0_body-overlay-top",
           "sheetId": 0,
@@ -1994,38 +2026,6 @@
           "y": 0.609375,
           "width": 0.0625,
           "height": 0.0625
-        },
-        "medic-0_body-overlay-left": {
-          "key": "medic-0_body-overlay-left",
-          "sheetId": 0,
-          "x": 0.40625,
-          "y": 0.671875,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "medic-0_body-overlay-front": {
-          "key": "medic-0_body-overlay-front",
-          "sheetId": 0,
-          "x": 0.46875,
-          "y": 0.671875,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "medic-0_body-overlay-right": {
-          "key": "medic-0_body-overlay-right",
-          "sheetId": 0,
-          "x": 0.53125,
-          "y": 0.671875,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "medic-0_body-overlay-back": {
-          "key": "medic-0_body-overlay-back",
-          "sheetId": 0,
-          "x": 0.59375,
-          "y": 0.671875,
-          "width": 0.0625,
-          "height": 0.125
         },
         "suit-0_head-front": {
           "key": "suit-0_head-front",
@@ -2123,6 +2123,38 @@
           "width": 0.0625,
           "height": 0.0625
         },
+        "suit-0_body-overlay-front": {
+          "key": "suit-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "suit-0_body-overlay-back": {
+          "key": "suit-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.59375,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "suit-0_body-overlay-left": {
+          "key": "suit-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.40625,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "suit-0_body-overlay-right": {
+          "key": "suit-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
         "suit-0_body-overlay-top": {
           "key": "suit-0_body-overlay-top",
           "sheetId": 0,
@@ -2138,38 +2170,6 @@
           "y": 0.8125,
           "width": 0.0625,
           "height": 0.0625
-        },
-        "suit-0_body-overlay-left": {
-          "key": "suit-0_body-overlay-left",
-          "sheetId": 0,
-          "x": 0.40625,
-          "y": 0.875,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "suit-0_body-overlay-front": {
-          "key": "suit-0_body-overlay-front",
-          "sheetId": 0,
-          "x": 0.46875,
-          "y": 0.875,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "suit-0_body-overlay-right": {
-          "key": "suit-0_body-overlay-right",
-          "sheetId": 0,
-          "x": 0.53125,
-          "y": 0.875,
-          "width": 0.0625,
-          "height": 0.125
-        },
-        "suit-0_body-overlay-back": {
-          "key": "suit-0_body-overlay-back",
-          "sheetId": 0,
-          "x": 0.59375,
-          "y": 0.875,
-          "width": 0.0625,
-          "height": 0.125
         },
         "test-head-front": {
           "key": "test-head-front",
