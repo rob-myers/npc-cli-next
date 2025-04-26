@@ -13,7 +13,6 @@ import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerC
 
 import { tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
-import { profile } from "@/npc-cli/sh/src";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
@@ -88,6 +87,10 @@ export default function Viewer() {
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
 
+    // 🚧 try prevent swipe back on mobile
+    function onTouchStart(e: TouchEvent) { e.preventDefault(); }
+    window.addEventListener('touchstart', onTouchStart, { passive: false})
+    
     // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {
       if (location.hash?.startsWith('#/internal/')) {
@@ -97,7 +100,11 @@ export default function Viewer() {
       }
     }
     window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', onHashChange);
+      window.removeEventListener('touchstart', onTouchStart);
+    };
   }, []);
 
   const collapsed = !site.viewOpen;
@@ -108,7 +115,7 @@ export default function Viewer() {
       css={viewerCss}
       className={cx({ collapsed })}
       data-testid="viewer"
-      ref={(el) => void (el && (state.rootEl = el))}
+      ref={state.ref('rootEl')}
       tabIndex={0}
       onKeyDown={state.onKeyDown}
     >
