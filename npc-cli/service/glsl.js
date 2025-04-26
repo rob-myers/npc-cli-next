@@ -371,7 +371,8 @@ export const humanZeroShader = {
 
     } else {// everything else
 
-      tint *= vec4(vec3(0.0 + 0.7 * dotProduct), 1.0); // flat shading
+      // 🔔 flat shading
+      tint *= vec4(vec3(0.05 + 0.7 * dotProduct), 1.0);
 
       // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
