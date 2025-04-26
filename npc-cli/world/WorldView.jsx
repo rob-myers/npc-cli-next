@@ -297,6 +297,7 @@ export default function WorldView(props) {
       const sp = getRelativePointer(e);
       state.lastScreenPoint.copy(sp);
       state.epoch.pointerDown = Date.now();
+      e.preventDefault();
 
       window.clearTimeout(state.down?.longTimeoutId); // No MultiTouch Long Press
 
@@ -587,7 +588,7 @@ export default function WorldView(props) {
       resize={{ debounce: 30 }}
       gl={state.glOpts}
       onCreated={state.onCreated}
-      onPointerDown={w.r3f ? state.onPointerDown : undefined}
+      onPointerDown={w.r3f === null ? undefined : state.onPointerDown}
       onPointerMove={state.onPointerMove}
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
@@ -637,7 +638,7 @@ export default function WorldView(props) {
       >
         {w.crowd === null ? [] : <>
           <BrightnessContrast
-            brightness={-0.2}
+            brightness={-0.22}
             contrast={0.1}
           />
           <Vignette
