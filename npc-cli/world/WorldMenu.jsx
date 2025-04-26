@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { zIndexWorld } from "../service/const";
-import { isSmallViewport } from "../service/dom";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -418,7 +417,8 @@ const cssTtyDisconnectedMessage = css`
   bottom: 0;
   right: 0;
   z-index: ${zIndexWorld.disconnectedMessage};
-
+  
+  user-select: none;
   pointer-events: none;
   padding: 16px;
   margin: 0 16px 16px 0;
