@@ -297,7 +297,6 @@ export default function WorldView(props) {
       const sp = getRelativePointer(e);
       state.lastScreenPoint.copy(sp);
       state.epoch.pointerDown = Date.now();
-      e.preventDefault();
 
       window.clearTimeout(state.down?.longTimeoutId); // No MultiTouch Long Press
 
@@ -592,6 +591,7 @@ export default function WorldView(props) {
       onPointerMove={state.onPointerMove}
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
+      onTouchStart={e => e.preventDefault()}
       onContextMenu={e => isTouchDevice() && e.preventDefault()}
       tabIndex={0}
       {...{ [popUpRootDataAttribute]: true }}
