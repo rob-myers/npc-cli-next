@@ -525,7 +525,8 @@ export default function useHandleEvents(w) {
       if (
         should === 'slow-down'
         || offMesh.orig.dstRoomMeta.small === true // small room
-        || npc.isTargetClose(offMesh.dst) === true // target nearby
+        // 🔔 this would also slow down "ahead npc"
+        // || npc.isTargetClose(offMesh.dst) === true // target nearby
       ) {
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
         return;

@@ -50,9 +50,13 @@
   agents stop moving, and start to animate very slowly
   - ℹ️ can fix by pausing that `w stopTick` then playing
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
-  - `w view.tween '{ fov: 30 }'` was jerky when eps was 1
+  - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
-- bug: sit on chair, get off it, right click decor point: its meta should not be mutated
+- BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
+
+- ✅ BUG: flicker after two npcs go through door
+  - offMeshConnection should have been cancelled, or npc should have slowed down
+  - seems "ahead npc" was stopping because detected nearby npc, we turned off this test
 
 - ✅ three more minecraft skin migrations (total 5)
   - ✅ medic-0
@@ -78,11 +82,12 @@
   - ✅ can enable/disable post-processing
   - can animate post-processing i.e. set uniform on Vignette
 
+- try "turn around before moving" via small acceleration initially
+  - could also "pause before moving"
+- profile-1 camera target y should always be 1.5?
 - consider "hot keys" e.g. 1, 2, 3, also tapable
   - could use to change camera settings
   - could use to change input settings e.g. drag select
-- try "turn around before moving" via small acceleration initially
-- profile-1 camera target y should always be 1.5?
 - move "x-ray" into PopUp opts?
 
 - ✅ shell should show debugs not errors
@@ -137,6 +142,8 @@
 
 - 🚧 support transform + transform-box fill-box inside e.g. human-0.0.tex.svg
   - https://github.com/Automattic/node-canvas/issues/2507
+  - could "do it ourselves" i.e. write node.js script,
+    starting by extending parseUvRects to transform-origin at any level
 
 - can we avoid re-request navmesh onchange skin?
   - maybe because assets.json is changing due to hash change?
