@@ -207,6 +207,20 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="brightness-filter-0" bx:preset="brightness 1 1.2" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.2"/>
+        <feFuncG type="linear" slope="1.2"/>
+        <feFuncB type="linear" slope="1.2"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="brightness-filter-1" bx:preset="brightness 1 1.2" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.2"/>
+        <feFuncG type="linear" slope="1.2"/>
+        <feFuncB type="linear" slope="1.2"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -879,14 +893,21 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAABK0lEQVQYGTVQPUsDQRSc3du7vQ9iDoyKd4hCUIIIamtsRBCsxD9gb5//YGedQgt/gWJhYWVjaSPpBW1OTGFygve97j7JwnsM8+Yx8xaraz318faubve21OTpRn0/DtVgfZO4OO4qIV0P5sWXV3gYnOPlM8fp9ZA4YdsQhHRbXopwkTCNXHTC+RkNbtDh8Ql8z8XZYokuy4G6wv7BEYlIYPYYY3j+ajRSNJg1nue/RDqui/6C0TN4QUDzqiwgqqJEppek72MlrNGHhU4UoSpLNHUDbpKaS9L0B9t3rySyHQfCscE5hwjabbI1GbhlYed+RGIpPZiikEJKJEmC6TSlsAYL6VAOttHb1b/lYDIea8+aSJ0TrXaIPMugr8hQFQWC1hxZGIUtXfzzJf4A6YRmYDzp+8YAAAAASUVORK5CYII=" width="128" height="192" x="928" y="544" style="image-rendering: pixelated;">
         <title>_front</title>
       </image>
-      <rect x="1024" y="496" width="32" height="48" style="stroke: rgb(0, 0, 0); fill: rgb(34, 34, 34);"/>
-      <rect x="928" y="496" width="32" height="48" style="stroke: rgb(0, 0, 0); fill: rgb(34, 34, 34);"/>
-      <rect x="928" y="416" width="128" height="48" style="stroke: rgb(0, 0, 0); fill: rgb(34, 34, 34);"/>
-      <rect x="960" y="528" width="16" height="16" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
-      <rect x="1024" y="448" width="32" height="48" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
-      <rect x="928" y="448" width="32" height="48" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
-      <rect x="1008" y="528" width="16" height="16" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
-      <ellipse style="fill-opacity: 0.2;" cx="991.51" cy="496" rx="32.49" ry="32"/>
+      <g>
+        <title>_top</title>
+        <path d="M 960 544 L 928 544 L 928 416 L 1056 416 L 1056 544 L 1024 544 L 1024 464 L 960 464 Z" style="stroke: rgb(0, 0, 0); fill: rgb(34, 34, 34);"/>
+        <rect x="960" y="528" width="16" height="16" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
+        <rect x="1024" y="448" width="32" height="48" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
+        <rect x="928" y="448" width="32" height="48" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
+        <rect x="1008" y="528" width="16" height="16" style="stroke: rgb(0, 0, 0); fill: rgb(68, 68, 68);"/>
+        <ellipse style="fill-opacity: 0.2;" cx="991.51" cy="496" rx="32.49" ry="32"/>
+      </g>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAZklEQVQIHTVNWw7AIAxCU+d2kWW/u//BrI/FVRpJQwilJdzPOxGAWgoWhDyBfF6UkWyJDTcsQdiCxgoEmGsjVf3Zjsjo3bXxuhRJiWKd0dh1kg8mvYXSKVZVqlEbvta8lo490aL4AR8YHWHuL959AAAAAElFTkSuQmCC" width="64" height="192" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#brightness-filter-1&quot;);" transform="matrix(2, 0, 0, 1, -800, 0)">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAZklEQVQIHTVNWw7AIAxCU+d2kWW/u//BrI/FVRpJQwilJdzPOxGAWgoWhDyBfF6UkWyJDTcsQdiCxgoEmGsjVf3Zjsjo3bXxuhRJiWKd0dh1kg8mvYXSKVZVqlEbvta8lo490aL4AR8YHWHuL959AAAAAElFTkSuQmCC" width="64" height="192" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#brightness-filter-0&quot;);" transform="matrix(2, 0, 0, 1, -544, 0)">
+        <title>_right</title>
+      </image>
     </g>
   </g>
 </svg>
