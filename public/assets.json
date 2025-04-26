@@ -1291,11 +1291,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -695425576},
-    "imagesHash": -782551513
+    "imagesHash": 759115006
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [2032389339, 1474634897]},
+    "svgHashes": {"human-0": [-1133597630, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -2168,6 +2168,54 @@
           "sheetId": 0,
           "x": 0.53125,
           "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-front": {
+          "key": "police-0_head-front",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-back": {
+          "key": "police-0_head-back",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-left": {
+          "key": "police-0_head-left",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-right": {
+          "key": "police-0_head-right",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-top": {
+          "key": "police-0_head-top",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.734375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-bottom": {
+          "key": "police-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.734375,
           "width": 0.0625,
           "height": 0.0625
         },
