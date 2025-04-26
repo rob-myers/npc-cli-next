@@ -984,5 +984,26 @@
         <title>_top</title>
       </image>
     </g>
+    <g transform="matrix(1, 0, 0, 1, 0, 576)">
+      <title>police-0_body-overlay</title>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="128" y="416">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="256" y="416">
+        <title>bottom</title>
+      </rect>
+      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0); transform-origin: 192px 672px;" y="544" x="128">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="256">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
+        <title>back</title>
+      </rect>
+    </g>
   </g>
 </svg>

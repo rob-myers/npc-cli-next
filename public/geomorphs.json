@@ -40169,11 +40169,11 @@
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
     "glbHash": {"human-0": -695425576},
-    "imagesHash": -396469565
+    "imagesHash": -106590805
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [426820745, 1474634897]},
+    "svgHashes": {"human-0": [-1883318335, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -41144,6 +41144,54 @@
           "y": 0.9375,
           "width": 0.0625,
           "height": 0.0625
+        },
+        "police-0_body-overlay-top": {
+          "key": "police-0_body-overlay-top",
+          "sheetId": 0,
+          "x": 0.0625,
+          "y": 0.484375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_body-overlay-bottom": {
+          "key": "police-0_body-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.125,
+          "y": 0.484375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_body-overlay-left": {
+          "key": "police-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0,
+          "y": 0.546875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "police-0_body-overlay-front": {
+          "key": "police-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.0625,
+          "y": 0.546875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "police-0_body-overlay-right": {
+          "key": "police-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.125,
+          "y": 0.546875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "police-0_body-overlay-back": {
+          "key": "police-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.1875,
+          "y": 0.546875,
+          "width": 0.0625,
+          "height": 0.125
         },
         "test-head-front": {
           "key": "test-head-front",
