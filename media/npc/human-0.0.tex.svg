@@ -774,6 +774,12 @@
         <rect x="848" y="544" width="32" height="48" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
         <rect x="928" y="464" width="32" height="32" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); opacity: 0.5;"/>
       </g>
+      <path d="M 1116.8 600 H 1123.2 V 612.8 H 1136 V 619.2 H 1123.2 V 632 H 1116.8 V 619.2 H 1104 V 612.8 H 1116.8 Z" bx:shape="cross 1104 600 32 32 6.4 6.4 0.5 1@29c29dc0" style="fill: none; stroke: rgb(189, 107, 107); stroke-width: 4px;"/>
+      <path d="M 862.8 600 H 869.2 V 612.8 H 882 V 619.2 H 869.2 V 632 H 862.8 V 619.2 H 850 V 612.8 H 862.8 Z" bx:shape="cross 850 600 32 32 6.4 6.4 0.5 1@530561a6" style="fill: none; stroke: rgb(189, 107, 107); stroke-width: 4px;"/>
+      <rect x="1152" y="648.178" width="32" height="48" style="fill: rgba(119, 119, 119, 0.404);"/>
+      <rect x="800" y="656" width="39.883" height="48" style="fill: rgba(119, 119, 119, 0.404);"/>
+      <rect x="1184" y="648.614" width="32" height="48" style="fill: rgba(119, 119, 119, 0.404);"/>
+      <rect x="1284" y="648.614" width="32" height="48" style="fill: rgba(119, 119, 119, 0.404);"/>
     </g>
   </g>
 </svg>
