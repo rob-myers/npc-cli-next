@@ -34,7 +34,7 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 5,
+      minDistance: 8,
       maxDistance: 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
@@ -638,7 +638,7 @@ export default function WorldView(props) {
       >
         {w.crowd === null ? [] : <>
           <BrightnessContrast
-            brightness={-0.22}
+            brightness={-0.2}
             contrast={0.1}
           />
           <Vignette
