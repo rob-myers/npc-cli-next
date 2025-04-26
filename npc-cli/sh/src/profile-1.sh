@@ -27,7 +27,7 @@ spawn '{ npcKey: "suit-guy", angle: Math.PI, skin: {
 
 spawn '{ npcKey: "policeman", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "police-0" },
-  "head-overlay-front": { prefix: "empty", otherPart: "body-front" },
+  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
 }}' '{ x: 1.5 * 1.5, y: 5 * 1.5 }'
 
 w n.rob.showSelector true
