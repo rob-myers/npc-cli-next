@@ -742,7 +742,7 @@
         <title>_right</title>
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAATUlEQVQYGWM8//Tpf25mZgZs4OvfvwwsIAleAQEGTiYmFDXf//1j+Pr2LQOqKIoSCIdyBSwgB7IBTWNmATsHbgnbr18MIDnKrRgMJgAAhNAO3T+CiXMAAAAASUVORK5CYII=" width="128" height="192" x="1184" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-13&quot;);">
-        <title>_bak</title>
+        <title>_back</title>
       </image>
       <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" x="928" y="416">
         <title>top</title>
@@ -855,6 +855,28 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQUlEQVQYGWNgoDlglFbR+f//zx+GZw9uMCLbJqWg8Z+RhYWBCST5+9tHsBxIEKQBxAGJgeRQgKiY5H+QIhRBijkAe2MZj1muyi0AAAAASUVORK5CYII=" width="128" height="128" x="640" style="image-rendering: pixelated;">
         <title>_back</title>
       </image>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 32, 1248)" style="">
+      <title>suit-0_body-overlay</title>
+      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" x="928" y="416">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" x="1056" y="416">
+        <title>bottom</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="800">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="256" style="transform-origin: 992px 672px; fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="928">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="1056">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="256" style="fill-opacity: 0.3; fill: none; stroke: rgb(0, 0, 0); stroke-width: 8px;" y="544" x="1184">
+        <title>back</title>
+      </rect>
+      <rect x="1284" y="648.614" width="32" height="48" style="fill: rgba(119, 119, 119, 0.404);"/>
     </g>
   </g>
 </svg>
