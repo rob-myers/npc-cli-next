@@ -51,9 +51,7 @@ w n.rob.applyTint
 # w n.rob.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
 # w n.rob.resetTint
 
-w e.grantNpcAccess rob .
-# temp debug doors:
-w e.grantNpcAccess will .
+w e.grantAccess . rob will kate suit-guy policeman
 
 # write selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {

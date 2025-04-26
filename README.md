@@ -76,7 +76,7 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 c=0
 while true; do
   spawn "rob_${c}" $( click 1 )
-  w e.grantNpcAccess "rob_${c}" .
+  w e.grantAccess . "rob_${c}"
   c+=1
 done
 

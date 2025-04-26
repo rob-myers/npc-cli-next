@@ -196,8 +196,10 @@ export default function useHandleEvents(w) {
         return null;
       }
     },
-    grantNpcAccess(npcKey, regexDef) {
-      (state.npcToAccess[npcKey] ??= new Set()).add(regexDef);
+    grantAccess(regexDef, ...npcKeys) {
+      for (const npcKey of npcKeys) {
+        (state.npcToAccess[npcKey] ??= new Set()).add(regexDef);
+      }
     },
     async handleEvents(e) {
       // debug('useHandleEvents', e);
@@ -798,7 +800,7 @@ export default function useHandleEvents(w) {
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(npcKey: string) => void} followNpc
  * @property {(e: React.PointerEvent<Element>, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
- * @property {(npcKey: string, regexDef: string) => void} grantNpcAccess
+ * @property {(regexDef: string, ...npcKeys: string[]) => void} grantAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
  * @property {(input: string | THREE.Vector3 | Vect) => void} lookAt
