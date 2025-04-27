@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
-import { EffectComposer, Noise, Vignette, BrightnessContrast } from '@react-three/postprocessing'
+import { EffectComposer, Vignette, BrightnessContrast } from '@react-three/postprocessing'
 import { BlendFunction, Effect } from 'postprocessing'
 
 import { debug, keys, tryLocalStorageGetParsed } from "../service/generic.js";
@@ -576,6 +576,9 @@ export default function WorldView(props) {
       state.controls.setPolarAngle(Math.PI / 4);
       state.controls.setAzimuthalAngle(Math.PI / 4);
     }
+
+    
+
     emptySceneForPicking.onAfterRender = state.renderObjectPickScene;
   }, [state.controls]);
 
@@ -592,6 +595,7 @@ export default function WorldView(props) {
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
       onTouchStart={e => e.preventDefault()}
+      onTouchMove={e => e.preventDefault()}
       onContextMenu={e => isTouchDevice() && e.preventDefault()}
       tabIndex={0}
       {...{ [popUpRootDataAttribute]: true }}
