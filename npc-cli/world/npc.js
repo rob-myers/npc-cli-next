@@ -518,9 +518,9 @@ export class Npc {
     if (this.s.target === null) {
       return helper.defaults.radius;
     } else if (this.s.run === true) {
-      return helper.defaults.radius * 3;
-    } else {
       return helper.defaults.radius * 2;
+    } else {
+      return helper.defaults.radius;
     }
   }
 
@@ -1244,7 +1244,7 @@ const movingSeparationWeight = 0.5;
 const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
-const preOffMeshCloseDist = helper.defaults.radius * 1.7;
+const preOffMeshCloseDist = helper.defaults.radius * 1;
 const preOffMeshCloserDist = helper.defaults.radius * 0.8;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
