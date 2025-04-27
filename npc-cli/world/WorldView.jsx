@@ -576,18 +576,7 @@ export default function WorldView(props) {
       state.controls.setPolarAngle(Math.PI / 4);
       state.controls.setAzimuthalAngle(Math.PI / 4);
     }
-
-    // 🚧
-    /** @param {TouchEvent} e */
-    function preventDefault(e) { e.preventDefault(); }
-    window.addEventListener('touchstart', preventDefault, { passive: false });
-    window.addEventListener('touchmove', preventDefault, { passive: false });
-
     emptySceneForPicking.onAfterRender = state.renderObjectPickScene;
-    return () => {
-      window.removeEventListener('touchstart', preventDefault);
-      window.removeEventListener('touchmove', preventDefault);
-    };
   }, [state.controls]);
 
   return (
