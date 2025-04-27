@@ -1052,9 +1052,6 @@
         <rect x="128" y="416" width="128" height="32" style="stroke: rgb(0, 0, 0); fill: rgb(56, 89, 138);"/>
         <rect x="144" y="416" width="96" height="32" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
       </g>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAANElEQVQIHWPU9y//zwAE7Ow8IAoF/Pz5hYEJJgLigDAMwNgsMAGYCTAJmDjYBHRJGB+kCADKvxPKdFWkWQAAAABJRU5ErkJggg==" width="128" height="64" x="256" y="480" style="" transform="matrix(1, 0, 0, 2, 0, -544)">
-        <title>_bottom</title>
-      </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAiklEQVQYGVWQXQ6DMAyDQxSExql2mR1rR5z2sh86KgEfzCj1Q9zEtVO1u97uy1y+Bpb62ZnSxWj9cLGg4bBjYy6f/Tb03/txiP+aU9CcKEGr1KO5Ghh3NjDzHMkg70drErJb65oLJACJnJtHZpH4WsvxD3LokRIxxDw9YYsYTgdOUMrLnAI0FGu+AvsWUiYtBYXXAAAAAElFTkSuQmCC" width="128" height="192" x="384" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-14&quot;);">
         <title>_back</title>
       </image>
