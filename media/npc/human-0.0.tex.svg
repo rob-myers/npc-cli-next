@@ -1047,10 +1047,10 @@
       <g style="filter: url(&quot;#inner-shadow-filter-15&quot;);">
         <title>_top</title>
         <path d="M 128 448 L 256 448 L 256 544 L 240 544 L 240 467.2 L 144 467.2 L 144 544 L 128 544 L 128 448 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
-        <ellipse style="fill-opacity: 0.3;" cx="192" cy="512" rx="32" ry="32"/>
         <path d="M 144 464 L 240 464 L 240 544 L 228 544 L 228 480 L 156 480 L 156 544 L 144 544 L 144 464 Z" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170);"/>
         <rect x="128" y="416" width="128" height="32" style="stroke: rgb(0, 0, 0); fill: rgb(56, 89, 138);"/>
         <rect x="144" y="416" width="96" height="32" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+        <ellipse style="fill-opacity: 0.3;" cx="192" cy="488.814" rx="48" ry="48"/>
       </g>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAiklEQVQYGVWQXQ6DMAyDQxSExql2mR1rR5z2sh86KgEfzCj1Q9zEtVO1u97uy1y+Bpb62ZnSxWj9cLGg4bBjYy6f/Tb03/txiP+aU9CcKEGr1KO5Ghh3NjDzHMkg70drErJb65oLJACJnJtHZpH4WsvxD3LokRIxxDw9YYsYTgdOUMrLnAI0FGu+AvsWUiYtBYXXAAAAAElFTkSuQmCC" width="128" height="192" x="384" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-14&quot;);">
         <title>_back</title>
