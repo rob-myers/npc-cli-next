@@ -507,12 +507,13 @@ export default function useHandleEvents(w) {
         offMesh.orig.dstRoomMeta.small === true // small room
       );
 
+      // 🔔 npc slow-down near offMesh.dst needed (noticeable top-down)
       let shouldSlowDown = doorwaySlowDown === true || npc.isTargetClose(offMesh.dst) === true;
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
         if (
-          doorwaySlowDown === false // ahead npc slows so stop
+          doorwaySlowDown === false // if ahead npc slows, stop
           && tr.seg === 2
           && tr.orig.srcGrKey === offMesh.orig.srcGrKey
           && w.n[tr.npcKey].isTargetClose(offMesh.dst) === false // ditto
