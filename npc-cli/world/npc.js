@@ -1249,7 +1249,7 @@ const preOffMeshCloserDist = helper.defaults.radius * 0.8;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
-  radius: 2 * helper.defaults.radius, // 🔔 too large causes jerky collisions
+  radius: helper.defaults.radius, // 🔔 too large causes jerky collisions
   height: 1.5,
   maxAcceleration: staticMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,
