@@ -503,33 +503,32 @@ export default function useHandleEvents(w) {
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
-      // on enter main seg...
-      let should = /** @type {null | 'slow-down' | 'stop'} */ (null)
+      const doorwaySlowDown = (
+        offMesh.orig.dstRoomMeta.small === true // small room
+      );
+
+      let shouldSlowDown = doorwaySlowDown === true || npc.isTargetClose(offMesh.dst) === true;
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
-        if (tr.seg === 2 && tr.orig.srcGrKey === offMesh.orig.srcGrKey) {
-          should = 'slow-down'; // other beyond midway and in same direction
+        if (
+          doorwaySlowDown === false // ahead npc slows so stop
+          && tr.seg === 2
+          && tr.orig.srcGrKey === offMesh.orig.srcGrKey
+          && w.n[tr.npcKey].isTargetClose(offMesh.dst) === false // ditto
+        ) {
+          shouldSlowDown = true; // other beyond midway and in same direction
           continue;
         }
-        should = 'stop';
-        break;
-      }
 
-      if (should === 'stop') {
-        npc.stopMoving(); // also teleport to stop offMeshConnection:
+        // **STOP** (teleport ensures we stop offMeshConnection)
+        npc.stopMoving();
         /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position); 
         return;
       }
 
-      if (
-        should === 'slow-down'
-        || offMesh.orig.dstRoomMeta.small === true // small room
-        // 🔔 this would also slow down "ahead npc"
-        // || npc.isTargetClose(offMesh.dst) === true // target nearby
-      ) {
-        npc.setOffMeshExitSpeed(npc.getMaxSpeed() / 2);
-        return;
+      if (shouldSlowDown === true) {
+        npc.setOffMeshExitSpeed(npc.getMaxSpeed() * 0.5);
       }
     },
     onExitDoorCollider(e) {// e.type === 'nearby'
