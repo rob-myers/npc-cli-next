@@ -577,9 +577,17 @@ export default function WorldView(props) {
       state.controls.setAzimuthalAngle(Math.PI / 4);
     }
 
-    
+    // 🚧
+    /** @param {TouchEvent} e */
+    function preventDefault(e) { e.preventDefault(); }
+    window.addEventListener('touchstart', preventDefault, { passive: false });
+    window.addEventListener('touchmove', preventDefault, { passive: false });
 
     emptySceneForPicking.onAfterRender = state.renderObjectPickScene;
+    return () => {
+      window.removeEventListener('touchstart', preventDefault);
+      window.removeEventListener('touchmove', preventDefault);
+    };
   }, [state.controls]);
 
   return (
@@ -594,8 +602,6 @@ export default function WorldView(props) {
       onPointerMove={state.onPointerMove}
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
-      onTouchStart={e => e.preventDefault()}
-      onTouchMove={e => e.preventDefault()}
       onContextMenu={e => isTouchDevice() && e.preventDefault()}
       tabIndex={0}
       {...{ [popUpRootDataAttribute]: true }}
