@@ -503,32 +503,28 @@ export default function useHandleEvents(w) {
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
-      const doorwaySlowDown = (
+      // - support chase behaviour
+      // - 🚧 if other npc, stop unless either:
+      //   (a) disjoint segs, or (b) other "in front" by a radius
+
+      let shouldSlowDown = (
         offMesh.orig.dstRoomMeta.small === true // small room
       );
-
-      // 🔔 npc slow-down near offMesh.dst needed (noticeable top-down)
-      let shouldSlowDown = doorwaySlowDown === true || npc.isTargetClose(offMesh.dst) === true;
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
-        if (
-          doorwaySlowDown === false // if ahead npc slows, stop
-          && tr.seg === 2
-          && tr.orig.srcGrKey === offMesh.orig.srcGrKey
-          && w.n[tr.npcKey].isTargetClose(offMesh.dst) === false // ditto
-        ) {
-          shouldSlowDown = true; // other beyond midway and in same direction
+        if (tr.orig.srcGrKey === offMesh.orig.srcGrKey) {
+          shouldSlowDown = true;
           continue;
         }
-
-        // **STOP** (teleport ensures we stop offMeshConnection)
+        // **STOP**
         npc.stopMoving();
         /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position); 
         return;
       }
-
+      
       if (shouldSlowDown === true) {
+        npc.agent?.raw.params.set_radius(0); // avoid sudden jumps
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() * 0.5);
       }
     },
@@ -555,6 +551,11 @@ export default function useHandleEvents(w) {
       if (npc.agent === null) {
         return; // e.g. npc without access near door
       }
+
+      if (npc.agent.radius === 0) {// restore radius
+        npc.agent.raw.params.set_radius(npc.getRadius());
+      }
+
       if (e.offMesh.dstRoomMeta.small === true) { 
         return npc.stopMoving(); // avoid jerk on try pass close neighbour
       }
@@ -562,7 +563,7 @@ export default function useHandleEvents(w) {
       // resume speed
       const maxSpeed = npc.getMaxSpeed();
       if (npc.agent.maxSpeed !== maxSpeed) {
-        npc.agent.updateParameters({ maxSpeed });
+        npc.agent.raw.params.set_maxSpeed(maxSpeed);
       }
       if (npc.s.run === true && npc.s.act !== 'Run') {
         npc.startAnimation('Run');
