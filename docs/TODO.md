@@ -4,6 +4,13 @@
 
 ### Site
 
+- 🚧 refactor Tabs
+  - 🚧 remove `tabset._${tabsKey}` tabsets
+  - remove save/restore from Tabs and into site.store
+    - setCurrentTabset restores from localStorage
+  - `tabset.current` is initial immutable layout
+  - can force reset to `tabset.current` via `reverts` prop/counter
+
 - 🚧 write 1st blog (npc cli)
   - ✅ more content
   - ✅ add a carousel
@@ -16,10 +23,9 @@
       - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
     - 🚧 can reset tabset by clicking link
       - ✅ tab layout should follow general format
-      - 🚧 save layout changes to site.store i.e. `state.model.toJson()`
     - can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
-    - 🚧 fix createOrRestoreJsonModel Error
+    - fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets
     - clean hard-coded initialization in initiateBrowser
   - 🚧 more content
