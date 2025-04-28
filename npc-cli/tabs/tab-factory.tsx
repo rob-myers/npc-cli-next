@@ -153,6 +153,7 @@ export function clearModelFromStorage(id: string) {
 export function createOrRestoreJsonModel(props: TabsProps) {
   const jsonModelString = tryLocalStorageGet(`model@${props.id}`);
 
+  // 🚧 🔔 this is preventing reset -- it must be moved into site.store
   if (props.persistLayout && jsonModelString) {
     try {
       const serializable = JSON.parse(jsonModelString) as IJsonModel;

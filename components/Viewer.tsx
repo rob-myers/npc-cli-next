@@ -50,6 +50,10 @@ export default function Viewer() {
           useSite.api.revertTabset(parts[1]);
           setTimeout(update);
           break;
+        case 'test-mutate-tabs':
+          useSite.api.testChangeTabsLayout();
+          setTimeout(update);
+          break;
         case 'open-tab':
           // 🚧
           break;

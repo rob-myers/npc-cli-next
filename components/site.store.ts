@@ -24,7 +24,7 @@ import {
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { extractTabNodes, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { createLayoutFromBasicLayout, extractTabNodes, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -60,6 +60,32 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
   
       return next;
+    },
+
+    // 🚧 temp
+    testChangeTabsLayout() {
+      
+      const next = createLayoutFromBasicLayout([[
+        { type: "component", class: "HelloWorld", filepath: "hello-world-2", props: {} },
+        { type: "component", class: "HelloWorld", filepath: "hello-world-3", props: {} },
+        {
+          type: "component",
+          class: "World",
+          filepath: "test-world-1",
+          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+        },
+      ],
+      [
+        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+      ]]);
+
+      set(({ tabset: lookup }) => {
+        return { tabset: { ...lookup,
+          current: { key: lookup.current.key, layout: next },
+        }};
+      });
+
     },
 
     createTabset(tabset) {
@@ -232,6 +258,7 @@ export type State = {
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
+    testChangeTabsLayout(): void;
   };
 };
 
