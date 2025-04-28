@@ -9,6 +9,7 @@ import {
   siteTopLevelKey,
   allArticlesMeta,
   initialTabsetLookup,
+  emptyTabset,
 } from "./const";
 
 import {
@@ -42,20 +43,18 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   
       if (next !== undefined) {
         // change current
-        set(({ tabset: lookup }) => ({ tabset: { ...lookup, current: next } }));
+        set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+          current: deepClone(next), // immutable
+        } }));
       } else {
         
         // create new empty current
-        next = { key: tabsetKey, layout: { type: 'row', children: [] } };
+        next = { ...deepClone(emptyTabset), key: tabsetKey };
   
-        set(({ tabset: lookup }) => ({
-          tabset: {
-            ...lookup, // reset will be empty without overwrite:
-            [`_${next.key}`]: deepClone(next),
-            [next.key]: next,
-            current: next,
-          },
-        }));
+        set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+          [next.key]: next,
+          current: deepClone(next), // immutable
+        }}));
 
         warn(`${'changeTabset'}: created empty tabset "${tabsetKey}"`);
       }
@@ -67,24 +66,19 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const next: TabsetLayout = {
         key: tabset.key,
         layout: isTouchDevice()
-        ? {
+          ? {
             type: 'row',
-            // 🔔 flatten tabsets on mobile for better UX
-            children: [
+            children: [// 🔔 flatten tabsets on mobile for better UX
               { type: 'tabset', children: extractTabNodes(tabset.layout) }
             ]}
           : tabset.layout
         ,
       };
 
-      set(({ tabset: lookup }) => ({
-        tabset: {
-          ...lookup,
-          [`_${next.key}`]: deepClone(next), // for revert
-          [next.key]: next,
-          current: next,
-        },
-      }));
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        [next.key]: next,
+        current: deepClone(next), // immutable
+      }}));
 
       return next;
     },
@@ -166,30 +160,18 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
-    rememberTabset(tabsetKey) {
-      const tabset = get().tabset[tabsetKey];
+    revertTabset() {
 
-      if (tabset !== undefined) {
-        set(({ tabset: lookup }) => ({
-          tabset: { ...lookup, [`_${tabset.key}`]: deepClone(tabset) },
-        }))
-      } else {
-        warn(`${'setTabsetReset'}: tabset key "${tabsetKey}" does not exist`);
-      }
-    },
-    
-    revertTabset(tabsetKey) {
-      const lookup = get().tabset;
+      // 🚧 maybe unnecessary: side-effect of "reverts++" and onModelChange
   
-      if (tabsetKey === 'current') {
-        const tabset = lookup.current;
-        const reverted = deepClone(lookup[`_${tabset.key}`]);
-        set({ tabset: { ...lookup, current: reverted, [tabset.key]: reverted }});
-      } else if (tabsetKey in lookup) {
-        set({ tabset: { ...lookup, [tabsetKey]: deepClone(lookup[`_${tabsetKey}`]) } });
-      } else {
-        warn(`${'revertTabset'}: tabset key "${tabsetKey}" does not exist`);
-      }
+      // if (tabsetKey === 'current') {
+      //   const tabset = lookup.current;
+      //   const reverted = deepClone(lookup[`_${tabset.key}`]);
+      //   set({ tabset: { ...lookup, current: reverted, [tabset.key]: reverted }});
+      // } else if (tabsetKey in lookup) {
+      //   set({ tabset: { ...lookup, [tabsetKey]: deepClone(lookup[`_${tabsetKey}`]) } });
+      // } 
+      
     },
 
     toggleNav(next) {
@@ -245,8 +227,6 @@ export type State = {
     isViewClosed(): boolean;
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
-    /** Remember for future reset */
-    rememberTabset(tabsetKey: string): void;
     /** Revert to last remembered, or noop */
     revertTabset(tabsetKey: string): void;
     toggleNav(next?: boolean): void;

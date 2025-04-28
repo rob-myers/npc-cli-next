@@ -5,8 +5,8 @@
 ### Site
 
 - 🚧 refactor Tabs
-  - 🚧 remove `tabset._${tabsKey}` tabsets
-  - remove save/restore from Tabs and into site.store
+  - ✅ remove `tabset._${tabsKey}` tabsets
+  - 🚧 remove save/restore from Tabs and into site.store
     - setCurrentTabset restores from localStorage
   - `tabset.current` is initial immutable layout
   - can force reset to `tabset.current` via `reverts` prop/counter
