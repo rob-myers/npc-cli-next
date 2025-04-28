@@ -1244,8 +1244,8 @@ const movingSeparationWeight = 0.5;
 const staticCollisionQueryRange = 1;
 const movingCollisionQueryRange = 1.5;
 
-const preOffMeshCloseDist = helper.defaults.radius * 1;
-const preOffMeshCloserDist = helper.defaults.radius * 0.8;
+const preOffMeshCloseDist = helper.defaults.radius * 0.5;
+const preOffMeshCloserDist = helper.defaults.radius * 0.5;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
