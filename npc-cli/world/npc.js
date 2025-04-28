@@ -996,7 +996,7 @@ export class Npc {
     if (elapsedTime - this.s.slowBegin < 0.3) {
       return;
     }
-    // 🔔 can prevent npc moving is acceleration too low
+
     this.w.npc.onStuckCustom?.(this, agent);
   }
 
