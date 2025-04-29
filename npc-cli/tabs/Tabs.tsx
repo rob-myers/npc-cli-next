@@ -143,7 +143,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       state.hash = nextHash;
       return tabsDefChanged;
     },
-  }));
+  }), { deps: [props] }); // 🔔 crucial dep
   
   const tabsDefChanged = state.updateHash(JSON.stringify(props.tabset));
 

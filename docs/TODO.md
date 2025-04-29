@@ -21,9 +21,10 @@
     - ✅ try restore from `_${tabsetKey}`
     - ℹ️ `tabset[tabsetKey]` will need to change onchange tabset, so need underscored to revert to "page load"
   - 🚧 fix HMR of Tabs related files
-    - 🚧 onchange site.store reverts to initial layout
+    - ✅ onchange site.store (HMR) reverts to initial layout
       - ✅ avoid Tabs remount
-      - 🚧 BUT we're changing hard reset?
+    - ✅ onchange site.store (HMR) breaks hard reset
+      - `<Tabs>` useStateRef was references stale `props`
     - 🚧 onchange tab-factory reverts to initial layout
       - ✅ avoid Tabs remount
     - 🚧 onchange Root (trigger `useSite.api.createTabset`) loses some state?
