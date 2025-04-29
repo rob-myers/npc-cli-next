@@ -75,7 +75,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         [next.key]: next,
-        [`_${next.key}`]: deepClone(next),
+        [`_${next.key}`]: deepClone(tabset),
         current: deepClone(next),
       }}));
 
