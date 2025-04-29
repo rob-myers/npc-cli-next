@@ -144,68 +144,6 @@ export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
 
-//#region persist
-
-export function clearModelFromStorage(id: string) {
-  tryLocalStorageRemove(`model@${id}`);
-}
-
-export function createOrRestoreJsonModel(props: TabsProps) {
-  const jsonModelString = tryLocalStorageGet(`model@${props.id}`);
-
-  // 🚧 🔔 this is preventing reset: move to site.store
-  // 🚧 instead return model.toJson() to be used as prop of <Tabs>
-  if (props.persistLayout && jsonModelString) {
-    try {
-      const serializable = JSON.parse(jsonModelString) as IJsonModel;
-
-      if (serializable.global) {
-        serializable.global.splitterExtra = 12; // Larger splitter hit test area
-        serializable.global.splitterSize = 2;
-        serializable.global.tabSetEnableDivide = !isTouchDevice();
-        serializable.global.enableEdgeDock = !isTouchDevice();
-      }
-
-      const model = Model.fromJson(serializable);
-
-      // Overwrite persisted `TabMeta`s with their value from `props`
-      const tabKeyToMeta = extractTabNodes(props.tabset.layout).reduce(
-        (agg, item) => Object.assign(agg, { [item.id as string]: item.config }),
-        {} as Record<string, TabDef>
-      );
-      model.visitNodes((x) => x.getType() === "tab" &&
-        Object.assign((x as TabNode).getConfig(), tabKeyToMeta[x.getId()])
-      );
-
-      // Validate i.e. props.tabs must mention same ids
-      const prevTabNodeIds = [] as string[];
-      model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
-      const nextTabNodeIds = extractTabNodes(props.tabset.layout).map((x) => x.id);
-      if (
-        prevTabNodeIds.length === nextTabNodeIds.length &&
-        prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
-      ) {
-        return model;
-      } else {
-        throw Error(JSON.stringify({
-          message: 'prev/next ids differ',
-          prevTabNodeIds,
-          nextTabNodeIds,
-        }, undefined, '\t'));
-      }
-    } catch (e) {
-      warn("createOrRestoreJsonModel", e);
-    }
-  }
-
-  // Either:
-  // (a) no Tabs model found in local storage, or
-  // (b) Tabs prop "tabs" has different ids
-  return Model.fromJson(
-    computeJsonModel(props.tabset, props.rootOrientationVertical)
-  );
-}
-
 export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
   return layout.children.flatMap(child => {
     if (child.type === 'row') {
@@ -244,8 +182,7 @@ export function createLayoutFromBasicLayout(
   };
 }
 
-
-function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
+export function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
   return {
     global: {
       tabEnableRename: false,
@@ -260,9 +197,11 @@ function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolea
   };
 }
 
-export function storeModelAsJson(id: string, model: Model) {
-  const serializable = model.toJson();
-  tryLocalStorageSet(`model@${id}`, JSON.stringify(serializable));
+export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
+  return {
+    type: 'row',
+    children: [// 🔔 flatten tabsets on mobile for better UX
+      { type: 'tabset', children: extractTabNodes(layout) }
+    ],
+  };
 }
-
-//#endregion

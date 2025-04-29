@@ -4,22 +4,18 @@ import {
   Actions,
   Layout as FlexLayout,
   Model,
-  type IJsonModel,
   type TabNode,
   type TabSetNode,
 } from "flexlayout-react";
 import debounce from "debounce";
-import { useBeforeunload } from "react-beforeunload";
 import { css } from "@emotion/react";
 
 import { detectTabPrevNextShortcut } from "../service/generic";
 import {
   type TabDef,
   type TabsBaseProps,
-  clearModelFromStorage,
-  createOrRestoreJsonModel,
+  computeJsonModel,
   factory,
-  storeModelAsJson,
 } from "./tab-factory";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -40,7 +36,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       state.rootEl.focus();
     },
     hardReset() {
-      clearModelFromStorage(props.id);
+      // clearModelFromStorage(props.id);
+      props.onHardReset?.(); // 🚧
       state.reset();
     },
     onAction(act) {
@@ -95,8 +92,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     },
     // 🔔 saw "Debounced method called with different contexts" for 300ms
     onModelChange: debounce((() => {
-      storeModelAsJson(props.id, state.model);
-      props.onModelChange?.(state.model.toJson());
+      props.onModelChange?.(false);
     }), 30),
     reset() {
       state.tabsState = {};
@@ -104,6 +100,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         state.everEnabled = false;
       }
       state.resetCount++; // Remount
+      props.onModelChange?.(true); // Save and sync current
       update();
     },
     toggleEnabled(next) {
@@ -151,8 +148,9 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 
   state.model = React.useMemo(() => {
     
-    // 🚧 simply receive modelJson as prop and create model
-    const output = createOrRestoreJsonModel(props);
+    const output = Model.fromJson(
+      computeJsonModel(props.tabset, props.rootOrientationVertical)
+    );
 
     // Enable and disable tabs relative to visibility
     output.visitNodes((node) => {
@@ -190,8 +188,6 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     return output;
   }, [tabsDefChanged, state.resetCount]);
 
-  useBeforeunload(() => storeModelAsJson(props.id, state.model));
-
   React.useImperativeHandle(ref, () => state);
 
   const update = useUpdate();
@@ -220,9 +216,10 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 
 export interface Props extends TabsBaseProps {
   rootOrientationVertical?: boolean;
+  onHardReset?(): void;
   /** Invoked onchange state.enabled */
   onToggled?(next: boolean): void;
-  onModelChange?(jsonModel: IJsonModel): void;
+  onModelChange?(syncCurrent: boolean): void;
 }
 
 export interface State {

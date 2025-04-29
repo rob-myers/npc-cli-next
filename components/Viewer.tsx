@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import cx from "classnames";
 import { shallow } from "zustand/shallow";
 import debounce from "debounce";
+import { useBeforeunload } from "react-beforeunload";
 
 import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
 
@@ -75,9 +76,12 @@ export default function Viewer() {
         state.tabs.toggleEnabled(true);
       }
     },
-    onModelChange(jsonModel) {
-      // 🚧 save to site.store
-      console.log('onModelChange', { jsonModel });
+    onModelChange(syncCurrent) {
+      useSite.api.storeCurrentLayout(state.tabs.model);
+
+      if (syncCurrent) {// sync avoids resetting to "initial layout"
+        useSite.api.syncCurrentTabset(state.tabs.model);
+      }
     },
     update,
   }));
@@ -105,6 +109,8 @@ export default function Viewer() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  useBeforeunload(() => useSite.api.storeCurrentLayout(state.tabs.model));
+
   const collapsed = !site.viewOpen;
   const neverEnabled = !state.tabs.everEnabled;
 
@@ -128,6 +134,8 @@ export default function Viewer() {
           ref={state.ref('tabs')}
           id="viewer-tabs"
           initEnabled={false}
+          // 🚧 not working?
+          onHardReset={useSite.api.forgetCurrentLayout}
           onModelChange={state.onModelChange}
           onToggled={update}
           persistLayout
@@ -149,7 +157,7 @@ export interface State {
   onInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
-  onModelChange(jsonModel: import('flexlayout-react').IJsonModel): void;
+  onModelChange(updateLayout: boolean): void;
   update(): void;
 }
 

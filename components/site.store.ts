@@ -22,10 +22,11 @@ import {
   error,
   deepClone,
   warn,
+  tryLocalStorageRemove,
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { createLayoutFromBasicLayout, extractTabNodes, type TabDef, type TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { createLayoutFromBasicLayout, extractTabNodes, flattenLayout, type TabDef, type TabsetLayout } from "@/npc-cli/tabs/tab-factory";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -64,17 +65,12 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     createTabset(tabset) {
-      const next: TabsetLayout = {
-        key: tabset.key,
-        layout: isTouchDevice()
-          ? {
-            type: 'row',
-            children: [// 🔔 flatten tabsets on mobile for better UX
-              { type: 'tabset', children: extractTabNodes(tabset.layout) }
-            ]}
-          : tabset.layout
-        ,
-      };
+
+      if (isTouchDevice()) {
+        tabset.layout = flattenLayout(tabset.layout);
+      }
+
+      const next: TabsetLayout = useSite.api.tryRestoreLayout(tabset);
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         [next.key]: next,
@@ -82,6 +78,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }}));
 
       return next;
+    },
+
+    forgetCurrentLayout() {
+      const { current } = get().tabset;
+      tryLocalStorageRemove(`tabset@${current.key}`);  
     },
 
     getPageMetadataFromScript() {// 🔔 read metadata from <script id="page-metadata-json">
@@ -165,6 +166,21 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       // 🚧
     },
 
+    storeCurrentLayout(model) {
+      const { current } = get().tabset;
+      const serializable = model.toJson();
+      tryLocalStorageSet(`tabset@${current.key}`, JSON.stringify(serializable));
+    },
+
+    syncCurrentTabset(model) {
+      set(({ tabset: lookup }) => ({
+        tabset: { ...lookup, current: {
+          key: lookup.current.key,
+          layout: model.toJson().layout,
+        }}
+      }));
+    },
+
     // 🚧 temp
     testChangeTabsLayout() {
       
@@ -191,8 +207,8 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     },
 
-    tryRestoreLayout(tabset, tabsKey) {
-      const jsonModelString = tryLocalStorageGet(`tabset@${tabsKey}`);
+    tryRestoreLayout(tabset) {
+      const jsonModelString = tryLocalStorageGet(`tabset@${tabset.key}`);
     
       if (jsonModelString !== null) {
         try {
@@ -290,6 +306,7 @@ export type State = {
     changeTabset(tabsetKey: string): TabsetLayout;
     /** Create, possibly overwriting `${key}` and `_${key}` */
     createTabset(tabsetDef: TabsetLayout): TabsetLayout;
+    forgetCurrentLayout(): void;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
@@ -300,8 +317,10 @@ export type State = {
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
+    storeCurrentLayout(model: Model): void;
+    syncCurrentTabset(model: Model): void;
     testChangeTabsLayout(): void; // 🚧 temp
-    tryRestoreLayout(layout: TabsetLayout, tabsKey: string): TabsetLayout;
+    tryRestoreLayout(layout: TabsetLayout): TabsetLayout;
   };
 };
 

@@ -8,15 +8,24 @@
   - ✅ remove `tabset._${tabsKey}` tabsets
   - 🚧 move restore from localStorage out of tabs
     - ℹ️ it is preventing us from overwriting tabs layout
-    - 🚧 move restore from localStorage out of Tabs and into site.store
+    - ✅ move restore from localStorage out of Tabs and into site.store
       - ✅ useSite.api.tryRestoreLayout
-      - 🚧 hook up useSite.api.tryRestoreLayout
-    - 🚧 move save to localStorage out of Tabs and into site.store
-      - `<Tabs>` onModelChange does not `storeModelAsJson(props.id, state.model)`
-      - `<Viewer>` stores instead, using tabsKey
-  - can change tabs programmatically without unmount
-  - keep tabset.current immutable while using Tabs UI
-  - try sending shallow clone to reset
+      - ✅ hook up useSite.api.tryRestoreLayout
+    - ✅ move save to localStorage out of Tabs and into site.store
+      - ✅ `<Tabs>` onModelChange does not `storeModelAsJson(props.id, state.model)`
+      - ✅ `<Viewer>` stores instead, using tabsKey
+  - ✅ remember layout on reset
+    - ✅ sync `tabset.current` with `tabs.model`
+    - ℹ️ we'll lose its previous state, so need keys `_${tabsetKey}` after all
+  - fix hard reset
+  - fix HMR of Tabs related files
+  - ❌ keep tabset.current immutable while using Tabs UI
+    - we won't update per flexlayout-react update, but we will change on reset (ViewerControls)
+  - ✅ can change tabs programmatically without unmount
+    - we can directly change `tabset.current` without overwriting "original tabset"
+  - can revert tabset
+  - do we need to mutate `tabset[tabset.key]` with UI?
+    - probably not i.e. we look at tabs.model instead
 
 - 🚧 write 1st blog (npc cli)
   - ✅ more content
