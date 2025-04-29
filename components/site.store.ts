@@ -2,6 +2,7 @@ import type { StateCreator } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { focusManager } from "@tanstack/react-query";
+import { Model, type TabNode, type IJsonModel } from "flexlayout-react";
 
 // 🔔 avoid unnecessary HMR: do not reference view-related consts
 import {
@@ -24,7 +25,7 @@ import {
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { createLayoutFromBasicLayout, extractTabNodes, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { createLayoutFromBasicLayout, extractTabNodes, type TabDef, type TabsetLayout } from "@/npc-cli/tabs/tab-factory";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -60,32 +61,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
   
       return next;
-    },
-
-    // 🚧 temp
-    testChangeTabsLayout() {
-      
-      const next = createLayoutFromBasicLayout([[
-        { type: "component", class: "HelloWorld", filepath: "hello-world-2", props: {} },
-        { type: "component", class: "HelloWorld", filepath: "hello-world-3", props: {} },
-        {
-          type: "component",
-          class: "World",
-          filepath: "test-world-1",
-          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-        },
-      ],
-      [
-        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-      ]]);
-
-      set(({ tabset: lookup }) => {
-        return { tabset: { ...lookup,
-          current: { key: lookup.current.key, layout: next },
-        }};
-      });
-
     },
 
     createTabset(tabset) {
@@ -187,17 +162,84 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     revertTabset() {
+      // 🚧
+    },
 
-      // 🚧 maybe unnecessary: side-effect of "reverts++" and onModelChange
-  
-      // if (tabsetKey === 'current') {
-      //   const tabset = lookup.current;
-      //   const reverted = deepClone(lookup[`_${tabset.key}`]);
-      //   set({ tabset: { ...lookup, current: reverted, [tabset.key]: reverted }});
-      // } else if (tabsetKey in lookup) {
-      //   set({ tabset: { ...lookup, [tabsetKey]: deepClone(lookup[`_${tabsetKey}`]) } });
-      // } 
+    // 🚧 temp
+    testChangeTabsLayout() {
       
+      const next = createLayoutFromBasicLayout([[
+        { type: "component", class: "HelloWorld", filepath: "hello-world-2", props: {} },
+        { type: "component", class: "HelloWorld", filepath: "hello-world-3", props: {} },
+        {
+          type: "component",
+          class: "World",
+          filepath: "test-world-1",
+          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+        },
+      ],
+      [
+        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+      ]]);
+
+      set(({ tabset: lookup }) => {
+        return { tabset: { ...lookup,
+          current: { key: lookup.current.key, layout: next },
+        }};
+      });
+
+    },
+
+    tryRestoreLayout(tabset, tabsKey) {
+      const jsonModelString = tryLocalStorageGet(`tabset@${tabsKey}`);
+    
+      if (jsonModelString !== null) {
+        try {
+          const serializable = JSON.parse(jsonModelString) as IJsonModel;
+    
+          if (serializable.global) {
+            serializable.global.splitterExtra = 12; // Larger splitter hit test area
+            serializable.global.splitterSize = 2;
+            serializable.global.tabSetEnableDivide = !isTouchDevice();
+            serializable.global.enableEdgeDock = !isTouchDevice();
+          }
+    
+          const model = Model.fromJson(serializable);
+    
+          // Overwrite persisted `TabMeta`s with their value from `props`
+          const tabKeyToMeta = extractTabNodes(tabset.layout).reduce(
+            (agg, item) => Object.assign(agg, { [item.id as string]: item.config }),
+            {} as Record<string, TabDef>
+          );
+          model.visitNodes((x) => x.getType() === "tab" &&
+            Object.assign((x as TabNode).getConfig(), tabKeyToMeta[x.getId()])
+          );
+    
+          // Validate i.e. `tabset` must mention same ids
+          const prevTabNodeIds = [] as string[];
+          model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
+          const nextTabNodeIds = extractTabNodes(tabset.layout).map((x) => x.id);
+          if (
+            prevTabNodeIds.length === nextTabNodeIds.length &&
+            prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
+          ) {
+            return {
+              key: tabset.key,
+              layout: model.toJson().layout,
+            };
+          } else {
+            throw Error(JSON.stringify({ message: 'prev/next ids differ', prevTabNodeIds, nextTabNodeIds }, undefined, '\t'));
+          }
+        } catch (e) {
+          warn("tryRestoreLayout", e);
+        }
+      }
+    
+      // Either:
+      // (a) no Tabs model found in local storage, or
+      // (b) Tabs prop "tabs" has different ids
+      return tabset;
     },
 
     toggleNav(next) {
@@ -258,7 +300,8 @@ export type State = {
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
-    testChangeTabsLayout(): void;
+    testChangeTabsLayout(): void; // 🚧 temp
+    tryRestoreLayout(layout: TabsetLayout, tabsKey: string): TabsetLayout;
   };
 };
 

@@ -153,7 +153,8 @@ export function clearModelFromStorage(id: string) {
 export function createOrRestoreJsonModel(props: TabsProps) {
   const jsonModelString = tryLocalStorageGet(`model@${props.id}`);
 
-  // 🚧 🔔 this is preventing reset -- it must be moved into site.store
+  // 🚧 🔔 this is preventing reset: move to site.store
+  // 🚧 instead return model.toJson() to be used as prop of <Tabs>
   if (props.persistLayout && jsonModelString) {
     try {
       const serializable = JSON.parse(jsonModelString) as IJsonModel;
@@ -168,15 +169,12 @@ export function createOrRestoreJsonModel(props: TabsProps) {
       const model = Model.fromJson(serializable);
 
       // Overwrite persisted `TabMeta`s with their value from `props`
-      
       const tabKeyToMeta = extractTabNodes(props.tabset.layout).reduce(
         (agg, item) => Object.assign(agg, { [item.id as string]: item.config }),
         {} as Record<string, TabDef>
       );
-      model.visitNodes(
-        (x) =>
-          x.getType() === "tab" &&
-          Object.assign((x as TabNode).getConfig(), tabKeyToMeta[x.getId()])
+      model.visitNodes((x) => x.getType() === "tab" &&
+        Object.assign((x as TabNode).getConfig(), tabKeyToMeta[x.getId()])
       );
 
       // Validate i.e. props.tabs must mention same ids

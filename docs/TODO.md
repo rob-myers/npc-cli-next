@@ -8,8 +8,12 @@
   - ✅ remove `tabset._${tabsKey}` tabsets
   - 🚧 move restore from localStorage out of tabs
     - ℹ️ it is preventing us from overwriting tabs layout
-    - move restore from localStorage out of Tabs and into site.store
-    - move save to localStorage out of Tabs and into site.store
+    - 🚧 move restore from localStorage out of Tabs and into site.store
+      - ✅ useSite.api.tryRestoreLayout
+      - 🚧 hook up useSite.api.tryRestoreLayout
+    - 🚧 move save to localStorage out of Tabs and into site.store
+      - `<Tabs>` onModelChange does not `storeModelAsJson(props.id, state.model)`
+      - `<Viewer>` stores instead, using tabsKey
   - can change tabs programmatically without unmount
   - keep tabset.current immutable while using Tabs UI
   - try sending shallow clone to reset

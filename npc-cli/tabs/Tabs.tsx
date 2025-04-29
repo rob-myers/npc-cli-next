@@ -150,6 +150,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
   const tabsDefChanged = state.updateHash(JSON.stringify(props.tabset));
 
   state.model = React.useMemo(() => {
+    
+    // 🚧 simply receive modelJson as prop and create model
     const output = createOrRestoreJsonModel(props);
 
     // Enable and disable tabs relative to visibility
