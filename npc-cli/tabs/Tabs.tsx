@@ -36,9 +36,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       state.rootEl.focus();
     },
     hardReset() {
-      // clearModelFromStorage(props.id);
-      props.onHardReset?.(); // 🚧
-      state.reset();
+      props.onHardReset?.();
+      state.reset(false);
     },
     onAction(act) {
       if (act.type === Actions.MAXIMIZE_TOGGLE) {
@@ -94,13 +93,15 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     onModelChange: debounce((() => {
       props.onModelChange?.(false);
     }), 30),
-    reset() {
+    reset(remember = true) {
       state.tabsState = {};
       if (!state.enabled) {
         state.everEnabled = false;
       }
+      if (remember) {// Save and sync current
+        props.onModelChange?.(true);
+      }
       state.resetCount++; // Remount
-      props.onModelChange?.(true); // Save and sync current
       update();
     },
     toggleEnabled(next) {
@@ -237,7 +238,7 @@ export interface State {
   onAction(act: Action): Action | undefined;
   onKeyDown(e: React.KeyboardEvent): void;
   onModelChange(): void;
-  reset(): void;
+  reset(remember?: boolean): void;
   toggleEnabled(next?: boolean): void;
   toggleTabsDisabled(next: boolean): void;
   /** Returns true iff hash changed */

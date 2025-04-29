@@ -40,25 +40,26 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
   api: {
 
-    changeTabset(tabsetKey) {
-      let next = get().tabset[tabsetKey];
+    changeTabset(nextTabsetKey) {
+      let next = get().tabset[nextTabsetKey];
   
       if (next !== undefined) {
         // change current
         set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-          current: deepClone(next), // immutable
+          current: deepClone(next),
         } }));
       } else {
         
         // create new empty current
-        next = { ...deepClone(emptyTabset), key: tabsetKey };
+        next = { ...deepClone(emptyTabset), key: nextTabsetKey };
   
         set(({ tabset: lookup }) => ({ tabset: { ...lookup,
           [next.key]: next,
-          current: deepClone(next), // immutable
+          [`_${next.key}`]: deepClone(next),
+          current: deepClone(next),
         }}));
 
-        warn(`${'changeTabset'}: created empty tabset "${tabsetKey}"`);
+        warn(`${'changeTabset'}: created empty tabset "${nextTabsetKey}"`);
       }
   
       return next;
@@ -66,15 +67,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     createTabset(tabset) {
 
-      if (isTouchDevice()) {
+      if (isTouchDevice()) {// better UX on mobile
         tabset.layout = flattenLayout(tabset.layout);
       }
 
-      const next: TabsetLayout = useSite.api.tryRestoreLayout(tabset);
+      const next = useSite.api.tryRestoreLayout(tabset);
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         [next.key]: next,
-        current: deepClone(next), // immutable
+        [`_${next.key}`]: deepClone(next),
+        current: deepClone(next),
       }}));
 
       return next;
@@ -162,8 +164,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
-    revertTabset() {
-      // 🚧
+    revertCurrentTabset() {
+      const { current } = get().tabset;
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        current: deepClone(lookup[`_${current.key}`]),
+      } }));
     },
 
     storeCurrentLayout(model) {
@@ -173,12 +178,9 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     syncCurrentTabset(model) {
-      set(({ tabset: lookup }) => ({
-        tabset: { ...lookup, current: {
-          key: lookup.current.key,
-          layout: model.toJson().layout,
-        }}
-      }));
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        current: { key: lookup.current.key, layout: model.toJson().layout },
+      }}));
     },
 
     // 🚧 temp
@@ -312,8 +314,7 @@ export type State = {
     isViewClosed(): boolean;
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
-    /** Revert to last remembered, or noop */
-    revertTabset(tabsetKey: string): void;
+    revertCurrentTabset(): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;

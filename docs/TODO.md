@@ -17,12 +17,16 @@
   - ✅ remember layout on reset
     - ✅ sync `tabset.current` with `tabs.model`
     - ℹ️ we'll lose its previous state, so need keys `_${tabsetKey}` after all
-  - fix hard reset
-  - fix HMR of Tabs related files
+  - ✅ fix hard reset
+    - ✅ try restore from `_${tabsetKey}`
+    - ℹ️ `tabset[tabsetKey]` will need to change onchange tabset, so need underscored to revert to "page load"
+  - 🚧 fix HMR of Tabs related files
+    - try changing: ...
   - ❌ keep tabset.current immutable while using Tabs UI
     - we won't update per flexlayout-react update, but we will change on reset (ViewerControls)
   - ✅ can change tabs programmatically without unmount
     - we can directly change `tabset.current` without overwriting "original tabset"
+  - try extend above approach to "reset without re-mount"
   - can revert tabset
   - do we need to mutate `tabset[tabset.key]` with UI?
     - probably not i.e. we look at tabs.model instead

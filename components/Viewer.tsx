@@ -37,6 +37,10 @@ export default function Viewer() {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
     }, 1000),
+    onHardReset() {
+      useSite.api.forgetCurrentLayout();
+      useSite.api.revertCurrentTabset();
+    },
     onInternalApi(internalApiPath) {
       const parts = internalApiPath.split('/').slice(2);
       console.log({ internalApiPath, parts });
@@ -48,7 +52,9 @@ export default function Viewer() {
           setTimeout(update);
           break;
         case 'reset-tabs':
-          useSite.api.revertTabset(parts[1]);
+          // 🚧 not the same as hard reset,
+          // since we don't want to remount!
+          useSite.api.revertCurrentTabset();
           setTimeout(update);
           break;
         case 'test-mutate-tabs':
@@ -135,7 +141,7 @@ export default function Viewer() {
           id="viewer-tabs"
           initEnabled={false}
           // 🚧 not working?
-          onHardReset={useSite.api.forgetCurrentLayout}
+          onHardReset={state.onHardReset}
           onModelChange={state.onModelChange}
           onToggled={update}
           persistLayout
@@ -157,6 +163,7 @@ export interface State {
   onInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
+  onHardReset(): void;
   onModelChange(updateLayout: boolean): void;
   update(): void;
 }
