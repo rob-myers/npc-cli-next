@@ -9,7 +9,6 @@ import {
   defaultSiteTopLevelState,
   siteTopLevelKey,
   allArticlesMeta,
-  initialTabsetLookup,
   emptyTabset,
 } from "./const";
 
@@ -26,7 +25,8 @@ import {
 } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { createLayoutFromBasicLayout, extractTabNodes, flattenLayout, type TabDef, type TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { createLayoutFromBasicLayout, type TabDef, type TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -35,7 +35,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   draggingView: false,
   pageMetadata: {} as PageMetadata,
   navOpen: false,
-  tabset: initialTabsetLookup,
+  tabset: restoreTabsetLookup(),
   viewOpen: false,
 
   api: {
@@ -72,12 +72,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
 
       const next = useSite.api.tryRestoreLayout(tabset);
+      const _next = deepClone(tabset);
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         [next.key]: next,
-        [`_${next.key}`]: deepClone(tabset),
+        [`_${next.key}`]: _next,
         current: deepClone(next),
       }}));
+
+      // save "restore point"
+      tryLocalStorageSet(`tabset@_${next.key}`, JSON.stringify(_next));
 
       return next;
     },
@@ -167,7 +171,8 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     revertCurrentTabset() {
       const { current } = get().tabset;
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-        current: deepClone(lookup[`_${current.key}`]),
+        current: deepClone({...lookup[`_${current.key}`], key: current.key }),
+        [current.key]: deepClone({...lookup[`_${current.key}`], key: current.key }),
       } }));
     },
 

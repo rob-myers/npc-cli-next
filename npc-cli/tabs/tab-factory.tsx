@@ -144,16 +144,6 @@ export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
 
-export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
-  return layout.children.flatMap(child => {
-    if (child.type === 'row') {
-      return extractTabNodes(child);
-    } else {
-      return child.children.flatMap(x=> x);
-    }
-  });
-}
-
 export function createLayoutFromBasicLayout(
   basicLayout: TabDef[][],
 ): IJsonRowNode {
@@ -194,14 +184,5 @@ export function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?:
       splitterSize: 2,
     },
     layout: tabset.layout,
-  };
-}
-
-export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
-  return {
-    type: 'row',
-    children: [// 🔔 flatten tabsets on mobile for better UX
-      { type: 'tabset', children: extractTabNodes(layout) }
-    ],
   };
 }

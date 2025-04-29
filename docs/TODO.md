@@ -21,13 +21,18 @@
     - ✅ try restore from `_${tabsetKey}`
     - ℹ️ `tabset[tabsetKey]` will need to change onchange tabset, so need underscored to revert to "page load"
   - 🚧 fix HMR of Tabs related files
-    - try changing: ...
+    - 🚧 onchange site.store reverts to initial layout
+      - ✅ avoid Tabs remount
+      - 🚧 BUT we're changing hard reset?
+    - 🚧 onchange tab-factory reverts to initial layout
+      - ✅ avoid Tabs remount
+    - 🚧 onchange Root (trigger `useSite.api.createTabset`) loses some state?
   - ❌ keep tabset.current immutable while using Tabs UI
     - we won't update per flexlayout-react update, but we will change on reset (ViewerControls)
   - ✅ can change tabs programmatically without unmount
     - we can directly change `tabset.current` without overwriting "original tabset"
   - try extend above approach to "reset without re-mount"
-  - can revert tabset
+  - can revert tabset to original without remount
   - do we need to mutate `tabset[tabset.key]` with UI?
     - probably not i.e. we look at tabs.model instead
 
