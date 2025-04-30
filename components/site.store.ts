@@ -28,68 +28,70 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     //#region tabset
 
     changeTabset(nextTabsetKey) {
-      let next = get().tabset[nextTabsetKey];
-  
-      if (next !== undefined) {
-        // change current
-        set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-          current: deepClone(next),
-        } }));
-      } else {
-        
-        // create new empty current
-        next = { ...deepClone(emptyTabset), key: nextTabsetKey };
-  
-        set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-          [next.key]: next,
-          [`_${next.key}`]: deepClone(next),
-          current: deepClone(next),
-        }}));
-
-        warn(`${'changeTabset'}: created empty tabset "${nextTabsetKey}"`);
+      const next = get().tabset[nextTabsetKey];
+      if (next === undefined) {
+        throw Error(`${'changeTabset'}: tabset not found "${nextTabsetKey}"`);
       }
+
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        current: deepClone(next),
+      } }));
+
+      useSite.api.storeTabsetsMeta();
   
       return next;
     },
 
-    createTabset(tabset) {
+    ensureTabset(tabset) {
 
       if (isTouchDevice()) {// better UX on mobile
         tabset.layout = flattenLayout(tabset.layout);
       }
 
+      // restore from localStorage if possible
       const next = useSite.api.tryRestoreLayout(tabset);
-      const _next = deepClone(tabset);
+      // hard-reset returns to original tabset 
+      const restorable = deepClone(tabset);
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         [next.key]: next,
-        [`_${next.key}`]: _next,
+        [`_${next.key}`]: restorable,
         current: deepClone(next),
       }}));
 
-      // save "restore point"
-      tryLocalStorageSet(`tabset@_${next.key}`, JSON.stringify(_next));
+      tryLocalStorageSet(`tabset@_${next.key}`, JSON.stringify(restorable));
+      useSite.api.storeTabsetsMeta();
 
       return next;
     },
 
-    forgetCurrentLayout() {
-      const { current } = get().tabset;
-      tryLocalStorageRemove(`tabset@${current.key}`);  
-    },
-
     revertCurrentTabset() {
-      const { current } = get().tabset;
-      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-        current: deepClone({...lookup[`_${current.key}`], key: current.key }),
-        [current.key]: deepClone({...lookup[`_${current.key}`], key: current.key }),
+      const { current: { key: tabsetKey }, ...lookup } = get().tabset;
+      const next = {...lookup[`_${tabsetKey}`], key: tabsetKey };
+
+      set(({ tabset: { ...lookup,
+        current: deepClone(next),
+        [tabsetKey]: deepClone(next),
       } }));
+
+      // overwrite localStorage too
+      tryLocalStorageSet(`tabset@${tabsetKey}`, JSON.stringify(next));
+      useSite.api.storeTabsetsMeta();
     },
 
     storeCurrentLayout(model) {
       const { current } = get().tabset;
       const serializable = model.toJson();
       tryLocalStorageSet(`tabset@${current.key}`, JSON.stringify(serializable));
+    },
+    
+    storeTabsetsMeta() {
+      const { current, ...lookup  } = get().tabset;
+      const tabsetsMeta: AllTabsetsMeta = {
+        currentKey: current.key,
+        allKeys: Object.keys(lookup),
+      };
+      tryLocalStorageSet(`tabsets-meta`, JSON.stringify(tabsetsMeta));
     },
 
     syncCurrentTabset(model) {
@@ -98,7 +100,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }}));
     },
 
-    // 🚧 temp
+    // 🚧 remove
     testChangeTabsLayout() {
       
       const next = createLayoutFromBasicLayout([[
@@ -301,8 +303,7 @@ export type State = {
     /** Change, creating new empty if n'exist pas */
     changeTabset(tabsetKey: string): TabsetLayout;
     /** Create, possibly overwriting `${key}` and `_${key}` */
-    createTabset(tabsetDef: TabsetLayout): TabsetLayout;
-    forgetCurrentLayout(): void;
+    ensureTabset(tabsetDef: TabsetLayout): TabsetLayout;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
@@ -313,6 +314,7 @@ export type State = {
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
     storeCurrentLayout(model: Model): void;
+    storeTabsetsMeta(): void;
     syncCurrentTabset(model: Model): void;
     testChangeTabsLayout(): void; // 🚧 temp
     tryRestoreLayout(layout: TabsetLayout): TabsetLayout;
@@ -357,6 +359,11 @@ interface GiscusDiscussionMeta {
   totalReplyCount: number;
   /** e.g. `"https://github.com/rob-myers/the-last-redoubt/discussions/5"` */
   url: string;
+}
+
+interface AllTabsetsMeta {
+  currentKey: string;
+  allKeys: string[];
 }
 
 const useSite = Object.assign(useStore, { api: useStore.getState().api });

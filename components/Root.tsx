@@ -29,7 +29,7 @@ export default function Root({ children }: React.PropsWithChildren) {
   React.useEffect(() => {
 
     // 🚧 move elsewhere
-    useSite.api.createTabset({
+    useSite.api.ensureTabset({
       key: 'temp_tabset',
       layout: createLayoutFromBasicLayout([[
         {

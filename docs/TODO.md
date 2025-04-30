@@ -19,10 +19,9 @@
     - ℹ️ we'll lose its previous state, so need keys `_${tabsetKey}` after all
   - ✅ fix hard reset
     - ✅ try restore from `_${tabsetKey}`
-    - ℹ️ `tabset[tabsetKey]` will need to change onchange tabset, so need underscored to revert to "page load"
-  - 🚧 localStorage records `all-tabsets` as `{ currentKey, allKeys }`
-    - used on restore
+  - ✅ localStorage includes `tabsets-meta` as `{ currentKey, allKeys }`
     - includes underscore keys
+  - use `tabset-meta` on initially create site.store
   - 🚧 fix HMR of Tabs related files
     - ✅ onchange site.store (HMR) reverts to initial layout
       - ✅ avoid Tabs remount
@@ -30,7 +29,7 @@
       - `<Tabs>` useStateRef was references stale `props.
     - 🚧 onchange tab-factory reverts to initial layout
       - ✅ avoid Tabs remount
-    - 🚧 onchange Root (trigger `useSite.api.createTabset`) loses some state?
+    - ✅ onchange Root (trigger `useSite.api.createTabset`) loses some state?
   - ❌ keep tabset.current immutable while using Tabs UI
     - we won't update per flexlayout-react update, but we will change on reset (ViewerControls)
   - ✅ can change tabs programmatically without unmount

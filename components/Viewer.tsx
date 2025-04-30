@@ -38,7 +38,6 @@ export default function Viewer() {
       update();
     }, 1000),
     onHardReset() {
-      useSite.api.forgetCurrentLayout();
       useSite.api.revertCurrentTabset();
     },
     onInternalApi(internalApiPath) {

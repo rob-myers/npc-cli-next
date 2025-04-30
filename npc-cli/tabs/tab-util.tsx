@@ -1,5 +1,5 @@
 import { type IJsonTabNode, type IJsonRowNode, IJsonModel } from "flexlayout-react";
-import { deepClone, tryLocalStorageGet, tryLocalStorageGetParsed } from "../service/generic";
+import { deepClone, tryLocalStorageGetParsed } from "../service/generic";
 import { type TabsetLayout } from "./tab-factory";
 import { emptyTabset } from "@/components/const";
 
@@ -19,13 +19,18 @@ export function restoreTabsetLookup() {
       ),
     };
     return agg[tabsetKey] = restored, agg;
-  }, {} as Record<string, TabsetLayout> & { current: TabsetLayout })
+  }, {
+    empty: deepClone(emptyTabset),
+    _empty: deepClone(emptyTabset),
+  } as Record<string, TabsetLayout>)
   
-  lookup.current = deepClone(lookup[currentTabsKey] ?? emptyTabset);
+  const output = {
+    ...lookup,
+    current:  deepClone(lookup[currentTabsKey] ?? emptyTabset),
+  };
   
-  console.log('restored', {lookup});
-
-  return lookup;
+  console.log(`${'restoreTabsetLookup'}`, output);
+  return output;
 }
 
 export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
