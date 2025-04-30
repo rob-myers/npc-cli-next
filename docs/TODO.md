@@ -21,7 +21,7 @@
     - ✅ try restore from `_${tabsetKey}`
   - ✅ localStorage includes `tabsets-meta` as `{ currentKey, allKeys }`
     - includes underscore keys
-  - use `tabset-meta` on initially create site.store
+  - ✅ use `tabset-meta` on initially create site.store
   - 🚧 fix HMR of Tabs related files
     - ✅ onchange site.store (HMR) reverts to initial layout
       - ✅ avoid Tabs remount

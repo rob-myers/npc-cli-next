@@ -11,7 +11,7 @@ import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopm
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import { createLayoutFromBasicLayout, type TabDef, type TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
+import { AllTabsetsMeta, extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -35,7 +35,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         current: deepClone(next),
-      } }));
+      }}));
 
       useSite.api.storeTabsetsMeta();
   
@@ -51,7 +51,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       // restore from localStorage if possible
       const next = useSite.api.tryRestoreLayout(tabset);
       // hard-reset returns to original tabset 
-      const restorable = deepClone(tabset);
+      const restorable = { ...deepClone(tabset), key: `_${next.key}` };
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         [next.key]: next,
@@ -67,7 +67,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     revertCurrentTabset() {
       const { current: { key: tabsetKey }, ...lookup } = get().tabset;
-      const next = {...lookup[`_${tabsetKey}`], key: tabsetKey };
+      const next = { ...lookup[`_${tabsetKey}`], key: tabsetKey };
 
       set(({ tabset: { ...lookup,
         current: deepClone(next),
@@ -361,10 +361,6 @@ interface GiscusDiscussionMeta {
   url: string;
 }
 
-interface AllTabsetsMeta {
-  currentKey: string;
-  allKeys: string[];
-}
 
 const useSite = Object.assign(useStore, { api: useStore.getState().api });
 export default useSite;

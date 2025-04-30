@@ -4,29 +4,30 @@ import { type TabsetLayout } from "./tab-factory";
 import { emptyTabset } from "@/components/const";
 
 export function restoreTabsetLookup() {
-  // 🚧 store list of tabsetKeys in localStorage
-  const tabsetKeys = ['temp_tabset', '_temp_tabset'];
-  // 🚧 store `currentTabsetKey` in localStorage
-  const currentTabsKey = 'temp_tabset';
+
+  const tabsetsMeta: AllTabsetsMeta = tryLocalStorageGetParsed('tabsets-meta') ?? {
+    currentKey: 'empty',
+    allKeys: ['empty', '_empty'],
+  };
   
-  const lookup = tabsetKeys.reduce((agg, tabsetKey) => {
+  const lookup = tabsetsMeta.allKeys.reduce((agg, tabsetKey) => {
     const restored: TabsetLayout = {
       key: tabsetKey,
       layout: (
-        (tryLocalStorageGetParsed<IJsonModel>(`tabset@${tabsetKey}`))?.layout
-        ?? (tryLocalStorageGetParsed<IJsonModel>(`tabset@_${tabsetKey}`))?.layout
+        tryLocalStorageGetParsed<IJsonModel>(`tabset@${tabsetKey}`)?.layout
+        ?? tryLocalStorageGetParsed<IJsonModel>(`tabset@_${tabsetKey}`)?.layout
         ?? deepClone(emptyTabset.layout)
       ),
     };
     return agg[tabsetKey] = restored, agg;
   }, {
     empty: deepClone(emptyTabset),
-    _empty: deepClone(emptyTabset),
+    _empty: {...deepClone(emptyTabset), key: '_empty' },
   } as Record<string, TabsetLayout>)
   
   const output = {
     ...lookup,
-    current:  deepClone(lookup[currentTabsKey] ?? emptyTabset),
+    current:  deepClone(lookup[tabsetsMeta.currentKey] ?? emptyTabset),
   };
   
   console.log(`${'restoreTabsetLookup'}`, output);
@@ -51,3 +52,9 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
     ],
   };
 }
+
+export interface AllTabsetsMeta {
+  currentKey: string;
+  allKeys: string[];
+}
+
