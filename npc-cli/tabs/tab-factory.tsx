@@ -1,19 +1,11 @@
 import React from "react";
 import loadable from "@loadable/component";
-import { type IJsonModel, type IJsonRowNode, IJsonTabNode, Model, TabNode } from "flexlayout-react";
+import type { IJsonRowNode, TabNode } from "flexlayout-react";
 
 import type ActualTerminal from "../terminal/TtyWithFunctions";
-import {
-  deepClone,
-  tryLocalStorageGet,
-  tryLocalStorageRemove,
-  tryLocalStorageSet,
-  warn,
-} from "../service/generic";
-import { CentredSpinner } from "../components/Spinner";
-import { Props as TabsProps, State as TabsApi } from "./Tabs";
+import type { State as TabsApi } from "./Tabs";
 import { TabMemo } from "./Tab";
-import { isTouchDevice } from "../service/dom";
+import { CentredSpinner } from "../components/Spinner";
 
 export function factory(node: TabNode, api: TabsApi, forceUpdate: boolean) {
   const state = api.tabsState[node.getId()];

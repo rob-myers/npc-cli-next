@@ -46,8 +46,8 @@
     - ✅ avoid idempotence of fragment identifier?
       - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
     - 🚧 can reset tabset by clicking link
-      - ✅ tab layout should follow general format
-    - can add Viewer tab by clicking link
+      - works first time, but not after
+    - 🚧 can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets

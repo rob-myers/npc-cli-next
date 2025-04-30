@@ -99,9 +99,8 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         current: { key: lookup.current.key, layout: model.toJson().layout },
       }}));
     },
-
-    // 🚧 remove
-    testChangeTabsLayout() {
+    
+    testMutateLayout() {// 🔔 debug only
       
       const next = createLayoutFromBasicLayout([[
         { type: "component", class: "HelloWorld", filepath: "hello-world-2", props: {} },
@@ -123,7 +122,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
           current: { key: lookup.current.key, layout: next },
         }};
       });
-
     },
 
     tryRestoreLayout(tabset) {
@@ -316,7 +314,7 @@ export type State = {
     storeCurrentLayout(model: Model): void;
     storeTabsetsMeta(): void;
     syncCurrentTabset(model: Model): void;
-    testChangeTabsLayout(): void; // 🚧 temp
+    testMutateLayout(): void; // 🚧 temp
     tryRestoreLayout(layout: TabsetLayout): TabsetLayout;
   };
 };
@@ -360,7 +358,6 @@ interface GiscusDiscussionMeta {
   /** e.g. `"https://github.com/rob-myers/the-last-redoubt/discussions/5"` */
   url: string;
 }
-
 
 const useSite = Object.assign(useStore, { api: useStore.getState().api });
 export default useSite;

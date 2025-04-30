@@ -51,13 +51,11 @@ export default function Viewer() {
           setTimeout(update);
           break;
         case 'reset-tabs':
-          // 🚧 not the same as hard reset,
-          // since we don't want to remount!
           useSite.api.revertCurrentTabset();
           setTimeout(update);
           break;
         case 'test-mutate-tabs':
-          useSite.api.testChangeTabsLayout();
+          useSite.api.testMutateLayout();
           setTimeout(update);
           break;
         case 'open-tab':
