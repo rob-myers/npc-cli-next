@@ -503,16 +503,18 @@ export default function useHandleEvents(w) {
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
-      // - support chase behaviour
-      // - 🚧 if other npc, stop unless either:
-      //   (a) disjoint segs, or (b) other "in front" by a radius
-
       let shouldSlowDown = (
         offMesh.orig.dstRoomMeta.small === true // small room
       );
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (tr.npcKey === e.npcKey) continue;
         if (tr.seg === 0) continue;
+        
+        console.log({
+          // 🚧 ≥ 0.4 is "far enough ahead"
+          doorwayLead: npc.getOtherDoorwayLead(w.n[tr.npcKey]),
+          disjoint: state.testOffMeshDisjoint(offMesh, tr),
+        });
         if (tr.orig.srcGrKey === offMesh.orig.srcGrKey) {
           shouldSlowDown = true;
           continue;
@@ -704,6 +706,16 @@ export default function useHandleEvents(w) {
     someNpcNearDoor(gdKey) {
       return state.doorToNearbyNpcs[gdKey]?.size > 0;
     },
+    testOffMeshDisjoint(offMesh1, offMesh2) {
+      const npcRadius = w.lib.defaults.radius;
+      const { x, y } = tmpVect1.copy(offMesh2.src).sub(offMesh1.src).normalize(npcRadius);
+      return geom.getLineSegsIntersection(
+        tmpVect1.set(offMesh1.src.x + x, offMesh1.src.y + y),
+        tmpVect2.set(offMesh1.dst.x + x, offMesh1.dst.y + y),
+        offMesh2.src,
+        offMesh2.dst,
+      ) === null;
+    },
     toggleDoor(gdKey, opts) {
       const door = w.door.byKey[gdKey];
 
@@ -817,6 +829,10 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string, regexDef: string) => void} revokeNpcAccess
  * @property {(npcKey: string, ...parts: string[]) => void} say
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
+ * @property {(offMesh1: NPC.OffMeshState, offMesh2: NPC.OffMeshState) => boolean} testOffMeshDisjoint
+ * Are two offMeshConnection traversals disjoint?
+ * We assume they have the same direction i.e.
+ * > `offMesh1.orig.srcGrKey === offMesh2.orig.srcGrKey`
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
  * Returns `true` iff successful.
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; point?: Geom.VectJson; } & Geomorph.ToggleLockOpts) => boolean} toggleLock
@@ -829,3 +845,4 @@ export default function useHandleEvents(w) {
 /** e.g. `'^g0'` -> `/^g0/` */
 const regexCache = /** @type {Record<string, RegExp>} */ ({});
 const tmpVect1 = new Vect();
+const tmpVect2 = new Vect();

@@ -531,6 +531,16 @@ export class Npc {
   }
 
   /**
+   * Given another npc in the same doorway, get how far ahead it is.
+   * @param {NPC.NPC} other an npc in same doorway
+   */
+  getOtherDoorwayLead(other) {
+    const offMesh = /** @type {NPC.OffMeshState} */ (other.s.offMesh);
+    const direction = tmpVect1.copy(offMesh.dst).sub(offMesh.src).normalize();
+    return ((other.position.x - this.position.x) * direction.x) + ((other.position.z - this.position.z) * direction.y);
+  }
+
+  /**
    * 1. Step `offMesh.seg` through `[0, 1, 2]`
    * 
    * 1. Handle turns onto/along an offMeshConnection.
@@ -1268,3 +1278,5 @@ export const crowdAgentParams = {
 /**
  * @typedef {import('@recast-navigation/wasm').default.dtCrowdNeighbour} dtCrowdNeighbour
  */
+
+const tmpVect1 = new Vect();

@@ -20,11 +20,14 @@
   - ✅ fix hard reset
     - ✅ try restore from `_${tabsetKey}`
     - ℹ️ `tabset[tabsetKey]` will need to change onchange tabset, so need underscored to revert to "page load"
+  - 🚧 localStorage records `all-tabsets` as `{ currentKey, allKeys }`
+    - used on restore
+    - includes underscore keys
   - 🚧 fix HMR of Tabs related files
     - ✅ onchange site.store (HMR) reverts to initial layout
       - ✅ avoid Tabs remount
     - ✅ onchange site.store (HMR) breaks hard reset
-      - `<Tabs>` useStateRef was references stale `props`
+      - `<Tabs>` useStateRef was references stale `props.
     - 🚧 onchange tab-factory reverts to initial layout
       - ✅ avoid Tabs remount
     - 🚧 onchange Root (trigger `useSite.api.createTabset`) loses some state?
@@ -87,6 +90,14 @@
   - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
+- BUG: profile-1: pause during initial tween ineffective
+
+- 🚧 doorway collision strategy:
+  - ℹ️ no collision if other has same direction and is "more than a radius ahead"
+  - ℹ️ no collision if other is "totally disjoint"
+  - ✅ can test if other "more than a radius ahead"
+  - ✅ can test if "totally disjoint"
+  - 🚧 hook em up
 
 - ✅ BUG: flicker after two npcs go through door
   - offMeshConnection should have been cancelled, or npc should have slowed down
