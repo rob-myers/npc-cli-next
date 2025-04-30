@@ -218,6 +218,7 @@ brew install ffmpeg
 cd ~/Desktop
 ffmpeg -i ~/Desktop/html-3d-example.mov -qscale 0 html-3d-example.mp4
 ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=10" -b:v 0 -crf 25 html-3d-example.mp4
+ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=30" -b:v 0 -crf 25 html-3d-example.mp4
 ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=60" -b:v 0 -crf 25 html-3d-example.mp4
 ```
 
