@@ -716,8 +716,8 @@ export class Npc {
     this.agent.updateParameters({
       maxAcceleration: movingMaxAcceleration,
       maxSpeed: this.getMaxSpeed(),
-      radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
-      // radius: helper.defaults.radius * 1.5, // reset
+      // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
+      radius: helper.defaults.radius,
       collisionQueryRange: movingCollisionQueryRange,
       separationWeight: movingSeparationWeight ,
       queryFilterType: this.w.lib.queryFilterType.excludeDoors,
@@ -1250,6 +1250,7 @@ const staticMaxAcceleration = 4;
 const movingMaxAcceleration = 6;
 // const staticSeparationWeight = 1;
 const staticSeparationWeight = 0.5;
+// 🔔 sudden change can cause jerk onexit doorway
 const movingSeparationWeight = 0.5;
 const staticCollisionQueryRange = 1.25;
 const movingCollisionQueryRange = 1.5;
