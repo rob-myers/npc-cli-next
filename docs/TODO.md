@@ -94,6 +94,9 @@
   - maybe test rectangle intersection
   - diagonal doors use 4-gons
 
+- fade ContextMenu and SpeechBubble (as before) on World resize
+  - needed again because we now debounce render
+
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
 - BUG: profile-1: pause during initial tween ineffective
 
