@@ -18,7 +18,7 @@ import Viewer from "./Viewer";
 
 // 🚧 remove below
 import { profile } from "@/npc-cli/sh/src";
-import { createLayoutFromBasicLayout } from "@/npc-cli/tabs/tab-factory";
+import { createLayoutFromBasicLayout } from "@/npc-cli/tabs/tab-util";
 
 export default function Root({ children }: React.PropsWithChildren) {
 

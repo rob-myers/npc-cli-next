@@ -62,11 +62,6 @@ export interface TabsBaseProps {
   persistLayout?: boolean;
 }
 
-/** Same as `node.getId()` ? */
-function getTabIdentifier(meta: TabDef) {
-  return meta.filepath;
-}
-
 const classToComponent = {
   HelloWorld: {
     loadable: loadable(() => import("../components/HelloWorld")),
@@ -143,46 +138,3 @@ export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   ssr: false,
   fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
-
-export function createLayoutFromBasicLayout(
-  basicLayout: TabDef[][],
-): IJsonRowNode {
-  return {
-    type: "row",
-    // One row for each list in `tabs`.
-    children: basicLayout.map((defs) => ({
-      type: "row",
-      weight: defs[0]?.weight,
-      // One tabset for each list in `tabs`
-      children: [
-        {
-          type: "tabset",
-          // One tab for each def in `defs`
-          children: defs.map((def) => ({
-            type: "tab",
-            // Tabs must not be duplicated within same `Tabs`,
-            // for otherwise this internal `id` will conflict.
-            id: getTabIdentifier(def),
-            name: getTabIdentifier(def),
-            config: deepClone(def),
-          })),
-        },
-      ],
-    })),
-  };
-}
-
-export function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
-  return {
-    global: {
-      tabEnableRename: false,
-      rootOrientationVertical,
-      tabEnableClose: false,
-      tabSetEnableDivide: !isTouchDevice(),
-      enableEdgeDock: !isTouchDevice(),
-      splitterExtra: 12,
-      splitterSize: 2,
-    },
-    layout: tabset.layout,
-  };
-}

@@ -1,22 +1,11 @@
 import React from "react";
-import {
-  Action,
-  Actions,
-  Layout as FlexLayout,
-  Model,
-  type TabNode,
-  type TabSetNode,
-} from "flexlayout-react";
+import { Action, Actions, Layout as FlexLayout, Model, type TabNode, type TabSetNode } from "flexlayout-react";
 import debounce from "debounce";
 import { css } from "@emotion/react";
 
 import { detectTabPrevNextShortcut } from "../service/generic";
-import {
-  type TabDef,
-  type TabsBaseProps,
-  computeJsonModel,
-  factory,
-} from "./tab-factory";
+import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
+import { computeJsonModel } from './tab-util';
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 

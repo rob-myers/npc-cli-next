@@ -4,9 +4,9 @@
 
 ### Site
 
-- 🚧 refactor Tabs
+- ✅ refactor Tabs
   - ✅ remove `tabset._${tabsKey}` tabsets
-  - 🚧 move restore from localStorage out of tabs
+  - ✅ move restore from localStorage out of tabs
     - ℹ️ it is preventing us from overwriting tabs layout
     - ✅ move restore from localStorage out of Tabs and into site.store
       - ✅ useSite.api.tryRestoreLayout
@@ -22,22 +22,18 @@
   - ✅ localStorage includes `tabsets-meta` as `{ currentKey, allKeys }`
     - includes underscore keys
   - ✅ use `tabset-meta` on initially create site.store
-  - 🚧 fix HMR of Tabs related files
+  - ✅ fix HMR of Tabs related files
     - ✅ onchange site.store (HMR) reverts to initial layout
       - ✅ avoid Tabs remount
     - ✅ onchange site.store (HMR) breaks hard reset
       - `<Tabs>` useStateRef was references stale `props.
-    - 🚧 onchange tab-factory reverts to initial layout
-      - ✅ avoid Tabs remount
+    - ✅ onchange tab-factory reverts to initial layout
+      - ✅ avoid Tabs remount onchange tab-util
     - ✅ onchange Root (trigger `useSite.api.createTabset`) loses some state?
   - ❌ keep tabset.current immutable while using Tabs UI
     - we won't update per flexlayout-react update, but we will change on reset (ViewerControls)
   - ✅ can change tabs programmatically without unmount
     - we can directly change `tabset.current` without overwriting "original tabset"
-  - try extend above approach to "reset without re-mount"
-  - can revert tabset to original without remount
-  - do we need to mutate `tabset[tabset.key]` with UI?
-    - probably not i.e. we look at tabs.model instead
 
 - 🚧 write 1st blog (npc cli)
   - ✅ more content

@@ -5,13 +5,13 @@ import { focusManager } from "@tanstack/react-query";
 import { Model, type TabNode, type IJsonModel } from "flexlayout-react";
 
 // 🔔 avoid unnecessary HMR: do not reference view-related consts
-import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta, emptyTabset } from "./const";
+import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta } from "./const";
 
 import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopment, error, deepClone, warn, tryLocalStorageRemove } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
-import { createLayoutFromBasicLayout, type TabDef, type TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { AllTabsetsMeta, extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
+import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { type AllTabsetsMeta, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
