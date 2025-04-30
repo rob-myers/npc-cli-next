@@ -10,11 +10,22 @@ export function appendTabToLayout(tabset: TabsetLayout, tabDef: TabDef) {
   if (layout.children.length === 0) {
     layout.children.push({ type: 'tabset', children: [], active: true });
   }
-  if (!hasTabNode(layout, tabId)) {// add node
-    const [activeTabset] = getActiveTabset(layout);
-    activeTabset.children.push(createTabNodeFromDef(tabDef))
+
+  const tabsetNodes = extractTabsetNodes(layout);
+  
+  const tabsetNode = tabsetNodes.find(x => x.children.some(y => y.id === tabId));
+  const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
+  tabsetNodes.forEach(x => x.maximized = false);
+  
+  if (tabsetNode === undefined) {// add and select node
+    const numTabs = activeTabset.children.push(createTabNodeFromDef(tabDef));
+    activeTabset.active = true;
+    activeTabset.selected = numTabs - 1;
+  } else {// select node
+    activeTabset.active = false;
+    tabsetNode.active = true;
+    tabsetNode.selected = tabsetNode.children.findIndex(x => x.id === tabId);
   }
-  // 🚧 select node
 
   return tabset;
 }
@@ -44,13 +55,10 @@ export function createLayoutFromBasicLayout(
       type: "row",
       weight: defs[0]?.weight,
       // One tabset for each list in `tabs`
-      children: [
-        {
-          type: "tabset",
-          // One tab for each def in `defs`
-          children: defs.map(createTabNodeFromDef),
-        },
-      ],
+      children: [{
+        type: "tabset",
+        children: defs.map(createTabNodeFromDef),
+      }],
     })),
   };
 }
@@ -76,6 +84,16 @@ export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
   });
 }
 
+export function extractTabsetNodes(layout: IJsonRowNode): IJsonTabSetNode[] {
+  return layout.children.flatMap(child => {
+    if (child.type === 'row') {
+      return extractTabsetNodes(child);
+    } else {
+      return child;
+    }
+  });
+}
+
 export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   return {
     type: 'row',
@@ -85,30 +103,9 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   };
 }
 
-/** Either singleton or empty. */
-function getActiveTabset(layout: IJsonRowNode): IJsonTabSetNode[] {
-  return layout.children.flatMap(child => {
-    if (child.type === 'row') {
-      return getActiveTabset(child);
-    } else {
-      return child.active ? child : [];
-    }
-  });
-}
-
 /** Same as `node.getId()` ? */
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
-}
-
-function hasTabNode(layout: IJsonRowNode, tabId: string): boolean {
-  return layout.children.some(child => {
-    if (child.type === 'row') {
-      return hasTabNode(child, tabId);
-    } else {
-      return child.children.some(tabNode => tabNode.id === tabId);
-    }
-  });
 }
 
 export function restoreTabsetLookup() {

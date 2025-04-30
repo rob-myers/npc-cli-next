@@ -12,7 +12,7 @@ import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 
-import { tryLocalStorageGet } from "@/npc-cli/service/generic";
+import { deepClone, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { appendTabToLayout } from "@/npc-cli/tabs/tab-util";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
@@ -60,14 +60,20 @@ export default function Viewer() {
           useSite.api.rememberCurrentTabs();
           setTimeout(update);
           break;
-        case 'open-tab':
-          useSite.setState(({ tabset: lookup }) => ({ tabset: { ...lookup,
-            current: {...appendTabToLayout(lookup.current, {
-              // 🚧 not hard-coded
-              type: "component", class: "HelloWorld", filepath: "hello-world-10", props: {} ,
-            })}
-          }}));
+        case 'open-tab': {
+          
+          const { tabset: lookup, tabset: { current } } = useSite.getState();
+          const next = {...appendTabToLayout(lookup[current.key], {
+            // 🚧 remove hard-coding
+            type: "component", class: "HelloWorld", filepath: "hello-world-10", props: {} ,
+          })};
+
+          useSite.setState(({ tabset: lookup, tabset: { current }, tabsetReverts }) => ({ tabset: { ...lookup,
+            current: next,
+            [current.key]: deepClone(next),
+          }, tabsetReverts: tabsetReverts + 1 }));
           break;
+        }
         case 'close-tab':
           // 🚧
           break;

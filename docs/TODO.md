@@ -51,9 +51,9 @@
       - ℹ️ we now track all UI changes in `tabset[current.key]`
     - 🚧 can add Viewer tab by clicking link
       - ✅ ensure hard-coded tab is in layout
-      - 🚧 ensure supplied tab is in layout
-      - ensure specific tab is selected
-      - what if another tab is maximized?
+      - ✅ ensure specific tab is selected
+      - ✅ handle case where another tab maximised
+      - 🚧 remove hard-coding of tab + clean
     - can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets
