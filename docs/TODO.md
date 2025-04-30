@@ -97,7 +97,9 @@
   - ℹ️ no collision if other is "totally disjoint"
   - ✅ can test if other "more than a radius ahead"
   - ✅ can test if "totally disjoint"
-  - 🚧 hook em up
+  - ✅ hook em up
+  - ℹ️ witnessed jerk on exit due to change staticSeparationWeight -> movingSeparationWeight
+  - 🚧 clarify issues relating to same weight i.e. staticSeparationWeight = movingSeparationWeight = 0.5
 
 - ✅ BUG: flicker after two npcs go through door
   - offMeshConnection should have been cancelled, or npc should have slowed down
