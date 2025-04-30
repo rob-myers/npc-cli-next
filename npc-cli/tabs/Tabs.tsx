@@ -17,7 +17,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     hash: "",
     model: {} as Model,
     prevFocused: null,
-    resetCount: 0,
+    resets: 0,
     rootEl: null as any,
     tabsState: {},
 
@@ -90,7 +90,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       if (remember) {// Save and sync current
         props.onModelChange?.(true);
       }
-      state.resetCount++; // Remount
+      state.resets++; // Remount
       update();
     },
     toggleEnabled(next) {
@@ -132,7 +132,11 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       state.hash = nextHash;
       return tabsDefChanged;
     },
-  }), { deps: [props] }); // 🔔 crucial dep
+  }), { deps: [// 🔔 crucial deps
+    props.onModelChange, 
+    props.onHardReset, 
+    props.onToggled
+  ]});
   
   const tabsDefChanged = state.updateHash(JSON.stringify(props.tabset));
 
@@ -176,7 +180,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     });
 
     return output;
-  }, [tabsDefChanged, state.resetCount]);
+  }, [tabsDefChanged, state.resets, props.reverts]);
 
   React.useImperativeHandle(ref, () => state);
 
@@ -184,7 +188,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 
   return (
     <figure
-      key={state.resetCount}
+      key={state.resets}
       css={tabsCss}
       className="tabs"
       onKeyDown={state.onKeyDown}
@@ -205,6 +209,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 });
 
 export interface Props extends TabsBaseProps {
+  /** A revert does not involve remounting */
+  reverts: number;
   rootOrientationVertical?: boolean;
   onHardReset?(): void;
   /** Invoked onchange state.enabled */
@@ -217,7 +223,8 @@ export interface State {
   everEnabled: boolean;
   hash: string;
   prevFocused: null | HTMLElement;
-  resetCount: number;
+  /** A reset involves remounting */
+  resets: number;
   rootEl: HTMLElement;
   /** By tab identifier */
   tabsState: Record<string, TabState>;

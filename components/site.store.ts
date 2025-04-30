@@ -21,6 +21,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   pageMetadata: {} as PageMetadata,
   navOpen: false,
   tabset: restoreTabsetLookup(),
+  tabsetReverts: 0,
   viewOpen: false,
 
   api: {
@@ -74,6 +75,9 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         [tabsetKey]: deepClone(next),
       } }));
 
+      // force <Tabs> to compute new model, else revert only works 1st time
+      set(({ tabsetReverts }) => ({ tabsetReverts: tabsetReverts + 1 }));
+      
       // overwrite localStorage too
       tryLocalStorageSet(`tabset@${tabsetKey}`, JSON.stringify(next));
       useSite.api.storeTabsetsMeta();
@@ -293,6 +297,11 @@ export type State = {
    *   i.e. the tabset we reset to.
    */
   tabset: Record<string, TabsetLayout> & { current: TabsetLayout };
+  /**
+   * Total number of times a tabset's layout has been reverted.
+   * This does not involve a remount.
+   */
+  tabsetReverts: number;
   navOpen: boolean;
   viewOpen: boolean;
 

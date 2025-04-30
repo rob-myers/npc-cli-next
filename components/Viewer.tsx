@@ -22,9 +22,10 @@ import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
-  const site = useSite(({ viewOpen, tabset: lookup }) => ({
-    viewOpen,
+  const site = useSite(({ viewOpen, tabset: lookup, tabsetReverts }) => ({
     tabset: lookup.current,
+    tabsetReverts,
+    viewOpen,
   }), shallow);
 
   const update = useUpdate();
@@ -142,6 +143,7 @@ export default function Viewer() {
           onModelChange={state.onModelChange}
           onToggled={update}
           persistLayout
+          reverts={site.tabsetReverts}
           rootOrientationVertical
           tabset={site.tabset}
         />

@@ -45,8 +45,7 @@
     - ✅ can set tabset by clicking link
     - ✅ avoid idempotence of fragment identifier?
       - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
-    - 🚧 can reset tabset by clicking link
-      - works first time, but not after
+    - ✅ can reset tabset by clicking link
     - 🚧 can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error
