@@ -40,6 +40,8 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
   api: {
 
+    //#region tabset
+
     changeTabset(nextTabsetKey) {
       let next = get().tabset[nextTabsetKey];
   
@@ -89,83 +91,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     forgetCurrentLayout() {
       const { current } = get().tabset;
       tryLocalStorageRemove(`tabset@${current.key}`);  
-    },
-
-    getPageMetadataFromScript() {// 🔔 read metadata from <script id="page-metadata-json">
-      try {
-        const script = document.getElementById('page-metadata-json') as HTMLScriptElement;
-        const pageMetadata = JSON.parse(JSON.parse(script.innerHTML)) as PageMetadata;
-        // console.log({pageMetadata});
-        set({
-          articleKey: pageMetadata.key ?? null,
-          pageMetadata,
-        }, undefined, "set-article-key");
-        return pageMetadata;
-      } catch (e) {
-        error(`pageMetadata failed: script#page-metadata-json: using fallback pageMetadata`);
-        console.error(e);
-        return { key: 'fallback-page-metadata' } as PageMetadata;
-      }
-    },
-
-    initiateBrowser() {
-      const cleanUps = [] as (() => void)[];
-
-      if (isDevelopment()) {
-        connectDevEventsWebsocket();
-        /**
-         * In development refetch on refocus can automate changes.
-         * In production, see https://github.com/TanStack/query/pull/4805.
-         */
-        focusManager.setEventListener((handleFocus) => {
-          if (typeof window !== "undefined" && "addEventListener" in window) {
-            window.addEventListener("focus", handleFocus as (e?: FocusEvent) => void, false);
-            return () => {
-              window.removeEventListener("focus", handleFocus as (e?: FocusEvent) => void);
-            };
-          }
-        });
-      }
-
-      window.addEventListener("message", useSite.api.onGiscusMessage);
-      cleanUps.push(() => window.removeEventListener("message", useSite.api.onGiscusMessage));
-
-      // open Nav/Viewer based on localStorage or defaults
-      const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
-        tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
-      ) ?? {};
-      if (topLevel.viewOpen) {
-        set(() => ({ viewOpen: topLevel.viewOpen }));
-      }
-      if (topLevel.navOpen) {
-        set(() => ({ navOpen: topLevel.navOpen }));
-      }
-
-      return () => cleanUps.forEach(cleanup => cleanup());
-    },
-
-    isViewClosed() {
-      return !get().viewOpen;
-    },
-
-    onGiscusMessage(message: MessageEvent) {
-      if (message.origin === "https://giscus.app" && message.data.giscus?.discussion) {
-        const discussion = message.data.giscus.discussion as GiscusDiscussionMeta;
-        info("giscus meta", discussion);
-        const { articleKey } = get();
-        if (articleKey) {
-          set(({ discussMeta: comments }) => ({
-            discussMeta: { ...comments, [articleKey]: discussion },
-          }), undefined, "store-giscus-meta");
-          return true;
-        }
-      }
-      return false;
-    },
-
-    onTerminate() {
-      const { navOpen, viewOpen } = get();
-      tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
     revertCurrentTabset() {
@@ -263,6 +188,85 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       // (a) no Tabs model found in local storage, or
       // (b) Tabs prop "tabs" has different ids
       return tabset;
+    },
+
+    //#endregion
+
+    getPageMetadataFromScript() {// 🔔 read metadata from <script id="page-metadata-json">
+      try {
+        const script = document.getElementById('page-metadata-json') as HTMLScriptElement;
+        const pageMetadata = JSON.parse(JSON.parse(script.innerHTML)) as PageMetadata;
+        // console.log({pageMetadata});
+        set({
+          articleKey: pageMetadata.key ?? null,
+          pageMetadata,
+        }, undefined, "set-article-key");
+        return pageMetadata;
+      } catch (e) {
+        error(`pageMetadata failed: script#page-metadata-json: using fallback pageMetadata`);
+        console.error(e);
+        return { key: 'fallback-page-metadata' } as PageMetadata;
+      }
+    },
+
+    initiateBrowser() {
+      const cleanUps = [] as (() => void)[];
+
+      if (isDevelopment()) {
+        connectDevEventsWebsocket();
+        /**
+         * In development refetch on refocus can automate changes.
+         * In production, see https://github.com/TanStack/query/pull/4805.
+         */
+        focusManager.setEventListener((handleFocus) => {
+          if (typeof window !== "undefined" && "addEventListener" in window) {
+            window.addEventListener("focus", handleFocus as (e?: FocusEvent) => void, false);
+            return () => {
+              window.removeEventListener("focus", handleFocus as (e?: FocusEvent) => void);
+            };
+          }
+        });
+      }
+
+      window.addEventListener("message", useSite.api.onGiscusMessage);
+      cleanUps.push(() => window.removeEventListener("message", useSite.api.onGiscusMessage));
+
+      // open Nav/Viewer based on localStorage or defaults
+      const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
+        tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
+      ) ?? {};
+      if (topLevel.viewOpen) {
+        set(() => ({ viewOpen: topLevel.viewOpen }));
+      }
+      if (topLevel.navOpen) {
+        set(() => ({ navOpen: topLevel.navOpen }));
+      }
+
+      return () => cleanUps.forEach(cleanup => cleanup());
+    },
+
+    isViewClosed() {
+      return !get().viewOpen;
+    },
+
+    onGiscusMessage(message: MessageEvent) {
+      if (message.origin === "https://giscus.app" && message.data.giscus?.discussion) {
+        const discussion = message.data.giscus.discussion as GiscusDiscussionMeta;
+        info("giscus meta", discussion);
+        const { articleKey } = get();
+        if (articleKey) {
+          set(({ discussMeta: comments }) => ({
+            discussMeta: { ...comments, [articleKey]: discussion },
+          }), undefined, "store-giscus-meta");
+          return true;
+        }
+      }
+      return false;
+    },
+
+    onTerminate() {
+      const { navOpen, viewOpen } = get();
+      tryLocalStorageSet(siteTopLevelKey, JSON.stringify({ navOpen, viewOpen }));
     },
 
     toggleNav(next) {
