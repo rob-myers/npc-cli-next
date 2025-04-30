@@ -252,6 +252,13 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="filter-2" bx:preset="brightness 1 1.2" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.2"/>
+        <feFuncG type="linear" slope="1.2"/>
+        <feFuncB type="linear" slope="1.2"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -938,6 +945,9 @@
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAZklEQVQIHTVNWw7AIAxCU+d2kWW/u//BrI/FVRpJQwilJdzPOxGAWgoWhDyBfF6UkWyJDTcsQdiCxgoEmGsjVf3Zjsjo3bXxuhRJiWKd0dh1kg8mvYXSKVZVqlEbvta8lo490aL4AR8YHWHuL959AAAAAElFTkSuQmCC" width="64" height="192" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#brightness-filter-0&quot;);" transform="matrix(2, 0, 0, 1, -544, 0)">
         <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAZklEQVQIHTVNWw7AIAxCU+d2kWW/u//BrI/FVRpJQwilJdzPOxGAWgoWhDyBfF6UkWyJDTcsQdiCxgoEmGsjVf3Zjsjo3bXxuhRJiWKd0dh1kg8mvYXSKVZVqlEbvta8lo490aL4AR8YHWHuL959AAAAAElFTkSuQmCC" width="64" height="192" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#filter-2&quot;);" transform="matrix(2, 0, 0, 1, -416, 0)">
+        <title>_back</title>
       </image>
     </g>
     <g transform="matrix(1, 0, 0, 1, 1152, 1248)">
