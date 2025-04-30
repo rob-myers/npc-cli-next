@@ -30,7 +30,7 @@ export default function Viewer() {
 
   const update = useUpdate();
 
-  const state = useStateRef<State>(() => ({
+  const state = useStateRef((): State => ({
     rootEl: null as any,
     tabs: {} as TabsState,
 
@@ -38,9 +38,6 @@ export default function Viewer() {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
     }, 1000),
-    onHardReset() {
-      useSite.api.revertCurrentTabset();
-    },
     onInternalApi(internalApiPath) {
       const parts = internalApiPath.split('/').slice(2);
       console.log({ internalApiPath, parts });
@@ -48,8 +45,7 @@ export default function Viewer() {
       switch (parts[0]) {
         case 'set-tabs':
           useSite.api.changeTabset(parts[1]);
-          // 🚧 why is a delayed update needed?
-          setTimeout(update);
+          setTimeout(update); // 🚧 why is a delayed update needed?
           break;
         case 'reset-tabs':
           useSite.api.revertCurrentTabset();
@@ -57,6 +53,10 @@ export default function Viewer() {
           break;
         case 'test-mutate-tabs':
           useSite.api.testMutateLayout();
+          setTimeout(update);
+          break;
+        case 'remember-tabs':
+          useSite.api.rememberCurrentTabs();
           setTimeout(update);
           break;
         case 'open-tab':
@@ -138,8 +138,7 @@ export default function Viewer() {
           ref={state.ref('tabs')}
           id="viewer-tabs"
           initEnabled={false}
-          // 🚧 not working?
-          onHardReset={state.onHardReset}
+          onHardReset={useSite.api.revertCurrentTabset}
           onModelChange={state.onModelChange}
           onToggled={update}
           persistLayout
@@ -156,13 +155,10 @@ export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
-  /**
-   * @param pathname e.g. `/internal/set-tabset/empty`
-   */
+  /** @param pathname e.g. `/internal/set-tabset/empty` */
   onInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
-  onHardReset(): void;
   onModelChange(updateLayout: boolean): void;
   update(): void;
 }

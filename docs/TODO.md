@@ -46,6 +46,9 @@
     - ✅ avoid idempotence of fragment identifier?
       - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
     - ✅ can reset tabset by clicking link
+    - ✅ can set restore point for tabsetKey
+      - when ensureTabset can choose whether to `preserveRestore`
+      - ℹ️ we now track all UI changes in `tabset[current.key]`
     - 🚧 can add Viewer tab by clicking link
     - can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error

@@ -53,7 +53,7 @@ export default function Root({ children }: React.PropsWithChildren) {
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]]),
-    });
+    }, true);
 
     useSite.api.initiateBrowser();
   }, []);

@@ -43,7 +43,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       return next;
     },
 
-    ensureTabset(tabset) {
+    ensureTabset(tabset, preserveRestore = false) {
 
       if (isTouchDevice()) {// better UX on mobile
         tabset.layout = flattenLayout(tabset.layout);
@@ -51,8 +51,13 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       // restore from localStorage if possible
       const next = useSite.api.tryRestoreLayout(tabset);
-      // hard-reset returns to original tabset 
-      const restorable = { ...deepClone(tabset), key: `_${next.key}` };
+
+      // hard-reset returns to original tabset
+      const restorable = { ...(
+        preserveRestore
+          ? get().tabset[`_${next.key}`] ?? deepClone(tabset)
+          : deepClone(tabset)
+      ), key: `_${next.key}` };
 
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         [next.key]: next,
@@ -64,6 +69,17 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       useSite.api.storeTabsetsMeta();
 
       return next;
+    },
+
+    rememberCurrentTabs() {
+      const { tabset: lookup, tabset: { current } } = get();
+
+      // changes tracked in `lookup[current.key]` not `lookup.current`
+      const restorable = { ...deepClone(lookup[current.key]), key: `_${current.key}` };
+      set(({ tabset: { ...lookup, [`_${current.key}`]: restorable }}));
+
+      // remember in case `ensureTabset(current.key, true)` later
+      tryLocalStorageSet(`tabset@_${current.key}`, JSON.stringify(restorable));
     },
 
     revertCurrentTabset() {
@@ -86,6 +102,10 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     storeCurrentLayout(model) {
       const { current } = get().tabset;
       const serializable = model.toJson();
+      // tabset[current.key] does not drive <Tabs> but keeps track of UI
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        [current.key]: { key: current.key, layout: serializable.layout },
+      }}));
       tryLocalStorageSet(`tabset@${current.key}`, JSON.stringify(serializable));
     },
     
@@ -310,12 +330,13 @@ export type State = {
     /** Change, creating new empty if n'exist pas */
     changeTabset(tabsetKey: string): TabsetLayout;
     /** Create, possibly overwriting `${key}` and `_${key}` */
-    ensureTabset(tabsetDef: TabsetLayout): TabsetLayout;
+    ensureTabset(tabsetDef: TabsetLayout, preserveRestore?: boolean): TabsetLayout;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
+    rememberCurrentTabs(): void;
     revertCurrentTabset(): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
