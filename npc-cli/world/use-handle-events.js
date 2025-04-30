@@ -524,7 +524,6 @@ export default function useHandleEvents(w) {
       }
       
       if (shouldSlowDown === true) {
-        npc.agent?.raw.params.set_radius(0); // avoid sudden jumps
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() * 0.5);
       }
     },
@@ -550,10 +549,6 @@ export default function useHandleEvents(w) {
       
       if (npc.agent === null) {
         return; // e.g. npc without access near door
-      }
-
-      if (npc.agent.radius === 0) {// restore radius
-        npc.agent.raw.params.set_radius(npc.getRadius());
       }
 
       if (e.offMesh.dstRoomMeta.small === true) { 
