@@ -507,6 +507,7 @@ export default function useHandleEvents(w) {
         if (
           tr.npcKey === e.npcKey
           || tr.seg === 0
+          // 🚧 fails when face each other
           || state.testOffMeshDisjoint(offMesh, tr) === true
         ) {
           continue;

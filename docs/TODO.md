@@ -90,6 +90,10 @@
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
   - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
+- BUG: testOffMeshDisjoint does not handle case where npcs face each
+  - maybe test rectangle intersection
+  - diagonal doors use 4-gons
+
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
 - BUG: profile-1: pause during initial tween ineffective
 
