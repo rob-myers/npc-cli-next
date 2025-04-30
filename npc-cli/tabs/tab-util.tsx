@@ -1,8 +1,23 @@
-import { type IJsonTabNode, type IJsonRowNode, IJsonModel } from "flexlayout-react";
+import { type IJsonTabNode, type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
 import { deepClone, tryLocalStorageGetParsed } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
 import type { TabDef, TabsetLayout } from "./tab-factory";
 import { emptyTabset } from "@/components/const";
+
+export function appendTabToLayout(tabset: TabsetLayout, tabDef: TabDef) {
+  const { layout } = tabset;
+  const tabId = getTabIdentifier(tabDef);
+  if (layout.children.length === 0) {
+    layout.children.push({ type: 'tabset', children: [], active: true });
+  }
+  if (!hasTabNode(layout, tabId)) {// add node
+    const [activeTabset] = getActiveTabset(layout);
+    activeTabset.children.push(createTabNodeFromDef(tabDef))
+  }
+  // 🚧 select node
+
+  return tabset;
+}
 
 export function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
   return {
@@ -33,17 +48,21 @@ export function createLayoutFromBasicLayout(
         {
           type: "tabset",
           // One tab for each def in `defs`
-          children: defs.map((def) => ({
-            type: "tab",
-            // Tabs must not be duplicated within same `Tabs`,
-            // for otherwise this internal `id` will conflict.
-            id: getTabIdentifier(def),
-            name: getTabIdentifier(def),
-            config: deepClone(def),
-          })),
+          children: defs.map(createTabNodeFromDef),
         },
       ],
     })),
+  };
+}
+
+function createTabNodeFromDef(def: TabDef) {
+  return {
+    type: "tab",
+    // Tabs must not be duplicated within same `Tabs`,
+    // for otherwise this internal `id` will conflict.
+    id: getTabIdentifier(def),
+    name: getTabIdentifier(def),
+    config: deepClone(def),
   };
 }
 
@@ -52,7 +71,7 @@ export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
     if (child.type === 'row') {
       return extractTabNodes(child);
     } else {
-      return child.children.flatMap(x=> x);
+      return child.children.flatMap(tabNode => tabNode);
     }
   });
 }
@@ -66,9 +85,30 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   };
 }
 
+/** Either singleton or empty. */
+function getActiveTabset(layout: IJsonRowNode): IJsonTabSetNode[] {
+  return layout.children.flatMap(child => {
+    if (child.type === 'row') {
+      return getActiveTabset(child);
+    } else {
+      return child.active ? child : [];
+    }
+  });
+}
+
 /** Same as `node.getId()` ? */
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
+}
+
+function hasTabNode(layout: IJsonRowNode, tabId: string): boolean {
+  return layout.children.some(child => {
+    if (child.type === 'row') {
+      return hasTabNode(child, tabId);
+    } else {
+      return child.children.some(tabNode => tabNode.id === tabId);
+    }
+  });
 }
 
 export function restoreTabsetLookup() {

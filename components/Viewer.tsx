@@ -14,6 +14,7 @@ import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerC
 
 import { tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
+import { appendTabToLayout } from "@/npc-cli/tabs/tab-util";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
@@ -60,7 +61,12 @@ export default function Viewer() {
           setTimeout(update);
           break;
         case 'open-tab':
-          // 🚧
+          useSite.setState(({ tabset: lookup }) => ({ tabset: { ...lookup,
+            current: {...appendTabToLayout(lookup.current, {
+              // 🚧 not hard-coded
+              type: "component", class: "HelloWorld", filepath: "hello-world-10", props: {} ,
+            })}
+          }}));
           break;
         case 'close-tab':
           // 🚧
