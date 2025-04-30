@@ -92,14 +92,22 @@
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
 - BUG: profile-1: pause during initial tween ineffective
 
-- 🚧 doorway collision strategy:
+- ✅ doorway collision strategy:
   - ℹ️ no collision if other has same direction and is "more than a radius ahead"
   - ℹ️ no collision if other is "totally disjoint"
   - ✅ can test if other "more than a radius ahead"
   - ✅ can test if "totally disjoint"
   - ✅ hook em up
   - ℹ️ witnessed jerk on exit due to change staticSeparationWeight -> movingSeparationWeight
-  - 🚧 clarify issues relating to same weight i.e. staticSeparationWeight = movingSeparationWeight = 0.5
+  - ✅ fix bad traversal onenter small room
+    - `testOffMeshDisjoint` now checks if offMesh src's are too close
+  - ℹ️ seems crowd agent radius was too large
+
+- fix run through doorway
+
+- clarify staticSeparationWeight = movingSeparationWeight = 0.5
+  - probably don't want this in general
+  - it avoids jerk onexit doorway "in parallel"
 
 - ✅ BUG: flicker after two npcs go through door
   - offMeshConnection should have been cancelled, or npc should have slowed down

@@ -503,36 +503,31 @@ export default function useHandleEvents(w) {
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
-      let shouldSlowDown = (
-        offMesh.orig.dstRoomMeta.small === true // small room
-      );
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
-        if (tr.npcKey === e.npcKey) continue;
-        if (tr.seg === 0) continue;
-        
-        // console.log({
-        //   doorwayLead: npc.getOtherDoorwayLead(w.n[tr.npcKey]),
-        //   disjoint: state.testOffMeshDisjoint(offMesh, tr),
-        // });
-
-        const disjoint = state.testOffMeshDisjoint(offMesh, tr);
-        if (disjoint === true) {
-          continue; // traversal can be either direction
-        }
-        if (// traversal same direction and other is far enough ahead
-          tr.orig.srcGrKey === offMesh.orig.srcGrKey
-          && npc.getOtherDoorwayLead(w.n[tr.npcKey]) >= 0.4 // 🚧
+        if (
+          tr.npcKey === e.npcKey
+          || tr.seg === 0
+          || state.testOffMeshDisjoint(offMesh, tr) === true
         ) {
-          shouldSlowDown = true;
           continue;
         }
+
+        if (// traversal same direction, other far enough ahead
+          tr.orig.srcGrKey === offMesh.orig.srcGrKey
+          && npc.getOtherDoorwayLead(w.n[tr.npcKey]) >= 0.4
+        ) {
+          continue;
+        }
+
         // **STOP**
         npc.stopMoving();
         /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position); 
         return;
       }
       
-      if (shouldSlowDown === true) {
+      if (
+        offMesh.orig.dstRoomMeta.small === true // small room
+      ) {
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() * 0.5);
       }
     },
@@ -714,10 +709,15 @@ export default function useHandleEvents(w) {
       return state.doorToNearbyNpcs[gdKey]?.size > 0;
     },
     testOffMeshDisjoint(offMesh1, offMesh2) {
-      // account for npc radius by offseting one of the segments towards to other
       const npcRadius = w.lib.defaults.radius;
-      const { x, y } = tmpVect1.copy(offMesh2.src).sub(offMesh1.src).normalize(npcRadius * 2);
+      const offset = tmpVect1.copy(offMesh2.src).sub(offMesh1.src);
+
+      if (Math.abs(offset.x) < 2 * npcRadius && Math.abs(offset.y) < 2 * npcRadius) {
+        return false; // initially intersect
+      }
+      const { x, y } = offset.normalize(npcRadius * 2);
       return geom.getLineSegsIntersection(
+        // account for npc radius by offsetting one segment towards other
         tmpVect1.set(offMesh1.src.x + x, offMesh1.src.y + y),
         tmpVect2.set(offMesh1.dst.x + x, offMesh1.dst.y + y),
         offMesh2.src,
