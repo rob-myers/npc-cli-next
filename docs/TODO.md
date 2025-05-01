@@ -53,7 +53,11 @@
       - ✅ ensure hard-coded tab is in layout
       - ✅ ensure specific tab is selected
       - ✅ handle case where another tab maximised
-      - 🚧 remove hard-coding of tab + clean
+      - 🚧 remove hard-coding of tab
+        - ✅ can open HelloWorld as hello-world-${opts.suffix}
+        - 🚧 can open World as ...
+        - 🚧 can open Tty as ...
+        - clean e.g. move to site.store
     - can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets

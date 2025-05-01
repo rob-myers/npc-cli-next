@@ -12,9 +12,10 @@ import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 
-import { deepClone, tryLocalStorageGet } from "@/npc-cli/service/generic";
+import { deepClone, parseJsArg, testNever, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
-import { appendTabToLayout } from "@/npc-cli/tabs/tab-util";
+import { appendTabToLayout, isComponentClassKey } from "@/npc-cli/tabs/tab-util";
+import type { ComponentClassKey, TabDef } from "@/npc-cli/tabs/tab-factory";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
@@ -35,13 +36,68 @@ export default function Viewer() {
     rootEl: null as any,
     tabs: {} as TabsState,
 
+    computeTabDef(classKey, opts) {
+      let tabDef: TabDef;
+
+      switch (classKey) {
+        case 'HelloWorld':
+          tabDef = {
+            type: 'component',
+            class: classKey,
+            filepath: `hello-world-${opts.suffix ?? '0'}`,
+            props: {},
+          };
+          break;
+        case 'World':
+          const worldKey = `world-${opts.suffix ?? '0'}`;
+          tabDef = {
+            type: 'component',
+            class: classKey,
+            filepath: worldKey,
+            props: {
+              worldKey,
+              mapKey: opts.mapKey ?? "demo-map-1"
+            },
+          };
+          break;
+        case 'Tty':
+          tabDef = {
+            type: 'terminal',
+            filepath: `tty-${opts.suffix}`,
+            env: opts.env ?? {},
+          };
+          break;
+        default:
+          throw testNever(classKey);
+      }
+
+      return tabDef;
+    },
     onChangeIntersect: debounce((intersects: boolean) => {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
     }, 1000),
     onInternalApi(internalApiPath) {
-      const parts = internalApiPath.split('/').slice(2);
-      console.log({ internalApiPath, parts });
+
+      const parsedUrl = new URL(internalApiPath, location.origin);
+
+      /**
+       * e.g. `/internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
+       * `{ baz: 'qux', env: {WORLD_KEY:'hello'} }`
+       */
+      const opts = Array.from(parsedUrl.searchParams).reduce(
+        (agg, [k, v]) => (agg[k] = parseJsArg(v), agg),
+        {} as Record<string, string>,
+      );
+
+      /**
+       * e.g. `/internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
+       * `['foo', 'bar']`
+       */
+      const parts = parsedUrl.pathname.split('/').slice(2);
+      
+      console.log({ internalApiPath, parts, opts });
+      
 
       switch (parts[0]) {
         case 'set-tabs':
@@ -61,12 +117,16 @@ export default function Viewer() {
           setTimeout(update);
           break;
         case 'open-tab': {
-          
+          const classKey = parts[1];
+
+          if (!(isComponentClassKey(classKey) || classKey === 'Tty')) {
+            throw Error(`${'onInternalApi'}: open-tab: unknown classKey "${classKey}"`);
+          }
+
+          const tabDef = state.computeTabDef(classKey, opts);
+          // 🚧 move to site.store
           const { tabset: lookup, tabset: { current } } = useSite.getState();
-          const next = {...appendTabToLayout(lookup[current.key], {
-            // 🚧 remove hard-coding
-            type: "component", class: "HelloWorld", filepath: "hello-world-10", props: {} ,
-          })};
+          const next = {...appendTabToLayout(lookup[current.key], tabDef)};
 
           useSite.setState(({ tabset: lookup, tabset: { current }, tabsetReverts }) => ({ tabset: { ...lookup,
             current: next,
@@ -167,6 +227,7 @@ export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
+  computeTabDef(classKey: ComponentClassKey | 'Tty', opts: Record<string, any>): TabDef;
   /** @param pathname e.g. `/internal/set-tabset/empty` */
   onInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;

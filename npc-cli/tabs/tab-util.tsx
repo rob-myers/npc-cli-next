@@ -1,7 +1,7 @@
 import { type IJsonTabNode, type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
 import { deepClone, tryLocalStorageGetParsed } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
-import type { TabDef, TabsetLayout } from "./tab-factory";
+import type { ComponentClassKey, TabDef, TabsetLayout } from "./tab-factory";
 import { emptyTabset } from "@/components/const";
 
 export function appendTabToLayout(tabset: TabsetLayout, tabDef: TabDef) {
@@ -106,6 +106,15 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
 /** Same as `node.getId()` ? */
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
+}
+
+const fromComponentClassKey: Record<ComponentClassKey, true> = {
+  HelloWorld: true,
+  World: true,
+};
+
+export function isComponentClassKey(input: string): input is ComponentClassKey {
+  return input in fromComponentClassKey;
 }
 
 export function restoreTabsetLookup() {
