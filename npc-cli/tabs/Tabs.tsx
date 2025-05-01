@@ -180,7 +180,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     });
 
     return output;
-  }, [tabsDefChanged, state.resets, props.reverts]);
+  }, [tabsDefChanged, state.resets, props.updates]);
 
   React.useImperativeHandle(ref, () => state);
 
@@ -209,8 +209,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 });
 
 export interface Props extends TabsBaseProps {
-  /** A revert does not involve remounting */
-  reverts: number;
+  /** A model update does not involve remounting */
+  updates: number;
   rootOrientationVertical?: boolean;
   onHardReset?(): void;
   /** Invoked onchange state.enabled */

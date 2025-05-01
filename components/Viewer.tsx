@@ -24,9 +24,9 @@ import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
-  const site = useSite(({ viewOpen, tabset: lookup, tabsetReverts }) => ({
+  const site = useSite(({ viewOpen, tabset: lookup, tabsetUpdates }) => ({
     tabset: lookup.current,
-    tabsetReverts,
+    tabsetUpdates,
     viewOpen,
   }), shallow);
 
@@ -78,7 +78,6 @@ export default function Viewer() {
       update();
     }, 1000),
     onInternalApi(internalApiPath) {
-
       const parsedUrl = new URL(internalApiPath, location.origin);
 
       /**
@@ -97,7 +96,6 @@ export default function Viewer() {
       const parts = parsedUrl.pathname.split('/').slice(2);
       
       console.log({ internalApiPath, parts, opts });
-      
 
       switch (parts[0]) {
         case 'set-tabs':
@@ -118,20 +116,12 @@ export default function Viewer() {
           break;
         case 'open-tab': {
           const classKey = parts[1];
-
           if (!(isComponentClassKey(classKey) || classKey === 'Tty')) {
             throw Error(`${'onInternalApi'}: open-tab: unknown classKey "${classKey}"`);
           }
 
           const tabDef = state.computeTabDef(classKey, opts);
-          // 🚧 move to site.store
-          const { tabset: lookup, tabset: { current } } = useSite.getState();
-          const next = {...appendTabToLayout(lookup[current.key], tabDef)};
-
-          useSite.setState(({ tabset: lookup, tabset: { current }, tabsetReverts }) => ({ tabset: { ...lookup,
-            current: next,
-            [current.key]: deepClone(next),
-          }, tabsetReverts: tabsetReverts + 1 }));
+          useSite.api.openTab(tabDef);
           break;
         }
         case 'close-tab':
@@ -214,7 +204,7 @@ export default function Viewer() {
           onModelChange={state.onModelChange}
           onToggled={update}
           persistLayout
-          reverts={site.tabsetReverts}
+          updates={site.tabsetUpdates}
           rootOrientationVertical
           tabset={site.tabset}
         />

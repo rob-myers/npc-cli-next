@@ -49,17 +49,17 @@
     - ✅ can set restore point for tabsetKey
       - when ensureTabset can choose whether to `preserveRestore`
       - ℹ️ we now track all UI changes in `tabset[current.key]`
-    - 🚧 can add Viewer tab by clicking link
+    - ✅ can add Viewer tab by clicking link
       - ✅ ensure hard-coded tab is in layout
       - ✅ ensure specific tab is selected
       - ✅ handle case where another tab maximised
-      - 🚧 remove hard-coding of tab
+      - ✅ remove hard-coding of tab
         - ✅ can open HelloWorld as hello-world-${opts.suffix}
         - ✅ can open Tty with `env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`
         - ✅ can open World with `suffix=2&mapsKey=small-map-1}`
         - ✅ index.mdx link for tty tab with spaces in PROFILE
-        - 🚧 clean e.g. move to site.store
-    - can remove Viewer tab by clicking link
+        - ✅ clean e.g. move to site.store
+    - 🚧 can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets
     - clean hard-coded initialization in initiateBrowser

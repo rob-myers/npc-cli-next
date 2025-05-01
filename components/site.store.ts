@@ -11,7 +11,7 @@ import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopm
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type AllTabsetsMeta, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
+import { type AllTabsetsMeta, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -21,7 +21,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   pageMetadata: {} as PageMetadata,
   navOpen: false,
   tabset: restoreTabsetLookup(),
-  tabsetReverts: 0,
+  tabsetUpdates: 0,
   viewOpen: false,
 
   api: {
@@ -71,6 +71,19 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       return next;
     },
 
+    openTab(tabDef) {
+      const { tabset: lookup, tabset: { current } } = useSite.getState();
+      const next = {...appendTabToLayout(lookup[current.key], tabDef)};
+
+      useSite.setState(({ tabsetUpdates }) => ({
+        tabset: { ...lookup,
+          current: next,
+          [current.key]: deepClone(next),
+        },
+        tabsetUpdates: tabsetUpdates + 1,
+      }));
+    },
+
     rememberCurrentTabs() {
       const { tabset: lookup, tabset: { current } } = get();
 
@@ -92,7 +105,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } }));
 
       // force <Tabs> to compute new model, else revert only works 1st time
-      set(({ tabsetReverts }) => ({ tabsetReverts: tabsetReverts + 1 }));
+      set(({ tabsetUpdates }) => ({ tabsetUpdates: tabsetUpdates + 1 }));
       
       // overwrite localStorage too
       tryLocalStorageSet(`tabset@${tabsetKey}`, JSON.stringify(next));
@@ -318,10 +331,10 @@ export type State = {
    */
   tabset: Record<string, TabsetLayout> & { current: TabsetLayout };
   /**
-   * Total number of times a tabset's layout has been reverted.
+   * Used to trigger tabset model recompute.
    * This does not involve a remount.
    */
-  tabsetReverts: number;
+  tabsetUpdates: number;
   navOpen: boolean;
   viewOpen: boolean;
 
@@ -336,6 +349,7 @@ export type State = {
     isViewClosed(): boolean;
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
+    openTab(tabDef: TabDef): void;
     rememberCurrentTabs(): void;
     revertCurrentTabset(): void;
     toggleNav(next?: boolean): void;
