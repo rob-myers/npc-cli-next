@@ -55,8 +55,9 @@
       - ✅ handle case where another tab maximised
       - 🚧 remove hard-coding of tab
         - ✅ can open HelloWorld as hello-world-${opts.suffix}
+        - ✅ can open Tty as with `env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`
         - 🚧 can open World as ...
-        - 🚧 can open Tty as ...
+        - index.mdx link for tty tab with spaces in PROFILE (via `<a>`)
         - clean e.g. move to site.store
     - can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error
