@@ -11,7 +11,7 @@ import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopm
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type AllTabsetsMeta, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
+import { type AllTabsetsMeta, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, removeTabFromLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -93,6 +93,24 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       // remember in case `ensureTabset(current.key, true)` later
       tryLocalStorageSet(`tabset@_${current.key}`, JSON.stringify(restorable));
+    },
+    
+    removeTab(tabId) {
+      const { tabset: lookup, tabset: { current } } = get();
+      const tabset = lookup[current.key];
+
+      if (removeTabFromLayout(tabset.layout, tabId) === true) {
+        set(({ tabsetUpdates }) => ({
+          tabset: { ...lookup,
+            [tabset.key]: { ...tabset },
+            current: deepClone(tabset),
+          },
+          tabsetUpdates: tabsetUpdates + 1,
+        }))
+        return true;
+      } else {
+        return false;
+      }
     },
 
     revertCurrentTabset() {
@@ -351,6 +369,7 @@ export type State = {
     onTerminate(): void;
     openTab(tabDef: TabDef): void;
     rememberCurrentTabs(): void;
+    removeTab(tabId: string): boolean;
     revertCurrentTabset(): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */

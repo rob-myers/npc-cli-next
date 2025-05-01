@@ -84,7 +84,7 @@ export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
   });
 }
 
-export function extractTabsetNodes(layout: IJsonRowNode): IJsonTabSetNode[] {
+function extractTabsetNodes(layout: IJsonRowNode): IJsonTabSetNode[] {
   return layout.children.flatMap(child => {
     if (child.type === 'row') {
       return extractTabsetNodes(child);
@@ -103,18 +103,29 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   };
 }
 
-/** Same as `node.getId()` ? */
-function getTabIdentifier(meta: TabDef) {
-  return meta.filepath;
-}
-
 const fromComponentClassKey: Record<ComponentClassKey, true> = {
   HelloWorld: true,
   World: true,
 };
 
+/** Same as `node.getId()` ? */
+function getTabIdentifier(meta: TabDef) {
+  return meta.filepath;
+}
+
 export function isComponentClassKey(input: string): input is ComponentClassKey {
   return input in fromComponentClassKey;
+}
+
+export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
+  for (const tabset of extractTabsetNodes(layout)) {
+    const index = tabset.children.findIndex(x => x.id === tabId);
+    if (index >= 0) {
+      tabset.children.splice(index, 1);
+      return true;
+    }
+  }
+  return false;
 }
 
 export function restoreTabsetLookup() {

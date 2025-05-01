@@ -59,8 +59,8 @@
         - ✅ can open World with `suffix=2&mapsKey=small-map-1}`
         - ✅ index.mdx link for tty tab with spaces in PROFILE
         - ✅ clean e.g. move to site.store
-    - 🚧 can remove Viewer tab by clicking link
-    - fix createOrRestoreJsonModel Error
+    - ✅ can remove Viewer tab by clicking link
+    - 🚧 fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets
     - clean hard-coded initialization in initiateBrowser
   - 🚧 more content

@@ -124,9 +124,11 @@ export default function Viewer() {
           useSite.api.openTab(tabDef);
           break;
         }
-        case 'close-tab':
-          // 🚧
+        case 'close-tab': {
+          const tabId = parts[1];
+          useSite.api.removeTab(tabId);
           break;
+        }
         case 'noop':
         default:
           return;
