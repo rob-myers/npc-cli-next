@@ -358,8 +358,6 @@ export const emptySkinnedMesh = new THREE.SkinnedMesh();
  * @property {null | number} texId
  */
 
-export const emptySceneForPicking = new THREE.Scene();
-
 /**
  * This is the 1x1 pixel render target we use to do object picking.
  */

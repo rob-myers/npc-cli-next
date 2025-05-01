@@ -11,7 +11,7 @@ import { debug, keys, tryLocalStorageGetParsed } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isSmallViewport, isTouchDevice } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
-import { dampXZ, emptySceneForPicking, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, toXZ, unitXVector3, v3Precision } from "../service/three.js";
+import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, toXZ, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
 import { WorldContext } from "./world-context.js";
 import useStateRef from "../hooks/use-state-ref.js";
@@ -58,6 +58,7 @@ export default function WorldView(props) {
       indices: new THREE.Vector3(),
       mat3: new THREE.Matrix3(),
     },
+    pickingScene: new THREE.Scene(),
     post: {
       enabled: tryLocalStorageGetParsed(`post-processing:enabled@${w.key}`) ?? (isSmallViewport() === false),
       ref: null,
@@ -68,7 +69,6 @@ export default function WorldView(props) {
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
     tweenWhilePaused: false,
-
     zoomState: 'near', // 🚧 finer-grained
 
     canvasRef(canvasEl) {
@@ -440,7 +440,7 @@ export default function WorldView(props) {
 
       gl.setRenderTarget(pickingRenderTarget);
       gl.clear();
-      gl.render(emptySceneForPicking, camera);
+      gl.render(state.pickingScene, camera);
 
       state.epoch.pickStart = Date.now();
       e.persist();
@@ -576,7 +576,7 @@ export default function WorldView(props) {
       state.controls.setPolarAngle(Math.PI / 4);
       state.controls.setAzimuthalAngle(Math.PI / 4);
     }
-    emptySceneForPicking.onAfterRender = state.renderObjectPickScene;
+    state.pickingScene.onAfterRender = state.renderObjectPickScene;
   }, [state.controls]);
 
   return (
@@ -704,6 +704,7 @@ export default function WorldView(props) {
  * @property {boolean} justLongDown
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
+ * @property {THREE.Scene} pickingScene Empty scene for picking.
  * @property {THREE.Raycaster} raycaster
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((value?: any) => void)>} resolve
  * - follow has `resolve.look` undefined i.e. never resolves
