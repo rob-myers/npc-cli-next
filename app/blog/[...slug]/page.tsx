@@ -19,9 +19,10 @@ export default async function BlogPage(props: {
           <SideNote bubbleClassName="not-prose" {...props} />
         ),
         // 🔔 convert href "/internal/..." to fragment identifier, enacted elsewhere
+        // 🔔 apply decodeURIComponent to support spaces via %20
         a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
           if (props.href?.startsWith('/internal/')) {
-            return <a {...props} href={`#${props.href}`}>{props.children}</a>
+            return <a {...props} href={`#${decodeURIComponent(props.href)}`}>{props.children}</a>
           } else {
             return <a {...props}>{props.children}</a>;
           }

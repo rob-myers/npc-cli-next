@@ -57,8 +57,8 @@
         - ✅ can open HelloWorld as hello-world-${opts.suffix}
         - ✅ can open Tty with `env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`
         - ✅ can open World with `suffix=2&mapsKey=small-map-1}`
-        - 🚧 index.mdx link for tty tab with spaces in PROFILE (via `<a>`)
-        - clean e.g. move to site.store
+        - ✅ index.mdx link for tty tab with spaces in PROFILE
+        - 🚧 clean e.g. move to site.store
     - can remove Viewer tab by clicking link
     - fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets
