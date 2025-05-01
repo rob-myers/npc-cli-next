@@ -90,9 +90,9 @@
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
   - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
-- BUG: testOffMeshDisjoint does not handle case where npcs face each
-  - maybe test rectangle intersection
-  - diagonal doors use 4-gons
+- 🚧 BUG: testOffMeshDisjoint does not handle case where npcs face each
+  - ✅ non-diagonal rectangle intersection
+  - diagonal doors initially transform lineSegs
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render

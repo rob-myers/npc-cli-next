@@ -1,6 +1,6 @@
 import React from "react";
 import * as THREE from "three";
-import { Vect } from "../geom";
+import { Vect, Rect } from "../geom";
 import { defaultDoorCloseMs, wallHeight } from "../service/const";
 import { pause, warn, debug, testNever } from "../service/generic";
 import { geom } from "../service/geom";
@@ -710,20 +710,11 @@ export default function useHandleEvents(w) {
       return state.doorToNearbyNpcs[gdKey]?.size > 0;
     },
     testOffMeshDisjoint(offMesh1, offMesh2) {
+      // 🚧 handle diagonal doors
       const npcRadius = w.lib.defaults.radius;
-      const offset = tmpVect1.copy(offMesh2.src).sub(offMesh1.src);
-
-      if (Math.abs(offset.x) < 2 * npcRadius && Math.abs(offset.y) < 2 * npcRadius) {
-        return false; // initially intersect
-      }
-      const { x, y } = offset.normalize(npcRadius * 2);
-      return geom.getLineSegsIntersection(
-        // account for npc radius by offsetting one segment towards other
-        tmpVect1.set(offMesh1.src.x + x, offMesh1.src.y + y),
-        tmpVect2.set(offMesh1.dst.x + x, offMesh1.dst.y + y),
-        offMesh2.src,
-        offMesh2.dst,
-      ) === null;
+      const rect1 = tmpRect1.setFromPoints(offMesh1.src, offMesh1.dst).outset(npcRadius);
+      const rect2 = tmpRect2.setFromPoints(offMesh2.src, offMesh2.dst).outset(npcRadius);
+      return rect1.intersects(rect2) === false;
     },
     toggleDoor(gdKey, opts) {
       const door = w.door.byKey[gdKey];
@@ -855,3 +846,5 @@ export default function useHandleEvents(w) {
 const regexCache = /** @type {Record<string, RegExp>} */ ({});
 const tmpVect1 = new Vect();
 const tmpVect2 = new Vect();
+const tmpRect1 = new Rect();
+const tmpRect2 = new Rect();
