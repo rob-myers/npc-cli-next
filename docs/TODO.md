@@ -205,6 +205,9 @@
     - `yarn test-svg-to-png media/debug/test-gradient-fill.svg`
   - ❌ prefer BoxySVG fix rather than apply our fix (for the moment)
 
+- BUG: why did adding a decor cuboid in fuel break Decor
+  - also would like to use a cuboid instead of wall for fuel
+
 - 🚧 improve assets script
   - ✅ more measurements in assets script
   - ✅ fix `yarn clean-assets`
