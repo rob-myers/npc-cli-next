@@ -127,15 +127,15 @@ export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
   return false;
 }
 
-export function restoreTabsetLookup(): AllTabsets {
+export function computeStoredTabsetLookup(): AllTabsets {
   
   function restoreLayout(key: keyof AllTabsets) {
-    return tryLocalStorageGetParsed<IJsonModel>(`tabset@${key}`)?.layout
+    return tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
       ?? deepClone(emptyTabsetLayout);
   }
   
   const output = {
-    started: restoreLayout('started'),
+    started: restoreLayout('synced'),
     synced: restoreLayout('synced'),
     saved: restoreLayout('saved'),
   };
