@@ -69,13 +69,15 @@
         - `synced` changes in sync with flexlayout-react
         - `restore` restore point
       - ✅ can change component tab props e.g. World mapKey
+      - ✅ cleanup function on restore from localStorage
+        - currently a noop
+      - ✅ fix/clarify Tabs refresh after add/remove node
+      - ✅ fix/clarify createOrRestoreJsonModel Error
+        - removed it
+      - ✅ localStorage remembers tabset, including resets
       - close tab should select some other tab in tabset
-      - cleanup function on restore from localStorage
-        - handles stale tabs (onchange TabDef type)
-      - 🚧 fix/clarify Tabs refresh after add/remove node
-      - 🚧 fix/clarify createOrRestoreJsonModel Error
-      - localStorage remembers tabset, including resets
-      - clean hard-coded initialization in initiateBrowser
+      - support HMR update tabset somehow
+      - clean hard-coded initialization in `<Root>`
   - more content
   - mention Starship Geomorphs early
   - mention recent improvements in AI

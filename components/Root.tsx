@@ -29,7 +29,7 @@ export default function Root({ children }: React.PropsWithChildren) {
   React.useEffect(() => {
 
     // 🚧 move elsewhere
-    useSite.api.ensureTabset(
+    useSite.api.restoreLayoutFallback(
       createLayoutFromBasicLayout([[
         {
           type: "component",
@@ -53,7 +53,7 @@ export default function Root({ children }: React.PropsWithChildren) {
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]])
     // }, true);
-    , false);
+    , { preserveRestore: false });
 
     useSite.api.initiateBrowser();
   }, []);

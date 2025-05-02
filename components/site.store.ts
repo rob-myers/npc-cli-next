@@ -2,7 +2,7 @@ import type { StateCreator } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { focusManager } from "@tanstack/react-query";
-import { Model, type TabNode, type IJsonModel, IJsonRowNode } from "flexlayout-react";
+import { Model, type IJsonRowNode } from "flexlayout-react";
 
 // 🔔 avoid unnecessary HMR: do not reference view-related consts
 import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta } from "./const";
@@ -11,7 +11,7 @@ import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopm
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, restoreTabsetLookup } from "@/npc-cli/tabs/tab-util";
+import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, restoreTabsetLookup as computeStoredTabsetLookup } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -20,7 +20,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   draggingView: false,
   pageMetadata: {} as PageMetadata,
   navOpen: false,
-  tabset: restoreTabsetLookup(),
+  tabset: computeStoredTabsetLookup(),
   tabsetUpdates: 0,
   viewOpen: false,
 
@@ -49,30 +49,29 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } }));
     },
 
-    ensureTabset(tabset, preserveRestore = false) {
+    restoreLayoutFallback(fallbackLayout, { preserveRestore = false }) {
 
       if (isTouchDevice()) {// better UX on mobile
-        tabset = flattenLayout(tabset);
+        fallbackLayout = flattenLayout(deepClone(fallbackLayout));
       }
 
       // restore from localStorage if possible
-      const next = useSite.api.tryRestoreLayout(tabset);
+      const next = useSite.api.tryRestoreLayout(fallbackLayout);
+      // hard-reset returns to `saved` or parameter `layout`
+      const restorable = preserveRestore && get().tabset.saved || deepClone(fallbackLayout);
 
-      // hard-reset returns to `saved` or `tabset`
-      const restorable = preserveRestore
-        ? get().tabset.saved ?? deepClone(tabset)
-        : deepClone(tabset)
-       ;
-
+      tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         started: deepClone(next),
         synced: next,
         saved: restorable,
       }}));
 
-      tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
-
       return next;
+    },
+
+    migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
+      return layout;
     },
 
     openTab(tabDef) {
@@ -132,6 +131,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     setTabset(layout) {
+
+      if (isTouchDevice()) {// better UX on mobile
+        layout = flattenLayout(deepClone(layout));
+      }
+
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         started: deepClone(layout),
         synced: deepClone(layout),
@@ -175,51 +179,24 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }}));
     },
 
-    // 🚧 avoid creating Model i.e. manipulate json directly
     tryRestoreLayout(layout) {
       const jsonModelString = tryLocalStorageGet(`tabset@${'synced'}`);
-    
       if (jsonModelString === null) {
         return layout;
       }
-
       try {
-        const restored = JSON.parse(jsonModelString) as IJsonRowNode;
-  
-        // 🚧 rootOrientationVertical always true?
-        const model = Model.fromJson(layoutToModelJson(restored, true));
-  
-        const tabKeyToDef = extractTabNodes(layout).reduce(
-          (agg, item) => Object.assign(agg, { [item.id as string]: item.config }),
-          {} as Record<string, TabDef>
-        );
-        /**
-         * Overwrite `restored` tab's config with `tabset`s config.
-         * We require config to have type @see {TabDef}, e.g.
-         * > `{type: "component", class: "HelloWorld", filepath: "hello-world-9", props: {}}`
-         */
-        model.visitNodes((x) => x.getType() === "tab" &&
-          Object.assign((x as TabNode).getConfig(), tabKeyToDef[x.getId()])
-        );
-  
-        // Validate i.e. `tabset` must mention same ids
-        const prevTabNodeIds = [] as string[];
-        model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
-        const nextTabNodeIds = extractTabNodes(layout).map((x) => x.id);
-        if (
-          prevTabNodeIds.length === nextTabNodeIds.length &&
-          prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
-        ) {
-          return model.toJson().layout;
-        } else {
-          throw Error(JSON.stringify({ message: 'prev/next ids differ', prevTabNodeIds, nextTabNodeIds }, undefined, '\t'));
-        }
+        let restored = JSON.parse(jsonModelString) as IJsonRowNode;
+        // create Model and serialize to validate
+        // 🔔 assume rootOrientationVertical true
+        restored = Model.fromJson(layoutToModelJson(restored, true)).toJson().layout;
+        // props could change over time
+        restored = useSite.api.migrateRestoredLayout(restored);
+
+        return restored;
       } catch (e) {
         warn("tryRestoreLayout", e);
+        return layout;
       }
-    
-      // `tabset` vs `restored` do not contain the same tab ids
-      return layout;
     },
 
     //#endregion
@@ -350,10 +327,13 @@ export type State = {
      * - If tab type is terminal we merge into env.
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
-    ensureTabset(tabsetDef: TabsetLayout, preserveRestore?: boolean): TabsetLayout;
+    /** Restore layout from localStorage or use fallback */
+    restoreLayoutFallback(fallbackLayout: TabsetLayout, opts: { preserveRestore?: boolean; }): TabsetLayout;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
+    /** ensure every `tab.config` has type @see {TabDef} */
+    migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
     onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
     openTab(tabDef: TabDef): void;
