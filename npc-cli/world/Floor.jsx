@@ -72,7 +72,9 @@ export default function Floor(props) {
       // floor
       drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#222', null]);
       // walls
-      drawPolygons(ct, gm.walls, ['#000', null]);
+      // drawPolygons(ct, gm.walls, ['#000', null]);
+      drawPolygons(ct, gm.walls.filter(x => x.meta.broad === true), ['#000', null]);
+      drawPolygons(ct, gm.walls.filter(x => x.meta.broad !== true), ['#555', null]);
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
