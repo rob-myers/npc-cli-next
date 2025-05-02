@@ -256,7 +256,7 @@
       "obsHashes": [1641095410]
     },
     "lifeboat--small-craft--2x4": {
-      "outputHash": 934442540,
+      "outputHash": 673113854,
       "pngHash": -2036140918
     },
     "lounge--015--4x2": {"outputHash": 2106332164, "pngHash": 222627377},
@@ -13547,7 +13547,43 @@
     "lifeboat--small-craft--2x4": {
       "key": "lifeboat--small-craft--2x4",
       "isHull": false,
-      "hullWalls": [],
+      "hullWalls": [
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-0.095, 1.5],
+              [0, 0.9275],
+              [0.294, 0.435],
+              [0.6285, 0.1455],
+              [1.097, -0.061],
+              [1.5, -0.1005],
+              [1.9335, -0.0595],
+              [2.52, 0.2675],
+              [2.894, 0.728],
+              [3.101, 1.5],
+              [2.912, 1.5],
+              [2.7585, 0.905],
+              [2.4305, 0.4315],
+              [1.8595, 0.127],
+              [1.1545, 0.135],
+              [0.549, 0.4395],
+              [0.238, 0.905],
+              [0.105, 1.5],
+              [0.105, 4.4],
+              [3.1, 4.4],
+              [3.1, 4.55],
+              [-0.095, 4.55]
+            ]
+          ],
+          "meta": {"wall": true, "hull": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[3.05, 1.5], [3.05, 4.5], [2.95, 4.5], [2.95, 1.5]]],
+          "meta": {"wall": true, "hull": true}
+        }
+      ],
       "obstacles": [],
       "walls": [
         {
@@ -13578,12 +13614,12 @@
               [-0.095, 4.55]
             ]
           ],
-          "meta": {"wall": true}
+          "meta": {"wall": true, "hull": true}
         },
         {
           "type": "Polygon",
           "coordinates": [[[3.05, 1.5], [3.05, 4.5], [2.95, 4.5], [2.95, 1.5]]],
-          "meta": {"wall": true}
+          "meta": {"wall": true, "hull": true}
         },
         {
           "type": "Polygon",
