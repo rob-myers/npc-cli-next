@@ -34,7 +34,7 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 5,
+      minDistance: 16,
       maxDistance: 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
@@ -43,7 +43,7 @@ export default function WorldView(props) {
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 30,
+    fov: 20,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
