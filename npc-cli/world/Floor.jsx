@@ -71,10 +71,6 @@ export default function Floor(props) {
 
       // floor
       drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#222', null]);
-      // walls
-      // drawPolygons(ct, gm.walls, ['#000', null]);
-      drawPolygons(ct, gm.walls.filter(x => x.meta.broad === true), ['#000', null]);
-      drawPolygons(ct, gm.walls.filter(x => x.meta.broad !== true), ['#555', null]);
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
@@ -93,6 +89,12 @@ export default function Floor(props) {
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
       drawPolygons(ct, shadowPolys, ['#111', null]);
+
+      // walls
+      // drawPolygons(ct, gm.walls, ['#000', null]);
+      const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
+      drawPolygons(ct, walls2[0], ['#000', null]);
+      drawPolygons(ct, walls2[1], ['#555', null]);
     },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
