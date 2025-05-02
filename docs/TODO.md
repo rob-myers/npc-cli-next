@@ -61,13 +61,14 @@
         - ✅ clean e.g. move to site.store
     - ✅ can remove Viewer tab by clicking link
     - 🚧 strategy for tabsets with added tabs
-      - ℹ️ we should be able to add/remove tabs to our tabsets over time
-      - ℹ️ "validating same tabset ids" doesn't make much sense...
+      - ℹ️ we'll add/remove tabs to our tabsets over time, so
+      - ℹ️ validating tabset ids doesn't make much sense;
       - ℹ️ however it'll be useful to "hot reload" tabset layouts
-      - maybe `tabset` lookup becomes `toTabset` with only 3 keys:
+      - ✅ `tabset` lookup has only 3 keys:
         - `current` provided as Prop to `<Tabs>` (rarely changes)
         - `synced` changes in sync with flexlayout-react
         - `restore` restore point
+      - close tab should select some other tab in tabset
       - cleanup function on restore from localStorage
         - handles stale tabs (onchange TabDef type)
       - 🚧 fix/clarify Tabs refresh after add/remove node

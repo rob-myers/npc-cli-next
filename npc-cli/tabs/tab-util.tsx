@@ -1,11 +1,10 @@
 import { type IJsonTabNode, type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
+import { profile } from "../sh/src";
 import { deepClone, tryLocalStorageGetParsed } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
 import type { ComponentClassKey, TabDef, TabsetLayout } from "./tab-factory";
-import { emptyTabset } from "@/components/const";
 
-export function appendTabToLayout(tabset: TabsetLayout, tabDef: TabDef) {
-  const { layout } = tabset;
+export function appendTabToLayout(layout: TabsetLayout, tabDef: TabDef) {
   const tabId = getTabIdentifier(tabDef);
   if (layout.children.length === 0) {
     layout.children.push({ type: 'tabset', children: [], active: true });
@@ -27,10 +26,10 @@ export function appendTabToLayout(tabset: TabsetLayout, tabDef: TabDef) {
     tabsetNode.selected = tabsetNode.children.findIndex(x => x.id === tabId);
   }
 
-  return tabset;
+  return layout;
 }
 
-export function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
+export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
   return {
     global: {
       tabEnableRename: false,
@@ -42,7 +41,7 @@ export function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?:
       splitterExtra: 12,
       splitterSize: 2,
     },
-    layout: tabset.layout,
+    layout,
   };
 }
 
@@ -129,38 +128,72 @@ export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
   return false;
 }
 
-export function restoreTabsetLookup() {
-
-  const tabsetsMeta: AllTabsetsMeta = tryLocalStorageGetParsed('tabsets-meta') ?? {
-    currentKey: 'empty',
-    allKeys: ['empty', '_empty'],
-  };
+export function restoreTabsetLookup(): AllTabsets {
   
-  const lookup = tabsetsMeta.allKeys.reduce((agg, tabsetKey) => {
-    const restored: TabsetLayout = {
-      key: tabsetKey,
-      layout: (
-        tryLocalStorageGetParsed<IJsonModel>(`tabset@${tabsetKey}`)?.layout
-        ?? tryLocalStorageGetParsed<IJsonModel>(`tabset@_${tabsetKey}`)?.layout
-        ?? deepClone(emptyTabset.layout)
-      ),
-    };
-    return agg[tabsetKey] = restored, agg;
-  }, {
-    empty: deepClone(emptyTabset),
-    _empty: {...deepClone(emptyTabset), key: '_empty' },
-  } as Record<string, TabsetLayout>)
+  function restoreLayout(key: keyof AllTabsets) {
+    return tryLocalStorageGetParsed<IJsonModel>(`tabset@${key}`)?.layout
+      ?? deepClone(emptyTabsetLayout);
+  }
   
   const output = {
-    ...lookup,
-    current:  deepClone(lookup[tabsetsMeta.currentKey] ?? emptyTabset),
+    started: restoreLayout('started'),
+    synced: restoreLayout('synced'),
+    saved: restoreLayout('saved'),
   };
-  
   console.log(`${'restoreTabsetLookup'}`, output);
   return output;
 }
 
-export interface AllTabsetsMeta {
-  currentKey: string;
-  allKeys: string[];
+/**
+ * Tabset layout by `key`.
+ * - `started` is most recent layout started in `<Tabs>`
+ * - `synced` is the actual layout, in sync with flexlayout-react
+ * - `saved` is the layout we restore to on hard reset
+ */
+export interface AllTabsets {
+  started: TabsetLayout;
+  synced: TabsetLayout;
+  saved: TabsetLayout;
+}
+
+export const emptyTabsetLayout: TabsetLayout = {
+  type: 'row',
+  children: [],
+};
+
+export const layoutPreset: Record<LayoutPresetKey, TabsetLayout> = {
+  "empty-layout": emptyTabsetLayout,
+  "layout-preset-0": createLayoutFromBasicLayout([
+    [
+      {
+        type: "component",
+        class: "World",
+        filepath: "test-world-1",
+        // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+        props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+      },
+    ],
+    [
+      {
+        type: "terminal",
+        filepath: "tty-1",
+        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
+      },
+      {
+        type: "terminal",
+        filepath: "tty-2",
+        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
+      },
+      { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+    ]
+  ]),
+};
+
+type LayoutPresetKey = (
+  | 'empty-layout'
+  | 'layout-preset-0'
+);
+
+export function isLayoutPresetKey(input: string): input is LayoutPresetKey {
+  return input in layoutPreset;
 }

@@ -29,9 +29,8 @@ export default function Root({ children }: React.PropsWithChildren) {
   React.useEffect(() => {
 
     // 🚧 move elsewhere
-    useSite.api.ensureTabset({
-      key: 'temp_tabset',
-      layout: createLayoutFromBasicLayout([[
+    useSite.api.ensureTabset(
+      createLayoutFromBasicLayout([[
         {
           type: "component",
           class: "World",
@@ -52,8 +51,9 @@ export default function Root({ children }: React.PropsWithChildren) {
           env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-      ]]),
-    }, true);
+      ]])
+    // }, true);
+    , false);
 
     useSite.api.initiateBrowser();
   }, []);

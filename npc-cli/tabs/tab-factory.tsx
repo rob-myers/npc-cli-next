@@ -23,10 +23,7 @@ export function factory(node: TabNode, api: TabsApi, forceUpdate: boolean) {
   }
 }
 
-export interface TabsetLayout {
-  key: string;
-  layout: IJsonRowNode;
-}
+export type TabsetLayout = IJsonRowNode;
 
 export type TabDef = { weight?: number } & (
   | ({

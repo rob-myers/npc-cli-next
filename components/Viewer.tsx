@@ -14,7 +14,7 @@ import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerC
 
 import { deepClone, parseJsArg, testNever, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
-import { appendTabToLayout, isComponentClassKey } from "@/npc-cli/tabs/tab-util";
+import { appendTabToLayout, emptyTabsetLayout, isComponentClassKey, isLayoutPresetKey, layoutPreset } from "@/npc-cli/tabs/tab-util";
 import type { ComponentClassKey, TabDef } from "@/npc-cli/tabs/tab-factory";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
@@ -25,7 +25,7 @@ import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 export default function Viewer() {
 
   const site = useSite(({ viewOpen, tabset: lookup, tabsetUpdates }) => ({
-    tabset: lookup.current,
+    tabset: lookup.started,
     tabsetUpdates,
     viewOpen,
   }), shallow);
@@ -98,21 +98,27 @@ export default function Viewer() {
       console.log({ internalApiPath, parts, opts });
 
       switch (parts[0]) {
-        case 'set-tabs':
-          useSite.api.changeTabset(parts[1]);
+        case 'set-tabs': {
+          const layoutPresetKey = parts[1];
+          if (isLayoutPresetKey(layoutPresetKey)) {
+            useSite.api.setTabset(layoutPreset[layoutPresetKey]);
+          } else {
+            throw Error(`${'onInternalApi'} set-tabs: invalid layoutPresetKey "${layoutPresetKey}"`);
+          }
           setTimeout(update); // 🚧 why is a delayed update needed?
           break;
+        }
         case 'reset-tabs':
           useSite.api.revertCurrentTabset();
-          setTimeout(update);
+          // setTimeout(update);
           break;
         case 'test-mutate-tabs':
           useSite.api.testMutateLayout();
-          setTimeout(update);
+          // setTimeout(update);
           break;
         case 'remember-tabs':
           useSite.api.rememberCurrentTabs();
-          setTimeout(update);
+          // setTimeout(update);
           break;
         case 'open-tab': {
           const classKey = parts[1];

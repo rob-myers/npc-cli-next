@@ -5,7 +5,7 @@ import { css } from "@emotion/react";
 
 import { detectTabPrevNextShortcut } from "../service/generic";
 import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
-import { computeJsonModel } from './tab-util';
+import { layoutToModelJson } from './tab-util';
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 
@@ -143,7 +143,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
   state.model = React.useMemo(() => {
     
     const output = Model.fromJson(
-      computeJsonModel(props.tabset, props.rootOrientationVertical)
+      layoutToModelJson(props.tabset, props.rootOrientationVertical)
     );
 
     // Enable and disable tabs relative to visibility
