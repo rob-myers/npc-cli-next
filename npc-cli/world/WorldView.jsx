@@ -34,7 +34,7 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 16,
+      minDistance: 12,
       maxDistance: 32,
       panSpeed: 2,
       zoomSpeed: 0.5,
@@ -567,7 +567,7 @@ export default function WorldView(props) {
 
       await Promise.all(promises);
     },
-  }), { reset: { ctrlOpts: false } });
+  }), { reset: { ctrlOpts: true } });
 
   w.view = state;
 
