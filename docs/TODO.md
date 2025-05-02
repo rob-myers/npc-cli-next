@@ -60,11 +60,21 @@
         - ✅ index.mdx link for tty tab with spaces in PROFILE
         - ✅ clean e.g. move to site.store
     - ✅ can remove Viewer tab by clicking link
-    - 🚧 fix Tabs refresh after add/remove node
-    - 🚧 fix createOrRestoreJsonModel Error
-    - localStorage remembers tabset, including resets
-    - clean hard-coded initialization in initiateBrowser
-  - 🚧 more content
+    - 🚧 strategy for tabsets with added tabs
+      - ℹ️ we should be able to add/remove tabs to our tabsets over time
+      - ℹ️ "validating same tabset ids" doesn't make much sense...
+      - ℹ️ however it'll be useful to "hot reload" tabset layouts
+      - maybe `tabset` lookup becomes `toTabset` with only 3 keys:
+        - `current` provided as Prop to `<Tabs>` (rarely changes)
+        - `synced` changes in sync with flexlayout-react
+        - `restore` restore point
+      - cleanup function on restore from localStorage
+        - handles stale tabs (onchange TabDef type)
+      - 🚧 fix/clarify Tabs refresh after add/remove node
+      - 🚧 fix/clarify createOrRestoreJsonModel Error
+      - localStorage remembers tabset, including resets
+      - clean hard-coded initialization in initiateBrowser
+  - more content
   - mention Starship Geomorphs early
   - mention recent improvements in AI
     - NPC CLI could use them as tools

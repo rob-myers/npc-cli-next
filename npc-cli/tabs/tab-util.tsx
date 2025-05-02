@@ -35,7 +35,8 @@ export function computeJsonModel(tabset: TabsetLayout, rootOrientationVertical?:
     global: {
       tabEnableRename: false,
       rootOrientationVertical,
-      tabEnableClose: false,
+      // tabEnableClose: false,
+      tabEnableClose: true,
       tabSetEnableDivide: !isTouchDevice(),
       enableEdgeDock: !isTouchDevice(),
       splitterExtra: 12,
