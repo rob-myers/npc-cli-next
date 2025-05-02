@@ -179,54 +179,58 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       });
     },
 
+    // 🚧 avoid creating Model i.e. manipulate json directly
     tryRestoreLayout(tabset) {
       const jsonModelString = tryLocalStorageGet(`tabset@${tabset.key}`);
     
-      if (jsonModelString !== null) {
-        try {
-          const serializable = JSON.parse(jsonModelString) as IJsonModel;
-    
-          if (serializable.global) {
-            serializable.global.splitterExtra = 12; // Larger splitter hit test area
-            serializable.global.splitterSize = 2;
-            serializable.global.tabSetEnableDivide = !isTouchDevice();
-            serializable.global.enableEdgeDock = !isTouchDevice();
-          }
-    
-          const model = Model.fromJson(serializable);
-    
-          // Overwrite persisted `TabMeta`s with their value from `props`
-          const tabKeyToMeta = extractTabNodes(tabset.layout).reduce(
-            (agg, item) => Object.assign(agg, { [item.id as string]: item.config }),
-            {} as Record<string, TabDef>
-          );
-          model.visitNodes((x) => x.getType() === "tab" &&
-            Object.assign((x as TabNode).getConfig(), tabKeyToMeta[x.getId()])
-          );
-    
-          // Validate i.e. `tabset` must mention same ids
-          const prevTabNodeIds = [] as string[];
-          model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
-          const nextTabNodeIds = extractTabNodes(tabset.layout).map((x) => x.id);
-          if (
-            prevTabNodeIds.length === nextTabNodeIds.length &&
-            prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
-          ) {
-            return {
-              key: tabset.key,
-              layout: model.toJson().layout,
-            };
-          } else {
-            throw Error(JSON.stringify({ message: 'prev/next ids differ', prevTabNodeIds, nextTabNodeIds }, undefined, '\t'));
-          }
-        } catch (e) {
-          warn("tryRestoreLayout", e);
+      if (jsonModelString === null) {
+        return tabset;
+      }
+
+      try {
+        const restored = JSON.parse(jsonModelString) as IJsonModel;
+  
+        restored.global ??= {};
+        restored.global.splitterExtra = 12; // Larger splitter hit test area
+        restored.global.splitterSize = 2;
+        restored.global.tabSetEnableDivide = !isTouchDevice();
+        restored.global.enableEdgeDock = !isTouchDevice();
+  
+        const model = Model.fromJson(restored);
+  
+        const tabKeyToDef = extractTabNodes(tabset.layout).reduce(
+          (agg, item) => Object.assign(agg, { [item.id as string]: item.config }),
+          {} as Record<string, TabDef>
+        );
+        /**
+         * Overwrite `restored` tab's config with `tabset`s config.
+         * We require config to have type @see {TabDef}, e.g.
+         * > `{type: "component", class: "HelloWorld", filepath: "hello-world-9", props: {}}`
+         */
+        model.visitNodes((x) => x.getType() === "tab" &&
+          Object.assign((x as TabNode).getConfig(), tabKeyToDef[x.getId()])
+        );
+  
+        // Validate i.e. `tabset` must mention same ids
+        const prevTabNodeIds = [] as string[];
+        model.visitNodes((x) => x.getType() === "tab" && prevTabNodeIds.push(x.getId()));
+        const nextTabNodeIds = extractTabNodes(tabset.layout).map((x) => x.id);
+        if (
+          prevTabNodeIds.length === nextTabNodeIds.length &&
+          prevTabNodeIds.every((id) => nextTabNodeIds.includes(id))
+        ) {
+          return {
+            key: tabset.key,
+            layout: model.toJson().layout,
+          };
+        } else {
+          throw Error(JSON.stringify({ message: 'prev/next ids differ', prevTabNodeIds, nextTabNodeIds }, undefined, '\t'));
         }
+      } catch (e) {
+        warn("tryRestoreLayout", e);
       }
     
-      // Either:
-      // (a) no Tabs model found in local storage, or
-      // (b) Tabs prop "tabs" has different ids
+      // `tabset` vs `restored` do not contain the same tab ids
       return tabset;
     },
 

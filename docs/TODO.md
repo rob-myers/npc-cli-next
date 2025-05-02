@@ -60,7 +60,7 @@
         - ✅ index.mdx link for tty tab with spaces in PROFILE
         - ✅ clean e.g. move to site.store
     - ✅ can remove Viewer tab by clicking link
-    - fix Tabs refresh after add/remove node
+    - 🚧 fix Tabs refresh after add/remove node
     - 🚧 fix createOrRestoreJsonModel Error
     - localStorage remembers tabset, including resets
     - clean hard-coded initialization in initiateBrowser
