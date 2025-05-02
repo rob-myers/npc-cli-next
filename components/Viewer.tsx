@@ -86,7 +86,7 @@ export default function Viewer() {
        */
       const opts = Array.from(parsedUrl.searchParams).reduce(
         (agg, [k, v]) => (agg[k] = parseJsArg(v), agg),
-        {} as Record<string, string>,
+        {} as Record<string, any>,
       );
 
       /**
@@ -98,28 +98,16 @@ export default function Viewer() {
       console.log({ internalApiPath, parts, opts });
 
       switch (parts[0]) {
-        case 'set-tabs': {
-          const layoutPresetKey = parts[1];
-          if (isLayoutPresetKey(layoutPresetKey)) {
-            useSite.api.setTabset(layoutPreset[layoutPresetKey]);
-          } else {
-            throw Error(`${'onInternalApi'} set-tabs: invalid layoutPresetKey "${layoutPresetKey}"`);
-          }
-          setTimeout(update); // 🚧 why is a delayed update needed?
+        case 'change-tab': {// props only, not tty env (useSession instead)
+          const tabId = parts[1];
+          useSite.api.changeTabProps(tabId, opts.props);
           break;
         }
-        case 'reset-tabs':
-          useSite.api.revertCurrentTabset();
-          // setTimeout(update);
+        case 'close-tab': {
+          const tabId = parts[1];
+          useSite.api.removeTab(tabId);
           break;
-        case 'test-mutate-tabs':
-          useSite.api.testMutateLayout();
-          // setTimeout(update);
-          break;
-        case 'remember-tabs':
-          useSite.api.rememberCurrentTabs();
-          // setTimeout(update);
-          break;
+        }
         case 'open-tab': {
           const classKey = parts[1];
           if (!(isComponentClassKey(classKey) || classKey === 'Tty')) {
@@ -130,11 +118,27 @@ export default function Viewer() {
           useSite.api.openTab(tabDef);
           break;
         }
-        case 'close-tab': {
-          const tabId = parts[1];
-          useSite.api.removeTab(tabId);
+        case 'remember-tabs':
+          useSite.api.rememberCurrentTabs();
+          break;
+        case 'reset-tabs':
+          useSite.api.revertCurrentTabset();
+          // setTimeout(update);
+          break;
+        case 'set-tabs': {
+          const layoutPresetKey = parts[1];
+          if (isLayoutPresetKey(layoutPresetKey)) {
+            useSite.api.setTabset(layoutPreset[layoutPresetKey]);
+          } else {
+            throw Error(`${'onInternalApi'} set-tabs: invalid layoutPresetKey "${layoutPresetKey}"`);
+          }
+          setTimeout(update); // 🚧 why is a delayed update needed?
           break;
         }
+        case 'test-mutate-tabs':
+          useSite.api.testMutateLayout();
+          // setTimeout(update);
+          break;
         case 'noop':
         default:
           return;

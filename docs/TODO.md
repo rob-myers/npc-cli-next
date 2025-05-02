@@ -68,6 +68,7 @@
         - `current` provided as Prop to `<Tabs>` (rarely changes)
         - `synced` changes in sync with flexlayout-react
         - `restore` restore point
+      - ✅ can change component tab props e.g. World mapKey
       - close tab should select some other tab in tabset
       - cleanup function on restore from localStorage
         - handles stale tabs (onchange TabDef type)

@@ -1,6 +1,6 @@
 import React from "react";
 import loadable from "@loadable/component";
-import type { IJsonRowNode, TabNode } from "flexlayout-react";
+import type { IJsonRowNode, IJsonTabNode, TabNode } from "flexlayout-react";
 
 import type ActualTerminal from "../terminal/TtyWithFunctions";
 import type { State as TabsApi } from "./Tabs";
@@ -127,3 +127,5 @@ export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   ssr: false,
   fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
+
+export type CustomIJsonTabNode = Omit<IJsonTabNode, 'config'> & { config: TabDef };

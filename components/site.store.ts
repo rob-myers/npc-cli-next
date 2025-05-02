@@ -28,6 +28,27 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     //#region tabset
 
+    changeTabProps(tabId, partialProps) {
+      const layout = get().tabset.synced;
+      const found = extractTabNodes(layout).find(x => x.id === tabId);
+      if (found === undefined) {
+        throw Error(`${'changeTabProps'} cannot find tabId "${tabId}"`);
+      }
+
+      if (found.config.type === 'component') {
+        Object.assign(found.config.props, partialProps);
+      } else if (found.config.type === 'terminal') {
+        throw Error(`${'changeTabProps'} cannot change terminal "${tabId}" (useSession instead)`);
+      } else {
+        throw Error(`${'changeTabProps'} unexpected tab config "${JSON.stringify(found.config)}"`);
+      }
+
+      set(({ tabset: lookup }) => ({ tabset: {...lookup,
+        started: layout,
+        synced: deepClone(layout),
+      } }));
+    },
+
     ensureTabset(tabset, preserveRestore = false) {
 
       if (isTouchDevice()) {// better UX on mobile
@@ -324,7 +345,11 @@ export type State = {
 
   api: {
     // clickToClipboard(e: React.MouseEvent): Promise<void>;
-    /** Create, possibly overwriting `${key}` and `_${key}` */
+    /**
+     * - If tab type is component we merge into props.
+     * - If tab type is terminal we merge into env.
+     */
+    changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     ensureTabset(tabsetDef: TabsetLayout, preserveRestore?: boolean): TabsetLayout;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;

@@ -1,8 +1,8 @@
-import { type IJsonTabNode, type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
+import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
 import { profile } from "../sh/src";
 import { deepClone, tryLocalStorageGetParsed } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
-import type { ComponentClassKey, TabDef, TabsetLayout } from "./tab-factory";
+import type { ComponentClassKey, CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
 
 export function appendTabToLayout(layout: TabsetLayout, tabDef: TabDef) {
   const tabId = getTabIdentifier(tabDef);
@@ -74,12 +74,12 @@ function createTabNodeFromDef(def: TabDef) {
   };
 }
 
-export function extractTabNodes(layout: IJsonRowNode): IJsonTabNode[] {
+export function extractTabNodes(layout: IJsonRowNode): (CustomIJsonTabNode)[] {
   return layout.children.flatMap(child => {
     if (child.type === 'row') {
       return extractTabNodes(child);
     } else {
-      return child.children.flatMap(tabNode => tabNode);
+      return child.children.flatMap(tabNode => tabNode as CustomIJsonTabNode);
     }
   });
 }
@@ -108,7 +108,6 @@ const fromComponentClassKey: Record<ComponentClassKey, true> = {
   World: true,
 };
 
-/** Same as `node.getId()` ? */
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
 }
