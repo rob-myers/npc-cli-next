@@ -230,7 +230,7 @@
     "fresher--025--3x2": {"outputHash": -2073406480, "pngHash": -1324814803},
     "fresher--036--4x2": {"outputHash": 570694497, "pngHash": 633687707},
     "fuel--010--4x2": {
-      "outputHash": 1196877019,
+      "outputHash": -1844931219,
       "pngHash": 858873613,
       "obsHashes": [-2106922932]
     },
@@ -12935,7 +12935,7 @@
               [-0.095, -0.0975]
             ]
           ],
-          "meta": {"wall": true, "hollow": true}
+          "meta": {"wall": true, "hollow": true, "broad": true}
         }
       ],
       "doors": [],
