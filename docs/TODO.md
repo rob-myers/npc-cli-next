@@ -114,8 +114,11 @@
 - 🚧 improve floor lighting
   - ✅ show hard-coded "light circle" in floor shader
   - ✅ light circle has basic gradient
-  - 🚧 light circle moves with camera
+  - ✅ light circle moves with camera
+    - ✅ fix shader code i.e. edge geomorphs are not full-height
   - 🚧 light circle scales up and down
+  - 🚧 light circle opacity changes
+  - try radial gradient texture
   - support many lights e.g. via DataTexture or DataArrayTexture
   - remove post-processing
   - could try "light image" again where distinct light's rect's don't overlap

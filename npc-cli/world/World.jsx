@@ -77,7 +77,9 @@ export default function World(props) {
     crowd: /** @type {*} */ (null),
 
     view: /** @type {*} */ (null),
-    floor: /** @type {*} */ ({}),
+    floor: /** @type {State['floor']} */ ({
+      litCircle: new THREE.Vector4(),
+    }),
     ceil: /** @type {*} */ ({}),
     decor: /** @type {*} */ (null),
     obs: /** @type {*} */ (null),

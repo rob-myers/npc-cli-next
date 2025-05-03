@@ -50,12 +50,13 @@ export interface InstancedMultiTextureMaterialProps {
   atlas: import('three').DataArrayTexture;
   diffuse: Vector3Input;
   /** `(cx, cz, r, opacity)` */
-  // litCircle?: Vector4Input;
-  litCircle?: import('three').Vector4;
+  litCircle?: import('three').Vector4; // constrain beyond Vector4Input
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;
 }
+
+export type InstancedMultiTextureMaterialKeys = keyof InstancedMultiTextureMaterialProps;
 
 export interface HumanZeroMaterialProps {
   atlas: import('three').DataArrayTexture;

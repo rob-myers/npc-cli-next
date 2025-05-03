@@ -446,6 +446,15 @@ export default function useHandleEvents(w) {
         1.5, // 🚧 hard-coded
       );
     },
+    onChangeControls(controls) {
+      // 🚧
+      w.floor.litCircle.set(
+        controls.target.x,
+        controls.target.z,
+        2.5,
+        1.0,
+      );
+    },
     onEnterDoorCollider(e) {// e.type === 'nearby'
       (state.npcToDoors[e.npcKey] ??= { nearby: new Set(), inside: null }).nearby.add(e.gdKey);
       (state.doorToNearbyNpcs[e.gdKey] ??= new Set()).add(e.npcKey);
@@ -820,6 +829,7 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcNearDoor
+ * @property {(controls: import('./WorldView').State['controls']) => void} onChangeControls
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.
