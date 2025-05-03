@@ -55,7 +55,9 @@ export interface HumanZeroMaterialProps {
   diffuse: Vector3Input;
   label: import('three').DataArrayTexture;
   labelY: number;
+  breathTriIds: number[];
   labelTriIds: number[];
+  selectorTriIds: number[];
   labelUvRect4: Vector4Input;
   /* A default value must be provided for object-pick to work */
   objectPick?: boolean;

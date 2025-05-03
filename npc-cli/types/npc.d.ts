@@ -395,7 +395,9 @@ declare namespace NPC {
 
   interface GltfAux {
     npcClassKey: Key.NpcClass;
+    breathTriIds: number[];
     labelTriIds: number[];
+    selectorTriIds: number[];
     labelUvRect4: [number, number, number, number];
     partToUv: NPC.SkinPartToUvRect;
     triToKey: NPC.TriToUvKeys;

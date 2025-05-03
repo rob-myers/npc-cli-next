@@ -256,10 +256,16 @@ export const humanZeroShader = {
   Vert: /*glsl*/`
 
   uniform float labelY;
+  uniform int breathTriIds[2];
   uniform int labelTriIds[2];
-  varying float dotProduct;
+  uniform int selectorTriIds[2];
+  varying float vDotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
+  // higher in [0, 1] is lighter
+  varying float vHeightShade;
+  // label, body, breath, selector
+  flat varying float vType;
 
   #include <common>
   #include <uv_pars_vertex>
@@ -275,12 +281,24 @@ export const humanZeroShader = {
     // since unwelded via geometry.toNonIndexed()
     triangleId = int(gl_VertexID / 3);
     vUv = uv;
-
+    vHeightShade = 1.0;
+    
+    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+      vType = 0.0; // label
+    } else if (triangleId == breathTriIds[0] || triangleId == breathTriIds[1]) {
+      vType = 0.75; // breath
+    } else if (triangleId == selectorTriIds[0] || triangleId == selectorTriIds[1]) {
+      vType = 1.0; // selector
+    } else {
+      vType = 0.25; // body
+      vHeightShade = min(max(pow(position.y / labelY, 1.0) + 0.1, 0.4), 1.0);
+    }
+    
     vec3 transformed = vec3(position);
     #include <skinning_vertex>
     vec4 mvPosition;
 
-    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+    if (vType == 0.0) {// label quad
 
       // label quad is above head and faces camera
       mvPosition = modelMatrix[3]; // translation
@@ -295,8 +313,7 @@ export const humanZeroShader = {
       // compute dot product for flat shading
       vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
       vec3 lightDir = -normalize(mvPosition.xyz);
-      dotProduct = dot(transformedNormal, lightDir);
-  
+      vDotProduct = dot(transformedNormal, lightDir);
     }
     
     gl_Position = projectionMatrix * mvPosition;
@@ -323,9 +340,11 @@ export const humanZeroShader = {
   uniform bool objectPick;
   uniform int uid;
 
-  varying float dotProduct;
+  varying float vDotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
+  varying float vHeightShade;
+  flat varying float vType;
 
   #include <common>
   #include <uv_pars_fragment>
@@ -358,7 +377,7 @@ export const humanZeroShader = {
 
     vec4 texel;
     
-    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {// label quad
+    if (vType == 0.0) {// label
 
       texel = texture(
         label,
@@ -369,17 +388,17 @@ export const humanZeroShader = {
         )
       );
 
-    } else {// everything else
+    } else {// body, breath, selector 
 
-      // 🔔 flat shading
-      tint *= vec4(vec3(0.05 + 0.8 * dotProduct), 1.0);
+      // 🔔 flat shading via vDotProduct
+      tint *= vec4(vec3((0.05 + 0.8 * vDotProduct) * vHeightShade), 1.0);
 
       // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
       float atlasId = uvOffset.z;
 
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
-      
+
     }
 
     gl_FragColor = texel * tint;
@@ -543,7 +562,9 @@ const humanZeroMaterialDefaultProps = {
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
   label: emptyDataArrayTexture,
   labelY: 0,
+  breathTriIds: [],
   labelTriIds: [],
+  selectorTriIds: [],
   labelUvRect4: new THREE.Vector4(),
   objectPick: false,
   opacity: 1,

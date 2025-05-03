@@ -108,11 +108,11 @@
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
   - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
-- 🚧 BUG: testOffMeshDisjoint does not handle case where npcs face each
+- ✅ BUG: testOffMeshDisjoint does not handle case where npcs face each
   - ✅ non-diagonal rectangle intersection
-  - diagonal doors initially transform lineSegs
 
-- BUG: fix multiple worlds
+- floor needs better lighting
+  - try "light image" again where distinct light's rect's don't overlap
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
@@ -171,7 +171,9 @@
 - consider "hot keys" e.g. 1, 2, 3, also tapable
   - could use to change camera settings
   - could use to change input settings e.g. drag select
-- move "x-ray" into PopUp opts?
+- ❌ move "x-ray" into PopUp opts?
+- testOffMeshDisjoint: diagonal doors initially transform lineSegs
+
 
 - ✅ shell should show debugs not errors
   - sometimes still show errors e.g. on mvdan-sh parse error
