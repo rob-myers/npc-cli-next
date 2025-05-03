@@ -639,7 +639,7 @@ export default function WorldView(props) {
       >
         {w.crowd === null ? [] : <>
           {/* <BrightnessContrast
-            brightness={-0.2}
+            brightness={-0.3}
             contrast={0.1}
           />
           <Vignette
