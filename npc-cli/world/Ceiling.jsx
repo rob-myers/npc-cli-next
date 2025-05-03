@@ -52,8 +52,8 @@ export default function Ceiling(props) {
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      drawPolygons(ct, tops.nonHull, ['#001', '#666', thickLineWidth]);
-      // drawPolygons(ct, tops.nonHull, ['#666', '#001', thickLineWidth]);
+      // drawPolygons(ct, tops.nonHull, ['#001', '#666', thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, ['#666', '#001', thickLineWidth]);
       drawPolygons(ct, tops.window, [black, wallsColor, thinLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
@@ -115,7 +115,7 @@ export default function Ceiling(props) {
         transparent
         atlas={tex}
         alphaTest={0.3} opacity={state.opacity} depthWrite={false}
-        diffuse={[0.6, 0.6, .7]}
+        diffuse={[1, 1, 1]}
         objectPickRed={3}
       />
     </instancedMesh>

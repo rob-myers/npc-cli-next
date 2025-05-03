@@ -513,7 +513,7 @@ export const instancedMultiTextureShader = {
           if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 1.6), vLitCircle.w);
           if (dist <= radius * 0.8) texel *= vec4(vec3(1.1), vLitCircle.w);
           // if (dist <= radius * 0.85) texel *= vec4(vec3(1.1), 1.0);
-          if (dist <= radius * 0.85) texel += vec4(vec3(0.05, 0.05, 0.0), vLitCircle.w);
+          if (dist <= radius * 0.85) texel += vec4(vec3(0.02, 0.02, 0.0), vLitCircle.w);
         }
 
         gl_FragColor = texel * vec4(vColor * diffuse, opacity);
