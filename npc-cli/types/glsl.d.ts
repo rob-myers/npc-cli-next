@@ -28,7 +28,7 @@ declare module '@react-three/fiber' {
       diffuse?: Vector3Input;
     };
 
-    instancedMonochromeShader: ThreeElement<typeof import('three').ShaderMaterial> & {
+    instancedWallsShader: ThreeElement<typeof import('three').ShaderMaterial> & {
       diffuse?: Vector3Input;
       opacity?: number;
     } & SupportsObjectPick;
@@ -50,7 +50,8 @@ export interface InstancedMultiTextureMaterialProps {
   atlas: import('three').DataArrayTexture;
   diffuse: Vector3Input;
   /** `(cx, cz, r, opacity)` */
-  litCircle?: Vector4Input;
+  // litCircle?: Vector4Input;
+  litCircle?: import('three').Vector4;
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;
