@@ -113,7 +113,7 @@
 
 - 🚧 improve floor lighting
   - ✅ show hard-coded "light circle" in floor shader
-  - 🚧 light circle has gradient fill?
+  - ✅ light circle has basic gradient
   - 🚧 light circle moves with camera
   - 🚧 light circle scales up and down
   - support many lights e.g. via DataTexture or DataArrayTexture
