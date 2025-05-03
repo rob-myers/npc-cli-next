@@ -439,12 +439,12 @@ export const instancedMultiTextureShader = {
       
       float radius = litCircle.z; // (cx, cz, r, opacity)
       if (radius > 0.0) {
-        // instanceMatrix takes unit quad to e.g. "geomorph floor quad"
-        // transform (cx, cz) to (uv.x, uv.y)
+        // - instanceMatrix takes unit quad to e.g. "geomorph floor quad"
+        // - transform (cx, cz) to (uv.x, uv.y)
         // 🚧 provide inverse matrices in uniform?
         mat4 invertInstanceMatrix = inverse(instanceMatrix);
         vLitCircle = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
-        vLitCircle.y = vLitCircle.z;
+        vLitCircle.y = vLitCircle.z * uvDimensions.y; // 🔔 edge geomorphs are not full-height
         // compute scaled radius
         vLitCircle.z = radius * invertInstanceMatrix[0].x;
         // store opacity
@@ -504,12 +504,13 @@ export const instancedMultiTextureShader = {
         if (radius > 0.0) {// 🔔 uvs within circle are lighter
           vec2 origin = vLitCircle.xy;
           float dist = distance(vUv, origin);
+          // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
+          
           // if (dist <= radius) texel *= 1.6;
           // if (dist <= radius) texel *= vec4(vec3(1.6), 1.0);
           if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 1.8), 1.0);
           if (dist <= radius * 0.8) texel *= vec4(vec3(1.1), 1.0);
           if (dist <= radius * 0.85) texel *= vec4(vec3(1.2), 1.0);
-          // if (dist <= radius * 0.8) texel += vec4(0.02, 0.02, 0.0, 1.0);
         }
 
         gl_FragColor = texel * vec4(vColor * diffuse, opacity);
@@ -621,7 +622,7 @@ export const HumanZeroMaterial = shaderMaterial(
  * @see glsl.d.ts
  */
 extend({
-  InstancedMonochromeShader: InstancedWallsShader,
+  InstancedWallsShader,
   InstancedLabelsMaterial,
   InstancedMultiTextureMaterial,
   InstancedFlatMaterial,
