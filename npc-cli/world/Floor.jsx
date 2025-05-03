@@ -70,7 +70,8 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#222', null]);
+      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#222', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
@@ -88,7 +89,7 @@ export default function Floor(props) {
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
-      drawPolygons(ct, shadowPolys, ['#111', null]);
+      drawPolygons(ct, shadowPolys, ['#000', null]);
 
       // walls
       // drawPolygons(ct, gm.walls, ['#000', null]);
