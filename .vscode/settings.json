@@ -7,5 +7,9 @@
   "html.format.enable": false,
   "[svg]": {
       "editor.formatOnSave": false
-  }
+  },
+  "cSpell.words": [
+    "geomorph",
+    "geomorphs"
+  ]
 }
