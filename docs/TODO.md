@@ -116,12 +116,13 @@
   - ✅ light circle has basic gradient
   - ✅ light circle moves with camera
     - ✅ fix shader code i.e. edge geomorphs are not full-height
+  - ✅ light circle scales up and down
+  - ✅ light circle opacity can change
   - move Floor and Ceiling to separate shader
   - provide inverse matrices as uniform (more efficient)
-  - light circle scales up and down
-  - light circle opacity changes
   - try radial gradient texture
   - try many lights e.g. via DataTexture or DataArrayTexture
+    - many fixed lights, which can be turned on/off altered
   - remove post-processing
   - npcs are lighter within light circle
   - ❌ could try "light image" again where distinct light's rect's don't overlap
