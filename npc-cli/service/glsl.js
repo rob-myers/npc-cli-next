@@ -265,7 +265,7 @@ export const humanZeroShader = {
   // higher in [0, 1] is lighter
   varying float vHeightShade;
   // label, body, breath, selector
-  flat varying float vType;
+  flat varying int vType;
 
   #include <common>
   #include <uv_pars_vertex>
@@ -284,13 +284,13 @@ export const humanZeroShader = {
     vHeightShade = 1.0;
     
     if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
-      vType = 0.0; // label
+      vType = 0; // label
     } else if (triangleId == breathTriIds[0] || triangleId == breathTriIds[1]) {
-      vType = 0.75; // breath
+      vType = 2; // breath
     } else if (triangleId == selectorTriIds[0] || triangleId == selectorTriIds[1]) {
-      vType = 1.0; // selector
+      vType = 3; // selector
     } else {
-      vType = 0.25; // body
+      vType = 1; // body
       vHeightShade = min(max(pow(position.y / labelY, 1.0) + 0.1, 0.4), 1.0);
     }
     
@@ -298,7 +298,7 @@ export const humanZeroShader = {
     #include <skinning_vertex>
     vec4 mvPosition;
 
-    if (vType == 0.0) {// label quad
+    if (vType == 0) {// label quad
 
       // label quad is above head and faces camera
       mvPosition = modelMatrix[3]; // translation
@@ -344,7 +344,7 @@ export const humanZeroShader = {
   flat varying int triangleId;
   varying vec2 vUv;
   varying float vHeightShade;
-  flat varying float vType;
+  flat varying int vType;
 
   #include <common>
   #include <uv_pars_fragment>
@@ -377,7 +377,7 @@ export const humanZeroShader = {
 
     vec4 texel;
     
-    if (vType == 0.0) {// label
+    if (vType == 0) {// label
 
       texel = texture(
         label,
@@ -414,6 +414,8 @@ export const humanZeroShader = {
 export const instancedMultiTextureShader = {
   Vert: /* glsl */`
 
+    uniform vec4 litCircle; // (cx, cz, r, opacity)
+
     attribute vec2 uvDimensions;
     attribute vec2 uvOffsets;
     attribute uint uvTextureIds;
@@ -424,6 +426,7 @@ export const instancedMultiTextureShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
+    flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
 
     #include <common>
     #include <logdepthbuf_pars_vertex>
@@ -433,6 +436,19 @@ export const instancedMultiTextureShader = {
       vUv = (uv * uvDimensions) + uvOffsets;
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
+      
+      float radius = litCircle.z; // (cx, cz, r, opacity)
+      if (radius > 0.0) {
+        // instanceMatrix takes unit quad to e.g. "geomorph floor quad"
+        // transform (cx, cz) to (uv.x, uv.y)
+        mat4 invertInstanceMatrix = inverse(instanceMatrix);
+        vLitCircle = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
+        vLitCircle.y = vLitCircle.z;
+        // compute scaled radius
+        vLitCircle.z = radius * invertInstanceMatrix[0].x;
+        // store opacity
+        vLitCircle.w = litCircle.w;
+      }
 
       vec4 modelViewPosition = vec4(position, 1.0);
       modelViewPosition = instanceMatrix * modelViewPosition;
@@ -450,6 +466,7 @@ export const instancedMultiTextureShader = {
 
   Frag: /* glsl */`
 
+    uniform vec4 litCircle;
     uniform float alphaTest;
     uniform bool objectPick;
     uniform int objectPickRed;
@@ -461,6 +478,7 @@ export const instancedMultiTextureShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
+    flat varying vec4 vLitCircle;
 
     #include <common>
     #include <logdepthbuf_pars_fragment>
@@ -480,6 +498,12 @@ export const instancedMultiTextureShader = {
         );
       } else {
         if (texel.a * opacity < alphaTest) discard;
+        
+        float radius = vLitCircle.z;
+        if (radius > 0.0) {// 🔔 uvs within circle are lighter
+          vec2 origin = vLitCircle.xy;
+          if (distance(vUv, origin) <= radius) texel *= 1.6;
+        }
 
         gl_FragColor = texel * vec4(vColor * diffuse, opacity);
       }
@@ -511,6 +535,21 @@ export const InstancedLabelsMaterial = shaderMaterial(
   instancedLabelsShader.Frag,
 );
 
+/** @type {import('@/npc-cli/types/glsl').InstancedMultiTextureMaterialProps} */
+const instancedMultiTextureMaterialDefaultProps = {
+  alphaTest: 0.5,
+  atlas: emptyDataArrayTexture,
+  diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  // 🔔 map, mapTransform required else can get weird texture
+  // map: null,
+  // mapTransform: new THREE.Matrix3(),
+  // colorSpace: false,
+  litCircle: new THREE.Vector4(0, 0, 0, 0),
+  objectPick: false,
+  objectPickRed: 0,
+  opacity: 1,
+};
+
 /**
  * - Ceiling
  * - Decor quads
@@ -519,18 +558,9 @@ export const InstancedLabelsMaterial = shaderMaterial(
  * - Floor
  */
 export const InstancedMultiTextureMaterial = shaderMaterial(
-  {
-    alphaTest: 0.5,
-    atlas: emptyDataArrayTexture,
-    diffuse: new THREE.Vector3(1, 0.9, 0.6),
-    // 🔔 map, mapTransform required else can get weird texture
-    // map: null,
-    // mapTransform: new THREE.Matrix3(),
-    // colorSpace: false,
-    objectPick: false,
-    objectPickRed: 0,
-    opacity: 1,
-  },
+  /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
+    instancedMultiTextureMaterialDefaultProps
+  ),
   instancedMultiTextureShader.Vert,
   instancedMultiTextureShader.Frag,
 );

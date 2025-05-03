@@ -99,7 +99,9 @@ export default function Floor(props) {
     },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
-        const mat = (new Mat([gm.pngRect.width, 0, 0, gm.pngRect.height, gm.pngRect.x, gm.pngRect.y])).postMultiply(gm.matrix);
+        const mat = (new Mat([
+          gm.pngRect.width, 0, 0, gm.pngRect.height, gm.pngRect.x, gm.pngRect.y,
+        ])).postMultiply(gm.matrix);
         // if (mat.determinant < 0) mat.preMultiply([-1, 0, 0, 1, 1, 0])
         state.inst.setMatrixAt(gmId, geomorph.embedXZMat4(mat.toArray()));
       }
@@ -137,6 +139,7 @@ export default function Floor(props) {
         diffuse={[1, 1, 1]}
         objectPickRed={2}
         alphaTest={0.5}
+        litCircle={[5, 5, 3, 1]} // 🚧 remove hard-coded
       />
     </instancedMesh>
   );

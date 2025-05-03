@@ -567,7 +567,7 @@ export default function WorldView(props) {
 
       await Promise.all(promises);
     },
-  }), { reset: { ctrlOpts: true } });
+  }), { reset: { ctrlOpts: false } });
 
   w.view = state;
 
@@ -636,7 +636,7 @@ export default function WorldView(props) {
         key={w.crowd === null ? 'empty' : 'non-empty'}
       >
         {w.crowd === null ? [] : <>
-          <BrightnessContrast
+          {/* <BrightnessContrast
             brightness={-0.2}
             contrast={0.1}
           />
@@ -645,7 +645,7 @@ export default function WorldView(props) {
             offset={0.3}
             darkness={1.3}
             blendFunction={BlendFunction.NORMAL}
-          />
+          /> */}
         </>}
       </EffectComposer>
 

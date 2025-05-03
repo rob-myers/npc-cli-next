@@ -111,8 +111,14 @@
 - ✅ BUG: testOffMeshDisjoint does not handle case where npcs face each
   - ✅ non-diagonal rectangle intersection
 
-- floor needs better lighting
-  - try "light image" again where distinct light's rect's don't overlap
+- 🚧 improve floor lighting
+  - ✅ show hard-coded "light circle" in floor shader
+  - 🚧 light circle has gradient fill?
+  - 🚧 light circle moves with camera
+  - 🚧 light circle scales up and down
+  - support many lights e.g. via DataTexture or DataArrayTexture
+  - remove post-processing
+  - could try "light image" again where distinct light's rect's don't overlap
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render

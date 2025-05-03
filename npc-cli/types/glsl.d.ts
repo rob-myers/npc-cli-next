@@ -33,14 +33,10 @@ declare module '@react-three/fiber' {
       opacity?: number;
     } & SupportsObjectPick;
 
-    instancedMultiTextureMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
-      alphaTest?: number;
-      diffuse?: Vector3Input;
-      atlas: import('three').DataArrayTexture;
-      /** Red component in [0..255] used by objectPick rgba */
-      objectPickRed?: number;
-      opacity?: number;
-    } & SupportsObjectPick;
+    instancedMultiTextureMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & InstancedMultiTextureMaterialProps
+    );
 
   }
 }
@@ -49,6 +45,17 @@ type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
 type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
 
 // 🚧 migrate all custom shaders
+export interface InstancedMultiTextureMaterialProps {
+  alphaTest: number;
+  atlas: import('three').DataArrayTexture;
+  diffuse: Vector3Input;
+  /** `(cx, cz, r, opacity)` */
+  litCircle?: Vector4Input;
+  objectPick?: boolean;
+  objectPickRed?: number;
+  opacity?: number;
+}
+
 export interface HumanZeroMaterialProps {
   atlas: import('three').DataArrayTexture;
   aux: import('three').DataArrayTexture;
