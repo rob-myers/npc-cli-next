@@ -121,9 +121,10 @@
   - light circle scales up and down
   - light circle opacity changes
   - try radial gradient texture
-  - support many lights e.g. via DataTexture or DataArrayTexture
   - remove post-processing
-  - could try "light image" again where distinct light's rect's don't overlap
+  - npcs are lighter within light circle
+  - ❌ support many lights e.g. via DataTexture or DataArrayTexture
+  - ❌ could try "light image" again where distinct light's rect's don't overlap
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
