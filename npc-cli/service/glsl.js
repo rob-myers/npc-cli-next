@@ -291,7 +291,7 @@ export const humanZeroShader = {
       vType = 3; // selector
     } else {
       vType = 1; // body
-      vHeightShade = min(max(pow(position.y / labelY, 1.0) + 0.1, 0.4), 1.0);
+      // vHeightShade = min(max(pow(position.y / labelY, 1.0) + 0.1, 0.4), 1.0);
     }
     
     vec3 transformed = vec3(position);
@@ -443,14 +443,14 @@ export const instancedMultiTextureShader = {
         // - transform (cx, cz) to (uv.x, uv.y)
         // 🚧 provide inverse matrices in uniform?
         mat4 invertInstanceMatrix = inverse(instanceMatrix);
+        float litCircleOpacity = litCircle.w;
+
         vLitCircle = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
         vLitCircle.y = vLitCircle.z;
         vLitCircle *= vec4(uvDimensions, 1.0, 1.0);
 
-        // compute scaled radius
-        vLitCircle.z = radius * invertInstanceMatrix[0].x;
-        // store opacity
-        vLitCircle.w = litCircle.w;
+        vLitCircle.z = radius * invertInstanceMatrix[0].x; // compute scaled radius
+        vLitCircle.w = litCircleOpacity; // store opacity
       }
 
       vec4 modelViewPosition = vec4(position, 1.0);
@@ -510,10 +510,10 @@ export const instancedMultiTextureShader = {
           
           // if (dist <= radius) texel *= 1.6;
           // if (dist <= radius) texel *= vec4(vec3(1.6), 1.0);
-          if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 1.6), 1.0);
-          if (dist <= radius * 0.8) texel *= vec4(vec3(1.1), 1.0);
+          if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 1.6), vLitCircle.w);
+          if (dist <= radius * 0.8) texel *= vec4(vec3(1.1), vLitCircle.w);
           // if (dist <= radius * 0.85) texel *= vec4(vec3(1.1), 1.0);
-          if (dist <= radius * 0.85) texel += vec4(vec3(0.05, 0.05, 0.0), 0.0);
+          if (dist <= radius * 0.85) texel += vec4(vec3(0.05, 0.05, 0.0), vLitCircle.w);
         }
 
         gl_FragColor = texel * vec4(vColor * diffuse, opacity);

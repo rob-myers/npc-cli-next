@@ -451,8 +451,9 @@ export default function useHandleEvents(w) {
       w.floor.litCircle.set(
         controls.target.x,
         controls.target.z,
-        2.5,
-        1.0,
+        // 2.5,
+        controls.getDistance() / 5,
+        0.7,
       );
     },
     onEnterDoorCollider(e) {// e.type === 'nearby'
