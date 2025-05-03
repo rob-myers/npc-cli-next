@@ -510,10 +510,11 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.8, .8, .8]}
+          diffuse={[1, 1, 1]}
 
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}
+
           // 🚧 move below to texture
           labelUvRect4={npc.gltfAux.labelUvRect4}
           breathTriIds={npc.gltfAux.breathTriIds}

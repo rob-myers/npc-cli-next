@@ -116,8 +116,10 @@
   - ✅ light circle has basic gradient
   - ✅ light circle moves with camera
     - ✅ fix shader code i.e. edge geomorphs are not full-height
-  - 🚧 light circle scales up and down
-  - 🚧 light circle opacity changes
+  - move Floor and Ceiling to separate shader
+  - provide inverse matrices as uniform (more efficient)
+  - light circle scales up and down
+  - light circle opacity changes
   - try radial gradient texture
   - support many lights e.g. via DataTexture or DataArrayTexture
   - remove post-processing

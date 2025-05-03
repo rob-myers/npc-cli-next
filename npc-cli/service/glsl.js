@@ -444,7 +444,9 @@ export const instancedMultiTextureShader = {
         // 🚧 provide inverse matrices in uniform?
         mat4 invertInstanceMatrix = inverse(instanceMatrix);
         vLitCircle = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
-        vLitCircle.y = vLitCircle.z * uvDimensions.y; // 🔔 edge geomorphs are not full-height
+        vLitCircle.y = vLitCircle.z;
+        vLitCircle *= vec4(uvDimensions, 1.0, 1.0);
+
         // compute scaled radius
         vLitCircle.z = radius * invertInstanceMatrix[0].x;
         // store opacity
