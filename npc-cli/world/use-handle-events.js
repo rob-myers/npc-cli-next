@@ -452,7 +452,7 @@ export default function useHandleEvents(w) {
         controls.target.x,
         controls.target.z,
         // 2.5,
-        controls.getDistance() / 5,
+        controls.getDistance() / 7,
         0.7,
       );
     },
