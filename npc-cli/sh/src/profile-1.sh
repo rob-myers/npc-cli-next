@@ -25,7 +25,7 @@ spawn '{ npcKey: "suit-guy", angle: Math.PI, skin: {
   "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
 }}' '{ x: 0.5 * 1.5, y: 5 * 1.5 }'
 
-spawn '{ npcKey: "policeman", angle: Math.PI, skin: {
+spawn '{ npcKey: "bad-lt", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
@@ -51,7 +51,7 @@ w n.rob.applyTint
 # w n.rob.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
 # w n.rob.resetTint
 
-w e.grantAccess . rob will kate suit-guy policeman
+w e.grantAccess . rob will kate suit-guy bad-lt
 
 # write selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
