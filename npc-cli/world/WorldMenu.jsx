@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { zIndexWorld } from "../service/const";
+import { isSmallViewport } from "../service/dom";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -271,7 +272,7 @@ export default function WorldMenu(props) {
   </>;
 }
 
-const defaultLoggerHeightPx = 100;
+const defaultLoggerHeightPx = isSmallViewport() ? 40 : 100;
 const defaultLoggerWidthPx = 800;
 /** Must be a factor of default height */
 const loggerHeightDelta = 20;
