@@ -136,7 +136,7 @@ export default function WorldView(props) {
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
     },
-    followPosition(dst, opts = { smoothTime: 0.8, y: 1.5 }) {
+    followPosition(dst, opts = { smoothTime: 0.3, y: 1.5, }) {
       // lock zoom
       state.controls.zoomToConstant = dst;
       /**
