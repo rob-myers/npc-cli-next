@@ -136,7 +136,7 @@ export default function WorldView(props) {
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
     },
-    followPosition(dst, opts = { smoothTime: 0.3, y: 1.5, }) {
+    followPosition(dst, opts = { smoothTime: 0.3 }) {
       // lock zoom
       state.controls.zoomToConstant = dst;
       /**
@@ -201,7 +201,7 @@ export default function WorldView(props) {
 
       try {
         const dst = toV3(point);
-        state.controls.zoomToConstant = dst;
+        // state.controls.zoomToConstant = dst;
         await state.tween({ look: dst, lookOpts: opts });
       } finally {
         if (state.dst.look === undefined) {
@@ -393,7 +393,8 @@ export default function WorldView(props) {
 
       if (state.dst.look !== undefined && state.down === null) {// look or follow
         const { look: target, lookOpts } = state.dst;
-        if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, lookOpts?.y ?? 1.5, 0.01) === false) {
+        // if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, lookOpts?.y ?? 1.5, 0.01) === false) {
+        if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, undefined, 0.01) === false) {
           state.resolve.look?.();
         }
         //@ts-ignore see patch i.e. fix azimuth angle
@@ -799,7 +800,6 @@ const statsCss = css`
  * @typedef LookAtOpts
  * @property {number} [maxSpeed]
  * @property {number} [smoothTime]
- * @property {number} [y]
 */
 
 const pixelBuffer = new Uint8Array(4);

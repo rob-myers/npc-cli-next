@@ -495,7 +495,7 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
   dz = Math.abs(current.z - target.z);
   dMax = Math.max(dx, dz);
   resX = dMax < eps ? false : damp(current, "x", v3d.x, smoothTime, deltaMs, maxSpeed * (dx / dMax), undefined, eps);
-  resY = damp(current, "y", y ?? v3d.y, smoothTime, deltaMs, maxSpeed, undefined, eps);
+  resY = y === undefined ? false : damp(current, "y", y, smoothTime, deltaMs, maxSpeed, undefined, eps);
   resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaMs, maxSpeed * (dz / dMax), undefined, eps);
   return resX || resY || resZ;
 }
