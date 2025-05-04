@@ -1,6 +1,6 @@
 awaitWorld
 
-spawn '{ npcKey: "rob" }' '{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+spawn '{ npcKey: "rob" }' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
 
 spawn '{ npcKey: "will", skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
@@ -94,12 +94,12 @@ setupOnSlowNpc
 # transition to fixed camera angle
 w update 'async w => {
   w.view.enableControls(false);
-  await w.view.tween({ azimuthal: 0, polar: Math.PI/4 });
+  await w.view.tween({ azimuthal: w.smallViewport ? 0 : Math.PI/4, polar: Math.PI/4 });
   w.view.enableControls(true);
-  await w.view.tween({ distance: 15 });
+  await w.view.tween({ distance: 10 });
 }'
 
-# fix camera angle and reduce maxDistance
+# on mobile fix camera angle and reduce maxDistance
 w update 'w => {
   if (w.smallViewport) {
     w.view.ctrlOpts.minAzimuthAngle = 0;
@@ -107,7 +107,11 @@ w update 'w => {
     w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
     w.view.ctrlOpts.maxDistance = 25;
   }
-  w.floor.lit = true; // 🔔 lighting
+  w.floor.lit = true; // 🔔 enable lighting
 }'
 
+# prevent zoom while look
+# 🔔 hacky, but controls save/restore can get sticky
+w update 'w => (w.view.controls.minDistance = w.view.controls.getDistance())'
 w e.lookAt rob
+w update 'w => (w.view.controls.minDistance = w.view.ctrlOpts.minDistance)'
