@@ -96,7 +96,7 @@ w update 'async w => {
   w.view.enableControls(false);
   await w.view.tween({ azimuthal: Math.PI/4, polar: Math.PI/4 });
   w.view.enableControls(true);
-  await w.view.tween({ distance: 25 });
+  await w.view.tween({ distance: 15 });
 }'
 
 # fix camera angle and reduce maxDistance
@@ -104,7 +104,7 @@ w update 'w => {
   w.view.ctrlOpts.minAzimuthAngle = Math.PI/4;
   w.view.ctrlOpts.maxAzimuthAngle = Math.PI/4;
   w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
-  w.view.ctrlOpts.maxDistance = 30;
+  w.view.ctrlOpts.maxDistance = 25;
   w.floor.lit = true; // 🔔 lighting
 }'
 

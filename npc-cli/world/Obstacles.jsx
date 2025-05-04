@@ -118,7 +118,7 @@ export default function Obstacles(props) {
         side={THREE.DoubleSide}
         transparent
         atlas={w.texObs.tex}
-        diffuse={[0.5, 0.5, 0.5]}
+        diffuse={[0.3, 0.3, 0.3]}
         objectPickRed={6}
         alphaTest={0.5}
       />

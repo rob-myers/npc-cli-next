@@ -451,7 +451,7 @@ export default function useHandleEvents(w) {
       w.floor.litCircle.set(
         controls.target.x,
         controls.target.z,
-        controls.getDistance() / 7,
+        controls.getDistance() / 4,
         0.75,
       );
     },

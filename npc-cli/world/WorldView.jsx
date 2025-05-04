@@ -25,7 +25,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 30, 0],
+    camInitPos: [0, 15, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -34,8 +34,8 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 12,
-      maxDistance: 32,
+      minDistance: 6,
+      maxDistance: 25,
       panSpeed: 2,
       zoomSpeed: 0.5,
     },
@@ -43,7 +43,7 @@ export default function WorldView(props) {
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 20,
+    fov: 40,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
