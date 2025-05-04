@@ -291,7 +291,7 @@ export const humanZeroShader = {
       vType = 3; // selector
     } else {
       vType = 1; // body
-      // vHeightShade = min(max(pow(position.y / labelY, 1.0) + 0.1, 0.4), 1.0);
+      vHeightShade = min(max(pow(position.y / labelY, .75) + 0.1, 0.4), 1.0);
     }
     
     vec3 transformed = vec3(position);
