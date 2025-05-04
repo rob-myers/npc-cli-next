@@ -122,6 +122,7 @@
   - provide inverse matrices as uniform (more efficient)
   - try radial gradient texture
   - remove post-processing
+  - fix issue with npc target height 1.5 but floor light target should be 0
   - npcs are lighter within light circle
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
