@@ -96,7 +96,6 @@ w update 'async w => {
   w.view.enableControls(false);
   await w.view.tween({ azimuthal: w.smallViewport ? 0 : Math.PI/4, polar: Math.PI/4 });
   w.view.enableControls(true);
-  await w.view.tween({ distance: 10 });
 }'
 
 # on mobile fix camera angle and reduce maxDistance
@@ -115,3 +114,4 @@ w update 'w => {
 w update 'w => (w.view.controls.minDistance = w.view.controls.getDistance())'
 w e.lookAt rob
 w update 'w => (w.view.controls.minDistance = w.view.ctrlOpts.minDistance)'
+w view.tween '{ distance: 10 }'
