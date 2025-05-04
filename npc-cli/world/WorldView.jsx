@@ -79,14 +79,8 @@ export default function WorldView(props) {
     },
     clearTweens() {// 🔔 does not stop follow
 
-      if (state.dst.look !== undefined && state.reject.look !== undefined) {
-        // stop looking (not following)
-        state.reject.look?.('cancelled look');
-        state.resolve.look = undefined;
-        state.reject.look = undefined;
-        delete state.dst.look; // 🔔
-      }
-
+      // stop looking (not following)
+      state.reject.look?.('cancelled look');
       state.reject?.distance?.('cancelled distance');
       state.reject?.fov?.('cancelled fov');
       state.reject?.polar?.('cancelled rotation: polar');
