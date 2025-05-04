@@ -188,7 +188,7 @@ export default function WorldView(props) {
     isPointerEventDrag(e) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
-    async lookAt(point, opts = { smoothTime: 0.4 }) {// look with "locked zoom"
+    async lookAt(point, opts = { smoothTime: 0.4, permitPaused: true }) {// look with "locked zoom"
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
@@ -196,7 +196,7 @@ export default function WorldView(props) {
       try {
         const dst = toV3(point);
         // state.controls.zoomToConstant = dst;
-        await state.tween({ look: dst, lookOpts: opts });
+        await state.tween({ look: dst, lookOpts: opts, permitPaused: opts.permitPaused });
       } finally {
         if (state.dst.look === undefined) {
           state.controls.zoomToConstant = null;
@@ -559,7 +559,7 @@ export default function WorldView(props) {
 
       }
 
-      if (w.disabled === true) {// can tween while paused
+      if (w.disabled === true && opts.permitPaused === true) {// can tween while paused
         state.tweenWhilePaused = true;
         state.syncRenderMode();
         w.timer.reset();
@@ -723,7 +723,7 @@ export default function WorldView(props) {
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
  * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
- * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
+ * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts & Pick<TweenOpts, 'permitPaused'>) => Promise<void>} lookAt
  * @property {(e?: THREE.Event) => void} onChangeControls
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
  * @property {() => void} onControlsEnd
@@ -742,14 +742,7 @@ export default function WorldView(props) {
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
- * @property {(opts: {
- *   fov?: number;
- *   distance?: number;
- *   look?: THREE.Vector3;
- *   azimuthal?: number;
- *   polar?: number;
- *   lookOpts?: LookAtOpts;
- * }) => Promise<void>} tween
+ * @property {(opts: TweenOpts) => Promise<void>} tween
  */
 
 const rootCss = css`
@@ -788,6 +781,18 @@ const statsCss = css`
  * @property {boolean} [justLongDown]
  * @property {Meta} meta
  * @property {THREE.Vector3Like} position
+*/
+
+/**
+ * @typedef TweenOpts
+ * @property {boolean} [permitPaused]
+ * Can this tween run whilst World is disabled?
+ * @property {number} [fov]
+ * @property {number} [distance]
+ * @property {THREE.Vector3} [look]
+ * @property {number} [azimuthal]
+ * @property {number} [polar]
+ * @property {LookAtOpts} [lookOpts]
 */
 
 /**

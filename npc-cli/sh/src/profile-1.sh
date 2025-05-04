@@ -94,7 +94,11 @@ setupOnSlowNpc
 # transition to fixed camera angle
 w update 'async w => {
   w.view.enableControls(false);
-  await w.view.tween({ azimuthal: w.smallViewport ? 0 : Math.PI/4, polar: Math.PI/4 });
+  await w.view.tween({
+    azimuthal: w.smallViewport ? 0 : Math.PI/4,
+    polar: Math.PI/4,
+    permitPaused: false,
+  });
   w.view.enableControls(true);
 }'
 
@@ -112,6 +116,6 @@ w update 'w => {
 # prevent zoom while look
 # 🔔 hacky, but controls save/restore can get sticky
 w update 'w => (w.view.controls.minDistance = w.view.controls.getDistance())'
-w e.lookAt rob
+w e.lookAt rob '{ permitPaused: false }'
 w update 'w => (w.view.controls.minDistance = w.view.ctrlOpts.minDistance)'
-w view.tween '{ distance: 10 }'
+w view.tween '{ distance: 10, permitPaused: false }'

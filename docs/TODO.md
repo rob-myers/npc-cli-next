@@ -120,12 +120,22 @@
   - ✅ light circle opacity can change
   - move Floor to separate shader
   - provide inverse matrices as uniform (more efficient)
-  - try radial gradient texture
   - remove post-processing
   - fix issue with npc target height 1.5 but floor light target should be 0
+  - try radial gradient texture
   - npcs are lighter within light circle
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
+
+- ✅ profile-1 tweens continue when should be paused
+  - `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
+  - ℹ️ can continue whilst initially paused inside profile,
+    BECAUSE tweens can run whilst paused too
+  - ✅ can explicitly specify `permitPaused: false`
+
+- `w`: support auto-cancel of promise-return-valued functions
+  - e.g. `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
+  - i.e. if return value is Promise can store reject in cleanups?
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
