@@ -1074,7 +1074,7 @@ export class Npc {
     }
 
     const strokeWidth = 5;
-    const fontHeight = 24; // permits > 12 chars on OSX Chrome
+    const fontHeight = 28; // permits > 12 chars on OSX Chrome
     ct.strokeStyle = 'black';
     ct.fillStyle = '#aaa';
     ct.lineWidth = strokeWidth;
