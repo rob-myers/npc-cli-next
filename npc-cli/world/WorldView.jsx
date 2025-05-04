@@ -98,7 +98,9 @@ export default function WorldView(props) {
       });
 
       state.syncRenderMode();
-      state.controls.zoomToConstant = null;
+      if (state.dst.look === undefined) {
+        state.controls.zoomToConstant = null;
+      }
       state.clearTargetDamping();
     },
     clearTargetDamping() {
@@ -202,7 +204,9 @@ export default function WorldView(props) {
         state.controls.zoomToConstant = dst;
         await state.tween({ look: dst, lookOpts: opts });
       } finally {
-        state.controls.zoomToConstant = null;
+        if (state.dst.look === undefined) {
+          state.controls.zoomToConstant = null;
+        }
       }
     },
     onChangeControls(_e) {
