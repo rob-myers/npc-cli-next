@@ -23,6 +23,7 @@ export default function Floor(props) {
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
     litCircle: w.floor.litCircle,
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
+    lit: false,
 
     addUvs() {
       const uvOffsets = /** @type {number[]} */ ([]);
@@ -145,6 +146,7 @@ export default function Floor(props) {
         diffuse={[1, 1, 1]}
         objectPickRed={2}
         alphaTest={0.5}
+        lit={state.lit}
         litCircle={state.litCircle}
         onUpdate={state.onUpdateMaterial}
       />
@@ -163,6 +165,7 @@ export default function Floor(props) {
  * @property {CanvasPattern} grid
  * @property {THREE.BufferGeometry} quad
  * @property {CanvasPattern} largeGrid
+ * @property {boolean} lit
  * @property {THREE.Vector4} litCircle Shader uniform `(cx, cz, radius, opacity)`
  *
  * @property {() => void} addUvs

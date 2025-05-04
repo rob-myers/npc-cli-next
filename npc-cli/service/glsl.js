@@ -414,6 +414,7 @@ export const humanZeroShader = {
 export const instancedMultiTextureShader = {
   Vert: /* glsl */`
 
+    uniform bool lit;
     uniform vec4 litCircle; // (cx, cz, r, opacity)
 
     attribute vec2 uvDimensions;
@@ -437,20 +438,18 @@ export const instancedMultiTextureShader = {
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
       
-      float radius = litCircle.z; // (cx, cz, r, opacity)
-      if (radius > 0.0) {
+      if (lit == true) {
+        // - litCircle is (cx, cz, r, opacity)
         // - instanceMatrix takes unit quad to e.g. "geomorph floor quad"
         // - transform (cx, cz) to (uv.x, uv.y)
-        // 🚧 provide inverse matrices in uniform?
+        // 🚧 provide inverse matrices in uniform
+
         mat4 invertInstanceMatrix = inverse(instanceMatrix);
-        float litCircleOpacity = litCircle.w;
-
-        vLitCircle = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
-        vLitCircle.y = vLitCircle.z;
-        vLitCircle *= vec4(uvDimensions, 1.0, 1.0);
-
-        vLitCircle.z = radius * invertInstanceMatrix[0].x; // compute scaled radius
-        vLitCircle.w = litCircleOpacity; // store opacity
+        vec4 transformedCenter = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
+        vLitCircle.x = transformedCenter.x * uvDimensions.x;
+        vLitCircle.y = transformedCenter.z * uvDimensions.y;
+        vLitCircle.z = litCircle.z * invertInstanceMatrix[0].x; // radius
+        vLitCircle.w = litCircle.w; // opacity
       }
 
       vec4 modelViewPosition = vec4(position, 1.0);
@@ -469,6 +468,7 @@ export const instancedMultiTextureShader = {
 
   Frag: /* glsl */`
 
+    uniform bool lit;
     uniform vec4 litCircle;
     uniform float alphaTest;
     uniform bool objectPick;
@@ -502,18 +502,13 @@ export const instancedMultiTextureShader = {
       } else {
         if (texel.a * opacity < alphaTest) discard;
         
-        float radius = vLitCircle.z;
-        if (radius > 0.0) {// 🔔 uvs within circle are lighter
+        if (lit == true) {// 🔔 uvs within circle are lighter
           vec2 origin = vLitCircle.xy;
+          float radius = vLitCircle.z;
           float dist = distance(vUv, origin);
           // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
-          
-          // if (dist <= radius) texel *= 1.6;
-          // if (dist <= radius) texel *= vec4(vec3(1.6), 1.0);
-          if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 1.6), vLitCircle.w);
-          if (dist <= radius * 0.8) texel *= vec4(vec3(1.1), vLitCircle.w);
-          // if (dist <= radius * 0.85) texel *= vec4(vec3(1.1), 1.0);
-          if (dist <= radius * 0.85) texel += vec4(vec3(0.02, 0.02, 0.0), vLitCircle.w);
+          if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
+          if (dist <= radius * 0.85) texel += vec4(vec3(0.02, 0.02, 0.0), 0.0);
         }
 
         gl_FragColor = texel * vec4(vColor * diffuse, opacity);
@@ -555,6 +550,7 @@ const instancedMultiTextureMaterialDefaultProps = {
   // map: null,
   // mapTransform: new THREE.Matrix3(),
   // colorSpace: false,
+  lit: false,
   litCircle: new THREE.Vector4(0, 0, 0, 0),
   objectPick: false,
   objectPickRed: 0,

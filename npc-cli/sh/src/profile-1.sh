@@ -105,6 +105,7 @@ w update 'w => {
   w.view.ctrlOpts.maxAzimuthAngle = Math.PI/4;
   w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
   w.view.ctrlOpts.maxDistance = 30;
+  w.floor.lit = true; // 🔔 lighting
 }'
 
 w e.lookAt rob

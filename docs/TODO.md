@@ -118,13 +118,12 @@
     - ✅ fix shader code i.e. edge geomorphs are not full-height
   - ✅ light circle scales up and down
   - ✅ light circle opacity can change
-  - move Floor and Ceiling to separate shader
+  - move Floor to separate shader
   - provide inverse matrices as uniform (more efficient)
   - try radial gradient texture
-  - try many lights e.g. via DataTexture or DataArrayTexture
-    - many fixed lights, which can be turned on/off altered
   - remove post-processing
   - npcs are lighter within light circle
+  - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
