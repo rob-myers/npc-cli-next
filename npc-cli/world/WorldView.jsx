@@ -69,7 +69,6 @@ export default function WorldView(props) {
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
     tweenWhilePaused: false,
-    zoomState: 'near', // 🚧 finer-grained
 
     canvasRef(canvasEl) {
       if (canvasEl !== null) {
@@ -192,7 +191,6 @@ export default function WorldView(props) {
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
-
       try {
         const dst = toV3(point);
         // state.controls.zoomToConstant = dst;
@@ -204,9 +202,6 @@ export default function WorldView(props) {
       }
     },
     onChangeControls(_e) {
-      const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
-      zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
-      state.zoomState = zoomState;
       // avoid event because too frequent
       w.e.onChangeControls(state.controls);
     },
@@ -712,7 +707,6 @@ export default function WorldView(props) {
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
  * @property {boolean} tweenWhilePaused Did we start tweening whilst paused?
- * @property {'near' | 'far'} zoomState
  *
  * @property {(x: import('postprocessing').EffectComposer | null) => void} effectComposerRef
  * @property {(enabled?: boolean) => void} enableControls Default `true`

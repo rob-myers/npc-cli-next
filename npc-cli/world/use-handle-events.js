@@ -209,8 +209,6 @@ export default function useHandleEvents(w) {
       }
 
       switch (e.key) {
-        case "changed-zoom": // 'near' or 'far'
-          break;
         case "controls-start":
           w.menu.setPreventDraggable(true);
           w.cm.draggable.el.style.pointerEvents = 'none';
@@ -447,6 +445,12 @@ export default function useHandleEvents(w) {
       );
     },
     onChangeControls(controls) {
+      // 🚧 on zoom out brighten obstacles/decor etc.
+
+      // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
+      // zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
+      // state.zoomState = zoomState;
+
       w.floor.litCircle.set(
         controls.target.x,
         controls.target.z,
