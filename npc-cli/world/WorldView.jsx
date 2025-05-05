@@ -13,6 +13,7 @@ import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, toXZ, u
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
 import { WorldContext } from "./world-context.js";
 import useStateRef from "../hooks/use-state-ref.js";
+import useUpdate from "../hooks/use-update.js";
 import NpcSpeechBubbles from "./NpcSpeechBubbles.jsx";
 import { ContextMenu } from "./ContextMenu.jsx";
 
@@ -64,6 +65,7 @@ export default function WorldView(props) {
 
     canTweenPaused: true,
     didTweenPaused: false,
+    lockedDistance: { min: 0, max: 0, current: 0 },
 
     canvasRef(canvasEl) {
       if (canvasEl !== null) {
@@ -172,6 +174,16 @@ export default function WorldView(props) {
     },
     isPointerEventDrag(e) {
       return e.distancePx > (e.touch ? 20 : 5);
+    },
+    lockDistance() {
+      const distance = state.controls.getDistance();
+      state.lockedDistance = {
+        current: distance,
+        min: state.controls.minDistance,
+        max: state.controls.maxDistance,
+      };
+      state.ctrlOpts.minDistance = state.ctrlOpts.maxDistance = distance;
+      update();
     },
     async lookAt(point, opts = { smoothTime: 0.4 }) {// look with "locked zoom"
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
@@ -549,6 +561,14 @@ export default function WorldView(props) {
 
       await Promise.all(promises);
     },
+    unlockDistance() {
+      if (state.lockedDistance !== null) {
+        state.ctrlOpts.minDistance = state.lockedDistance.min;
+        state.ctrlOpts.maxDistance = state.lockedDistance.max;
+        state.lockedDistance = null;
+        update();
+      }
+    },
   }), { reset: { ctrlOpts: false } });
 
   w.view = state;
@@ -560,6 +580,8 @@ export default function WorldView(props) {
     }
     state.pickingScene.onAfterRender = state.renderObjectPickScene;
   }, [state.controls]);
+
+  const update = useUpdate();
 
   return (
     <Canvas
@@ -670,6 +692,7 @@ export default function WorldView(props) {
  * @property {HTMLDivElement} rootEl
  * @property {boolean} canTweenPaused Can we start tweening whilst paused?
  * @property {boolean} didTweenPaused Did we start tweening whilst paused?
+ * @property {null | { min: number; max: number; current: number }} lockedDistance
  *
  * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
@@ -679,6 +702,7 @@ export default function WorldView(props) {
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
  * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
+ * @property {() => void} lockDistance
  * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
  * @property {(e?: THREE.Event) => void} onChangeControls
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
@@ -699,6 +723,7 @@ export default function WorldView(props) {
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu
  * @property {(opts: TweenOpts) => Promise<void>} tween
+ * @property {() => void} unlockDistance
  */
 
 const rootCss = css`

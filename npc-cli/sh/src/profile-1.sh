@@ -113,12 +113,9 @@ w update 'async w => {
   w.floor.lit = true; // 🔔 enable lighting
   w.update();
 
-  // prevent zoom-in while look (hacky)
-  const { minDistance } = w.view.controls;
-  w.view.controls.minDistance = w.view.controls.getDistance();
-  await w.e.lookAt("rob").finally(
-    () => w.view.controls.minDistance = minDistance
-  );
+  // prevent zoom-in while look
+  w.view.lockDistance();
+  await w.e.lookAt("rob").finally(w.view.unlockDistance);
   
   await w.view.tween({ distance: 10 });
 
