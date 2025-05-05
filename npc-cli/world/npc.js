@@ -1256,7 +1256,8 @@ const staticCollisionQueryRange = 1.25;
 const movingCollisionQueryRange = 1.5;
 
 const preOffMeshCloseDist = helper.defaults.radius;
-const preOffMeshCloserDist = helper.defaults.radius;
+// 🔔 stationary npc more permissive during preOffMeshConnection
+const preOffMeshCloserDist = helper.defaults.radius / 2;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
