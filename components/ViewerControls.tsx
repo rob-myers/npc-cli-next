@@ -7,7 +7,13 @@ import debounce from "debounce";
 import useSite from "./site.store";
 import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import { getNavWidth, isSmallView } from "./layout";
+import { isTouchDevice } from "@/npc-cli/service/dom";
+import { tryLocalStorageSet } from "@/npc-cli/service/generic";
+import { localStorageKey } from "@/npc-cli/service/const";
 
+import useLongPress from "@/npc-cli/hooks/use-long-press";
+import useUpdate from "@/npc-cli/hooks/use-update";
+import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import { type State, viewerBaseCssVar } from "./Viewer";
 import {
   FontAwesomeIcon,
@@ -19,64 +25,25 @@ import {
   faCirclePlay,
 } from "./Icon";
 
-import { isTouchDevice } from "@/npc-cli/service/dom";
-import useLongPress from "@/npc-cli/hooks/use-long-press";
-import useUpdate from "@/npc-cli/hooks/use-update";
-import useStateRef from "@/npc-cli/hooks/use-state-ref";
-import { tryLocalStorageSet } from "@/npc-cli/service/generic";
-import { localStorageKey } from "@/npc-cli/service/const";
 
 export default function ViewerControls({ api }: Props) {
   const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
 
   const state = useStateRef(() => ({
+    dragOffset: null as null | number,
+    showReset: false,
+
+    getViewerBase() {
+      const percentage = api.rootEl.style.getPropertyValue(viewerBaseCssVar);
+      return percentage === null ? null : parseFloat(percentage);
+    },
     onLongReset() {
       api.tabs.hardReset();
       api.update(); // show "interact"
     },
-    onReset: debounce(() => {
-      api.tabs.reset();
-      api.update(); // show "interact"
-    }, 300),
-    toggleEnabled() {
-      api.tabs.toggleEnabled();
-      update();
-    },
     onMaximize() {
       state.setViewerBase(100);
       useSite.api.toggleView(true);
-    },
-    dragOffset: null as null | number,
-    onDragStart(e: React.PointerEvent) {
-      // console.log("drag start");
-      if (!(e.target as HTMLElement).matches(".viewer-buttons")) {
-        return;
-      }
-      if (state.dragOffset !== null) {
-        state.onDragEnd(e.nativeEvent);
-        return;
-      }
-
-      state.dragOffset = isSmallView()
-        ? api.rootEl.getBoundingClientRect().y - e.clientY
-        : api.rootEl.getBoundingClientRect().x - e.clientX;
-
-      document.documentElement.classList.add(
-        isSmallView() ? "cursor-row-resize" : "cursor-col-resize"
-      );
-      // trigger main overlay (iframe can get in the way of body)
-      useSite.setState({ draggingView: true });
-      document.body.addEventListener("pointermove", state.onDrag);
-      document.body.addEventListener("pointerup", state.onDragEnd);
-      if (!isTouchDevice()) {
-        document.body.addEventListener("pointerleave", state.onDragEnd);
-      }
-      api.rootEl.style.transition = `min-width 0s, min-height 0s`;
-
-      if (useSite.api.isViewClosed()) {
-        api.rootEl.style.setProperty(viewerBaseCssVar, `${0}%`);
-        useSite.api.toggleView(true);
-      }
     },
     onDrag(e: PointerEvent) {
       if (state.dragOffset === null) {
@@ -111,10 +78,46 @@ export default function ViewerControls({ api }: Props) {
         }
       }
     },
-    getViewerBase() {
-      const percentage = api.rootEl.style.getPropertyValue(viewerBaseCssVar);
-      return percentage === null ? null : parseFloat(percentage);
+    onDragStart(e: React.PointerEvent) {
+      // console.log("drag start");
+      if (!(e.target as HTMLElement).matches(".viewer-buttons")) {
+        return;
+      }
+      if (state.dragOffset !== null) {
+        state.onDragEnd(e.nativeEvent);
+        return;
+      }
+
+      state.dragOffset = isSmallView()
+        ? api.rootEl.getBoundingClientRect().y - e.clientY
+        : api.rootEl.getBoundingClientRect().x - e.clientX;
+
+      document.documentElement.classList.add(
+        isSmallView() ? "cursor-row-resize" : "cursor-col-resize"
+      );
+      // trigger main overlay (iframe can get in the way of body)
+      useSite.setState({ draggingView: true });
+      document.body.addEventListener("pointermove", state.onDrag);
+      document.body.addEventListener("pointerup", state.onDragEnd);
+      if (!isTouchDevice()) {
+        document.body.addEventListener("pointerleave", state.onDragEnd);
+      }
+      api.rootEl.style.transition = `min-width 0s, min-height 0s`;
+
+      if (useSite.api.isViewClosed()) {
+        api.rootEl.style.setProperty(viewerBaseCssVar, `${0}%`);
+        useSite.api.toggleView(true);
+      }
     },
+    onPreReset() {
+      state.showReset = true;
+      setTimeout(() => (state.showReset = false, update()), 3000);
+      update();
+    },
+    onReset: debounce(() => {
+      api.tabs.reset();
+      api.update(); // show "interact"
+    }, 300),
     setViewerBase(percentage: number) {
       percentage = Math.max(0, Math.min(100, percentage));
       api.rootEl.style.setProperty(viewerBaseCssVar, `${percentage}%`);
@@ -135,6 +138,10 @@ export default function ViewerControls({ api }: Props) {
         }
       }
 
+    },
+    toggleEnabled() {
+      api.tabs.toggleEnabled();
+      update();
     },
   }));
 
@@ -165,16 +172,42 @@ export default function ViewerControls({ api }: Props) {
       <button
         title={api.tabs.enabled ? "pause tabs" : "enable tabs"}
         onClick={state.toggleEnabled}
+        className="top-level"
       >
         <FontAwesomeIcon icon={api.tabs.enabled ? faCirclePauseThin : faCirclePlay} size="1x" />
       </button>
-      <button title="reset tabs" {...resetHandlers}>
-        <FontAwesomeIcon icon={faRefreshThin} size="1x" />
-      </button>
-      <button title="max/min tabs" onClick={state.onMaximize}>
+
+      {/* 🚧 click shows confirm */}
+      {/* 🚧 confirm expires after timeout */}
+      <div className="reset-container">
+        <button
+          className="top-level"
+          title="reset tabs"
+          onClick={state.onPreReset}
+        >
+          <FontAwesomeIcon icon={faRefreshThin} size="1x" />
+        </button>
+        {state.showReset && <button
+          className="confirm-reset"
+          {...resetHandlers}
+        >
+          reset
+        </button>}
+      </div>
+
+      <button
+        className="top-level"
+        title="max/min tabs"
+        onClick={state.onMaximize}
+      >
         <FontAwesomeIcon icon={faExpandThin} size="1x" />
       </button>
-      <button onClick={() => state.toggleCollapsed()}>
+
+
+      <button
+        className="top-level"
+        onClick={() => state.toggleCollapsed()}
+      >
         <FontAwesomeIcon
           icon={faChevronRight}
           size="1x"
@@ -265,7 +298,7 @@ const buttonsCss = css`
   }
 
   // each control is a button
-  button {
+  button.top-level {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -288,7 +321,7 @@ const buttonsCss = css`
   }
 
   // toggle Viewer
-  button:last-child {
+  > button:last-child {
     @media (min-width: ${afterBreakpoint}) {
       height: ${view.barSize};
       height: 4rem;
@@ -297,5 +330,28 @@ const buttonsCss = css`
       transform: rotate(90deg);
       margin-right: 0.5rem;
     }
+  }
+  
+  .reset-container {
+    position: relative;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .confirm-reset {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 1px;
+    font-size: small;
+    background-color: rgba(50, 50, 50, 1);
+    animation: fadeIn ease-in 0.5s, fadeOut 0.5s ease-out 2s forwards;
   }
 `;
