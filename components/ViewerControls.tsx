@@ -191,7 +191,7 @@ export default function ViewerControls({ api }: Props) {
           className="confirm-reset"
           {...resetHandlers}
         >
-          reset
+          reset?
         </button>}
       </div>
 
@@ -351,7 +351,9 @@ const buttonsCss = css`
     width: 100%;
     top: 1px;
     font-size: small;
-    background-color: rgba(50, 50, 50, 1);
-    animation: fadeIn ease-in 0.5s forwards, fadeOut 0.5s ease-out 2s forwards;
+    color: rgba(255, 150, 150, 1);
+    background-color: rgba(0, 0, 0, 1);
+    opacity: 0;
+    animation: fadeIn ease-in 0.3s forwards, fadeOut 0.3s ease-out 2.4s forwards;
   }
 `;
