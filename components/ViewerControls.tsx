@@ -352,6 +352,6 @@ const buttonsCss = css`
     top: 1px;
     font-size: small;
     background-color: rgba(50, 50, 50, 1);
-    animation: fadeIn ease-in 0.5s, fadeOut 0.5s ease-out 2s forwards;
+    animation: fadeIn ease-in 0.5s forwards, fadeOut 0.5s ease-out 2s forwards;
   }
 `;
