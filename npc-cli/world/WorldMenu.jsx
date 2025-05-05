@@ -39,7 +39,6 @@ export default function WorldMenu(props) {
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    showPostProcessing: w.view.post.enabled,
     xRayOpacity: 4, // [1..10]
 
     applyControlsInitValues() {
@@ -47,7 +46,7 @@ export default function WorldMenu(props) {
       const toEvent = (value) => /** @type {React.ChangeEvent<HTMLInputElement>} */ ({ currentTarget: { value, checked: value } });
       state.onChangeBrightness(toEvent(state.brightness))
       state.onChangeXRay(toEvent(state.xRayOpacity));
-      state.onChangePostProcessing(toEvent(state.showPostProcessing));
+      state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
       state.onResizeLoggerHeight(toEvent(state.loggerHeight));
       state.onResizeLoggerWidth(toEvent(state.loggerWidth));
     },
@@ -71,9 +70,8 @@ export default function WorldMenu(props) {
       tryLocalStorageSet(`logger:debug@${w.key}`, `${state.showDebug}`);
       update();
     },
-    onChangePostProcessing(e) {
-      state.showPostProcessing = w.view.post.enabled = e.currentTarget.checked;
-      tryLocalStorageSet(`post-processing:enabled@${w.key}`, `${state.showPostProcessing}`);
+    onChangeCanTweenPaused(e) {
+      w.view.canTweenPaused = e.currentTarget.checked;
       w.update();
     },
     onChangeXRay(e) {
@@ -235,11 +233,11 @@ export default function WorldMenu(props) {
               />
             </label>
             <label>
-              effects
+              tween paused
               <input
                 type="checkbox"
-                defaultChecked={state.showPostProcessing}
-                onChange={state.onChangePostProcessing}
+                onChange={state.onChangeCanTweenPaused}
+                checked={w.view.canTweenPaused}
               />
             </label>
           </div>
@@ -460,12 +458,11 @@ const cssTtyDisconnectedMessage = css`
  * @property {number} loggerWidthDelta
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
- * @property {boolean} showPostProcessing
  * @property {number} xRayOpacity In [1..10]
  *
  * @property {() => void} applyControlsInitValues
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangePostProcessing
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness

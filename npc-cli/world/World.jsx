@@ -111,7 +111,7 @@ export default function World(props) {
       // 🚧 move to w.view.onPausedTick
       state.timer.update();
       if (
-        state.view.tweenWhilePaused === true &&
+        state.view.didTweenPaused === true &&
         Object.keys(state.view.dst).length > 0 // 🚧
       ) {
         state.view.onTick(state.timer.getDelta());
@@ -339,7 +339,7 @@ export default function World(props) {
     state.view.syncRenderMode();
     if (!state.disabled) {
       state.onTick();
-      state.view.tweenWhilePaused = false;
+      state.view.didTweenPaused = false;
     }
     state.events.next({ key: state.disabled ? 'disabled' : 'enabled' });
     return () => state.stopTick();

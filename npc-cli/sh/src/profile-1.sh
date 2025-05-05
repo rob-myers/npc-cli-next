@@ -93,17 +93,17 @@ setupOnSlowNpc
 
 # transition to fixed camera angle
 w update 'async w => {
-  w.view.enableControls(false);
+  w.view.canTweenPaused = false;
+  w.update();
+  
   await w.view.tween({
     azimuthal: w.smallViewport ? 0 : Math.PI/6,
     polar: Math.PI/4,
-    permitPaused: false,
   });
-  w.view.enableControls(true);
 }'
 
-# on mobile fix camera angle and reduce maxDistance
-w update 'w => {
+# on mobile fix camera angle, look at rob
+w update 'async w => {
   if (w.smallViewport) {
     w.view.ctrlOpts.minAzimuthAngle = 0;
     w.view.ctrlOpts.maxAzimuthAngle = 0;
@@ -111,11 +111,16 @@ w update 'w => {
     w.view.ctrlOpts.maxDistance = 25;
   }
   w.floor.lit = true; // 🔔 enable lighting
-}'
+  w.update();
 
-# prevent zoom while look
-# 🔔 hacky, but controls save/restore can get sticky
-w update 'w => (w.view.controls.minDistance = w.view.controls.getDistance())'
-w e.lookAt rob '{ permitPaused: false }'
-w update 'w => (w.view.controls.minDistance = w.view.ctrlOpts.minDistance)'
-w view.tween '{ distance: 10, permitPaused: false }'
+  // prevent zoom-in while look (hacky)
+  const { minDistance } = w.view.controls;
+  w.view.controls.minDistance = w.view.controls.getDistance();
+  await w.e.lookAt("rob").finally(
+    () => w.view.controls.minDistance = minDistance
+  );
+  
+  await w.view.tween({ distance: 10 });
+
+  w.view.canTweenPaused = true;
+}'

@@ -4,8 +4,6 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
-import { EffectComposer, Vignette, BrightnessContrast } from '@react-three/postprocessing'
-import { BlendFunction, Effect } from 'postprocessing'
 
 import { debug, keys, tryLocalStorageGetParsed } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
@@ -59,16 +57,13 @@ export default function WorldView(props) {
       mat3: new THREE.Matrix3(),
     },
     pickingScene: new THREE.Scene(),
-    post: {
-      enabled: tryLocalStorageGetParsed(`post-processing:enabled@${w.key}`) ?? (isSmallViewport() === false),
-      ref: null,
-      effect: {},
-    },
     raycaster: new THREE.Raycaster(),
     resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
-    tweenWhilePaused: false,
+
+    canTweenPaused: true,
+    didTweenPaused: false,
 
     canvasRef(canvasEl) {
       if (canvasEl !== null) {
@@ -116,15 +111,6 @@ export default function WorldView(props) {
       const normalMatrix = mat3.getNormalMatrix(mesh.matrixWorld);
       output.applyNormalMatrix(normalMatrix);
       return output;
-    },
-    effectComposerRef(ref) {
-      state.post.ref = ref;
-      Object.keys(state.post.effect).forEach(name => delete state.post.effect[name]);
-      if (state.post.ref !== null) {
-        const effectPass = /** @type {*} */ (state.post.ref.passes[1]);
-        const effects = /** @type {Effect[]} */ (effectPass?.effects);
-        effects?.forEach(effect => state.post.effect[effect.name] = effect);
-      }
     },
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
@@ -187,14 +173,14 @@ export default function WorldView(props) {
     isPointerEventDrag(e) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
-    async lookAt(point, opts = { smoothTime: 0.4, permitPaused: true }) {// look with "locked zoom"
+    async lookAt(point, opts = { smoothTime: 0.4 }) {// look with "locked zoom"
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
       try {
         const dst = toV3(point);
         // state.controls.zoomToConstant = dst;
-        await state.tween({ look: dst, lookOpts: opts, permitPaused: opts.permitPaused });
+        await state.tween({ look: dst, lookOpts: opts });
       } finally {
         if (state.dst.look === undefined) {
           state.controls.zoomToConstant = null;
@@ -493,7 +479,7 @@ export default function WorldView(props) {
     },
     syncRenderMode() {
       if (w.disabled === true && !(
-        state.tweenWhilePaused === true && Object.keys(state.resolve).length > 0
+        state.didTweenPaused === true && Object.keys(state.resolve).length > 0
       )) {
         w.r3f?.set({ frameloop: 'demand' });
         return 'demand';
@@ -554,8 +540,8 @@ export default function WorldView(props) {
 
       }
 
-      if (w.disabled === true && opts.permitPaused === true) {// can tween while paused
-        state.tweenWhilePaused = true;
+      if (w.disabled === true && state.canTweenPaused === true) {
+        state.didTweenPaused = true;
         state.syncRenderMode();
         w.timer.reset();
         w.onDebugTick();
@@ -626,25 +612,6 @@ export default function WorldView(props) {
 
       <NpcSpeechBubbles/>
 
-      <EffectComposer
-        ref={state.effectComposerRef}
-        enabled={state.post.enabled}
-        key={w.crowd === null ? 'empty' : 'non-empty'}
-      >
-        {w.crowd === null ? [] : <>
-          {/* <BrightnessContrast
-            brightness={-0.3}
-            contrast={0.1}
-          />
-          <Vignette
-            eskil={false}
-            offset={0.3}
-            darkness={1.3}
-            blendFunction={BlendFunction.NORMAL}
-          /> */}
-        </>}
-      </EffectComposer>
-
     </Canvas>
   );
 }
@@ -676,11 +643,6 @@ export default function WorldView(props) {
  * @property {Partial<Record<'brightness' | 'sepia', string>>} cssFilter
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
- * @property {{
- *   ref: import('postprocessing').EffectComposer | null;
- *   enabled: boolean;
- *   effect: Record<string, import('postprocessing').Effect>
- * }} post EffectComposer
  * 
  * @property {{
  *   azimuthal?: number;
@@ -706,9 +668,9 @@ export default function WorldView(props) {
  * - follow has `resolve.look` undefined i.e. never resolves
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
- * @property {boolean} tweenWhilePaused Did we start tweening whilst paused?
+ * @property {boolean} canTweenPaused Can we start tweening whilst paused?
+ * @property {boolean} didTweenPaused Did we start tweening whilst paused?
  *
- * @property {(x: import('postprocessing').EffectComposer | null) => void} effectComposerRef
  * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
@@ -717,7 +679,7 @@ export default function WorldView(props) {
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
  * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
- * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts & Pick<TweenOpts, 'permitPaused'>) => Promise<void>} lookAt
+ * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
  * @property {(e?: THREE.Event) => void} onChangeControls
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
  * @property {() => void} onControlsEnd
@@ -779,7 +741,6 @@ const statsCss = css`
 
 /**
  * @typedef TweenOpts
- * @property {boolean} [permitPaused]
  * Can this tween run whilst World is disabled?
  * @property {number} [fov]
  * @property {number} [distance]
