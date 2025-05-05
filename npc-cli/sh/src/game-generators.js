@@ -315,7 +315,7 @@ export async function* w(ctxt) {
   if (stdin !== true) {
     const func = api.generateSelector(
       api.parseFnOrStr(args[0]),
-      args.slice(1).map(x => api.parseJsArg(x)),
+      args.slice(1).map(api.parseJsArg),
     );
     const v = func(w, ctxt);
     yield v instanceof Promise ? Promise.race([v, getHandleProm()]) : v;

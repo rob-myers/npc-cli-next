@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 
-import { debug, keys, tryLocalStorageGetParsed } from "../service/generic.js";
+import { debug, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isSmallViewport, isTouchDevice } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
