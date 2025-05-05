@@ -39,7 +39,8 @@ export default function ViewerControls({ api }: Props) {
     },
     onLongReset() {
       api.tabs.hardReset();
-      api.update(); // show "interact"
+      state.showReset = false;
+      update();
     },
     onMaximize() {
       state.setViewerBase(100);
@@ -116,7 +117,8 @@ export default function ViewerControls({ api }: Props) {
     },
     onReset: debounce(() => {
       api.tabs.reset();
-      api.update(); // show "interact"
+      state.showReset = false;
+      update();
     }, 300),
     setViewerBase(percentage: number) {
       percentage = Math.max(0, Math.min(100, percentage));
@@ -177,8 +179,6 @@ export default function ViewerControls({ api }: Props) {
         <FontAwesomeIcon icon={api.tabs.enabled ? faCirclePauseThin : faCirclePlay} size="1x" />
       </button>
 
-      {/* 🚧 click shows confirm */}
-      {/* 🚧 confirm expires after timeout */}
       <div className="reset-container">
         <button
           className="top-level"
@@ -187,12 +187,12 @@ export default function ViewerControls({ api }: Props) {
         >
           <FontAwesomeIcon icon={faRefreshThin} size="1x" />
         </button>
-        {state.showReset && <button
-          className="confirm-reset"
+        <button
+          className={cx("confirm-reset", { show: state.showReset })}
           {...resetHandlers}
         >
           reset?
-        </button>}
+        </button>
       </div>
 
       <button
@@ -347,13 +347,21 @@ const buttonsCss = css`
 
   .confirm-reset {
     position: absolute;
-    height: 100%;
-    width: 100%;
     top: 1px;
+    left: 1px;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
     font-size: small;
     color: rgba(255, 150, 150, 1);
     background-color: rgba(0, 0, 0, 1);
+
+    transition: opacity 300ms;
     opacity: 0;
-    animation: fadeIn ease-in 0.3s forwards, fadeOut 0.3s ease-out 2.4s forwards;
+    pointer-events: none;
+    
+    &.show {
+      opacity: 1;
+      pointer-events: all;
+    }
   }
 `;
