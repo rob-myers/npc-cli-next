@@ -73,7 +73,7 @@ export class Npc {
     labelY: 0,
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
-    lookSecs: 0.5,
+    lookSecs: lookSecsNoTarget,
     /** An offMeshConnection traversal */
     offMesh: /** @type {null | NPC.OffMeshState} */ (null),
     opacity: 1,
@@ -1030,6 +1030,7 @@ export class Npc {
     const nei = agent.raw.get_neis(0); // 0th closest
     const other = this.w.npc.byAgId[nei.idx];
     if (other.s.target === null || nei.dist > (other.s.run === true ? 0.8 : 0.6)) {// 🔔
+      this.s.lookAngleDst = null; // 🔔 won't clear this.rotation.__damp
       return;
     }
     
@@ -1171,7 +1172,7 @@ export class Npc {
       return;
     }
 
-    this.s.lookSecs = 0.5;
+    this.s.lookSecs = lookSecsNoTarget;
     this.s.lookAngleDst = null;
     this.s.permitTurn = true;
     this.s.slowBegin = null;
@@ -1258,6 +1259,8 @@ const movingCollisionQueryRange = 1.5;
 const preOffMeshCloseDist = helper.defaults.radius;
 // 🔔 stationary npc more permissive during preOffMeshConnection
 const preOffMeshCloserDist = helper.defaults.radius / 2;
+
+const lookSecsNoTarget = 0.75;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
