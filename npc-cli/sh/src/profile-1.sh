@@ -95,7 +95,7 @@ setupOnSlowNpc
 w update 'async w => {
   w.view.enableControls(false);
   await w.view.tween({
-    azimuthal: w.smallViewport ? 0 : Math.PI/4,
+    azimuthal: w.smallViewport ? 0 : Math.PI/6,
     polar: Math.PI/4,
     permitPaused: false,
   });
