@@ -35,6 +35,8 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
       rootOrientationVertical,
       // tabEnableClose: false,
       tabEnableClose: true,
+      tabSetMinHeight: 100,
+      tabSetMinWidth: 200,
       tabSetEnableDivide: !isTouchDevice(),
       enableEdgeDock: !isTouchDevice(),
       splitterExtra: 12,

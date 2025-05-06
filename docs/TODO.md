@@ -75,8 +75,10 @@
       - ✅ fix/clarify createOrRestoreJsonModel Error
         - removed it
       - ✅ localStorage remembers tabset, including resets
-      - close tab should select some other tab in tabset
-      - support HMR update tabset somehow
+      - 🚧 close tab should select some other tab in tabset
+        - repro?
+      - ✅ support HMR update tabset somehow
+        - we sync PROFILE via profileKey
       - clean hard-coded initialization in `<Root>`
   - more content
   - mention Starship Geomorphs early
