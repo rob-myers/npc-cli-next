@@ -29,8 +29,9 @@ export default function Root({ children }: React.PropsWithChildren) {
   React.useEffect(() => {
 
     // 🚧 move elsewhere
-    useSite.api.restoreLayoutFallback(
-    // useSite.api.setTabset(
+    // 🚧 saw issue with stale PROFILE i.e. we need PROFILE to update onchange profile-1.sh
+    // useSite.api.restoreLayoutFallback(
+    useSite.api.setTabset(
       createLayoutFromBasicLayout([[
         {
           type: "component",
@@ -53,8 +54,8 @@ export default function Root({ children }: React.PropsWithChildren) {
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]])
-    , { preserveRestore: false });
-    // , { overwrite: false });
+    // , { preserveRestore: false });
+    , { overwrite: true });
 
     useSite.api.initiateBrowser();
   }, []);

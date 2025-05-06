@@ -234,7 +234,7 @@
   - ✅ `export metadata` approach can replace frontmatter
   - ✅ /blog2 -> /blog1 and remove `next-remote-mdx`
 
-- 🚧 @napi-rs/canvas `&quot;` issue
+- ❌ @napi-rs/canvas `&quot;` issue
   - https://github.com/Brooooooklyn/canvas/issues/1029
   - https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
   - `skia-canvas` issues:
@@ -243,6 +243,13 @@
   - ✅ find a fix which removes them e.g. `url(&quot;#foo&quot;)` -> `url(#foo)`
     - `yarn test-svg-to-png media/debug/test-gradient-fill.svg`
   - ❌ prefer BoxySVG fix rather than apply our fix (for the moment)
+  - apparently an upstream issue
+    - https://skia.googlesource.com/skia/
+
+- 🚧 issue with stale PROFILE
+  - we need PROFILE to update onchange profile-1.sh
+  - can force via `useSite.api.setTabset(..., { overwrite: true })`
+  - BUT we should also be updating PROFILE when "linked to file" e.g. profile-1.sh
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
