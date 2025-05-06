@@ -1029,15 +1029,20 @@ export class Npc {
 
     const nei = agent.raw.get_neis(0); // 0th closest
     const other = this.w.npc.byAgId[nei.idx];
-    if (other.s.target === null || nei.dist > (other.s.run === true ? 0.8 : 0.6)) {// 🔔
-      this.s.lookAngleDst = null; // 🔔 won't clear this.rotation.__damp
+
+    if (other.s.target === null) {
       return;
     }
+
+    // 🚧 rethink e.g. this.rotation.__damp
+    if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
+      this.s.lookAngleDst = null;
+    } else {// turn towards "closest neighbour" if they have a target
+      this.s.lookAngleDst = this.getEulerAngle(
+        geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
+      );
+    }
     
-    // turn towards "closest neighbour" if they have a target
-    this.s.lookAngleDst = this.getEulerAngle(
-      geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
-    );
   }
 
   resetSkin() {
