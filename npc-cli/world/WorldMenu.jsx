@@ -233,7 +233,7 @@ export default function WorldMenu(props) {
               />
             </label>
             <label>
-              tween paused
+              paused-tweens
               <input
                 type="checkbox"
                 onChange={state.onChangeCanTweenPaused}
