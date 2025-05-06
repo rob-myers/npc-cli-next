@@ -218,6 +218,18 @@ export default function WorldView(props) {
       w.r3f = /** @type {typeof w['r3f']} */ (rootState);
       w.update(); // e.g. show stats
     },
+    onPausedTick() {
+      w.timer.update();
+      if (
+        state.didTweenPaused === true &&
+        Object.keys(state.dst).length > 0 // 🚧 use Set?
+      ) {
+        state.onTick(w.timer.getDelta());
+        w.reqAnimId = requestAnimationFrame(state.onPausedTick);
+      } else if (w.disabled === true) {
+        w.stopTick();
+      }
+    },
     onObjectPickPixel(e, pixel) {// 🔔 references `w.e`
       
       state.lastDown = undefined; // overwritten below on successful raycast
@@ -556,7 +568,7 @@ export default function WorldView(props) {
         state.didTweenPaused = true;
         state.syncRenderMode();
         w.timer.reset();
-        w.onDebugTick();
+        state.onPausedTick();
       }
 
       await Promise.all(promises);
@@ -708,6 +720,7 @@ export default function WorldView(props) {
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
  * @property {() => void} onControlsEnd
  * @property {() => void} onControlsStart
+ * @property {() => void} onPausedTick
  * @property {(e: React.PointerEvent<HTMLElement>) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerLeave
  * @property {(e: React.PointerEvent) => void} onPointerMove

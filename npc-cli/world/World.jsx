@@ -108,19 +108,7 @@ export default function World(props) {
       }
       return ready;
     },
-    onDebugTick() {
-      // 🚧 move to w.view.onPausedTick
-      state.timer.update();
-      if (
-        state.view.didTweenPaused === true &&
-        Object.keys(state.view.dst).length > 0 // 🚧
-      ) {
-        state.view.onTick(state.timer.getDelta());
-        state.reqAnimId = requestAnimationFrame(state.onDebugTick);
-      } else if (state.disabled === true) {
-        state.stopTick();
-      }
-    },
+
     onTick() {
       state.reqAnimId = requestAnimationFrame(state.onTick);
       state.timer.update();
@@ -456,7 +444,6 @@ export default function World(props) {
  * @property {import('@recast-navigation/core').Crowd} crowd
  * @property {boolean} smallViewport Was viewport small when we mounted World?
  *
- * @property {() => void} onDebugTick
  * @property {() => void} onTick
  * @property {(connectorKey?: string) => boolean} isReady
  * @property {() => void} stopTick
