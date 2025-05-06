@@ -97,6 +97,7 @@ export default function World(props) {
 
     e: /** @type {*} */ (null), // useHandleEvents
     n: {}, // w.npc.npc
+    a: {}, // w.npc.byAgId
     d: {}, // w.door.byKey
 
     isReady(connectorKey) {
@@ -433,6 +434,8 @@ export default function World(props) {
  * Events state i.e. useHandleEvents state
  * @property {import("./Npcs").State['npc']} n
  * Shortcut for `w.npc.npc`
+ * @property {import("./Npcs").State['byAgId']} a
+ * Shortcut for `w.npc.byAgId`
  * @property {import("./Doors").State['byKey']} d
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm

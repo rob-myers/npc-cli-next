@@ -355,6 +355,7 @@ export default function Npcs(props) {
 
   w.npc = state;
   w.n = state.npc;
+  w.a = state.byAgId;
   
   // load meshes
   entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {

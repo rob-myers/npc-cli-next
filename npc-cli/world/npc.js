@@ -609,7 +609,7 @@ export class Npc {
     for (let i = 0; i < nneis; i++) {
       nei = agent.raw.get_neis(i);
       if (nei.dist < closeDist) {// maybe cancel traversal
-        const other = this.w.npc.byAgId[nei.idx];
+        const other = this.w.a[nei.idx];
         if (other.s.target === null && !(nei.dist < closerDist)) {
           continue;
         }
@@ -1028,7 +1028,7 @@ export class Npc {
     }
 
     const nei = agent.raw.get_neis(0); // 0th closest
-    const other = this.w.npc.byAgId[nei.idx];
+    const other = this.w.a[nei.idx];
 
     if (other.s.target === null) {
       return;
