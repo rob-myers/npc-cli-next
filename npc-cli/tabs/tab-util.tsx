@@ -120,10 +120,17 @@ export function isComponentClassKey(input: string): input is ComponentClassKey {
 export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
   for (const tabset of extractTabsetNodes(layout)) {
     const index = tabset.children.findIndex(x => x.id === tabId);
-    if (index >= 0) {
-      tabset.children.splice(index, 1);
-      return true;
+    if (index === -1) {
+      continue;
     }
+
+    tabset.children.splice(index, 1);
+    
+    const { length } = tabset.children;
+    if (length === 0) tabset.selected = undefined;
+    else if (length === index) tabset.selected = index - 1;
+    else tabset.selected = index; // preserve
+    return true;
   }
   return false;
 }

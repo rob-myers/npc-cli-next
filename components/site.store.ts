@@ -49,29 +49,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } }));
     },
 
-    restoreLayoutFallback(fallbackLayout, opts = {}) {
-
-      if (isTouchDevice()) {// better UX on mobile
-        fallbackLayout = flattenLayout(deepClone(fallbackLayout));
-      }
-
-      // restore from localStorage if possible
-      const next = useSite.api.tryRestoreLayout(fallbackLayout);
-      // hard-reset returns to `saved` or parameter `layout`
-      const restorable = opts.preserveRestore === true
-        && get().tabset.saved || deepClone(fallbackLayout)
-      ;
-
-      tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
-      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-        started: deepClone(next),
-        synced: next,
-        saved: restorable,
-      }}));
-
-      return next;
-    },
-
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
       return layout;
     },
@@ -113,6 +90,29 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } else {
         return false;
       }
+    },
+
+    restoreLayoutFallback(fallbackLayout, opts = {}) {
+
+      if (isTouchDevice()) {// better UX on mobile
+        fallbackLayout = flattenLayout(deepClone(fallbackLayout));
+      }
+
+      // restore from localStorage if possible
+      const next = useSite.api.tryRestoreLayout(fallbackLayout);
+      // hard-reset returns to `saved` or parameter `layout`
+      const restorable = opts.preserveRestore === true
+        && get().tabset.saved || deepClone(fallbackLayout)
+      ;
+
+      tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        started: deepClone(next),
+        synced: next,
+        saved: restorable,
+      }}));
+
+      return next;
     },
 
     revertCurrentTabset() {
