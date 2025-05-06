@@ -191,7 +191,7 @@ export default function ViewerControls({ api }: Props) {
           className={cx("confirm-reset", { show: state.showReset })}
           {...resetHandlers}
         >
-          reset?
+          reset
         </button>
       </div>
 
