@@ -17,7 +17,6 @@ import Comments from "./Comments";
 import Viewer from "./Viewer";
 
 // 🚧 remove below
-import { profile } from "@/npc-cli/sh/src";
 import { createLayoutFromBasicLayout } from "@/npc-cli/tabs/tab-util";
 
 export default function Root({ children }: React.PropsWithChildren) {
@@ -45,12 +44,14 @@ export default function Root({ children }: React.PropsWithChildren) {
         {
           type: "terminal",
           filepath: "tty-1",
-          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
+          profileKey: 'profile1Sh',
+          env: { WORLD_KEY: "test-world-1" },
         },
         {
           type: "terminal",
           filepath: "tty-2",
-          env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
+          profileKey: 'profileAwaitWorldSh',
+          env: { WORLD_KEY: "test-world-1" },
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]])

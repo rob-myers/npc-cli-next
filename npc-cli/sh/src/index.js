@@ -5,3 +5,7 @@ export const profile = {
   profile1Sh,
   profileAwaitWorldSh,
 };
+
+/**
+ * @typedef {keyof typeof profile} ProfileKey
+ */

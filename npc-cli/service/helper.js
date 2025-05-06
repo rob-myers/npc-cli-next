@@ -1,7 +1,6 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
 
 /**
- * 🚧 try singleton instance instead, including other methods
  * - Use object so can merge into `w.lib`.
  * - Used in web workers.
  * - Used in server script assets.js.
@@ -14,9 +13,49 @@ export const helper = {
   /** Aligned to media/decor/{key}.svg */
   fromDecorImgKey,
 
+  /** @type {Record<Key.Profile, true>} */
+  fromProfileKey: {
+    profile1Sh: true,
+    profileAwaitWorldSh: true,
+  },
+
   /** @type {Record<Key.NpcClass, true>} */
   fromNpcClassKey: {
     "human-0": true,
+  },
+
+  /**
+   * These are "basic layouts".
+   * @type {Record<Key.LayoutPreset, import("../tabs/tab-util").BasicTabsLayout>}
+   */
+  layoutPreset: {
+    "empty-layout": [],
+    "layout-preset-0": [
+      [
+        {
+          type: "component",
+          class: "World",
+          filepath: "test-world-1",
+          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+        },
+      ],
+      [
+        {
+          type: "terminal",
+          filepath: "tty-1",
+          profileKey: 'profile1Sh',
+          env: { WORLD_KEY: "test-world-1" },
+        },
+        {
+          type: "terminal",
+          filepath: "tty-2",
+          profileKey: 'profileAwaitWorldSh',
+          env: { WORLD_KEY: "test-world-1" },
+        },
+        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+      ]
+    ]
   },
 
   /** Global over all `queryFilter`s */
@@ -186,6 +225,14 @@ export const helper = {
       return { grKey: helper.getGmRoomKey(input[0], input[1]), gmId: input[0], roomId: input[1] };
     }
   },
+  
+  /**
+   * @param {string} input 
+   * @returns {input is Key.Anim}
+   */
+  isAnimKey(input) {
+    return input in helper.fromAnimKey;
+  },
 
   /**
    * @param {string} input 
@@ -194,13 +241,21 @@ export const helper = {
   isNpcClassKey(input) {
     return input in helper.fromNpcClassKey;
   },
-  
+
   /**
    * @param {string} input 
-   * @returns {input is Key.Anim}
+   * @returns {input is Key.LayoutPreset}
    */
-  isAnimKey(input) {
-    return input in helper.fromAnimKey;
+  isLayoutPresetKey(input) {
+    return input in helper.layoutPreset;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.Profile}
+   */
+  isProfileKey(input) {
+    return input in helper.fromProfileKey;
   },
 
   /**

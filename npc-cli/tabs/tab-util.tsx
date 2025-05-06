@@ -1,5 +1,4 @@
 import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
-import { profile } from "../sh/src";
 import { deepClone, tryLocalStorageGetParsed } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
 import type { ComponentClassKey, CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
@@ -46,7 +45,7 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
 }
 
 export function createLayoutFromBasicLayout(
-  basicLayout: TabDef[][],
+  basicLayout: BasicTabsLayout,
 ): IJsonRowNode {
   return {
     type: "row",
@@ -143,6 +142,11 @@ export function computeStoredTabsetLookup(): AllTabsets {
   return output;
 }
 
+const emptyTabsetLayout: TabsetLayout = {
+  type: 'row',
+  children: [],
+};
+
 /**
  * Tabset layout by `key`.
  * - `started` is most recent layout started in `<Tabs>`
@@ -155,44 +159,7 @@ export interface AllTabsets {
   saved: TabsetLayout;
 }
 
-export const emptyTabsetLayout: TabsetLayout = {
-  type: 'row',
-  children: [],
-};
-
-export const layoutPreset: Record<LayoutPresetKey, TabsetLayout> = {
-  "empty-layout": emptyTabsetLayout,
-  "layout-preset-0": createLayoutFromBasicLayout([
-    [
-      {
-        type: "component",
-        class: "World",
-        filepath: "test-world-1",
-        // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-        props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-      },
-    ],
-    [
-      {
-        type: "terminal",
-        filepath: "tty-1",
-        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profile1Sh },
-      },
-      {
-        type: "terminal",
-        filepath: "tty-2",
-        env: { WORLD_KEY: "test-world-1", PROFILE: profile.profileAwaitWorldSh },
-      },
-      { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-    ]
-  ]),
-};
-
-type LayoutPresetKey = (
-  | 'empty-layout'
-  | 'layout-preset-0'
-);
-
-export function isLayoutPresetKey(input: string): input is LayoutPresetKey {
-  return input in layoutPreset;
-}
+/**
+ * 🤔 could extend e.g. permit vertical split via `TabDef[][] | TabDef[][][]`
+ */
+export type BasicTabsLayout = TabDef[][];

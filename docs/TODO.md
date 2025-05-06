@@ -246,10 +246,10 @@
   - apparently an upstream issue
     - https://skia.googlesource.com/skia/
 
-- 🚧 issue with stale PROFILE
-  - we need PROFILE to update onchange profile-1.sh
-  - can force via `useSite.api.setTabset(..., { overwrite: true })`
-  - BUT we should also be updating PROFILE when "linked to file" e.g. profile-1.sh
+- ✅ we should update PROFILE when "linked to file" e.g. profile-1.sh
+  - ℹ️ we need PROFILE to update onchange profile-1.sh
+  - ℹ️ currently can only force via `useSite.api.setTabset(..., { overwrite: true })`
+  - ✅ tty expects profileKey
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel

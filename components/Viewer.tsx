@@ -10,15 +10,18 @@ import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp
 import { view } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
-import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 
-import { deepClone, parseJsArg, testNever, tryLocalStorageGet } from "@/npc-cli/service/generic";
+import { parseJsArg, testNever, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
-import { appendTabToLayout, emptyTabsetLayout, isComponentClassKey, isLayoutPresetKey, layoutPreset } from "@/npc-cli/tabs/tab-util";
+import { helper } from "@/npc-cli/service/helper";
+import { createLayoutFromBasicLayout, isComponentClassKey } from "@/npc-cli/tabs/tab-util";
 import type { ComponentClassKey, TabDef } from "@/npc-cli/tabs/tab-factory";
+
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
+
+import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
 import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
 
 
@@ -64,6 +67,7 @@ export default function Viewer() {
           tabDef = {
             type: 'terminal',
             filepath: `tty-${opts.suffix}`,
+            profileKey: helper.isProfileKey(opts.profileKey) ? opts.profileKey : 'profileAwaitWorldSh',
             env: opts.env ?? {},
           };
           break;
@@ -108,7 +112,7 @@ export default function Viewer() {
           useSite.api.removeTab(tabId);
           break;
         }
-        case 'open-tab': {
+        case 'open-tab': {// 🔔 open tab via (classKey, opts)
           const classKey = parts[1];
           if (!(isComponentClassKey(classKey) || classKey === 'Tty')) {
             throw Error(`${'onInternalApi'}: open-tab: unknown classKey "${classKey}"`);
@@ -125,10 +129,12 @@ export default function Viewer() {
           useSite.api.revertCurrentTabset();
           // setTimeout(update);
           break;
-        case 'set-tabs': {
+        case 'set-tabs': {// 🔔 set layout via layoutPresetKey
           const layoutPresetKey = parts[1];
-          if (isLayoutPresetKey(layoutPresetKey)) {
-            useSite.api.setTabset(layoutPreset[layoutPresetKey]);
+          if (helper.isLayoutPresetKey(layoutPresetKey)) {
+            useSite.api.setTabset(
+              createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey])
+            );
           } else {
             throw Error(`${'onInternalApi'} set-tabs: invalid layoutPresetKey "${layoutPresetKey}"`);
           }

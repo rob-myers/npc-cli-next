@@ -22,6 +22,11 @@ namespace Key {
     | 303
   );
 
+  type LayoutPreset = (
+    | 'empty-layout'
+    | 'layout-preset-0'
+  );
+
   /**
    * Corresponds to Blender model and its exported GLB/GLTF.
    */
@@ -40,6 +45,9 @@ namespace Key {
     | 'npc'
     | 'lock-light'
   );
+
+  
+  type Profile = import('../sh/src').ProfileKey
 
   type SkinPart = keyof import('../service/helper').Helper['fromSkinPart'];
 
