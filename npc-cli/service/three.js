@@ -495,7 +495,7 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
   dz = Math.abs(current.z - target.z);
   dMax = Math.max(dx, dz);
   resX = dMax < eps ? false : damp(current, "x", v3d.x, smoothTime, deltaMs, maxSpeed * (dx / dMax), undefined, eps);
-  resY = damp(current, "y", y ?? v3d.y, smoothTime, deltaMs, maxSpeed, undefined, eps);
+  resY = y === undefined ? false : damp(current, "y", y, smoothTime, deltaMs, maxSpeed, undefined, eps);
   resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaMs, maxSpeed * (dz / dMax), undefined, eps);
   return resX || resY || resZ;
 }
@@ -508,7 +508,13 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
  * @param {import('three').SkinnedMesh} skinnedMesh
  * @param {Geomorph.UvRectLookup} uvMap
  * @param {number} initSheetId Which sheet was used when we exported from Blender
- * @returns {{ triToUvKeys: NPC.TriToUvKeys; partToUvRect: NPC.SkinPartToUvRect; labelTriIds: number[]; }}
+ * @returns {{
+ *  triToUvKeys: NPC.TriToUvKeys;
+ *  partToUvRect: NPC.SkinPartToUvRect;
+ *  breathTriIds: number[];
+ *  labelTriIds: number[];
+ *  selectorTriIds: number[];
+ * }}
  */
 export function computeMeshUvMappings(skinnedMesh, uvMap, initSheetId) {
   const triToUvKeys = /** @type {NPC.TriToUvKeys} */ ([]);
@@ -566,7 +572,9 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, initSheetId) {
   /** Centre of mass of each UV-triangle (it's inside triangle) */
   const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
   
+  const breathTriIds = /** @type {number[]} */ ([]);
   const labelTriIds = /** @type {number[]} */ ([]);
+  const selectorTriIds = /** @type {number[]} */ ([]);
   
   // find uvRect fast or via fallback,
   // also compute labelTriIds and label uv min/max
@@ -590,8 +598,13 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, initSheetId) {
     const skinPartKey = /** @type {Key.SkinPart} */ (uvRectKey.split('_')[1]);
     triToUvKeys[triId] = { uvRectKey, skinPartKey };
     partToUvRect[skinPartKey] = uvMap[uvRectKey];
+
     if (uvRectKey === 'default_label') {
       labelTriIds.push(triId);
+    } else if (uvRectKey === 'default_selector') {
+      selectorTriIds.push(triId);
+    } else if (uvRectKey === 'default_breath') {
+      breathTriIds.push(triId);
     }
   }
   
@@ -602,6 +615,8 @@ export function computeMeshUvMappings(skinnedMesh, uvMap, initSheetId) {
   return {
     triToUvKeys,
     partToUvRect,
+    breathTriIds,
     labelTriIds,
+    selectorTriIds,
   };
 }

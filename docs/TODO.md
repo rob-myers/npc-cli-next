@@ -110,11 +110,34 @@
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
   - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
-- 🚧 BUG: testOffMeshDisjoint does not handle case where npcs face each
+- ✅ BUG: testOffMeshDisjoint does not handle case where npcs face each
   - ✅ non-diagonal rectangle intersection
-  - diagonal doors initially transform lineSegs
 
-- BUG: fix multiple worlds
+- 🚧 improve floor lighting
+  - ✅ show hard-coded "light circle" in floor shader
+  - ✅ light circle has basic gradient
+  - ✅ light circle moves with camera
+    - ✅ fix shader code i.e. edge geomorphs are not full-height
+  - ✅ light circle scales up and down
+  - ✅ light circle opacity can change
+  - move Floor to separate shader
+  - provide inverse matrices as uniform (more efficient)
+  - remove post-processing
+  - fix issue with npc target height 1.5 but floor light target should be 0
+  - try radial gradient texture
+  - npcs are lighter within light circle
+  - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
+  - ❌ could try "light image" again where distinct light's rect's don't overlap
+
+- ✅ profile-1 tweens continue when should be paused
+  - `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
+  - ℹ️ can continue whilst initially paused inside profile,
+    BECAUSE tweens can run whilst paused too
+  - ✅ can explicitly specify `permitPaused: false`
+
+- `w`: support auto-cancel of promise-return-valued functions
+  - e.g. `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
+  - i.e. if return value is Promise can store reject in cleanups?
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
@@ -173,7 +196,9 @@
 - consider "hot keys" e.g. 1, 2, 3, also tapable
   - could use to change camera settings
   - could use to change input settings e.g. drag select
-- move "x-ray" into PopUp opts?
+- ❌ move "x-ray" into PopUp opts?
+- testOffMeshDisjoint: diagonal doors initially transform lineSegs
+
 
 - ✅ shell should show debugs not errors
   - sometimes still show errors e.g. on mvdan-sh parse error

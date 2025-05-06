@@ -111,7 +111,6 @@ declare namespace NPC {
     | { key: "closed-door"; gmId: number; doorId: number; meta?: Meta }
     | { key: "locked-door"; gmId: number; doorId: number; meta?: Meta }
     | { key: "unlocked-door"; gmId: number; doorId: number; meta?: Meta }
-    | { key: "changed-zoom"; level: 'near' | 'far' }
     | { key: "enter-collider"; npcKey: string; } & BaseColliderEvent
     | { key: "exit-collider"; npcKey: string; } & BaseColliderEvent
     | {
@@ -395,7 +394,9 @@ declare namespace NPC {
 
   interface GltfAux {
     npcClassKey: Key.NpcClass;
+    breathTriIds: number[];
     labelTriIds: number[];
+    selectorTriIds: number[];
     labelUvRect4: [number, number, number, number];
     partToUv: NPC.SkinPartToUvRect;
     triToKey: NPC.TriToUvKeys;

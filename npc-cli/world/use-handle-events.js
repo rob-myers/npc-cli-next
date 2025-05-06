@@ -209,8 +209,6 @@ export default function useHandleEvents(w) {
       }
 
       switch (e.key) {
-        case "changed-zoom": // 'near' or 'far'
-          break;
         case "controls-start":
           w.menu.setPreventDraggable(true);
           w.cm.draggable.el.style.pointerEvents = 'none';
@@ -444,6 +442,20 @@ export default function useHandleEvents(w) {
         dst,
         w.n[npcKey].getPoint(),
         1.5, // 🚧 hard-coded
+      );
+    },
+    onChangeControls(controls) {
+      // 🚧 on zoom out brighten obstacles/decor etc.
+
+      // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
+      // zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
+      // state.zoomState = zoomState;
+
+      w.floor.litCircle.set(
+        controls.target.x,
+        controls.target.z,
+        3,
+        0.75,
       );
     },
     onEnterDoorCollider(e) {// e.type === 'nearby'
@@ -820,6 +832,7 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcNearDoor
+ * @property {(controls: import('./WorldView').State['controls']) => void} onChangeControls
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.

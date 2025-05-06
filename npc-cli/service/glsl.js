@@ -29,7 +29,7 @@ const instancedWallsShader = {
     #include <logdepthbuf_vertex>
 
     // 🚧 remove hard-coded divisor
-    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 20.0f;
+    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 8.0f;
   }
 
   `,
@@ -256,10 +256,16 @@ export const humanZeroShader = {
   Vert: /*glsl*/`
 
   uniform float labelY;
+  uniform int breathTriIds[2];
   uniform int labelTriIds[2];
-  varying float dotProduct;
+  uniform int selectorTriIds[2];
+  varying float vDotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
+  // higher in [0, 1] is lighter
+  varying float vHeightShade;
+  // label, body, breath, selector
+  flat varying int vType;
 
   #include <common>
   #include <uv_pars_vertex>
@@ -275,12 +281,24 @@ export const humanZeroShader = {
     // since unwelded via geometry.toNonIndexed()
     triangleId = int(gl_VertexID / 3);
     vUv = uv;
-
+    vHeightShade = 1.0;
+    
+    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+      vType = 0; // label
+    } else if (triangleId == breathTriIds[0] || triangleId == breathTriIds[1]) {
+      vType = 2; // breath
+    } else if (triangleId == selectorTriIds[0] || triangleId == selectorTriIds[1]) {
+      vType = 3; // selector
+    } else {
+      vType = 1; // body
+      vHeightShade = min(max(pow(position.y / labelY, .75) + 0.1, 0.4), 1.0);
+    }
+    
     vec3 transformed = vec3(position);
     #include <skinning_vertex>
     vec4 mvPosition;
 
-    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {
+    if (vType == 0) {// label quad
 
       // label quad is above head and faces camera
       mvPosition = modelMatrix[3]; // translation
@@ -295,8 +313,7 @@ export const humanZeroShader = {
       // compute dot product for flat shading
       vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
       vec3 lightDir = -normalize(mvPosition.xyz);
-      dotProduct = dot(transformedNormal, lightDir);
-  
+      vDotProduct = dot(transformedNormal, lightDir);
     }
     
     gl_Position = projectionMatrix * mvPosition;
@@ -323,9 +340,11 @@ export const humanZeroShader = {
   uniform bool objectPick;
   uniform int uid;
 
-  varying float dotProduct;
+  varying float vDotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
+  varying float vHeightShade;
+  flat varying int vType;
 
   #include <common>
   #include <uv_pars_fragment>
@@ -358,7 +377,7 @@ export const humanZeroShader = {
 
     vec4 texel;
     
-    if (triangleId == labelTriIds[0] || triangleId == labelTriIds[1]) {// label quad
+    if (vType == 0) {// label
 
       texel = texture(
         label,
@@ -369,17 +388,17 @@ export const humanZeroShader = {
         )
       );
 
-    } else {// everything else
+    } else {// body, breath, selector 
 
-      // 🔔 flat shading
-      tint *= vec4(vec3(0.05 + 0.8 * dotProduct), 1.0);
+      // 🔔 flat shading via vDotProduct
+      tint *= vec4(vec3((0.05 + 0.8 * vDotProduct) * vHeightShade), 1.0);
 
       // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
       float atlasId = uvOffset.z;
 
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
-      
+
     }
 
     gl_FragColor = texel * tint;
@@ -395,6 +414,9 @@ export const humanZeroShader = {
 export const instancedMultiTextureShader = {
   Vert: /* glsl */`
 
+    uniform bool lit;
+    uniform vec4 litCircle; // (cx, cz, r, opacity)
+
     attribute vec2 uvDimensions;
     attribute vec2 uvOffsets;
     attribute uint uvTextureIds;
@@ -405,6 +427,7 @@ export const instancedMultiTextureShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
+    flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
 
     #include <common>
     #include <logdepthbuf_pars_vertex>
@@ -414,6 +437,20 @@ export const instancedMultiTextureShader = {
       vUv = (uv * uvDimensions) + uvOffsets;
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
+      
+      if (lit == true) {
+        // - litCircle is (cx, cz, r, opacity)
+        // - instanceMatrix takes unit quad to e.g. "geomorph floor quad"
+        // - transform (cx, cz) to (uv.x, uv.y)
+        // 🚧 provide inverse matrices in uniform
+
+        mat4 invertInstanceMatrix = inverse(instanceMatrix);
+        vec4 transformedCenter = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
+        vLitCircle.x = transformedCenter.x * uvDimensions.x;
+        vLitCircle.y = transformedCenter.z * uvDimensions.y;
+        vLitCircle.z = litCircle.z * invertInstanceMatrix[0].x; // radius
+        vLitCircle.w = litCircle.w; // opacity
+      }
 
       vec4 modelViewPosition = vec4(position, 1.0);
       modelViewPosition = instanceMatrix * modelViewPosition;
@@ -431,6 +468,8 @@ export const instancedMultiTextureShader = {
 
   Frag: /* glsl */`
 
+    uniform bool lit;
+    uniform vec4 litCircle;
     uniform float alphaTest;
     uniform bool objectPick;
     uniform int objectPickRed;
@@ -442,6 +481,7 @@ export const instancedMultiTextureShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
+    flat varying vec4 vLitCircle;
 
     #include <common>
     #include <logdepthbuf_pars_fragment>
@@ -461,6 +501,15 @@ export const instancedMultiTextureShader = {
         );
       } else {
         if (texel.a * opacity < alphaTest) discard;
+        
+        if (lit == true) {// 🔔 uvs within circle are lighter
+          vec2 origin = vLitCircle.xy;
+          float radius = vLitCircle.z;
+          float dist = distance(vUv, origin);
+          // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
+          if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
+          // if (dist <= radius * 0.85) texel += vec4(vec3(0.03, 0.03, 0.0), 0.0);
+        }
 
         gl_FragColor = texel * vec4(vColor * diffuse, opacity);
       }
@@ -492,6 +541,22 @@ export const InstancedLabelsMaterial = shaderMaterial(
   instancedLabelsShader.Frag,
 );
 
+/** @type {import('@/npc-cli/types/glsl').InstancedMultiTextureMaterialProps} */
+const instancedMultiTextureMaterialDefaultProps = {
+  alphaTest: 0.5,
+  atlas: emptyDataArrayTexture,
+  diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  // 🔔 map, mapTransform required else can get weird texture
+  // map: null,
+  // mapTransform: new THREE.Matrix3(),
+  // colorSpace: false,
+  lit: false,
+  litCircle: new THREE.Vector4(0, 0, 0, 0),
+  objectPick: false,
+  objectPickRed: 0,
+  opacity: 1,
+};
+
 /**
  * - Ceiling
  * - Decor quads
@@ -500,18 +565,9 @@ export const InstancedLabelsMaterial = shaderMaterial(
  * - Floor
  */
 export const InstancedMultiTextureMaterial = shaderMaterial(
-  {
-    alphaTest: 0.5,
-    atlas: emptyDataArrayTexture,
-    diffuse: new THREE.Vector3(1, 0.9, 0.6),
-    // 🔔 map, mapTransform required else can get weird texture
-    // map: null,
-    // mapTransform: new THREE.Matrix3(),
-    // colorSpace: false,
-    objectPick: false,
-    objectPickRed: 0,
-    opacity: 1,
-  },
+  /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
+    instancedMultiTextureMaterialDefaultProps
+  ),
   instancedMultiTextureShader.Vert,
   instancedMultiTextureShader.Frag,
 );
@@ -543,7 +599,9 @@ const humanZeroMaterialDefaultProps = {
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
   label: emptyDataArrayTexture,
   labelY: 0,
+  breathTriIds: [],
   labelTriIds: [],
+  selectorTriIds: [],
   labelUvRect4: new THREE.Vector4(),
   objectPick: false,
   opacity: 1,
@@ -563,7 +621,7 @@ export const HumanZeroMaterial = shaderMaterial(
  * @see glsl.d.ts
  */
 extend({
-  InstancedMonochromeShader: InstancedWallsShader,
+  InstancedWallsShader,
   InstancedLabelsMaterial,
   InstancedMultiTextureMaterial,
   InstancedFlatMaterial,

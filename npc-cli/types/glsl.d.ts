@@ -28,19 +28,15 @@ declare module '@react-three/fiber' {
       diffuse?: Vector3Input;
     };
 
-    instancedMonochromeShader: ThreeElement<typeof import('three').ShaderMaterial> & {
+    instancedWallsShader: ThreeElement<typeof import('three').ShaderMaterial> & {
       diffuse?: Vector3Input;
       opacity?: number;
     } & SupportsObjectPick;
 
-    instancedMultiTextureMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
-      alphaTest?: number;
-      diffuse?: Vector3Input;
-      atlas: import('three').DataArrayTexture;
-      /** Red component in [0..255] used by objectPick rgba */
-      objectPickRed?: number;
-      opacity?: number;
-    } & SupportsObjectPick;
+    instancedMultiTextureMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & InstancedMultiTextureMaterialProps
+    );
 
   }
 }
@@ -49,13 +45,29 @@ type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
 type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
 
 // 🚧 migrate all custom shaders
+export interface InstancedMultiTextureMaterialProps {
+  alphaTest: number;
+  atlas: import('three').DataArrayTexture;
+  diffuse: Vector3Input;
+  lit?: boolean;
+  /** `(cx, cz, r, opacity)` */
+  litCircle?: import('three').Vector4; // constrain beyond Vector4Input
+  objectPick?: boolean;
+  objectPickRed?: number;
+  opacity?: number;
+}
+
+export type InstancedMultiTextureMaterialKeys = keyof InstancedMultiTextureMaterialProps;
+
 export interface HumanZeroMaterialProps {
   atlas: import('three').DataArrayTexture;
   aux: import('three').DataArrayTexture;
   diffuse: Vector3Input;
   label: import('three').DataArrayTexture;
   labelY: number;
+  breathTriIds: number[];
   labelTriIds: number[];
+  selectorTriIds: number[];
   labelUvRect4: Vector4Input;
   /* A default value must be provided for object-pick to work */
   objectPick?: boolean;

@@ -1,6 +1,6 @@
 awaitWorld
 
-spawn '{ npcKey: "rob" }' '{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
+spawn '{ npcKey: "rob" }' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
 
 spawn '{ npcKey: "will", skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
@@ -25,7 +25,7 @@ spawn '{ npcKey: "suit-guy", angle: Math.PI, skin: {
   "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
 }}' '{ x: 0.5 * 1.5, y: 5 * 1.5 }'
 
-spawn '{ npcKey: "policeman", angle: Math.PI, skin: {
+spawn '{ npcKey: "bad-lt", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
@@ -51,7 +51,7 @@ w n.rob.applyTint
 # w n.rob.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
 # w n.rob.resetTint
 
-w e.grantAccess . rob will kate suit-guy policeman
+w e.grantAccess . rob will kate suit-guy bad-lt
 
 # write selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
@@ -93,18 +93,31 @@ setupOnSlowNpc
 
 # transition to fixed camera angle
 w update 'async w => {
-  w.view.enableControls(false);
-  await w.view.tween({ azimuthal: Math.PI/4, polar: Math.PI/4 });
-  w.view.enableControls(true);
-  await w.view.tween({ distance: 25 });
+  w.view.canTweenPaused = false;
+  w.update();
+  
+  await w.view.tween({
+    azimuthal: w.smallViewport ? 0 : Math.PI/6,
+    polar: Math.PI/4,
+  });
 }'
 
-# fix camera angle and reduce maxDistance
-w update 'w => {
-  w.view.ctrlOpts.minAzimuthAngle = Math.PI/4;
-  w.view.ctrlOpts.maxAzimuthAngle = Math.PI/4;
-  w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
-  w.view.ctrlOpts.maxDistance = 30;
-}'
+# on mobile fix camera angle, look at rob
+w update 'async w => {
+  if (w.smallViewport) {
+    w.view.ctrlOpts.minAzimuthAngle = 0;
+    w.view.ctrlOpts.maxAzimuthAngle = 0;
+    w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
+    w.view.ctrlOpts.maxDistance = 25;
+  }
+  w.floor.lit = true; // 🔔 enable lighting
+  w.update();
 
-w e.lookAt rob
+  // prevent zoom-in while look
+  w.view.lockDistance();
+  await w.e.lookAt("rob").finally(w.view.unlockDistance);
+  
+  await w.view.tween({ distance: 10 });
+
+  w.view.canTweenPaused = true;
+}'

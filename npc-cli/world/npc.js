@@ -73,7 +73,7 @@ export class Npc {
     labelY: 0,
     /** Desired look angle (rotation.y) */
     lookAngleDst: /** @type {null | number} */ (null),
-    lookSecs: 0.5,
+    lookSecs: lookSecsNoTarget,
     /** An offMeshConnection traversal */
     offMesh: /** @type {null | NPC.OffMeshState} */ (null),
     opacity: 1,
@@ -609,7 +609,7 @@ export class Npc {
     for (let i = 0; i < nneis; i++) {
       nei = agent.raw.get_neis(i);
       if (nei.dist < closeDist) {// maybe cancel traversal
-        const other = this.w.npc.byAgId[nei.idx];
+        const other = this.w.a[nei.idx];
         if (other.s.target === null && !(nei.dist < closerDist)) {
           continue;
         }
@@ -1028,15 +1028,21 @@ export class Npc {
     }
 
     const nei = agent.raw.get_neis(0); // 0th closest
-    const other = this.w.npc.byAgId[nei.idx];
-    if (other.s.target === null || nei.dist > (other.s.run === true ? 0.8 : 0.6)) {// 🔔
+    const other = this.w.a[nei.idx];
+
+    if (other.s.target === null) {
       return;
     }
+
+    // 🚧 rethink e.g. this.rotation.__damp
+    if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
+      this.s.lookAngleDst = null;
+    } else {// turn towards "closest neighbour" if they have a target
+      this.s.lookAngleDst = this.getEulerAngle(
+        geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
+      );
+    }
     
-    // turn towards "closest neighbour" if they have a target
-    this.s.lookAngleDst = this.getEulerAngle(
-      geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
-    );
   }
 
   resetSkin() {
@@ -1074,7 +1080,7 @@ export class Npc {
     }
 
     const strokeWidth = 5;
-    const fontHeight = 24; // permits > 12 chars on OSX Chrome
+    const fontHeight = 28; // permits > 12 chars on OSX Chrome
     ct.strokeStyle = 'black';
     ct.fillStyle = '#aaa';
     ct.lineWidth = strokeWidth;
@@ -1171,7 +1177,7 @@ export class Npc {
       return;
     }
 
-    this.s.lookSecs = 0.5;
+    this.s.lookSecs = lookSecsNoTarget;
     this.s.lookAngleDst = null;
     this.s.permitTurn = true;
     this.s.slowBegin = null;
@@ -1256,7 +1262,10 @@ const staticCollisionQueryRange = 1.25;
 const movingCollisionQueryRange = 1.5;
 
 const preOffMeshCloseDist = helper.defaults.radius;
-const preOffMeshCloserDist = helper.defaults.radius;
+// 🔔 stationary npc more permissive during preOffMeshConnection
+const preOffMeshCloserDist = helper.defaults.radius / 2;
+
+const lookSecsNoTarget = 0.75;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {

@@ -197,20 +197,26 @@ export default function Npcs(props) {
         }
 
         // 🔔 always recompute: either mesh or sheet might have changed
-        const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, initSheetId);
+        const {
+          triToUvKeys,
+          partToUvRect,
+          breathTriIds,
+          labelTriIds,
+          selectorTriIds,
+        } = computeMeshUvMappings(mesh, uvMap, initSheetId);
         const labelUvRect = uvMap.default_label;
 
         state.gltfAux[npcClassKey] = {
           npcClassKey: meta.npcClassKey,
+          breathTriIds,
           labelTriIds,
+          selectorTriIds,
           labelUvRect4: labelUvRect
             ? [labelUvRect.x, labelUvRect.y, labelUvRect.width, labelUvRect.height]
             : [0, 0, 0, 0],
           partToUv: partToUvRect,
           triToKey: triToUvKeys,
-          animHeights: mapValues(
-            meta.modelAnimHeight, x => x * meta.scale
-          ),
+          animHeights: mapValues(meta.modelAnimHeight, x => x * meta.scale),
           labelHeight: meta.modelLabelHeight * meta.scale,
         };
       }
@@ -349,6 +355,7 @@ export default function Npcs(props) {
 
   w.npc = state;
   w.n = state.npc;
+  w.a = state.byAgId;
   
   // load meshes
   entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {
@@ -504,12 +511,16 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.8, .8, .8]}
+          diffuse={[1, 1, 1]}
 
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}
-          labelTriIds={npc.gltfAux.labelTriIds}
+
+          // 🚧 move below to texture
           labelUvRect4={npc.gltfAux.labelUvRect4}
+          breathTriIds={npc.gltfAux.breathTriIds}
+          labelTriIds={npc.gltfAux.labelTriIds}
+          selectorTriIds={npc.gltfAux.selectorTriIds}
 
           opacity={npc.s.opacity}
           transparent

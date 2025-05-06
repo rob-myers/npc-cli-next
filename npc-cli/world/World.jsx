@@ -77,7 +77,9 @@ export default function World(props) {
     crowd: /** @type {*} */ (null),
 
     view: /** @type {*} */ (null),
-    floor: /** @type {*} */ ({}),
+    floor: /** @type {State['floor']} */ ({
+      litCircle: new THREE.Vector4(),
+    }),
     ceil: /** @type {*} */ ({}),
     decor: /** @type {*} */ (null),
     obs: /** @type {*} */ (null),
@@ -95,6 +97,7 @@ export default function World(props) {
 
     e: /** @type {*} */ (null), // useHandleEvents
     n: {}, // w.npc.npc
+    a: {}, // w.npc.byAgId
     d: {}, // w.door.byKey
 
     isReady(connectorKey) {
@@ -109,7 +112,7 @@ export default function World(props) {
       // 🚧 move to w.view.onPausedTick
       state.timer.update();
       if (
-        state.view.tweenWhilePaused === true &&
+        state.view.didTweenPaused === true &&
         Object.keys(state.view.dst).length > 0 // 🚧
       ) {
         state.view.onTick(state.timer.getDelta());
@@ -337,7 +340,7 @@ export default function World(props) {
     state.view.syncRenderMode();
     if (!state.disabled) {
       state.onTick();
-      state.view.tweenWhilePaused = false;
+      state.view.didTweenPaused = false;
     }
     state.events.next({ key: state.disabled ? 'disabled' : 'enabled' });
     return () => state.stopTick();
@@ -431,6 +434,8 @@ export default function World(props) {
  * Events state i.e. useHandleEvents state
  * @property {import("./Npcs").State['npc']} n
  * Shortcut for `w.npc.npc`
+ * @property {import("./Npcs").State['byAgId']} a
+ * Shortcut for `w.npc.byAgId`
  * @property {import("./Doors").State['byKey']} d
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm

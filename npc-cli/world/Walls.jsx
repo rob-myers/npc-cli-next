@@ -124,7 +124,7 @@ export default function Walls(props) {
       renderOrder={transparent ? 2 : undefined}
     >
       {/* <meshBasicMaterial side={THREE.DoubleSide} color="#866" wireframe /> */}
-      <instancedMonochromeShader
+      <instancedWallsShader
         key={InstancedWallsShader.key}
         diffuse={[0, 0, 0]}
         // diffuse={transparent ? [.4, .4, .5] : [0, 0, 0]}
