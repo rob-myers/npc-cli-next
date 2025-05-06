@@ -30,6 +30,7 @@ export default function Root({ children }: React.PropsWithChildren) {
 
     // 🚧 move elsewhere
     useSite.api.restoreLayoutFallback(
+    // useSite.api.setTabset(
       createLayoutFromBasicLayout([[
         {
           type: "component",
@@ -52,8 +53,8 @@ export default function Root({ children }: React.PropsWithChildren) {
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]])
-    // }, true);
     , { preserveRestore: false });
+    // , { overwrite: false });
 
     useSite.api.initiateBrowser();
   }, []);

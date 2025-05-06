@@ -49,7 +49,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } }));
     },
 
-    restoreLayoutFallback(fallbackLayout, { preserveRestore = false }) {
+    restoreLayoutFallback(fallbackLayout, opts = {}) {
 
       if (isTouchDevice()) {// better UX on mobile
         fallbackLayout = flattenLayout(deepClone(fallbackLayout));
@@ -58,7 +58,9 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       // restore from localStorage if possible
       const next = useSite.api.tryRestoreLayout(fallbackLayout);
       // hard-reset returns to `saved` or parameter `layout`
-      const restorable = preserveRestore && get().tabset.saved || deepClone(fallbackLayout);
+      const restorable = opts.preserveRestore === true
+        && get().tabset.saved || deepClone(fallbackLayout)
+      ;
 
       tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
@@ -130,16 +132,19 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(next));
     },
 
-    setTabset(layout) {
-
+    setTabset(layout, opts) {
+      
       if (isTouchDevice()) {// better UX on mobile
         layout = flattenLayout(deepClone(layout));
       }
 
-      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-        started: deepClone(layout),
-        synced: deepClone(layout),
-      }}));
+      set(({ tabset: lookup, tabsetUpdates }) => ({
+        tabset: { ...lookup,
+          started: deepClone(layout),
+          synced: deepClone(layout),
+        },
+        ...opts?.overwrite === true && { tabsetUpdates: tabsetUpdates + 1, }
+      }));
     },
 
     storeCurrentLayout(model) {
@@ -328,7 +333,7 @@ export type State = {
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     /** Restore layout from localStorage or use fallback */
-    restoreLayoutFallback(fallbackLayout: TabsetLayout, opts: { preserveRestore?: boolean; }): TabsetLayout;
+    restoreLayoutFallback(fallbackLayout: TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
@@ -343,7 +348,8 @@ export type State = {
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
-    setTabset(layout: TabsetLayout): void;
+    /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
+    setTabset(layout: TabsetLayout, opts?: { overwrite?: boolean }): void;
     storeCurrentLayout(model: Model): void;
     syncCurrentTabset(model: Model): void;
     testMutateLayout(): void; // 🚧 temp
