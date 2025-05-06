@@ -87,9 +87,8 @@
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
-  - 🚧 improve images in first carousel
+  - 🚧 redo images in first carousel
     - three images
-    - improve second image
   - clean carousel css e.g. more css variables
   - auto png to webp in public/images
 
