@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { zIndexWorld } from "../service/const";
-import { isSmallViewport } from "../service/dom";
+import { isSmallViewport, isTouchDevice } from "../service/dom";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -39,7 +39,7 @@ export default function WorldMenu(props) {
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    xRayOpacity: 8, // [1..20]
+    xRayOpacity: isTouchDevice() ? 13 : 8, // [1..20]
 
     applyControlsInitValues() {
       /** @param {any} value */
