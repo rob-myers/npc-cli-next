@@ -28,7 +28,7 @@ export default function WorldMenu(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
 
-    brightness: 7, // [1..10] inducing percentage `50 + 10 * b`
+    brightness: 13, // [1..20] inducing percentage `100 + 10 * (b - 10)`
     disconnected: true,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
@@ -39,7 +39,7 @@ export default function WorldMenu(props) {
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    xRayOpacity: 4, // [1..10]
+    xRayOpacity: 8, // [1..20]
 
     applyControlsInitValues() {
       /** @param {any} value */
@@ -63,7 +63,7 @@ export default function WorldMenu(props) {
     },
     onChangeBrightness(e) {
       state.brightness = Number(e.currentTarget.value);
-      w.view.setCssFilter({ brightness: `${50 + 10 * state.brightness}%` });
+      w.view.setCssFilter({ brightness: `${100 + 10 * (state.brightness - 10)}%` });
     },
     onChangeLoggerLog(e) {
       state.showDebug = e.currentTarget.checked;
@@ -76,8 +76,8 @@ export default function WorldMenu(props) {
     },
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
-      w.wall.setOpacity(state.xRayOpacity / 10);
-      w.ceil.setOpacity(state.xRayOpacity / 10)
+      w.wall.setOpacity(state.xRayOpacity / 20);
+      w.ceil.setOpacity(state.xRayOpacity / 20)
       w.update();
     },
     onClickLoggerLink(e) {
@@ -122,9 +122,9 @@ export default function WorldMenu(props) {
       update();
     },
     toggleXRay() {
-      state.xRayOpacity = state.xRayOpacity < 10 ? 10 : 5;
-      w.wall.setOpacity(state.xRayOpacity / 10);
-      w.ceil.setOpacity(state.xRayOpacity / 10);
+      state.xRayOpacity = state.xRayOpacity < 20 ? 20 : 10;
+      w.wall.setOpacity(state.xRayOpacity / 20);
+      w.ceil.setOpacity(state.xRayOpacity / 20);
 
       /** @type {HTMLInputElement} */ (// reflect in range
         state.draggable.el.querySelector('input.change-x-ray')
@@ -154,7 +154,7 @@ export default function WorldMenu(props) {
     {w.disabled && <div css={pausedControlsCss}>
       <button
         onClick={state.toggleXRay}
-        className={state.xRayOpacity < 10 ? 'text-green' : undefined}
+        className={state.xRayOpacity < 20 ? 'text-green' : undefined}
       >
         x-ray
       </button>
@@ -205,7 +205,7 @@ export default function WorldMenu(props) {
                 type="range"
                 className="change-x-ray"
                 min={1}
-                max={10}
+                max={20}
                 defaultValue={state.xRayOpacity}
                 onChange={state.onChangeXRay}
               />
@@ -216,7 +216,7 @@ export default function WorldMenu(props) {
                 type="range"
                 className="change-brightness"
                 min={1}
-                max={10}
+                max={20}
                 defaultValue={state.brightness}
                 onChange={state.onChangeBrightness}
               />
@@ -458,7 +458,7 @@ const cssTtyDisconnectedMessage = css`
  * @property {number} loggerWidthDelta
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
- * @property {number} xRayOpacity In [1..10]
+ * @property {number} xRayOpacity In [1..20]
  *
  * @property {() => void} applyControlsInitValues
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
