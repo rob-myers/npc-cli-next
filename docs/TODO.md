@@ -35,10 +35,10 @@
   - ✅ can change tabs programmatically without unmount
     - we can directly change `tabset.current` without overwriting "original tabset"
 
-- 🚧 write 1st blog (npc cli)
+- ✅ towards 1st blog (npc cli)
   - ✅ more content
   - ✅ add a carousel
-  - 🚧 can somehow change tabs from blog
+  - ✅ can somehow change tabs from blog
     - ✅ mechanism for links with href `/internal/...` to trigger code in `<Viewer>`
     - ✅ `tabset` has structure `{ key: string; def: TabDef[][]; }`
     - ✅ store lookup `tabset` and `tabset.current` in site.store
@@ -60,7 +60,7 @@
         - ✅ index.mdx link for tty tab with spaces in PROFILE
         - ✅ clean e.g. move to site.store
     - ✅ can remove Viewer tab by clicking link
-    - 🚧 strategy for tabsets with added tabs
+    - ✅ strategy for tabsets with added tabs
       - ℹ️ we'll add/remove tabs to our tabsets over time, so
       - ℹ️ validating tabset ids doesn't make much sense;
       - ℹ️ however it'll be useful to "hot reload" tabset layouts
@@ -79,11 +79,7 @@
         - ℹ️ repro by programmatic open, then select, then programmatic close
       - ✅ support HMR update tabset somehow
         - we sync PROFILE via profileKey
-      - 🚧 clean hard-coded initialization in `<Root>`
-  - more content
-  - mention Starship Geomorphs early
-  - mention recent improvements in AI
-    - NPC CLI could use them as tools
+      - ✅ clean hard-coded initialization in `<Root>`
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
@@ -91,6 +87,11 @@
     - three images
   - clean carousel css e.g. more css variables
   - auto png to webp in public/images
+
+- more content
+- mention Starship Geomorphs early
+- mention recent improvements in AI
+  - NPC CLI could use them as tools
 
 - start adding cypress
 - basic help page

@@ -11,7 +11,7 @@ import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopm
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup } from "@/npc-cli/tabs/tab-util";
+import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -49,6 +49,24 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } }));
     },
 
+    closeTab(tabId) {
+      const lookup = get().tabset;
+      const tabset = lookup.synced;
+
+      if (removeTabFromLayout(tabset, tabId) === true) {
+        set(({ tabsetUpdates }) => ({
+          tabset: { ...lookup,
+            synced: { ...tabset },
+            started: deepClone(tabset),
+          },
+          tabsetUpdates: tabsetUpdates + 1,
+        }))
+        return true;
+      } else {
+        return false;
+      }
+    },
+
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
       return layout;
     },
@@ -73,26 +91,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       // remember in case `ensureTabset(current.key, true)` later
       tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
     },
-    
-    removeTab(tabId) {
-      const lookup = get().tabset;
-      const tabset = lookup.synced;
-
-      if (removeTabFromLayout(tabset, tabId) === true) {
-        set(({ tabsetUpdates }) => ({
-          tabset: { ...lookup,
-            synced: { ...tabset },
-            started: deepClone(tabset),
-          },
-          tabsetUpdates: tabsetUpdates + 1,
-        }))
-        return true;
-      } else {
-        return false;
-      }
-    },
 
     restoreLayoutFallback(fallbackLayout, opts = {}) {
+      if (typeof fallbackLayout === 'string') {
+        fallbackLayout = resolveLayoutPreset(fallbackLayout);
+      }
 
       if (isTouchDevice()) {// better UX on mobile
         fallbackLayout = flattenLayout(deepClone(fallbackLayout));
@@ -133,7 +136,10 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     setTabset(layout, opts) {
-      
+      if (typeof layout === 'string') {
+        layout = resolveLayoutPreset(layout);
+      }
+
       if (isTouchDevice()) {// better UX on mobile
         layout = flattenLayout(deepClone(layout));
       }
@@ -333,7 +339,7 @@ export type State = {
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     /** Restore layout from localStorage or use fallback */
-    restoreLayoutFallback(fallbackLayout: TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
+    restoreLayoutFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
@@ -343,13 +349,13 @@ export type State = {
     onTerminate(): void;
     openTab(tabDef: TabDef): void;
     rememberCurrentTabs(): void;
-    removeTab(tabId: string): boolean;
+    closeTab(tabId: string): boolean;
     revertCurrentTabset(): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
     /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
-    setTabset(layout: TabsetLayout, opts?: { overwrite?: boolean }): void;
+    setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
     storeCurrentLayout(model: Model): void;
     syncCurrentTabset(model: Model): void;
     testMutateLayout(): void; // 🚧 temp

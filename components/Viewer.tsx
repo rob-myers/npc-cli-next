@@ -109,7 +109,7 @@ export default function Viewer() {
         }
         case 'close-tab': {
           const tabId = parts[1];
-          useSite.api.removeTab(tabId);
+          useSite.api.closeTab(tabId);
           break;
         }
         case 'open-tab': {// 🔔 open tab via (classKey, opts)
@@ -132,9 +132,7 @@ export default function Viewer() {
         case 'set-tabs': {// 🔔 set layout via layoutPresetKey
           const layoutPresetKey = parts[1];
           if (helper.isLayoutPresetKey(layoutPresetKey)) {
-            useSite.api.setTabset(
-              createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey])
-            );
+            useSite.api.setTabset(layoutPresetKey);
           } else {
             throw Error(`${'onInternalApi'} set-tabs: invalid layoutPresetKey "${layoutPresetKey}"`);
           }
@@ -180,6 +178,9 @@ export default function Viewer() {
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
+
+    // ensure layout if localStorage empty
+    useSite.api.restoreLayoutFallback("layout-preset-0", { preserveRestore: false });
 
     // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {

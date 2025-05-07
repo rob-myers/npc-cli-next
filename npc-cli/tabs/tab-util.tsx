@@ -1,7 +1,8 @@
 import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
-import { deepClone, tryLocalStorageGetParsed } from "../service/generic";
+import { deepClone, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
 import type { ComponentClassKey, CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
+import { helper } from "../service/helper";
 
 export function appendTabToLayout(layout: TabsetLayout, tabDef: TabDef) {
   const tabId = getTabIdentifier(tabDef);
@@ -133,6 +134,14 @@ export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
     return true;
   }
   return false;
+}
+
+export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
+  if (!helper.isLayoutPresetKey(layoutPresetKey)) {
+    warn(`${'resolveLayoutPreset'}: invalid layoutKey: ${layoutPresetKey}`);
+    layoutPresetKey = 'layout-preset-0';
+  }
+  return createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey]);
 }
 
 export function computeStoredTabsetLookup(): AllTabsets {

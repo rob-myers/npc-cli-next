@@ -16,49 +16,13 @@ import Main from "./Main";
 import Comments from "./Comments";
 import Viewer from "./Viewer";
 
-// 🚧 remove below
-import { createLayoutFromBasicLayout } from "@/npc-cli/tabs/tab-util";
-
 export default function Root({ children }: React.PropsWithChildren) {
 
   const frontMatter = useSite(x => x.pageMetadata);
   const pathname = usePathname();
   React.useEffect(() => void useSite.api.getPageMetadataFromScript(), [pathname]);
   
-  React.useEffect(() => {
-
-    // 🚧 move elsewhere
-    useSite.api.restoreLayoutFallback(
-    // useSite.api.setTabset(
-      createLayoutFromBasicLayout([[
-        {
-          type: "component",
-          class: "World",
-          filepath: "test-world-1",
-          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-        },
-      ],
-      [
-        {
-          type: "terminal",
-          filepath: "tty-1",
-          profileKey: 'profile1Sh',
-          env: { WORLD_KEY: "test-world-1" },
-        },
-        {
-          type: "terminal",
-          filepath: "tty-2",
-          profileKey: 'profileAwaitWorldSh',
-          env: { WORLD_KEY: "test-world-1" },
-        },
-        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
-      ]])
-    , { preserveRestore: false });
-    // , { overwrite: true });
-
-    useSite.api.initiateBrowser();
-  }, []);
+  React.useEffect(() => useSite.api.initiateBrowser(), []);
   useOnResize(); // Update matchMedia computations
   useBeforeunload(() => void useSite.api.onTerminate());
 
