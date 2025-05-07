@@ -119,7 +119,7 @@ export const glbFadeOut = {
     Lie: { Idle: 0, Run: 0, Walk: 0, Sit: 0, Lie: 0 },
     Run: { Idle: 0.2, Run: 0, Walk: 0.2, Sit: 0.2, Lie: 0 },
     Sit: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0, Lie: 0 },
-    Walk: { Idle: 0.1, Run: 0.2, Walk: 0, Sit: 0.25, Lie: 0 },
+    Walk: { Idle: 0.07, Run: 0.2, Walk: 0, Sit: 0.25, Lie: 0 },
 };
 
 /**
