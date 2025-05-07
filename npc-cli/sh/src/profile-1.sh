@@ -53,11 +53,16 @@ w n.rob.applyTint
 
 w e.grantAccess . rob will kate suit-guy bad-lt
 
-# write selectedNpcKey on click npc
+# write/toggle selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.showSelector(false);
-  w.n[meta.npcKey].showSelector(true);
-  home.selectedNpcKey = meta.npcKey;
+
+  if (meta.npcKey !== home.selectedNpcKey) {
+    w.n[meta.npcKey].showSelector(true);
+    home.selectedNpcKey = meta.npcKey;
+  } else {
+    home.selectedNpcKey = undefined;
+  }
 }' &
 
 # open door on click
@@ -65,12 +70,13 @@ click | map '({meta}, {w}) => {
   meta.door && w.e.toggleDoor(meta.gdKey, {})
 }' &
 
-w | map 'w => w.e.pressMenuFilters.push(
-  (meta) => meta.do === true || meta.floor === true
+w | map '(w, { home }) => w.e.pressMenuFilters.push(
+  (meta) => meta.do === true || (home.selectedNpcKey in w.n && meta.floor === true)
 )'
 
 click --long | map --forever 'async (input, {home, w}) => {
   const npc = w.n[home.selectedNpcKey];
+  if (!npc) return;
   if (input.meta.floor === true && !npc.s.doMeta) npc.look(input);
   else await npc.do(input);
 }' &
@@ -78,6 +84,7 @@ click --long | map --forever 'async (input, {home, w}) => {
 # click navmesh to move selectedNpcKey
 ptags=no-pause; click | filter meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
+  if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;
   npc.moveTo(input).catch(() => {}); // can override
 }' &

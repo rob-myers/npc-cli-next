@@ -111,6 +111,8 @@
   - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
   - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
 
+- ✅ sh: given `home.foo === undefined` we should not get `foo: not found`
+
 - ✅ BUG: testOffMeshDisjoint does not handle case where npcs face each
   - ✅ non-diagonal rectangle intersection
 
