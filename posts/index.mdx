@@ -57,10 +57,10 @@ Can the NPCs fool the Player? <SideNote>
   minHeight={400}
 />
 
-This problem can be "solved" by restricting interactivity.
+This problem is often avoided by restricting interactivity.
 For example, racing games only permit physical collisions,
-whereas puzzle games are often too abstract to express human behaviour.
-In fact many games only offer *aggressive* NPCs, additionally constrained by their time-limited existence.
+and many others (e.g. puzzlers) are too abstract to express human behaviour.
+A vast number of games only offer *aggressive* NPCs, additionally constrained by their time-limited existence.
 So let's assume the NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
 (or even comes close). But why?
@@ -69,11 +69,11 @@ Under this assumption, no known game solves the underlying problem
 
 {/* Developers are wary of state-space explosions. */}
 As behaviours become more complex, the Game's state-space explodes.
-More things go wrong, meaning more debugging, meaning less time for other important tasks.
-The number of states becomes so large it cannot be effectively explored and debugged.
+More and more things go wrong, requiring more and more debugging, meaning less time for other important tasks.
+The number of states becomes too large to be effectively explored and debugged.
 How can composite behaviour be resolved if the developer has never encountered it?
-Even if we've taken it into account, time-limited behaviour may go unnoticed or be misinterpreted by the Player.
-We shouldn't forget we're entertaining the Player,
+Even behaviour accounted for may go unnoticed or be misinterpreted by the Player.
+We're entertaining the Player,
 rather than creating a World in which the Player is situated.
 This leads us to intermediate objectives:
 {/* We are creating a World _around_ the Player. */}
