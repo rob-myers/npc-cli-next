@@ -177,6 +177,9 @@ export function normalizeAbsParts(absParts: string[]) {
   }, [] as string[]);
 }
 
+/**
+ * 🔔 now throws on non-existent path
+ */
 export function resolveNormalized(parts: string[], root: any) {
   return parts.reduce((agg, item) => {
     // Support invocation of functions, where
@@ -189,7 +192,12 @@ export function resolveNormalized(parts: string[], root: any) {
         return agg[item.slice(0, -(matched[1].length + 2))](...args);
       }
     }
-    return agg[item];
+    // return agg[item];
+    if (item in agg) {
+      return agg[item];
+    } else {
+      throw new ShError(`not found: /${parts.join('/')}`, 1);
+    }
   }, root);
 }
 

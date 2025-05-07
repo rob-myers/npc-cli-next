@@ -673,7 +673,8 @@ class cmdServiceClass {
           : null;
       return parts[0] && localCtxt
         ? parts.reduce((agg, part) => agg[part], localCtxt)
-        : resolvePath(arg, root, pwd);
+        : resolvePath(arg, root, pwd)
+      ;
     });
 
     node.exitCode = outputs.length && outputs.every((x) => x === undefined) ? 1 : 0;

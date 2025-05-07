@@ -315,11 +315,12 @@ class semanticsServiceClass {
           // Try to `get` things instead
           for (const arg of args) {
             const result = cmdService.get(node, [arg]);
-            if (result[0] !== undefined || matchFuncFormat(arg) !== null) {
-              yield* result;
+            if (result[0] !== undefined) {
+              yield* result; // defined, or invoked defined-valued function
+            } else if (matchFuncFormat(arg) !== null) {
+              yield* result; // invoked a function returning undefined
             } else {
-              // Throw if get undefined, unless invoked func
-              throw Error();
+              // resolved undefined-valued variable
             }
           }
         } catch {
