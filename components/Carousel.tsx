@@ -227,6 +227,7 @@ const carouselCss = css`
   .embla__button__svg {
     width: var(--slider-next-icon-width);
     height: var(--slider-next-icon-width);
+    padding: 2px;
   }
 
   .slide-label {

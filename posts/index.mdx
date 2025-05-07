@@ -11,6 +11,7 @@ export const metadata = {
 import Carousel from '../components/Carousel';
 import Image from 'next/image';
 
+import TestWebp from '../public/images/first-carousel-image-test.webp';
 import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
 import FirstWithTtyWebp from '../public/images/first-example-with-tty.png.webp';
 
@@ -36,6 +37,10 @@ Can the NPCs fool the Player? <SideNote>
 
 <Carousel
   items={[
+    {
+      img: TestWebp,
+      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
+    },
     {
       img: WorldTwoNpcWebp,
       label: <>Our system <em>NPC CLI</em> is built into this site.</>,

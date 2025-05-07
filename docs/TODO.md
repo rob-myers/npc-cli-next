@@ -84,7 +84,10 @@
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
   - 🚧 redo images in first carousel
+    - https://squoosh.app/editor
     - three images
+    - specific size
+      - try 1500 * 1554 (after resize)
   - clean carousel css e.g. more css variables
   - auto png to webp in public/images
 
