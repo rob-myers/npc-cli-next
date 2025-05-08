@@ -65,13 +65,14 @@ export default function World(props) {
     smallViewport: isSmallViewport(),
 
     // 🔔 hmr issue when initial width = height = 0
-    texFloor: new TexArray({ ctKey: 'floor-tex-array', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
-    texCeil: new TexArray({ ctKey: 'ceil-tex-array', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
-    texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
-    texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
-    texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
-    texNpcAux: new TexArray({ ctKey: 'skins-aux-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
-    texNpcLabel: new TexArray({ ctKey: 'skins-label-array', numTextures: maxNumberOfNpcs, width: skinsLabelsTextureWidth, height: skinsLabelsTextureHeight }),
+    texFloor: new TexArray({ ctKey: 'floor-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
+    texFloorLight: new TexArray({ ctKey: 'floor-light-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
+    texCeil: new TexArray({ ctKey: 'ceil-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
+    texDecor: new TexArray({ ctKey: 'decor-tex', numTextures: 1, width: 0, height: 0 }),
+    texObs: new TexArray({ ctKey: 'obstacle-tex', numTextures: 1, width: 0, height: 0 }),
+    texSkin: new TexArray({ ctKey: 'skins-tex', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
+    texNpcAux: new TexArray({ ctKey: 'skins-aux', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
+    texNpcLabel: new TexArray({ ctKey: 'skins-label', numTextures: maxNumberOfNpcs, width: skinsLabelsTextureWidth, height: skinsLabelsTextureHeight }),
     texVs: { floor: 0, ceiling: 0 }, // versions
 
     crowd: /** @type {*} */ (null),
@@ -207,6 +208,7 @@ export default function World(props) {
       if (mapChanged) {
         const dimension = floorTextureDimension;
         state.texFloor.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
+        state.texFloorLight.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texCeil.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texVs.floor++; // e.g. fix edit const.js
         state.texVs.ceiling++;
@@ -431,6 +433,7 @@ export default function World(props) {
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
  * @property {TexArray} texFloor
+ * @property {TexArray} texFloorLight
  * @property {TexArray} texObs
  * @property {TexArray} texSkin skin texels, one pre skin
  * @property {TexArray} texNpcAux uv re-mapping and skin tinting, one per npc
