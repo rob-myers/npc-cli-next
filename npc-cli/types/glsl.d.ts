@@ -33,7 +33,7 @@ declare module '@react-three/fiber' {
       opacity?: number;
     } & SupportsObjectPick;
 
-    instancedMultiTextureMaterial: (
+    instancedAtlasMaterial: (
       ThreeElement<typeof import('three').ShaderMaterial>
       & InstancedMultiTextureMaterialProps
     );

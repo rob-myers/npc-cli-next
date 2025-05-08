@@ -113,8 +113,8 @@ export default function Obstacles(props) {
       position={[0, 0.001, 0]} // 🚧
       renderOrder={-1}
     >
-      <instancedMultiTextureMaterial
-        key={glsl.InstancedMultiTextureMaterial.key}
+      <instancedAtlasMaterial
+        key={glsl.InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
         atlas={w.texObs.tex}

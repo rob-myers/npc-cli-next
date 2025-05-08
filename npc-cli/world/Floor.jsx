@@ -6,7 +6,7 @@ import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguSca
 import { pause } from "../service/generic";
 import { getGridPattern, drawPolygons } from "../service/dom";
 import { geomorph } from "../service/geomorph";
-import { InstancedMultiTextureMaterial } from "../service/glsl";
+import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -137,8 +137,8 @@ export default function Floor(props) {
       renderOrder={-3} // 🔔 must render before other transparent e.g. npc drop shadow
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
-      <instancedMultiTextureMaterial
-        key={InstancedMultiTextureMaterial.key}
+      <instancedAtlasMaterial
+        key={InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
         atlas={tex}

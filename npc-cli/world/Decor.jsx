@@ -579,8 +579,8 @@ export default function Decor(props) {
       visible={ready}
     >
       {/* <meshBasicMaterial color="red" /> */}
-      {ready && <instancedMultiTextureMaterial
-        key={glsl.InstancedMultiTextureMaterial.key}
+      {ready && <instancedAtlasMaterial
+        key={glsl.InstancedAtlasMaterial.key}
         alphaTest={0.5}
         diffuse={[0.5, 0.5, 0.5]}
         atlas={w.texDecor.tex}

@@ -411,7 +411,7 @@ export const humanZeroShader = {
   `,
 };
 
-export const instancedMultiTextureShader = {
+export const instancedAtlasShader = {
   Vert: /* glsl */`
 
     uniform bool lit;
@@ -564,12 +564,12 @@ const instancedMultiTextureMaterialDefaultProps = {
  * - Obstacles
  * - Floor
  */
-export const InstancedMultiTextureMaterial = shaderMaterial(
+export const InstancedAtlasMaterial = shaderMaterial(
   /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
     instancedMultiTextureMaterialDefaultProps
   ),
-  instancedMultiTextureShader.Vert,
-  instancedMultiTextureShader.Frag,
+  instancedAtlasShader.Vert,
+  instancedAtlasShader.Frag,
 );
 
 /**
@@ -623,7 +623,7 @@ export const HumanZeroMaterial = shaderMaterial(
 extend({
   InstancedWallsShader,
   InstancedLabelsMaterial,
-  InstancedMultiTextureMaterial,
+  InstancedAtlasMaterial,
   InstancedFlatMaterial,
   HumanZeroMaterial,
 });

@@ -6,7 +6,7 @@ import { wallHeight, gmFloorExtraScale, worldToSguScale, sguToWorldScale, instan
 import { pause } from "../service/generic";
 import { drawPolygons } from "../service/dom";
 import { getQuadGeometryXZ } from "../service/three";
-import { InstancedMultiTextureMaterial } from "../service/glsl";
+import { InstancedAtlasMaterial } from "../service/glsl";
 import { geomorph } from "../service/geomorph";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -109,8 +109,8 @@ export default function Ceiling(props) {
       renderOrder={3}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
-      <instancedMultiTextureMaterial
-        key={InstancedMultiTextureMaterial.key}
+      <instancedAtlasMaterial
+        key={InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
         atlas={tex}

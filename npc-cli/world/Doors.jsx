@@ -312,8 +312,8 @@ export default function Doors(props) {
       renderOrder={1}
       visible={state.ready}
     >
-      {state.ready && <instancedMultiTextureMaterial
-        key={glsl.InstancedMultiTextureMaterial.key}
+      {state.ready && <instancedAtlasMaterial
+        key={glsl.InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
         atlas={w.texDecor.tex}
