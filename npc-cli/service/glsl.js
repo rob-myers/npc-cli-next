@@ -526,7 +526,6 @@ const instancedFloorShader = {
         // - instanceMatrix takes unit quad to e.g. "geomorph floor quad"
         // - transform (cx, cz) to (uv.x, uv.y)
         // 🚧 provide inverse matrices in uniform
-
         mat4 invertInstanceMatrix = inverse(instanceMatrix);
         vec4 transformedCenter = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
         vLitCircle.x = transformedCenter.x * uvDimensions.x;
@@ -553,11 +552,13 @@ const instancedFloorShader = {
 
     uniform bool lit;
     uniform vec4 litCircle;
+    uniform sampler2DArray lightAtlas;
+
     uniform float alphaTest;
-    uniform bool objectPick;
-    uniform int objectPickRed;
     uniform sampler2DArray atlas;
     uniform vec3 diffuse;
+    uniform bool objectPick;
+    uniform int objectPickRed;
     uniform float opacity;
 
     varying vec3 vColor;
@@ -573,6 +574,7 @@ const instancedFloorShader = {
 
       vec4 texel = texture(atlas, vec3(vUv, vTextureId));
 
+      //#region object-pick 
       if (objectPick == true) {
         if (texel.a < alphaTest) discard;
 
@@ -582,21 +584,32 @@ const instancedFloorShader = {
           float(int(vInstanceId) & 255) / 255.0,
           1
         );
-      } else {
-        if (texel.a * opacity < alphaTest) discard;
+
+        #include <logdepthbuf_fragment>
         
-        if (lit == true) {// 🔔 uvs within circle are lighter
-          vec2 origin = vLitCircle.xy;
-          float radius = vLitCircle.z;
-          float dist = distance(vUv, origin);
-          // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
-          if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
-          // if (dist <= radius * 0.85) texel += vec4(vec3(0.03, 0.03, 0.0), 0.0);
-        }
-
-        gl_FragColor = texel * vec4(vColor * diffuse, opacity);
+        return;
       }
+      //#endregion
 
+      if (texel.a * opacity < alphaTest) discard;
+      
+      if (lit == true) {
+        
+        // 🔔 uvs within "lit circle" are lighter
+        vec2 origin = vLitCircle.xy;
+        float radius = vLitCircle.z;
+        float dist = distance(vUv, origin);
+        // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
+        if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
+        // if (dist <= radius * 0.85) texel += vec4(vec3(0.03, 0.03, 0.0), 0.0);
+
+        // texel *= vec4(0.5, 0.5, 0.5, 1.0);
+        vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
+        // texel *= lightTexel; // 🚧
+      }
+      
+      gl_FragColor = texel * vec4(vColor * diffuse, opacity);
+      
       #include <logdepthbuf_fragment>
     }
   
@@ -641,6 +654,7 @@ const instancedAtlasDefaultProps = {
 /** @type {import('@/npc-cli/types/glsl').InstancedFloorProps} */
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
+  lightAtlas: emptyDataArrayTexture,
   lit: false,
   litCircle: new THREE.Vector4(0, 0, 0, 0),
 };

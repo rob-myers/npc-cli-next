@@ -46,8 +46,8 @@
   - ✅ texture atlas for light maps
   - ✅ move Floor to separate shader
   - 🚧 test light map
-    - draw a bunch of radial gradients
-    - apply test light map to Floor shader (1st attempt)
+    - ✅ apply test light map to Floor shader (simple mul)
+    - draw a bunch of radial gradients into map
   - geomorph layout symbol induces light map
 
 - 🚧 improve floor lighting

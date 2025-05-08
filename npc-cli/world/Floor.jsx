@@ -57,7 +57,9 @@ export default function Floor(props) {
       w.menu.measure('floor.draw');
       for (const [texId, gmKey] of w.gmsData.seenGmKeys.entries()) {
         state.drawGm(gmKey);
+        state.drawGmLight(gmKey);
         w.texFloor.updateIndex(texId);
+        w.texFloorLight.updateIndex(texId);
         await pause();
       }
       w.texFloor.update();
@@ -99,6 +101,20 @@ export default function Floor(props) {
       drawPolygons(ct, walls2[0], ['#000', null]);
       drawPolygons(ct, walls2[1], ['#555', null]);
     },
+    drawGmLight(gmKey) {
+      const { ct } = w.texFloorLight;
+      const gm = w.geomorphs.layout[gmKey];
+
+      ct.fillStyle = 'rgba(255, 0, 0, 0.2)';
+      ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
+
+      // 🚧
+      // ct.resetTransform();
+      // ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
+      // ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
+
+
+    },
     onUpdateMaterial(material) {
       /** @type {import("../types/glsl").InstancedFloorKeys} */
       const uniformKey = 'litCircle';
@@ -118,7 +134,6 @@ export default function Floor(props) {
   }), { reset: { grid: false, largeGrid: false } });
 
   w.floor = state;
-  const { tex } = w.texFloor;
 
   React.useEffect(() => {
     state.positionInstances();
@@ -141,11 +156,12 @@ export default function Floor(props) {
         key={InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
-        atlas={tex}
+        atlas={w.texFloor.tex}
         depthWrite={false} // fix z-fighting
         diffuse={[1, 1, 1]}
         objectPickRed={2}
         alphaTest={0.5}
+        lightAtlas={w.texFloorLight.tex}
         lit={state.lit}
         litCircle={state.litCircle}
         onUpdate={state.onUpdateMaterial}
@@ -171,6 +187,7 @@ export default function Floor(props) {
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
+ * @property {(gmKey: Key.Geomorph) => void} drawGmLight
  * @property {(material: THREE.ShaderMaterial) => void} onUpdateMaterial
  * @property {() => void} positionInstances
  */

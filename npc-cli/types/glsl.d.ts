@@ -62,6 +62,7 @@ export interface InstancedAtlasProps {
 export type InstancedAtlasKeys = keyof InstancedAtlasProps;
 
 export interface InstancedFloorProps extends InstancedAtlasProps {
+  lightAtlas: import('three').DataArrayTexture;
   lit?: boolean;
   /** `(cx, cz, r, opacity)` */
   litCircle?: import('three').Vector4; // constrain beyond Vector4Input
