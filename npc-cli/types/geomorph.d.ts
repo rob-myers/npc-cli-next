@@ -476,6 +476,7 @@ declare namespace Geomorph {
   }
 
   interface UvRect extends Geom.RectJson {
+    key: string;
     /** Relative to parent npcClassKey */
     sheetId: number;
   }

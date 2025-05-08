@@ -210,7 +210,11 @@ export async function* handleContextMenu({ api, w, datum: e }) {
         break;
       case "follow":
         if (typeof meta.npcKey === "string") {
-          w.e.toggleFollowNpc(meta.npcKey);
+          if (w.e.isFollowingNpc(meta.npcKey)) {
+            w.view.stopFollowing();
+          } else {
+            w.e.followNpc(meta.npcKey);
+          }
           w.cm.update();
         }
         break;
@@ -271,7 +275,7 @@ export const setupOnSlowNpc = ({ w, args }) => {
       case 'noop': // do nothing
         break;
       default: // both stop
-        npc.stopMoving(true);
+        npc.stopMoving();
         break;
     }
   };
@@ -311,7 +315,7 @@ export async function* w(ctxt) {
   if (stdin !== true) {
     const func = api.generateSelector(
       api.parseFnOrStr(args[0]),
-      args.slice(1).map(x => api.parseJsArg(x)),
+      args.slice(1).map(api.parseJsArg),
     );
     const v = func(w, ctxt);
     yield v instanceof Promise ? Promise.race([v, getHandleProm()]) : v;

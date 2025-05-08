@@ -2,7 +2,7 @@ import type Sh from "mvdan-sh";
 import cloneWithRefs from "lodash.clonedeep";
 //@ts-ignore
 import getopts from "getopts";
-import { testNever, last } from "../service/generic";
+import { testNever, last, error } from "../service/generic";
 
 // We lazy-load the shell parser `mvdan-sh`.
 
@@ -818,7 +818,7 @@ class ParseShService {
         ? { key: "incomplete" as "incomplete" }
         : { key: "complete" as "complete", parsed: parsed!, src };
     } catch (e) {
-      console.error(e);
+      error(e);
       return { key: "failed" as "failed", error: `${(e as any).Error()}` };
     }
   }

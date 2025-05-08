@@ -526,12 +526,15 @@ class GeomorphService {
    * - `<image>` i.e. background image in symbol
    * - `<polygon>`
    * @private
-   * @param {{ tagName: string; attributes: Record<string, string>; title: string; }} tagMeta
-   * @param {Meta} meta
-   * @param {number} [scale]
+   * @param {object} opts
+   * @param {{ tagName: string; attributes: Record<string, string>; title: string; }} opts.tagMeta
+   * @param {Meta} [opts.meta]
+   * @param {number} [opts.scale] Default `scale` is `sguToWorldScale * sguSymbolScaleDown`.
+   * @param {Mat} [opts.matrix] Ancestral transform
    * @returns {Geom.Poly | null}
    */
-  extractPoly(tagMeta, meta, scale = sguToWorldScale * sguSymbolScaleDown) {
+  extractPoly(opts) {
+    const {tagMeta, meta = {}, scale = sguToWorldScale * sguSymbolScaleDown} = opts;
     const { tagName, attributes: a, title } = tagMeta;
     let poly = /** @type {Geom.Poly | null} */ (null);
 
@@ -559,15 +562,17 @@ class GeomorphService {
       return null;
     }
 
-    // 🔔 DOMMatrix not available server-side
-    const { transformOrigin } = geomorph.extractTransformData(tagMeta);
-    if (a.transform && transformOrigin) {
-      poly.translate(-transformOrigin.x, -transformOrigin.y)
-        .applyMatrix(new Mat(a.transform))
-        .translate(transformOrigin.x, transformOrigin.y);
-    } else if (a.transform) {
-      poly.applyMatrix(new Mat(a.transform));
+    const matrix = new Mat(a.transform);
+    const transformOrigin = geomorph.extractTransformData(tagMeta)?.transformOrigin ?? { x: 0, y: 0 };
+
+    if (opts.matrix !== undefined) {
+      matrix.preMultiply(opts.matrix);
+      opts.matrix.transformPoint(transformOrigin);
     }
+    poly.translate(-transformOrigin.x, -transformOrigin.y)
+      .applyMatrix(matrix)
+      .translate(transformOrigin.x, transformOrigin.y)
+    ;
 
     poly.scale(scale);
     poly.meta = meta;
@@ -627,7 +632,7 @@ class GeomorphService {
    */
   extractTransformData({ tagName, attributes: a }) {
     const style = geomorph.extractStyles(a.style ?? "");
-    const transformOrigin = (style['transform-origin'] || '').trim();
+    const transformOrigin = (style['transform-origin'] ?? '').trim();
     const transformBox = style['transform-box'] || null;
     const [xPart, yPart] = transformOrigin.split(/\s+/);
     
@@ -638,19 +643,17 @@ class GeomorphService {
       transformOrigin && error(`${tagName}: transform-box/origin: "${transformBox}"/"${transformOrigin}": transform-origin must have an "x part" and a "y part"`);
       return { transformOrigin: null, transformBox };
     }
-
-    if (transformBox) {
-      if (transformBox === 'fill-box') {
-        if (tagName === 'rect' || tagName === 'use') {
-          bounds = new Rect(Number(a.x || 0), Number(a.y || 0), Number(a.width || 0), Number(a.height || 0));
-        } else if (tagName === 'path') {
-          const pathPoly = geom.svgPathToPolygon(a.d);
-          pathPoly && (bounds = pathPoly.rect) || error(`path.d parse failed: ${a.d}`);
-        }
-      } else {
-        error(`${tagName}: transform-box/origin: "${transformBox}"/"${transformOrigin}": only fill-box is supported`);
-        return { transformOrigin: null, transformBox };
+    
+    if (transformBox === 'fill-box') {
+      if (tagName === 'rect' || tagName === 'use') {
+        bounds = new Rect(Number(a.x || 0), Number(a.y || 0), Number(a.width || 0), Number(a.height || 0));
+      } else if (tagName === 'path') {
+        const pathPoly = geom.svgPathToPolygon(a.d)?.cleanFinalReps();
+        pathPoly && (bounds = pathPoly.rect) || error(`path.d parse failed: ${a.d}`);
       }
+    } else if (transformBox !== null) {
+      error(`${tagName}: transform-box/origin: "${transformBox}"/"${transformOrigin}": only fill-box is supported`);
+      return { transformOrigin: null, transformBox };
     }
 
     const [x, y] = [xPart, yPart].map((rep, i) => {
@@ -1036,7 +1039,7 @@ class GeomorphService {
 
         const poly = parent.tagName === "use" && meta.decor === true
           ? geomorph.extractDecorPoly({ ...parent, title: contents }, meta)
-          : geomorph.extractPoly({ ...parent, title: contents }, meta)
+          : geomorph.extractPoly({ tagMeta: { ...parent, title: contents }, meta })
         ;
         
         if (poly === null) {
@@ -1132,6 +1135,7 @@ class GeomorphService {
     });
     const tagStack = /** @type {HtmlParser2Tag[]} */ ([]);
     const folderStack = /** @type {string[]} */ ([]);
+    let insideIgnoredFolder = false;
     
     /** Matrices of transforms arising from `g.transform`s */
     const matrixStack = /** @type {Mat[]} */ ([]);
@@ -1153,6 +1157,7 @@ class GeomorphService {
         
         if (parent.tagName === "g") {// track folders, transforms
           folderStack.push(contents);
+          insideIgnoredFolder = folderStack.some(x => x.startsWith('_'));
           if ('transform' in parent.attributes) {
             matrixStack.push(new Mat().setMatrixValue(parent.attributes.transform));
           }
@@ -1162,28 +1167,32 @@ class GeomorphService {
         if (folderStack[0] !== 'uv-map') {
           return; // must be inside root folder "uv-map"
         }
+        if (insideIgnoredFolder === true) {
+          return; // must not be inside some folder "_foo"
+        }
 
         const baseName = contents;
         if (baseName.startsWith('_')) {
-          return; // ignore underscore-prefixed items e.g. _demo-icon
+          return; // label cannot be "_foo"
         }
         
-        const poly = geomorph.extractPoly({ ...parent, title: contents }, {}, 1);
+        const poly = geomorph.extractPoly({
+          tagMeta: { ...parent, title: contents },
+          scale: 1,
+          ...matrixStack.length !== 0 && {
+            matrix: matrixStack.reduce((agg, m) => agg.postMultiply(m), new Mat())
+          },
+        });
 
         if (poly === null) {
-          warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: failed to parse polygon`);
-          return;
-        }
-
-        if (matrixStack.length !== 0) {
-          const matrix = matrixStack.reduce((agg, m) => agg.postMultiply(m), new Mat());
-          poly.applyMatrix(matrix);
+          return warn(`${'parseUvMapRects'}: ${logLabel}: ${parent?.tagName} ${contents}: failed to parse polygon`);
         }
 
         // output sub-rect of [0, 1] x [0, 1]
         const extendedName = folderStack.slice(1).concat(baseName).join('-');
         const uvRectKey = extendedName; // e.g. `base-head-right`
         output.uvMap[uvRectKey] = {
+          key: uvRectKey,
           sheetId,
           ...poly.rect.scale(1 / output.width, 1 / output.height).precision(8).json,
         };
@@ -1192,6 +1201,7 @@ class GeomorphService {
         const tag = /** @type {HtmlParser2Tag} */ (tagStack.pop());
         if (tagName === "g") {
           folderStack.pop();
+          insideIgnoredFolder = folderStack.some(x => x.startsWith('_'));
           if ('transform' in tag.attributes) {
             matrixStack.pop();
           }

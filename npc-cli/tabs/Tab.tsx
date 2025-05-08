@@ -44,10 +44,11 @@ export function Tab({ def, api, state: tabState }: TabProps) {
     return (
       <Terminal
         disabled={tabState.disabled}
-        setTabsEnabled={state.setTabsEnabled}
-        sessionKey={def.filepath}
         env={{ ...def.env, CACHE_SHORTCUTS: { w: "WORLD_KEY" }}}
         onKey={state.onTerminalKey}
+        profileKey={def.profileKey}
+        sessionKey={def.filepath}
+        setTabsEnabled={state.setTabsEnabled}
       />
     );
   }

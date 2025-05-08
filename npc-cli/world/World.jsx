@@ -77,7 +77,9 @@ export default function World(props) {
     crowd: /** @type {*} */ (null),
 
     view: /** @type {*} */ (null),
-    floor: /** @type {*} */ ({}),
+    floor: /** @type {State['floor']} */ ({
+      litCircle: new THREE.Vector4(),
+    }),
     ceil: /** @type {*} */ ({}),
     decor: /** @type {*} */ (null),
     obs: /** @type {*} */ (null),
@@ -95,6 +97,7 @@ export default function World(props) {
 
     e: /** @type {*} */ (null), // useHandleEvents
     n: {}, // w.npc.npc
+    a: {}, // w.npc.byAgId
     d: {}, // w.door.byKey
 
     isReady(connectorKey) {
@@ -105,18 +108,7 @@ export default function World(props) {
       }
       return ready;
     },
-    onDebugTick() {
-      state.timer.update();
-      // Animate camera while paused
-      if (
-        Object.keys(state.view.dst).length > 0 // 🚧
-      ) {
-        state.view.onTick(state.timer.getDelta());
-        state.reqAnimId = requestAnimationFrame(state.onDebugTick);
-      } else if (state.disabled === true) {
-        state.stopTick();
-      }
-    },
+
     onTick() {
       state.reqAnimId = requestAnimationFrame(state.onTick);
       state.timer.update();
@@ -294,6 +286,8 @@ export default function World(props) {
           texArray.ct.drawImage(img, 0, 0);
           invert && invertCanvas(texArray.ct.canvas, getContext2d('invert-copy'), getContext2d('invert-mask'));
           texArray.updateIndex(texId);
+          // texArray.tex.wrapS = THREE.RepeatWrapping;
+          // texArray.tex.wrapT = THREE.RepeatWrapping;
         }));
 
         texArray.update();
@@ -334,6 +328,7 @@ export default function World(props) {
     state.view.syncRenderMode();
     if (!state.disabled) {
       state.onTick();
+      state.view.didTweenPaused = false;
     }
     state.events.next({ key: state.disabled ? 'disabled' : 'enabled' });
     return () => state.stopTick();
@@ -427,6 +422,8 @@ export default function World(props) {
  * Events state i.e. useHandleEvents state
  * @property {import("./Npcs").State['npc']} n
  * Shortcut for `w.npc.npc`
+ * @property {import("./Npcs").State['byAgId']} a
+ * Shortcut for `w.npc.byAgId`
  * @property {import("./Doors").State['byKey']} d
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm
@@ -447,7 +444,6 @@ export default function World(props) {
  * @property {import('@recast-navigation/core').Crowd} crowd
  * @property {boolean} smallViewport Was viewport small when we mounted World?
  *
- * @property {() => void} onDebugTick
  * @property {() => void} onTick
  * @property {(connectorKey?: string) => boolean} isReady
  * @property {() => void} stopTick

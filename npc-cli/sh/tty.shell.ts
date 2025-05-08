@@ -1,10 +1,10 @@
 import type * as Sh from "./parse";
-import { testNever } from "../service/generic";
+import { error, testNever } from "../service/generic";
 import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
 import { ansi } from "./const";
-import { ProcessError, ShError } from "./util";
+import { ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { ProcessMeta, ProcessStatus } from "./session.store";
 import { semanticsService } from "./semantics.service";
@@ -229,7 +229,7 @@ export class ttyShellClass implements Device {
     } catch (e) {
       if (e instanceof ProcessError) {
         // 🔔 possibly via preProcessWrite
-        console.error(`${meta.sessionKey}${meta.pgid ? " (background)" : ""}: ${meta.pid}: ${e.code}`);
+        ttyError(`${meta.sessionKey}${meta.pgid ? " (background)" : ""}: ${meta.pid}: ${e.code}`);
         // Ctrl-C code is 130 unless overridden
         term.exitCode = e.exitCode ?? 130; // 🚧 or 137?
       } else if (e instanceof ShError) {
@@ -265,7 +265,7 @@ export class ttyShellClass implements Device {
         case "failed": {
           this.xterm.shouldEcho = true;
           const errMsg = `mvdan-sh: ${result.error.replace(/^src\.sh:/, "")}`;
-          console.error(errMsg);
+          error(errMsg);
           this.io.write({ key: "error", msg: errMsg });
           this.buffer.length = 0;
           this.prompt("$");
@@ -296,7 +296,7 @@ export class ttyShellClass implements Device {
       if (e instanceof ProcessError) {
         semanticsService.handleTopLevelProcessError(e);
       } else {
-        console.error("unexpected error propagated to tty.shell", e);
+        error("unexpected error propagated to tty.shell", e);
       }
       this.prompt("$");
     } finally {

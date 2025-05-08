@@ -1,27 +1,117 @@
----
-key: index
-date: 2024-06-15
-info: Home page
-giscusTerm: /home
-label: home
-path: /
-tags: 
-  - cli web 
-  - dev 
-  - behaviour video games
----
+export const metadata = {
+  key: 'index',
+  date: '2025-04-05',
+  info: 'Blog Home page',
+  giscusTerm: '/blog',
+  label: 'blog-home',
+  path: '/',
+  tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
+};
+
+import Carousel from '../components/Carousel';
+import Image from 'next/image';
+
+import TestWebp from '../public/images/first-carousel-image-test.webp';
+import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
+import FirstWithTtyWebp from '../public/images/first-example-with-tty.png.webp';
 
 # Home
 
 ## Intent
 
-This website focuses on a fun but difficult problem.
+This blog is driven by a fun yet challenging problem.
 
 <Card id="underlying-problem"> 
 **Underlying Problem**
 
-Create a video game where every Non-Player Character <SideNote>A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
-behaves like a human-controlled character. The Player cannot distinguish the NPCs from human-controlled characters.
-{/* where the Player cannot distinguish any Non-Player Character <SideNote>A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
-from human-controlled characters. */}
+Create a video game whose Non-Player Characters behave just like human-controlled characters.
 </Card>
+
+The underlying problem is related to Turing's _Imitation Game_:
+the Player is the interrogator,
+the questions are video game interactions.
+Can the NPCs fool the Player? <SideNote>
+  A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote> <SideNote>
+  Imagine a human hired to "play the part" of an NPC,
+  rather than another human Player.</SideNote>
+
+<Carousel
+  items={[
+    {
+      img: TestWebp,
+      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
+    },
+    {
+      img: WorldTwoNpcWebp,
+      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
+      objectPosition: '0% 0%',
+    },
+    {
+      img: FirstWithTtyWebp,
+      label: <>CLI stands for <em>Command Line Interface.</em></>,
+      objectPosition: '0% 70%',
+    },
+  ]}
+  filter="brightness(1)"
+  maxHeight={400}
+  minHeight={400}
+/>
+
+This problem is often avoided by restricting interactivity.
+For example, racing games only permit physical collisions,
+and many others (e.g. puzzlers) are too abstract to express human behaviour.
+A vast number of games only offer *aggressive* NPCs, additionally constrained by their time-limited existence.
+So let's assume the NPCs can move freely through a 3D environment without time constraints.
+Under this assumption, no known game solves the underlying problem
+(or even comes close). But why?
+
+> Because it's too damn hard!
+
+{/* Developers are wary of state-space explosions. */}
+As behaviours become more complex, the Game's state-space explodes.
+More and more things go wrong, requiring more and more debugging, meaning less time for other important tasks.
+The number of states becomes too large to be effectively explored and debugged.
+How can composite behaviour be resolved if the developer has never encountered it?
+Even behaviour accounted for may go unnoticed or be misinterpreted by the Player.
+We're entertaining the Player,
+rather than creating a World in which the Player is situated.
+This leads us to intermediate objectives:
+{/* We are creating a World _around_ the Player. */}
+{/* It must be interwoven with the Player's experience, not an independent set of "plans". */}
+
+<Card id="underlying-problem"> 
+**Our Objectives**
+
+1. Build real-time control systems for NPCs.
+2. Enable a Game Master to act indistinguishably from many humans. <SideNote>
+  A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
+</Card>
+
+They are a step towards the Underlying Problem.
+If one human can appear as many,
+we can try to learn how to simulate his/her behaviour.
+Let's begin by seeing the system in action.
+
+[use preset empty-tabs](/internal/set-tabs/empty-layout) ✅
+
+[set preset 'layout-preset-0'](/internal/set-tabs/layout-preset-0) ✅
+
+[reset current tabset](/internal/reset-tabs) ✅
+
+[test mutate current tabset](/internal/test-mutate-tabs) ✅
+
+[remember current tabset](/internal/remember-tabs) ✅
+
+[open tab hello-world-1](/internal/open-tab/HelloWorld?suffix=1) ✅
+
+[open Tty tab](/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}) ✅
+
+[open World tab](/internal/open-tab/World?suffix=2&mapKey=small-map-1) ✅
+
+[open Tty tab with PROFILE with spaces via `%20`](/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!"}) ✅
+
+[close tab hello-world-1](/internal/close-tab/hello-world-1) ✅
+
+[change "test-world-1" tab props: mapKey=small-map-1 ](/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}) ✅
+
+[change "test-world-1" tab props: mapKey=demo-map-1 ](/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}) ✅

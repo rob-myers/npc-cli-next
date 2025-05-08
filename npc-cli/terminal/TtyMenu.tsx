@@ -6,20 +6,14 @@ import { localStorageKey, zIndexTabs } from "../service/const";
 import type { Session } from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { faderOverlayCss, pausedControlsCss } from "../world/overlay-menu-css";
 
 export default function TtyMenu(props: Props) {
   const update = useUpdate();
 
   const state = useStateRef(() => ({
-    debugWhilePaused: false,
     xterm: props.session.ttyShell.xterm,
     touchMenuOpen: true,
 
-    clickEnableAll() {
-      props.setTabsEnabled(true);
-      state.xterm.xterm.focus();
-    },
     async onClickMenu(e: React.MouseEvent) {
       const target = e.target as HTMLElement;
       state.xterm.xterm.scrollToBottom();
@@ -50,11 +44,8 @@ export default function TtyMenu(props: Props) {
       } else if (target.classList.contains("down")) {
         state.xterm.reqHistoryLine(-1);
       }
-      // xterm.xterm.focus();
-    },
-    toggleDebug() {// hiding overlay permits user to use terminal whilst paused
-      state.debugWhilePaused = !state.debugWhilePaused;
-      update();
+      // on mobile avoid close keyboard
+      state.xterm.xterm.focus();
     },
     toggleTouchMenu() {
       const next = !state.touchMenuOpen;
@@ -82,45 +73,23 @@ export default function TtyMenu(props: Props) {
 
   return <>
     <div
-      css={faderOverlayCss}
-      className={cx({ faded: props.disabled && !state.debugWhilePaused })}
-      onPointerUp={() => props.setTabsEnabled(true)}
-    />
-
-    <div
       css={menuCss}
-      className={cx({ disabled: props.disabled && !state.debugWhilePaused, open: state.touchMenuOpen })}
+      className={cx({ open: state.touchMenuOpen })}
       onClick={state.onClickMenu}
     >
-
       <div className="toggle-and-paused-controls">
-
         <div className="toggle" onClick={state.toggleTouchMenu}>
           {state.touchMenuOpen ? ">" : "<"}
         </div>
-
-        {props.disabled && (// Overlay Buttons
-          <div css={pausedControlsCss}>
-            <button className="text-white" onClick={state.clickEnableAll}>
-              enable
-            </button>
-            <button
-              onClick={state.toggleDebug}
-              className={state.debugWhilePaused ? 'text-green' : undefined}
-            >
-              debug
-            </button>
-          </div>
-        )}
       </div>
       
       <div className="touch-menu">
-        <div
+        {/* <div
           className={cx("icon can-type", { enabled: state.xterm.canType() })}
           title={`text input ${state.xterm.canType() ? "enabled" : "disabled"}`}
         >
           $
-        </div>
+        </div> */}
         <div className="icon paste" title="or press e.g. Cmd+V">
           paste
         </div>
@@ -202,11 +171,6 @@ const menuCss = css`
       color: #ddd;
       border: 2px solid #444;
     }
-  }
-
-  &.disabled .touch-menu {
-    filter: brightness(0.4);
-    pointer-events: none;
   }
 
   .icon {

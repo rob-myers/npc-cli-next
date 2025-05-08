@@ -1,5 +1,13 @@
 # Blender Experiences
 
+## Gotchas
+
+- 🔔 Our model has two layers e.g. head, overlay head.
+  Ensure you're selecting the correct bit!
+
+- 🔔 Selecting a face under another face.
+  Use wireframe mode (shift-z)
+
 ## Edit Mode
 
 If we duplicate quad it inherits UVs.

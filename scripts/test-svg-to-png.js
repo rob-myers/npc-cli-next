@@ -1,38 +1,57 @@
+/**
+ * Usage:
+ * - npm run test-svg-to-png-fast media/debug/node-canvas-bug.svg
+ * - npm run test-svg-to-png-fast media/debug/minecraft-testing.svg
+ * - npm run test-svg-to-png media/debug/minecraft-testing.svg
+ * - npm run test-svg-to-png media/debug/test-human-0.0.tex.svg
+ * - npm run test-svg-to-png media/debug/test-gradient-fill.svg
+ */
 import fs from 'fs';
+import { promises as stream } from 'stream';
 import path from 'path';
-import { Canvas, loadImage, Image } from '@napi-rs/canvas';
+import napiRsCanvas from '@napi-rs/canvas';
+import nodeCanvas from 'canvas';
+
+const napiRsCanvasOutput = false;
 
 const [ ,, ...args] = process.argv;
 
-/**
- * Usage:
- * ```sh
- * cd REPO_ROOT
- * npm run test-svg-to-png media/debug/test-gradient-fill.svg
- * ```
- */
 (async function main() {
 
   const [inputSvgFilePath] = args;
   const outputSvgFilePath = `${inputSvgFilePath}.png`;
 
+  // we import SVG using node-canvas, because loadImage
+  // supports most features, e.g.
+  // - <image> with data-url
+  // - `url(&quot;foo&quot;)` in style
   const svgPath = path.resolve(process.cwd(), inputSvgFilePath);
-  // ℹ️ usual approach
-  // const image = await loadImage(svgPath);
-
-  // 🔔 fix extra &quot; in urls
-  // https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
-  const contents = fs.readFileSync(svgPath).toString();
-  const dataUrl = `data:image/svg+xml;utf8,${
-    // contents
-    contents.replace(/url\(&quot;(.+)&quot;\)/g, 'url($1)')
-  }`;
-  const image = await loadImage(dataUrl);
-  
-  const canvas = new Canvas(image.width, image.height);
+  const image = await nodeCanvas.loadImage(svgPath);
+  const canvas = new nodeCanvas.Canvas(image.width, image.height);
   canvas.getContext('2d').drawImage(image, 0, 0);
 
-  const pngData = await canvas.encode('png');
-  fs.writeFileSync(outputSvgFilePath, pngData);
+  // 🔔 must explicitly add svg.{width,height} in BoxySVG
+  console.log({ width: image.width, height: image.height });
+
+  if (napiRsCanvasOutput) {
+    
+    // we export using @napi-rs/canvas, because
+    // we've observed nondeterministic output in node-canvas
+    const dataUrl = canvas.toDataURL();
+    const napiRsImage = await napiRsCanvas.loadImage(dataUrl);
+    const canvas2 = new napiRsCanvas.Canvas(napiRsImage.width, napiRsImage.height);
+    canvas2.getContext('2d').drawImage(napiRsImage, 0, 0);
+    const pngData = await canvas2.encode('png');
+    await fs.promises.writeFile(outputSvgFilePath, pngData);
+
+  } else {
+
+    // export using node-canvas
+    // 🔔 may be nondeterministic
+    await stream.pipeline(
+      canvas.createPNGStream({}),
+      fs.createWriteStream(outputSvgFilePath),
+    );
+  }
 
 })();

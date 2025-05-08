@@ -2,50 +2,230 @@ import type { StateCreator } from "zustand";
 import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { focusManager } from "@tanstack/react-query";
+import { Model, type IJsonRowNode } from "flexlayout-react";
 
 // 🔔 avoid unnecessary HMR: do not reference view-related consts
-import {
-  defaultSiteTopLevelState,
-  siteTopLevelKey,
-  allArticlesMeta,
-} from "./const";
+import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta } from "./const";
 
-import {
-  safeJsonParse,
-  tryLocalStorageGet,
-  tryLocalStorageSet,
-  info,
-  isDevelopment,
-  error,
-} from "@/npc-cli/service/generic";
+import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopment, error, deepClone, warn, tryLocalStorageRemove } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
+import { isTouchDevice } from "@/npc-cli/service/dom";
+import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
+import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
   articlesMeta: allArticlesMeta,
-  browserLoaded: false,
   discussMeta: {},
-  frontMatter: {} as FrontMatter,
-  mainOverlay: false,
+  draggingView: false,
+  pageMetadata: {} as PageMetadata,
   navOpen: false,
+  tabset: computeStoredTabsetLookup(),
+  tabsetUpdates: 0,
   viewOpen: false,
 
   api: {
-    getFrontMatterFromScript() {
+
+    //#region tabset
+
+    changeTabProps(tabId, partialProps) {
+      const layout = get().tabset.synced;
+      const found = extractTabNodes(layout).find(x => x.id === tabId);
+      if (found === undefined) {
+        throw Error(`${'changeTabProps'} cannot find tabId "${tabId}"`);
+      }
+
+      if (found.config.type === 'component') {
+        Object.assign(found.config.props, partialProps);
+      } else if (found.config.type === 'terminal') {
+        throw Error(`${'changeTabProps'} cannot change terminal "${tabId}" (useSession instead)`);
+      } else {
+        throw Error(`${'changeTabProps'} unexpected tab config "${JSON.stringify(found.config)}"`);
+      }
+
+      set(({ tabset: lookup }) => ({ tabset: {...lookup,
+        started: layout,
+        synced: deepClone(layout),
+      } }));
+    },
+
+    closeTab(tabId) {
+      const lookup = get().tabset;
+      const tabset = lookup.synced;
+
+      if (removeTabFromLayout(tabset, tabId) === true) {
+        set(({ tabsetUpdates }) => ({
+          tabset: { ...lookup,
+            synced: { ...tabset },
+            started: deepClone(tabset),
+          },
+          tabsetUpdates: tabsetUpdates + 1,
+        }))
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
+      return layout;
+    },
+
+    openTab(tabDef) {
+      const lookup = useSite.getState().tabset;
+      const next = {...appendTabToLayout(lookup.synced, tabDef)};
+
+      useSite.setState(({ tabsetUpdates }) => ({
+        tabset: { ...lookup,
+          started: next,
+          synced: deepClone(next),
+        },
+        tabsetUpdates: tabsetUpdates + 1,
+      }));
+    },
+
+    rememberCurrentTabs() {
+      const lookup = get().tabset;
+      const restorable = deepClone(lookup.synced);
+      set(({ tabset: { ...lookup, saved: restorable }}));
+      // remember in case `ensureTabset(current.key, true)` later
+      tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
+    },
+
+    restoreLayoutFallback(fallbackLayout, opts = {}) {
+      if (typeof fallbackLayout === 'string') {
+        fallbackLayout = resolveLayoutPreset(fallbackLayout);
+      }
+
+      if (isTouchDevice()) {// better UX on mobile
+        fallbackLayout = flattenLayout(deepClone(fallbackLayout));
+      }
+
+      // restore from localStorage if possible
+      const next = useSite.api.tryRestoreLayout(fallbackLayout);
+      // hard-reset returns to `saved` or parameter `layout`
+      const restorable = opts.preserveRestore === true
+        && get().tabset.saved || deepClone(fallbackLayout)
+      ;
+
+      tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        started: deepClone(next),
+        synced: next,
+        saved: restorable,
+      }}));
+
+      return next;
+    },
+
+    revertCurrentTabset() {
+      const lookup = get().tabset;
+      const next = lookup.saved;
+
+      set(({ tabsetUpdates }) => ({
+        tabset: { ...lookup,
+          started: deepClone(next),
+          synced: deepClone(next),
+        },
+        // force <Tabs> to compute new model, else revert only works 1st time
+        tabsetUpdates: tabsetUpdates + 1,
+      }));
+      
+      // overwrite localStorage too
+      tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(next));
+    },
+
+    setTabset(layout, opts) {
+      if (typeof layout === 'string') {
+        layout = resolveLayoutPreset(layout);
+      }
+
+      if (isTouchDevice()) {// better UX on mobile
+        layout = flattenLayout(deepClone(layout));
+      }
+
+      set(({ tabset: lookup, tabsetUpdates }) => ({
+        tabset: { ...lookup,
+          started: deepClone(layout),
+          synced: deepClone(layout),
+        },
+        ...opts?.overwrite === true && { tabsetUpdates: tabsetUpdates + 1, }
+      }));
+    },
+
+    storeCurrentLayout(model) {
+      const serializable = model.toJson();
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        // tabset.synced doesn't drive <Tabs> but keeps track of its current state
+        synced: serializable.layout,
+      }}));
+      tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(serializable.layout));
+    },
+
+    syncCurrentTabset(model) {
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        started: model.toJson().layout,
+      }}));
+    },
+    
+    testMutateLayout() {// 🔔 debug only
+      
+      const next = createLayoutFromBasicLayout([[
+        { type: "component", class: "HelloWorld", filepath: "hello-world-2", props: {} },
+        { type: "component", class: "HelloWorld", filepath: "hello-world-3", props: {} },
+        {
+          type: "component",
+          class: "World",
+          filepath: "test-world-1",
+          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
+          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+        },
+      ],
+      [
+        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+      ]]);
+
+      set(({ tabset: lookup }) => ({ tabset: { ...lookup,
+        started: next,
+      }}));
+    },
+
+    tryRestoreLayout(layout) {
+      const jsonModelString = tryLocalStorageGet(`tabset@${'synced'}`);
+      if (jsonModelString === null) {
+        return layout;
+      }
       try {
-        // 🔔 read frontmatter from <script id="frontmatter-json">
-        const script = document.getElementById('frontmatter-json') as HTMLScriptElement;
-        const frontMatter = JSON.parse(JSON.parse(script.innerHTML)) as FrontMatter;
-        // console.log({frontMatter});
-        set({
-          articleKey: frontMatter.key ?? null,
-          frontMatter,
-        }, undefined, "set-article-key");
-        return frontMatter;
+        let restored = JSON.parse(jsonModelString) as IJsonRowNode;
+        // create Model and serialize to validate
+        // 🔔 assume rootOrientationVertical true
+        restored = Model.fromJson(layoutToModelJson(restored, true)).toJson().layout;
+        // props could change over time
+        restored = useSite.api.migrateRestoredLayout(restored);
+
+        return restored;
       } catch (e) {
-        error(`frontMatter failed (script#frontmatter-json): using fallback frontMatter`);
+        warn("tryRestoreLayout", e);
+        return layout;
+      }
+    },
+
+    //#endregion
+
+    getPageMetadataFromScript() {// 🔔 read metadata from <script id="page-metadata-json">
+      try {
+        const script = document.getElementById('page-metadata-json') as HTMLScriptElement;
+        const pageMetadata = JSON.parse(JSON.parse(script.innerHTML)) as PageMetadata;
+        // console.log({pageMetadata});
+        set({
+          articleKey: pageMetadata.key ?? null,
+          pageMetadata,
+        }, undefined, "set-article-key");
+        return pageMetadata;
+      } catch (e) {
+        error(`pageMetadata failed: script#page-metadata-json: using fallback pageMetadata`);
         console.error(e);
-        return { key: 'fallback-frontmatter' } as FrontMatter;
+        return { key: 'fallback-page-metadata' } as PageMetadata;
       }
     },
 
@@ -54,7 +234,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       if (isDevelopment()) {
         connectDevEventsWebsocket();
-
         /**
          * In development refetch on refocus can automate changes.
          * In production, see https://github.com/TanStack/query/pull/4805.
@@ -69,33 +248,13 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         });
       }
 
-      function onGiscusMessage(message: MessageEvent) {
-        if (message.origin === "https://giscus.app" && message.data.giscus?.discussion) {
-          const discussion = message.data.giscus.discussion as GiscusDiscussionMeta;
-          info("giscus meta", discussion);
-          const { articleKey } = get();
-          if (articleKey) {
-            set(
-              ({ discussMeta: comments }) => ({
-                discussMeta: { ...comments, [articleKey]: discussion },
-              }),
-              undefined,
-              "store-giscus-meta"
-            );
-            return true;
-          }
-        }
-      }
+      window.addEventListener("message", useSite.api.onGiscusMessage);
+      cleanUps.push(() => window.removeEventListener("message", useSite.api.onGiscusMessage));
 
-      window.addEventListener("message", onGiscusMessage);
-      cleanUps.push(() => window.removeEventListener("message", onGiscusMessage));
-
-      set(() => ({ browserLoaded: true }), undefined, "browser-load");
-
-      const topLevel: typeof defaultSiteTopLevelState =
-        safeJsonParse(
-          tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
-        ) ?? {};
+      // open Nav/Viewer based on localStorage or defaults
+      const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
+        tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
+      ) ?? {};
       if (topLevel.viewOpen) {
         set(() => ({ viewOpen: topLevel.viewOpen }));
       }
@@ -103,11 +262,26 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         set(() => ({ navOpen: topLevel.navOpen }));
       }
 
-      return () => cleanUps.forEach((cleanup) => cleanup());
+      return () => cleanUps.forEach(cleanup => cleanup());
     },
 
     isViewClosed() {
       return !get().viewOpen;
+    },
+
+    onGiscusMessage(message: MessageEvent) {
+      if (message.origin === "https://giscus.app" && message.data.giscus?.discussion) {
+        const discussion = message.data.giscus.discussion as GiscusDiscussionMeta;
+        info("giscus meta", discussion);
+        const { articleKey } = get();
+        if (articleKey) {
+          set(({ discussMeta: comments }) => ({
+            discussMeta: { ...comments, [articleKey]: discussion },
+          }), undefined, "store-giscus-meta");
+          return true;
+        }
+      }
+      return false;
     },
 
     onTerminate() {
@@ -143,23 +317,49 @@ export type State = {
   articleKey: null | string;
   /** Frontmatter of every article */
   articlesMeta: typeof allArticlesMeta;
-  browserLoaded: boolean;
   discussMeta: { [articleKey: string]: GiscusDiscussionMeta };
-  frontMatter: FrontMatter;
+  pageMetadata: PageMetadata;
+  
+  draggingView: boolean;
 
-  mainOverlay: boolean;
+  tabset: AllTabsets;
+  /**
+   * Used to trigger tabset model recompute.
+   * This does not involve a remount.
+   */
+  tabsetUpdates: number;
   navOpen: boolean;
   viewOpen: boolean;
 
   api: {
     // clickToClipboard(e: React.MouseEvent): Promise<void>;
+    /**
+     * - If tab type is component we merge into props.
+     * - If tab type is terminal we merge into env.
+     */
+    changeTabProps(tabId: string, partialProps: Record<string, any>): void;
+    /** Restore layout from localStorage or use fallback */
+    restoreLayoutFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
+    getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
+    /** ensure every `tab.config` has type @see {TabDef} */
+    migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
+    onGiscusMessage(message: MessageEvent): boolean;
     onTerminate(): void;
-    getFrontMatterFromScript(): FrontMatter;
+    openTab(tabDef: TabDef): void;
+    rememberCurrentTabs(): void;
+    closeTab(tabId: string): boolean;
+    revertCurrentTabset(): void;
     toggleNav(next?: boolean): void;
     /** Returns next value of `viewOpen` */
     toggleView(next?: boolean): boolean;
+    /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
+    setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
+    storeCurrentLayout(model: Model): void;
+    syncCurrentTabset(model: Model): void;
+    testMutateLayout(): void; // 🚧 temp
+    tryRestoreLayout(layout: TabsetLayout): TabsetLayout;
   };
 };
 
@@ -178,7 +378,7 @@ export interface ArticleMeta {
   tags: string[];
 }
 
-export interface FrontMatter {
+export interface PageMetadata {
   key: string;
   date: string;
   info: string;

@@ -1,6 +1,6 @@
 import braces from "braces";
 import { ansi } from "./const";
-import { last, parseJsArg } from "../service/generic";
+import { debug, last, parseJsArg } from "../service/generic";
 import { ProcessMeta, ProcessStatus, TtyLinkCtxt } from "./session.store";
 import { SigEnum } from "./io";
 import type * as Sh from "./parse";
@@ -75,6 +75,7 @@ export function interpretEscapeSequences(input: string): string {
 const bracesOpts: braces.Options = {
   expand: true,
   rangeLimit: Infinity,
+  keepQuotes: true, // prevent where's -> wheres
 };
 
 export function literal({ Value, parent }: Sh.Lit): string[] {
@@ -99,7 +100,7 @@ export function literal({ Value, parent }: Sh.Lit): string[] {
   }
   // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
   // We escape square brackets for npm module `braces`.
-  value = value.replace(/\\(['"\\$`])/g, "$1")
+  value = value.replace(/\\(['"\\$`])/g, "$1");
   return braces(value.replace(/\[/g, "\\[").replace(/\]/g, "\\]"), bracesOpts);
 }
 
@@ -176,6 +177,9 @@ export function normalizeAbsParts(absParts: string[]) {
   }, [] as string[]);
 }
 
+/**
+ * 🔔 now throws on non-existent path
+ */
 export function resolveNormalized(parts: string[], root: any) {
   return parts.reduce((agg, item) => {
     // Support invocation of functions, where
@@ -188,7 +192,12 @@ export function resolveNormalized(parts: string[], root: any) {
         return agg[item.slice(0, -(matched[1].length + 2))](...args);
       }
     }
-    return agg[item];
+    // return agg[item];
+    if (item in agg) {
+      return agg[item];
+    } else {
+      throw new ShError(`not found: /${parts.join('/')}`, 1);
+    }
   }, root);
 }
 
@@ -304,6 +313,11 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
     ttyTextKey,
     linkCtxtsFactory,
   };
+}
+
+/** Avoid clogging logs with "pseudo errors" */
+export function ttyError(...args: any[]) {
+  debug('ttyError', ...args);
 }
 
 //#endregion

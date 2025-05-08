@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { LineMaterial } from "three-stdlib";
 import { damp } from "maath/easing";
 
+import { skinsTextureDimension } from "./const";
 import { range, warn } from "./generic";
 import { Rect, Vect } from "../geom";
 import packRectangles from "./rects-packer";
@@ -41,7 +42,7 @@ export function getQuadGeometryXZ(key, centered = false) {
 }
 
 /**
- * @param {string} colorRep 
+ * @param {string | number} colorRep 
  */
 export function getColor(colorRep) {
   return colorLookup[colorRep] ??= new THREE.Color(colorRep);
@@ -228,17 +229,21 @@ export function buildObject3DLookup(object) {
 }
 
 /**
- * 12 triangles:
- * > right x2, left x2, front x2, back x2, top x2, bottom x2
+ * - Pre un-weld:
+ *   - 24 vertices
+ *   - 12 triangles: right x2, left x2, front x2, back x2, top x2, bottom x2.
+ * - Post un-weld:
+ *   - 34 vertices (12 * 3)
+ *   - 12 triangles: right-{upper,lower}, left-{upper,lower}, top-{back,front}, bottom-{front,back}, front-{top,bottom}, back-{top,bottom}
  */
-export const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+export const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1).toNonIndexed();
 
 /** @param {string} key */
 export function getBoxGeometry(key) {
   return boxGeomLookup[key] ??= boxGeometry.clone();
 }
 
-const boxGeomLookup = /** @type {Record<string, THREE.BoxGeometry>} */ ({});
+const boxGeomLookup = /** @type {Record<string, THREE.BufferGeometry>} */ ({});
 
 export const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 32, 1);
 
@@ -352,8 +357,6 @@ export const emptySkinnedMesh = new THREE.SkinnedMesh();
  * @property {HTMLCanvasElement} canvas
  * @property {null | number} texId
  */
-
-export const emptySceneForPicking = new THREE.Scene();
 
 /**
  * This is the 1x1 pixel render target we use to do object picking.
@@ -492,73 +495,128 @@ export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity
   dz = Math.abs(current.z - target.z);
   dMax = Math.max(dx, dz);
   resX = dMax < eps ? false : damp(current, "x", v3d.x, smoothTime, deltaMs, maxSpeed * (dx / dMax), undefined, eps);
-  resY = damp(current, "y", y ?? v3d.y, smoothTime, deltaMs, maxSpeed, undefined, eps);
+  resY = y === undefined ? false : damp(current, "y", y, smoothTime, deltaMs, maxSpeed, undefined, eps);
   resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaMs, maxSpeed * (dz / dMax), undefined, eps);
   return resX || resY || resZ;
 }
 
 /**
+ * Compute:
+ * - mapping from SkinnedMesh's triangles to uv rectangles.
+ * - base mapping from skin part to uv rect.
+ * - the two triangle ids corresponding to the label
  * @param {import('three').SkinnedMesh} skinnedMesh
  * @param {Geomorph.UvRectLookup} uvMap
- * @param {number} skinSheetId
- * @returns {{ triToUvKeys: NPC.TriToUvKeys; partToUvRect: NPC.SkinPartToUvRect; labelTriIds: number[]; }}
+ * @param {number} initSheetId Which sheet was used when we exported from Blender
+ * @returns {{
+ *  triToUvKeys: NPC.TriToUvKeys;
+ *  partToUvRect: NPC.SkinPartToUvRect;
+ *  breathTriIds: number[];
+ *  labelTriIds: number[];
+ *  selectorTriIds: number[];
+ * }}
  */
-export function computeMeshUvMappings(skinnedMesh, uvMap, skinSheetId) {
+export function computeMeshUvMappings(skinnedMesh, uvMap, initSheetId) {
   const triToUvKeys = /** @type {NPC.TriToUvKeys} */ ([]);
   const partToUvRect = /** @type {NPC.SkinPartToUvRect} */ ({});
 
-  if (skinnedMesh.geometry.index !== null) {
-    // 🔔 geometry must be un-welded i.e. triangles pairwise disjoint,
-    // so we can detect current triangleId in fragment shader
-    throw Error(`skinnedMesh "${skinnedMesh.name}" must satisfy \`geometry.index === null\`: use geometry.toNonIndexed()`);
-  }
+  // For fallback approach
+  const seenUvRects = /** @type {Geomorph.UvRect[]} */ ([]);
+  const currRect = new Rect();
 
-  // arrange uvMap as sorted list of lists for fast querying
-  // 🔔 assume it defines a grid, where rows/cols can have different widths/heights
-  const mapping = Object.entries(uvMap).reduce((agg, [uvRectKey, { x, width, y, height, sheetId }]) => {
-    if (sheetId === skinSheetId) {
-      (agg[x] ??= [x + width, []])[1].push([y + height, uvRectKey]);
+  if (skinnedMesh.geometry.index !== null) {
+    // geometry must be un-welded i.e. triangles pairwise-disjoint,
+    // so we can detect current triangleId in fragment shader
+    throw Error(`${'computeMeshUvMappings'}: ${skinnedMesh.name}: expected \`geometry.index === null\``);
+  }
+  
+  // 🔔 arrange uvMap as sorted list-of-lists for fast-querying
+  // - this requires uv rects to be arranged as non-overlapping columns
+  // - if the columns overlap, we warn and fall back to a slower procedure
+  // - it's worth satisfying the constraint because it keeps the data clean
+  const mapping = Object.values(uvMap).reduce((agg, uvRect) => {
+    const { key: uvRectKey, x, width, y, height, sheetId } = uvRect;
+    if (sheetId === initSheetId) {
+      (agg[x] ??= [x, x + width, []])[2].push([y + height, uvRectKey]);
+      seenUvRects.push(uvRect);
     }
     return agg;
-  }, /** @type {Record<number, [maxX: number, [maxY: number, uvRectKey: string][]]>} */ ([]));
-  const sorted = Object.values(mapping).sort((a, b) => a[0] < b[0] ? -1 : 1);
-  sorted.forEach(([ , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
+  }, /** @type {Record<number, [minX: Number, maxX: number, [maxY: number, uvRectKey: string][]]>} */ ([]));
+  
+  const sorted = Object.values(mapping).sort((a, b) => a[1] < b[1] ? -1 : 1);
+  
+  // Check if uv rects are arranged as non-overlapping columns
+  const colOverlapId = sorted.findIndex(([_minX, maxX], i) => sorted[i + 1]?.[0] < maxX);
+  const colsOverlap = colOverlapId !== -1;
 
+  if (colsOverlap) {
+    warn(`${'computeMeshUvMappings'}: ${skinnedMesh.name}: uv-map columns overlap: ${
+      JSON.stringify({
+        col1: {
+          mx: sorted[colOverlapId][0] * skinsTextureDimension,
+          Mx: sorted[colOverlapId][1] * skinsTextureDimension,
+        },
+        col2: {
+          mx: sorted[colOverlapId + 1][0] * skinsTextureDimension,
+          Mx: sorted[colOverlapId + 1][1] * skinsTextureDimension,
+        },
+      })
+    } 🔔 falling back to slower algorithm`);
+  } else {// also sort inners for fast lookup to work
+    sorted.forEach(([ , , inner]) => inner.sort((a, b) => a[0] < b[0] ? -1 : 1));
+  }
+  
   const uvs = getGeometryUvs(skinnedMesh.geometry);
   const numVerts = skinnedMesh.geometry.getAttribute('position').count;
   const tris = range(numVerts / 3).map(i => [3 * i, 3 * i + 1, 3 * i + 2])
-  /** Centre of mass of each UV-triangle (inside triangle) */
+  /** Centre of mass of each UV-triangle (it's inside triangle) */
   const centers = tris.map(vIds => Vect.average(vIds.map(vId => uvs[vId])));
-
-  const labelTriIds = /** @type {number[]} */ ([]);
   
-  // find uvRect fast via sorted rects
+  const breathTriIds = /** @type {number[]} */ ([]);
+  const labelTriIds = /** @type {number[]} */ ([]);
+  const selectorTriIds = /** @type {number[]} */ ([]);
+  
+  // find uvRect fast or via fallback,
   // also compute labelTriIds and label uv min/max
   for (const [triId, center] of centers.entries()) {
-    const inner = sorted.find(([maxX]) => center.x < maxX);
-    const found = inner === undefined ? undefined : inner[1].find(([maxY]) => center.y < maxY);
+    
+    /** @type {string | undefined} */
+    let uvRectKey = undefined;
+    
+    if (colsOverlap === true) {// slow fallback method (search all rects)
+      uvRectKey = seenUvRects.find(uvRect => currRect.copy(uvRect).contains(center))?.key;
+    } else {// fast method (stratified rects)
+      const inner = sorted.find(([, maxX]) => center.x < maxX);
+      uvRectKey = inner === undefined ? undefined : inner[2].find(([maxY]) => center.y < maxY)?.[1];
+    }
+
     const vertexIds = tris[triId];
-    if (found === undefined) {
+    if (uvRectKey === undefined) {
       warn(`triangle not contained in any uv-rect: ${JSON.stringify({ triId, vertexIds })}`);
       continue;
     }
-    const uvRectKey = found[1];
     const skinPartKey = /** @type {Key.SkinPart} */ (uvRectKey.split('_')[1]);
     triToUvKeys[triId] = { uvRectKey, skinPartKey };
     partToUvRect[skinPartKey] = uvMap[uvRectKey];
-    // if (skinPartKey === 'label') {
+
     if (uvRectKey === 'default_label') {
       labelTriIds.push(triId);
+    } else if (uvRectKey === 'default_selector') {
+      selectorTriIds.push(triId);
+    } else if (uvRectKey === 'default_breath') {
+      breathTriIds.push(triId);
     }
   }
   
   if (labelTriIds.length !== 2) {
-    warn(`expected exactly 2 triangles inside uv-rect default_label: ${JSON.stringify(labelTriIds)}`);
+    warn(`expected exactly 2 triangles inside uv-rect ${'default_label'}: ${JSON.stringify(labelTriIds)}`);
   }
 
   return {
     triToUvKeys,
     partToUvRect,
+    breathTriIds,
     labelTriIds,
+    selectorTriIds,
   };
 }

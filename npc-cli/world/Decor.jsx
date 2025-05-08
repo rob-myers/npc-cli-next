@@ -200,7 +200,7 @@ export default function Decor(props) {
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
-        0, transform[3], 0, wallHeight - 0.2,
+        0, transform[3], 0, wallHeight + 0.5,
         0, 0, 1, transform[5],
         0, 0, 0, 1
       );
@@ -288,7 +288,14 @@ export default function Decor(props) {
           break;
         }
         case "point": {
-          // +90 after transform so bottom-to-top sprite-sheet text "faces" direction
+          /**
+           * +90° converts:
+           * - "clockwise from above from east" (SVG symbol coords) to
+           * - "clockwise from above from north" (easier for users)
+           * 
+           * This also aligns sprite-sheet icons/text correctly, i.e.
+           * decor-arrow points from bottom-to-top of icons/text.
+           */
           const orient = (gm.matrix.transformDegrees(d.orient) + 90) % 360;
           instance = gm.matrix.transformPoint(/** @type {Geomorph.DecorPoint} */ ({ ...d, ...base, orient }));
           instance.x = toPrecision(instance.x);
@@ -575,7 +582,7 @@ export default function Decor(props) {
       {ready && <instancedMultiTextureMaterial
         key={glsl.InstancedMultiTextureMaterial.key}
         alphaTest={0.5}
-        diffuse={[0.7, 0.7, 0.7]}
+        diffuse={[0.5, 0.5, 0.5]}
         atlas={w.texDecor.tex}
         objectPickRed={5}
         opacity={query.status === 'success' ? 1 : 0}
@@ -618,7 +625,7 @@ export default function Decor(props) {
  * @property {Record<string, Geomorph.Decor>} byKey
  * @property {Geomorph.RoomDecor[][]} byRoom
  * Decor organised by `byRoom[gmId][roomId]` where (`gmId`, `roomId`) are unique
- * @property {THREE.BoxGeometry} cuboidGeom
+ * @property {THREE.BufferGeometry} cuboidGeom
  * @property {Geomorph.DecorCuboid[]} cuboids
  * @property {THREE.InstancedMesh} cuboidInst
  * @property {Geomorph.DecorPoint[]} labels

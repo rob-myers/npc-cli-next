@@ -6,7 +6,7 @@ import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "r
 import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useStateRef from "../npc-cli/hooks/use-state-ref";
-import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight } from "./Icon";
+import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight, faCodeBranch } from "./Icon";
 
 export default function Nav() {
   const collapsed = useSite(({ navOpen }) => !navOpen);
@@ -67,11 +67,12 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <SubMenu icon={icon.dev} label="Dev">
+        <SubMenu icon={icon.devBlog} label="Dev Blog">
           <MenuItem>Tech</MenuItem>
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
+        <MenuItem icon={icon.research}>Research</MenuItem>
         <MenuItem icon={icon.help}>Help</MenuItem>
         <MenuItem icon={icon.about}>About</MenuItem>
       </Menu>
@@ -79,44 +80,49 @@ export default function Nav() {
   );
 }
 
-
-// 🔔 See parent component for more CSS
 const navCss = css`
+
+  .${sidebarClasses.container} {
+    z-index: ${zIndexSite.nav};
+  }
+
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 
   color: white;
   border-right: 1px solid #444 !important;
+  text-transform: lowercase;
 
-  text-transform: lowercase; // 🔔
 
+  // root item height and hover
   a.${menuClasses.button}, span.${menuClasses.button} {
+    height: ${nav.menuItem};
+    
     &:hover {
       background-color: transparent;
       text-decoration: underline;
     }
-    height: ${nav.menuItem};
   }
 
+  // root item icon
+  span.${menuClasses.icon} {
+    width: 1rem;
+    min-width: 1rem;
+    margin-right: 24px;
+    margin-left: 12px;
+    transition: margin-left 300ms;
+  }
+
+  // sub-menu
   .${menuClasses.subMenuContent} {
     background-color: #222222;
     padding-left: 20px;
   }
-
-  span.${menuClasses.label} a {
-    color: white;
-    text-decoration: none;
+  .${menuClasses.SubMenuExpandIcon} {
+    padding-right: 0.5rem;
   }
 
-  span.${menuClasses.icon} {
-    width: 1rem;
-    min-width: 1rem;
-  }
-
-  .${sidebarClasses.container} {
-      z-index: ${zIndexSite.nav};
-  }
-
+  // collapsed (only visible on desktop)
   &.${sidebarClasses.collapsed} {
     span.${menuClasses.icon} {
       margin-left: 4px;
@@ -126,16 +132,7 @@ const navCss = css`
     }
   }
 
-  &:not(.${sidebarClasses.collapsed}) {
-    span.${menuClasses.icon} {
-      margin-right: 24px;
-      margin-left: 12px;
-    }
-    .${menuClasses.SubMenuExpandIcon} {
-      padding-right: 0.5rem;
-    }
-  }
-
+  // Nav title
   .${menuClasses.menuItemRoot}.title {
     opacity: 1;
     transition: opacity 500ms;
@@ -162,19 +159,44 @@ const navCss = css`
         font-size: 1.3rem;
       }
     }
-
   }
-
   &.${sidebarClasses.collapsed} .${menuClasses.menuItemRoot}.title {
     opacity: 0;
+  }
+
+  @media (max-width: ${breakpoint}) {
+
+    // avoid displace <main> on expand
+    position: fixed !important;
+    z-index: ${zIndexSite.nav};
+    height: 100dvh;
+    height: 100vh;
+
+    // only show toggle when collapsed
+    &.${sidebarClasses.collapsed} {
+      pointer-events: none;
+      button.toggle {
+        pointer-events: all;
+      }
+
+      border: none !important;
+      > div {
+        background-color: transparent;
+        overflow: hidden;
+        .${menuClasses.root} {
+          display: none;
+        }
+      }
+    }
   }
 `;
 
 const icon = {
   blog: <FontAwesomeIcon icon={faRobot} color="white" size="1x" />,
-  dev: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
+  devBlog: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
   help: <FontAwesomeIcon icon={faCircleQuestion} color="white" size="1x" />,
   about: <FontAwesomeIcon icon={faCircleInfo} color="white" size="1x" />,
+  research: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
 };
 
 const toggleCss = css`

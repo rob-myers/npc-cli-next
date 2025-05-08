@@ -14,21 +14,19 @@
   }
 } */
 
+html{
+  overscroll-behavior: none;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
 
   overscroll-behavior: none;
+  /* touch-action: none; */
 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell,
     "Helvetica Neue", sans-serif;
   font-weight: 400;
   letter-spacing: 0.5px;
-}
-
-nextjs-portal {
-  .nextjs-toast.nextjs-toast-errors-parent.nextjs-error-with-static {
-    /* Hide e.g. expected errors from our TTY */
-    display: none !important;
-  }
 }

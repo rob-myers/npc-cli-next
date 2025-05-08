@@ -1,7 +1,8 @@
-import type { ArticleKey, ArticleMeta } from "./site.store";
+import type { ArticleKey, ArticleMeta, State } from "./site.store";
 
 export const afterBreakpoint = "1201px";
 export const breakpoint = "1200px";
+export const mobileBreakpoint = "800px";
 
 export const discussionsUrl = "https://github.com/rob-myers/npc-cli/discussions";
 
@@ -58,3 +59,5 @@ export const zIndexSite = /** @type {const} */ ({
 
   aboveViewerFocusOutline: 1,
 });
+
+export const sideNoteRootDataAttribute = 'data-side-note-root';

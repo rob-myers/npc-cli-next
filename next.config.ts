@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createMDX from "@next/mdx";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
@@ -12,6 +13,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ['next-mdx-remote'],
   // 🔔 dev only, where turbo runs via `next dev --turbopack`
   experimental: {
+    scrollRestoration: true,
     turbo: {
       rules: {
         "**/sh/src/*.sh": {
@@ -38,4 +40,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withMDX = createMDX({
+  // Add markdown plugins here, as desired
+});
+
+export default withMDX(nextConfig);

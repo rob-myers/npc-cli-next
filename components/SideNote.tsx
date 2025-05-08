@@ -1,13 +1,14 @@
 "use client"
 import React from 'react';
+import cx from 'classnames';
 import { css } from '@emotion/react';
+import { sideNoteRootDataAttribute } from './const';
 
 /**
  * - Direction is `right` unless < 200 pixels to the right of
  *   root element, in which case direction is `left`
- * - Currently .dark-mode applies `filter: invert(1)`
  */
-export default function SideNote(props: React.PropsWithChildren<{ width?: number }>) {
+export default function SideNote(props: React.PropsWithChildren<Props>) {
   const timeoutId = React.useRef(0);
 
   return <>
@@ -20,12 +21,13 @@ export default function SideNote(props: React.PropsWithChildren<{ width?: number
           rect: e.currentTarget.getBoundingClientRect(),
           width: props.width,
           timeoutId: timeoutId.current,
+          minWidth: props.minWidth,
         })
       }
       onMouseEnter={e => {
         const bubble = e.currentTarget.nextSibling as HTMLElement;
         const rect = e.currentTarget.getBoundingClientRect();
-        timeoutId.current = window.setTimeout(() => open({ bubble, rect, width: props.width, timeoutId: timeoutId.current }), hoverShowMs);
+        timeoutId.current = window.setTimeout(() => open({ bubble, rect, width: props.width, minWidth: props.minWidth, timeoutId: timeoutId.current }), hoverShowMs);
       }}
       onMouseLeave={e => {
         window.clearTimeout(timeoutId.current); // clear hover timeout
@@ -36,11 +38,11 @@ export default function SideNote(props: React.PropsWithChildren<{ width?: number
     </span>
     <span
       css={speechBubbleCss}
-      className="side-note-bubble"
+      className={cx("side-note-bubble", props.bubbleClassName)}
       onMouseEnter={_ => window.clearTimeout(timeoutId.current)}
       onMouseLeave={e => (timeoutId.current = close(e, 'bubble'))} // Triggered on mobile click outside
     >
-      <span className="arrow"/>
+      {props.hideArrow !== true && <span className="arrow"/>}
       <span className="info">
         {props.children}
       </span>
@@ -48,7 +50,14 @@ export default function SideNote(props: React.PropsWithChildren<{ width?: number
   </>;
 }
 
-function open({ bubble, rect, width, timeoutId }: { bubble: HTMLElement; rect: DOMRect; width: number | undefined, timeoutId: number; }) {
+interface Props {
+  bubbleClassName?: string; 
+  hideArrow?: boolean;
+  minWidth?: number;
+  width?: number;
+}
+
+function open({ bubble, rect, width, minWidth, timeoutId }: OpenOpts) {
   window.clearTimeout(timeoutId); // clear close timeout
 
   bubble.classList.add('open');
@@ -63,9 +72,17 @@ function open({ bubble, rect, width, timeoutId }: { bubble: HTMLElement; rect: D
   const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
   width = maxWidthAvailable < (width ?? defaultInfoWidthPx) ? maxWidthAvailable : width;
   if (width !== undefined) {
-    width = Math.max(width, minInfoWidth);
+    width = Math.max(width, minWidth ?? minInfoWidth);
     bubble.style.setProperty('--info-width', `${width}px`);
   }
+}
+
+interface OpenOpts {
+  bubble: HTMLElement;
+  rect: DOMRect;
+  minWidth?: number;
+  width?: number;
+  timeoutId: number;
 }
 
 function close(e: React.MouseEvent, source: 'icon' | 'bubble') {
@@ -116,9 +133,11 @@ const speechBubbleCss = css`
   }
 
   .info {
+    position: absolute;
+    z-index: 1;
+
     visibility: hidden;
     white-space: normal;
-    position: absolute;
     width: var(--info-width);
     margin-left: calc(-0.5 * var(--info-width));
     padding: 16px;
@@ -184,8 +203,6 @@ const speechBubbleCss = css`
     }
   }
 `;
-
-export const sideNoteRootDataAttribute = 'data-side-note-root';
 
 const hoverShowMs = 500;
 const minInfoWidth = 200;

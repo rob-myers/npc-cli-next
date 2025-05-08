@@ -1,21 +1,31 @@
 import React from "react";
 
+import { profile, type ProfileKey } from '../sh/src';
+
 import utilFunctionsSh from "../sh/src/util-functions.sh";
 import gameFunctionsSh from "../sh/src/game-functions.sh";
 
 import * as utilGeneratorsJs from '../sh/src/util-generators';
 import * as gameGeneratorsJs from '../sh/src/game-generators';
 
-import Tty, { type Props } from "./Tty";
+import Tty, { type Props as TtyProps } from "./Tty";
 
 /**
  * Using a separate file permits hot-module reloading,
  * without triggering the terminal's various useEffects.
  */
-export default function TtyWithFunctions(props: Omit<Props, 'functionFiles'>) {
+export default function TtyWithFunctions(props: Props) {
   return (
-    <Tty {...props} functionFiles={functionFiles} />
+    <Tty
+      {...props}
+      functionFiles={functionFiles}
+      profile={profile[props.profileKey]}
+    />
   );
+}
+
+interface Props extends Omit<TtyProps, 'functionFiles' | 'profile'> {
+  profileKey: ProfileKey;
 }
 
 const generatorConstructorNames = ['AsyncGeneratorFunction', 'GeneratorFunction'];

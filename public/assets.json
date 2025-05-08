@@ -103,7 +103,7 @@
       "obsHashes": [-532072178]
     },
     "counter--009--0.4x0.4": {
-      "outputHash": 151424005,
+      "outputHash": -631315576,
       "pngHash": 1463076709,
       "obsHashes": [937252768]
     },
@@ -121,7 +121,7 @@
     "engineering--045--6x4": {"outputHash": 1655107836, "pngHash": -1132388510},
     "engineering--047--4x7": {"outputHash": -1000865445, "pngHash": 541808283},
     "extra--001--fresher--0.5x0.5": {
-      "outputHash": -2020260430,
+      "outputHash": 1527201333,
       "pngHash": 1247120224,
       "obsHashes": [-1912350195]
     },
@@ -230,7 +230,7 @@
     "fresher--025--3x2": {"outputHash": -2073406480, "pngHash": -1324814803},
     "fresher--036--4x2": {"outputHash": 570694497, "pngHash": 633687707},
     "fuel--010--4x2": {
-      "outputHash": 1196877019,
+      "outputHash": -1844931219,
       "pngHash": 858873613,
       "obsHashes": [-2106922932]
     },
@@ -256,7 +256,7 @@
       "obsHashes": [1641095410]
     },
     "lifeboat--small-craft--2x4": {
-      "outputHash": 934442540,
+      "outputHash": 673113854,
       "pngHash": -2036140918
     },
     "lounge--015--4x2": {"outputHash": 2106332164, "pngHash": 222627377},
@@ -1290,58 +1290,65 @@
     },
     "obstacleDims": [{"width": 2210, "height": 2308}],
     "maxObstacleDim": {"width": 2210, "height": 2308},
-    "glbHash": {"human-0": -1118186859},
-    "imagesHash": -1926258885
+    "glbHash": {"human-0": 873745138},
+    "imagesHash": 1446296645
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [508224031, 1474634897]},
+    "svgHashes": {"human-0": [609408743, 1474634897]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
         "base_head-front": {
+          "key": "base_head-front",
           "sheetId": 0,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-back": {
+          "key": "base_head-back",
           "sheetId": 0,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-left": {
+          "key": "base_head-left",
           "sheetId": 0,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-right": {
+          "key": "base_head-right",
           "sheetId": 0,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-top": {
+          "key": "base_head-top",
           "sheetId": 0,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-bottom": {
+          "key": "base_head-bottom",
           "sheetId": 0,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_body-top": {
+          "key": "base_body-top",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0,
@@ -1349,6 +1356,7 @@
           "height": 0.0625
         },
         "base_body-bottom": {
+          "key": "base_body-bottom",
           "sheetId": 0,
           "x": 0.125,
           "y": 0,
@@ -1356,6 +1364,7 @@
           "height": 0.0625
         },
         "base_body-left": {
+          "key": "base_body-left",
           "sheetId": 0,
           "x": 0,
           "y": 0.0625,
@@ -1363,6 +1372,7 @@
           "height": 0.125
         },
         "base_body-front": {
+          "key": "base_body-front",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.0625,
@@ -1370,6 +1380,7 @@
           "height": 0.125
         },
         "base_body-right": {
+          "key": "base_body-right",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.0625,
@@ -1377,6 +1388,7 @@
           "height": 0.125
         },
         "base_body-back": {
+          "key": "base_body-back",
           "sheetId": 0,
           "x": 0.1875,
           "y": 0.0625,
@@ -1384,48 +1396,55 @@
           "height": 0.125
         },
         "base_head-overlay-front": {
+          "key": "base_head-overlay-front",
           "sheetId": 0,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-overlay-back": {
+          "key": "base_head-overlay-back",
           "sheetId": 0,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-overlay-left": {
+          "key": "base_head-overlay-left",
           "sheetId": 0,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-overlay-right": {
+          "key": "base_head-overlay-right",
           "sheetId": 0,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-overlay-top": {
+          "key": "base_head-overlay-top",
           "sheetId": 0,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0.328125,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_head-overlay-bottom": {
+          "key": "base_head-overlay-bottom",
           "sheetId": 0,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.328125,
           "width": 0.0625,
           "height": 0.0625
         },
         "base_body-overlay-top": {
+          "key": "base_body-overlay-top",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.203125,
@@ -1433,6 +1452,7 @@
           "height": 0.0625
         },
         "base_body-overlay-bottom": {
+          "key": "base_body-overlay-bottom",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.203125,
@@ -1440,6 +1460,7 @@
           "height": 0.0625
         },
         "base_body-overlay-left": {
+          "key": "base_body-overlay-left",
           "sheetId": 0,
           "x": 0,
           "y": 0.265625,
@@ -1447,6 +1468,7 @@
           "height": 0.125
         },
         "base_body-overlay-front": {
+          "key": "base_body-overlay-front",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.265625,
@@ -1454,6 +1476,7 @@
           "height": 0.125
         },
         "base_body-overlay-right": {
+          "key": "base_body-overlay-right",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.265625,
@@ -1461,20 +1484,15 @@
           "height": 0.125
         },
         "base_body-overlay-back": {
+          "key": "base_body-overlay-back",
           "sheetId": 0,
           "x": 0.1875,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "default_selector": {
-          "sheetId": 0,
-          "x": 0.0625,
-          "y": 0.40625,
-          "width": 0.0625,
-          "height": 0.0625
-        },
         "default_breath": {
+          "key": "default_breath",
           "sheetId": 0,
           "x": 0.1875,
           "y": 0.40625,
@@ -1482,132 +1500,823 @@
           "height": 0.0625
         },
         "default_label": {
+          "key": "default_label",
           "sheetId": 0,
           "x": 0,
           "y": 0.984375,
           "width": 0.0625,
           "height": 0.015625
         },
-        "confused_head-overlay-front": {
+        "default_selector": {
+          "key": "default_selector",
           "sheetId": 0,
-          "x": 0.390625,
+          "x": 0.0625,
           "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "empty_body-front": {
+          "key": "empty_body-front",
+          "sheetId": 0,
+          "x": 0.9375,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "confused_head-overlay-front": {
+          "key": "confused_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.328125,
+          "y": 0.46875,
           "width": 0.0625,
           "height": 0.0625
         },
         "small-eyes_head-overlay-front": {
+          "key": "small-eyes_head-overlay-front",
           "sheetId": 0,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.40625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body_body-top": {
+        "plus-icon_body-overlay-front": {
+          "key": "plus-icon_body-overlay-front",
           "sheetId": 0,
-          "x": 0.453125,
+          "x": 0.265625,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "top-skin-only_body-top": {
+          "key": "top-skin-only_body-top",
+          "sheetId": 0,
+          "x": 0.46875,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body_body-bottom": {
+        "top-skin-only_body-bottom": {
+          "key": "top-skin-only_body-bottom",
           "sheetId": 0,
-          "x": 0.515625,
+          "x": 0.53125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body_body-left": {
+        "top-skin-only_body-left": {
+          "key": "top-skin-only_body-left",
           "sheetId": 0,
-          "x": 0.390625,
+          "x": 0.40625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body_body-front": {
+        "top-skin-only_body-front": {
+          "key": "top-skin-only_body-front",
           "sheetId": 0,
-          "x": 0.453125,
+          "x": 0.46875,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body_body-right": {
+        "top-skin-only_body-right": {
+          "key": "top-skin-only_body-right",
           "sheetId": 0,
-          "x": 0.515625,
+          "x": 0.53125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body_body-back": {
+        "top-skin-only_body-back": {
+          "key": "top-skin-only_body-back",
           "sheetId": 0,
-          "x": 0.578125,
+          "x": 0.59375,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body-overlay_body-overlay-top": {
+        "soldier-0_head-front": {
+          "key": "soldier-0_head-front",
           "sheetId": 0,
-          "x": 0.453125,
+          "x": 0.671875,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-back": {
+          "key": "soldier-0_head-back",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-left": {
+          "key": "soldier-0_head-left",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-right": {
+          "key": "soldier-0_head-right",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-top": {
+          "key": "soldier-0_head-top",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-bottom": {
+          "key": "soldier-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-front": {
+          "key": "soldier-0_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.671875,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body-overlay_body-overlay-bottom": {
+        "soldier-0_head-overlay-back": {
+          "key": "soldier-0_head-overlay-back",
           "sheetId": 0,
-          "x": 0.515625,
+          "x": 0.734375,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body-overlay_body-overlay-left": {
+        "soldier-0_head-overlay-left": {
+          "key": "soldier-0_head-overlay-left",
           "sheetId": 0,
-          "x": 0.390625,
+          "x": 0.671875,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-right": {
+          "key": "soldier-0_head-overlay-right",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-top": {
+          "key": "soldier-0_head-overlay-top",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_head-overlay-bottom": {
+          "key": "soldier-0_head-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_body-overlay-top": {
+          "key": "soldier-0_body-overlay-top",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_body-overlay-bottom": {
+          "key": "soldier-0_body-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "soldier-0_body-overlay-left": {
+          "key": "soldier-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.40625,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body-overlay_body-overlay-front": {
+        "soldier-0_body-overlay-front": {
+          "key": "soldier-0_body-overlay-front",
           "sheetId": 0,
-          "x": 0.453125,
+          "x": 0.46875,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body-overlay_body-overlay-right": {
+        "soldier-0_body-overlay-right": {
+          "key": "soldier-0_body-overlay-right",
           "sheetId": 0,
-          "x": 0.515625,
+          "x": 0.53125,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body-overlay_body-overlay-back": {
+        "soldier-0_body-overlay-back": {
+          "key": "soldier-0_body-overlay-back",
           "sheetId": 0,
-          "x": 0.578125,
+          "x": 0.59375,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "robot-icon_body-overlay-front": {
+        "scientist-0_head-front": {
+          "key": "scientist-0_head-front",
           "sheetId": 0,
-          "x": 0,
-          "y": 0.484375,
+          "x": 0.671875,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-back": {
+          "key": "scientist-0_head-back",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-left": {
+          "key": "scientist-0_head-left",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-right": {
+          "key": "scientist-0_head-right",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-top": {
+          "key": "scientist-0_head-top",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.53125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-bottom": {
+          "key": "scientist-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.53125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-overlay-front": {
+          "key": "scientist-0_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-overlay-back": {
+          "key": "scientist-0_head-overlay-back",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-overlay-left": {
+          "key": "scientist-0_head-overlay-left",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-overlay-right": {
+          "key": "scientist-0_head-overlay-right",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-overlay-top": {
+          "key": "scientist-0_head-overlay-top",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.734375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_head-overlay-bottom": {
+          "key": "scientist-0_head-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.734375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_body-overlay-top": {
+          "key": "scientist-0_body-overlay-top",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_body-overlay-bottom": {
+          "key": "scientist-0_body-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "scientist-0_body-overlay-left": {
+          "key": "scientist-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.40625,
+          "y": 0.46875,
           "width": 0.0625,
           "height": 0.125
         },
-        "heart-icon_body-overlay-front": {
+        "scientist-0_body-overlay-front": {
+          "key": "scientist-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "scientist-0_body-overlay-right": {
+          "key": "scientist-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "scientist-0_body-overlay-back": {
+          "key": "scientist-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.59375,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_head-front": {
+          "key": "medic-0_head-front",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-back": {
+          "key": "medic-0_head-back",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-left": {
+          "key": "medic-0_head-left",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-right": {
+          "key": "medic-0_head-right",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-top": {
+          "key": "medic-0_head-top",
+          "sheetId": 0,
+          "x": 0.671875,
+          "y": 0.9375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-bottom": {
+          "key": "medic-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.734375,
+          "y": 0.9375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-front": {
+          "key": "medic-0_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-back": {
+          "key": "medic-0_head-overlay-back",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-left": {
+          "key": "medic-0_head-overlay-left",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-right": {
+          "key": "medic-0_head-overlay-right",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.0625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-top": {
+          "key": "medic-0_head-overlay-top",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_head-overlay-bottom": {
+          "key": "medic-0_head-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_body-overlay-front": {
+          "key": "medic-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_body-overlay-back": {
+          "key": "medic-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.59375,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_body-overlay-left": {
+          "key": "medic-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.40625,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_body-overlay-right": {
+          "key": "medic-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "medic-0_body-overlay-top": {
+          "key": "medic-0_body-overlay-top",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "medic-0_body-overlay-bottom": {
+          "key": "medic-0_body-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-front": {
+          "key": "suit-0_head-front",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-back": {
+          "key": "suit-0_head-back",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-left": {
+          "key": "suit-0_head-left",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-right": {
+          "key": "suit-0_head-right",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-top": {
+          "key": "suit-0_head-top",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-bottom": {
+          "key": "suit-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-overlay-front": {
+          "key": "suit-0_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-overlay-back": {
+          "key": "suit-0_head-overlay-back",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.40625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-overlay-left": {
+          "key": "suit-0_head-overlay-left",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-overlay-right": {
+          "key": "suit-0_head-overlay-right",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.46875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-overlay-top": {
+          "key": "suit-0_head-overlay-top",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.53125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_head-overlay-bottom": {
+          "key": "suit-0_head-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.53125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_body-overlay-front": {
+          "key": "suit-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "suit-0_body-overlay-back": {
+          "key": "suit-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.59375,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "suit-0_body-overlay-left": {
+          "key": "suit-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0.40625,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "suit-0_body-overlay-right": {
+          "key": "suit-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "suit-0_body-overlay-top": {
+          "key": "suit-0_body-overlay-top",
+          "sheetId": 0,
+          "x": 0.46875,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "suit-0_body-overlay-bottom": {
+          "key": "suit-0_body-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.53125,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-front": {
+          "key": "police-0_head-front",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-back": {
+          "key": "police-0_head-back",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.609375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-left": {
+          "key": "police-0_head-left",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-right": {
+          "key": "police-0_head-right",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.671875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-top": {
+          "key": "police-0_head-top",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.734375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-bottom": {
+          "key": "police-0_head-bottom",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.734375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-overlay-front": {
+          "key": "police-0_head-overlay-front",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-overlay-back": {
+          "key": "police-0_head-overlay-back",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.8125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-overlay-left": {
+          "key": "police-0_head-overlay-left",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-overlay-right": {
+          "key": "police-0_head-overlay-right",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.875,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-overlay-top": {
+          "key": "police-0_head-overlay-top",
+          "sheetId": 0,
+          "x": 0.8125,
+          "y": 0.9375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_head-overlay-bottom": {
+          "key": "police-0_head-overlay-bottom",
+          "sheetId": 0,
+          "x": 0.875,
+          "y": 0.9375,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_body-overlay-top": {
+          "key": "police-0_body-overlay-top",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.484375,
           "width": 0.0625,
-          "height": 0.125
+          "height": 0.0625
         },
-        "plus-icon_body-overlay-front": {
+        "police-0_body-overlay-bottom": {
+          "key": "police-0_body-overlay-bottom",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.484375,
           "width": 0.0625,
+          "height": 0.0625
+        },
+        "police-0_body-overlay-left": {
+          "key": "police-0_body-overlay-left",
+          "sheetId": 0,
+          "x": 0,
+          "y": 0.546875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "police-0_body-overlay-front": {
+          "key": "police-0_body-overlay-front",
+          "sheetId": 0,
+          "x": 0.0625,
+          "y": 0.546875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "police-0_body-overlay-right": {
+          "key": "police-0_body-overlay-right",
+          "sheetId": 0,
+          "x": 0.125,
+          "y": 0.546875,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "police-0_body-overlay-back": {
+          "key": "police-0_body-overlay-back",
+          "sheetId": 0,
+          "x": 0.1875,
+          "y": 0.546875,
+          "width": 0.0625,
           "height": 0.125
         },
         "test-head-front": {
+          "key": "test-head-front",
           "sheetId": 1,
           "x": 0.25,
           "y": 0,
@@ -1615,6 +2324,7 @@
           "height": 0.0625
         },
         "test-head-back": {
+          "key": "test-head-back",
           "sheetId": 1,
           "x": 0.3125,
           "y": 0,
@@ -1622,6 +2332,7 @@
           "height": 0.0625
         },
         "test-head-left": {
+          "key": "test-head-left",
           "sheetId": 1,
           "x": 0.25,
           "y": 0.0625,
@@ -1629,6 +2340,7 @@
           "height": 0.0625
         },
         "test-head-right": {
+          "key": "test-head-right",
           "sheetId": 1,
           "x": 0.3125,
           "y": 0.0625,
@@ -1636,6 +2348,7 @@
           "height": 0.0625
         },
         "test-head-top": {
+          "key": "test-head-top",
           "sheetId": 1,
           "x": 0.25,
           "y": 0.125,
@@ -1643,6 +2356,7 @@
           "height": 0.0625
         },
         "test-head-bottom": {
+          "key": "test-head-bottom",
           "sheetId": 1,
           "x": 0.3125,
           "y": 0.125,
@@ -1650,6 +2364,7 @@
           "height": 0.0625
         },
         "test-body-top": {
+          "key": "test-body-top",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0,
@@ -1657,6 +2372,7 @@
           "height": 0.0625
         },
         "test-body-bottom": {
+          "key": "test-body-bottom",
           "sheetId": 1,
           "x": 0.125,
           "y": 0,
@@ -1664,6 +2380,7 @@
           "height": 0.0625
         },
         "test-body-left": {
+          "key": "test-body-left",
           "sheetId": 1,
           "x": 0,
           "y": 0.0625,
@@ -1671,6 +2388,7 @@
           "height": 0.125
         },
         "test-body-front": {
+          "key": "test-body-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.0625,
@@ -1678,6 +2396,7 @@
           "height": 0.125
         },
         "test-body-right": {
+          "key": "test-body-right",
           "sheetId": 1,
           "x": 0.125,
           "y": 0.0625,
@@ -1685,6 +2404,7 @@
           "height": 0.125
         },
         "test-body-back": {
+          "key": "test-body-back",
           "sheetId": 1,
           "x": 0.1875,
           "y": 0.0625,
@@ -1692,6 +2412,7 @@
           "height": 0.125
         },
         "shitty-face_head-overlay-front": {
+          "key": "shitty-face_head-overlay-front",
           "sheetId": 1,
           "x": 0,
           "y": 0.203125,
@@ -1699,6 +2420,7 @@
           "height": 0.0625
         },
         "another-shitty-face_head-overlay-front": {
+          "key": "another-shitty-face_head-overlay-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.203125,
@@ -9389,6 +10111,7 @@
             "decor": true,
             "do": true,
             "stand": true,
+            "y": 0,
             "point": true,
             "direction": {"x": 0, "y": -1}
           }
@@ -10639,7 +11362,7 @@
             "decor": true,
             "do": true,
             "stand": true,
-            "y": 0.01,
+            "y": 0,
             "point": true,
             "direction": {"x": 0, "y": -1}
           }
@@ -12212,7 +12935,7 @@
               [-0.095, -0.0975]
             ]
           ],
-          "meta": {"wall": true, "hollow": true}
+          "meta": {"wall": true, "hollow": true, "broad": true}
         }
       ],
       "doors": [],
@@ -12824,7 +13547,43 @@
     "lifeboat--small-craft--2x4": {
       "key": "lifeboat--small-craft--2x4",
       "isHull": false,
-      "hullWalls": [],
+      "hullWalls": [
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-0.095, 1.5],
+              [0, 0.9275],
+              [0.294, 0.435],
+              [0.6285, 0.1455],
+              [1.097, -0.061],
+              [1.5, -0.1005],
+              [1.9335, -0.0595],
+              [2.52, 0.2675],
+              [2.894, 0.728],
+              [3.101, 1.5],
+              [2.912, 1.5],
+              [2.7585, 0.905],
+              [2.4305, 0.4315],
+              [1.8595, 0.127],
+              [1.1545, 0.135],
+              [0.549, 0.4395],
+              [0.238, 0.905],
+              [0.105, 1.5],
+              [0.105, 4.4],
+              [3.1, 4.4],
+              [3.1, 4.55],
+              [-0.095, 4.55]
+            ]
+          ],
+          "meta": {"wall": true, "hull": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[3.05, 1.5], [3.05, 4.5], [2.95, 4.5], [2.95, 1.5]]],
+          "meta": {"wall": true, "hull": true}
+        }
+      ],
       "obstacles": [],
       "walls": [
         {
@@ -12855,12 +13614,12 @@
               [-0.095, 4.55]
             ]
           ],
-          "meta": {"wall": true}
+          "meta": {"wall": true, "hull": true}
         },
         {
           "type": "Polygon",
           "coordinates": [[[3.05, 1.5], [3.05, 4.5], [2.95, 4.5], [2.95, 1.5]]],
-          "meta": {"wall": true}
+          "meta": {"wall": true, "hull": true}
         },
         {
           "type": "Polygon",

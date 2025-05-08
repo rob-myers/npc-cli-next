@@ -147,28 +147,28 @@ export default function Doors(props) {
       const { door } = state.byKey[gdKey];
       return door.normal.dot(direction) > 0 ? door.roomIds[0] : door.roomIds[1];
     },
-    getDoorMat(meta) {
-      const { src, dir, ratio, segLength, door, normal } = meta;
+    getDoorMat(door) {
+      const { src, dir, ratio, segLength, door: connector, normal } = door;
       const length = segLength * ratio;
 
       // Hull doors are moved inside (`normal` points outside)
-      const offsetX = door.meta.hull ? door.baseRect.height/2 * -normal.x : 0;
-      const offsetY = door.meta.hull ? door.baseRect.height/2 * -normal.y : 0;
+      const offsetX = connector.meta.hull ? connector.baseRect.height/2 * -normal.x : 0;
+      const offsetY = connector.meta.hull ? connector.baseRect.height/2 * -normal.y : 0;
 
       return geomorph.embedXZMat4(
         [length * dir.x, length * dir.y, -dir.y, dir.x, src.x + offsetX, src.y + offsetY],
         { yScale: doorHeight, mat4: tmpMatFour1 },
       );
     },
-    getLockSigMat(meta) {
+    getLockSigMat(door) {
       const sx = 0.4;
-      const sz = meta.hull === true ? hullDoorDepth/4 : doorDepth + 0.025 * 2;
-      const center = tmpVec1.copy(meta.src).add(meta.dst).scale(0.5);
-      if (meta.hull === true) {
-        center.addScaled(meta.normal, -hullDoorDepth/2);
+      const sz = door.hull === true ? hullDoorDepth/4 : doorDepth + 0.025 * 2;
+      const center = tmpVec1.copy(door.src).add(door.dst).scale(0.5);
+      if (door.hull === true) {
+        center.addScaled(door.normal, -hullDoorDepth/2);
       }
       return geomorph.embedXZMat4(
-        [sx * meta.dir.x, sx * meta.dir.y, sz * meta.normal.x, sz * meta.normal.y, center.x, center.y],
+        [sx * door.dir.x, sx * door.dir.y, sz * door.normal.x, sz * door.normal.y, center.x, center.y],
         { yScale: 0.1 / 2, yHeight: doorHeight + 0.1, mat4: tmpMatFour1 },
       );
     },
@@ -185,27 +185,27 @@ export default function Doors(props) {
       
       // 🚧 control via "float array" of ratios instead of 4x4 matrices
       const { instanceMatrix } = state.inst;
-      for (const [instanceId, meta] of state.movingDoors.entries()) {
-        const dstRatio = meta.open ? 0 : 1;
-        damp(meta, 'ratio', dstRatio, 0.1, deltaMs);
-        const length = meta.ratio * meta.segLength;
+      for (const [instanceId, door] of state.movingDoors.entries()) {
+        const dstRatio = door.open ? 0 : 1;
+        damp(door, 'ratio', dstRatio, 0.1, deltaMs);
+        const length = door.ratio * door.segLength;
         // set e1 (x,,z)
-        instanceMatrix.array[instanceId * 16 + 0] = meta.dir.x * length;
-        instanceMatrix.array[instanceId * 16 + 2] = meta.dir.y * length;
+        instanceMatrix.array[instanceId * 16 + 0] = door.dir.x * length;
+        instanceMatrix.array[instanceId * 16 + 2] = door.dir.y * length;
         // translate
         // 🚧 must slide "into wall", or fade, or texture compatible with "crumpling"
         // instanceMatrix.array[instanceId * 16 + 12 + 0] = meta.src.x + meta.dir.x * ((1 - meta.ratio) * meta.segLength);
         // instanceMatrix.array[instanceId * 16 + 12 + 2] = meta.src.y + meta.dir.y * ((1 - meta.ratio) * meta.segLength);
-        if (meta.ratio === dstRatio) state.movingDoors.delete(instanceId);
+        if (door.ratio === dstRatio) state.movingDoors.delete(instanceId);
       }
       instanceMatrix.needsUpdate = true;
     },
     positionInstances() {
       const { inst: ds, lockSigInst: ls } = state;
-      for (const meta of Object.values(state.byKey)) {
-        ds.setMatrixAt(meta.instanceId, state.getDoorMat(meta));
-        ls.setMatrixAt(meta.instanceId, state.getLockSigMat(meta));
-        ls.setColorAt(meta.instanceId, getColor(meta.locked ? doorLockedColor : doorUnlockedColor));
+      for (const doorState of Object.values(state.byKey)) {
+        ds.setMatrixAt(doorState.instanceId, state.getDoorMat(doorState));
+        ls.setMatrixAt(doorState.instanceId, state.getLockSigMat(doorState));
+        ls.setColorAt(doorState.instanceId, getColor(doorState.locked ? doorLockedColor : doorUnlockedColor));
       }
       ds.instanceMatrix.needsUpdate = true;
       ls.instanceMatrix.needsUpdate = true;
@@ -354,7 +354,7 @@ export default function Doors(props) {
  * @property {{ [center in `${number},${number}`]: Geomorph.DoorState }} byPos
  * @property {THREE.InstancedMesh} inst
  * @property {THREE.BufferGeometry} quad
- * @property {THREE.BoxGeometry} lockSigGeom
+ * @property {THREE.BufferGeometry} lockSigGeom
  * @property {THREE.InstancedMesh} lockSigInst
  * @property {Map<number, Geomorph.DoorState>} movingDoors To be animated until they open/close.
  * @property {number} opacity

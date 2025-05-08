@@ -39,7 +39,7 @@ export default function Tty(props: Props) {
     pausedPids: {} as Record<number, true>,
 
     onFocus() {
-      if (state.inputOnFocus) {
+      if (state.inputOnFocus !== undefined) {
         state.base.xterm.setInput(state.inputOnFocus.input);
         state.base.xterm.setCursor(state.inputOnFocus.cursor);
         state.inputOnFocus = undefined;
@@ -148,9 +148,9 @@ export default function Tty(props: Props) {
 
   React.useEffect(() => {// sync ~/PROFILE
     if (state.base.session) {
-      state.base.session.var.PROFILE = props.env.PROFILE;
+      state.base.session.var.PROFILE = props.profile;
     }
-  }, [state.base.session, props.env.PROFILE]);
+  }, [state.base.session, props.profile]);
 
   React.useEffect(() => {// Boot profile
     if (state.base.session && !props.disabled && !state.booted) {
@@ -191,7 +191,10 @@ export interface Props extends BaseTabProps {
   sessionKey: string;
   /** Can initialize variables */
   env: Partial<Session["var"]>;
+  /** Synced with e.g. game-generators.sh */
   functionFiles: Record<string, string>;
+  /** Synced with e.g. profile-1.sh */
+  profile: string;
   onKey?(e: KeyboardEvent): void;
 }
 

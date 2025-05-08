@@ -53,7 +53,8 @@ export function ContextMenu() {
         if (skip[k] === true) return [];
         const vStr = v === true ? '' : typeof v === 'string' ? v : javascriptStringify(v) ?? '';
         return { k, v: vStr, length: k.length + (vStr === '' ? 0 : 1) + vStr.length };
-      }).sort((a, b) => a.length < b.length ? -1 : 1);
+      // }).sort((a, b) => a.length < b.length ? -1 : 1);
+      }); // sorting destroys tag precedence
     },
     /**
      * Apply matchers, assuming `state.meta` is up-to-date.

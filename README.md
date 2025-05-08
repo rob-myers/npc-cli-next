@@ -44,6 +44,21 @@ Related resources (less/more resolution)
 
 Then you can run the various scripts (as needed) found inside `scripts/get-pngs.js`.
 
+## Gotchas
+
+1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle both `transform` and `transform-box`.
+   > https://github.com/Automattic/node-canvas/issues/2507
+
+  
+  ```xml
+  <path d="M 1088 192 L 1088 128 L 1040 192 L 1088 192 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-box: fill-box; transform-origin: 50% 50%;" transform="matrix(-1, 0, 0, -1, 0, 0)">
+    <bx:title>_debug-path-transform</bx:title>
+  </path>
+  ```
+
+  In BoxySVG we can `Object > transform > Reduce Transform`.
+
+2. Similar for transform on `<image>` e.g. scale.
 
 ## Development only routes
 
@@ -57,26 +72,56 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
 ## Example NPC-CLI shell commands
 
-  ```sh
-  c=0
-  while true; do
-    spawn "rob_${c}" $( click 1 )
-    w e.grantNpcAccess "rob_${c}" .
-    c+=1
-  done
-  
-  # commands work while paused via prefix `ptags=no-pause;`
-  ptags=no-pause events
+```sh
+c=0
+while true; do
+  spawn "rob_${c}" $( click 1 )
+  w e.grantAccess . "rob_${c}"
+  c+=1
+done
 
-  # reset or save control state i.e. current view
-  w view.controls.reset
-  w view.controls.saveState
+# commands work while paused via prefix `ptags=no-pause;`
+ptags=no-pause events
 
-  # this command does not exit until the World is enabled
-  test $( w disabled ) &&
-    events '({ key }) => key === "enabled"' | take 1
+# reset or save control state i.e. current view
+w view.controls.reset
+w view.controls.saveState
 
-  ```
+# this command does not exit until the World is enabled
+test $( w disabled ) &&
+  events '({ key }) => key === "enabled"' | take 1
+
+# modify npc rob's skin
+w n.rob.skin | assign '{ "body-overlay-front": { prefix: "plus-icon" }}'
+w n.rob.applySkin
+
+# reset npc rob's skin
+w n.rob.resetSkin
+
+# - tell npc rob to change speed by factor `dst` onenter next offMeshConnection
+# - onexit speed will suddenly increase unless we set agent maxSpeed whilst traversing
+w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'
+
+# pass from Vector3 to Vect for an internal function which only supports the latter
+click | map xz | w n.rob.getLookAngle -
+
+w view.controls | assign '{minDistance:1}'
+```
+
+## Working with a branch of `recast-navigation-js`
+
+Follow instructions here:
+> https://github.com/rob-myers/recast-navigation-js/blob/main/DEVELOPMENT.md
+
+```sh
+brew install cmake
+
+# at repo root
+git checkout feat/expose-all-mesh-anim
+# yarn build does not work, but we can:
+# might have to manually delete packages/recast-navigation-wasm/{build,dist}
+yarn build:packages2
+```
 
 ## Bits and bobs
 
@@ -101,7 +146,7 @@ but after publishing we should re-comment these paths and use turbopack.
 #### At `recast-navigation-js` repo root
 
 1. Manually bump versions
-  - search for current patch e.g. 0.39.1 and replace with next e.g. 0.39.2
+  - search for current patch e.g. `0.39.2` and replace with next e.g. `0.39.3`
   - do not include yarn.lock, files should be:
     > packages/recast-navigation{,-core,-generators,-playcanvas,-three,-wasm}
 
@@ -173,5 +218,66 @@ brew install ffmpeg
 cd ~/Desktop
 ffmpeg -i ~/Desktop/html-3d-example.mov -qscale 0 html-3d-example.mp4
 ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=10" -b:v 0 -crf 25 html-3d-example.mp4
+ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=30" -b:v 0 -crf 25 html-3d-example.mp4
 ffmpeg -i ~/Desktop/html-3d-example.mov -filter_complex "[0:v] fps=60" -b:v 0 -crf 25 html-3d-example.mp4
 ```
+
+### Deceleration in terms of time
+
+> We originally calculated the following in order to simulate slow-down inside offMeshConnections.
+> However we decided upon a simpler approach
+> i.e. add time scaling factor `tScale` to `dtCrowdAnimation` and tween it.
+
+- Suppose move in 1D with:
+  - init/final position `x(0) := 0`, `x(t_1) := x_1` where `t_1` unknown.
+  - init/final velocity `v(0) := u_0`, `v(t_1) := u_1`.
+- Suppose we constantly decelerate i.e. `dv/dt = a ≤ 0` from speed `u_0` to `u_1` at time `t_1`
+
+It follows that:
+- `v(t) = u_0 + a . t` for all `t ≥ 0`
+- `x(t) = u_0 . t + a/2 . t^2` for all `t ≥ 0`.
+- `v(t_1) = u_1` hence `t_1 = (u_0 - u_1) / |a|`
+- `x(t_1) = x_1` hence `x_1 = ((u_0 - u_1) / |a|). ( u_0 - (u_0 - u_1) / 2 )`
+  i.e. `x_1 = (1 / 2|a|) . (u_0 - u_1). (u_0 + u_1)`
+
+Sanity check: if `u_0 = u_1` then `t_1 = x_1 = 0` i.e. immediate.
+Sanity check: if `u_1 = 0` then `x_1 = 0.5 . 1/|a| . u_0^2`
+
+Then we know:
+- the deceleration `|a| = 0.5 . (1 / x_1) . (u_0 - u_1) . (u_0 + u_1)`.
+- the time `t_1 = (u_0 - u_1) / |a| = 2 * x_1 * (1 / (u_0 + u_1))`
+
+## Towards better skins
+
+We'll try to re-map publicly available Minecraft Skins.
+
+- https://namemc.com/minecraft-skins/tag/soldier
+  - 🚧 https://namemc.com/skin/45461862ef51524e
+- https://namemc.com/minecraft-skins/tag/scientist
+  - 🚧 https://namemc.com/skin/7161dce64d6b12be
+  - https://namemc.com/skin/3a335a2ec786efdb
+- https://namemc.com/minecraft-skins/tag/general
+- https://namemc.com/minecraft-skins/tag/medic
+  - 🚧 https://namemc.com/skin/194c3366860674c0
+- https://namemc.com/minecraft-skins/tag/suit
+  - 🚧 https://namemc.com/skin/7271372bc0b9bc89
+- https://namemc.com/minecraft-skins/tag/police
+  - 🚧 https://namemc.com/skin/c06caf409cd8427e
+- https://namemc.com/minecraft-skins/tag/business
+  - https://namemc.com/skin/9ec38f8ce7f8498d
+- https://namemc.com/minecraft-skins/tag/engineer
+  - https://namemc.com/skin/5040062e039888a2
+- https://namemc.com/minecraft-skins/tag/assassin
+- https://namemc.com/minecraft-skins/tag/politician
+- https://namemc.com/minecraft-skins/tag/monk
+  - https://namemc.com/skin/a5f66f97d8382dc9
+  - https://namemc.com/skin/b84f86d6ab682a38
+- https://namemc.com/minecraft-skins/tag/priest
+- https://namemc.com/minecraft-skins/tag/scary
+  - https://namemc.com/skin/aa774a19c9ce5fc9
+- https://namemc.com/minecraft-skins/tag/star-wars
+  - https://namemc.com/skin/c4e6ff045b7ab219
+- https://namemc.com/minecraft-skins/tag/skeleton
+  - https://namemc.com/skin/4c15a5af6a583cc9
+- https://namemc.com/minecraft-skins/tag/knight
+  - https://namemc.com/skin/5fd193f91ecc3e2e

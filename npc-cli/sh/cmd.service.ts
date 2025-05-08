@@ -2,45 +2,12 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import {
-  Deferred,
-  deepGet,
-  keysDeep,
-  pause,
-  removeFirst,
-  generateSelector,
-  testNever,
-  truncateOneLine,
-  jsStringify,
-  safeJsonCompact,
-} from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsonCompact } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import {
-  addStdinToArgs,
-  computeNormalizedParts,
-  formatLink,
-  handleProcessError,
-  killError,
-  killProcess,
-  normalizeAbsParts,
-  parseTtyMarkdownLinks,
-  ProcessError,
-  resolveNormalized,
-  resolvePath,
-  ShError,
-  stripAnsi,
-} from "./util";
+import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
-import {
-  ReadResult,
-  preProcessRead,
-  dataChunk,
-  isProxy,
-  redirectNode,
-  VoiceCommand,
-  isDataChunk,
-} from "./io";
-import useSession, { ProcessMeta, ProcessStatus, Session } from "./session.store";
+import { type ReadResult, preProcessRead, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk } from "./io";
+import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
 import { cloneParsed, getOpts, parseService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
 
@@ -291,14 +258,23 @@ class cmdServiceClass {
       case "kill": {
         const { opts, operands } = getOpts(args, {
           boolean: [
+            "all"  /** --all all processes */,
+            "ALL"  /** --ALL all processes */,
             "STOP" /** --STOP pauses a process */,
             "CONT" /** --CONT continues a paused process */,
           ],
         });
 
-        const pids = operands
-          .map((x) => parseJsonArg(x))
-          .filter((x): x is number => Number.isFinite(x));
+        let pids = [] as number[];
+
+        if (opts.all === true || opts.ALL === true) {
+          const session = useSession.api.getSession(meta.sessionKey)
+          pids = Object.keys(session.process).map(Number);
+        } else {
+          pids = operands.map((x) => parseJsonArg(x)).filter(
+            (x): x is number => Number.isFinite(x)
+          );
+        }
 
         this.killProcesses(meta.sessionKey, pids, { STOP: opts.STOP, CONT: opts.CONT });
         break;
@@ -520,7 +496,7 @@ class cmdServiceClass {
               throw e;
             }
           } else {
-            console.error(e); // Provide JS stack
+            ttyError(e); // Provide JS stack
             node.exitCode = 1;
             throw new ShError(`${(e as Error)?.message ?? e}`, 1);
           }
@@ -697,7 +673,8 @@ class cmdServiceClass {
           : null;
       return parts[0] && localCtxt
         ? parts.reduce((agg, part) => agg[part], localCtxt)
-        : resolvePath(arg, root, pwd);
+        : resolvePath(arg, root, pwd)
+      ;
     });
 
     node.exitCode = outputs.length && outputs.every((x) => x === undefined) ? 1 : 0;
@@ -718,17 +695,19 @@ class cmdServiceClass {
     const session = useSession.api.getSession(sessionKey);
     for (const pid of pids) {
       const { [pid]: process } = session.process;
+
       if (!process) {
         continue; // Already killed
       }
-      const processes =
-        process.pgid === pid || opts.group
-          ? // Apply command to whole process group __in reverse__
-            useSession.api.getProcesses(sessionKey, process.pgid).reverse()
-          : [process]; // Apply command to exactly one process
+
+      const processes = process.pgid === pid || opts.group
+        ? // Apply command to whole process group __in reverse__
+          useSession.api.getProcesses(sessionKey, process.pgid).reverse()
+        : [process] // Apply command to exactly one process
+      ;
 
       // onSuspend onResume are "first-in first-invoked"
-      processes.forEach((p) => {
+      for (const p of processes) {
         if (opts.STOP) {
           p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend());
           p.status = ProcessStatus.Suspended;
@@ -738,9 +717,10 @@ class cmdServiceClass {
         } else {
           p.status = ProcessStatus.Killed;
           // Avoid immediate clean because it stops `sleep` (??)
-          window.setTimeout(() => killProcess(p, opts.SIGINT));
+          // window.setTimeout(() => killProcess(p, opts.SIGINT));
+          killProcess(p, opts.SIGINT);
         }
-      });
+      }
     }
   }
 
@@ -838,6 +818,11 @@ class cmdServiceClass {
       return isTtyAt(this.meta, fd);
     },
 
+    /** Create succinct JSON projections of JS values */
+    json(x: any) {
+      return safeJsonCompact(x);
+    },
+
     kill(group = false) {
       cmdService.killProcesses(this.meta.sessionKey, [this.meta.pid], { group });
     },
@@ -864,11 +849,6 @@ class cmdServiceClass {
     /** Pretty print JS values */
     pretty(x: any) {
       return jsStringify(isProxy(x) ? { ...x } : x, true);
-    },
-
-    /** Create succinct JSON projections of JS values */
-    json(x: any) {
-      return safeJsonCompact(x);
     },
 
     /** Read once from stdin. */

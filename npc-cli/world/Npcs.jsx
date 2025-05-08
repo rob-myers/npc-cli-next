@@ -120,15 +120,16 @@ export default function Npcs(props) {
     },
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
-      for (const npc of npcs) {
-        state.removeAgent(npc);
-      }
+      const animKeys = npcs.map(x => x.s.act);
+      npcs.forEach(npc => state.removeAgent(npc));
+
       await pause();
-      for(const npc of npcs ) {
+
+      for(const [i, npc] of npcs.entries()) {
         const agent = state.attachAgent(npc);
         const closest = state.getClosestNavigable(npc.position);
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
-          npc.startAnimation('Idle');
+          npc.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
           npc.moveTo(toXZ(npc.s.target));
         } else {// so they'll move "out of the way" of other npcs
@@ -173,10 +174,10 @@ export default function Npcs(props) {
         const meta = npcClassToMeta[npcClassKey];
 
         const mesh = /** @type {THREE.SkinnedMesh} */ (gltf.nodes[meta.meshName]);
-        // get sheetId from orig material name e.g. human-0.0.tex.png
+        // get initial sheetId from orig material name e.g. human-0.0.tex.png
         const origMaterial = /** @type {THREE.MeshStandardMaterial} */ (mesh.material);
         const matBaseName = origMaterial.map?.name ?? null;
-        const skinSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
+        const initSheetId = matBaseName === null ? 0 : (Number(matBaseName.split('.')[1]) || 0);
 
         const {
           uvMap: {[meta.npcClassKey]: uvMap},
@@ -185,7 +186,7 @@ export default function Npcs(props) {
 
         state.sheetAux[npcClassKey] = {
           npcClassKey: meta.npcClassKey,
-          sheetId: skinSheetId,
+          sheetId: initSheetId,
           sheetTexIds,
           uvMap,
         };
@@ -196,20 +197,26 @@ export default function Npcs(props) {
         }
 
         // 🔔 always recompute: either mesh or sheet might have changed
-        const { triToUvKeys, partToUvRect, labelTriIds } = computeMeshUvMappings(mesh, uvMap, skinSheetId);
+        const {
+          triToUvKeys,
+          partToUvRect,
+          breathTriIds,
+          labelTriIds,
+          selectorTriIds,
+        } = computeMeshUvMappings(mesh, uvMap, initSheetId);
         const labelUvRect = uvMap.default_label;
 
         state.gltfAux[npcClassKey] = {
           npcClassKey: meta.npcClassKey,
+          breathTriIds,
           labelTriIds,
+          selectorTriIds,
           labelUvRect4: labelUvRect
             ? [labelUvRect.x, labelUvRect.y, labelUvRect.width, labelUvRect.height]
             : [0, 0, 0, 0],
           partToUv: partToUvRect,
           triToKey: triToUvKeys,
-          animHeights: mapValues(
-            meta.modelAnimHeight, x => x * meta.scale
-          ),
+          animHeights: mapValues(meta.modelAnimHeight, x => x * meta.scale),
           labelHeight: meta.modelLabelHeight * meta.scale,
         };
       }
@@ -246,20 +253,19 @@ export default function Npcs(props) {
 
       let npc = state.npc[opts.npcKey];
 
-      // orient to meta 🚧 remove from elsewhere
       opts.angle ??= typeof p.meta?.orient === 'number'
-        ? (p.meta.orient * (Math.PI / 180)) - Math.PI/2
+        ? p.meta.orient * (Math.PI / 180) // keep using "cw from north"
         : undefined
       ;
 
       if (npc !== undefined) {// Respawn
-        await npc.cancel();
+        npc.cancel();
         npc.epochMs = Date.now();
 
         npc.def = {
           key: opts.npcKey,
           uid: npc.def.uid,
-          angle: opts.angle ?? npc.getAngle() ?? 0, // prev angle fallback
+          angle: opts.angle ?? npc.getAngle(), // prev angle fallback
           classKey: opts.classKey ?? npc.def.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
@@ -274,7 +280,7 @@ export default function Npcs(props) {
         npc = state.npc[opts.npcKey] = new Npc({
           key: opts.npcKey,
           uid: takeFirst(state.freeId),
-          angle: opts.angle ?? 0,
+          angle: opts.angle ?? Math.PI/2, // default face along x axis
           classKey: opts.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
@@ -282,6 +288,11 @@ export default function Npcs(props) {
         state.idToKey.set(npc.def.uid, opts.npcKey);
 
         npc.initialize(state.gltf[npc.def.classKey]);
+      }
+
+      if (opts.skin !== undefined) {
+        Object.assign(npc.skin, opts.skin);
+        npc.applySkin();
       }
 
       if (npc.s.spawns === 0) {
@@ -344,6 +355,7 @@ export default function Npcs(props) {
 
   w.npc = state;
   w.n = state.npc;
+  w.a = state.byAgId;
   
   // load meshes
   entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {
@@ -484,8 +496,7 @@ function NPC({ npc }) {
         skeleton={mesh.skeleton}
         userData={mesh.userData}
 
-        // 🔔 keep shader up-to-date
-        // 🔔 update onchange gltf
+        // 🔔 keep shader up-to-date e.g. onchange gltf
         key={`${HumanZeroMaterial.key} ${mesh.uuid}`}
         onUpdate={(skinnedMesh) => {
           npc.m.mesh = skinnedMesh; 
@@ -500,12 +511,16 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
-          diffuse={[.4, .4, .4]}
+          diffuse={[1, 1, 1]}
 
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}
-          labelTriIds={npc.gltfAux.labelTriIds}
+
+          // 🚧 move below to texture
           labelUvRect4={npc.gltfAux.labelUvRect4}
+          breathTriIds={npc.gltfAux.breathTriIds}
+          labelTriIds={npc.gltfAux.labelTriIds}
+          selectorTriIds={npc.gltfAux.selectorTriIds}
 
           opacity={npc.s.opacity}
           transparent

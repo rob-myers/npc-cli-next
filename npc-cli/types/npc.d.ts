@@ -9,7 +9,7 @@ declare namespace NPC {
     uid: number;
     /** Specifies the underlying 3D model */
     classKey: Key.NpcClass;
-    /** Radians */
+    /** Radians, cw from north viewed from above */
     angle: number;
     /** World units per second */
     runSpeed: number;
@@ -80,6 +80,7 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
+    skin?: NPC.SkinReMap;
   }
 
   type Event = (
@@ -110,7 +111,6 @@ declare namespace NPC {
     | { key: "closed-door"; gmId: number; doorId: number; meta?: Meta }
     | { key: "locked-door"; gmId: number; doorId: number; meta?: Meta }
     | { key: "unlocked-door"; gmId: number; doorId: number; meta?: Meta }
-    | { key: "changed-zoom"; level: 'near' | 'far' }
     | { key: "enter-collider"; npcKey: string; } & BaseColliderEvent
     | { key: "exit-collider"; npcKey: string; } & BaseColliderEvent
     | {
@@ -361,7 +361,13 @@ declare namespace NPC {
 
   type SkinPartToUvRect = Record<Key.SkinPart, Geomorph.UvRect>;
   
-  type SkinReMap = Partial<Record<Key.SkinPart, {
+  /**
+   * We also permit brace expansion in keys, e.g.
+   * > `"head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },`
+   */
+  type SkinReMap = Partial<Record<Key.SkinPart, SkinReMapValue>>;
+
+  type SkinReMapValue = {
     /**
      * For example `base`, where `base_{skinPart}` is in this npc's class's uv map.
      */
@@ -377,16 +383,20 @@ declare namespace NPC {
      * In other words, an icon mapped to body overlay front can also be used on the back.
      */
     otherPart?: Key.SkinPart;
-  }>>;
+  };
 
   /**
    * Values are `[r, g, b, a]` where `r`, `g`, `b`, `a` in `[0, 1]`
    */
-  type SkinTint = Partial<Record<Key.SkinPart, [number, number, number, number]>>
+  type SkinTint = Partial<Record<Key.SkinPart, SkinTintValue>>
+
+  type SkinTintValue = [number, number, number, number];
 
   interface GltfAux {
     npcClassKey: Key.NpcClass;
+    breathTriIds: number[];
     labelTriIds: number[];
+    selectorTriIds: number[];
     labelUvRect4: [number, number, number, number];
     partToUv: NPC.SkinPartToUvRect;
     triToKey: NPC.TriToUvKeys;

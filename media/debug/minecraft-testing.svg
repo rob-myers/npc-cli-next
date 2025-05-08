@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 384" width="640" height="384" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <filter id="pixelete-filter-1" bx:preset="pixelete 1 8" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feFlood height="2" width="2"/>
+      <feComposite width="8" height="8"/>
+      <feTile result="a"/>
+      <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      <feMorphology operator="dilate" radius="4"/>
+    </filter>
+    <bx:grid x="0" y="0" width="16" height="16"/>
+    <filter id="pixelete-filter-0" bx:preset="pixelete 1 10" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feFlood height="2" width="2"/>
+      <feComposite width="10" height="10"/>
+      <feTile result="a"/>
+      <feComposite in="SourceGraphic" in2="a" operator="in"/>
+      <feMorphology operator="dilate" radius="5"/>
+    </filter>
+  </defs>
+  <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAy0lEQVQYGTWPPQ6CQBCF3xJ+dTcEEg5A5QlsvICH8AA29t7AxMKCC3gDKW3sPIi1CQEiLLBAIjKb+JKZzMz3XjFss15NnLvgSw+u64CkVA/ZdJBSgaVpOtExDENEUUQjsixDURR6ZnEcT5ZlgUoIoY91XWMcR12moSQWzIXNRnzLFq+81qZ/M4U3Q8vEabeFzX0ktweSyxn9p4AscxgE+WwiOX4A4TkaDl0H1VQwCAbzB5QmHQ97EBxUq3eDIKWu9+ecLFHlbw0pTfsPM/5SmPFXl7YAAAAASUVORK5CYII=" width="128" height="128" style="filter: url(&quot;#pixelete-filter-1&quot;);"/>
+  <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAEAAAAAANp9p1AAACdUlEQVRIDbVVv4sTURD+FpPN7mU3ZxKCnmgRLcQ/QBQLA4KIVgZLG7nGRrjC4sA/QLSwuD9AsbGwuKRTDm0iiFwjiN3BmcJGCUm47OaySYS43yQvvl0v7qE4sLvz5tc38/bNPAMJdOn82YnjWHCyNiwrI9ZBMITfH8D3A6yYWZG5dgZLmbTw+8MxvMFQ+M33Hw1hFrxSC+RzsQ6ezVpzuWLcI9OkCH7UNpX40N/kBGaVE9xx7d8DB5DKdXDFcyeSKDEBbnscXE9k9cpFwcgs5yNYw72urJ+//RCRxxeJCcQd4msFbGVzMK0lUY+C/bjZwnViAjxwilTlvjdAvx+AOgVs2r9+D3kmc5hEEhPgaY+TAqcu6PfmapXEaDAQcF03N4oxyQmErRYnvQ3Vv9ZtWDnBD9LpduSNpD6nkd6KXOsJ/KveqNVqEwYpFAoolUpk0Wq10Ol0hOerWq2i0WigUqmITPH1en1u8yd/Gi3SG+VyeZJOp8HHdV0J6HkexuOxPBT8T71xZqU0cW0LZnp6HL60PUnib1+ni9MiRuMf4TiOnh/ikHR5SoE/vH0NprOMjc032HjyODxAHfjdtjjkLlxHuFPYfvoIueJxnLt5B81mE73t16J38kVklgtYu7+OtVtXMfL38ODFFlxER7cqUpenKHRmmXGo8FIhOFtJtZH5qYHdrZf4vvMZ5klb+CCUzfUygDriyxhMgDF9RHdA4ejyFIX5cN6zetL6vbsCrg8RxY/Ci+fr7g6OnTgVGTJKT99e+5vEYkyduGZxJN6U3dl8SSnFs1fvsHrjMjhWON0O6mMCkxb1ufJhLAUmDuFLv66VjN+fvsBKkKRBw5IAAAAASUVORK5CYII=" width="512" height="256" x="128" y="128" style="filter: url(&quot;#pixelete-filter-0&quot;);"/>
+  <rect width="640" height="384" style="fill: none; stroke: rgb(255, 0, 0);"/>
+</svg>

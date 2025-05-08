@@ -2,7 +2,7 @@ import { Subject, Subscription } from "rxjs";
 import { deepClone, removeFirst, last } from "../service/generic";
 import type * as Sh from "./parse";
 import { traverseParsed } from "./parse";
-import { killError } from "./util";
+import { killError, ttyError } from "./util";
 import useSessionStore, { ProcessMeta, ProcessStatus } from "./session.store";
 
 export const scrollback = 200;
@@ -485,8 +485,8 @@ export class VoiceDevice implements Device {
     await new Promise<void>((resolve, _) => {
       utterance.onend = () => setTimeout(() => resolve(), 100);
       utterance.onerror = (errorEvent) => {
-        console.error(`Utterance '${text}' by '${voice}' failed.`);
-        console.error(errorEvent);
+        ttyError(`Utterance '${text}' by '${voice}' failed.`);
+        ttyError(errorEvent);
         resolve();
       };
       this.synth.speak(utterance);

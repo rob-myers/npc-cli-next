@@ -114,11 +114,11 @@ const speechBubbleBaseScale = 4;
 export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
 export const npcSpeechBubbleCss = css`
-  --menu-width: 200px;
+  --speech-bubble-width: 220px;
 
   position: absolute;
   top: 0;
-  left: calc(-1/2 * var(--menu-width));
+  left: calc(-1/2 * var(--speech-bubble-width));
   transform-origin: 0 0;
   
   pointer-events: none;
@@ -126,8 +126,8 @@ export const npcSpeechBubbleCss = css`
 
   
   > div {
-    transform-origin: calc(+1/2 * var(--menu-width)) 0;
-    width: var(--menu-width);
+    transform-origin: calc(+1/2 * var(--speech-bubble-width)) 0;
+    width: var(--speech-bubble-width);
     display: flex;
     justify-content: center;
     
@@ -136,11 +136,14 @@ export const npcSpeechBubbleCss = css`
   }
   
   .speech {
+    font-family: 'Courier New', Courier, monospace;
     font-weight: lighter;
     font-style: italic;
-    font-size: 1.5rem;
+    font-size: 1rem;
     color: rgba(255, 255, 255, 0.6);
     background-color: rgba(0, 0, 0, 0.5);
+    letter-spacing: 0;
+    line-height: 1.4;
     
     display: -webkit-box;
     justify-content: center;

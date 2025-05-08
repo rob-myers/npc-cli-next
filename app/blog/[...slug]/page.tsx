@@ -1,8 +1,4 @@
-import { promises as fs } from 'fs'
-import path from 'path'
-import { compileMDX } from 'next-mdx-remote/rsc'
-
-import type { FrontMatter } from '@/components/site.store';
+import React from 'react';
 import Card from "@/components/Card";
 import SideNote from "@/components/SideNote";
 
@@ -12,41 +8,51 @@ export default async function BlogPage(props: {
 
   const { slug } = await props.params;
   const mdxFilename = `${slug[0]}.mdx` as const;
-  const content = await fs.readFile(path.join(repoRoot, 'posts', mdxFilename), 'utf-8');
-
-  const data = await compileMDX<FrontMatter>({
-    source: content,
-    options: {
-      parseFrontmatter: true,
-    },
-    components: {
-      Card,
-      SideNote,
-      // 🚧
-    },
-  });
+  const imported = await import(`@/posts/${mdxFilename}`);
 
   return <>
+
+    {React.createElement(imported.default, {
+      components: {
+        Card,
+        SideNote: (props: React.ComponentProps<typeof SideNote>) => (
+          <SideNote bubbleClassName="not-prose" {...props} />
+        ),
+        // 🔔 convert href "/internal/..." to fragment identifier, enacted elsewhere
+        // 🔔 apply decodeURIComponent to support spaces via %20
+        a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+          if (props.href?.startsWith('/internal/')) {
+            return <a {...props} href={`#${decodeURIComponent(props.href)}`}>{props.children}</a>
+          } else {
+            return <a {...props}>{props.children}</a>;
+          }
+        },
+      },
+    })}
+
     <script
-      id="frontmatter-json"
+      id="page-metadata-json"
       // stringify twice avoids "SyntaxError: Unexpected token ':' (at blog/:1:16614)"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(data.frontmatter)) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(
+        imported.metadata ?? { key: 'fallback-metadata' }
+      )) }}
     />
-    {data.content}
+
   </>;
 }
 
 export async function generateStaticParams(): Promise<Slug[]> {
-  // 🚧 generate from mdx metadata
+  // 🚧 generate automatically
   // const posts = await fetch('https://.../posts').then((res) => res.json())
   // return posts.map((post) => ({
   //   slug: post.slug,
   // }))
-  return [{ slug: ['index'] }, { slug: ['strategy-1'] }];
+  return [
+    { slug: ['index'] }, 
+    { slug: ['strategy-1'] },
+  ];
 }
 
 interface Slug {
   slug: string[];
 }
-
-const repoRoot = process.cwd();

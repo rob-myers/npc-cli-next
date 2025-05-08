@@ -389,8 +389,8 @@ export class Poly {
       this.cache(tris);
       return { vs: this.allPoints, tris };
     } catch (e) {
-      console.error("Quality triangulation failed, falling back to earcut");
-      console.error(e);
+      console.error(`Quality triangulation (poly2tri) failed: falling-back to earcut`);
+      console.error(`${e}`)
       return this.fastTriangulate();
     }
   }

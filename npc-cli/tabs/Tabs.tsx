@@ -1,39 +1,23 @@
 import React from "react";
-import {
-  Action,
-  Actions,
-  Layout as FlexLayout,
-  Model,
-  type TabNode,
-  type TabSetNode,
-} from "flexlayout-react";
+import { Action, Actions, Layout as FlexLayout, Model, type TabNode, type TabSetNode } from "flexlayout-react";
 import debounce from "debounce";
-import { useBeforeunload } from "react-beforeunload";
 import { css } from "@emotion/react";
-import cx from "classnames";
 
-import { afterBreakpoint, breakpoint } from "../../components/const";
 import { detectTabPrevNextShortcut } from "../service/generic";
-import {
-  TabDef,
-  TabsDef,
-  clearModelFromStorage,
-  createOrRestoreJsonModel,
-  factory,
-  storeModelAsJson,
-} from "./tab-factory";
+import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
+import { layoutToModelJson } from './tab-util';
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import Spinner from "../components/Spinner";
 
 export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
+
   const state = useStateRef((): State => ({
     enabled: false,
     everEnabled: false,
     hash: "",
     model: {} as Model,
     prevFocused: null,
-    resetCount: 0,
+    resets: 0,
     rootEl: null as any,
     tabsState: {},
 
@@ -41,8 +25,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       state.rootEl.focus();
     },
     hardReset() {
-      clearModelFromStorage(props.id);
-      state.reset();
+      props.onHardReset?.();
+      state.reset(false);
     },
     onAction(act) {
       if (act.type === Actions.MAXIMIZE_TOGGLE) {
@@ -96,14 +80,17 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     },
     // 🔔 saw "Debounced method called with different contexts" for 300ms
     onModelChange: debounce((() => {
-      storeModelAsJson(props.id, state.model);
+      props.onModelChange?.(false);
     }), 30),
-    reset() {
+    reset(remember = true) {
       state.tabsState = {};
       if (!state.enabled) {
         state.everEnabled = false;
       }
-      state.resetCount++; // Remount
+      if (remember) {// Save and sync current
+        props.onModelChange?.(true);
+      }
+      state.resets++; // Remount
       update();
     },
     toggleEnabled(next) {
@@ -145,12 +132,19 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       state.hash = nextHash;
       return tabsDefChanged;
     },
-  }));
+  }), { deps: [// 🔔 crucial deps
+    props.onModelChange, 
+    props.onHardReset, 
+    props.onToggled
+  ]});
   
-  const tabsDefChanged = state.updateHash(JSON.stringify(props.tabs));
+  const tabsDefChanged = state.updateHash(JSON.stringify(props.tabset));
 
   state.model = React.useMemo(() => {
-    const output = createOrRestoreJsonModel(props);
+    
+    const output = Model.fromJson(
+      layoutToModelJson(props.tabset, props.rootOrientationVertical)
+    );
 
     // Enable and disable tabs relative to visibility
     output.visitNodes((node) => {
@@ -186,57 +180,42 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     });
 
     return output;
-  }, [tabsDefChanged, state.resetCount]);
-
-  useBeforeunload(() => storeModelAsJson(props.id, state.model));
+  }, [tabsDefChanged, state.resets, props.updates]);
 
   React.useImperativeHandle(ref, () => state);
 
   const update = useUpdate();
 
   return (
-    <>
-      <figure
-        key={state.resetCount}
-        css={tabsCss}
-        className="tabs"
-        ref={state.ref('rootEl')}
-        tabIndex={0}
-        onKeyDown={state.onKeyDown}
-      >
-        {state.everEnabled && (
-          <FlexLayout
-            model={state.model}
-            factory={(node) => factory(node, state, tabsDefChanged)}
-            realtimeResize
-            onModelChange={state.onModelChange}
-            onAction={state.onAction}
-          />
-        )}
-      </figure>
-
-      {!state.everEnabled && (
-        <button
-          css={interactButtonCss}
-          className={cx({ collapsed: props.collapsed })}
-          onPointerDown={() => state.toggleEnabled(true)}
-        >
-          <div>
-            {props.browserLoaded ? "interact" : <Spinner size={24} />}
-          </div>
-        </button>
+    <figure
+      key={state.resets}
+      css={tabsCss}
+      className="tabs"
+      onKeyDown={state.onKeyDown}
+      ref={state.ref('rootEl')}
+      tabIndex={0}
+    >
+      {state.everEnabled === true && (
+        <FlexLayout
+          factory={(node) => factory(node, state, tabsDefChanged)}
+          model={state.model}
+          onModelChange={state.onModelChange}
+          onAction={state.onAction}
+          realtimeResize
+        />
       )}
-
-    </>
+    </figure>
   );
 });
 
-export interface Props extends TabsDef {
-  browserLoaded: boolean;
-  collapsed: boolean;
+export interface Props extends TabsBaseProps {
+  /** A model update does not involve remounting */
+  updates: number;
   rootOrientationVertical?: boolean;
+  onHardReset?(): void;
   /** Invoked onchange state.enabled */
   onToggled?(next: boolean): void;
+  onModelChange?(syncCurrent: boolean): void;
 }
 
 export interface State {
@@ -244,7 +223,8 @@ export interface State {
   everEnabled: boolean;
   hash: string;
   prevFocused: null | HTMLElement;
-  resetCount: number;
+  /** A reset involves remounting */
+  resets: number;
   rootEl: HTMLElement;
   /** By tab identifier */
   tabsState: Record<string, TabState>;
@@ -254,7 +234,7 @@ export interface State {
   onAction(act: Action): Action | undefined;
   onKeyDown(e: React.KeyboardEvent): void;
   onModelChange(): void;
-  reset(): void;
+  reset(remember?: boolean): void;
   toggleEnabled(next?: boolean): void;
   toggleTabsDisabled(next: boolean): void;
   /** Returns true iff hash changed */
@@ -279,6 +259,10 @@ const tabsCss = css`
   position: relative;
   width: 100%;
   height: 100%;
+
+  .flexlayout__tabset_content {
+    background-color: #000;
+  }
 
   .flexlayout__tab {
     background-color: black;
@@ -331,39 +315,5 @@ const tabsCss = css`
       color: red;
       font-size: 1.2rem;
     }
-  }
-`;
-
-const interactButtonCss = css`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  @media (min-width: ${afterBreakpoint}) {
-    left: var(--view-bar-size);
-    top: 0;
-    width: calc(100% - var(--view-bar-size));
-    height: 100%;
-  }
-  @media (max-width: ${breakpoint}) {
-    left: 0;
-    top: calc(var(--view-bar-size) + 32px + 4px);
-    width: 100%;
-    height: calc(100% - 2 * var(--view-bar-size));
-  }
-
-  user-select: none;
-  &.collapsed {
-    display: none;
-  }
-
-  > div {
-    letter-spacing: 2px;
-    pointer-events: all;
-    
-    cursor: pointer;
-    font-size: 1rem;
-    color: white;
   }
 `;

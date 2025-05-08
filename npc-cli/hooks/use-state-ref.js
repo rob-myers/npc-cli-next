@@ -27,8 +27,9 @@ export default function useStateRef(initializer, opts = {}) {
        * 🚧 avoid invocation in production
        */
       state._prevFn = initializer.toString();
-      state.ref = (key) => (value) => void (
-        state[key] = value === null ? /** @type {*} */ (null) : value
+      state.ref = (key, functionRef) => (value) => void (
+        state[key] = value === null ? /** @type {*} */ (null) : value,
+        functionRef?.(value)
       );
     } else {
       /**
@@ -89,7 +90,10 @@ module.hot?.decline();
  * @template {Record<string, any>} State
  * @typedef {State & {
  *   _prevFn?: string;
- *   ref<Key extends keyof State, T extends State[Key]>(key: Key): ((value: T | null) => void);
+ *   ref<Key extends keyof State, T extends State[Key]>(
+ *      key: Key,
+ *      functionRef?: (value: T | null) => void,
+ *   ): ((value: T | null) => void);
  * }} UseStateRef
  * The state returned by `useStateRef`, which includes a special function `ref`.
  */
