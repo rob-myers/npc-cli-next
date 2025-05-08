@@ -14,7 +14,7 @@ import useSite from "./site.store";
 import { parseJsArg, testNever, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { helper } from "@/npc-cli/service/helper";
-import { createLayoutFromBasicLayout, isComponentClassKey } from "@/npc-cli/tabs/tab-util";
+import { isComponentClassKey, toComponentClassPrefix } from "@/npc-cli/tabs/tab-util";
 import type { ComponentClassKey, TabDef } from "@/npc-cli/tabs/tab-factory";
 
 import useIntersection from "@/npc-cli/hooks/use-intersection";
@@ -43,16 +43,19 @@ export default function Viewer() {
       let tabDef: TabDef;
 
       switch (classKey) {
-        case 'HelloWorld':
+        case 'Debug':
+        case 'HelloWorld': {
+          const filepath = `${toComponentClassPrefix[classKey]}-${opts.suffix ?? '0'}`;
           tabDef = {
             type: 'component',
             class: classKey,
-            filepath: `hello-world-${opts.suffix ?? '0'}`,
+            filepath,
             props: {},
           };
           break;
-        case 'World':
-          const worldKey = `world-${opts.suffix ?? '0'}`;
+        }
+        case 'World': {
+          const worldKey = `${toComponentClassPrefix[classKey]}-${opts.suffix ?? '0'}`;
           tabDef = {
             type: 'component',
             class: classKey,
@@ -63,6 +66,7 @@ export default function Viewer() {
             },
           };
           break;
+        }
         case 'Tty':
           tabDef = {
             type: 'terminal',

@@ -32,14 +32,23 @@
 
 ### World
 
-- 🚧 improve floor lighting
+- ✅ improve floor lighting
   - ✅ show hard-coded "light circle" in floor shader
   - ✅ light circle has basic gradient
   - ✅ light circle moves with camera
     - ✅ fix shader code i.e. edge geomorphs are not full-height
   - ✅ light circle scales up and down
   - ✅ light circle opacity can change
-  - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
+
+- 🚧 geomorph lighting
+  - 🚧 debug tag shows radial gradient
+    - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
+  - texture atlas for light maps
+  - test light map
+  - apply test light map
+  - geomorph layout symbol induces light map
+
+- 🚧 improve floor lighting
   - move Floor to separate shader
   - provide inverse matrices as uniform (more efficient)
   - remove post-processing

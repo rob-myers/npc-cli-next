@@ -106,8 +106,15 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
 }
 
 const fromComponentClassKey: Record<ComponentClassKey, true> = {
+  Debug: true,
   HelloWorld: true,
   World: true,
+};
+
+export const toComponentClassPrefix: Record<ComponentClassKey, string> = {
+  Debug: 'debug',
+  HelloWorld: 'hello-world',
+  World: 'world',
 };
 
 function getTabIdentifier(meta: TabDef) {
