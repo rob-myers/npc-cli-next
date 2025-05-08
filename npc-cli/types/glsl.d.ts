@@ -35,7 +35,12 @@ declare module '@react-three/fiber' {
 
     instancedAtlasMaterial: (
       ThreeElement<typeof import('three').ShaderMaterial>
-      & InstancedMultiTextureMaterialProps
+      & InstancedAtlasProps
+    );
+
+    instancedFloorMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & InstancedFloorProps
     );
 
   }
@@ -45,20 +50,24 @@ type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
 type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
 
 // 🚧 migrate all custom shaders
-export interface InstancedMultiTextureMaterialProps {
+export interface InstancedAtlasProps {
   alphaTest: number;
   atlas: import('three').DataArrayTexture;
   diffuse: Vector3Input;
-  lit?: boolean;
-  /** `(cx, cz, r, opacity)` */
-  litCircle?: import('three').Vector4; // constrain beyond Vector4Input
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;
 }
 
-export type InstancedMultiTextureMaterialKeys = keyof InstancedMultiTextureMaterialProps;
+export type InstancedAtlasKeys = keyof InstancedAtlasProps;
 
+export interface InstancedFloorProps extends InstancedAtlasProps {
+  lit?: boolean;
+  /** `(cx, cz, r, opacity)` */
+  litCircle?: import('three').Vector4; // constrain beyond Vector4Input
+}
+
+export type InstancedFloorKeys = keyof InstancedFloorProps;
 export interface HumanZeroMaterialProps {
   atlas: import('three').DataArrayTexture;
   aux: import('three').DataArrayTexture;

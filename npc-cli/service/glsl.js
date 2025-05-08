@@ -411,7 +411,90 @@ export const humanZeroShader = {
   `,
 };
 
-export const instancedAtlasShader = {
+const instancedAtlasShader = {
+  Vert: /* glsl */`
+
+    attribute vec2 uvDimensions;
+    attribute vec2 uvOffsets;
+    attribute uint uvTextureIds;
+    // e.g. can be used to infer gmId
+    attribute uint instanceIds;
+  
+    varying vec3 vColor;
+    varying vec2 vUv;
+    flat varying uint vTextureId;
+    flat varying uint vInstanceId;
+    flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
+
+    #include <common>
+    #include <logdepthbuf_pars_vertex>
+
+    void main() {
+      // vUv = uv;
+      vUv = (uv * uvDimensions) + uvOffsets;
+      vTextureId = uvTextureIds;
+      vInstanceId = instanceIds;
+      
+      vec4 modelViewPosition = vec4(position, 1.0);
+      modelViewPosition = instanceMatrix * modelViewPosition;
+      modelViewPosition = modelViewMatrix * modelViewPosition;
+      gl_Position = projectionMatrix * modelViewPosition;
+
+      vColor = vec3(1.0);
+      #ifdef USE_INSTANCING_COLOR
+        vColor.xyz *= instanceColor.xyz;
+      #endif
+
+      #include <logdepthbuf_vertex>
+    }
+  `,
+
+  Frag: /* glsl */`
+
+    uniform bool lit;
+    uniform vec4 litCircle;
+    uniform float alphaTest;
+    uniform bool objectPick;
+    uniform int objectPickRed;
+    uniform sampler2DArray atlas;
+    uniform vec3 diffuse;
+    uniform float opacity;
+
+    varying vec3 vColor;
+    varying vec2 vUv;
+    flat varying uint vTextureId;
+    flat varying uint vInstanceId;
+    flat varying vec4 vLitCircle;
+
+    #include <common>
+    #include <logdepthbuf_pars_fragment>
+  
+    void main() {
+
+      vec4 texel = texture(atlas, vec3(vUv, vTextureId));
+
+      if (objectPick == true) {
+        if (texel.a < alphaTest) discard;
+
+        gl_FragColor = vec4(
+          float(objectPickRed) / 255.0,
+          float((int(vInstanceId) >> 8) & 255) / 255.0,
+          float(int(vInstanceId) & 255) / 255.0,
+          1
+        );
+      } else {
+        if (texel.a * opacity < alphaTest) discard;
+        
+        gl_FragColor = texel * vec4(vColor * diffuse, opacity);
+      }
+
+      #include <logdepthbuf_fragment>
+    }
+  
+  `,
+};
+
+const instancedFloorShader = {
   Vert: /* glsl */`
 
     uniform bool lit;
@@ -541,20 +624,25 @@ export const InstancedLabelsMaterial = shaderMaterial(
   instancedLabelsShader.Frag,
 );
 
-/** @type {import('@/npc-cli/types/glsl').InstancedMultiTextureMaterialProps} */
-const instancedMultiTextureMaterialDefaultProps = {
+/** @type {import('@/npc-cli/types/glsl').InstancedAtlasProps} */
+const instancedAtlasDefaultProps = {
   alphaTest: 0.5,
   atlas: emptyDataArrayTexture,
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  objectPick: false,
+  objectPickRed: 0,
+  opacity: 1,
   // 🔔 map, mapTransform required else can get weird texture
   // map: null,
   // mapTransform: new THREE.Matrix3(),
   // colorSpace: false,
+};
+
+/** @type {import('@/npc-cli/types/glsl').InstancedFloorProps} */
+const instancedFloorDefaultProps = {
+  ...instancedAtlasDefaultProps,
   lit: false,
   litCircle: new THREE.Vector4(0, 0, 0, 0),
-  objectPick: false,
-  objectPickRed: 0,
-  opacity: 1,
 };
 
 /**
@@ -562,14 +650,24 @@ const instancedMultiTextureMaterialDefaultProps = {
  * - Decor quads
  * - Doors
  * - Obstacles
- * - Floor
  */
 export const InstancedAtlasMaterial = shaderMaterial(
   /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
-    instancedMultiTextureMaterialDefaultProps
+    instancedAtlasDefaultProps
   ),
   instancedAtlasShader.Vert,
   instancedAtlasShader.Frag,
+);
+
+/**
+ * Floor only
+ */
+export const InstancedFloorMaterial = shaderMaterial(
+  /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
+    instancedFloorDefaultProps
+  ),
+  instancedFloorShader.Vert,
+  instancedFloorShader.Frag,
 );
 
 /**
@@ -624,6 +722,7 @@ extend({
   InstancedWallsShader,
   InstancedLabelsMaterial,
   InstancedAtlasMaterial,
+  InstancedFloorMaterial,
   InstancedFlatMaterial,
   HumanZeroMaterial,
 });

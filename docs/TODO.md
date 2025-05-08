@@ -44,7 +44,7 @@
   - ✅ debug tag shows radial gradient
     - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
   - ✅ texture atlas for light maps
-  - 🚧 move Floor to separate shader
+  - ✅ move Floor to separate shader
   - 🚧 test light map
     - draw a bunch of radial gradients
     - apply test light map to Floor shader (1st attempt)

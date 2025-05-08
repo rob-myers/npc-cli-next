@@ -100,7 +100,7 @@ export default function Floor(props) {
       drawPolygons(ct, walls2[1], ['#555', null]);
     },
     onUpdateMaterial(material) {
-      /** @type {import("../types/glsl").InstancedMultiTextureMaterialKeys} */
+      /** @type {import("../types/glsl").InstancedFloorKeys} */
       const uniformKey = 'litCircle';
       (material.uniforms)[uniformKey].value = state.litCircle;
     },
@@ -137,7 +137,7 @@ export default function Floor(props) {
       renderOrder={-3} // 🔔 must render before other transparent e.g. npc drop shadow
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
-      <instancedAtlasMaterial
+      <instancedFloorMaterial
         key={InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
