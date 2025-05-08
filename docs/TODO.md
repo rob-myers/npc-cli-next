@@ -41,11 +41,12 @@
   - ✅ light circle opacity can change
 
 - 🚧 geomorph lighting
-  - 🚧 debug tag shows radial gradient
+  - ✅ debug tag shows radial gradient
     - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
-  - texture atlas for light maps
+  - 🚧 texture atlas for light maps
   - test light map
-  - apply test light map
+    - draw a bunch of radial gradients
+    - apply test light map to Floor shader (1st attempt)
   - geomorph layout symbol induces light map
 
 - 🚧 improve floor lighting
