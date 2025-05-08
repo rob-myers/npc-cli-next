@@ -1255,11 +1255,11 @@ export class Npc {
 const staticMaxAcceleration = 4;
 const movingMaxAcceleration = 6;
 // const staticSeparationWeight = 1;
-const staticSeparationWeight = 0.5;
+const staticSeparationWeight = 0.25;
 // 🔔 sudden change can cause jerk onexit doorway
 const movingSeparationWeight = 0.5;
-const staticCollisionQueryRange = 1.25;
-const movingCollisionQueryRange = 1.5;
+const staticCollisionQueryRange = 2;
+const movingCollisionQueryRange = 2;
 
 const preOffMeshCloseDist = helper.defaults.radius;
 // 🔔 stationary npc more permissive during preOffMeshConnection
