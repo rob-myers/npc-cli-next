@@ -1,85 +1,8 @@
 # TODO
 
-## Branch `start-blog`
+## Branch `light-and-blog`
 
 ### Site
-
-- ✅ refactor Tabs
-  - ✅ remove `tabset._${tabsKey}` tabsets
-  - ✅ move restore from localStorage out of tabs
-    - ℹ️ it is preventing us from overwriting tabs layout
-    - ✅ move restore from localStorage out of Tabs and into site.store
-      - ✅ useSite.api.tryRestoreLayout
-      - ✅ hook up useSite.api.tryRestoreLayout
-    - ✅ move save to localStorage out of Tabs and into site.store
-      - ✅ `<Tabs>` onModelChange does not `storeModelAsJson(props.id, state.model)`
-      - ✅ `<Viewer>` stores instead, using tabsKey
-  - ✅ remember layout on reset
-    - ✅ sync `tabset.current` with `tabs.model`
-    - ℹ️ we'll lose its previous state, so need keys `_${tabsetKey}` after all
-  - ✅ fix hard reset
-    - ✅ try restore from `_${tabsetKey}`
-  - ✅ localStorage includes `tabsets-meta` as `{ currentKey, allKeys }`
-    - includes underscore keys
-  - ✅ use `tabset-meta` on initially create site.store
-  - ✅ fix HMR of Tabs related files
-    - ✅ onchange site.store (HMR) reverts to initial layout
-      - ✅ avoid Tabs remount
-    - ✅ onchange site.store (HMR) breaks hard reset
-      - `<Tabs>` useStateRef was references stale `props.
-    - ✅ onchange tab-factory reverts to initial layout
-      - ✅ avoid Tabs remount onchange tab-util
-    - ✅ onchange Root (trigger `useSite.api.createTabset`) loses some state?
-  - ❌ keep tabset.current immutable while using Tabs UI
-    - we won't update per flexlayout-react update, but we will change on reset (ViewerControls)
-  - ✅ can change tabs programmatically without unmount
-    - we can directly change `tabset.current` without overwriting "original tabset"
-
-- ✅ towards 1st blog (npc cli)
-  - ✅ more content
-  - ✅ add a carousel
-  - ✅ can somehow change tabs from blog
-    - ✅ mechanism for links with href `/internal/...` to trigger code in `<Viewer>`
-    - ✅ `tabset` has structure `{ key: string; def: TabDef[][]; }`
-    - ✅ store lookup `tabset` and `tabset.current` in site.store
-    - ✅ can set tabset by clicking link
-    - ✅ avoid idempotence of fragment identifier?
-      - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
-    - ✅ can reset tabset by clicking link
-    - ✅ can set restore point for tabsetKey
-      - when ensureTabset can choose whether to `preserveRestore`
-      - ℹ️ we now track all UI changes in `tabset[current.key]`
-    - ✅ can add Viewer tab by clicking link
-      - ✅ ensure hard-coded tab is in layout
-      - ✅ ensure specific tab is selected
-      - ✅ handle case where another tab maximised
-      - ✅ remove hard-coding of tab
-        - ✅ can open HelloWorld as hello-world-${opts.suffix}
-        - ✅ can open Tty with `env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`
-        - ✅ can open World with `suffix=2&mapsKey=small-map-1}`
-        - ✅ index.mdx link for tty tab with spaces in PROFILE
-        - ✅ clean e.g. move to site.store
-    - ✅ can remove Viewer tab by clicking link
-    - ✅ strategy for tabsets with added tabs
-      - ℹ️ we'll add/remove tabs to our tabsets over time, so
-      - ℹ️ validating tabset ids doesn't make much sense;
-      - ℹ️ however it'll be useful to "hot reload" tabset layouts
-      - ✅ `tabset` lookup has only 3 keys:
-        - `current` provided as Prop to `<Tabs>` (rarely changes)
-        - `synced` changes in sync with flexlayout-react
-        - `restore` restore point
-      - ✅ can change component tab props e.g. World mapKey
-      - ✅ cleanup function on restore from localStorage
-        - currently a noop
-      - ✅ fix/clarify Tabs refresh after add/remove node
-      - ✅ fix/clarify createOrRestoreJsonModel Error
-        - removed it
-      - ✅ localStorage remembers tabset, including resets
-      - ✅ close tab should select some other tab in tabset
-        - ℹ️ repro by programmatic open, then select, then programmatic close
-      - ✅ support HMR update tabset somehow
-        - we sync PROFILE via profileKey
-      - ✅ clean hard-coded initialization in `<Root>`
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
@@ -109,17 +32,6 @@
 
 ### World
 
-- 🚧 BUG: after multiple invokes of e.g. `w view.tween '{ fov: 30 }'`,
-  agents stop moving, and start to animate very slowly
-  - ℹ️ can fix by pausing that `w stopTick` then playing
-  - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
-  - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
-
-- ✅ sh: given `home.foo === undefined` we should not get `foo: not found`
-
-- ✅ BUG: testOffMeshDisjoint does not handle case where npcs face each
-  - ✅ non-diagonal rectangle intersection
-
 - 🚧 improve floor lighting
   - ✅ show hard-coded "light circle" in floor shader
   - ✅ light circle has basic gradient
@@ -127,6 +39,7 @@
     - ✅ fix shader code i.e. edge geomorphs are not full-height
   - ✅ light circle scales up and down
   - ✅ light circle opacity can change
+  - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
   - move Floor to separate shader
   - provide inverse matrices as uniform (more efficient)
   - remove post-processing
@@ -136,50 +49,16 @@
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
 
-- ✅ profile-1 tweens continue when should be paused
-  - `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
-  - ℹ️ can continue whilst initially paused inside profile,
-    BECAUSE tweens can run whilst paused too
-  - ✅ can explicitly specify `permitPaused: false`
-
-- `w`: support auto-cancel of promise-return-valued functions
-  - e.g. `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
-  - i.e. if return value is Promise can store reject in cleanups?
-
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
 
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
-- BUG: profile-1: pause during initial tween ineffective
-
-- ✅ doorway collision strategy:
-  - ℹ️ no collision if other has same direction and is "more than a radius ahead"
-  - ℹ️ no collision if other is "totally disjoint"
-  - ✅ can test if other "more than a radius ahead"
-  - ✅ can test if "totally disjoint"
-  - ✅ hook em up
-  - ℹ️ witnessed jerk on exit due to change staticSeparationWeight -> movingSeparationWeight
-  - ✅ fix bad traversal onenter small room
-    - `testOffMeshDisjoint` now checks if offMesh src's are too close
-  - ℹ️ seems crowd agent radius was too large
 
 - fix run through doorway
 
 - clarify staticSeparationWeight = movingSeparationWeight = 0.5
   - probably don't want this in general
   - it avoids jerk onexit doorway "in parallel"
-
-- ✅ BUG: flicker after two npcs go through door
-  - offMeshConnection should have been cancelled, or npc should have slowed down
-  - seems "ahead npc" was stopping because detected nearby npc, we turned off this test
-
-- ✅ three more minecraft skin migrations (total 5)
-  - ✅ medic-0
-    - https://namemc.com/skin/194c3366860674c0
-  - ✅ suit-0
-    - https://namemc.com/skin/7271372bc0b9bc89
-  - ✅ police-0
-    - https://namemc.com/skin/c06caf409cd8427e
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlay cuboids should be double-sided
@@ -191,24 +70,14 @@
   - small-eyes -> robot-face-0
   - confused -> robot-face-1
 
-- 🚧 post-processing api
-  - ✅ can manually load effects via `w view.extractPostEffects`
-  - ✅ auto load effects via `w view.extractPostEffects`
-  - ✅ can enable/disable post-processing
-  - can animate post-processing i.e. set uniform on Vignette
-
 - try "turn around before moving" via small acceleration initially
   - could also "pause before moving"
 - profile-1 camera target y should always be 1.5?
 - consider "hot keys" e.g. 1, 2, 3, also tapable
   - could use to change camera settings
   - could use to change input settings e.g. drag select
-- ❌ move "x-ray" into PopUp opts?
 - testOffMeshDisjoint: diagonal doors initially transform lineSegs
 
-
-- ✅ shell should show debugs not errors
-  - sometimes still show errors e.g. on mvdan-sh parse error
 - avoid "speed up before collision" near door
   - seems related to enter offMeshConnection
 - somehow additionally indicate npc is selected by ContextMenu when docked
@@ -219,44 +88,12 @@
   - saw fire when npc no longer stuck causing bad stop
   - maybe check if closest neighbour is in front too
 
-- consider CSS vignette instead of post-processing
-  - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
-
-- ❌ when w.view.enableControls show "ui disabled icon"
-
 - bug: sh
   - multi-line edit using Option+Enter not working (need repro)
   - paste multiline command and start Option-Deleting midway  (need repro)
   - ctrl + w while multiple input: goes back a line (need repro)
 
 ### Dev Env
-
-- ✅ fix hmr of blogs
-  - ❌ https://github.com/gaearon/overreacted.io/pull/797/files
-
-- ✅ migrate back to standard next.js mdx solution
-  - ℹ️ https://nextjs.org/docs/pages/building-your-application/configuring/mdx
-  - ✅ /test/mdx works with hot-reloading
-  - ✅ can statically export pages: /blog2/index
-  - ✅ `export metadata` approach can replace frontmatter
-  - ✅ /blog2 -> /blog1 and remove `next-remote-mdx`
-
-- ❌ @napi-rs/canvas `&quot;` issue
-  - https://github.com/Brooooooklyn/canvas/issues/1029
-  - https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
-  - `skia-canvas` issues:
-    - https://github.com/samizdatco/skia-canvas/issues/219
-    - 🚧 possibly just an issue with `&quot;` inside url.
-  - ✅ find a fix which removes them e.g. `url(&quot;#foo&quot;)` -> `url(#foo)`
-    - `yarn test-svg-to-png media/debug/test-gradient-fill.svg`
-  - ❌ prefer BoxySVG fix rather than apply our fix (for the moment)
-  - apparently an upstream issue
-    - https://skia.googlesource.com/skia/
-
-- ✅ we should update PROFILE when "linked to file" e.g. profile-1.sh
-  - ℹ️ we need PROFILE to update onchange profile-1.sh
-  - ℹ️ currently can only force via `useSite.api.setTabset(..., { overwrite: true })`
-  - ✅ tty expects profileKey
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
@@ -839,6 +676,83 @@
 
 - ✅ fix desktop scroll of grey side area
 
+- ✅ refactor Tabs
+  - ✅ remove `tabset._${tabsKey}` tabsets
+  - ✅ move restore from localStorage out of tabs
+    - ℹ️ it is preventing us from overwriting tabs layout
+    - ✅ move restore from localStorage out of Tabs and into site.store
+      - ✅ useSite.api.tryRestoreLayout
+      - ✅ hook up useSite.api.tryRestoreLayout
+    - ✅ move save to localStorage out of Tabs and into site.store
+      - ✅ `<Tabs>` onModelChange does not `storeModelAsJson(props.id, state.model)`
+      - ✅ `<Viewer>` stores instead, using tabsKey
+  - ✅ remember layout on reset
+    - ✅ sync `tabset.current` with `tabs.model`
+    - ℹ️ we'll lose its previous state, so need keys `_${tabsetKey}` after all
+  - ✅ fix hard reset
+    - ✅ try restore from `_${tabsetKey}`
+  - ✅ localStorage includes `tabsets-meta` as `{ currentKey, allKeys }`
+    - includes underscore keys
+  - ✅ use `tabset-meta` on initially create site.store
+  - ✅ fix HMR of Tabs related files
+    - ✅ onchange site.store (HMR) reverts to initial layout
+      - ✅ avoid Tabs remount
+    - ✅ onchange site.store (HMR) breaks hard reset
+      - `<Tabs>` useStateRef was references stale `props.
+    - ✅ onchange tab-factory reverts to initial layout
+      - ✅ avoid Tabs remount onchange tab-util
+    - ✅ onchange Root (trigger `useSite.api.createTabset`) loses some state?
+  - ❌ keep tabset.current immutable while using Tabs UI
+    - we won't update per flexlayout-react update, but we will change on reset (ViewerControls)
+  - ✅ can change tabs programmatically without unmount
+    - we can directly change `tabset.current` without overwriting "original tabset"
+
+- ✅ towards 1st blog (npc cli)
+  - ✅ more content
+  - ✅ add a carousel
+  - ✅ can somehow change tabs from blog
+    - ✅ mechanism for links with href `/internal/...` to trigger code in `<Viewer>`
+    - ✅ `tabset` has structure `{ key: string; def: TabDef[][]; }`
+    - ✅ store lookup `tabset` and `tabset.current` in site.store
+    - ✅ can set tabset by clicking link
+    - ✅ avoid idempotence of fragment identifier?
+      - e.g. `#/internal/set-tabs/empty` then `#/internal/noop`
+    - ✅ can reset tabset by clicking link
+    - ✅ can set restore point for tabsetKey
+      - when ensureTabset can choose whether to `preserveRestore`
+      - ℹ️ we now track all UI changes in `tabset[current.key]`
+    - ✅ can add Viewer tab by clicking link
+      - ✅ ensure hard-coded tab is in layout
+      - ✅ ensure specific tab is selected
+      - ✅ handle case where another tab maximised
+      - ✅ remove hard-coding of tab
+        - ✅ can open HelloWorld as hello-world-${opts.suffix}
+        - ✅ can open Tty with `env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`
+        - ✅ can open World with `suffix=2&mapsKey=small-map-1}`
+        - ✅ index.mdx link for tty tab with spaces in PROFILE
+        - ✅ clean e.g. move to site.store
+    - ✅ can remove Viewer tab by clicking link
+    - ✅ strategy for tabsets with added tabs
+      - ℹ️ we'll add/remove tabs to our tabsets over time, so
+      - ℹ️ validating tabset ids doesn't make much sense;
+      - ℹ️ however it'll be useful to "hot reload" tabset layouts
+      - ✅ `tabset` lookup has only 3 keys:
+        - `current` provided as Prop to `<Tabs>` (rarely changes)
+        - `synced` changes in sync with flexlayout-react
+        - `restore` restore point
+      - ✅ can change component tab props e.g. World mapKey
+      - ✅ cleanup function on restore from localStorage
+        - currently a noop
+      - ✅ fix/clarify Tabs refresh after add/remove node
+      - ✅ fix/clarify createOrRestoreJsonModel Error
+        - removed it
+      - ✅ localStorage remembers tabset, including resets
+      - ✅ close tab should select some other tab in tabset
+        - ℹ️ repro by programmatic open, then select, then programmatic close
+      - ✅ support HMR update tabset somehow
+        - we sync PROFILE via profileKey
+      - ✅ clean hard-coded initialization in `<Root>`
+
 
 ### World
 
@@ -1021,3 +935,94 @@
       - [dz,dy], [dz,dy], [dz,dy], [dz,dy], [dx,dz], [dx,dz], [dx,dz], [dx,dz], [dx,dy], [dx,dy], [dx,dy], [dx,dy]
   - ✅ compute scale factors from instancedMatrix in vertex shader
   - ✅ send scaled uv dimensions e.g. `[sz, sy]` from vertex shader to fragment shader
+
+
+- ✅ BUG: after multiple invokes of e.g. `w view.tween '{ fov: 30 }'`,
+  agents stop moving, and start to animate very slowly
+  - ℹ️ can fix by pausing that `w stopTick` then playing
+  - ℹ️ seems both `w.onTick` and `w.onDebugTick` are running
+  - ℹ️ `w view.tween '{ fov: 30 }'` was jerky when eps was 1
+
+- ✅ sh: given `home.foo === undefined` we should not get `foo: not found`
+
+- ✅ BUG: testOffMeshDisjoint does not handle case where npcs face each
+  - ✅ non-diagonal rectangle intersection
+
+- ✅ profile-1 tweens continue when should be paused
+  - `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
+  - ℹ️ can continue whilst initially paused inside profile,
+    BECAUSE tweens can run whilst paused too
+  - ✅ can explicitly specify `permitPaused: false`
+
+- ❌ `w`: support auto-cancel of promise-return-valued functions
+  - e.g. `w view.tween '{ look: {x:0,y:0,z:0}, lookOpts: {smoothTime: 5} }'`
+  - i.e. if return value is Promise can store reject in cleanups?
+
+- ✅ BUG: profile-1: pause during initial tween ineffective
+  - use w.view.canTweenPaused
+
+- ✅ doorway collision strategy:
+  - ℹ️ no collision if other has same direction and is "more than a radius ahead"
+  - ℹ️ no collision if other is "totally disjoint"
+  - ✅ can test if other "more than a radius ahead"
+  - ✅ can test if "totally disjoint"
+  - ✅ hook em up
+  - ℹ️ witnessed jerk on exit due to change staticSeparationWeight -> movingSeparationWeight
+  - ✅ fix bad traversal onenter small room
+    - `testOffMeshDisjoint` now checks if offMesh src's are too close
+  - ℹ️ seems crowd agent radius was too large
+
+- ✅ BUG: flicker after two npcs go through door
+  - offMeshConnection should have been cancelled, or npc should have slowed down
+  - seems "ahead npc" was stopping because detected nearby npc, we turned off this test
+
+- ✅ three more minecraft skin migrations (total 5)
+  - ✅ medic-0
+    - https://namemc.com/skin/194c3366860674c0
+  - ✅ suit-0
+    - https://namemc.com/skin/7271372bc0b9bc89
+  - ✅ police-0
+    - https://namemc.com/skin/c06caf409cd8427e
+
+- ❌ post-processing api
+  - ✅ can manually load effects via `w view.extractPostEffects`
+  - ✅ auto load effects via `w view.extractPostEffects`
+  - ✅ can enable/disable post-processing
+  - can animate post-processing i.e. set uniform on Vignette
+
+- ❌ move "x-ray" into PopUp opts?
+
+
+- ✅ shell should show debugs not errors
+  - sometimes still show errors e.g. on mvdan-sh parse error
+
+- ❌ when w.view.enableControls show "ui disabled icon"
+
+### Dev Env
+
+- ✅ fix hmr of blogs
+  - ❌ https://github.com/gaearon/overreacted.io/pull/797/files
+
+- ✅ migrate back to standard next.js mdx solution
+  - ℹ️ https://nextjs.org/docs/pages/building-your-application/configuring/mdx
+  - ✅ /test/mdx works with hot-reloading
+  - ✅ can statically export pages: /blog2/index
+  - ✅ `export metadata` approach can replace frontmatter
+  - ✅ /blog2 -> /blog1 and remove `next-remote-mdx`
+
+- ❌ @napi-rs/canvas `&quot;` issue
+  - https://github.com/Brooooooklyn/canvas/issues/1029
+  - https://boxy-svg.com/bugs/431/bad-and-quot-s-broken-urls-and-svg-attributes
+  - `skia-canvas` issues:
+    - https://github.com/samizdatco/skia-canvas/issues/219
+    - 🚧 possibly just an issue with `&quot;` inside url.
+  - ✅ find a fix which removes them e.g. `url(&quot;#foo&quot;)` -> `url(#foo)`
+    - `yarn test-svg-to-png media/debug/test-gradient-fill.svg`
+  - ❌ prefer BoxySVG fix rather than apply our fix (for the moment)
+  - apparently an upstream issue
+    - https://skia.googlesource.com/skia/
+
+- ✅ we should update PROFILE when "linked to file" e.g. profile-1.sh
+  - ℹ️ we need PROFILE to update onchange profile-1.sh
+  - ℹ️ currently can only force via `useSite.api.setTabset(..., { overwrite: true })`
+  - ✅ tty expects profileKey
