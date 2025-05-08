@@ -115,7 +115,6 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
     <div
       ref={state.ref('container')}
       css={xtermContainerCss}
-      className="scrollable"
       onKeyDown={stopKeysPropagating}
     />
   );
