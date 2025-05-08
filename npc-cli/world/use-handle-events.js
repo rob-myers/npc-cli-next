@@ -445,13 +445,11 @@ export default function useHandleEvents(w) {
       );
     },
     onChangeControls(controls) {
-      // 🚧 on zoom out brighten obstacles/decor etc.
-
       // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
       // zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
       // state.zoomState = zoomState;
 
-      w.floor.litCircle.set(
+      w.floor.lit.circle4.set(
         controls.target.x,
         controls.target.z,
         3,

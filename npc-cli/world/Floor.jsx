@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { Mat, Poly } from "../geom";
 import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { getGridPattern, drawPolygons } from "../service/dom";
+import { getGridPattern, drawPolygons, getContext2d } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
@@ -21,9 +21,12 @@ export default function Floor(props) {
     grid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
-    litCircle: w.floor.litCircle,
+    lit: {
+      circle4: w.floor.lit.circle4,
+      enabled: false,
+      testCt: getContext2d(`${w.key}-lit-canvas-${'test'}`)
+    },
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
-    lit: false,
 
     addUvs() {
       const uvOffsets = /** @type {number[]} */ ([]);
@@ -101,24 +104,25 @@ export default function Floor(props) {
       drawPolygons(ct, walls2[0], ['#000', null]);
       drawPolygons(ct, walls2[1], ['#555', null]);
     },
-    drawGmLight(gmKey) {
+    drawGmLight(gmKey) {// 🚧
+
       const { ct } = w.texFloorLight;
       const gm = w.geomorphs.layout[gmKey];
 
-      ct.fillStyle = 'rgba(255, 0, 0, 0.2)';
-      ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
+      // ct.fillStyle = 'rgba(255, 0, 0, 0.2)';
+      // ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
 
       // 🚧
-      // ct.resetTransform();
-      // ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
-      // ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
+      ct.resetTransform();
+      ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
+      ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
 
     },
     onUpdateMaterial(material) {
       /** @type {import("../types/glsl").InstancedFloorKeys} */
       const uniformKey = 'litCircle';
-      (material.uniforms)[uniformKey].value = state.litCircle;
+      (material.uniforms)[uniformKey].value = state.lit.circle4;
     },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
@@ -162,8 +166,8 @@ export default function Floor(props) {
         objectPickRed={2}
         alphaTest={0.5}
         lightAtlas={w.texFloorLight.tex}
-        lit={state.lit}
-        litCircle={state.litCircle}
+        lit={state.lit.enabled}
+        litCircle={state.lit.circle4}
         onUpdate={state.onUpdateMaterial}
       />
     </instancedMesh>
@@ -179,10 +183,12 @@ export default function Floor(props) {
  * @typedef State
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
  * @property {CanvasPattern} grid
- * @property {THREE.BufferGeometry} quad
  * @property {CanvasPattern} largeGrid
- * @property {boolean} lit
- * @property {THREE.Vector4} litCircle Shader uniform `(cx, cz, radius, opacity)`
+ * @property {object} lit
+ * @property {THREE.Vector4} lit.circle4 Shader uniform `(cx, cz, radius, opacity)`
+ * @property {boolean} lit.enabled
+ * @property {CanvasRenderingContext2D} lit.testCt
+ * @property {THREE.BufferGeometry} quad
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw

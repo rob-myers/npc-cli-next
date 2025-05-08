@@ -110,6 +110,7 @@ w update 'async w => {
 }'
 
 # on mobile fix camera angle, look at rob
+# 🚧 move to game-generators.js
 w update 'async w => {
   if (w.smallViewport) {
     w.view.ctrlOpts.minAzimuthAngle = 0;
@@ -117,7 +118,7 @@ w update 'async w => {
     w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
     w.view.ctrlOpts.maxDistance = 25;
   }
-  w.floor.lit = true; // 🔔 enable lighting
+  w.floor.lit.enabled = true; // 🔔 enable lighting
   w.update();
 
   // prevent zoom-in while look
