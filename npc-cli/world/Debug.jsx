@@ -30,7 +30,7 @@ export default function Debug(props) {
         const layout = w.geomorphs.layout[gmKey];
         // Fix normals for recast/detour -- triangulation ordering?
         w.gmsData[gmKey].navPoly = decompToXZGeometry(layout.navDecomp, { reverse: true });
-        update();
+        // update();
       }
     },
     onPhysicsDebugData(e) {
@@ -165,6 +165,10 @@ export default function Debug(props) {
     }
   }, [props.showStaticColliders, w.physics.rebuilds]);
 
+  React.useEffect(() => {
+    w.gms.forEach(gm => state.ensureNavPoly(gm.key));
+    w.update();
+  }, [props.showOrigNavPoly]);
 
   const update = useUpdate();
 
@@ -218,20 +222,22 @@ export default function Debug(props) {
       renderOrder={0}
     />}
 
-    {props.showOrigNavPoly === true && w.gms.map((gm, gmId) => (
-      <group
-        key={`${gm.key} ${gmId} ${gm.transform}`}
-        onUpdate={(group) => group.applyMatrix4(gm.mat4)}
-        ref={(group) => void (group && state.ensureNavPoly(gm.key))}
-      >
-        <mesh
-          name="orig-nav-poly"
-          args={[w.gmsData[gm.key].navPoly, origNavPolyMaterial]}
-          position={[0, 0.0001, 0]}
-          visible={props.showOrigNavPoly}
-        />
-      </group>
-    ))}
+    {props.showOrigNavPoly === true && (
+      w.gms.map((gm, gmId) => (
+        <group
+          key={`${gm.key} ${gmId} ${gm.transform}`}
+          matrix={gm.mat4}
+          matrixAutoUpdate={false}
+        >
+          <mesh
+            name="orig-nav-poly"
+            args={[w.gmsData[gm.key].navPoly, origNavPolyMaterial]}
+            position={[0, 0.0001, 0]}
+            visible={props.showOrigNavPoly}
+          />
+        </group>
+      ))
+    )}
     
     {state.staticColliders.length > 0 && <group
       name="static-colliders"
