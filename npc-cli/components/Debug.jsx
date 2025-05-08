@@ -62,6 +62,7 @@ const debugCss = css`
   color: white;
   padding: 24px;
   height: 100%;
+  overflow: scroll;
 
   canvas {
     border: 1px solid #777;

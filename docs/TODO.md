@@ -43,14 +43,14 @@
 - 🚧 geomorph lighting
   - ✅ debug tag shows radial gradient
     - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
-  - 🚧 texture atlas for light maps
-  - test light map
+  - ✅ texture atlas for light maps
+  - 🚧 move Floor to separate shader
+  - 🚧 test light map
     - draw a bunch of radial gradients
     - apply test light map to Floor shader (1st attempt)
   - geomorph layout symbol induces light map
 
 - 🚧 improve floor lighting
-  - move Floor to separate shader
   - provide inverse matrices as uniform (more efficient)
   - remove post-processing
   - fix issue with npc target height 1.5 but floor light target should be 0
