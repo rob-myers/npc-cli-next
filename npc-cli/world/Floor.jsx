@@ -128,8 +128,8 @@ export default function Floor(props) {
       const { radialCt1 } = state;
       const lights = gm.unsorted.filter(x => x.meta.light === true);
       for (const light of lights) {
-        const { x, y, width: radius } = light.rect;
-        ct.drawImage(radialCt1.canvas, x, y, radius * 2, radius * 2);
+        const { x, y, width } = light.rect;
+        ct.drawImage(radialCt1.canvas, x, y, width, width);
       }
 
 
