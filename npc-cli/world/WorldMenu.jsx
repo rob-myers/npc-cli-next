@@ -77,7 +77,7 @@ export default function WorldMenu(props) {
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
       w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity(state.xRayOpacity / 20)
+      // w.ceil.setOpacity(state.xRayOpacity / 20)
       w.update();
     },
     onClickLoggerLink(e) {
@@ -124,7 +124,7 @@ export default function WorldMenu(props) {
     toggleXRay() {
       state.xRayOpacity = state.xRayOpacity < 20 ? 20 : 10;
       w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity(state.xRayOpacity / 20);
+      // w.ceil.setOpacity(state.xRayOpacity / 10);
 
       /** @type {HTMLInputElement} */ (// reflect in range
         state.draggable.el.querySelector('input.change-x-ray')
