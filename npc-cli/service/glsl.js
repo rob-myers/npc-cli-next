@@ -600,15 +600,16 @@ const instancedFloorShader = {
         float radius = vLitCircle.z;
         float dist = distance(vUv, origin);
         // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
-        if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
         // if (dist <= radius * 0.85) texel += vec4(vec3(0.03, 0.03, 0.0), 0.0);
+        // if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
+        if (dist <= radius) texel *= vec4(vec3(1.0) * min((radius / dist), 2.0), vLitCircle.w);
       }
 
       if (staticLights == true) {
         // texel *= vec4(0.5, 0.5, 0.5, 1.0);
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        texel *= 4.0 * vec4(vec3(lightTexel), 1.0); // 🚧
-        // texel += 0.5 * vec4(vec3(lightTexel), 0.0); // 🚧
+        texel *= 3.0 * vec4(vec3(lightTexel), 1.0); // 🚧
+        // texel *= 6.0 * vec4(vec3(lightTexel), 1.0); // 🚧
       }
       
       gl_FragColor = texel * vec4(vColor * diffuse, opacity);

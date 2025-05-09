@@ -53,6 +53,7 @@
     - ✅ draw a bunch of radial gradients into map
       - `w update 'w => w.floor.lit.static = true'`
   - 🚧 geomorph layout symbol induces light map
+    - 🚧 `light` tagged `<circle>` in geomorph symbol 301 induce static lights
 
 - 🚧 improve floor lighting
   - provide inverse matrices as uniform (more efficient)

@@ -120,19 +120,20 @@ export default function Floor(props) {
       // ct.fillStyle = 'rgba(255, 0, 0, 1)';
       // ct.fillStyle = 'rgba(255, 255, 255, 1)';
       // ct.fillStyle = 'rgba(0, 0, 0, 1)';
-      ct.fillStyle = 'rgba(50, 50, 50, 1)';
+      // ct.fillStyle = 'rgba(50, 50, 50, 1)';
+      ct.fillStyle = 'rgba(70, 70, 70, 1)';
       ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
 
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       const { testCt } = state.lit;
       const { width, height } = gm.pngRect;
-      const radius = width / 10;
+      const radius = width / 5;
 
       // 🚧
+      // ct.globalAlpha = 0.5;
       for (let x = 0; x < width; x+= 2 * width / 5) {
         for (let y = 0; y < height; y+= 2 * height / 5) {
-          // ct.globalAlpha = 0.5;
           ct.drawImage(testCt.canvas, x, y, radius * 2, radius * 2);
         }
       }
