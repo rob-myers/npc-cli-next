@@ -66,10 +66,17 @@ export interface InstancedFloorProps extends InstancedAtlasProps {
   /** Dynamically follows target */
   showTorch?: boolean;
   showLights?: boolean;
-  litCircle: import('three').Vector4; // 🚧 rm
+  torchTarget: import('three').Vector3;
+  /** (radius, intensity, opacity) */
+  torchData: import('three').Vector3;
 }
 
 export type InstancedFloorKeys = keyof InstancedFloorProps;
+export type InstancedFloorUniforms = Record<
+  InstancedFloorKeys,
+  { value: any }
+>;
+
 export interface HumanZeroMaterialProps {
   atlas: import('three').DataArrayTexture;
   aux: import('three').DataArrayTexture;

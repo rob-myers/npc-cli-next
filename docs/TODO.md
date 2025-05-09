@@ -52,7 +52,7 @@
     - ✅ floor shader has uniforms for target/static
     - ✅ draw a bunch of radial gradients into map
       - `w update 'w => w.floor.lit.static = true'`
-  - 🚧 target light should track given position
+  - ✅ controls target light -> torch with general target
     - e.g. npc.position
   - 🚧 geomorph layout symbol induces light map
     - svg light `<g><circle/><polygon/></g>` induce static lights

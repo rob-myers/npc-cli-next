@@ -22,14 +22,14 @@ export default function Floor(props) {
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
     lit: {
-      circle4: new THREE.Vector4(), // 🚧 rm
-      target: new THREE.Vector3(),
       showLights: false,
       showTorch: false,
+      torchTarget: new THREE.Vector3(),
       testCt: getContext2d(`${w.key}-lit-canvas-${'test'}`, {
         width: 400,
         height: 400,
       }),
+      torchData: new THREE.Vector3(1, 1, 1),
     },
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
@@ -141,11 +141,6 @@ export default function Floor(props) {
 
 
     },
-    onUpdateMaterial(material) {
-      /** @type {import("../types/glsl").InstancedFloorKeys} */
-      const uniformKey = 'litCircle';
-      (material.uniforms)[uniformKey].value = state.lit.circle4;
-    },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
         const mat = (new Mat([
@@ -156,6 +151,18 @@ export default function Floor(props) {
       }
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
+    },
+    setTorchTarget(positionRef) {
+      state.lit.torchTarget = positionRef;
+      state.syncUniforms();
+    },
+    syncUniforms() {
+      const material = state.inst.material;
+      const uniforms = /** @type {import("../types/glsl").InstancedFloorUniforms} */ (
+        material.uniforms
+      );
+      uniforms.torchData.value = state.lit.torchData;
+      uniforms.torchTarget.value = state.lit.torchTarget;
     },
   }), { reset: { grid: false, largeGrid: false } });
 
@@ -192,10 +199,10 @@ export default function Floor(props) {
         alphaTest={0.5}
 
         lightAtlas={w.texFloorLight.tex}
-        litCircle={state.lit.circle4}
         showLights={state.lit.showLights}
         showTorch={state.lit.showTorch}
-        onUpdate={state.onUpdateMaterial}
+        torchTarget={state.lit.torchTarget}
+        torchData={state.lit.torchData}
       />
     </instancedMesh>
   );
@@ -218,8 +225,9 @@ export default function Floor(props) {
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {(gmKey: Key.Geomorph) => void} drawGmLight
- * @property {(material: THREE.ShaderMaterial) => void} onUpdateMaterial
  * @property {() => void} positionInstances
+ * @property {(positionRef: THREE.Vector3) => void} setTorchTarget
+ * @property {() => void} syncUniforms
  */
 
 const tmpMat1 = new Mat();
@@ -227,9 +235,9 @@ const worldToCanvas = worldToSguScale * gmFloorExtraScale;
 
 /**
  * @typedef Lit
- * @property {THREE.Vector4} circle4 Shader uniform `(cx, cz, radius, opacity)`
- * @property {THREE.Vector3} target Torch
  * @property {boolean} showLights Show static lights?
  * @property {boolean} showTorch
+ * @property {THREE.Vector3} torchTarget Torch
+ * @property {THREE.Vector3} torchData (radius, intensity, opacity)
  * @property {CanvasRenderingContext2D} testCt 🚧
  */

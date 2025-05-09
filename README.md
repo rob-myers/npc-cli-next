@@ -106,6 +106,8 @@ w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'
 click | map xz | w n.rob.getLookAngle -
 
 w view.controls | assign '{minDistance:1}'
+
+w n.rob.position | w floor.setTorchTarget -
 ```
 
 ## Working with a branch of `recast-navigation-js`

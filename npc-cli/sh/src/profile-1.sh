@@ -34,6 +34,8 @@ spawn '{ npcKey: "bad-lt", angle: Math.PI, skin: {
 
 w n.rob.showSelector true
 selectedNpcKey="rob"
+# torch follows rob
+w n.rob.position | w floor.setTorchTarget -
 
 # re-skin rob
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
@@ -53,7 +55,7 @@ w n.rob.applyTint
 
 w e.grantAccess . rob will kate suit-guy bad-lt
 
-# write/toggle selectedNpcKey on click npc
+# de/select selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.showSelector(false);
 

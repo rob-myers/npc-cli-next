@@ -498,7 +498,8 @@ const instancedFloorShader = {
   Vert: /* glsl */`
 
     uniform bool showTorch;
-    uniform vec4 litCircle; // (cx, cz, r, opacity)
+    uniform vec3 torchData;
+    uniform vec3 torchTarget;
 
     attribute vec2 uvDimensions;
     attribute vec2 uvOffsets;
@@ -510,7 +511,9 @@ const instancedFloorShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
-    flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
+
+    flat varying vec3 vTorchData;
+    flat varying vec2 vTorchUvOrigin;
 
     #include <common>
     #include <logdepthbuf_pars_vertex>
@@ -522,16 +525,14 @@ const instancedFloorShader = {
       vInstanceId = instanceIds;
       
       if (showTorch == true) {
-        // - litCircle is (cx, cz, r, opacity)
-        // - instanceMatrix takes unit quad to e.g. "geomorph floor quad"
-        // - transform (cx, cz) to (uv.x, uv.y)
+        // instanceMatrix takes unit quad to e.g. "geomorph floor quad"
         // 🚧 provide inverse matrices in uniform
         mat4 invertInstanceMatrix = inverse(instanceMatrix);
-        vec4 transformedCenter = invertInstanceMatrix * vec4(litCircle.x, 0.0, litCircle.y, 1.0);
-        vLitCircle.x = transformedCenter.x * uvDimensions.x;
-        vLitCircle.y = transformedCenter.z * uvDimensions.y;
-        vLitCircle.z = litCircle.z * invertInstanceMatrix[0].x; // radius
-        vLitCircle.w = litCircle.w; // opacity
+        vec4 transformedCenter = invertInstanceMatrix * vec4(vec3(torchTarget), 1.0);
+
+        // (radius, intensity, opacity)
+        vTorchData = vec3(torchData.x * invertInstanceMatrix[0].x, torchData.y, torchData.z);
+        vTorchUvOrigin = vec2(transformedCenter.x * uvDimensions.x, transformedCenter.z * uvDimensions.y);
       }
 
       vec4 modelViewPosition = vec4(position, 1.0);
@@ -552,7 +553,7 @@ const instancedFloorShader = {
 
     uniform bool showLights;
     uniform bool showTorch;
-    uniform vec4 litCircle;
+    uniform vec3 torchTarget;
     uniform sampler2DArray lightAtlas;
 
     uniform float alphaTest;
@@ -566,7 +567,8 @@ const instancedFloorShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
-    flat varying vec4 vLitCircle;
+    flat varying vec3 vTorchData; // (radius, intensity, opacity)
+    flat varying vec2 vTorchUvOrigin;
 
     #include <common>
     #include <logdepthbuf_pars_fragment>
@@ -594,15 +596,14 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
-      if (showTorch == true) {
-        // 🚧 uvs within "lit circle" are lighter
-        vec2 origin = vLitCircle.xy;
-        float radius = vLitCircle.z;
-        float dist = distance(vUv, origin);
+      if (showTorch == true) {// uvs within "torch" are lighter
+        float dist = distance(vUv, vTorchUvOrigin);
+        float radius = vTorchData.x;
+        float intensity = vTorchData.y;
+        float opacity = vTorchData.z;
         // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
-        // if (dist <= radius * 0.85) texel += vec4(vec3(0.03, 0.03, 0.0), 0.0);
         // if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
-        if (dist <= radius) texel *= vec4(vec3(1.0) * min((radius / dist), 2.0), vLitCircle.w);
+        if (dist <= radius) texel *= vec4(vec3(intensity) * min((radius / dist), 2.0), opacity);
       }
 
       if (showLights == true) {
@@ -641,7 +642,7 @@ export const InstancedLabelsMaterial = shaderMaterial(
   instancedLabelsShader.Frag,
 );
 
-/** @type {import('@/npc-cli/types/glsl').InstancedAtlasProps} */
+/** @type {Required<import('@/npc-cli/types/glsl').InstancedAtlasProps>} */
 const instancedAtlasDefaultProps = {
   alphaTest: 0.5,
   atlas: emptyDataArrayTexture,
@@ -655,13 +656,14 @@ const instancedAtlasDefaultProps = {
   // colorSpace: false,
 };
 
-/** @type {import('@/npc-cli/types/glsl').InstancedFloorProps} */
+/** @type {Required<import('@/npc-cli/types/glsl').InstancedFloorProps>} */
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
   lightAtlas: emptyDataArrayTexture,
   showTorch: false,
   showLights: false,
-  litCircle: new THREE.Vector4(0, 0, 0, 0),
+  torchData: new THREE.Vector3(),
+  torchTarget: new THREE.Vector3(),
 };
 
 /**
