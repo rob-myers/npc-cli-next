@@ -60,6 +60,8 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 2. Similar for transform on `<image>` e.g. scale.
 
+3. Avoid deep properties `state.foo.bar` inside `useStateRef` e.g. because they won't be reloaded if `foo` stays same name but `bar` changes to `baz`.
+
 ## Development only routes
 
 These are removed in production via next.config output `export`.
