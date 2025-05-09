@@ -200,8 +200,9 @@ export default function WorldView(props) {
       }
     },
     onChangeControls(_e) {
-      // avoid event because too frequent
-      w.e.onChangeControls(state.controls);
+      // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
+      // zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
+      // state.zoomState = zoomState;
     },
     onControlsEnd() {
       w.events.next({ key: 'controls-end' });

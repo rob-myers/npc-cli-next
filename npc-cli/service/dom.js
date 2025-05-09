@@ -7,12 +7,13 @@ export function getCanvas(key) {
 
 /**
  * @param {string} key
- * @param {CanvasRenderingContext2DSettings} [opts]
+ * @param {CanvasRenderingContext2DSettings & { width?: number; height?: number; }} [opts]
  */
 export function getContext2d(key, opts) {
-  return /** @type {CanvasRenderingContext2D} */ ((
-    canvasLookup[key] ??= document.createElement('canvas')
-  ).getContext('2d', opts));
+  const canvas = canvasLookup[key] ??= document.createElement('canvas');
+  if (opts?.width) canvas.width = opts.width;
+  if (opts?.height) canvas.height = opts.height;
+  return /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d', opts));
 }
 
 /** Cache to avoid re-creation on HMR */
@@ -132,6 +133,28 @@ export function drawPolygons(ct, polys, [fillStyle, strokeStyle, lineWidth] = []
       clip === false ? ct.fill() : ct.clip();
     }
   }
+}
+
+/**
+ * 🚧 customizable via args
+ * @param {CanvasRenderingContext2D} ct 
+ */
+export function drawRadialFillCustom(ct) {
+    // draw radial gradient in tempCanvas
+    const c = ct.canvas;
+    ct.clearRect(0, 0, c.width, c.height);
+
+    const rg = ct.createRadialGradient(c.width / 2, c.height / 2, 0, c.width / 2, c.height / 2, c.width / 2);
+    rg.addColorStop(0.2, 'rgba(255, 255, 255, 1)');
+    // rg.addColorStop(0.9, 'rgba(255, 255, 255, 0.2)');
+    rg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    
+    ct.fillStyle = rg;
+    ct.clearRect(0, 0, c.width, c.height)
+    // ct.fillRect(0, 0, c.width, c.height);
+    ct.beginPath();
+    ct.arc(c.width / 2, c.height / 2, c.width / 2, 0, 2 * Math.PI);
+    ct.fill();
 }
 
 /**

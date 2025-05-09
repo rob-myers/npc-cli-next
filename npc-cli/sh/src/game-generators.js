@@ -87,7 +87,7 @@ export async function* click({ api, args, w }) {
 
 /**
  * Examples:
- * ```ts
+ * ```sh
  * events | filter 'e => e.npcKey'
  * events | filter /pointerup/
  * events /pointerup/
@@ -111,6 +111,47 @@ export async function* events({ api, args, w }) {
   }
   // get here via ctrl-c or `kill`
   throw api.getKillError();
+}
+
+/**
+ * ```sh
+ * initCamAndLights rob # initially look at rob
+ * ```
+ * @param {RunArg} ctxt
+ */
+export async function* initCamAndLights({ api, args, w }) {
+
+  const [npcKey] = args;
+
+  w.view.canTweenPaused = false;
+  w.update(); // update WorldMenu PopUp checkbox
+  
+  await w.view.tween({
+    azimuthal: w.smallViewport ? 0 : Math.PI/6,
+    polar: Math.PI/4,
+  });
+
+  if (w.smallViewport) {
+    w.view.ctrlOpts.minAzimuthAngle = 0;
+    w.view.ctrlOpts.maxAzimuthAngle = 0;
+    w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
+    w.view.ctrlOpts.maxDistance = 25;
+  }
+
+  // enable lighting
+  w.floor.showTorch = true;
+  w.floor.showLights = true;
+  w.update();
+
+  if (npcKey in w.n) {
+    // prevent zoom-in while look
+    w.view.lockDistance();
+    await w.e.lookAt(npcKey).catch().finally(w.view.unlockDistance);
+  }
+  
+  await w.view.tween({ distance: 10 });
+
+  w.view.canTweenPaused = true;
 }
 
 /**

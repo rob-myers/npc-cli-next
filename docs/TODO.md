@@ -45,19 +45,34 @@
     - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
   - ✅ texture atlas for light maps
   - ✅ move Floor to separate shader
-  - 🚧 test light map
+  - ✅ test light map
     - ✅ apply test light map to Floor shader (simple mul)
-    - 🚧 draw a bunch of radial gradients into map
-  - geomorph layout symbol induces light map
-
-- 🚧 improve floor lighting
+    - ✅ `w.floor.lit.target` for moving target light
+    - ✅ `w.floor.lit.static` for static lights
+    - ✅ floor shader has uniforms for target/static
+    - ✅ draw a bunch of radial gradients into map
+      - `w update 'w => w.floor.lit.static = true'`
+  - ✅ controls target light -> torch with general target
+    - e.g. npc.position
+  - 🚧 geomorph layout symbol induces light map
+    - ✅ svg lights `<circle>` induce static lights
+      - 🔔 `<ellipse>` are not supported
+    - 🚧 add lights to every geomorph
+    - 🚧 torch + static light combination
+    - 🚧 lights should not overlap geomorph edges?
+    - light supports `intensity`
   - provide inverse matrices as uniform (more efficient)
-  - remove post-processing
-  - fix issue with npc target height 1.5 but floor light target should be 0
-  - try radial gradient texture
-  - npcs are lighter within light circle
+
+- ✅ improve floor lighting
+  - ✅ remove post-processing
+  - ✅ fix issue with npc target height 1.5 but floor light target should be 0
+    - lookAt target always satisfies y = 0
+  - ✅ try radial gradient texture
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
+  - ❌ npcs are lighter within light circle
+
+- Ctrl-C "failure" unclear while paused
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
@@ -105,6 +120,10 @@
 
 ### Dev Env
 
+- avoid re-request navmesh onchange skin
+- avoid re-request navmesh onchange lights
+  - maybe because assets.json is changing due to hash change?
+
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
 
@@ -118,9 +137,6 @@
   - https://github.com/Automattic/node-canvas/issues/2507
   - could "do it ourselves" i.e. write node.js script,
     starting by extending parseUvRects to transform-origin at any level
-
-- can we avoid re-request navmesh onchange skin?
-  - maybe because assets.json is changing due to hash change?
 
 - blog/index -> /blog/home
   - observed caching of local build sending /blog/index -> /blog/ and received 404

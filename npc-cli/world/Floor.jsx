@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { Mat, Poly } from "../geom";
 import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { getGridPattern, drawPolygons, getContext2d } from "../service/dom";
+import { getGridPattern, drawPolygons, getContext2d, drawRadialFillCustom } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
@@ -21,11 +21,14 @@ export default function Floor(props) {
     grid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
-    lit: {
-      circle4: w.floor.lit.circle4,
-      enabled: false,
-      testCt: getContext2d(`${w.key}-lit-canvas-${'test'}`)
-    },
+    radialCt1: getContext2d(`${w.key}-lit-canvas-${'test'}`, {
+      width: 400,
+      height: 400,
+    }),
+    showLights: false,
+    showTorch: false,
+    torchData: new THREE.Vector3(2, 1, 1),
+    torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -108,21 +111,28 @@ export default function Floor(props) {
 
       const { ct } = w.texFloorLight;
       const gm = w.geomorphs.layout[gmKey];
-
-      // ct.fillStyle = 'rgba(255, 0, 0, 0.2)';
-      // ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
-
-      // 🚧
+      
       ct.resetTransform();
       ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
+
+      // ct.fillStyle = 'rgba(255, 0, 0, 1)';
+      // ct.fillStyle = 'rgba(255, 255, 255, 1)';
+      // ct.fillStyle = 'rgba(0, 0, 0, 1)';
+      // ct.fillStyle = 'rgba(50, 50, 50, 1)';
+      ct.fillStyle = 'rgba(70, 70, 70, 1)';
+      ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
+
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
+      // 🚧
+      const { radialCt1 } = state;
+      const lights = gm.unsorted.filter(x => x.meta.light === true);
+      for (const light of lights) {
+        const { x, y, width } = light.rect;
+        ct.drawImage(radialCt1.canvas, x, y, width, width);
+      }
 
-    },
-    onUpdateMaterial(material) {
-      /** @type {import("../types/glsl").InstancedFloorKeys} */
-      const uniformKey = 'litCircle';
-      (material.uniforms)[uniformKey].value = state.lit.circle4;
+
     },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
@@ -135,13 +145,28 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-  }), { reset: { grid: false, largeGrid: false } });
+    setTorchTarget(positionRef) {
+      state.torchTarget = positionRef;
+      state.syncUniforms();
+    },
+    syncUniforms() {
+      const material = state.inst.material;
+      const uniforms = /** @type {import("../types/glsl").InstancedFloorUniforms} */ (
+        material.uniforms
+      );
+      uniforms.torchData.value = state.torchData;
+      uniforms.torchTarget.value = state.torchTarget;
+    },
+  }), { reset: { grid: false, largeGrid: false, torchData: true } });
 
   w.floor = state;
 
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
+
+    drawRadialFillCustom(state.radialCt1); // light template
+    if (state.inst?.material) state.syncUniforms(); // hmr
   }, [w.mapKey, w.hash.full]);
   
   React.useEffect(() => {
@@ -165,10 +190,12 @@ export default function Floor(props) {
         diffuse={[1, 1, 1]}
         objectPickRed={2}
         alphaTest={0.5}
+
         lightAtlas={w.texFloorLight.tex}
-        lit={state.lit.enabled}
-        litCircle={state.lit.circle4}
-        onUpdate={state.onUpdateMaterial}
+        showLights={state.showLights}
+        showTorch={state.showTorch}
+        torchTarget={state.torchTarget}
+        torchData={state.torchData}
       />
     </instancedMesh>
   );
@@ -184,18 +211,20 @@ export default function Floor(props) {
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
  * @property {CanvasPattern} grid
  * @property {CanvasPattern} largeGrid
- * @property {object} lit
- * @property {THREE.Vector4} lit.circle4 Shader uniform `(cx, cz, radius, opacity)`
- * @property {boolean} lit.enabled
- * @property {CanvasRenderingContext2D} lit.testCt
  * @property {THREE.BufferGeometry} quad
+ * @property {boolean} showLights Show static lights?
+ * @property {boolean} showTorch
+ * @property {THREE.Vector3} torchTarget Torch
+ * @property {THREE.Vector3} torchData (radius, intensity, opacity)
+ * @property {CanvasRenderingContext2D} radialCt1 🚧
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {(gmKey: Key.Geomorph) => void} drawGmLight
- * @property {(material: THREE.ShaderMaterial) => void} onUpdateMaterial
  * @property {() => void} positionInstances
+ * @property {(positionRef: THREE.Vector3) => void} setTorchTarget
+ * @property {() => void} syncUniforms
  */
 
 const tmpMat1 = new Mat();

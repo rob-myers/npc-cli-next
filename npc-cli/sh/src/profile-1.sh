@@ -34,6 +34,8 @@ spawn '{ npcKey: "bad-lt", angle: Math.PI, skin: {
 
 w n.rob.showSelector true
 selectedNpcKey="rob"
+# torch follows rob
+w n.rob.position | w floor.setTorchTarget -
 
 # re-skin rob
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
@@ -53,7 +55,7 @@ w n.rob.applyTint
 
 w e.grantAccess . rob will kate suit-guy bad-lt
 
-# write/toggle selectedNpcKey on click npc
+# de/select selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.showSelector(false);
 
@@ -98,34 +100,4 @@ ptags=no-pause; events | handleLoggerLinks &
 
 setupOnSlowNpc
 
-# transition to fixed camera angle
-w update 'async w => {
-  w.view.canTweenPaused = false;
-  w.update();
-  
-  await w.view.tween({
-    azimuthal: w.smallViewport ? 0 : Math.PI/6,
-    polar: Math.PI/4,
-  });
-}'
-
-# on mobile fix camera angle, look at rob
-# 🚧 move to game-generators.js
-w update 'async w => {
-  if (w.smallViewport) {
-    w.view.ctrlOpts.minAzimuthAngle = 0;
-    w.view.ctrlOpts.maxAzimuthAngle = 0;
-    w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
-    w.view.ctrlOpts.maxDistance = 25;
-  }
-  w.floor.lit.enabled = true; // 🔔 enable lighting
-  w.update();
-
-  // prevent zoom-in while look
-  w.view.lockDistance();
-  await w.e.lookAt("rob").finally(w.view.unlockDistance);
-  
-  await w.view.tween({ distance: 10 });
-
-  w.view.canTweenPaused = true;
-}'
+initCamAndLights rob

@@ -444,18 +444,6 @@ export default function useHandleEvents(w) {
         1.5, // 🚧 hard-coded
       );
     },
-    onChangeControls(controls) {
-      // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
-      // zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
-      // state.zoomState = zoomState;
-
-      w.floor.lit.circle4.set(
-        controls.target.x,
-        controls.target.z,
-        3,
-        0.75,
-      );
-    },
     onEnterDoorCollider(e) {// e.type === 'nearby'
       (state.npcToDoors[e.npcKey] ??= { nearby: new Set(), inside: null }).nearby.add(e.gdKey);
       (state.doorToNearbyNpcs[e.gdKey] ??= new Set()).add(e.npcKey);
@@ -822,7 +810,7 @@ export default function useHandleEvents(w) {
  * @property {(regexDef: string, ...npcKeys: string[]) => void} grantAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
- * @property {(input: string | THREE.Vector3 | Vect) => void} lookAt
+ * @property {(input: string | THREE.Vector3 | Vect) => Promise<void>} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
@@ -830,7 +818,6 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcNearDoor
- * @property {(controls: import('./WorldView').State['controls']) => void} onChangeControls
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.

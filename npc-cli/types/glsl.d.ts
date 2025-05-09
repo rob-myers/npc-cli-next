@@ -63,12 +63,20 @@ export type InstancedAtlasKeys = keyof InstancedAtlasProps;
 
 export interface InstancedFloorProps extends InstancedAtlasProps {
   lightAtlas: import('three').DataArrayTexture;
-  lit?: boolean;
-  /** `(cx, cz, r, opacity)` */
-  litCircle?: import('three').Vector4; // constrain beyond Vector4Input
+  /** Dynamically follows target */
+  showTorch?: boolean;
+  showLights?: boolean;
+  torchTarget: import('three').Vector3;
+  /** (radius, intensity, opacity) */
+  torchData: import('three').Vector3;
 }
 
 export type InstancedFloorKeys = keyof InstancedFloorProps;
+export type InstancedFloorUniforms = Record<
+  InstancedFloorKeys,
+  { value: any }
+>;
+
 export interface HumanZeroMaterialProps {
   atlas: import('three').DataArrayTexture;
   aux: import('three').DataArrayTexture;

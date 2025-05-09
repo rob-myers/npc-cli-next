@@ -11,5 +11,8 @@
   "cSpell.words": [
     "geomorph",
     "geomorphs"
-  ]
+  ],
+  "workbench.editorAssociations": {
+    "*.svg": "default"
+  }
 }
