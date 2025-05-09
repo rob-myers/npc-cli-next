@@ -925,6 +925,7 @@ class GeomorphService {
   /**
    * Parse Starship Symbol
    * 🔔 we do not support transforms on parent groups
+   * 🚧 we should support this 👆
    * @param {Key.Symbol} symbolKey
    * @param {string} svgContents
    * @returns {Geomorph.Symbol}

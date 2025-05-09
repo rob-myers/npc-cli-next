@@ -114,7 +114,6 @@ export default function Floor(props) {
       const { ct } = w.texFloorLight;
       const gm = w.geomorphs.layout[gmKey];
       
-      // 🚧
       ct.resetTransform();
       ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
 
@@ -127,16 +126,12 @@ export default function Floor(props) {
 
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
-      const { testCt } = state.lit;
-      const { width, height } = gm.pngRect;
-      const radius = width / 10;
-
       // 🚧
-      // ct.globalAlpha = 0.5;
-      for (let x = 0; x < width; x+= 2 * width / 5) {
-        for (let y = 0; y < height; y+= 2 * height / 5) {
-          ct.drawImage(testCt.canvas, x, y, radius * 2, radius * 2);
-        }
+      const { testCt } = state.lit;
+      const lights = gm.unsorted.filter(x => x.meta.light === true);
+      for (const light of lights) {
+        const { x, y, width: radius } = light.rect;
+        ct.drawImage(testCt.canvas, x, y, radius * 2, radius * 2);
       }
 
 

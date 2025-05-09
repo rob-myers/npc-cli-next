@@ -55,9 +55,9 @@
   - ✅ controls target light -> torch with general target
     - e.g. npc.position
   - 🚧 geomorph layout symbol induces light map
-    - svg light `<g><circle/><polygon/></g>` induce static lights
-      - where `<polygon/>` is optional mask
-      - mask before drawImage via `ct.clip()` and `ct.restore()`
+    - ✅ svg lights `<circle>` induce static lights
+      - 🔔 `<ellipse>` are not supported
+    - 🚧 add lights to every geomorph
     - light supports `intensity`
   - provide inverse matrices as uniform (more efficient)
 
@@ -116,6 +116,10 @@
 
 ### Dev Env
 
+- avoid re-request navmesh onchange skin
+- avoid re-request navmesh onchange lights
+  - maybe because assets.json is changing due to hash change?
+
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
 
@@ -129,9 +133,6 @@
   - https://github.com/Automattic/node-canvas/issues/2507
   - could "do it ourselves" i.e. write node.js script,
     starting by extending parseUvRects to transform-origin at any level
-
-- can we avoid re-request navmesh onchange skin?
-  - maybe because assets.json is changing due to hash change?
 
 - blog/index -> /blog/home
   - observed caching of local build sending /blog/index -> /blog/ and received 404
