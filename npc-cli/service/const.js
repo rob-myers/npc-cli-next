@@ -188,7 +188,7 @@ export const doorSwitchDecorImgKey = /** @type {const} */ ('icon--square');
  */
 
 /** Aligned to media/decor/{key}.svg */
-export const fromDecorImgKey = {// 🔔 must extend when adding new decor
+export const fromDecorImgKey = /** @type {const} */ ({// 🔔 must extend when adding new decor
   'door--standard': true,
   'door--hull': true,
   'icon--info': true,
@@ -201,14 +201,14 @@ export const fromDecorImgKey = {// 🔔 must extend when adding new decor
   'icon--robot': true,
   'icon--square': true,
   'icon--warn': true,
-};
+});
 
 /**
  * @typedef {keyof fromSymbolKey} SymbolKey
  */
 
 /** Aligned to media/symbol/{key}.svg */
-export const fromSymbolKey = {// 🔔 must extend when adding new symbols
+export const fromSymbolKey = /** @type {const} */ ({// 🔔 must extend when adding new symbols
 
   "101--hull": true,
   "102--hull": true,
@@ -325,7 +325,7 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
   "extra--018--table-0.25x0.25": true,
   "extra--019--table-0.5x2": true,
   "extra--020--table-2x0.66": true,
-};
+});
 
 /**
  * The `*.glb` files must be exported from Blender using respective `media/npc/*.blend`
