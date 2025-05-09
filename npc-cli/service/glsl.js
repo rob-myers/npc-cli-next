@@ -497,7 +497,7 @@ const instancedAtlasShader = {
 const instancedFloorShader = {
   Vert: /* glsl */`
 
-    uniform bool targetLight;
+    uniform bool showTorch;
     uniform vec4 litCircle; // (cx, cz, r, opacity)
 
     attribute vec2 uvDimensions;
@@ -521,7 +521,7 @@ const instancedFloorShader = {
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
       
-      if (targetLight == true) {
+      if (showTorch == true) {
         // - litCircle is (cx, cz, r, opacity)
         // - instanceMatrix takes unit quad to e.g. "geomorph floor quad"
         // - transform (cx, cz) to (uv.x, uv.y)
@@ -550,8 +550,8 @@ const instancedFloorShader = {
 
   Frag: /* glsl */`
 
-    uniform bool staticLights;
-    uniform bool targetLight;
+    uniform bool showLights;
+    uniform bool showTorch;
     uniform vec4 litCircle;
     uniform sampler2DArray lightAtlas;
 
@@ -594,7 +594,7 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
-      if (targetLight == true) {
+      if (showTorch == true) {
         // 🚧 uvs within "lit circle" are lighter
         vec2 origin = vLitCircle.xy;
         float radius = vLitCircle.z;
@@ -605,7 +605,7 @@ const instancedFloorShader = {
         if (dist <= radius) texel *= vec4(vec3(1.0) * min((radius / dist), 2.0), vLitCircle.w);
       }
 
-      if (staticLights == true) {
+      if (showLights == true) {
         // texel *= vec4(0.5, 0.5, 0.5, 1.0);
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
         texel *= 3.0 * vec4(vec3(lightTexel), 1.0); // 🚧
@@ -659,8 +659,8 @@ const instancedAtlasDefaultProps = {
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
   lightAtlas: emptyDataArrayTexture,
-  targetLight: false,
-  staticLights: false,
+  showTorch: false,
+  showLights: false,
   litCircle: new THREE.Vector4(0, 0, 0, 0),
 };
 

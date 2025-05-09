@@ -452,8 +452,8 @@ export default function useHandleEvents(w) {
       w.floor.lit.circle4.set(
         controls.target.x,
         controls.target.z,
-        3,
-        0.75,
+        1,
+        1,
       );
     },
     onEnterDoorCollider(e) {// e.type === 'nearby'

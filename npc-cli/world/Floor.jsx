@@ -22,9 +22,10 @@ export default function Floor(props) {
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
     lit: {
-      circle4: new THREE.Vector4(),
-      static: false,
-      target: false,
+      circle4: new THREE.Vector4(), // 🚧 rm
+      target: new THREE.Vector3(),
+      showLights: false,
+      showTorch: false,
       testCt: getContext2d(`${w.key}-lit-canvas-${'test'}`, {
         width: 400,
         height: 400,
@@ -128,7 +129,7 @@ export default function Floor(props) {
 
       const { testCt } = state.lit;
       const { width, height } = gm.pngRect;
-      const radius = width / 5;
+      const radius = width / 10;
 
       // 🚧
       // ct.globalAlpha = 0.5;
@@ -192,8 +193,8 @@ export default function Floor(props) {
 
         lightAtlas={w.texFloorLight.tex}
         litCircle={state.lit.circle4}
-        staticLights={state.lit.static}
-        targetLight={state.lit.target}
+        showLights={state.lit.showLights}
+        showTorch={state.lit.showTorch}
         onUpdate={state.onUpdateMaterial}
       />
     </instancedMesh>
@@ -227,7 +228,8 @@ const worldToCanvas = worldToSguScale * gmFloorExtraScale;
 /**
  * @typedef Lit
  * @property {THREE.Vector4} circle4 Shader uniform `(cx, cz, radius, opacity)`
- * @property {boolean} static Show static lights?
- * @property {boolean} target Show moving target light?
+ * @property {THREE.Vector3} target Torch
+ * @property {boolean} showLights Show static lights?
+ * @property {boolean} showTorch
  * @property {CanvasRenderingContext2D} testCt 🚧
  */

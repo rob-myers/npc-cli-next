@@ -139,8 +139,8 @@ export async function* initCamAndLights({ api, args, w }) {
   }
 
   // enable lighting
-  w.floor.lit.target = true;
-  // w.floor.lit.static = true;
+  w.floor.lit.showTorch = true;
+  // w.floor.lit.showLights = true;
   w.update();
 
   if (npcKey in w.n) {

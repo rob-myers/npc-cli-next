@@ -52,17 +52,23 @@
     - ✅ floor shader has uniforms for target/static
     - ✅ draw a bunch of radial gradients into map
       - `w update 'w => w.floor.lit.static = true'`
+  - 🚧 target light should track given position
+    - e.g. npc.position
   - 🚧 geomorph layout symbol induces light map
-    - 🚧 `light` tagged `<circle>` in geomorph symbol 301 induce static lights
-
-- 🚧 improve floor lighting
+    - svg light `<g><circle/><polygon/></g>` induce static lights
+      - where `<polygon/>` is optional mask
+      - mask before drawImage via `ct.clip()` and `ct.restore()`
+    - light supports `intensity`
   - provide inverse matrices as uniform (more efficient)
-  - remove post-processing
-  - fix issue with npc target height 1.5 but floor light target should be 0
-  - try radial gradient texture
-  - npcs are lighter within light circle
+
+- ✅ improve floor lighting
+  - ✅ remove post-processing
+  - ✅ fix issue with npc target height 1.5 but floor light target should be 0
+    - lookAt target always satisfies y = 0
+  - ✅ try radial gradient texture
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
+  - ❌ npcs are lighter within light circle
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
