@@ -98,34 +98,4 @@ ptags=no-pause; events | handleLoggerLinks &
 
 setupOnSlowNpc
 
-# transition to fixed camera angle
-w update 'async w => {
-  w.view.canTweenPaused = false;
-  w.update();
-  
-  await w.view.tween({
-    azimuthal: w.smallViewport ? 0 : Math.PI/6,
-    polar: Math.PI/4,
-  });
-}'
-
-# on mobile fix camera angle, look at rob
-# 🚧 move to game-generators.js
-w update 'async w => {
-  if (w.smallViewport) {
-    w.view.ctrlOpts.minAzimuthAngle = 0;
-    w.view.ctrlOpts.maxAzimuthAngle = 0;
-    w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
-    w.view.ctrlOpts.maxDistance = 25;
-  }
-  w.floor.lit.enabled = true; // 🔔 enable lighting
-  w.update();
-
-  // prevent zoom-in while look
-  w.view.lockDistance();
-  await w.e.lookAt("rob").finally(w.view.unlockDistance);
-  
-  await w.view.tween({ distance: 10 });
-
-  w.view.canTweenPaused = true;
-}'
+initCamAndLights rob

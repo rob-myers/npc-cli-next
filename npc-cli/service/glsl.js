@@ -497,7 +497,7 @@ const instancedAtlasShader = {
 const instancedFloorShader = {
   Vert: /* glsl */`
 
-    uniform bool lit;
+    uniform bool targetLight;
     uniform vec4 litCircle; // (cx, cz, r, opacity)
 
     attribute vec2 uvDimensions;
@@ -521,7 +521,7 @@ const instancedFloorShader = {
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
       
-      if (lit == true) {
+      if (targetLight == true) {
         // - litCircle is (cx, cz, r, opacity)
         // - instanceMatrix takes unit quad to e.g. "geomorph floor quad"
         // - transform (cx, cz) to (uv.x, uv.y)
@@ -550,7 +550,8 @@ const instancedFloorShader = {
 
   Frag: /* glsl */`
 
-    uniform bool lit;
+    uniform bool staticLights;
+    uniform bool targetLight;
     uniform vec4 litCircle;
     uniform sampler2DArray lightAtlas;
 
@@ -593,19 +594,21 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
-      if (lit == true) {
-        
-        // 🔔 uvs within "lit circle" are lighter
+      if (targetLight == true) {
+        // 🚧 uvs within "lit circle" are lighter
         vec2 origin = vLitCircle.xy;
         float radius = vLitCircle.z;
         float dist = distance(vUv, origin);
         // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
         if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
         // if (dist <= radius * 0.85) texel += vec4(vec3(0.03, 0.03, 0.0), 0.0);
+      }
 
+      if (staticLights == true) {
         // texel *= vec4(0.5, 0.5, 0.5, 1.0);
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        // texel *= lightTexel; // 🚧
+        texel *= 4.0 * vec4(vec3(lightTexel), 1.0); // 🚧
+        // texel += 0.5 * vec4(vec3(lightTexel), 0.0); // 🚧
       }
       
       gl_FragColor = texel * vec4(vColor * diffuse, opacity);
@@ -655,7 +658,8 @@ const instancedAtlasDefaultProps = {
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
   lightAtlas: emptyDataArrayTexture,
-  lit: false,
+  targetLight: false,
+  staticLights: false,
   litCircle: new THREE.Vector4(0, 0, 0, 0),
 };
 

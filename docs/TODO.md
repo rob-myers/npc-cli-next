@@ -45,10 +45,14 @@
     - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
   - ✅ texture atlas for light maps
   - ✅ move Floor to separate shader
-  - 🚧 test light map
+  - ✅ test light map
     - ✅ apply test light map to Floor shader (simple mul)
-    - 🚧 draw a bunch of radial gradients into map
-  - geomorph layout symbol induces light map
+    - ✅ `w.floor.lit.target` for moving target light
+    - ✅ `w.floor.lit.static` for static lights
+    - ✅ floor shader has uniforms for target/static
+    - ✅ draw a bunch of radial gradients into map
+      - `w update 'w => w.floor.lit.static = true'`
+  - 🚧 geomorph layout symbol induces light map
 
 - 🚧 improve floor lighting
   - provide inverse matrices as uniform (more efficient)

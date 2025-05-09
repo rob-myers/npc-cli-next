@@ -63,9 +63,11 @@ export type InstancedAtlasKeys = keyof InstancedAtlasProps;
 
 export interface InstancedFloorProps extends InstancedAtlasProps {
   lightAtlas: import('three').DataArrayTexture;
-  lit?: boolean;
+  /** Dynamically follows current target */
+  targetLight?: boolean;
+  staticLights?: boolean;
   /** `(cx, cz, r, opacity)` */
-  litCircle?: import('three').Vector4; // constrain beyond Vector4Input
+  litCircle: import('three').Vector4;
 }
 
 export type InstancedFloorKeys = keyof InstancedFloorProps;

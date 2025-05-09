@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { Mat, Poly } from "../geom";
 import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { getGridPattern, drawPolygons, getContext2d } from "../service/dom";
+import { getGridPattern, drawPolygons, getContext2d, drawRadialFillCustom } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
@@ -22,9 +22,13 @@ export default function Floor(props) {
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
     lit: {
-      circle4: w.floor.lit.circle4,
-      enabled: false,
-      testCt: getContext2d(`${w.key}-lit-canvas-${'test'}`)
+      circle4: new THREE.Vector4(),
+      static: false,
+      target: false,
+      testCt: getContext2d(`${w.key}-lit-canvas-${'test'}`, {
+        width: 400,
+        height: 400,
+      }),
     },
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
@@ -108,14 +112,30 @@ export default function Floor(props) {
 
       const { ct } = w.texFloorLight;
       const gm = w.geomorphs.layout[gmKey];
-
-      // ct.fillStyle = 'rgba(255, 0, 0, 0.2)';
-      // ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
-
+      
       // 🚧
       ct.resetTransform();
       ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
+
+      // ct.fillStyle = 'rgba(255, 0, 0, 1)';
+      // ct.fillStyle = 'rgba(255, 255, 255, 1)';
+      // ct.fillStyle = 'rgba(0, 0, 0, 1)';
+      ct.fillStyle = 'rgba(50, 50, 50, 1)';
+      ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
+
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
+
+      const { testCt } = state.lit;
+      const { width, height } = gm.pngRect;
+      const radius = width / 10;
+
+      // 🚧
+      for (let x = 0; x < width; x+= 2 * width / 5) {
+        for (let y = 0; y < height; y+= 2 * height / 5) {
+          // ct.globalAlpha = 0.5;
+          ct.drawImage(testCt.canvas, x, y, radius * 2, radius * 2);
+        }
+      }
 
 
     },
@@ -142,6 +162,9 @@ export default function Floor(props) {
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
+    // cache radial fill
+    drawRadialFillCustom(state.lit.testCt);
+
   }, [w.mapKey, w.hash.full]);
   
   React.useEffect(() => {
@@ -165,9 +188,11 @@ export default function Floor(props) {
         diffuse={[1, 1, 1]}
         objectPickRed={2}
         alphaTest={0.5}
+
         lightAtlas={w.texFloorLight.tex}
-        lit={state.lit.enabled}
         litCircle={state.lit.circle4}
+        staticLights={state.lit.static}
+        targetLight={state.lit.target}
         onUpdate={state.onUpdateMaterial}
       />
     </instancedMesh>
@@ -184,10 +209,7 @@ export default function Floor(props) {
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
  * @property {CanvasPattern} grid
  * @property {CanvasPattern} largeGrid
- * @property {object} lit
- * @property {THREE.Vector4} lit.circle4 Shader uniform `(cx, cz, radius, opacity)`
- * @property {boolean} lit.enabled
- * @property {CanvasRenderingContext2D} lit.testCt
+ * @property {Lit} lit
  * @property {THREE.BufferGeometry} quad
  *
  * @property {() => void} addUvs
@@ -200,3 +222,11 @@ export default function Floor(props) {
 
 const tmpMat1 = new Mat();
 const worldToCanvas = worldToSguScale * gmFloorExtraScale;
+
+/**
+ * @typedef Lit
+ * @property {THREE.Vector4} circle4 Shader uniform `(cx, cz, radius, opacity)`
+ * @property {boolean} static Show static lights?
+ * @property {boolean} target Show moving target light?
+ * @property {CanvasRenderingContext2D} testCt 🚧
+ */
