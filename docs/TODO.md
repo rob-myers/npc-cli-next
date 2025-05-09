@@ -58,6 +58,8 @@
     - ✅ svg lights `<circle>` induce static lights
       - 🔔 `<ellipse>` are not supported
     - 🚧 add lights to every geomorph
+    - 🚧 torch + static light combination
+    - 🚧 lights should not overlap geomorph edges?
     - light supports `intensity`
   - provide inverse matrices as uniform (more efficient)
 
@@ -69,6 +71,8 @@
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
   - ❌ npcs are lighter within light circle
+
+- Ctrl-C "failure" unclear while paused
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render

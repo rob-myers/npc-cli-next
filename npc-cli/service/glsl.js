@@ -596,14 +596,18 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
+      // 🚧 composition i.e. torch + static light
+
       if (showTorch == true) {// uvs within "torch" are lighter
         float dist = distance(vUv, vTorchUvOrigin);
         float radius = vTorchData.x;
-        float intensity = vTorchData.y;
-        float opacity = vTorchData.z;
         // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
         // if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
-        if (dist <= radius) texel *= vec4(vec3(intensity) * min((radius / dist), 2.0), opacity);
+        if (dist <= radius) {
+          float torchIntensity = vTorchData.y;
+          float torchOpacity = vTorchData.z;
+          texel *= vec4(vec3(torchIntensity) * min((radius / dist), 2.0), torchOpacity);
+        }
       }
 
       if (showLights == true) {

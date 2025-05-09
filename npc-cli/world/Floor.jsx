@@ -21,16 +21,14 @@ export default function Floor(props) {
     grid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
-    lit: {
-      showLights: false,
-      showTorch: false,
-      torchTarget: new THREE.Vector3(),
-      testCt: getContext2d(`${w.key}-lit-canvas-${'test'}`, {
-        width: 400,
-        height: 400,
-      }),
-      torchData: new THREE.Vector3(1, 1, 1),
-    },
+    radialCt1: getContext2d(`${w.key}-lit-canvas-${'test'}`, {
+      width: 400,
+      height: 400,
+    }),
+    showLights: false,
+    showTorch: false,
+    torchData: new THREE.Vector3(2, 1, 1),
+    torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -127,11 +125,11 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // 🚧
-      const { testCt } = state.lit;
+      const { radialCt1 } = state;
       const lights = gm.unsorted.filter(x => x.meta.light === true);
       for (const light of lights) {
         const { x, y, width: radius } = light.rect;
-        ct.drawImage(testCt.canvas, x, y, radius * 2, radius * 2);
+        ct.drawImage(radialCt1.canvas, x, y, radius * 2, radius * 2);
       }
 
 
@@ -148,7 +146,7 @@ export default function Floor(props) {
       state.inst.computeBoundingSphere();
     },
     setTorchTarget(positionRef) {
-      state.lit.torchTarget = positionRef;
+      state.torchTarget = positionRef;
       state.syncUniforms();
     },
     syncUniforms() {
@@ -156,19 +154,19 @@ export default function Floor(props) {
       const uniforms = /** @type {import("../types/glsl").InstancedFloorUniforms} */ (
         material.uniforms
       );
-      uniforms.torchData.value = state.lit.torchData;
-      uniforms.torchTarget.value = state.lit.torchTarget;
+      uniforms.torchData.value = state.torchData;
+      uniforms.torchTarget.value = state.torchTarget;
     },
-  }), { reset: { grid: false, largeGrid: false } });
+  }), { reset: { grid: false, largeGrid: false, torchData: true } });
 
   w.floor = state;
 
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
-    // cache radial fill
-    drawRadialFillCustom(state.lit.testCt);
 
+    drawRadialFillCustom(state.radialCt1); // light template
+    if (state.inst?.material) state.syncUniforms(); // hmr
   }, [w.mapKey, w.hash.full]);
   
   React.useEffect(() => {
@@ -194,10 +192,10 @@ export default function Floor(props) {
         alphaTest={0.5}
 
         lightAtlas={w.texFloorLight.tex}
-        showLights={state.lit.showLights}
-        showTorch={state.lit.showTorch}
-        torchTarget={state.lit.torchTarget}
-        torchData={state.lit.torchData}
+        showLights={state.showLights}
+        showTorch={state.showTorch}
+        torchTarget={state.torchTarget}
+        torchData={state.torchData}
       />
     </instancedMesh>
   );
@@ -213,8 +211,12 @@ export default function Floor(props) {
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
  * @property {CanvasPattern} grid
  * @property {CanvasPattern} largeGrid
- * @property {Lit} lit
  * @property {THREE.BufferGeometry} quad
+ * @property {boolean} showLights Show static lights?
+ * @property {boolean} showTorch
+ * @property {THREE.Vector3} torchTarget Torch
+ * @property {THREE.Vector3} torchData (radius, intensity, opacity)
+ * @property {CanvasRenderingContext2D} radialCt1 🚧
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
@@ -227,12 +229,3 @@ export default function Floor(props) {
 
 const tmpMat1 = new Mat();
 const worldToCanvas = worldToSguScale * gmFloorExtraScale;
-
-/**
- * @typedef Lit
- * @property {boolean} showLights Show static lights?
- * @property {boolean} showTorch
- * @property {THREE.Vector3} torchTarget Torch
- * @property {THREE.Vector3} torchData (radius, intensity, opacity)
- * @property {CanvasRenderingContext2D} testCt 🚧
- */
