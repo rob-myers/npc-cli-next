@@ -552,20 +552,22 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
-      // 🚧 composition i.e. torch + static light
+      // for light composite i.e. torch + static light
+      float lighter = 1.0;
 
       if (showTorch == true) {// uvs within "torch" are lighter
         vec4 torchTexel = texture(torchTexture, vTorchUv);
-        texel *= vec4( max(4.0 * torchTexel.w, 1.0) );
+        lighter *= clamp(4.0 * torchTexel.w, 1.0, 4.0);
       }
 
       if (showLights == true) { // 🚧
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        texel *= 3.0 * vec4(vec3(lightTexel), 1.0);
-        // texel *= 6.0 * vec4(vec3(lightTexel), 1.0);
+        lighter *= clamp(3.0 * lightTexel.w, 1.0, 3.0);
       }
       
-      gl_FragColor = texel * vec4(vColor * diffuse, opacity);
+      lighter = clamp(lighter, 1.0, 2.0);
+      
+      gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
       
       #include <logdepthbuf_fragment>
     }

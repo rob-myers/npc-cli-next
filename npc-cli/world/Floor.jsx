@@ -21,11 +21,11 @@ export default function Floor(props) {
     grid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
-    // 🚧 remove?
-    radialCt1: getContext2d(`${w.key}-lit-canvas-${'test'}`, {
+    radialCt1: getContext2d(`${w.key}-lit-canvas-${'test'}`, {// 🚧 rm
       width: 400,
       height: 400,
     }),
+    // 🚧 initialize width/height?
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: false,
     showTorch: false,
@@ -117,22 +117,17 @@ export default function Floor(props) {
       ct.resetTransform();
       ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
 
-      // ct.fillStyle = 'rgba(255, 0, 0, 1)';
-      // ct.fillStyle = 'rgba(255, 255, 255, 1)';
-      // ct.fillStyle = 'rgba(0, 0, 0, 1)';
-      // ct.fillStyle = 'rgba(50, 50, 50, 1)';
-      ct.fillStyle = 'rgba(70, 70, 70, 1)';
-      ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
-
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // 🚧
-      const { radialCt1 } = state;
+      // ct.globalAlpha = 0.8;
+      const { image }  = state.radialTex;
       const lights = gm.unsorted.filter(x => x.meta.light === true);
       for (const light of lights) {
         const { x, y, width } = light.rect;
-        ct.drawImage(radialCt1.canvas, x, y, width, width);
+        ct.drawImage(image, x, y, width, width);
       }
+      ct.globalAlpha = 1;
 
 
     },
@@ -141,7 +136,8 @@ export default function Floor(props) {
       const ct = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
       
       // 🚧 recreate texture onresize ?
-      canvas.width = canvas.height = 512;
+      // canvas.width = canvas.height = 512;
+      canvas.width = canvas.height = 1024;
       
       ct.clearRect(0, 0, canvas.width, canvas.height);
       drawRadialFillCustom(ct);
@@ -179,8 +175,7 @@ export default function Floor(props) {
     state.positionInstances();
     state.addUvs();
 
-    // 🚧
-    drawRadialFillCustom(state.radialCt1); // old
+    drawRadialFillCustom(state.radialCt1); // 🚧 rm
     state.drawRadialLight();
 
     if (state.inst?.material) state.syncUniforms(); // hmr

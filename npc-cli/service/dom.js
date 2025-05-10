@@ -149,9 +149,10 @@ export function drawRadialFillCustom(ct) {
     // rg.addColorStop(1, 'rgba(0, 0, 0, 0)');
     rg.addColorStop(1, 'rgba(255, 255, 255, 0)');
     
+    const radius = c.width / 2;
     ct.fillStyle = rg;
     ct.beginPath();
-    ct.arc(c.width / 2, c.height / 2, c.width / 2, 0, 2 * Math.PI);
+    ct.arc(c.width / 2, c.height / 2, radius, 0, 2 * Math.PI);
     ct.fill();
 }
 

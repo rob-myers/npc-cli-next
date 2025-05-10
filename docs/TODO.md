@@ -58,8 +58,8 @@
     - ✅ svg lights `<circle>` induce static lights
       - 🔔 `<ellipse>` are not supported
     - ✅ torch uses texture rather than abstract function
-    - 🚧 fix static lights i.e. lightAtlas
-    - 🚧 torch + static light combination
+    - ✅ fix static lights i.e. lightAtlas
+    - ✅ torch + static light combination
     - add lights to every geomorph
     - lights should not overlap geomorph edges?
     - light supports `intensity`
