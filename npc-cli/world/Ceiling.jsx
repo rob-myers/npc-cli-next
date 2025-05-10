@@ -20,7 +20,7 @@ export default function Ceiling(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-ceiling-xz`),
-    opacity: 0.8,
+    opacity: 0.7,
 
     async draw() {
       w.menu.measure('ceil.draw');
