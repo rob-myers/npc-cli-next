@@ -63,6 +63,10 @@
     - light supports `intensity`
   - provide inverse matrices as uniform (more efficient)
 
+- ✅ try fix jerk on collide just before offMeshConnection
+  - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`
+  - ✅ but permit smaller radius if npc -> offMesh.src does not intersect
+
 - ✅ improve floor lighting
   - ✅ remove post-processing
   - ✅ fix issue with npc target height 1.5 but floor light target should be 0

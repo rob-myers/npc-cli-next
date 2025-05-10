@@ -66,7 +66,6 @@ export class Npc {
   s = {
     act: /** @type {Key.Anim} */ ('Idle'),
     agentState: /** @type {null | number} */ (null),
-    permitTurn: true,
     doMeta: /** @type {null | Meta} */ (null),
     fadeSecs: 0.3,
     label: /** @type {null | string} */ (null),
@@ -559,7 +558,7 @@ export class Npc {
    */
   handleOffMeshConnection(agent, offMesh) {
     if (offMesh.seg === 0) {
-      this.handlePreOffMeshCollision(agent);
+      this.handlePreOffMeshCollision(agent, offMesh);
     }
 
     const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
@@ -599,20 +598,33 @@ export class Npc {
   /**
    * Detect collisions whilst on initial segment of offMeshConnection
    * @param {NPC.CrowdAgent} agent
+   * @param {NPC.OffMeshState} offMesh
    */
-  handlePreOffMeshCollision(agent) {
+  handlePreOffMeshCollision(agent, offMesh) {
     const nneis  = agent.raw.nneis;
     /** @type {dtCrowdNeighbour} */ let nei;
+    // 🔔 if too small jerky on collide after offMeshConnection begins
     const closeDist = preOffMeshCloseDist * (this.s.run === true ? 2 : 1);
-    const closerDist = preOffMeshCloserDist * (this.s.run === true ? 2 : 1);
+    const point = this.getPoint();
 
     for (let i = 0; i < nneis; i++) {
       nei = agent.raw.get_neis(i);
       if (nei.dist < closeDist) {// maybe cancel traversal
         const other = this.w.a[nei.idx];
-        if (other.s.target === null && !(nei.dist < closerDist)) {
+        
+        if (
+          other.s.target === null
+          && geom.lineSegIntersectsCircle(
+            point,
+            offMesh.src,
+            other.getPoint(),
+            0.2,
+          ) === false
+        ) {
+          // 🔔 permissive if other idle and "not in the way"
           continue;
         }
+
         this.stopMoving();
         break;
       }
@@ -679,7 +691,6 @@ export class Npc {
       throw new Error(`${'look'}: 1st arg must be radians or point`);
     }
 
-    this.s.permitTurn = true;
     this.s.lookAngleDst = this.getEulerAngle(input);
     this.s.lookSecs = ms / 1000;
 
@@ -710,7 +721,6 @@ export class Npc {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(dst)}`);
     }
 
-    this.s.permitTurn = true;
     this.s.lookSecs = 0.2;
 
     this.agent.updateParameters({
@@ -924,7 +934,7 @@ export class Npc {
   onTick(deltaMs, positions) {
     this.mixer.update(deltaMs);
 
-    if (this.s.lookAngleDst !== null && this.s.permitTurn === true) {
+    if (this.s.lookAngleDst !== null) {
       if (dampAngle(this.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
@@ -932,7 +942,7 @@ export class Npc {
     }
 
     if (this.s.opacityDst !== null) {
-      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs, deltaMs, undefined, undefined, 0.1) === false) {
+      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs, deltaMs, undefined, undefined, 0.02) === false) {
         this.s.opacityDst = null;
         this.resolve.fade?.();
       }
@@ -971,6 +981,8 @@ export class Npc {
       this.handleOffMeshConnection(agent, this.s.offMesh);
       return; // Avoid stopMoving whilst offMesh
     }
+
+    // this.speed = tmpVectThree1.copy(agent.velocity()).length();
 
     if (this.s.target === null) {
       this.onTickTurnNoTarget(agent);
@@ -1179,7 +1191,6 @@ export class Npc {
 
     this.s.lookSecs = lookSecsNoTarget;
     this.s.lookAngleDst = null;
-    this.s.permitTurn = true;
     this.s.slowBegin = null;
     this.s.target = null;
 
@@ -1262,8 +1273,6 @@ const staticCollisionQueryRange = 2;
 const movingCollisionQueryRange = 2;
 
 const preOffMeshCloseDist = helper.defaults.radius;
-// 🔔 stationary npc more permissive during preOffMeshConnection
-const preOffMeshCloserDist = helper.defaults.radius / 2;
 
 const lookSecsNoTarget = 0.75;
 

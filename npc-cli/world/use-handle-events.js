@@ -630,6 +630,9 @@ export default function useHandleEvents(w) {
         };
       }
 
+      // 🤔 could use last known speed and speed up via tScale
+      const speed = npc.getMaxSpeed();
+
       // adjust RecastDetour dtCrowdAgentAnimation
       const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
       anim.set_initPos(0, npcPoint.x);
@@ -639,9 +642,9 @@ export default function useHandleEvents(w) {
       anim.set_endPos(0, newDst.x);
       anim.set_endPos(2, newDst.y);
       anim.set_t(0);
-      anim.set_tmid(npcPoint.distanceTo(newSrc) / npc.getMaxSpeed());
+      anim.set_tmid(npcPoint.distanceTo(newSrc) / speed);
       const delta = tmpVect1.copy(newDst).sub(newSrc);
-      anim.set_tmax(anim.tmid + (delta.length / npc.getMaxSpeed()));
+      anim.set_tmax(anim.tmid + (delta.length / speed));
       delta.normalize();
       anim.set_unitExitVel(0, delta.x);
       anim.set_unitExitVel(1, 0);
