@@ -28,7 +28,7 @@ declare module '@react-three/fiber' {
       diffuse?: Vector3Input;
     };
 
-    instancedWallsShader: ThreeElement<typeof import('three').ShaderMaterial> & {
+    instancedWallsMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       diffuse?: Vector3Input;
       opacity?: number;
     } & SupportsObjectPick;
