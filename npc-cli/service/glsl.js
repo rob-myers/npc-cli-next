@@ -447,10 +447,6 @@ export const InstancedFlatMaterial = shaderMaterial(
 const instancedFloorShader = {
   Vert: /* glsl */`
 
-    uniform bool showTorch;
-    uniform vec3 torchData;
-    uniform vec3 torchTarget;
-
     attribute vec2 uvDimensions;
     attribute vec2 uvOffsets;
     attribute uint uvTextureIds;
@@ -462,11 +458,6 @@ const instancedFloorShader = {
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
 
-    flat varying vec3 vTorchData;
-    // uvs pointing into torchTexture
-    // 🤔 could add extra varying per additional torch
-    varying vec2 vTorchUv;
-
     #include <common>
     #include <logdepthbuf_pars_vertex>
 
@@ -475,20 +466,6 @@ const instancedFloorShader = {
       vUv = (uv * uvDimensions) + uvOffsets;
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
-      
-      if (showTorch == true) {
-        // instanceMatrix takes unit quad to e.g. "geomorph floor quad"
-        // 🚧 provide inverse matrices in uniform
-        mat4 invertInstanceMatrix = inverse(instanceMatrix);
-
-        // (radius, intensity, opacity)
-        vTorchData = vec3(torchData.x * invertInstanceMatrix[0].x, torchData.y, torchData.z);
-        // torch uvs relative to "atlas"
-        vec4 transformedCenter = invertInstanceMatrix * vec4(vec3(torchTarget), 1.0);
-        vec2 torchUvOrigin = vec2(transformedCenter.x * uvDimensions.x, transformedCenter.z * uvDimensions.y);
-        // torch uvs relative to torchTexture
-        vTorchUv = ((vUv - torchUvOrigin) / vTorchData.x) + vec2(0.5);
-      }
 
       vec4 modelViewPosition = vec4(position, 1.0);
       modelViewPosition = instanceMatrix * modelViewPosition;
@@ -508,9 +485,6 @@ const instancedFloorShader = {
 
     uniform sampler2DArray lightAtlas;
     uniform bool showLights;
-    uniform bool showTorch;
-    uniform vec3 torchTarget;
-    uniform sampler2D torchTexture;
 
     uniform float alphaTest;
     uniform sampler2DArray atlas;
@@ -523,8 +497,6 @@ const instancedFloorShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
-    flat varying vec3 vTorchData; // (radius, intensity, opacity)
-    varying vec2 vTorchUv;
 
     #include <common>
     #include <logdepthbuf_pars_fragment>
@@ -555,17 +527,10 @@ const instancedFloorShader = {
       // for light composite i.e. torch + static light
       float lighter = 1.0;
 
-      if (showTorch == true) {// uvs within "torch" are lighter
-        vec4 torchTexel = texture(torchTexture, vTorchUv);
-        lighter *= clamp(4.0 * torchTexel.w, 1.0, 4.0);
-      }
-
-      if (showLights == true) { // 🚧
+      if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= clamp(3.0 * lightTexel.w, 1.0, 3.0);
+        lighter *= clamp(4.0 * lightTexel.w, 1.0, 3.0);
       }
-      
-      lighter = clamp(lighter, 1.0, 2.0);
       
       gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
       
@@ -579,11 +544,7 @@ const instancedFloorShader = {
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
   lightAtlas: emptyDataArrayTexture,
-  showTorch: false,
   showLights: false,
-  torchData: new THREE.Vector3(),
-  torchTarget: new THREE.Vector3(),
-  torchTexture: /** @type {*} */ (null), // THREE.CanvasTexture
 };
 
 /**
