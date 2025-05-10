@@ -68,6 +68,8 @@
     - ❌ selector "too light" when surrounded by torch?
   - ❌ provide inverse matrices as uniform (more efficient)
 
+- npc is lit by static lighting 
+
 - ✅ try fix jerk on collide just before offMeshConnection
   - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`
   - ✅ but permit smaller radius if npc -> offMesh.src does not intersect
