@@ -57,10 +57,13 @@
   - 🚧 geomorph layout symbol induces light map
     - ✅ svg lights `<circle>` induce static lights
       - 🔔 `<ellipse>` are not supported
-    - 🚧 add lights to every geomorph
+    - ✅ torch uses texture rather than abstract function
+    - 🚧 fix static lights i.e. lightAtlas
     - 🚧 torch + static light combination
-    - 🚧 lights should not overlap geomorph edges?
+    - add lights to every geomorph
+    - lights should not overlap geomorph edges?
     - light supports `intensity`
+    - selector "too light" when surrounded by torch?
   - provide inverse matrices as uniform (more efficient)
 
 - ✅ try fix jerk on collide just before offMeshConnection
@@ -116,6 +119,8 @@
 - onTickDetectStuck more general approach
   - saw fire when npc no longer stuck causing bad stop
   - maybe check if closest neighbour is in front too
+- ✅ floor torch: more efficient approach
+  - use single varying vec2 vFoo i.e. uvs into radial light fill texture
 
 - bug: sh
   - multi-line edit using Option+Enter not working (need repro)

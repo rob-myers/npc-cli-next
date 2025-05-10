@@ -66,9 +66,10 @@ export interface InstancedFloorProps extends InstancedAtlasProps {
   /** Dynamically follows target */
   showTorch?: boolean;
   showLights?: boolean;
-  torchTarget: import('three').Vector3;
   /** (radius, intensity, opacity) */
   torchData: import('three').Vector3;
+  torchTarget: import('three').Vector3;
+  torchTexture: import('three').CanvasTexture;
 }
 
 export type InstancedFloorKeys = keyof InstancedFloorProps;

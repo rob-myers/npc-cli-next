@@ -463,7 +463,9 @@ const instancedFloorShader = {
     flat varying uint vInstanceId;
 
     flat varying vec3 vTorchData;
-    flat varying vec2 vTorchUvOrigin;
+    // uvs pointing into torchTexture
+    // 🤔 could add extra varying per additional torch
+    varying vec2 vTorchUv;
 
     #include <common>
     #include <logdepthbuf_pars_vertex>
@@ -478,11 +480,14 @@ const instancedFloorShader = {
         // instanceMatrix takes unit quad to e.g. "geomorph floor quad"
         // 🚧 provide inverse matrices in uniform
         mat4 invertInstanceMatrix = inverse(instanceMatrix);
-        vec4 transformedCenter = invertInstanceMatrix * vec4(vec3(torchTarget), 1.0);
 
         // (radius, intensity, opacity)
         vTorchData = vec3(torchData.x * invertInstanceMatrix[0].x, torchData.y, torchData.z);
-        vTorchUvOrigin = vec2(transformedCenter.x * uvDimensions.x, transformedCenter.z * uvDimensions.y);
+        // torch uvs relative to "atlas"
+        vec4 transformedCenter = invertInstanceMatrix * vec4(vec3(torchTarget), 1.0);
+        vec2 torchUvOrigin = vec2(transformedCenter.x * uvDimensions.x, transformedCenter.z * uvDimensions.y);
+        // torch uvs relative to torchTexture
+        vTorchUv = ((vUv - torchUvOrigin) / vTorchData.x) + vec2(0.5);
       }
 
       vec4 modelViewPosition = vec4(position, 1.0);
@@ -501,10 +506,11 @@ const instancedFloorShader = {
 
   Frag: /* glsl */`
 
+    uniform sampler2DArray lightAtlas;
     uniform bool showLights;
     uniform bool showTorch;
     uniform vec3 torchTarget;
-    uniform sampler2DArray lightAtlas;
+    uniform sampler2D torchTexture;
 
     uniform float alphaTest;
     uniform sampler2DArray atlas;
@@ -518,7 +524,7 @@ const instancedFloorShader = {
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
     flat varying vec3 vTorchData; // (radius, intensity, opacity)
-    flat varying vec2 vTorchUvOrigin;
+    varying vec2 vTorchUv;
 
     #include <common>
     #include <logdepthbuf_pars_fragment>
@@ -549,22 +555,14 @@ const instancedFloorShader = {
       // 🚧 composition i.e. torch + static light
 
       if (showTorch == true) {// uvs within "torch" are lighter
-        float dist = distance(vUv, vTorchUvOrigin);
-        float radius = vTorchData.x;
-        // if (dist <= radius) texel = vec4(1.0, 0.0, 0.0, 1.0); // debug
-        // if (dist <= radius) texel *= vec4(vec3(1.3) * min((radius / dist), 2.8), vLitCircle.w);
-        if (dist <= radius) {
-          float torchIntensity = vTorchData.y;
-          float torchOpacity = vTorchData.z;
-          texel *= vec4(vec3(torchIntensity) * min((radius / dist), 2.0), torchOpacity);
-        }
+        vec4 torchTexel = texture(torchTexture, vTorchUv);
+        texel *= vec4( max(4.0 * torchTexel.w, 1.0) );
       }
 
-      if (showLights == true) {
-        // texel *= vec4(0.5, 0.5, 0.5, 1.0);
+      if (showLights == true) { // 🚧
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        texel *= 3.0 * vec4(vec3(lightTexel), 1.0); // 🚧
-        // texel *= 6.0 * vec4(vec3(lightTexel), 1.0); // 🚧
+        texel *= 3.0 * vec4(vec3(lightTexel), 1.0);
+        // texel *= 6.0 * vec4(vec3(lightTexel), 1.0);
       }
       
       gl_FragColor = texel * vec4(vColor * diffuse, opacity);
@@ -583,6 +581,7 @@ const instancedFloorDefaultProps = {
   showLights: false,
   torchData: new THREE.Vector3(),
   torchTarget: new THREE.Vector3(),
+  torchTexture: /** @type {*} */ (null), // THREE.CanvasTexture
 };
 
 /**

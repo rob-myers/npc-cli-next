@@ -142,16 +142,14 @@ export function drawPolygons(ct, polys, [fillStyle, strokeStyle, lineWidth] = []
 export function drawRadialFillCustom(ct) {
     // draw radial gradient in tempCanvas
     const c = ct.canvas;
-    ct.clearRect(0, 0, c.width, c.height);
 
     const rg = ct.createRadialGradient(c.width / 2, c.height / 2, 0, c.width / 2, c.height / 2, c.width / 2);
     rg.addColorStop(0.2, 'rgba(255, 255, 255, 1)');
     // rg.addColorStop(0.9, 'rgba(255, 255, 255, 0.2)');
-    rg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    // rg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    rg.addColorStop(1, 'rgba(255, 255, 255, 0)');
     
     ct.fillStyle = rg;
-    ct.clearRect(0, 0, c.width, c.height)
-    // ct.fillRect(0, 0, c.width, c.height);
     ct.beginPath();
     ct.arc(c.width / 2, c.height / 2, c.width / 2, 0, 2 * Math.PI);
     ct.fill();

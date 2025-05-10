@@ -23,13 +23,14 @@ export default function Debug(props) {
     // draw radial gradient in tempCanvas
     const tct = state.tempCt;
     const tc = tct.canvas;
+    tct.clearRect(0, 0, c.width, c.height);
     drawRadialFillCustom(tct);
 
     // copy radial gradient into canvas
     ct.drawImage(tc, 0, 0);
-    ct.globalAlpha = 0.5;
-    ct.drawImage(tc, +1.1 * c.width / 2, 0);
-    ct.drawImage(tc, -1.1 * c.width / 2, 0);
+    // ct.globalAlpha = 0.5;
+    // ct.drawImage(tc, +1.1 * c.width / 2, 0);
+    // ct.drawImage(tc, -1.1 * c.width / 2, 0);
     ct.globalAlpha = 1;
 
   }, []);
