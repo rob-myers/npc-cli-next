@@ -675,7 +675,7 @@ export default function WorldView(props) {
  * }} controls
  * We provide access to `sphericalDelta` via patch.
  * @property {import('@react-three/drei').MapControlsProps} ctrlOpts
- * @property {Partial<Record<'brightness' | 'sepia', string>>} cssFilter
+ * @property {Partial<Record<'brightness' | 'sepia' | 'invert', string>>} cssFilter
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
  * 
@@ -746,7 +746,7 @@ const rootCss = css`
     width: 100%;
     height: 100%;
     background-color: rgba(20, 20, 20, 1);
-    transition: filter 1s;
+    transition: filter 300ms;
   }
   
   /* center canvas during resize */

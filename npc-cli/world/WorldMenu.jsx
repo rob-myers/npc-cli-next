@@ -33,6 +33,7 @@ export default function WorldMenu(props) {
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
+    invertColor: false,
     logger: /** @type {*} */ (null),
     loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? defaultLoggerHeightPx / loggerHeightDelta,
     loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? defaultLoggerWidthPx / defaultLoggerWidthDelta,
@@ -72,6 +73,11 @@ export default function WorldMenu(props) {
     },
     onChangeCanTweenPaused(e) {
       w.view.canTweenPaused = e.currentTarget.checked;
+      w.update();
+    },
+    onChangeInvertColor(e) {
+      state.invertColor = e.currentTarget.checked;
+      w.view.setCssFilter({ invert: state.invertColor ? '1' : '0' });
       w.update();
     },
     onChangeXRay(e) {
@@ -238,6 +244,14 @@ export default function WorldMenu(props) {
                 type="checkbox"
                 onChange={state.onChangeCanTweenPaused}
                 checked={w.view.canTweenPaused}
+              />
+            </label>
+            <label>
+              invert
+              <input
+                type="checkbox"
+                onChange={state.onChangeInvertColor}
+                checked={state.invertColor}
               />
             </label>
           </div>
@@ -452,6 +466,7 @@ const cssTtyDisconnectedMessage = css`
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {boolean} disconnected
  * @property {{ [durKey: string]: number }} durationKeys
+ * @property {boolean} invertColor
  * @property {import('../terminal/Logger').State} logger
  * @property {number} loggerHeight
  * @property {number} loggerWidth
@@ -461,11 +476,12 @@ const cssTtyDisconnectedMessage = css`
  * @property {number} xRayOpacity In [1..20]
  *
  * @property {() => void} applyControlsInitValues
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRay
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
