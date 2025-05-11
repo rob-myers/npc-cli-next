@@ -550,6 +550,11 @@ class GeomorphService {
       const r = Number(a.r ?? 0);
       poly = Poly.fromRect(new Rect(Number(a.cx ?? 0) - r, Number(a.cy ?? 0) - r, 2 * r, 2 * r));
       meta.circle = true;
+    } else if (tagName === 'ellipse') {
+      const rx = Number(a.rx ?? 0);
+      const ry = Number(a.ry ?? 0);
+      poly = Poly.fromRect(new Rect(Number(a.cx ?? 0) - rx, Number(a.cy ?? 0) - ry, 2 * rx, 2 * ry));
+      meta.ellipse = true;
     } else if (tagName === 'polygon') {
       // e.g. "1024.000,0.000 921.600,0.000 921.600,102.400 1024.000,102.400"
       poly = geom.svgPathToPolygon(`M${a.points}Z`);
@@ -1036,7 +1041,6 @@ class GeomorphService {
         if (folderStack[0] === "lights") {
           const meta = tagsToMeta(ownTags, {}, metaVarNames, metaVarValues);
           meta.light = true;
-          // 🚧 support <ellipse>
           const poly = geomorph.extractPoly({ tagMeta: { ...parent, title: contents }, meta });
 
           if (poly !== null) {

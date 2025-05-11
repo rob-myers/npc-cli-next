@@ -27466,6 +27466,13 @@
         {
           "type": "Polygon",
           "coordinates": [
+            [[3.75, 10.45], [3.75, 11.95], [0.75, 11.95], [0.75, 10.45]]
+          ],
+          "meta": {"light": true, "ellipse": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
             [
               [10.5679, 2.9367],
               [11.3462, 2.2839],
