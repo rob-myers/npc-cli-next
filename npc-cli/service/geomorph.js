@@ -478,24 +478,32 @@ class GeomorphService {
    * Given decor symbol instance <use>, extract polygon with meta.
    * Support: cuboid, point, quad.
    * @private
-   * @param {{ tagName: string; attributes: Record<string, string>; title: string; }} tagMeta
-   * @param {Meta} meta
+   * @param {object} opts
+   * @param {{ tagName: string; attributes: Record<string, string>; title: string; }} opts.tagMeta
+   * @param {Meta} opts.meta
+   * @param {Mat} [opts.matrix]
    * @returns {Geom.Poly}
    */
-  extractDecorPoly(tagMeta, meta) {
+  extractDecorPoly(opts) {
+    const { tagMeta, meta } = opts;
     const scale = sguToWorldScale * sguSymbolScaleDown;
-    const trOrigin = geomorph.extractTransformData(tagMeta).transformOrigin ?? { x: 0, y: 0 };
-    tmpMat1.setMatrixValue(tagMeta.attributes.transform)
-      .preMultiply([1, 0, 0, 1, -trOrigin.x, -trOrigin.y])
-      .postMultiply([scale, 0, 0, scale, trOrigin.x * scale, trOrigin.y * scale])
-    ;
+    
+    const poly = Poly.fromRect(new Rect(0, 0, 1, 1));
 
-    const poly = Poly.fromRect(new Rect(0, 0, 1, 1)).applyMatrix(tmpMat1);
+    const matrix = tmpMat1.setMatrixValue(tagMeta.attributes.transform);
+    const transformOrigin = geomorph.extractTransformData(tagMeta).transformOrigin ?? { x: 0, y: 0 };
+    matrix.preMultiply([1, 0, 0, 1, -transformOrigin.x, -transformOrigin.y]);
+    matrix.postMultiply([scale, 0, 0, scale, scale * transformOrigin.x, scale * transformOrigin.y]);
+    if (opts.matrix !== undefined) {
+      matrix.preMultiply(opts.matrix);
+    }
+
+    poly.applyMatrix(matrix)
     poly.meta = meta;
 
     // support cuboid/point/quad with point fallback
     if (meta.cuboid === true) {
-      meta.transform = tmpMat1.precision(precision).toArray();
+      meta.transform = matrix.precision(precision).toArray();
     } else if (meta.quad === true) {
       /**
        * 🔔 SVG symbols with meta.quad should have meta.img
@@ -506,13 +514,13 @@ class GeomorphService {
         meta.tilt = true; // 90° so in XY plane
         meta.img = doorSwitchDecorImgKey;
         // 🔔 scale up for easier mobile press
-        meta.transform = tmpMat1.preMultiply(switchDecorQuadScaleUp).precision(precision).toArray();
+        meta.transform = matrix.preMultiply(switchDecorQuadScaleUp).precision(precision).toArray();
       } else {
-        meta.transform = tmpMat1.precision(precision).toArray();
+        meta.transform = matrix.precision(precision).toArray();
       }
     } else {
       meta.point = true;
-      meta.direction = tmpVect1.set(tmpMat1.a, tmpMat1.b).normalize().json;
+      meta.direction = tmpVect1.set(matrix.a, matrix.b).normalize().json;
     }
 
     return poly.precision(precision).cleanFinalReps().fixOrientation();
@@ -941,8 +949,14 @@ class GeomorphService {
     const scale = sguToWorldScale * sguSymbolScaleDown;
     const permittedFolders = { symbols: true, lights: true };
 
-    const tagStack = /** @type {{ tagName: string; attributes: Record<string, string>; }[]} */ ([]);
     const folderStack = /** @type {string[]} */ ([]);
+    /** Matrices of transforms arising from `g.transform`s */
+    const matrixStack = /** @type {Mat[]} */ ([]);
+    /** The final item in `currentMatrixStack`  */
+    let currentMatrix = new Mat();
+    /** The i^th item is the product `matrixStack[i - 1] ... matrixStack[0]` */
+    const currentMatrixStack = [currentMatrix];
+    const tagStack = /** @type {{ tagName: string; attributes: Record<string, string>; }[]} */ ([]);
     let defsStack = 0;
 
     let viewBoxRect = /** @type {Geom.Rect | null} */ (null);
@@ -983,7 +997,16 @@ class GeomorphService {
         if (parent.tagName === "g") {
           const folderName = contents;
           folderStack.push(folderName);
-          return !(folderName in permittedFolders) && warn(`unexpected folder: "${folderName}" will be ignored`);
+          if (!(folderName in permittedFolders)) {
+            warn(`unexpected folder: "${folderName}" will be ignored`); 
+          }
+          if ('transform' in parent.attributes) {
+            const groupMatrix = new Mat().setMatrixValue(parent.attributes.transform);
+            matrixStack.push(groupMatrix);
+            currentMatrix = new Mat().setMatrixValue(currentMatrixStack.at(-1)).postMultiply(groupMatrix);
+            currentMatrixStack.push(currentMatrix);
+          }
+          return;
         }
         if (parent.tagName === "image") {
           return;
@@ -1056,8 +1079,18 @@ class GeomorphService {
         }
 
         const poly = parent.tagName === "use" && meta.decor === true
-          ? geomorph.extractDecorPoly({ ...parent, title: contents }, meta)
-          : geomorph.extractPoly({ tagMeta: { ...parent, title: contents }, meta })
+          ? geomorph.extractDecorPoly({
+            tagMeta: { ...parent, title: contents },
+            meta,
+            // 🚧 maybe permit parent transforms
+            // matrix: matrixStack.length === 0 ? undefined : currentMatrix,
+          })
+          : geomorph.extractPoly({
+              tagMeta: { ...parent, title: contents },
+              meta,
+              // 🚧 maybe permit parent transforms
+              // matrix: matrixStack.length === 0 ? undefined : currentMatrix,
+            })
         ;
         
         if (poly === null) {
@@ -1085,11 +1118,16 @@ class GeomorphService {
           meta.obsId = obstacles.length - 1;
         }
       },
-      onclosetag(tag) {
-        tagStack.pop();
-        if (tag === "g") {
+      onclosetag(tagName) {
+        const tag = /** @type {HtmlParser2Tag} */ (tagStack.pop());
+        if (tagName === "g") {
           folderStack.pop();
-        } else if (tag === "defs") {
+          if ('transform' in tag.attributes) {
+            matrixStack.pop();
+            currentMatrixStack.pop();
+            currentMatrix = currentMatrixStack.at(-1) ?? new Mat();
+          }
+        } else if (tagName === "defs") {
           defsStack--;
         }
       },
