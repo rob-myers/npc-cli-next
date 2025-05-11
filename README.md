@@ -46,6 +46,10 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 ## Gotchas
 
+1. Our SVG symbols currently do not support parent transforms
+  - e.g. on "symbols" folder
+  - e.g. on "lights" folder
+
 1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle both `transform` and `transform-box`.
    > https://github.com/Automattic/node-canvas/issues/2507
 
@@ -58,9 +62,9 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
   In BoxySVG we can `Object > transform > Reduce Transform`.
 
-2. Similar for transform on `<image>` e.g. scale.
+1. Similar for transform on `<image>` e.g. scale.
 
-3. Avoid deep properties `state.foo.bar` inside `useStateRef` e.g. because they won't be reloaded if `foo` stays same name but `bar` changes to `baz`.
+1. Avoid deep properties `state.foo.bar` inside `useStateRef` e.g. because they won't be reloaded if `foo` stays same name but `bar` changes to `baz`.
 
 ## Development only routes
 
