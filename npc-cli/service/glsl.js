@@ -523,13 +523,16 @@ const instancedFloorShader = {
       //#endregion
 
       if (texel.a * opacity < alphaTest) discard;
+      
+      // for light composite i.e. torch + static light
+      float lighter = 1.0;
 
       if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        texel *= vec4( vec3( clamp(4.0 * lightTexel.w, 1.0, 2.0) ), 1.0);
+        lighter *= clamp(4.0 * lightTexel.w, 1.0, 3.0);
       }
       
-      gl_FragColor = texel * vec4(vColor * diffuse, opacity);
+      gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
       
       #include <logdepthbuf_fragment>
     }
