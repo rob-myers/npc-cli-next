@@ -66,7 +66,8 @@ export default function Floor(props) {
         w.texFloorLight.updateIndex(texId);
         await pause();
       }
-      w.texFloor.update();
+      // w.texFloor.update();
+      // w.texFloorLight.update();
       w.menu.measure('floor.draw');
     },
     drawGm(gmKey) {
