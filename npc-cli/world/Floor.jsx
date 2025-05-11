@@ -78,8 +78,8 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#191919', null]);
-      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
+      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#191919', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
@@ -106,7 +106,6 @@ export default function Floor(props) {
       drawPolygons(ct, walls2[1], ['#555', null]);
     },
     drawGmLight(gmKey) {
-
       const { ct } = w.texFloorLight;
       const gm = w.geomorphs.layout[gmKey];
       
@@ -123,8 +122,6 @@ export default function Floor(props) {
         ct.drawImage(image, x, y, width, height);
       }
       ct.globalAlpha = 1;
-
-
     },
     drawRadialLight() {
       const canvas = /** @type {HTMLCanvasElement} */ (state.radialTex.image);
