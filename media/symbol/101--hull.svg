@@ -300,13 +300,13 @@
     <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 0.00010681200365070254, 0)" href="#symbol-13">
       <title>fuel--010--4x2 y=wallHeight</title>
     </use>
-    <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 1800, 0.00003600005220505409)" href="#symbol-13">
+    <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 1800, 0.000036000059481011704)" href="#symbol-13">
       <title>fuel--010--4x2 y=wallHeight</title>
     </use>
-    <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 3001, 0.00003814708179561421)" href="#symbol-13">
+    <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 3001, 0.00003814708543359302)" href="#symbol-13">
       <title>fuel--010--4x2 y=wallHeight</title>
     </use>
-    <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 4801, 0.00003814708179561421)" href="#symbol-13">
+    <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 4801, 0.00003814708543359302)" href="#symbol-13">
       <title>fuel--010--4x2 y=wallHeight</title>
     </use>
     <use width="1200" height="600" transform="matrix(1, 0, 0, 1, 1799, 5400)" href="#symbol-13">
@@ -385,6 +385,12 @@
   <rect x="2692" y="3292" width="617" height="17.5" style="stroke: rgb(0, 0, 0); fill: rgb(255, 0, 0);">
     <title>wall</title>
   </rect>
+  <g>
+    <title>lights</title>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1460.33" cy="1050" r="450">
+      <title>light</title>
+    </circle>
+  </g>
   <rect x="-20" y="1240" width="40" height="240" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0);">
     <title>door hull edge=w</title>
   </rect>

@@ -8789,6 +8789,13 @@
         {
           "type": "Polygon",
           "coordinates": [
+            [[9.5517, 3], [9.5517, 7.5], [5.0517, 7.5], [5.0517, 3]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
             [
               [0, 13.5],
               [0.3905, 12.4965],
@@ -31433,6 +31440,30 @@
             "stroke": "#999999",
             "strokeWidth": 4
           }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [30.6519, 6.7524],
+              [30.6519, 11.2524],
+              [26.1519, 11.2524],
+              [26.1519, 6.7524]
+            ]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [3.3568, 9.4055],
+              [3.3568, 13.9055],
+              [-1.1432, 13.9055],
+              [-1.1432, 9.4055]
+            ]
+          ],
+          "meta": {"light": true, "circle": true}
         }
       ],
       "navDecomp": {

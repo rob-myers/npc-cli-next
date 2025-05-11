@@ -61,6 +61,7 @@
     - ✅ fix static lights i.e. lightAtlas
     - ✅ torch + static light combination
     - 🚧 add lights to every geomorph
+      - 301 ✅ 302 🚧 303 🚧 101 🚧 102 🚧 103 🚧 
     - 🚧 lights should not overlap geomorph edges?
     - ❌ light supports `intensity`
     - ❌ selector "too light" when surrounded by torch?
