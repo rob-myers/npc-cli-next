@@ -21,10 +21,6 @@ export default function Floor(props) {
     grid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
-    radialCt1: getContext2d(`${w.key}-lit-canvas-${'test'}`, {// 🚧 rm
-      width: 400,
-      height: 400,
-    }),
     // 🚧 initialize width/height?
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: false,
@@ -109,7 +105,7 @@ export default function Floor(props) {
       drawPolygons(ct, walls2[0], ['#000', null]);
       drawPolygons(ct, walls2[1], ['#555', null]);
     },
-    drawGmLight(gmKey) {// 🚧
+    drawGmLight(gmKey) {
 
       const { ct } = w.texFloorLight;
       const gm = w.geomorphs.layout[gmKey];
@@ -119,13 +115,12 @@ export default function Floor(props) {
 
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
-      // 🚧
       // ct.globalAlpha = 0.8;
       const { image }  = state.radialTex;
       const lights = gm.unsorted.filter(x => x.meta.light === true);
       for (const light of lights) {
-        const { x, y, width } = light.rect;
-        ct.drawImage(image, x, y, width, width);
+        const { x, y, width, height } = light.rect;
+        ct.drawImage(image, x, y, width, height);
       }
       ct.globalAlpha = 1;
 
@@ -174,10 +169,7 @@ export default function Floor(props) {
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
-
-    drawRadialFillCustom(state.radialCt1); // 🚧 rm
     state.drawRadialLight();
-
     if (state.inst?.material) state.syncUniforms(); // hmr
   }, [w.mapKey, w.hash.full]);
   
@@ -229,7 +221,6 @@ export default function Floor(props) {
  * @property {boolean} showTorch
  * @property {THREE.Vector3} torchTarget Torch
  * @property {THREE.Vector3} torchData (radius, intensity, opacity)
- * @property {CanvasRenderingContext2D} radialCt1 🚧
  * @property {THREE.CanvasTexture} radialTex
  *
  * @property {() => void} addUvs
