@@ -127,7 +127,7 @@ export async function* initCamAndLights({ api, args, w }) {
   w.update(); // update WorldMenu PopUp checkbox
   
   await w.view.tween({
-    azimuthal: w.smallViewport ? 0 : Math.PI/6,
+    azimuthal: w.smallViewport ? 0 : Math.PI/4,
     polar: Math.PI/4,
   });
 
@@ -138,8 +138,7 @@ export async function* initCamAndLights({ api, args, w }) {
     w.view.ctrlOpts.maxDistance = 25;
   }
 
-  // enable lighting
-  w.floor.showTorch = true;
+  w.floor.showTorch = false;
   w.floor.showLights = true;
   w.update();
 
