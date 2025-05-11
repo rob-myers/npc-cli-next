@@ -169,24 +169,54 @@
       <title>iris-valves--006--1x1</title>
     </use>
   </g>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="580.931" cy="1050" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="858.683" cy="2550" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="2550" cy="2250" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1050" cy="750" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="300" cy="300" r="300">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1261.53" cy="1553.98" r="450">
-    <title>light</title>
-  </circle>
+  <g>
+    <title>lights</title>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="580.931" cy="1050" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="858.683" cy="2550" r="450" transform="matrix(1, 0, 0, 0.666667, 0, 1000)">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="2550" cy="2250" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1050" cy="750" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="300" cy="300" r="300">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1261.53" cy="1553.98" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1261.53" cy="1553.98" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1782.92" cy="2240" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="2972.17" cy="1301" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="3901.78" cy="1650" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="4510.03" cy="750" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="5397.88" cy="985.819" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="5456.51" cy="2095.14" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="4650" cy="2015.3" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="3450" cy="862.867" r="450">
+      <title>light</title>
+    </circle>
+  </g>
   <path d="M 2123.27 591.485 L 2189.085 533.805 L 2277.51 466.135 L 2371.545 407.795 L 2467.505 356.8 L 2568.75 313.4 L 2672.56 282.72 L 2784.675 258.115 L 2891.59 246.59 L 3000 238.96 L 3108.315 244.155 L 3217.465 257.48 L 3323.625 283.85 L 3430.035 315.38 L 3529.985 354.67 L 3630.93 407.97 L 3721.455 466.64 L 3807.825 533.22 L 3872.73 591.52 L 3889.095 611.855 L 3846.715 652.23 L 3832.5 637.245 L 3771.625 579.72 L 3688.09 516.645 L 3600 460.69 L 3506.085 412.4 L 3409.055 371.095 L 3306.92 340.325 L 3208.11 318.48 L 3105 305 L 3000 300 L 2895.665 305.425 L 2789.87 318.5 L 2689.17 342.31 L 2590.15 372.47 L 2492.575 412.66 L 2400 461.295 L 2311.875 518.875 L 2226.915 580.86 L 2146.05 661.65 L 2100 617.15 L 2123.27 591.485 Z" style="stroke: rgb(0, 0, 0); fill-opacity: 0.31; fill: rgb(255, 0, 0);">
     <title>wall hull _window</title>
   </path>
@@ -307,31 +337,4 @@
   <path d="M 424 117 L 455 91 L 493 69 L 534 54 L 578 47 L 621 46 L 664 54 L 706 69 L 744 91 L 775 117 L 779 122 L 772 129 L 767 125 L 737 100 L 701 80 L 661 65 L 620 57 L 578 57 L 537 65 L 498 80 L 462 101 L 433 125 L 428 130 L 419 122 L 424 117 Z" style="stroke: rgb(0, 0, 0); fill-opacity: 0.31; visibility: hidden;" transform="matrix(1, 0, 0, 1, 0, 7.105427357601002e-15)">
     <title>_window</title>
   </path>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1261.53" cy="1553.98" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="1782.92" cy="2240" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="2972.17" cy="1301" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="3901.78" cy="1650" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="4510.03" cy="750" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="5397.88" cy="985.819" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="5456.51" cy="2095.14" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="4650" cy="2015.3" r="450">
-    <title>light</title>
-  </circle>
-  <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="3450" cy="862.867" r="450">
-    <title>light</title>
-  </circle>
 </svg>

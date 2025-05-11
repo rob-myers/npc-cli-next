@@ -934,6 +934,7 @@ class GeomorphService {
     // info("parseStarshipSymbol", symbolKey, "...");
     const isHull = this.isHullKey(symbolKey);
     const scale = sguToWorldScale * sguSymbolScaleDown;
+    const permittedFolders = { symbols: true, lights: true };
 
     const tagStack = /** @type {{ tagName: string; attributes: Record<string, string>; }[]} */ ([]);
     const folderStack = /** @type {string[]} */ ([]);
@@ -975,15 +976,15 @@ class GeomorphService {
           return; // Only consider <title>, ignoring <defs>
         }
         if (parent.tagName === "g") {
-          folderStack.push(contents);
-          contents !== "symbols" && warn(`unexpected folder: "${contents}" will be ignored`);
-          return;
+          const folderName = contents;
+          folderStack.push(folderName);
+          return !(folderName in permittedFolders) && warn(`unexpected folder: "${folderName}" will be ignored`);
         }
         if (parent.tagName === "image") {
           return;
         }
-        if (folderStack.length >= 2 || (folderStack[0] && folderStack[0] !== "symbols")) {
-          return; // Only depth 0 and folder 'symbols' supported
+        if (folderStack.length >= 2 || (folderStack[0] && !(folderStack[0] in permittedFolders))) {
+          return; // Only depth 0 permittedFolders supported
         }
 
         // const ownTags = contents.split(" ");
@@ -1029,6 +1030,18 @@ class GeomorphService {
             });
           }
 
+          return;
+        }
+        
+        if (folderStack[0] === "lights") {
+          const meta = tagsToMeta(ownTags, {}, metaVarNames, metaVarValues);
+          meta.light = true;
+          // 🚧 support <ellipse>
+          const poly = geomorph.extractPoly({ tagMeta: { ...parent, title: contents }, meta });
+
+          if (poly !== null) {
+            unsorted.push(poly);
+          }
           return;
         }
 
