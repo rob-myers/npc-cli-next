@@ -138,6 +138,8 @@ export async function* initCamAndLights({ api, args, w }) {
     w.view.ctrlOpts.maxDistance = 25;
   }
 
+  // enable lighting
+  w.floor.showTorch = true;
   w.floor.showLights = true;
   w.update();
 

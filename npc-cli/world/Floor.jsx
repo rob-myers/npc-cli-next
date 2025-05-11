@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { Mat, Poly } from "../geom";
 import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { getGridPattern, drawPolygons, drawRadialFillCustom, getCanvas } from "../service/dom";
+import { getGridPattern, drawPolygons, getContext2d, drawRadialFillCustom, getCanvas } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
@@ -21,9 +21,16 @@ export default function Floor(props) {
     grid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
-    // 🚧 convert to canvas
+    radialCt1: getContext2d(`${w.key}-lit-canvas-${'test'}`, {// 🚧 rm
+      width: 400,
+      height: 400,
+    }),
+    // 🚧 initialize width/height?
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: false,
+    showTorch: false,
+    torchData: new THREE.Vector3(3, 1, 1),
+    torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -97,12 +104,13 @@ export default function Floor(props) {
       drawPolygons(ct, shadowPolys, ['#000', null]);
 
       // walls
-      drawPolygons(ct, gm.walls, ['#000', null]);
-      // const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
-      // drawPolygons(ct, walls2[0], ['#000', null]);
-      // drawPolygons(ct, walls2[1], ['#555', null]);
+      // drawPolygons(ct, gm.walls, ['#000', null]);
+      const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
+      drawPolygons(ct, walls2[0], ['#000', null]);
+      drawPolygons(ct, walls2[1], ['#555', null]);
     },
     drawGmLight(gmKey) {// 🚧
+
       const { ct } = w.texFloorLight;
       const gm = w.geomorphs.layout[gmKey];
       
@@ -111,8 +119,8 @@ export default function Floor(props) {
 
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
+      // 🚧
       // ct.globalAlpha = 0.8;
-      // ct.globalCompositeOperation = 'luminosity';
       const { image }  = state.radialTex;
       const lights = gm.unsorted.filter(x => x.meta.light === true);
       for (const light of lights) {
@@ -120,7 +128,7 @@ export default function Floor(props) {
         ct.drawImage(image, x, y, width, width);
       }
       ct.globalAlpha = 1;
-      ct.globalCompositeOperation = 'source-over';
+
 
     },
     drawRadialLight() {
@@ -147,14 +155,30 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-  }), { reset: { grid: false, largeGrid: false } });
+    setTorchTarget(positionRef) {
+      state.torchTarget = positionRef;
+      state.syncUniforms();
+    },
+    syncUniforms() {
+      const material = state.inst.material;
+      const uniforms = /** @type {import("../types/glsl").InstancedFloorUniforms} */ (
+        material.uniforms
+      );
+      uniforms.torchData.value = state.torchData;
+      uniforms.torchTarget.value = state.torchTarget;
+    },
+  }), { reset: { grid: false, largeGrid: false, torchData: true } });
 
   w.floor = state;
 
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
+
+    drawRadialFillCustom(state.radialCt1); // 🚧 rm
     state.drawRadialLight();
+
+    if (state.inst?.material) state.syncUniforms(); // hmr
   }, [w.mapKey, w.hash.full]);
   
   React.useEffect(() => {
@@ -181,6 +205,10 @@ export default function Floor(props) {
 
         lightAtlas={w.texFloorLight.tex}
         showLights={state.showLights}
+        showTorch={state.showTorch}
+        torchData={state.torchData}
+        torchTarget={state.torchTarget}
+        torchTexture={state.radialTex}
       />
     </instancedMesh>
   );
@@ -198,6 +226,10 @@ export default function Floor(props) {
  * @property {CanvasPattern} largeGrid
  * @property {THREE.BufferGeometry} quad
  * @property {boolean} showLights Show static lights?
+ * @property {boolean} showTorch
+ * @property {THREE.Vector3} torchTarget Torch
+ * @property {THREE.Vector3} torchData (radius, intensity, opacity)
+ * @property {CanvasRenderingContext2D} radialCt1 🚧
  * @property {THREE.CanvasTexture} radialTex
  *
  * @property {() => void} addUvs
@@ -206,6 +238,8 @@ export default function Floor(props) {
  * @property {(gmKey: Key.Geomorph) => void} drawGmLight
  * @property {() => void} drawRadialLight
  * @property {() => void} positionInstances
+ * @property {(positionRef: THREE.Vector3) => void} setTorchTarget
+ * @property {() => void} syncUniforms
  */
 
 const tmpMat1 = new Mat();

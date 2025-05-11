@@ -60,13 +60,11 @@
     - ✅ torch uses texture rather than abstract function
     - ✅ fix static lights i.e. lightAtlas
     - ✅ torch + static light combination
-    - 🚧 add lights to every geomorph
-    - 🚧 lights should not overlap geomorph edges
-    - ❌ torch + multiple static light issue
-      - removed torch
-    - ❌ light supports `intensity`
-    - ❌ selector "too light" when surrounded by torch?
-  - ❌ provide inverse matrices as uniform (more efficient)
+    - add lights to every geomorph
+    - lights should not overlap geomorph edges?
+    - light supports `intensity`
+    - selector "too light" when surrounded by torch?
+  - provide inverse matrices as uniform (more efficient)
 
 - npc is lit by static lighting 
 
