@@ -60,13 +60,11 @@
     - ✅ torch uses texture rather than abstract function
     - ✅ fix static lights i.e. lightAtlas
     - ✅ torch + static light combination
-    - add lights to every geomorph
-    - lights should not overlap geomorph edges?
-    - light supports `intensity`
-    - selector "too light" when surrounded by torch?
-  - provide inverse matrices as uniform (more efficient)
-
-- npc is lit by static lighting 
+    - 🚧 add lights to every geomorph
+    - 🚧 lights should not overlap geomorph edges?
+    - ❌ light supports `intensity`
+    - ❌ selector "too light" when surrounded by torch?
+      - we won't use torch by default
 
 - ✅ try fix jerk on collide just before offMeshConnection
   - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`
@@ -121,6 +119,10 @@
 - onTickDetectStuck more general approach
   - saw fire when npc no longer stuck causing bad stop
   - maybe check if closest neighbour is in front too
+- torch: provide inverse matrices as uniform (more efficient)
+- npc is lit by static lighting 
+  - provide inverse-matrix-per-gmId as uniform
+  - provide gmId as uniform
 - ✅ floor torch: more efficient approach
   - use single varying vec2 vFoo i.e. uvs into radial light fill texture
 
