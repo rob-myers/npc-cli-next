@@ -552,22 +552,30 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
-      // for light composite i.e. torch + static light
       float lighter = 1.0;
 
-      if (showTorch == true) {// uvs within "torch" are lighter
-        vec4 torchTexel = texture(torchTexture, vTorchUv);
-        lighter *= clamp(4.0 * torchTexel.w, 1.0, 4.0);
-      }
+      if (showTorch == true && showLights == true) {
 
-      if (showLights == true) { // 🚧
+        vec4 torchTexel = texture(torchTexture, vTorchUv);
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= clamp(3.0 * lightTexel.w, 1.0, 3.0);
+        lighter *= 1.0 * (clamp(12.0 * torchTexel.w, 1.0, 3.0) * clamp(5.0 * lightTexel.w, 1.0, 3.0));
+        lighter = clamp(lighter, 1.0, 3.0);
+
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
+
+      } else if (showTorch == true) {// uvs within "torch" are lighter
+
+        vec4 torchTexel = texture(torchTexture, vTorchUv);
+        lighter *= clamp(6.0 * torchTexel.w, 1.0, 3.0);
+
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
+
+      } else if (showLights == true) {
+        vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
+        lighter *= clamp(5.0 * lightTexel.w, 1.0, 3.0);
+
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
       }
-      
-      lighter = clamp(lighter, 1.0, 2.0);
-      
-      gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
       
       #include <logdepthbuf_fragment>
     }

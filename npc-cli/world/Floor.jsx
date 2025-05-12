@@ -118,11 +118,14 @@ export default function Floor(props) {
       // ct.globalAlpha = 0.8;
       const { image }  = state.radialTex;
       const lights = gm.unsorted.filter(x => x.meta.light === true);
+      // ct.globalCompositeOperation = 'exclusion';
+      // ct.globalCompositeOperation = 'difference';
       for (const light of lights) {
         const { x, y, width, height } = light.rect;
         ct.drawImage(image, x, y, width, height);
       }
       ct.globalAlpha = 1;
+      ct.globalCompositeOperation = 'source-over';
     },
     drawRadialLight() {
       const canvas = /** @type {HTMLCanvasElement} */ (state.radialTex.image);
