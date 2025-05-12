@@ -321,10 +321,16 @@
   </rect>
   <g transform="">
     <title>lights</title>
-    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="5680.38" cy="1800.48" r="450">
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="5705.38" cy="1936.33" r="286.872">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="5705.38" cy="2414.15" r="286.872">
       <title>light</title>
     </circle>
     <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="221.351" cy="2331.1" r="450">
+      <title>light</title>
+    </circle>
+    <circle style="fill-opacity: 0.25; stroke: rgb(255, 255, 153); fill: none; stroke-width: 4px; stroke-dasharray: 30;" cx="4950" cy="2139.64" r="450">
       <title>light</title>
     </circle>
   </g>
