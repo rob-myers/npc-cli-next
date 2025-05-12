@@ -57,6 +57,8 @@ export default function Ceiling(props) {
       drawPolygons(ct, tops.window, [black, wallsColor, thinLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
+      drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
+
       // decals
       polyDecals.filter(x => x.meta.ceil === true).forEach(x => {
         const strokeWidth = typeof x.meta.strokeWidth === 'number'
@@ -66,7 +68,7 @@ export default function Ceiling(props) {
         // drawPolygons(ct, x, ['red', 'white', 0.08]);
       });
 
-      drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
+      ct.strokeStyle = wallsColor;
       
       // Stroke a square at each corner to avoid z-fighting
       const hullRect = layout.hullPoly[0].rect;
