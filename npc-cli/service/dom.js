@@ -147,7 +147,7 @@ export function drawRadialFillCustom(ct) {
     const rgRadius = (c.width / 2) + (c.width * 1/40);
     const rg = ct.createRadialGradient(c.width / 2, c.height / 2, 0, c.width / 2, c.height / 2, rgRadius);
     rg.addColorStop(0.2, 'rgba(255, 255, 255, 1)');
-    // rg.addColorStop(0.4, 'rgba(255, 255, 255, 1)');
+    // rg.addColorStop(0.4, 'rgba(255, 255, 255, 0.8)');
     // rg.addColorStop(0.9, 'rgba(255, 255, 255, 0.25)');
     rg.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
     // rg.addColorStop(1, 'rgba(0, 0, 0, 1.0)');

@@ -552,14 +552,17 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
+      // 🚧 darker while torch maintains luminosity
+      // 🚧 match lighting approaches when torch on/off
+
       float lighter = 1.0;
 
       if (showTorch == true && showLights == true) {
 
         vec4 torchTexel = texture(torchTexture, vTorchUv);
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= 1.0 * (clamp(12.0 * torchTexel.w, 1.0, 3.0) * clamp(5.0 * lightTexel.w, 1.0, 3.0));
-        lighter = clamp(lighter, 1.0, 3.0);
+        lighter *= 1.0 * (clamp(8.0 * torchTexel.w, 1.0, 3.0) + clamp(4.0 * lightTexel.w, 1.0, 3.0));
+        lighter = clamp(lighter, 1.0, 3.0) * 0.8;
 
         gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
 
@@ -572,7 +575,7 @@ const instancedFloorShader = {
 
       } else if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= clamp(5.0 * lightTexel.w, 1.0, 3.0);
+        lighter *= clamp(4.0 * lightTexel.w, 1.0, 3.0);
 
         gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
       }

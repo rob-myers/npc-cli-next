@@ -25,7 +25,7 @@ export default function Floor(props) {
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: false,
     showTorch: false,
-    torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
+    torchData: new THREE.Vector3(2, 1, 1), // 🚧 only radius needed?
     torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
