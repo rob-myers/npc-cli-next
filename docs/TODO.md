@@ -69,6 +69,8 @@
       - we won't use torch by default
 
 - 🚧 extend 303
+  - 🚧 add galley-and-mess-halls--006--2x4
+  - 🚧 fix obstacle outline bug (?)
 
 - ✅ try fix jerk on collide just before offMeshConnection
   - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`

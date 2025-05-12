@@ -253,6 +253,7 @@ export const fromSymbolKey = /** @type {const} */ ({// 🔔 must extend when add
   "fresher--025--3x2": true,
   "fresher--036--4x2": true,
   "fuel--010--4x2": true,
+  "galley-and-mess-halls--006--2x4": true,
   "iris-valves--005--1x1": true,
   "iris-valves--006--1x1": true,
   "lab--012--4x3": true,
