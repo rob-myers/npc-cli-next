@@ -561,10 +561,10 @@ const instancedFloorShader = {
 
         vec4 torchTexel = texture(torchTexture, vTorchUv);
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= (clamp(8.0 * torchTexel.w, 1.0, 3.0) + clamp(4.0 * lightTexel.w, 1.0, 3.0) - 1.0);
+        lighter *= (clamp(6.0 * torchTexel.w, 1.0, 3.0) + clamp(4.0 * lightTexel.w, 1.0, 3.0) - 1.0);
         lighter = clamp(lighter, 1.0, 3.0);
 
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
 
       } else if (showTorch == true) {// uvs within "torch" are lighter
 
@@ -577,7 +577,9 @@ const instancedFloorShader = {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
         lighter *= clamp(4.0 * lightTexel.w, 1.0, 3.0);
 
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
+      } else {
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 1.0;
       }
       
       #include <logdepthbuf_fragment>
