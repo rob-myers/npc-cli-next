@@ -4,8 +4,8 @@
     "102--hull": {"outputHash": -1106929025, "pngHash": 184103855},
     "103--hull": {"outputHash": 1827714979, "pngHash": -1937509879},
     "301--hull": {"outputHash": 1371945242, "pngHash": 787602800},
-    "302--hull": {"outputHash": 688979837, "pngHash": -1557128953},
-    "303--hull": {"outputHash": -355982282, "pngHash": -299838577},
+    "302--hull": {"outputHash": -233330253, "pngHash": -1557128953},
+    "303--hull": {"outputHash": -1436100192, "pngHash": -299838577},
     "bed--003--1x1.6": {
       "outputHash": -2001357850,
       "pngHash": -1845623984,
@@ -6929,6 +6929,50 @@
           "type": "Polygon",
           "coordinates": [[[22.5, 8.6649], [22.5, 15], [15, 15], [15, 8.6649]]],
           "meta": {"light": true, "opacity": 0.5, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[15.3175, 10.5], [15.3175, 15], [10.8175, 15], [10.8175, 10.5]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[13.5, 12], [13.5, 16.5], [9, 16.5], [9, 12]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[13.5, 12], [13.5, 16.5], [9, 16.5], [9, 12]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[10.5, 9], [10.5, 13.5], [6, 13.5], [6, 9]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[6, 12], [6, 16.5], [1.5, 16.5], [1.5, 12]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[3, 2.152], [3, 6.652], [0, 6.652], [0, 2.152]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[3, 0], [3, 3], [0, 3], [0, 0]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[27.9, 12], [27.9, 17.2496], [17.4, 17.2496], [17.4, 12]]
+          ],
+          "meta": {"light": true, "circle": true}
         }
       ],
       "width": 30,
@@ -7804,6 +7848,130 @@
         }
       ],
       "unsorted": [
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[4.0409, 10.5], [4.0409, 16.0409], [-1.5, 16.0409], [-1.5, 10.5]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[7.0409, 7.9591], [7.0409, 13.5], [1.5, 13.5], [1.5, 7.9591]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[9.3921, 4.9591], [9.3921, 10.5], [3.8512, 10.5], [3.8512, 4.9591]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[4.5, 0], [4.5, 5.5409], [-1.0409, 5.5409], [-1.0409, 0]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[9, 0], [9, 5.5409], [3.4591, 5.5409], [3.4591, 0]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[14.5409, 0], [14.5409, 5.5409], [9, 5.5409], [9, 0]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[20.5409, 0], [20.5409, 5.5409], [15, 5.5409], [15, 0]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[22.5, 3], [22.5, 8.5409], [16.9591, 8.5409], [16.9591, 3]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[9, 15], [9, 9.4591], [14.5409, 9.4591], [14.5409, 15]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[15, 15], [15, 9.4591], [20.5409, 9.4591], [20.5409, 15]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[16.9591, 12], [16.9591, 6.4591], [22.5, 6.4591], [22.5, 12]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[30, 3], [30, 8.541], [24.4591, 8.541], [24.4591, 3]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[24.4591, 12], [24.4591, 6.4591], [30, 6.4591], [30, 12]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[19.9591, 15], [19.9591, 12.3539], [25.5, 12.3539], [25.5, 15]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[24, 3], [24, 0.3539], [29.5409, 0.3539], [29.5409, 3]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[15, 6], [15, 8.5409], [12.4591, 8.5409], [12.4591, 6]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[17.5409, 6], [17.5409, 8.5409], [15, 8.5409], [15, 6]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[12.6104, 6], [12.6104, 8.5409], [10.0695, 8.5409], [10.0695, 6]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
         {
           "type": "Polygon",
           "coordinates": [
