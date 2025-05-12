@@ -25,7 +25,7 @@ export default function Floor(props) {
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: false,
     showTorch: false,
-    torchData: new THREE.Vector3(2, 1, 1), // 🚧 only radius needed?
+    torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
     torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
@@ -115,13 +115,13 @@ export default function Floor(props) {
 
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
-      // ct.globalAlpha = 0.8;
       const { image }  = state.radialTex;
       const lights = gm.unsorted.filter(x => x.meta.light === true);
       // ct.globalCompositeOperation = 'exclusion';
       // ct.globalCompositeOperation = 'difference';
       for (const light of lights) {
         const { x, y, width, height } = light.rect;
+        ct.globalAlpha = typeof light.meta.opacity === 'number' ? light.meta.opacity : 1;
         ct.drawImage(image, x, y, width, height);
       }
       ct.globalAlpha = 1;
