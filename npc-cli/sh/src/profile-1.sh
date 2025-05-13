@@ -48,8 +48,8 @@ w n.rob.skin | assign '{
 }' > /dev/null
 w n.rob.applySkin
 
-w n.rob.tint | assign '{ "body-{front,back,left,right,top,bottom}": [0.25, 0.25, 0.25, 1] }'
-w n.rob.applyTint
+# w n.rob.tint | assign '{ "body-{front,back,left,right,top,bottom}": [0.25, 0.25, 0.25, 1] }'
+# w n.rob.applyTint
 # w n.rob.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
 # w n.rob.resetTint
 
