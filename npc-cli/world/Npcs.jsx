@@ -230,6 +230,8 @@ export default function Npcs(props) {
       const point = toXZ(p);
       if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
         throw Error(`npc key: ${JSON.stringify(opts.npcKey)} must match /^[a-z0-9-_]+$/i`);
+      } else if (opts.npcKey.length > 10) {
+        throw Error(`npc key: ${JSON.stringify(opts.npcKey)} must have length ≤ 10`);
       } else if (!(typeof point?.x === 'number' && typeof point.y === 'number')) {
         throw Error(`invalid point {x, y}: ${JSON.stringify(p)}`);
       } else if (opts.npcKey === 'default') {
