@@ -121,36 +121,40 @@ export async function* events({ api, args, w }) {
  */
 export async function* initCamAndLights({ api, args, w }) {
 
-  const [npcKey] = args;
-
-  w.view.canTweenPaused = false;
-  w.update(); // update WorldMenu PopUp checkbox
+  try {
+    const [npcKey] = args;
   
-  await w.view.tween({
-    azimuthal: w.smallViewport ? 0 : Math.PI/4,
-    polar: Math.PI/4,
-  });
-
-  if (w.smallViewport) {
-    w.view.ctrlOpts.minAzimuthAngle = 0;
-    w.view.ctrlOpts.maxAzimuthAngle = 0;
-    w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
-    w.view.ctrlOpts.maxDistance = 25;
+    // turn off "tween while paused" so can pause profile
+    w.view.canTweenPaused = false;
+    w.update(); // update WorldMenu PopUp checkbox
+    
+    await w.view.tween({
+      azimuthal: w.smallViewport ? 0 : Math.PI/4,
+      polar: Math.PI/4,
+    });
+  
+    if (w.smallViewport) {
+      w.view.ctrlOpts.minAzimuthAngle = 0;
+      w.view.ctrlOpts.maxAzimuthAngle = 0;
+      w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
+      w.view.ctrlOpts.maxDistance = 25;
+    }
+  
+    w.floor.showTorch = false;
+    w.floor.showLights = true;
+    w.update();
+  
+    if (npcKey in w.n) {
+      w.view.lockDistance(); // prevent zoom-in while look
+      await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
+    }
+    
+    await w.view.tween({ distance: 10 });
+  
+  } finally {
+    w.view.canTweenPaused = true;
   }
 
-  w.floor.showTorch = false;
-  w.floor.showLights = true;
-  w.update();
-
-  if (npcKey in w.n) {
-    // prevent zoom-in while look
-    w.view.lockDistance();
-    await w.e.lookAt(npcKey).catch().finally(w.view.unlockDistance);
-  }
-  
-  await w.view.tween({ distance: 10 });
-
-  w.view.canTweenPaused = true;
 }
 
 /**
