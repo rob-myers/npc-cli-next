@@ -200,7 +200,7 @@ export default function Decor(props) {
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
-        0, transform[3], 0, wallHeight + 0.5,
+        0, transform[3], 0, 1, // 🚧 remove hard-coding
         0, 0, 1, transform[5],
         0, 0, 0, 1
       );
