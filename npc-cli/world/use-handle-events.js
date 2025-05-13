@@ -357,7 +357,7 @@ export default function useHandleEvents(w) {
           w.bubble.delete(e.npcKey);
 
           if (w.disabled === true) {
-            setTimeout(() => w.npc.tickOnceDebounced());
+            w.update();
           }
           break;
         }
@@ -384,7 +384,8 @@ export default function useHandleEvents(w) {
           w.cm.refreshOptsPopUp(); // update npcKey select
 
           if (w.disabled === true) {
-            w.npc.tickOnceDebounced();
+            // w.npc.tickOnceDebounced();
+            w.npc.update();
           }
           break;
         }
