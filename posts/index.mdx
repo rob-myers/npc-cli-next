@@ -60,7 +60,7 @@ Can the NPCs fool the Player? <SideNote>
 This problem can be "solved" by restricting interactivity.
 For example, racing games only permit physical collisions.
 Puzzle games are often too abstract to express human behaviour.
-In fact, many games only offer *aggressive* NPCs, additionally constrained by their time-limited existence.
+In fact, many games only offer *aggressive* NPCs additionally constrained by their time-limited existence.
 So let's assume the NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
 (or even comes close). But why?
@@ -68,16 +68,15 @@ Under this assumption, no known game solves the underlying problem
 > Because it's too damn hard!
 
 {/* Developers are wary of state-space explosions. */}
-As behaviours become more complex, the Game's state-space explodes.
-Things go wrong more and more, requiring more and more debugging, meaning less time for other important tasks.
-The number of states becomes too large to be effectively explored and debugged.
+As behaviours become more complex the Game's state-space explodes.
+More and more things go wrong, requiring more and more debugging, meaning less time for other important tasks.
+The number of states becomes too large to be effectively explored.
 How can composite behaviour be resolved if the developer has never encountered it?
-Even behaviour accounted for may go unnoticed or be misinterpreted by the Player.
-We're entertaining the Player,
+Even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
+We should remember
+we're entertaining the Player,
 rather than creating a World in which the Player is situated.
-This leads us to intermediate objectives:
-{/* We are creating a World _around_ the Player. */}
-{/* It must be interwoven with the Player's experience, not an independent set of "plans". */}
+This leads us to intermediate objectives.
 
 <Card id="underlying-problem"> 
 **Our Objectives**
