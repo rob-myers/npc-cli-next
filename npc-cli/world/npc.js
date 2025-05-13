@@ -5,7 +5,7 @@ import { lerp } from "maath/misc";
 import braces from "braces";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, npcTargetArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
 import { error, info, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
@@ -993,7 +993,7 @@ export class Npc {
 
     const distance = this.s.target.distanceTo(pos);
 
-    if (distance < 0.15) {// Reached target
+    if (distance < npcTargetArriveDistance) {// Reached target
       this.stopMoving();
       return;
     }

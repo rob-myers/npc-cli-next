@@ -435,3 +435,5 @@ export const skinsLabelsTextureHeight = 200 / 4;
  * @see {skinsLabelsTextureWidth}
  */
 export const npcLabelMaxChars = 12;
+
+export const npcTargetArriveDistance = 0.05;
