@@ -100,6 +100,8 @@
   - probably don't want this in general
   - it avoids jerk onexit doorway "in parallel"
 
+- support meta `h=y-0.01` e.g. cuboid under obstacle
+
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlay cuboids should be double-sided
     - then can remove `Side={THREE.DoubleSide}`
