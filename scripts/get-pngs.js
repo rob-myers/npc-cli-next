@@ -150,5 +150,6 @@ function computeFileMetas(srcFilenames) {
       });
       break;
   }
-  return fileMetas;
+  // 🔔 force ordering
+  return fileMetas.sort((a, b) => a.srcName < b.srcName ? -1 : 1);
 }
