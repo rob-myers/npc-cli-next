@@ -21530,7 +21530,145 @@
         }
       ],
       "windows": [],
-      "unsorted": [],
+      "unsorted": [
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[9, 1.5], [9, 7.6277], [2.8723, 7.6277], [2.8723, 1.5]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[6.1277, 3], [6.1277, 9.1277], [0, 9.1277], [0, 3]]],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[12.1277, 5.8723], [12.1277, 9], [9, 9], [9, 5.8723]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[15.1277, 5.8723], [15.1277, 9], [12, 9], [12, 5.8723]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[18.1277, 5.8723], [18.1277, 9], [15, 9], [15, 5.8723]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[21.1277, 5.8723], [21.1277, 9], [18, 9], [18, 5.8723]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [27.1279, 1.5],
+              [27.1279, 7.6277],
+              [21.0001, 7.6277],
+              [21.0001, 1.5]
+            ]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[29.9999, 3], [29.9999, 9.1277], [23.8721, 9.1277], [23.8721, 3]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[16.6277, 12.1277], [13.5, 12.1277], [13.5, 9], [16.6277, 9]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[16.6277, 15.1277], [13.5, 15.1277], [13.5, 12], [16.6277, 12]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[16.6277, 18.1277], [13.5, 18.1277], [13.5, 15], [16.6277, 15]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[16.6277, 21.1277], [13.5, 21.1277], [13.5, 18], [16.6277, 18]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[12.1277, 21], [12.1277, 27.1277], [6, 27.1277], [6, 21]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[12.1277, 23.8723], [12.1277, 30], [6, 30], [6, 23.8723]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [18.2554, 21],
+              [18.2554, 27.1277],
+              [12.1276, 27.1277],
+              [12.1276, 21]
+            ]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [23.9999, 23.8723],
+              [23.9999, 30],
+              [17.8721, 30],
+              [17.8721, 23.8723]
+            ]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [23.9999, 21],
+              [23.9999, 27.1277],
+              [17.8721, 27.1277],
+              [17.8721, 21]
+            ]
+          ],
+          "meta": {"light": true, "circle": true}
+        }
+      ],
       "navDecomp": {
         "vs": [
           {"x": 0.4, "y": 0.4},

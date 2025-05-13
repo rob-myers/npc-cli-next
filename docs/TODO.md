@@ -32,61 +32,6 @@
 
 ### World
 
-- ✅ improve floor lighting
-  - ✅ show hard-coded "light circle" in floor shader
-  - ✅ light circle has basic gradient
-  - ✅ light circle moves with camera
-    - ✅ fix shader code i.e. edge geomorphs are not full-height
-  - ✅ light circle scales up and down
-  - ✅ light circle opacity can change
-
-- 🚧 geomorph lighting
-  - ✅ debug tag shows radial gradient
-    - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
-  - ✅ texture atlas for light maps
-  - ✅ move Floor to separate shader
-  - ✅ test light map
-    - ✅ apply test light map to Floor shader (simple mul)
-    - ✅ `w.floor.lit.target` for moving target light
-    - ✅ `w.floor.lit.static` for static lights
-    - ✅ floor shader has uniforms for target/static
-    - ✅ draw a bunch of radial gradients into map
-      - `w update 'w => w.floor.lit.static = true'`
-  - ✅ controls target light -> torch with general target
-    - e.g. npc.position
-  - 🚧 geomorph layout symbol induces light map
-    - ✅ svg lights `<circle>` induce static lights
-      - 🔔 `<ellipse>` are not supported
-    - ✅ torch uses texture rather than abstract function
-    - ✅ fix static lights i.e. lightAtlas
-    - ✅ torch + static light combination
-    - 🚧 add lights to every geomorph
-      - 301 ✅ 302 ✅ 303 ✅ 101 ✅ 102 ✅ 103 🚧 
-    - ✅ improve lightsAtlas composite approach
-    - 🚧 lights should not overlap geomorph edges?
-    - ❌ light supports `intensity`
-    - ❌ selector "too light" when surrounded by torch?
-      - we won't use torch by default
-
-- ✅ extend 303
-  - ✅ add galley-and-mess-halls--006--2x4
-  - ❌ fix obstacle outline bug
-    - not a bug: background symbol `<img>` was wrong size when dragged into BoxySVG,
-      so had to manually resize
-
-- ✅ try fix jerk on collide just before offMeshConnection
-  - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`
-  - ✅ but permit smaller radius if npc -> offMesh.src does not intersect
-
-- ✅ improve floor lighting
-  - ✅ remove post-processing
-  - ✅ fix issue with npc target height 1.5 but floor light target should be 0
-    - lookAt target always satisfies y = 0
-  - ✅ try radial gradient texture
-  - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
-  - ❌ could try "light image" again where distinct light's rect's don't overlap
-  - ❌ npcs are lighter within light circle
-
 - Ctrl-C "failure" unclear while paused
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
@@ -143,8 +88,8 @@
 
 ### Dev Env
 
-- 🚧 avoid re-request navmesh onchange skin
-- 🚧 avoid re-request navmesh onchange lights
+- ✅ avoid re-request navmesh onchange skin
+- ✅ avoid re-request navmesh onchange lights
   - maybe because assets.json is changing due to hash change?
 
 - BUG: why did adding a decor cuboid in fuel break Decor
@@ -1075,3 +1020,63 @@
   - ℹ️ we need PROFILE to update onchange profile-1.sh
   - ℹ️ currently can only force via `useSite.api.setTabset(..., { overwrite: true })`
   - ✅ tty expects profileKey
+
+
+## Branch `light-and-blog`
+
+### World
+
+- ✅ improve floor lighting
+  - ✅ show hard-coded "light circle" in floor shader
+  - ✅ light circle has basic gradient
+  - ✅ light circle moves with camera
+    - ✅ fix shader code i.e. edge geomorphs are not full-height
+  - ✅ light circle scales up and down
+  - ✅ light circle opacity can change
+
+- ✅ geomorph lighting
+  - ✅ debug tag shows radial gradient
+    - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
+  - ✅ texture atlas for light maps
+  - ✅ move Floor to separate shader
+  - ✅ test light map
+    - ✅ apply test light map to Floor shader (simple mul)
+    - ✅ `w.floor.lit.target` for moving target light
+    - ✅ `w.floor.lit.static` for static lights
+    - ✅ floor shader has uniforms for target/static
+    - ✅ draw a bunch of radial gradients into map
+      - `w update 'w => w.floor.lit.static = true'`
+  - ✅ controls target light -> torch with general target
+    - e.g. npc.position
+  - ✅ geomorph layout symbol induces light map
+    - ✅ svg lights `<circle>` induce static lights
+      - 🔔 `<ellipse>` are not supported
+    - ✅ torch uses texture rather than abstract function
+    - ✅ fix static lights i.e. lightAtlas
+    - ✅ torch + static light combination
+    - ✅ add lights to every geomorph
+      - 301 ✅ 302 ✅ 303 ✅ 101 ✅ 102 ✅ 103 ✅ 
+    - ✅ improve lightsAtlas composite approach
+    - ✅ lights should not overlap geomorph edges
+    - ❌ light supports `intensity`
+    - ❌ selector "too light" when surrounded by torch?
+      - we won't use torch by default
+
+- ✅ extend 303
+  - ✅ add galley-and-mess-halls--006--2x4
+  - ❌ fix obstacle outline bug
+    - not a bug: background symbol `<img>` was wrong size when dragged into BoxySVG,
+      so had to manually resize
+
+- ✅ try fix jerk on collide just before offMeshConnection
+  - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`
+  - ✅ but permit smaller radius if npc -> offMesh.src does not intersect
+
+- ✅ improve floor lighting
+  - ✅ remove post-processing
+  - ✅ fix issue with npc target height 1.5 but floor light target should be 0
+    - lookAt target always satisfies y = 0
+  - ✅ try radial gradient texture
+  - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
+  - ❌ could try "light image" again where distinct light's rect's don't overlap
+  - ❌ npcs are lighter within light circle
