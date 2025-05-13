@@ -16,6 +16,7 @@ import {
   hashJson,
   tagsToMeta,
   textToTags,
+  removeDups,
 } from "./generic";
 import { geom, tmpRect1 } from "./geom";
 import { helper } from "./helper";
@@ -222,9 +223,19 @@ class GeomorphService {
    * @returns {Geomorph.GeomorphsHash}
    */
   computeHash(geomorphs, mapKey) {
+
+    // current map specific
+    const map = geomorphs.map[mapKey];
+    const mapHash = hashJson(map);
+    const mapGmHashes = map.gms.map((x) => hashJson(x));
+    const mapGmKeys = removeDups(map.gms.map(x => x.gmKey));
+    const mapNavHash = hashJson(mapGmKeys.map(x => geomorphs.layout[x].navDecomp));
+    
+    // over all maps, layouts, sheets
     const mapsHash = hashJson(geomorphs.map);
     const layoutsHash = hashJson(geomorphs.layout);
     const sheetsHash = hashJson(geomorphs.sheet);
+
     /** @type {Geomorph.PerGeomorphHash} */
     const perGmHash = mapValues(geomorphs.layout, value => ({
       full: hashJson(value),
@@ -236,11 +247,11 @@ class GeomorphService {
       ...perGmHash,
       full: `${mapsHash} ${layoutsHash} ${sheetsHash}`,
       maps: mapsHash,
-      layouts: layoutsHash,
       sheets: sheetsHash,
       decor: `${layoutsHash} ${mapsHash}`,
-      map: hashJson(geomorphs.map[mapKey]),
-      mapGmHashes: geomorphs.map[mapKey].gms.map((x) => hashJson(x)),
+      map: mapHash,
+      mapGmHashes,
+      mapNav: mapNavHash,
     };
   }
 

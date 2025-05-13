@@ -143,55 +143,63 @@ export default function WorldWorkers() {
   }));
 
   React.useEffect(() => {// restart workers
-    if (w.threeReady && w.hash.full) {
-      w.nav.worker = new Worker(new URL("./nav.worker", import.meta.url));
-      w.nav.worker.addEventListener("message", state.handleNavWorkerMessage);
-
-      w.physics.worker = new Worker(new URL("./physics.worker", import.meta.url));
-      w.physics.worker.addEventListener("message", state.handlePhysicsWorkerMessage);
-
-      return () => {
-        w.nav.worker.terminate();
-        w.physics.worker.terminate();
-      };
+    if (!(w.threeReady && w.hash.full)) {
+      return;
     }
-  }, [w.threeReady, w.hash.full]);
+
+    w.nav.worker = new Worker(new URL("./nav.worker", import.meta.url));
+    w.nav.worker.addEventListener("message", state.handleNavWorkerMessage);
+
+    w.physics.worker = new Worker(new URL("./physics.worker", import.meta.url));
+    w.physics.worker.addEventListener("message", state.handlePhysicsWorkerMessage);
+
+    return () => {
+      w.nav.worker.terminate();
+      w.physics.worker.terminate();
+    };
+  }, [w.threeReady, Boolean(w.hash.full)]);
 
   React.useEffect(() => {// request nav-mesh, fresh physics world
-    if (w.threeReady && w.hash.full) {
-
-      const prev = state.seenHash;
-      const next = w.hash;
-      const changedGmIds = w.gms.map(({ key }, gmId) =>
-        next[key].nav !== prev[key]?.nav // geomorph changed
-        || next.mapGmHashes[gmId] !== prev.mapGmHashes[gmId] // geomorph instance changed
-      );
-      
-      w.nav.offMeshDefs = computeOffMeshConnectionsParams(w);
-      w.events.next({ key: 'pre-request-nav', changedGmIds });
-      w.menu.measure('request-nav');
-      w.nav.worker.postMessage({
-        type: "request-nav",
-        mapKey: w.mapKey,
-        offMeshDefs: w.nav.offMeshDefs,
-        baseUrl: location.href,
-      });
-
-      w.events.next({ key: 'pre-setup-physics' });
-      w.menu.measure('setup-physics');
-      w.physics.worker.postMessage({
-        type: "setup-physics",
-        mapKey: w.mapKey, // On HMR must provide existing npcs:
-        npcs: Object.values(w.npc?.npc ?? {}).map((npc) => ({
-          npcKey: npc.key,
-          position: npc.position,
-        })),
-        baseUrl: location.href,
-      });
-
-      state.seenHash = next;
+    if (!(w.threeReady && w.hash.full)) {
+      return;
     }
-  }, [w.threeReady, w.mapKey, w.hash.full]); // 🚧 avoid rebuild when only image changes
+
+    const prev = state.seenHash;
+    const next = w.hash;
+    const changedGmIds = w.gms.map(({ key }, gmId) =>
+      next[key].nav !== prev[key]?.nav // geomorph changed
+      || next.mapGmHashes[gmId] !== prev.mapGmHashes[gmId] // geomorph instance changed
+    );
+    
+    w.nav.offMeshDefs = computeOffMeshConnectionsParams(w);
+    w.events.next({ key: 'pre-request-nav', changedGmIds });
+    w.menu.measure('request-nav');
+    w.nav.worker.postMessage({
+      type: "request-nav",
+      mapKey: w.mapKey,
+      offMeshDefs: w.nav.offMeshDefs,
+      baseUrl: location.href,
+    });
+
+    w.events.next({ key: 'pre-setup-physics' });
+    w.menu.measure('setup-physics');
+    w.physics.worker.postMessage({
+      type: "setup-physics",
+      mapKey: w.mapKey, // On HMR must provide existing npcs:
+      npcs: Object.values(w.npc?.npc ?? {}).map((npc) => ({
+        npcKey: npc.key,
+        position: npc.position,
+      })),
+      baseUrl: location.href,
+    });
+
+    state.seenHash = next;
+  }, [
+    w.threeReady,
+    w.mapKey, // change map
+    w.hash.map, // change current map def
+    w.hash.mapNav, // change current map navMeshes 
+  ]);
 
   return null;
 }
