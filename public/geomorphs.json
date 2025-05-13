@@ -8796,6 +8796,25 @@
         {
           "type": "Polygon",
           "coordinates": [
+            [[5.1871, 6], [5.1871, 10.5], [0.6871, 10.5], [0.6871, 6]]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [11.3597, 12.7472],
+              [11.3597, 17.2472],
+              [6.8597, 17.2472],
+              [6.8597, 12.7472]
+            ]
+          ],
+          "meta": {"light": true, "circle": true}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
             [
               [0, 13.5],
               [0.3905, 12.4965],

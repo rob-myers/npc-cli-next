@@ -68,9 +68,11 @@
     - ❌ selector "too light" when surrounded by torch?
       - we won't use torch by default
 
-- 🚧 extend 303
-  - 🚧 add galley-and-mess-halls--006--2x4
-  - 🚧 fix obstacle outline bug (?)
+- ✅ extend 303
+  - ✅ add galley-and-mess-halls--006--2x4
+  - ❌ fix obstacle outline bug
+    - not a bug: background symbol `<img>` was wrong size when dragged into BoxySVG,
+      so had to manually resize
 
 - ✅ try fix jerk on collide just before offMeshConnection
   - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`
@@ -139,8 +141,8 @@
 
 ### Dev Env
 
-- avoid re-request navmesh onchange skin
-- avoid re-request navmesh onchange lights
+- 🚧 avoid re-request navmesh onchange skin
+- 🚧 avoid re-request navmesh onchange lights
   - maybe because assets.json is changing due to hash change?
 
 - BUG: why did adding a decor cuboid in fuel break Decor
