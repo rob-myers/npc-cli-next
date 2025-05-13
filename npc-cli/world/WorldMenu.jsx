@@ -4,13 +4,12 @@ import cx from "classnames";
 import { createPortal } from "react-dom";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
-import { zIndexWorld } from "../service/const";
+import { zIndexTabs, zIndexWorld } from "../service/const";
 import { isSmallViewport, isTouchDevice } from "../service/dom";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { pausedControlsCss } from "./overlay-menu-css";
 import { Draggable } from "../components/Draggable";
 import { PopUp, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 import { globalLoggerLinksRegex, Logger } from "../terminal/Logger";
@@ -456,6 +455,43 @@ const cssTtyDisconnectedMessage = css`
     opacity: 0;
     /** override commons.css */
     display: initial;
+  }
+`;
+
+const pausedControlsCss = css`
+  position: absolute;
+  right: 0;
+  top: 64px;
+  z-index: ${zIndexTabs.pausedControls};
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  button {
+    color: #aaa;
+    padding: 12px;
+    background-color: #000;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-width: 1px 0 1px 1px;
+    border-color: #555;
+    font-size: 0.8rem;
+    user-select: none;
+
+    width: 80px;
+    opacity: 0.75;
+
+    &.text-white {
+      color: #fff;
+    }
+    &.text-green {
+      color: #0f0;
+    }
+  }
+
+  transition: filter 1s;
+  &:hover {
+    filter: brightness(2) ;
   }
 `;
 
