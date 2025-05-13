@@ -153,7 +153,8 @@ const carouselCss = css`
   
   user-select: none;
   margin: 48px 0;
-  padding: 80px 48px 16px 48px;
+  /* padding: 80px 48px 16px 48px; */
+  padding: 0 48px;
   @media (max-width: ${mobileBreakpoint}) {
     margin: 32px 0;
     --slider-border-radius: 8px;
