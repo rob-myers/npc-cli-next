@@ -19,7 +19,8 @@
         {
           "gmKey": "g-302--xboat-repair-bay",
           "transform": [-1, 0, 0, -1, 60, 45]
-        }
+        },
+        {"gmKey": "g-103--cargo-bay", "transform": [1, 0, 0, 1, 60, 15]}
       ]
     },
     "small-map-1": {
@@ -20040,6 +20041,306 @@
           "transform": [-0.15, 0, 0, -0.225, 23.95, 29.9725],
           "center": {"x": 23.875, "y": 29.898},
           "det": 1
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 1.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 1.5, 9],
+          "center": {"x": 3, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 4.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 4.5, 9],
+          "center": {"x": 6, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 7.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 7.5, 9],
+          "center": {"x": 9, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 10.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 10.5, 9],
+          "center": {"x": 12, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 1.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 1.5, 15],
+          "center": {"x": 3, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 4.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 4.5, 15],
+          "center": {"x": 6, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 7.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 7.5, 15],
+          "center": {"x": 9, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 10.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 10.5, 15],
+          "center": {"x": 12, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 16.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 16.5, 9],
+          "center": {"x": 18, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 19.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 19.5, 9],
+          "center": {"x": 21, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 22.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 22.5, 9],
+          "center": {"x": 24, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 25.5, "y": 9, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 25.5, 9],
+          "center": {"x": 27, "y": 0.91, "z": 12}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 16.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 16.5, 15],
+          "center": {"x": 18, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 19.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 19.5, 15],
+          "center": {"x": 21, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 22.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 22.5, 15],
+          "center": {"x": 24, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 25.5, "y": 15, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 25.5, 15],
+          "center": {"x": 27, "y": 0.91, "z": 18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 9, "y": 0, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 9, 0],
+          "center": {"x": 10.5, "y": 0.91, "z": 3}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 12, "y": 0, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 12, 0],
+          "center": {"x": 13.5, "y": 0.91, "z": 3}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 15, "y": 0, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 15, 0],
+          "center": {"x": 16.5, "y": 0.91, "z": 3}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0.01,
+            "h": 1.79,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 18, "y": 0, "width": 3, "height": 6},
+          "transform": [3, 0, 0, 6, 18, 0],
+          "center": {"x": 19.5, "y": 0.91, "z": 3}
         }
       ],
       "doors": [
@@ -20403,7 +20704,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20433,7 +20734,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20463,7 +20764,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20493,7 +20794,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20523,7 +20824,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20553,7 +20854,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20583,7 +20884,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20613,7 +20914,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20643,7 +20944,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20673,7 +20974,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20703,7 +21004,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20733,7 +21034,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20763,7 +21064,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20793,7 +21094,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20823,7 +21124,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20853,7 +21154,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20883,7 +21184,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20913,7 +21214,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20943,7 +21244,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -20973,7 +21274,7 @@
         {
           "symbolKey": "cargo--003--2x4",
           "obstacleId": 0,
-          "height": 0,
+          "height": 1.8,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -41248,7 +41549,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 873745138},
-    "imagesHash": -481007205
+    "imagesHash": -1000004524
   },
   "skin": {
     "numSheets": {"human-0": 2},

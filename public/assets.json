@@ -2,7 +2,7 @@
   "meta": {
     "101--hull": {"outputHash": 484592053, "pngHash": 568633107},
     "102--hull": {"outputHash": -1312278175, "pngHash": 184103855},
-    "103--hull": {"outputHash": 1827714979, "pngHash": -1937509879},
+    "103--hull": {"outputHash": -1589531377, "pngHash": -1937509879},
     "301--hull": {"outputHash": 1371945242, "pngHash": 787602800},
     "302--hull": {"outputHash": -233330253, "pngHash": -1557128953},
     "303--hull": {"outputHash": -246601453, "pngHash": -299838577},
@@ -30,7 +30,7 @@
     },
     "cargo--002--2x2": {"outputHash": 29938404, "pngHash": 1491321256},
     "cargo--003--2x4": {
-      "outputHash": -1138868030,
+      "outputHash": -1179085827,
       "pngHash": -1889744861,
       "obsHashes": [-1222003751]
     },
@@ -410,7 +410,7 @@
       "pngHash": 1975320118,
       "obsHashes": [596298591]
     },
-    "demo-map-1": {"outputHash": 1429562441},
+    "demo-map-1": {"outputHash": -208319803},
     "small-map-1": {"outputHash": -944716326}
   },
   "sheet": {
@@ -1321,7 +1321,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 873745138},
-    "imagesHash": -481007205
+    "imagesHash": -1000004524
   },
   "skin": {
     "numSheets": {"human-0": 2},
@@ -5170,140 +5170,140 @@
       "symbols": [
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 1.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 4.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 7.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 10.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 1.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 4.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 7.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 10.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 16.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 19.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 22.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 25.5, 9]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 16.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 19.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 22.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 25.5, 15]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 9, 0]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 12, 0]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 15, 0]
         },
         {
           "symbolKey": "cargo--003--2x4",
-          "meta": {"key": "cargo--003--2x4"},
+          "meta": {"key": "cargo--003--2x4", "y": 1.8},
           "width": 3,
           "height": 6,
           "transform": [1, 0, 0, 1, 18, 0]
@@ -9920,7 +9920,21 @@
       "walls": [],
       "doors": [],
       "windows": [],
-      "decor": [],
+      "decor": [
+        {
+          "type": "Polygon",
+          "coordinates": [[[3, 0], [3, 6], [0, 6], [0, 0]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "max-height": true,
+            "y": 0,
+            "h": -0.01,
+            "color": "#888",
+            "transform": [3, 0, 0, 6, 0, 0]
+          }
+        }
+      ],
       "unsorted": [],
       "width": 3,
       "height": 6,
@@ -19958,7 +19972,8 @@
         {
           "gmKey": "g-302--xboat-repair-bay",
           "transform": [-1, 0, 0, -1, 60, 45]
-        }
+        },
+        {"gmKey": "g-103--cargo-bay", "transform": [1, 0, 0, 1, 60, 15]}
       ]
     },
     "small-map-1": {

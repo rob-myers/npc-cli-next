@@ -59,64 +59,64 @@
         <g>
                 <title>symbols</title>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 300, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 900, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 1500, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 2100, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 300, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 900, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 1500, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 2100, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 3300, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 3900, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 4500, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 5100, 1800)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 3300, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 3900, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 4500, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 5100, 3000)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 1800, 0)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 2400, 0)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 3000, 0)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
                 <use width="600" height="1200" transform="matrix(1, 0, 0, 1, 3600, 0)" href="#symbol-1">
-                        <title>cargo--003--2x4</title>
+                        <title>cargo--003--2x4 y=1.8</title>
                 </use>
         </g>
         <path d="M 20 5980 L 5980 5980 L 5980 20 L 20 20 L 20 5980 Z M 6019 -19 L 6019 6019 L -19 6019 L -19 -19 L 6019 -19 Z" style="fill: rgb(255, 0, 0);">
