@@ -622,6 +622,7 @@ export class ttyXtermClass {
           items.slice(-2 * scrollback).forEach((x) => this.onMessage(x));
         } else {
           const stringified = jsStringify(msg);
+          // const stringified = jsStringify(msg).replaceAll('\n', '\n\r');
           this.queueCommands([
             {
               key: "line",

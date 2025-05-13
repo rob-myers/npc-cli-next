@@ -156,6 +156,7 @@ const carouselCss = css`
   /* padding: 80px 48px 16px 48px; */
   padding: 0 48px;
   @media (max-width: ${mobileBreakpoint}) {
+    padding: 0;
     margin: 32px 0;
     --slider-border-radius: 8px;
   }
