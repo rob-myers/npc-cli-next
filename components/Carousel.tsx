@@ -286,13 +286,14 @@ const carouselCss = css`
     align-items: center;
     justify-content: center;
     
-    background-color: #eee;
+    /* background-color: #eee; */
     border-radius: 50%;
     border: 1px solid #999;
+    background-color: black;
     
     &.embla__dot--selected {
       background-color: white;
-      border: 2px solid #444;
+      border: 2px solid #77f;
     }
   }
 `;
