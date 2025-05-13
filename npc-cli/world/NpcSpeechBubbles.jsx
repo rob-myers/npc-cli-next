@@ -114,7 +114,7 @@ const speechBubbleBaseScale = 4;
 export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
 export const npcSpeechBubbleCss = css`
-  --speech-bubble-width: 420px;
+  --speech-bubble-width: 400px;
 
   position: absolute;
   top: 0;
@@ -140,12 +140,13 @@ export const npcSpeechBubbleCss = css`
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     /* font-weight: lighter; */
     /* font-style: italic; */
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.6);
-    background-color: rgba(0, 0, 0, 0.3);
-    /* letter-spacing: 0; */
+    /* background-color: rgba(0, 0, 0, 0.3); */
+    /* letter-spacing: 2px; */
     line-height: 1.4;
     padding: 0px 8px;
+    text-shadow: 2px 0px black;
     
     display: -webkit-box;
     justify-content: center;
@@ -157,6 +158,7 @@ export const npcSpeechBubbleCss = css`
   }
 
   .npc-key {
+    font-weight: lighter;
     font-style: italic;
     color: #ff9;
   }
