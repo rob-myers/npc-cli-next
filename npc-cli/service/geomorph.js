@@ -1093,13 +1093,13 @@ class GeomorphService {
           ? geomorph.extractDecorPoly({
             tagMeta: { ...parent, title: contents },
             meta,
-            // 🚧 maybe permit parent transforms
+            // 🚧 ignore parent transform but warn if present
             // matrix: matrixStack.length === 0 ? undefined : currentMatrix,
           })
           : geomorph.extractPoly({
               tagMeta: { ...parent, title: contents },
               meta,
-              // 🚧 maybe permit parent transforms
+              // 🚧 ignore parent transform but warn if present
               // matrix: matrixStack.length === 0 ? undefined : currentMatrix,
             })
         ;
@@ -1385,15 +1385,24 @@ class GeomorphService {
    * For nested symbols i.e. before decor becomes `Geomorph.Decor`
    * @param {Meta} meta 
    * @param {Geom.Mat} mat
-   * @param {number} [y] Height off the ground
+   * @param {number} [y] Parent height off the ground
    * @returns {Meta}
    */
   transformDecorMeta(meta, mat, y) {
+    /**
+     * Aggregate `y` i.e. height off ground, unless
+     * `y=0` which forces decor to be "on the ground"
+     */
+    const nextY = meta.y === 0 ? 0.01 : (Number(y) || 0) + (Number(meta.y) || 0.01);
+    /**
+     * If `max-height` then height aggregates `y`.
+     */
+    const nextH = meta['max-height'] === true ? (Number(y) || 0) + (Number(meta.h) || 0.01) : meta.h;
+
     return {
       ...meta,
-      // aggregate `y` i.e. height off ground,
-      // 🔔 except y=0 which is forced to be "on the ground"
-      y: meta.y === 0 ? 0.01 : (Number(y) || 0) + (Number(meta.y) || 0.01),
+      y: nextY,
+      h: nextH,
       // transform `transform` i.e. affine transform from unit quad (0,0)...(1,1) to rect
       ...Array.isArray(meta.transform) && {
         transform: tmpMat2.setMatrixValue(tmpMat1).preMultiply(/** @type {Geom.SixTuple} */ (meta.transform)).toArray(),
