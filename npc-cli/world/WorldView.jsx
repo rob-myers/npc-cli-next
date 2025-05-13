@@ -65,7 +65,7 @@ export default function WorldView(props) {
 
     canTweenPaused: true,
     didTweenPaused: false,
-    lockedDistance: { min: 0, max: 0, current: 0 },
+    lockedDistance: null,
 
     canvasRef(canvasEl) {
       if (canvasEl !== null) {
@@ -524,7 +524,7 @@ export default function WorldView(props) {
       async function createPromise(key) {
         return (new Promise((resolve, reject) =>
           [state.resolve[key] = resolve, state.reject[key] = reject]
-        )).catch().finally(() => {
+        )).finally(() => {
           delete state.dst[key];
           delete state.resolve[key];
           delete state.reject[key];
