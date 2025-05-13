@@ -718,7 +718,7 @@ export default function useHandleEvents(w) {
       const rect2 = tmpRect2.setFromPoints(offMesh2.src, offMesh2.dst).outset(npcRadius);
       return rect1.intersects(rect2) === false;
     },
-    toggleDoor(gdKey, opts) {
+    toggleDoor(gdKey, opts = {}) {
       const door = w.door.byKey[gdKey];
 
       // clear if already closed and offMeshConnection free
@@ -835,7 +835,7 @@ export default function useHandleEvents(w) {
  * Are two offMeshConnection traversals disjoint?
  * We assume they have the same direction i.e.
  * > `offMesh1.orig.srcGrKey === offMesh2.orig.srcGrKey`
- * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
+ * @property {(gdKey: Geomorph.GmDoorKey, opts?: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
  * Returns `true` iff successful.
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; point?: Geom.VectJson; } & Geomorph.ToggleLockOpts) => boolean} toggleLock
  * Returns `true` iff successful.
