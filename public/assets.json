@@ -1321,11 +1321,11 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 873745138},
-    "imagesHash": -1955524951
+    "imagesHash": -1088138606
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [1365899858, 1474634897]},
+    "svgHashes": {"human-0": [-470266155, -1730993151]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -2345,117 +2345,197 @@
           "width": 0.0625,
           "height": 0.125
         },
-        "test-head-front": {
-          "key": "test-head-front",
+        "astronaut_head-front": {
+          "key": "astronaut_head-front",
           "sheetId": 1,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head-back": {
-          "key": "test-head-back",
+        "astronaut_head-back": {
+          "key": "astronaut_head-back",
           "sheetId": 1,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head-left": {
-          "key": "test-head-left",
+        "astronaut_head-left": {
+          "key": "astronaut_head-left",
           "sheetId": 1,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head-right": {
-          "key": "test-head-right",
+        "astronaut_head-right": {
+          "key": "astronaut_head-right",
           "sheetId": 1,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head-top": {
-          "key": "test-head-top",
+        "astronaut_head-top": {
+          "key": "astronaut_head-top",
           "sheetId": 1,
-          "x": 0.25,
+          "x": 0.265625,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-head-bottom": {
-          "key": "test-head-bottom",
+        "astronaut_head-bottom": {
+          "key": "astronaut_head-bottom",
           "sheetId": 1,
-          "x": 0.3125,
+          "x": 0.328125,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body-top": {
-          "key": "test-body-top",
+        "astronaut_body-top": {
+          "key": "astronaut_body-top",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body-bottom": {
-          "key": "test-body-bottom",
+        "astronaut_body-bottom": {
+          "key": "astronaut_body-bottom",
           "sheetId": 1,
           "x": 0.125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "test-body-left": {
-          "key": "test-body-left",
+        "astronaut_body-left": {
+          "key": "astronaut_body-left",
           "sheetId": 1,
           "x": 0,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body-front": {
-          "key": "test-body-front",
+        "astronaut_body-front": {
+          "key": "astronaut_body-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body-right": {
-          "key": "test-body-right",
+        "astronaut_body-right": {
+          "key": "astronaut_body-right",
           "sheetId": 1,
           "x": 0.125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "test-body-back": {
-          "key": "test-body-back",
+        "astronaut_body-back": {
+          "key": "astronaut_body-back",
           "sheetId": 1,
           "x": 0.1875,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "shitty-face_head-overlay-front": {
-          "key": "shitty-face_head-overlay-front",
+        "astronaut_head-overlay-front": {
+          "key": "astronaut_head-overlay-front",
           "sheetId": 1,
-          "x": 0,
+          "x": 0.265625,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "another-shitty-face_head-overlay-front": {
-          "key": "another-shitty-face_head-overlay-front",
+        "astronaut_head-overlay-back": {
+          "key": "astronaut_head-overlay-back",
+          "sheetId": 1,
+          "x": 0.328125,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "astronaut_head-overlay-left": {
+          "key": "astronaut_head-overlay-left",
+          "sheetId": 1,
+          "x": 0.265625,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "astronaut_head-overlay-right": {
+          "key": "astronaut_head-overlay-right",
+          "sheetId": 1,
+          "x": 0.328125,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "astronaut_head-overlay-top": {
+          "key": "astronaut_head-overlay-top",
+          "sheetId": 1,
+          "x": 0.265625,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "astronaut_head-overlay-bottom": {
+          "key": "astronaut_head-overlay-bottom",
+          "sheetId": 1,
+          "x": 0.328125,
+          "y": 0.328125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "astronaut_body-overlay-top": {
+          "key": "astronaut_body-overlay-top",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
+        },
+        "astronaut_body-overlay-bottom": {
+          "key": "astronaut_body-overlay-bottom",
+          "sheetId": 1,
+          "x": 0.125,
+          "y": 0.203125,
+          "width": 0.0625,
+          "height": 0.0625
+        },
+        "astronaut_body-overlay-left": {
+          "key": "astronaut_body-overlay-left",
+          "sheetId": 1,
+          "x": 0,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "astronaut_body-overlay-front": {
+          "key": "astronaut_body-overlay-front",
+          "sheetId": 1,
+          "x": 0.0625,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "astronaut_body-overlay-right": {
+          "key": "astronaut_body-overlay-right",
+          "sheetId": 1,
+          "x": 0.125,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
+        },
+        "astronaut_body-overlay-back": {
+          "key": "astronaut_body-overlay-back",
+          "sheetId": 1,
+          "x": 0.1875,
+          "y": 0.265625,
+          "width": 0.0625,
+          "height": 0.125
         }
       }
     },
