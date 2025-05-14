@@ -159,7 +159,7 @@ export default function useHandleEvents(w) {
     },
     followNpc(npcKey) {
       const npc = w.n[npcKey];
-      w.view.followPosition(npc.position);
+      w.view.followPosition(npc.position, { height: w.lib.defaults.height });
     },
     getRaycastIntersection(e, decoded) {// 🚧 move to WorldView
       /** @type {THREE.Mesh} */

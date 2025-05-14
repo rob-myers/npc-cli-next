@@ -40,8 +40,10 @@ declare namespace NPC {
     meshName: string;
     /** Height above npc's head, pre-scale */
     modelAnimHeight: Record<Key.Anim, number>;
-    /** Pre-scale */
+    /** Pre-scale height of label */
     modelLabelHeight: number;
+    /** Pre-scale height excluding label */
+    modelHeight: number;
     /** Pre-scale */
     modelRadius: number;
     /** Format `/3d/{npcClassKey}.glb` */

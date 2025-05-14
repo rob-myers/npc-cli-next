@@ -246,7 +246,7 @@ export async function* handleContextMenu({ api, w, datum: e }) {
     switch (e.linkKey) {
       case "look":
         if (typeof meta.npcKey === "string") {
-          w.view.lookAt(w.n[meta.npcKey].position).catch(() => {});
+          w.view.lookAt(w.n[meta.npcKey].position, { height: w.lib.defaults.height }).catch(() => {});
         } else {
           w.view.lookAt(w.cm.position).catch(() => {});
         }

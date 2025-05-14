@@ -33,7 +33,7 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 6,
+      minDistance: 1.5, // target could be ground or npc head
       maxDistance: 25,
       panSpeed: 2,
       zoomSpeed: 0.5,
@@ -122,7 +122,7 @@ export default function WorldView(props) {
       state.controls.zoomToConstant = dst;
       /**
        * - following amounts to "look tween without resolve/reject"
-       * - 🔔 stop look via @see {state.stopFollowing}
+       * - stop look via @see {state.stopFollowing}
        */
       state.dst.look = dst;
       state.dst.lookOpts = opts;
@@ -185,19 +185,12 @@ export default function WorldView(props) {
       state.ctrlOpts.minDistance = state.ctrlOpts.maxDistance = distance;
       update();
     },
-    async lookAt(point, opts = { smoothTime: 0.4 }) {// look with "locked zoom"
+    async lookAt(point, opts = { smoothTime: 0.4 }) {
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
-      try {
-        const dst = toV3(point);
-        // state.controls.zoomToConstant = dst;
-        await state.tween({ look: dst, lookOpts: opts });
-      } finally {
-        if (state.dst.look === undefined) {
-          state.controls.zoomToConstant = null;
-        }
-      }
+      const dst = toV3(point);
+      await state.tween({ look: dst, lookOpts: opts });
     },
     onChangeControls(_e) {
       // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
@@ -392,9 +385,8 @@ export default function WorldView(props) {
       }
 
       if (state.dst.look !== undefined && state.down === null) {// look or follow
-        const { look: target, lookOpts } = state.dst;
-        // if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, lookOpts?.y ?? 1.5, 0.01) === false) {
-        if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, undefined, 0.01) === false) {
+        const { look: target, lookOpts = {} } = state.dst;
+        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaMs, lookOpts.maxSpeed, lookOpts.height, 0.01) === false) {
           state.resolve.look?.();
         }
         //@ts-ignore see patch i.e. fix azimuth angle
@@ -791,6 +783,7 @@ const statsCss = css`
 
 /**
  * @typedef LookAtOpts
+ * @property {number} [height]
  * @property {number} [maxSpeed]
  * @property {number} [smoothTime]
 */

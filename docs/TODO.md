@@ -19,7 +19,6 @@
 - mention recent improvements in AI
   - NPC CLI could use them as tools
 
-- start adding cypress
 - basic help page
 - basic about page
 - write 1st dev blog
@@ -29,8 +28,12 @@
   - summary of pre-existing academic work
 - Tabs: debug is global among Tab instances
   - defunct if we remove debug i.e. always paused when paused
+- start adding cypress
 
 ### World
+
+- ✅ look/follow npc at their height i.e. controls.target.y > 0
+  - ℹ️ controls.minDistance measured from controls.target
 
 - Ctrl-C "failure" unclear while paused
 

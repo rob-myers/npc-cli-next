@@ -345,6 +345,7 @@ export const npcClassToMeta = {
     modelLabelHeight: 0.25,
     modelUrl: '/3d/human-0.glb',
     npcClassKey: 'human-0',
+    modelHeight: 2.2, // 🚧 measure in Blender
     modelRadius: 0.5,
     runSpeed: 4,
     scale: 0.7,

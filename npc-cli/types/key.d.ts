@@ -1,6 +1,12 @@
 namespace Key {
 
-  type Anim = keyof import('../service/helper').Helper['fromAnimKey'];
+  type Anim = (
+    | 'Idle'
+    | 'Lie'
+    | 'Run'
+    | 'Sit'
+    | 'Walk'
+  );
 
   type DecorImg = import('../service/const.js').DecorImgKey;
 

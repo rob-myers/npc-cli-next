@@ -109,14 +109,15 @@ export const helper = {
     "g-303--passenger-deck": "303--hull",
   },
   
-  defaults: {// 🚧
+  /** 🚧 should be by classKey */
+  defaults: {
+    height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
     radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.75,
     runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale,
     walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale,
   },
 
-  // 🚧 fix types
-  // /** @type {Record<Key.Anim, true>} */
+  /** @type {Record<Key.Anim, true>} */
   fromAnimKey: {
     Idle: true,
     Lie: true,
