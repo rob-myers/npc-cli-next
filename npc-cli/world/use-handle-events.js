@@ -418,10 +418,12 @@ export default function useHandleEvents(w) {
       }
     },
     async lookAt(input) {
+      const lookAtOpts = /** @type {import("./WorldView").LookAtOpts} */ ({});
       if (typeof input === 'string') {// npcKey
         input = w.n[input].position;
+        lookAtOpts.height = w.lib.defaults.height;
       }
-      await w.view.tween({ look: toV3(input) });
+      await w.view.lookAt(toV3(input), lookAtOpts);
     },
     isFollowingNpc(npcKey) {
       const npc = w.n[npcKey];

@@ -121,38 +121,34 @@ export async function* events({ api, args, w }) {
  */
 export async function* initCamAndLights({ api, args, w }) {
 
-  try {
-    const [npcKey] = args;
+  const [npcKey] = args;
+
+  // turn off "tween while paused" so can pause profile
+  w.view.canTweenPaused = false;
+  w.update(); // update WorldMenu PopUp checkbox
   
-    // turn off "tween while paused" so can pause profile
-    w.view.canTweenPaused = false;
-    w.update(); // update WorldMenu PopUp checkbox
-    
-    await w.view.tween({
-      azimuthal: w.smallViewport ? 0 : Math.PI/4,
-      polar: Math.PI/4,
-    });
+  await w.view.tween({
+    azimuthal: w.smallViewport ? 0 : Math.PI/4,
+    polar: Math.PI/4,
+  }).catch(() => {});
+
+  if (w.smallViewport) {
+    w.view.ctrlOpts.minAzimuthAngle = 0;
+    w.view.ctrlOpts.maxAzimuthAngle = 0;
+    w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
+    w.view.ctrlOpts.maxDistance = 25;
+  }
+
+  w.floor.showTorch = false;
+  w.floor.showLights = true;
+  w.update();
   
-    if (w.smallViewport) {
-      w.view.ctrlOpts.minAzimuthAngle = 0;
-      w.view.ctrlOpts.maxAzimuthAngle = 0;
-      w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
-      w.view.ctrlOpts.maxDistance = 25;
-    }
-  
-    w.floor.showTorch = false;
-    w.floor.showLights = true;
-    w.update();
-  
-    if (npcKey in w.n) {
-      w.view.lockDistance(); // prevent zoom-in while look
-      await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-    }
-    
-    await w.view.tween({ distance: 10 });
-  
-  } finally {
-    w.view.canTweenPaused = true;
+  w.view.canTweenPaused = true;
+
+  if (npcKey in w.n) {
+    w.view.lockDistance(); // prevent zoom-in while look
+    await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
+    await w.view.tween({ distance: 5 });
   }
 
 }
@@ -246,7 +242,7 @@ export async function* handleContextMenu({ api, w, datum: e }) {
     switch (e.linkKey) {
       case "look":
         if (typeof meta.npcKey === "string") {
-          w.view.lookAt(w.n[meta.npcKey].position, { height: w.lib.defaults.height }).catch(() => {});
+          w.e.lookAt(meta.npcKey).catch(() => {});
         } else {
           w.view.lookAt(w.cm.position).catch(() => {});
         }
@@ -302,7 +298,7 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
     //   // clicked initial link
     // }
     if (e.linkText === e.npcKey) {
-      w.view.lookAt(w.n[e.npcKey].position).catch(() => {});
+      w.e.lookAt(e.npcKey).catch(() => {});
     }
 
   }
