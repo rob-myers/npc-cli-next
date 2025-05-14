@@ -75,7 +75,7 @@ click | map '({meta}, {w}) => {
 }' &
 
 w | map '(w, { home }) => w.e.pressMenuFilters.push(
-  (meta) => meta.do === true || (home.selectedNpcKey in w.n && meta.floor === true)
+  (meta) => home.selectedNpcKey in w.n && (meta.do === true || meta.floor === true)
 )'
 
 click --long | map --forever 'async (input, {home, w}) => {
