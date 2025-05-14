@@ -150,7 +150,7 @@ export const npcSpeechBubbleCss = css`
     
     display: -webkit-box;
     justify-content: center;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical; 
     overflow: hidden;
     
