@@ -230,6 +230,7 @@ class GeomorphService {
     const mapGmHashes = map.gms.map((x) => hashJson(x));
     const mapGmKeys = removeDups(map.gms.map(x => x.gmKey));
     const mapNavHash = hashJson(mapGmKeys.map(x => geomorphs.layout[x].navDecomp));
+    const mapDecorHash = hashJson(mapGmKeys.map(x => geomorphs.layout[x].decor));
     
     // over all maps, layouts, sheets
     const mapsHash = hashJson(geomorphs.map);
@@ -248,9 +249,9 @@ class GeomorphService {
       full: `${mapsHash} ${layoutsHash} ${sheetsHash}`,
       maps: mapsHash,
       sheets: sheetsHash,
-      decor: `${layoutsHash} ${mapsHash}`,
       map: mapHash,
       mapGmHashes,
+      mapDecor: mapDecorHash,
       mapNav: mapNavHash,
     };
   }

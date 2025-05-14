@@ -196,9 +196,9 @@ export default function WorldWorkers() {
     state.seenHash = next;
   }, [
     w.threeReady,
-    w.mapKey, // change map
-    w.hash.map, // change current map def
-    w.hash.mapNav, // change current map navMeshes 
+    w.mapKey, // current map
+    w.hash.map, // current map layout (gmKey and transforms)
+    w.hash.mapNav, // current map navMeshes 
   ]);
 
   return null;

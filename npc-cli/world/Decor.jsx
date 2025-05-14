@@ -457,7 +457,14 @@ export default function Decor(props) {
   
   // instantiate geomorph decor
   const query = useQuery({
-    queryKey: ['decor', w.key, w.mapKey, w.hash.full],
+    queryKey: [
+      'decor',
+      w.key,
+      w.mapKey,
+      w.hash.map,
+      w.hash.mapDecor,
+      // w.hash.full,
+    ],
 
     async queryFn() {
       if (module.hot?.active === false) {

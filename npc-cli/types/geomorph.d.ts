@@ -36,13 +36,13 @@ declare namespace Geomorph {
     mapGmHashes: number[];
     /** Hash of current map nav meshes (one per geomorph key) */
     mapNav: number;
+    /** Hash of current map decor */
+    mapDecor: number;
 
     /** Hash of all maps */
     maps: number;
     /** Depends on rect lookup, images, and skins */
     sheets: number;
-    /** `${layouts} ${maps}` */
-    decor: `${number} ${number}`;
 
   }
 
