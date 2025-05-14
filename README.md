@@ -264,13 +264,16 @@ We'll try to re-map publicly available Minecraft Skins.
 - https://namemc.com/minecraft-skins/tag/scientist
   - 🚧 https://namemc.com/skin/7161dce64d6b12be
   - https://namemc.com/skin/3a335a2ec786efdb
-- https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/medic
   - 🚧 https://namemc.com/skin/194c3366860674c0
 - https://namemc.com/minecraft-skins/tag/suit
   - 🚧 https://namemc.com/skin/7271372bc0b9bc89
 - https://namemc.com/minecraft-skins/tag/police
   - 🚧 https://namemc.com/skin/c06caf409cd8427e
+- https://namemc.com/minecraft-skins/tag/astronaut
+  - 🚧 https://namemc.com/skin/0668665d67015d4c
+
+- https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/business
   - https://namemc.com/skin/9ec38f8ce7f8498d
 - https://namemc.com/minecraft-skins/tag/engineer

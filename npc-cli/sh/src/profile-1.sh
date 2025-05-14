@@ -1,6 +1,8 @@
 awaitWorld
 
-spawn '{ npcKey: "rob" }' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
+spawn '{ npcKey: "rob", skin: {
+  "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
+}}' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
 
 spawn '{ npcKey: "will", skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
