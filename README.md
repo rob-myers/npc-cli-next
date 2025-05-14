@@ -272,6 +272,8 @@ We'll try to re-map publicly available Minecraft Skins.
   - 🚧 https://namemc.com/skin/c06caf409cd8427e
 - https://namemc.com/minecraft-skins/tag/astronaut
   - 🚧 https://namemc.com/skin/0668665d67015d4c
+- https://namemc.com/minecraft-skins/tag/beard
+  - 🚧 https://namemc.com/skin/12708b02a8e4cc10
 
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/business

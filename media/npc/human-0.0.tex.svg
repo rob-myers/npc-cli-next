@@ -259,10 +259,28 @@
         <feFuncB type="linear" slope="1.2"/>
       </feComponentTransfer>
     </filter>
+    <filter id="sepia-filter-0" bx:preset="sepia 1 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0 0.349 0.686 0.168 0 0 0.272 0.534 0.131 0 0 0 0 0 1 0"/>
+    </filter>
+    <filter id="sepia-filter-1" bx:preset="sepia 1 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0 0.349 0.686 0.168 0 0 0.272 0.534 0.131 0 0 0 0 0 1 0"/>
+    </filter>
+    <filter id="sepia-filter-2" bx:preset="sepia 1 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0 0.349 0.686 0.168 0 0 0.272 0.534 0.131 0 0 0 0 0 1 0"/>
+    </filter>
+    <filter id="outline-filter-3" bx:preset="outline 1 1 #0505053a" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
+      <feFlood flood-color="#0505053a" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge>
+        <feMergeNode in="outline"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
-    <g transform="matrix(1, 0, 0, 1, 32, 0)">
+    <g transform="matrix(1, 0, 0, 1, 32, 0)" style="filter: url(&quot;#sepia-filter-1&quot;);">
       <title>base_head</title>
       <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="512">
         <title>front</title>
@@ -282,13 +300,31 @@
       <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640" y="256">
         <title>bottom</title>
       </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAArklEQVQYGWWOMQqEMBREJ7AggpXiDTyBB7Cz8gR26XMGj2ErdrY2Xkas0oZYCUGbuJPFLXan+cP78zMRVVX5KIpwnid+J94S8zz7NE3p/7TvO0Rd1/7ZdF0Hwr7vH4SXUgpFUaBpmi9c1xXLsmDbNohhGEIFLxm8rgtaa7A2VPCTUkpM0wRrbXglyzK0bYtxHCHKsvTOOeR5DgYpLowxiOP4EyBMkiRAeoaP46DFDYHSTi35RdCtAAAAAElFTkSuQmCC" width="128" height="128" x="512" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXklEQVQYGW2Ouw3AMAhEMZ0lT8OSLOWxLLl08oiIKHwFB8fxaWZ29t7Se5cba4pjDAHJ5AwpoYo0ABrD+pX3GBtwrbXujlf9N6Spcpxw97hFASrTa3POQyMnyUE+/gBCRzp6RxUbbwAAAABJRU5ErkJggg==" width="128" height="128" x="640" style="image-rendering: pixelated;">
+        <title>_back</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAkElEQVQYGV1PwQnFIBSLpSAFT93CkZzAi5sUxIOX3hzBAZzJkyCe+ongpzTw8JmXF6PQWj/44DiOySilsL8vS9dag3MO53li771PnifFa8AhsZFk3feNEAJijHNQawVrOqxnSBDee0gpYYzBRoL21tq5wZ4ZxhhIKUHknB+mJUnQ5bqu2dNZlFL+33yLqGCeH8GBSCZetpEEAAAAAElFTkSuQmCC" width="128" height="128" x="512" y="128" style="image-rendering: pixelated;">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAiklEQVQYGT1OsQ0DIAwDqQsSE6dwAO9wAQNfMHAAGys3cBATEmKisqvUA0kcx1iHEN7eWwHWWlY8wukxxltrqVorl+ecvwiNnnM+NBCJUJzg8gEpgEsphWOMkZWC3ru695LAgXNOGWN+gtYaG9jhfwhyzuTwaO/9k2ApJV5jgRzMgAELANaAhET9AtSSSKvSEfKbAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="128" style="image-rendering: pixelated;">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASklEQVQYGWPU1NT8z8nJyfD9+3cGbDQTAwGAooCHhwdDOVgBugSMD6KZQPaCAC4axQp08798+cIAVsDOzg6WQ6dBgizI9oEE0PkAsOMPTpWV51cAAAAASUVORK5CYII=" width="128" height="128" x="512" y="256" style="image-rendering: pixelated;">
+        <title>_top</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASElEQVQYGWPcs2fPfwYg+PLlC4iCAx4eHjCbCS6Cg0FQAQu60TCDYOKETXj37h1ME1aaoAmMRkZGYG+CtH///h1sCicnJ9w0AB0XE13KOE/SAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="256" style="image-rendering: pixelated;">
+        <title>_bottom</title>
+      </image>
     </g>
-    <g>
+    <g style="filter: none;">
       <title>base_body</title>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="128">
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px; fill: rgb(255, 225, 169);" x="128">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="256">
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px; fill: rgb(255, 225, 169);" x="256">
         <title>bottom</title>
       </rect>
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" y="128">
@@ -303,6 +339,18 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" y="128" x="384">
         <title>back</title>
       </rect>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAm0lEQVQYGVVPuQ0EIQz0rgAREFEAEf2LgogogIgAQbB3Y92gPUtgPI9trlLKI7/ovesrxkhITAjhFBCAfGMGrHNORXSyXmvJDabWqoL3RUwFOefDsT0xHcHlkLkHHBCb1pq6U0p/XYBDbLAYHhRChRoB7uZMdACAw246Al8COMY4TrrB6ZIEkBEwcMz1rR/vvVhrleS195Y5p3wATgg+ravrTvoAAAAASUVORK5CYII=" width="8" height="12" x="128" y="128" style="image-rendering: pixelated; filter: url(&quot;#sepia-filter-0&quot;);" transform="matrix(16, 0, 0, 20, -1920, -2432)">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAQklEQVQIHWPcsGHDfwYkwITEZuDh4WFAEQBJ4hf48uULpgqWd+/eIZvLwCIkJIQqALIKGbCwsbEh8zENZQRKozgdACwVCmMzfXHDAAAAAElFTkSuQmCC" width="4" height="12" y="128" transform="matrix(32, 0, 0, 20, 0, -2432)" style="image-rendering: pixelated; filter: url(&quot;#sepia-filter-0&quot;);">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAQklEQVQIHWPcsGHDfwYkwITEZuDh4WFAEQBJ4hf48uULpgqWd+/eIZvLwCIkJIQqALIKGbCwsbEh8zENZQRKozgdACwVCmMzfXHDAAAAAElFTkSuQmCC" width="4" height="12" y="128" transform="matrix(-32, 0, 0, 20, 384.000061, -2432)" style="image-rendering: pixelated; filter: url(&quot;#sepia-filter-0&quot;);">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAe0lEQVQYGW1PQQoAIQg0qejQqf8/opd16hB0aBvBcKOBUscZUVdrXbTRWkM4KKVI7vHnnKVAjDGKGHnvndg2RXUZWEmoXzgC27RitoUVIZcd7u2tCD3GOa8p4NDzesUtUt7j7heUP1fAoaS6YXT7rZQShRB+g+acNMagDzV0LqlDWNOoAAAAAElFTkSuQmCC" width="8" height="12" x="384" y="128" style="image-rendering: pixelated; filter: url(&quot;#sepia-filter-0&quot;);" transform="matrix(16, 0, 0, 20, -5760, -2432)">
+        <title>_back</title>
+      </image>
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 0)">
       <title>base_head-overlay</title>
@@ -324,7 +372,7 @@
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
         <title>bottom</title>
       </rect>
-      <g transform="matrix(1, 0, 0, 1, 350.829986572266, -153.599975585937)" style="">
+      <g transform="matrix(1, 0, 0, 1, 350.829986572266, -153.599975585937)" style="visibility: hidden;">
         <title>_eyes</title>
         <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
           <title>_left</title>
@@ -333,6 +381,15 @@
           <title>_right</title>
         </circle>
       </g>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAN0lEQVQYGWNkAAJXV9f/P3/+ZGBnZ2dApg8dOsQIkh/6AO4NIyOj/9+/fwf7iJOTk+HcuXNgOQDksRQDRyC4RQAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASUlEQVQYGWNgoDlgBNlgZGT0//v37wycnJwMyPT169cZmUAKeHh4QBQKDVIMAmAFIAZMAEaDxEAArICdnR3MQafhCkAMbNaAxAHQYg5yElBZUgAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="672" style="image-rendering: pixelated;">
+        <title>_top</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAIklEQVQYGWNgGBGAEeZLIyOj/9+/fwdzOTk5Gc6dOweWAwBsoQcCxR0CzQAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="672" style="image-rendering: pixelated;">
+        <title>_bottom</title>
+      </image>
     </g>
     <g>
       <title>base_body-overlay</title>
@@ -354,7 +411,10 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
         <title>back</title>
       </rect>
-      <path d="M 191.816 607.493 C 194.46 607.493 196.598 609.629 196.598 612.275 L 196.598 621.838 L 214.528 621.838 C 220.475 621.838 225.287 626.65 225.287 632.597 L 225.287 673.24 C 225.287 679.188 220.475 683.999 214.528 683.999 L 169.103 683.999 C 163.156 683.999 158.344 679.188 158.344 673.24 L 158.344 632.597 C 158.344 626.65 163.156 621.838 169.103 621.838 L 187.035 621.838 L 187.035 612.275 C 187.035 609.629 189.171 607.493 191.816 607.493 Z M 206.16 651.724 C 210.761 651.724 213.637 646.742 211.336 642.758 C 210.269 640.909 208.296 639.769 206.16 639.769 C 201.559 639.769 198.684 644.75 200.983 648.734 C 202.051 650.584 204.024 651.724 206.16 651.724 Z M 183.448 645.745 C 183.448 641.146 178.468 638.27 174.482 640.569 C 172.633 641.638 171.494 643.611 171.494 645.745 C 171.494 650.346 176.474 653.223 180.459 650.922 C 182.308 649.854 183.448 647.881 183.448 645.745 Z M 203.769 664.872 C 202.454 664.872 201.378 665.947 201.378 667.263 C 201.378 668.577 202.454 669.654 203.769 669.654 L 208.551 669.654 C 209.866 669.654 210.941 668.577 210.941 667.263 C 210.941 665.947 209.866 664.872 208.551 664.872 L 203.769 664.872 Z M 189.425 664.872 C 188.109 664.872 187.035 665.947 187.035 667.263 C 187.035 668.577 188.109 669.654 189.425 669.654 L 194.205 669.654 C 195.52 669.654 196.598 668.577 196.598 667.263 C 196.598 665.947 195.52 664.872 194.205 664.872 L 189.425 664.872 Z M 175.08 664.872 C 173.765 664.872 172.689 665.947 172.689 667.263 C 172.689 668.577 173.765 669.654 175.08 669.654 L 179.862 669.654 C 181.177 669.654 182.252 668.577 182.252 667.263 C 182.252 665.947 181.177 664.872 179.862 664.872 L 175.08 664.872 Z" style="text-wrap-mode: nowrap; stroke-width: 1.54496px; fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); filter: url(&quot;#outline-filter-1&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAXklEQVQYGdWNuw3AMAhEcQpXVB6IygMzADMxgBtHdzJSpBSpQ8F9kB4iH9Nwj4gNnXM2d9+qisjccOy9s8hM6hiDutaSC87MSGJ7VnUvAvBFBIGDN/hdBPhnrv6/egMmPChCDrtnrAAAAABJRU5ErkJggg==" width="8" height="12" x="128" y="544" transform="matrix(16, 0, 0, 21.333334, -1920, -11061.333008)" style="image-rendering: pixelated; opacity: 0.65; filter: url(&quot;#sepia-filter-2&quot;) url(&quot;#outline-filter-3&quot;);">
+        <title>_front</title>
+      </image>
+      <path d="M 191.816 607.493 C 194.46 607.493 196.598 609.629 196.598 612.275 L 196.598 621.838 L 214.528 621.838 C 220.475 621.838 225.287 626.65 225.287 632.597 L 225.287 673.24 C 225.287 679.188 220.475 683.999 214.528 683.999 L 169.103 683.999 C 163.156 683.999 158.344 679.188 158.344 673.24 L 158.344 632.597 C 158.344 626.65 163.156 621.838 169.103 621.838 L 187.035 621.838 L 187.035 612.275 C 187.035 609.629 189.171 607.493 191.816 607.493 Z M 206.16 651.724 C 210.761 651.724 213.637 646.742 211.336 642.758 C 210.269 640.909 208.296 639.769 206.16 639.769 C 201.559 639.769 198.684 644.75 200.983 648.734 C 202.051 650.584 204.024 651.724 206.16 651.724 Z M 183.448 645.745 C 183.448 641.146 178.468 638.27 174.482 640.569 C 172.633 641.638 171.494 643.611 171.494 645.745 C 171.494 650.346 176.474 653.223 180.459 650.922 C 182.308 649.854 183.448 647.881 183.448 645.745 Z M 203.769 664.872 C 202.454 664.872 201.378 665.947 201.378 667.263 C 201.378 668.577 202.454 669.654 203.769 669.654 L 208.551 669.654 C 209.866 669.654 210.941 668.577 210.941 667.263 C 210.941 665.947 209.866 664.872 208.551 664.872 L 203.769 664.872 Z M 189.425 664.872 C 188.109 664.872 187.035 665.947 187.035 667.263 C 187.035 668.577 188.109 669.654 189.425 669.654 L 194.205 669.654 C 195.52 669.654 196.598 668.577 196.598 667.263 C 196.598 665.947 195.52 664.872 194.205 664.872 L 189.425 664.872 Z M 175.08 664.872 C 173.765 664.872 172.689 665.947 172.689 667.263 C 172.689 668.577 173.765 669.654 175.08 669.654 L 179.862 669.654 C 181.177 669.654 182.252 668.577 182.252 667.263 C 182.252 665.947 181.177 664.872 179.862 664.872 L 175.08 664.872 Z" style="text-wrap-mode: nowrap; stroke-width: 1.54496px; fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); filter: url(&quot;#outline-filter-1&quot;); visibility: hidden;">
         <title>_robot-icon</title>
       </path>
     </g>
