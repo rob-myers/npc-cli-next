@@ -386,7 +386,7 @@ export default function WorldView(props) {
 
       if (state.dst.look !== undefined && state.down === null) {// look or follow
         const { look: target, lookOpts = {} } = state.dst;
-        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaMs, lookOpts.maxSpeed, lookOpts.height, 0.01) === false) {
+        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaMs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
           state.resolve.look?.();
         }
         //@ts-ignore see patch i.e. fix azimuth angle
