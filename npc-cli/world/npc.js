@@ -618,7 +618,7 @@ export class Npc {
             point,
             offMesh.src,
             other.getPoint(),
-            0.2,
+            0.24,
           ) === false
         ) {
           // 🔔 permissive if other idle and "not in the way"
