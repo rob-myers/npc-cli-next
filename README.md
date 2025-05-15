@@ -263,6 +263,7 @@ We'll try to re-map publicly available Minecraft Skins.
   - 🚧 https://namemc.com/skin/45461862ef51524e
 - https://namemc.com/minecraft-skins/tag/scientist
   - 🚧 https://namemc.com/skin/7161dce64d6b12be
+  - 🚧 https://namemc.com/skin/72474583457b91c0
   - https://namemc.com/skin/3a335a2ec786efdb
 - https://namemc.com/minecraft-skins/tag/medic
   - 🚧 https://namemc.com/skin/194c3366860674c0
@@ -275,7 +276,7 @@ We'll try to re-map publicly available Minecraft Skins.
 - https://namemc.com/minecraft-skins/tag/beard
   - 🚧 https://namemc.com/skin/12708b02a8e4cc10
 - https://namemc.com/minecraft-skins/tag/breaking-bad
-  - https://namemc.com/skin/354790babeda2bc0
+  - 🚧 https://namemc.com/skin/354790babeda2bc0
 
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/business

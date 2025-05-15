@@ -273,6 +273,17 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="inner-shadow-filter-17" bx:preset="inner-shadow 1 0 0 2 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="2"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -329,13 +340,16 @@
       <rect width="128" height="256" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" y="128" x="256">
         <title>right</title>
       </rect>
-      <rect width="128" height="128" style="fill: rgb(217, 212, 186); stroke: rgb(0, 0, 0); stroke-width: 4px;" x="128">
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(225, 225, 225);" x="128">
         <title>top</title>
       </rect>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); stroke-width: 4px;" x="256">
         <title>bottom</title>
       </rect>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAA8UlEQVQYGT2QsUoEMRCG/wubZLMgVjYLe4LNvcJVgoVg7ROJjdxzCNr5AFde5QPYXHXFwnHYibjZJMI6M8k6xebP/F/+YWex/9hOoDpr19C7N5ZI1/f4Pr6LVto6EZvngxhssgYW0LZGlYIXoG50MQBLGpiQwoj/BOMqAS+6c1jHACjBQVUmj7CNkWbt8ikAecoUwJGRo+cRlMCANo0I+RXJyB+OZ09JFF1GHxGGJC6f/JpLABazySDXVCJVigNS9Ag+v/7sv0T/Ui/FHxCQ9/D6cIu71Qk3Vz1eSNOeCBhpUQVYLltsnh65j8uulTHs/QFuGlTr2ntpQAAAAABJRU5ErkJggg==" width="8" height="12" x="128" y="128" transform="matrix(16, 0, 0, 21.333334, -1920, -2602.666748)" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAA8UlEQVQYGT2QsUoEMRCG/wubZLMgVjYLe4LNvcJVgoVg7ROJjdxzCNr5AFde5QPYXHXFwnHYibjZJMI6M8k6xebP/F/+YWex/9hOoDpr19C7N5ZI1/f4Pr6LVto6EZvngxhssgYW0LZGlYIXoG50MQBLGpiQwoj/BOMqAS+6c1jHACjBQVUmj7CNkWbt8ikAecoUwJGRo+cRlMCANo0I+RXJyB+OZ09JFF1GHxGGJC6f/JpLABazySDXVCJVigNS9Ag+v/7sv0T/Ui/FHxCQ9/D6cIu71Qk3Vz1eSNOeCBhpUQVYLltsnh65j8uulTHs/QFuGlTr2ntpQAAAAABJRU5ErkJggg==" width="8" height="12" x="128" y="128" transform="matrix(16, 0, 0, 21.333334, -1920, -2602.666748)" style="image-rendering: pixelated; visibility: hidden;">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAxklEQVQYGWO8ffv2//rp9xlAYEHYPzCdsIoJTDdmKjIwPnv27D8nJyeDX1AWg4ZNPljixpGJDJvWTWP4/v07AwtIhIODAywJkvj86Q2DqVczWAyuAKwNSOh+ucPw5c8vGBdMg00Asb5+/cTwmEcFbIIWkA0DcAXc3HxwE9iBbBiAKyDbBIiHoeZdBrqB3W8mzHQwjWKFrGEi2LEoKkABBfTvf6Dg/9mzZ/9ftWoVmA0SA8mBTfjx4wcDkAPU/RWsGcQGiYEAAI8lbo1LutvaAAAAAElFTkSuQmCC" width="8" height="12" x="128" y="128" transform="matrix(16, 0, 0, 21.333334, -1920, -2602.666748)" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-17&quot;);">
         <title>_front</title>
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAArElEQVQYGX1QQQ7DIAwLFXQr6m3//8jescsesZ0q2sIkZodkx0VKCbGNk4bn497lT0Ri6bJImpdBA70HkU/dpZ27TEowkCSSgZsgSGSDkdebnvykOUvZXiBfQaAKyUGo9HBLtajw+4E2ckOPMbEg2GrRBi9eE4utHhh7YFrbhSC3iNI7FLggxwZd6gmRhW7hA/kZE/zVCi+wOTIPDey4ps+hf7Jsb4BMC9uZwi/NvEmnXVnp/AAAAABJRU5ErkJggg==" width="8" height="12" x="384" y="128" transform="matrix(16, 0, 0, 21.333334, -5760, -2602.666748)" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-16&quot;);">
@@ -347,9 +361,6 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAMCAYAAABFohwTAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABKADAAQAAAABAAAADAAAAAD1HLXDAAAAXUlEQVQIHVWOSxKAMAhDKSNUe//TeA43XsSO6IwSf0V2vECSNE/jQWFY8hBWIra1/oGGC8k9sWh7ES0OpAH8umn5PHarxDETAZwe/RV4s+VCENDJwd0DF0jsYBTbnoPZGNPWZGu1AAAAAElFTkSuQmCC" width="4" height="12" x="256" y="128" transform="matrix(32, 0, 0, 21.333334, -7936, -2602.666748)" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-16&quot;);">
         <title>_right</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAWElEQVQIHWO8eWXXfwYkAOIwIvFZQGxWdk6Gr2yqDJxsrGCp7z9/M3D/vs3w++d3BrACkCgnGwsD/8nNYAUM5r4MDL8hTCYQBVLJxc4GEQGS3OysYDGQAADMXBaTqMW3RgAAAABJRU5ErkJggg==" width="128" height="64" x="128" style="image-rendering: pixelated;" y="64">
-        <title>_top</title>
-      </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAATUlEQVQIHWN8/ODM/9+/vzNgA6xsnAwsIMmklAqG3z9/Mfz69ROsjo2NnYGNnY1h7pwOBiaQCCM27VAxoIL/YJUgPg8vLxiD2CDdIAAAuHgXVLrLpB8AAAAASUVORK5CYII=" width="8" height="4" x="256" transform="matrix(16, 0, 0, 32, -3840, 0)" style="image-rendering: pixelated;">
         <title>_bottom</title>
       </image>
@@ -357,6 +368,7 @@
       <rect x="288" y="-256" width="64" height="16" style="fill: rgba(119, 119, 119, 0.404); stroke: rgb(0, 0, 0); stroke-width: 2px; filter: none;" transform="matrix(1, 0, 0, -1, 0, 0)"/>
       <rect x="32" y="256" width="64" height="48" style="fill: rgba(119, 119, 119, 0.404); stroke: rgb(136, 136, 136); stroke-width: 2px; filter: none;"/>
       <rect x="32" y="-256" width="64" height="16" style="fill: rgba(119, 119, 119, 0.404); stroke: rgb(0, 0, 0); stroke-width: 2; filter: none;" transform="matrix(1, 0, 0, -1, 0, 0)"/>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAPklEQVQIHWO8ffv2f25ubgb+rTMZkMFH73SGr1+/MjAhC/55/4YBhJEBWEFJzxVkMTAbJsaCLMMiKILMBbMB6c8TGTf9wYoAAAAASUVORK5CYII=" width="128" height="64" x="128" y="64" style="image-rendering: pixelated; filter: none;" transform="matrix(1, 0, 0, 1.25, 0, -32)"/>
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 0)">
       <title>base_head-overlay</title>
@@ -500,16 +512,16 @@
       <rect width="128" height="128" style="stroke-width: 12px;" x="1056">
         <title>bottom</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="800">
+      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="800">
         <title>left</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial; stroke: rgb(255, 255, 255);" y="128" x="928">
+      <rect width="128" height="256" style="stroke-width: 12px; alignment-baseline: initial;" y="128" x="928">
         <title>front</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1056">
+      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="1056">
         <title>right</title>
       </rect>
-      <rect width="128" height="256" style="stroke-width: 12px; stroke: rgb(255, 255, 255);" y="128" x="1184">
+      <rect width="128" height="256" style="stroke-width: 12px;" y="128" x="1184">
         <title>back</title>
       </rect>
       <path d="M 976 128 L 976 192 L 928 128 L 976 128 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;">
@@ -521,6 +533,7 @@
       <path d="M 928 0 L 1056 0 L 1056 128 L 1008 128 L 1008 160 L 976 160 L 976 128 L 928 128 Z" style="stroke-width: 12px; alignment-baseline: initial; fill: rgb(186, 127, 85); filter: url(&quot;#inner-shadow-filter-5&quot;);">
         <title>_skin</title>
       </path>
+      <path d="M 944 32 L 944 128 L 928 128 L 928 0 L 1056 0 L 1056 128 L 1040 128 L 1040 32 L 944 32 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
     </g>
     <g transform="matrix(1, 0, 0, 1, 864, 0)">
       <title>soldier-0_head</title>
@@ -642,7 +655,7 @@
           <title>medal</title>
         </rect>
       </g>
-      <ellipse style="fill-opacity: 0.3;" cx="992" cy="66" rx="48" ry="48"/>
+      <ellipse style="fill-opacity: 0.3;" cx="992" cy="490" rx="48" ry="48"/>
     </g>
     <g transform="matrix(1, 0, 0, 1, 866, 832)">
       <title>scientist-0_head</title>
