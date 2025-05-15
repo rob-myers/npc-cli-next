@@ -125,7 +125,9 @@ export async function* initCamAndLights({ api, args, w }) {
 
   // turn off "tween while paused" so can pause profile
   w.view.canTweenPaused = false;
-  w.update(); // update WorldMenu PopUp checkbox
+  w.floor.showTorch = false;
+  w.floor.showLights = true;
+  w.update();
   
   await w.view.tween({
     azimuthal: w.smallViewport ? 0 : Math.PI/4,
@@ -138,10 +140,6 @@ export async function* initCamAndLights({ api, args, w }) {
     w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
     w.view.ctrlOpts.maxDistance = 25;
   }
-
-  w.floor.showTorch = false;
-  w.floor.showLights = true;
-  w.update();
   
   w.view.canTweenPaused = true;
 
