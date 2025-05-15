@@ -41687,11 +41687,11 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 873745138},
-    "imagesHash": -205256899
+    "imagesHash": -401358502
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-1352944388, 1472240371]},
+    "svgHashes": {"human-0": [1767356937, 1472240371]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -41781,7 +41781,7 @@
           "x": 0.0625,
           "y": 0,
           "width": 0.0625,
-          "height": 0.0625
+          "height": 0.0234375
         },
         "base_body-bottom": {
           "key": "base_body-bottom",
