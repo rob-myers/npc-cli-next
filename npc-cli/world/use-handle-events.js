@@ -384,8 +384,8 @@ export default function useHandleEvents(w) {
           w.cm.refreshOptsPopUp(); // update npcKey select
 
           if (w.disabled === true) {
-            // w.npc.tickOnceDebounced();
-            w.npc.update();
+            // 🔔 must tick to change initial pose e.g. when spawn lie
+            w.npc.tickOnceDebounced();
           }
           break;
         }
