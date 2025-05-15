@@ -185,6 +185,7 @@ export default function ViewerControls({ api }: Props) {
           className="top-level"
           title="reset tabs"
           onClick={state.onPreReset}
+          disabled={api.tabs.everEnabled === false}
         >
           <FontAwesomeIcon icon={faRefreshThin} size="1x" />
         </button>
@@ -203,7 +204,6 @@ export default function ViewerControls({ api }: Props) {
       >
         <FontAwesomeIcon icon={faExpandThin} size="1x" />
       </button>
-
 
       <button
         className="top-level"
