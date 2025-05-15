@@ -508,7 +508,6 @@ export default function useHandleEvents(w) {
         if (
           tr.npcKey === e.npcKey
           || tr.seg === 0
-          // 🚧 fails when face each other
           || state.testOffMeshDisjoint(offMesh, tr) === true
         ) {
           continue;
@@ -529,6 +528,7 @@ export default function useHandleEvents(w) {
       
       if (
         offMesh.orig.dstRoomMeta.small === true // small room
+        // 🚧 or when target close to dst
       ) {
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() * 0.5);
       }

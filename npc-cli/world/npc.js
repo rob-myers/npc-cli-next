@@ -603,7 +603,7 @@ export class Npc {
   handlePreOffMeshCollision(agent, offMesh) {
     const nneis  = agent.raw.nneis;
     /** @type {dtCrowdNeighbour} */ let nei;
-    // 🔔 if too small jerky on collide after offMeshConnection begins
+    // 🔔 if too small, can be jerky on collide after offMeshConnection begins
     const closeDist = preOffMeshCloseDist * (this.s.run === true ? 2 : 1);
     const point = this.getPoint();
 
@@ -613,15 +613,14 @@ export class Npc {
         const other = this.w.a[nei.idx];
         
         if (
-          other.s.target === null
-          && geom.lineSegIntersectsCircle(
+          other.s.target === null &&
+          geom.lineSegIntersectsCircle(
             point,
             offMesh.src,
             other.getPoint(),
-            0.2,
+            0.24,
           ) === false
-        ) {
-          // 🔔 permissive if other idle and "not in the way"
+        ) {// 🔔 permitted if other idle and "not in the way"
           continue;
         }
 
