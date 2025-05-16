@@ -143,6 +143,7 @@ const humanZeroShader = {
 
       // 🔔 flat shading via vDotProduct
       tint *= vec4(vec3((0.05 + 0.8 * vDotProduct) * vHeightShade), 1.0);
+      // tint *= vec4(vec3(0.75), 1.0);
 
       // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
@@ -151,6 +152,12 @@ const humanZeroShader = {
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
 
     }
+
+    // if (true) {
+    //   texel.x = 1.0 - texel.x;
+    //   texel.y = 1.0 - texel.y;
+    //   texel.z = 1.0 - texel.z;
+    // }
 
     gl_FragColor = texel * tint;
     #include <logdepthbuf_fragment>
