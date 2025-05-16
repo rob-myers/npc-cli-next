@@ -36,6 +36,8 @@
   - ℹ️ controls.minDistance measured from controls.target
 
 - Ctrl-C "failure" unclear while paused
+- `spawn bar $( click 1 )` then pause, cannot click
+  - provide UI `cont` interactive process
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
