@@ -344,6 +344,17 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="inner-shadow-filter-22" bx:preset="inner-shadow 1 0 0 15 0.58 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="15"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1.16"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -367,22 +378,22 @@
       <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640" y="256">
         <title>bottom</title>
       </rect>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAArklEQVQYGWWOMQqEMBREJ7AggpXiDTyBB7Cz8gR26XMGj2ErdrY2Xkas0oZYCUGbuJPFLXan+cP78zMRVVX5KIpwnid+J94S8zz7NE3p/7TvO0Rd1/7ZdF0Hwr7vH4SXUgpFUaBpmi9c1xXLsmDbNohhGEIFLxm8rgtaa7A2VPCTUkpM0wRrbXglyzK0bYtxHCHKsvTOOeR5DgYpLowxiOP4EyBMkiRAeoaP46DFDYHSTi35RdCtAAAAAElFTkSuQmCC" width="128" height="128" x="512" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAArklEQVQYGWWOMQqEMBREJ7AggpXiDTyBB7Cz8gR26XMGj2ErdrY2Xkas0oZYCUGbuJPFLXan+cP78zMRVVX5KIpwnid+J94S8zz7NE3p/7TvO0Rd1/7ZdF0Hwr7vH4SXUgpFUaBpmi9c1xXLsmDbNohhGEIFLxm8rgtaa7A2VPCTUkpM0wRrbXglyzK0bYtxHCHKsvTOOeR5DgYpLowxiOP4EyBMkiRAeoaP46DFDYHSTi35RdCtAAAAAElFTkSuQmCC" width="128" height="128" x="512" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
         <title>_front</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXklEQVQYGW2Ouw3AMAhEMZ0lT8OSLOWxLLl08oiIKHwFB8fxaWZ29t7Se5cba4pjDAHJ5AwpoYo0ABrD+pX3GBtwrbXujlf9N6Spcpxw97hFASrTa3POQyMnyUE+/gBCRzp6RxUbbwAAAABJRU5ErkJggg==" width="128" height="128" x="640" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXklEQVQYGW2Ouw3AMAhEMZ0lT8OSLOWxLLl08oiIKHwFB8fxaWZ29t7Se5cba4pjDAHJ5AwpoYo0ABrD+pX3GBtwrbXujlf9N6Spcpxw97hFASrTa3POQyMnyUE+/gBCRzp6RxUbbwAAAABJRU5ErkJggg==" width="128" height="128" x="640" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
         <title>_back</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAkElEQVQYGV1PwQnFIBSLpSAFT93CkZzAi5sUxIOX3hzBAZzJkyCe+ongpzTw8JmXF6PQWj/44DiOySilsL8vS9dag3MO53li771PnifFa8AhsZFk3feNEAJijHNQawVrOqxnSBDee0gpYYzBRoL21tq5wZ4ZxhhIKUHknB+mJUnQ5bqu2dNZlFL+33yLqGCeH8GBSCZetpEEAAAAAElFTkSuQmCC" width="128" height="128" x="512" y="128" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAkElEQVQYGV1PwQnFIBSLpSAFT93CkZzAi5sUxIOX3hzBAZzJkyCe+ongpzTw8JmXF6PQWj/44DiOySilsL8vS9dag3MO53li771PnifFa8AhsZFk3feNEAJijHNQawVrOqxnSBDee0gpYYzBRoL21tq5wZ4ZxhhIKUHknB+mJUnQ5bqu2dNZlFL+33yLqGCeH8GBSCZetpEEAAAAAElFTkSuQmCC" width="128" height="128" x="512" y="128" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
         <title>_left</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAiklEQVQYGT1OsQ0DIAwDqQsSE6dwAO9wAQNfMHAAGys3cBATEmKisqvUA0kcx1iHEN7eWwHWWlY8wukxxltrqVorl+ecvwiNnnM+NBCJUJzg8gEpgEsphWOMkZWC3ru695LAgXNOGWN+gtYaG9jhfwhyzuTwaO/9k2ApJV5jgRzMgAELANaAhET9AtSSSKvSEfKbAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="128" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAiklEQVQYGT1OsQ0DIAwDqQsSE6dwAO9wAQNfMHAAGys3cBATEmKisqvUA0kcx1iHEN7eWwHWWlY8wukxxltrqVorl+ecvwiNnnM+NBCJUJzg8gEpgEsphWOMkZWC3ru695LAgXNOGWN+gtYaG9jhfwhyzuTwaO/9k2ApJV5jgRzMgAELANaAhET9AtSSSKvSEfKbAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="128" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
         <title>_right</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASklEQVQYGWPU1NT8z8nJyfD9+3cGbDQTAwGAooCHhwdDOVgBugSMD6KZQPaCAC4axQp08798+cIAVsDOzg6WQ6dBgizI9oEE0PkAsOMPTpWV51cAAAAASUVORK5CYII=" width="128" height="128" x="512" y="256" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASklEQVQYGWPU1NT8z8nJyfD9+3cGbDQTAwGAooCHhwdDOVgBugSMD6KZQPaCAC4axQp08798+cIAVsDOzg6WQ6dBgizI9oEE0PkAsOMPTpWV51cAAAAASUVORK5CYII=" width="128" height="128" x="512" y="256" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
         <title>_top</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASElEQVQYGWPcs2fPfwYg+PLlC4iCAx4eHjCbCS6Cg0FQAQu60TCDYOKETXj37h1ME1aaoAmMRkZGYG+CtH///h1sCicnJ9w0AB0XE13KOE/SAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="256" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASElEQVQYGWPcs2fPfwYg+PLlC4iCAx4eHjCbCS6Cg0FQAQu60TCDYOKETXj37h1ME1aaoAmMRkZGYG+CtH///h1sCicnJ9w0AB0XE13KOE/SAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="256" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
         <title>_bottom</title>
       </image>
       <ellipse style="fill: rgb(209, 92, 61); stroke-width: 8px; stroke: rgb(68, 68, 68);" cx="704" cy="304" rx="32" ry="32">
