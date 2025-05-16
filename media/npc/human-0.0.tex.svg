@@ -323,6 +323,9 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="sepia-filter-0" bx:preset="sepia 1 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0 0.349 0.686 0.168 0 0 0.272 0.534 0.131 0 0 0 0 0 1 0"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -409,7 +412,7 @@
       <rect x="32" y="-256" width="64" height="16" style="fill: rgba(119, 119, 119, 0.404); stroke: rgb(0, 0, 0); stroke-width: 2; filter: none;" transform="matrix(1, 0, 0, -1, 0, 0)"/>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAPklEQVQIHWO8ffv2f25ubgb+rTMZkMFH73SGr1+/MjAhC/55/4YBhJEBWEFJzxVkMTAbJsaCLMMiKILMBbMB6c8TGTf9wYoAAAAASUVORK5CYII=" width="128" height="64" x="128" y="64" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-18&quot;) url(&quot;#saturate-filter-9&quot;);" transform="matrix(1, 0, 0, 1.25, 0, -32)"/>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 32, 0)">
+    <g transform="matrix(1, 0, 0, 1, 32, 0)" style="filter: url(&quot;#sepia-filter-0&quot;);">
       <title>base_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
         <title>front</title>
