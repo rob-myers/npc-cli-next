@@ -8,7 +8,7 @@
   - https://squoosh.app/editor
   - specific size
   - scenes from films
-    - 🚧 can spawn with various skins easily
+    - ✅ can spawn with various skins easily
     - alien chest-burster scene
 
 - 🚧 refine chosen carousel embla-carousel
@@ -38,15 +38,19 @@
   - ℹ️ controls.minDistance measured from controls.target
 
 - ✅ top-skin-only -> plain-0
-- 🚧 skin shortcuts
+- ✅ skin shortcuts
   - ℹ️ e.g. `spawn '{ npcKey: "rob", skin: "soldier-0" }' $( click 1 )`
-    - `"soldier-0"` -> {head,body}{,-overlay}
-    - `"soldier-0 scientist-0 plain-0 police-0"` ->
+    - `"soldier-0"`
+    - `"soldier-0/scientist-0/plain-0/police-0"` ->
       - head `soldier-0`
       - body `scientist-0`
       - head-overlay `plain-0`
       - body-overlay `police-0`
-    - multiple spaces for gaps
+    - `"soldier-0/-/-/-"` only changes head
+
+- head-overlay-bottom uvs flipped vertically (?)
+  - fix beard on base skin
+  - possibly add beard to soldier-0-head-overlay
 
 - Ctrl-C "failure" unclear while paused
 - tty: run `spawn bar $( click 1 )` then pause... cannot click

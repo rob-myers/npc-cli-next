@@ -164,6 +164,20 @@ export default function Npcs(props) {
         npc.s.offMesh = null;
       }
     },
+    resolveSkin(shortcut) {
+      // e.g. "soldier-0" maps all
+      // e.g. "soldier-0///" only maps head, otherwise "base" skin
+      // e.g. "soldier-0/-/-/-" only maps head, nothing else changed
+      const parts = shortcut.split('/');
+      const fallback = parts[parts.length - 1];
+      const [head, body = fallback, headOverlay = fallback, bodyOverlay = fallback] = parts;
+      return {
+        ...head !== '-' && { "head-{front,back,left,right,top,bottom}": { prefix: head || 'base' } },
+        ...body !== '-' && { "body-{front,back,left,right,top,bottom}": { prefix: body || 'base' } },
+        ...headOverlay !== '-' && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay || 'base' } },
+        ...bodyOverlay !== '-' && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay || 'base' } },
+      };
+    },
     setupSkins() {
       // 🔔 compute sheetAux e.g. uvMap
       // 🔔 compute gltfAux e.g. triangleId -> uvRectKey
@@ -292,7 +306,12 @@ export default function Npcs(props) {
         npc.initialize(state.gltf[npc.def.classKey]);
       }
 
+      if (typeof opts.skin === 'string') {
+        opts.skin = state.resolveSkin(opts.skin);
+      }
+
       if (opts.skin !== undefined) {
+        // 🔔 opts.skin keys may be brace-expansions (normalized by applySkin)
         Object.assign(npc.skin, opts.skin);
         npc.applySkin();
       }
@@ -458,6 +477,11 @@ export default function Npcs(props) {
  * @property {(deltaMs: number) => void} onTick
  * @property {(npcKey: string) => void} remove
  * @property {(npc: NPC.NPC) => void} removeAgent
+ * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
+ * For example,
+ * - `"soldier-0"`
+ * - `"soldier-0//soldier-0/scientist-0"`
+ * - `"soldier-0/-/-/-"`
  * @property {(opts: string | NPC.SpawnOpts, position: MaybeMeta<(Geom.VectJson | THREE.Vector3Like)>) => Promise<NPC.NPC>} spawn
  * - `spawn("rob", { x, y, meta })`
  * - `spawn("rob", { x, y, z, meta })`
