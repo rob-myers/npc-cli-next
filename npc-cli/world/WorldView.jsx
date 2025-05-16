@@ -740,10 +740,11 @@ export default function WorldView(props) {
 
 const rootCss = css`
   user-select: none;
+  background-color: rgba(10, 10, 10, 1);
+
   canvas[data-engine] {
     width: 100%;
     height: 100%;
-    background-color: rgba(20, 20, 20, 1);
     /* 🔔 invert would lag behind npc shader invert */
     /* transition: filter 300ms; */
   }
