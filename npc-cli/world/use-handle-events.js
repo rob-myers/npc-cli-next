@@ -528,7 +528,7 @@ export default function useHandleEvents(w) {
       
       if (
         offMesh.orig.dstRoomMeta.small === true // small room
-        // 🚧 or when target close to dst
+        || npc.isTargetClose(offMesh.dst) === true
       ) {
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() * 0.5);
       }
