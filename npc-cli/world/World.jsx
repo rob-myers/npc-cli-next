@@ -176,12 +176,12 @@ export default function World(props) {
       };
 
       const dataChanged = !prevGeomorphs || state.hash.full !== next.hash.full;
-      if (dataChanged) {
+      if (dataChanged === true) {
         next.geomorphs = geomorph.deserializeGeomorphs(geomorphsJson);
       }
       
       const mapChanged = dataChanged || state.mapKey !== props.mapKey;
-      if (mapChanged) {
+      if (mapChanged === true) {
         next.mapKey = props.mapKey;
         const mapDef = next.geomorphs.map[next.mapKey];
         next.gms = mapDef.gms.map(({ gmKey, transform }, gmId) => 
@@ -191,18 +191,22 @@ export default function World(props) {
       
       // 🔔 if this function changes we'll run the whole query
       const queryFnHash = hashText(queryCache.find({ queryKey: [WORLD_QUERY_FIRST_KEY], exact: false })?.options.queryFn?.toString() ?? '');
-      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr(
-        { createGmsData, GmGraphClass, queryFnHash },
-      );
+      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr({
+        createGmsData,
+        GmGraphClass,
+        queryFnHash,
+      });
 
-      if (mapChanged || gmsDataChanged) {
+      
+      if (mapChanged === true || gmsDataChanged === true) {
         next.gmsData = createGmsData();
-
+        
         // ensure GmData per gmKey in map
         state.menu.measure('gmsData');
+        const breathingSpaceMs = 100;
         for (const gmKey of new Set(next.gms.map(({ key }) => key))) {
           if (next.gmsData[gmKey].unseen) {
-            await pause(); // breathing space
+            await pause(breathingSpaceMs);
             await next.gmsData.computeGmData(next.geomorphs.layout[gmKey]);
           }
         };
@@ -311,11 +315,7 @@ export default function World(props) {
     // refetchOnWindowFocus: false,
     enabled: state.threeReady, // 🔔 fixes horrible reset issue on mobile
     gcTime: 0, // concurrent queries with different mapKey can break HMR
-    /**
-     * 🔔 Very useful for debugging
-     * 🔔 Breaks on restart dev env
-     */
-    throwOnError: true,
+    throwOnError: true, // Very useful for debugging
     networkMode: isDevelopment() ? 'always' : 'online',
   });
 
