@@ -81,17 +81,21 @@ export type InstancedFloorUniforms = Record<
 export interface HumanZeroMaterialProps {
   atlas: import('three').DataArrayTexture;
   aux: import('three').DataArrayTexture;
+  globalAux: import('three').DataArrayTexture;
+
   diffuse: Vector3Input;
   label: import('three').DataArrayTexture;
   labelY: number;
-  breathTriIds: number[];
-  labelTriIds: number[];
-  selectorTriIds: number[];
-  labelUvRect4: Vector4Input;
   /* A default value must be provided for object-pick to work */
   objectPick?: boolean;
   opacity: number;
   uid: number;
+
+  // 🚧 move to w.texAux
+  breathTriIds: number[];
+  labelTriIds: number[];
+  selectorTriIds: number[];
+  labelUvRect4: Vector4Input;
 }
 
 /** From node_modules/@react-three/drei/core/shaderMaterial.d.ts */

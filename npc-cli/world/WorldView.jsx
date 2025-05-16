@@ -738,7 +738,8 @@ const rootCss = css`
     width: 100%;
     height: 100%;
     background-color: rgba(20, 20, 20, 1);
-    transition: filter 300ms;
+    /* 🔔 invert would lag behind npc shader invert */
+    /* transition: filter 300ms; */
   }
   
   /* center canvas during resize */

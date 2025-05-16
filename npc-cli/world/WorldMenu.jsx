@@ -47,6 +47,7 @@ export default function WorldMenu(props) {
       state.onChangeBrightness(toEvent(state.brightness))
       state.onChangeXRay(toEvent(state.xRayOpacity));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
+      state.onChangeInvertColor(toEvent(state.invertColor));
       state.onResizeLoggerHeight(toEvent(state.loggerHeight));
       state.onResizeLoggerWidth(toEvent(state.loggerWidth));
     },
@@ -77,6 +78,9 @@ export default function WorldMenu(props) {
     onChangeInvertColor(e) {
       state.invertColor = e.currentTarget.checked;
       w.view.setCssFilter({ invert: state.invertColor ? '1' : '0' });
+      w.updateTexAux({
+        0: state.invertColor ? [1, 1, 1, 1] : [0, 0, 0, 0], // invert ~ 0th key
+      });
       w.update();
     },
     onChangeXRay(e) {

@@ -8,8 +8,8 @@ import { Timer } from "three-stdlib";
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
-import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth } from "../service/const";
-import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
+import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
+import { debug, isDevelopment, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
 import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
@@ -65,13 +65,14 @@ export default function World(props) {
     smallViewport: isSmallViewport(),
 
     // 🔔 hmr issue when initial width = height = 0
+    texAux: new TexArray({ ctKey: 'aux', type: THREE.FloatType, numTextures: texAuxDepth, width: 1, height: 1 }),
     texFloor: new TexArray({ ctKey: 'floor-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texFloorLight: new TexArray({ ctKey: 'floor-light-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texCeil: new TexArray({ ctKey: 'ceil-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texDecor: new TexArray({ ctKey: 'decor-tex', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex', numTextures: 1, width: 0, height: 0 }),
-    texSkin: new TexArray({ ctKey: 'skins-tex', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
     texNpcAux: new TexArray({ ctKey: 'skins-aux', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
+    texSkin: new TexArray({ ctKey: 'skins-tex', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
     texNpcLabel: new TexArray({ ctKey: 'skins-label', numTextures: maxNumberOfNpcs, width: skinsLabelsTextureWidth, height: skinsLabelsTextureHeight }),
     texVs: { floor: 0, ceiling: 0 }, // versions
 
@@ -107,7 +108,6 @@ export default function World(props) {
       }
       return ready;
     },
-
     onTick() {
       state.reqAnimId = requestAnimationFrame(state.onTick);
       state.timer.update();
@@ -135,6 +135,13 @@ export default function World(props) {
     async update(mutator) {
       await mutator?.(state);
       update();
+    },
+    updateTexAux(partial) {
+      const buffer = new Float32Array(4);
+      for (const indexStr in partial) {
+        buffer.set(partial[indexStr])
+        state.texAux.updateIndex(Number(indexStr), new Float32Array(buffer));
+      }
     },
   }), { reset: { lib: true, texFloor: false, texCeil: false } });
 
@@ -428,6 +435,7 @@ export default function World(props) {
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm
  *
+ * @property {TexArray} texAux
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
  * @property {TexArray} texFloor
@@ -450,7 +458,8 @@ export default function World(props) {
  * @property {() => void} stopTick
  * @property {(next: State['hmr']) => Record<keyof State['hmr'], boolean>} trackHmr
  * Has function `createGmsData` changed?
- * @property {(mutator?: (w: State) => void) => void} update
+ * @property {(mutator?: (w: State) => void | Promise<void>) => void} update
+ * @property {(partial: Record<number, [number, number, number, number]>) => void} updateTexAux
  */
 
 /**

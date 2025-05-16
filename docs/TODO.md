@@ -49,11 +49,14 @@
     - `"soldier-0/-/-/-"` only changes head
 
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
-  - invert npc (when WorldMenu invert on)
+  - ✅ invert npc (when WorldMenu invert on)
   - torch radius/opacity
+  - breathTriIds (one per classKey)
   - ...
 
-- head-overlay-bottom uvs flipped vertically (?)
+- plain-0-body <-> base-0-body
+
+- blender: head-overlay-bottom uvs flipped vertically (?)
   - fix beard on base skin
   - possibly add beard to soldier-0-head-overlay
 

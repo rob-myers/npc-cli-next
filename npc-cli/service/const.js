@@ -438,3 +438,5 @@ export const skinsLabelsTextureHeight = 200 / 4;
 export const npcLabelMaxChars = 12;
 
 export const npcTargetArriveDistance = 0.05;
+
+export const texAuxDepth = 256;

@@ -15,7 +15,7 @@ const humanZeroShader = {
   varying vec2 vUv;
   // higher in [0, 1] is lighter
   varying float vHeightShade;
-  // label, body, breath, selector
+  // label=0, body=1, breath=2, selector=3
   flat varying int vType;
 
   #include <common>
@@ -81,6 +81,10 @@ const humanZeroShader = {
   // depth is max number of npcs
   uniform sampler2DArray aux;
   
+  // 0 ~ invert ([0, 0, 0, 0] or [1, 1, 1, 1])
+  // ...
+  uniform sampler2DArray globalAux;
+  
   // 🔔 label must be a quad i.e. two triangles
   uniform sampler2DArray label;
   uniform int labelTriIds[2];
@@ -118,8 +122,10 @@ const humanZeroShader = {
       return;
     }
 
+    bool invert = texture(globalAux, vec3(0.0, 0.0, 0.0)).x == 1.0;
+
     // tinting (DataArrayTexture has width 128)
-    // 🤔 tint factor is 0.5
+    // tint factor is 0.5
     vec4 tint = texture(aux, vec3(float(triangleId) / 128.0, 1.0, uid));
     tint.x = 0.5 * diffuse.x + 0.5 * tint.x;
     tint.y = 0.5 * diffuse.y + 0.5 * tint.y;
@@ -128,7 +134,7 @@ const humanZeroShader = {
 
     vec4 texel;
     
-    if (vType == 0) {// label
+    if (vType == 0) {// label=0
 
       texel = texture(
         label,
@@ -139,11 +145,13 @@ const humanZeroShader = {
         )
       );
 
-    } else {// body, breath, selector 
+    } else {// body=1, breath=2, selector=3
 
-      // 🔔 flat shading via vDotProduct
-      tint *= vec4(vec3((0.05 + 0.8 * vDotProduct) * vHeightShade), 1.0);
-      // tint *= vec4(vec3(0.75), 1.0);
+      if (!invert) {// 🔔 flat shading via vDotProduct
+        tint *= vec4(vec3((0.05 + 0.8 * vDotProduct) * vHeightShade), 1.0);
+      } else {// invert, making selector more visible
+        tint = vec4(vec3(vType == 3 ? 2.0 : 0.8), tint.a);
+      }
 
       // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
@@ -153,11 +161,9 @@ const humanZeroShader = {
 
     }
 
-    // if (true) {
-    //   texel.x = 1.0 - texel.x;
-    //   texel.y = 1.0 - texel.y;
-    //   texel.z = 1.0 - texel.z;
-    // }
+    if (invert) {
+      texel.xyz = 1.0 - texel.xyz;
+    }
 
     gl_FragColor = texel * tint;
     #include <logdepthbuf_fragment>
@@ -173,6 +179,7 @@ const humanZeroShader = {
 const humanZeroMaterialDefaultProps = {
   atlas: emptyDataArrayTexture,
   aux: emptyDataArrayTexture,
+  globalAux: emptyDataArrayTexture,
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
   label: emptyDataArrayTexture,
   labelY: 0,

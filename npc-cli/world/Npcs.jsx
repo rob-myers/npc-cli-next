@@ -537,21 +537,21 @@ function NPC({ npc }) {
           key={HumanZeroMaterial.key}
           atlas={npc.w.texSkin.tex}
           aux={npc.w.texNpcAux.tex}
+          globalAux={npc.w.texAux.tex}
+          
           // diffuse={[1, 1, 1]}
           diffuse={[0.7, 0.7, 0.7]}
-
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}
+          opacity={npc.s.opacity}
+          transparent
+          uid={npc.def.uid}
 
-          // 🚧 move below to texture
+          // 🚧 move to w.texAux
           labelUvRect4={npc.gltfAux.labelUvRect4}
           breathTriIds={npc.gltfAux.breathTriIds}
           labelTriIds={npc.gltfAux.labelTriIds}
           selectorTriIds={npc.gltfAux.selectorTriIds}
-
-          opacity={npc.s.opacity}
-          transparent
-          uid={npc.def.uid}
         />
         
       </skinnedMesh>
