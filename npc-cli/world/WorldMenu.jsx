@@ -39,7 +39,7 @@ export default function WorldMenu(props) {
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    xRayOpacity: 6, // [1..20]
+    xRayOpacity: 8, // [1..20]
 
     applyControlsInitValues() {
       /** @param {any} value */
