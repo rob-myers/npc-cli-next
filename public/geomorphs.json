@@ -41687,11 +41687,11 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 873745138},
-    "imagesHash": -245913140
+    "imagesHash": 1419942965
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [1723990017, 1472240371]},
+    "svgHashes": {"human-0": [656881336, 1472240371]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -41943,48 +41943,48 @@
           "width": 0.0625,
           "height": 0.125
         },
-        "top-skin-only_body-top": {
-          "key": "top-skin-only_body-top",
+        "plain-0_body-top": {
+          "key": "plain-0_body-top",
           "sheetId": 0,
           "x": 0.46875,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "top-skin-only_body-bottom": {
-          "key": "top-skin-only_body-bottom",
+        "plain-0_body-bottom": {
+          "key": "plain-0_body-bottom",
           "sheetId": 0,
           "x": 0.53125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "top-skin-only_body-left": {
-          "key": "top-skin-only_body-left",
+        "plain-0_body-left": {
+          "key": "plain-0_body-left",
           "sheetId": 0,
           "x": 0.40625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "top-skin-only_body-front": {
-          "key": "top-skin-only_body-front",
+        "plain-0_body-front": {
+          "key": "plain-0_body-front",
           "sheetId": 0,
           "x": 0.46875,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "top-skin-only_body-right": {
-          "key": "top-skin-only_body-right",
+        "plain-0_body-right": {
+          "key": "plain-0_body-right",
           "sheetId": 0,
           "x": 0.53125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "top-skin-only_body-back": {
-          "key": "top-skin-only_body-back",
+        "plain-0_body-back": {
+          "key": "plain-0_body-back",
           "sheetId": 0,
           "x": 0.59375,
           "y": 0.0625,

@@ -4,13 +4,15 @@
 
 ### Site
 
+- 🚧 redo images in first carousel
+  - https://squoosh.app/editor
+  - specific size
+  - scenes from films
+    - 🚧 can spawn with various skins easily
+    - alien chest-burster scene
+
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
-  - 🚧 redo images in first carousel
-    - https://squoosh.app/editor
-    - three images
-    - specific size
-      - try 1500 * 1554 (after resize)
   - clean carousel css e.g. more css variables
   - auto png to webp in public/images
 
@@ -35,8 +37,19 @@
 - ✅ look/follow npc at their height i.e. controls.target.y > 0
   - ℹ️ controls.minDistance measured from controls.target
 
+- ✅ top-skin-only -> plain-0
+- 🚧 skin shortcuts
+  - ℹ️ e.g. `spawn '{ npcKey: "rob", skin: "soldier-0" }' $( click 1 )`
+    - `"soldier-0"` -> {head,body}{,-overlay}
+    - `"soldier-0 scientist-0 plain-0 police-0"` ->
+      - head `soldier-0`
+      - body `scientist-0`
+      - head-overlay `plain-0`
+      - body-overlay `police-0`
+    - multiple spaces for gaps
+
 - Ctrl-C "failure" unclear while paused
-- `spawn bar $( click 1 )` then pause, cannot click
+- tty: run `spawn bar $( click 1 )` then pause... cannot click
   - provide UI `cont` interactive process
 
 - fade ContextMenu and SpeechBubble (as before) on World resize

@@ -1,7 +1,7 @@
 awaitWorld
 
 spawn '{ npcKey: "rob", skin: {
-  "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
 }}' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
 
 spawn '{ npcKey: "will", skin: {
@@ -9,29 +9,29 @@ spawn '{ npcKey: "will", skin: {
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
   // "body-overlay-{front,back,left,right,top,bottom}": { prefix: "empty", otherPart: "body-front" },
-  "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
 }}' '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 
 spawn '{ npcKey: "kate", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
-  "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
 }}' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
-spawn '{ npcKey: "suit-guy", angle: Math.PI, skin: {
+spawn '{ npcKey: "suit", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "suit-0" },
   // "head-overlay-front": { prefix: "empty", otherPart: "body-front" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "suit-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "suit-0" },
-  "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
 }}' '{ x: 0.5 * 1.5, y: 5 * 1.5 }'
 
-spawn '{ npcKey: "poirot", angle: Math.PI, skin: {
+spawn '{ npcKey: "authority", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
-  "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
 }}' '{ x: 1.5 * 1.5, y: 5 * 1.5 }'
 
 w n.rob.showSelector true
@@ -44,7 +44,7 @@ w n.rob.position | w floor.setTorchTarget -
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }'
 w n.rob.skin | assign '{
   "head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
-  // "body-{front,back,left,right,top,bottom}": { prefix: "top-skin-only" },
+  // "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
 }' > /dev/null
@@ -55,7 +55,7 @@ w n.rob.applySkin
 # w n.rob.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
 # w n.rob.resetTint
 
-w e.grantAccess . rob will kate suit-guy poirot
+w e.grantAccess . rob will kate suit authority
 
 # de/select selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
