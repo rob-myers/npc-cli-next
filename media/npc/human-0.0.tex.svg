@@ -367,6 +367,9 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASElEQVQYGWPcs2fPfwYg+PLlC4iCAx4eHjCbCS6Cg0FQAQu60TCDYOKETXj37h1ME1aaoAmMRkZGYG+CtH///h1sCicnJ9w0AB0XE13KOE/SAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="256" style="image-rendering: pixelated;">
         <title>_bottom</title>
       </image>
+      <ellipse style="fill: rgb(209, 92, 61); stroke-width: 8px; stroke: rgb(68, 68, 68);" cx="704" cy="304" rx="32" ry="32">
+        <title>_neck-top</title>
+      </ellipse>
     </g>
     <g style="filter: none;">
       <title>base_body</title>
