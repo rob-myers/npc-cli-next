@@ -18,13 +18,12 @@ export default function Floor(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    grid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
-    // 🚧 initialize width/height?
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: false,
     showTorch: false,
+    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
     torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
     torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
@@ -84,11 +83,11 @@ export default function Floor(props) {
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
-      drawPolygons(ct, navPoly, ['#00000055', '#445', 0.02]);
+      drawPolygons(ct, navPoly, ['#00000055', '#434340', 0.02]);
 
       // grids
       ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
-      ct.fillStyle = state.grid;
+      ct.fillStyle = state.smallGrid;
       ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
       ct.fillStyle = state.largeGrid;
       ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
@@ -163,7 +162,7 @@ export default function Floor(props) {
       uniforms.torchData.value = state.torchData;
       uniforms.torchTarget.value = state.torchTarget;
     },
-  }), { reset: { grid: false, largeGrid: false, torchData: true } });
+  }), { reset: { smallGrid: false, largeGrid: false, torchData: true } });
 
   w.floor = state;
 
@@ -215,7 +214,7 @@ export default function Floor(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
- * @property {CanvasPattern} grid
+ * @property {CanvasPattern} smallGrid
  * @property {CanvasPattern} largeGrid
  * @property {THREE.BufferGeometry} quad
  * @property {boolean} showLights Show static lights?
