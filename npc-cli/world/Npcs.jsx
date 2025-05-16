@@ -362,6 +362,7 @@ export default function Npcs(props) {
       return npc;
     },
     tickOnceDebounced: debounce(() => {
+      w.crowd.update(1000 / 60); // agent may no longer exist
       state.onTick(1000 / 60);
       w.r3f.advance(Date.now()); // so they move
     }, 30, { immediate: true }),
