@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 
-import { debug, keys } from "../service/generic.js";
+import { debug, entries, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isSmallViewport, isTouchDevice } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
@@ -38,7 +38,11 @@ export default function WorldView(props) {
       panSpeed: 2,
       zoomSpeed: 0.5,
     },
-    cssFilter: {},
+    cssFilter: [
+      { key: 'brightness', value: '100%'},
+      { key: 'sepia', value: '0' },
+      { key: 'invert', value: '0' },
+    ],
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
@@ -481,8 +485,10 @@ export default function WorldView(props) {
       });
     },
     setCssFilter(partial) {
-      Object.assign(state.cssFilter, partial);
-      const nextFilter = Object.entries(state.cssFilter).map(([k, v]) => `${k}(${v})`).join(' ');
+      for (const [k, v] of entries(partial)) {
+        state.cssFilter.some(x => x.key === k && (x.value = v, true));
+      }
+      const nextFilter = state.cssFilter.map(({ key, value }) => `${key}(${value})`).join(' ');
       state.canvas.style.filter = nextFilter; // e.g. brightness(50%)
     },
     stopFollowing() {
@@ -667,7 +673,7 @@ export default function WorldView(props) {
  * }} controls
  * We provide access to `sphericalDelta` via patch.
  * @property {import('@react-three/drei').MapControlsProps} ctrlOpts
- * @property {Partial<Record<'brightness' | 'sepia' | 'invert', string>>} cssFilter
+ * @property {{ key: 'brightness' | 'sepia' | 'invert'; value: string }[]} cssFilter
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
  * 
@@ -723,7 +729,7 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
- * @property {(partial: State['cssFilter']) => void} setCssFilter
+ * @property {(partial: Partial<Record<'brightness'| 'sepia' | 'invert', string>>) => void} setCssFilter
  * @property {() => boolean} stopFollowing
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
