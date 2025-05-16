@@ -47,6 +47,12 @@
       - head-overlay `plain-0`
       - body-overlay `police-0`
     - `"soldier-0/-/-/-"` only changes head
+- 🚧 what about skin prefix `scientist-0` lacking `body`?
+  - ℹ️ or `scientist-1` only having `body`
+  - in resolveSkin could check
+    - `w.geomorphs.skin.uvMap`
+    - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
+  - could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
 
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
   - ✅ invert npc (when WorldMenu invert on)
@@ -54,7 +60,7 @@
   - breathTriIds (one per classKey)
   - ...
 
-- plain-0-body <-> base-0-body
+- ✅ plain-0-body <-> base-0-body
 
 - blender: head-overlay-bottom uvs flipped vertically (?)
   - fix beard on base skin

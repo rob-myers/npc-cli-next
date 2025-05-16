@@ -741,7 +741,7 @@ const rootCss = css`
     /* 🔔 invert would lag behind npc shader invert */
     /* transition: filter 300ms; */
   }
-  
+
   /* center canvas during resize */
   > div:first-of-type {
     display: flex;
