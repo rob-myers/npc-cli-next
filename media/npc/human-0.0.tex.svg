@@ -495,27 +495,27 @@
       </path>
       <ellipse style="fill-opacity: 0.3;" cx="192" cy="480" rx="48" ry="48"/>
     </g>
+    <rect width="128" height="128" style="fill: none;" x="384" y="832">
+      <title>default_breath</title>
+    </rect>
     <rect width="128" height="32" style="fill: none; stroke: rgb(0, 0, 0);" y="2016">
       <title>default_label</title>
     </rect>
+    <rect width="128" height="128" style="fill: none;" x="128" y="832">
+      <title>default_selector</title>
+    </rect>
     <g>
-      <title>default</title>
-      <rect width="128" height="128" style="fill: none;" x="384" y="832">
-        <title>breath</title>
-      </rect>
-      <rect width="128" height="128" style="fill: none;" x="128" y="832">
-        <title>selector</title>
-      </rect>
+      <title>_default</title>
       <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="191.999" cy="895.999" r="61.999">
-        <title>_selector</title>
+        <title>selector</title>
       </circle>
       <circle style="stroke-width: 2.79351px; stroke-opacity: 0.5; stroke: rgb(153, 255, 153); fill-opacity: 0.2;" cx="448" cy="896" r="62">
-        <title>_outer_breath</title>
+        <title>outer_breath</title>
       </circle>
       <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="448" cy="896" r="23.04">
-        <title>_inner_breath</title>
+        <title>inner_breath</title>
       </circle>
-      <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; white-space: pre;" x="5.428" y="2038.69"><title>_label-test-text</title>label-test-text</text>
+      <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; white-space: pre;" x="5.428" y="2038.69"><title>label-test-text</title>label-test-text</text>
     </g>
     <g style="">
       <title>empty_body</title>
