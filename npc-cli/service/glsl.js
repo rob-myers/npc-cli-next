@@ -150,7 +150,7 @@ const humanZeroShader = {
       if (!invert) {// 🔔 flat shading via vDotProduct
         tint *= vec4(vec3((0.05 + 0.8 * vDotProduct) * vHeightShade), 1.0);
       } else {// invert, making selector more visible
-        tint = vec4(vec3(vType == 3 ? 2.0 : 0.8), tint.a);
+        tint = vec4(vec3(vType == 3 ? 4.0 : 0.8), tint.a);
       }
 
       // skinning
@@ -566,9 +566,6 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
-      // 🚧 darker while torch maintains luminosity
-      // 🚧 match lighting approaches when torch on/off
-
       float lighter = 1.0;
 
       if (showTorch == true && showLights == true) {
