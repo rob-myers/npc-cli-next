@@ -1,8 +1,6 @@
 awaitWorld
 
-spawn '{ npcKey: "rob", skin: {
-  "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-}}' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
+spawn '{ npcKey: "rob", skin: "soldier-0" }' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
 
 spawn '{ npcKey: "will", skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
@@ -42,13 +40,13 @@ w n.rob.position | w floor.setTorchTarget -
 # re-skin rob
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }'
-w n.rob.skin | assign '{
-  "head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
-  // "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
-  "body-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
-}' > /dev/null
-w n.rob.applySkin
+# w n.rob.skin | assign '{
+#   "head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
+#   // "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
+#   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
+#   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
+# }' > /dev/null
+# w n.rob.applySkin
 
 # w n.rob.tint | assign '{ "body-{front,back,left,right,top,bottom}": [0.25, 0.25, 0.25, 1] }'
 # w n.rob.applyTint
