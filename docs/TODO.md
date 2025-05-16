@@ -62,9 +62,13 @@
 
 - ✅ plain-0-body <-> base-0-body
 
-- blender: head-overlay-bottom uvs flipped vertically (?)
+- improve base skin yet again: base-body too basic
+
+- consider fixing azimuthal rotation and having WASD for e.g.
+  - `w view.tween '{ azimuthal: Math.PI/2 }`
+
+- ✅ blender: head-overlay-bottom uvs flipped vertically
   - fix beard on base skin
-  - possibly add beard to soldier-0-head-overlay
 
 - Ctrl-C "failure" unclear while paused
 - tty: run `spawn bar $( click 1 )` then pause... cannot click
