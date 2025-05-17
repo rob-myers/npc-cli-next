@@ -145,7 +145,7 @@ export function isDataChunk(data: any): data is DataChunk {
   if (data === undefined || data === null) {
     return false;
   }
-  return data[dataChunkKey];
+  return !!data[dataChunkKey];
 }
 export function dataChunk(items: any[]): DataChunk {
   return { __chunk__: true, items };

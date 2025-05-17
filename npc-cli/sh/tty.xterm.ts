@@ -610,28 +610,31 @@ export class ttyXtermClass {
         ]);
         break;
       default: {
-        if (isDataChunk(msg)) {
+        const other = msg as any;
+
+        if (isDataChunk(other) === true) {
           /**
            * We'll only process the last `2 * scrollback` items.
            * This makes sense if screen rows no larger than scrollback.
            * The buffer length consists of the screen rows (on resize)
            * plus the scrollback.
            */
-          const { items } = msg as DataChunk;
+          const { items } = other as DataChunk;
           // Pretend we outputted them all
           items.slice(-2 * scrollback).forEach((x) => this.onMessage(x));
+        } else if (other instanceof HTMLElement) {
+          this.queueCommands([{
+            key: "line",
+            line: `<${other.tagName.toLowerCase()}>`,
+          }]);
         } else {
-          const stringified = jsStringify(msg);
-          // const stringified = jsStringify(msg).replaceAll('\n', '\n\r');
-          this.queueCommands([
-            {
-              key: "line",
-              line: `${ansi.BrightYellow}${stringified.slice(-this.maxStringifyLength)}${
-                ansi.Reset
-              }`,
-            },
-          ]);
-          this.session.rememberLastValue(msg);
+          const stringified = jsStringify(other);
+          // const stringified = jsStringify(other).replaceAll('\n', '\n\r');
+          this.queueCommands([{
+            key: "line",
+            line: `${ansi.BrightYellow}${stringified.slice(-this.maxStringifyLength)}${ansi.Reset}`,
+          }]);
+          this.session.rememberLastValue(other);
         }
       }
     }
