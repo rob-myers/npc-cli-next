@@ -47,13 +47,12 @@
       - head-overlay `plain-0`
       - body-overlay `police-0`
     - `"soldier-0/-/-/-"` only changes head
-- 🚧 what about skin prefix `scientist-0` lacking `body`?
+- ✅ what about skin prefix `scientist-0` lacking `body`?
   - ℹ️ or `scientist-1` only having `body`
-  - in resolveSkin could check
-    - `w.geomorphs.skin.uvMap`
+  - ✅ in expandSkin could check against
     - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
-  - could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
-- can `spawn foo soldier-0 $( click 1)`
+  - ❌ could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
+- ✅ can `spawn foo@soldier-0 $( click 1)`
 
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
   - ✅ invert npc (when WorldMenu invert on)
@@ -65,7 +64,7 @@
 
 - ✅ improve base skin yet again: base-body too basic
 
-- consider fixing azimuthal rotation and having WASD for e.g.
+- ✅ consider having WASD for e.g.
   - `w view.tween '{ azimuthal: Math.PI/2 }`
 
 - ✅ blender: head-overlay-bottom uvs flipped vertically

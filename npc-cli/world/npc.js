@@ -59,7 +59,7 @@ export class Npc {
     selector: [1, 1, 1, 0],
   });
 
-  /** Shortcut to `this.w.npc.gltfAux[this.def.classKet]` */
+  /** Shortcut to `this.w.npc.gltfAux[this.def.classKey]` */
   gltfAux = /** @type {NPC.GltfAux} */ ({});
 
   /** State */
@@ -155,7 +155,7 @@ export class Npc {
     const { sheetId: initSheetId, uvMap, sheetTexIds } = sheetAux[classKey];
     const { triToKey } = skinAux[classKey];
 
-    this.expandSkinMap('skin');
+    this.expandSkin();
 
     /** Index in DataTextureArray of this model's `initSheetId` sheet */
     const initSheetTexId = sheetTexIds[initSheetId];
@@ -228,7 +228,7 @@ export class Npc {
     const classKey = this.def.classKey;
     const { triToKey } = this.w.npc.gltfAux[classKey];
 
-    this.expandSkinMap('tint');
+    this.expandTint();
 
     // THREE.FloatType handle negative uv offsets in applySkin
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
@@ -762,16 +762,48 @@ export class Npc {
   }
 
   /**
-   * Brace expansion of keys of `this.skin` or `this.tint`, e.g.
+   * Brace expansion of keys of `this.skin` e.g.
    * > `'head-{front,back}'` -> `['head-front', 'head-back']`
-   * 
    * - Any keys with braces will be expanded and removed.
    * - Later keys override earlier ones.
-   * @template {'skin' | 'tint'} T
-   * @param {T} type
+   * - We ignore unresolved expansions (they needn't be errors).
    */
-  expandSkinMap(type) {
-    const lookup = this[type];
+  expandSkin() {
+    const lookup = this.skin;
+    const pending = /** @type {typeof lookup} */ ({});
+    const { sheetAux } = this.w.npc;
+
+    for (const k of keys(lookup)) {
+      const remap = lookup[k];
+      if (remap === undefined) {
+        continue;
+      } else if (k.includes('{') === false) {
+        pending[k] = remap;
+      } else {
+        braces(k, { expand: true }).forEach(expanded => {
+          if (helper.isSkinPart(expanded) === false) {
+            return warn(`${'expandSkinMap'}: ${'skin'}: ${this.key}: invalid skinPart "${expanded}"`);
+          }
+          const uvKey = `${remap.prefix}_${remap.otherPart ?? expanded}`;
+          if (!(uvKey in sheetAux[remap.classKey ?? this.def.classKey].uvMap)) {
+            return; // 🔔 `remap.prefix` may not be defined for all {head,body}{,-overlay}
+          }
+          pending[expanded] = remap;
+        });
+      }
+    }
+
+    this.skin = pending;
+  }
+
+  /**
+   * Brace expansion of keys of `this.tint`, e.g.
+   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
+   * - Any keys with braces will be expanded and removed.
+   * - Later keys override earlier ones.
+   */
+  expandTint() {
+    const lookup = this.tint;
     const pending = /** @type {typeof lookup} */ ({});
 
     for (const k of keys(lookup)) {
@@ -780,16 +812,15 @@ export class Npc {
         pending[k] = v;
       } else {
         braces(k, { expand: true }).forEach(expanded => {
-          if (helper.isSkinPart(expanded) === true) {
-            pending[expanded] = v;
-          } else {
-            warn(`${'expandSkinMap'}: ${type}: ${this.key}: ignored invalid skinPart "${expanded}"`);
+          if (helper.isSkinPart(expanded) === false) {
+            return warn(`${'expandSkinMap'}: ${'tint'}: ${this.key}: invalid skinPart "${expanded}"`);
           }
+          pending[expanded] = v;
         });
       }
     }
 
-    this[type] = pending;
+    this.tint = pending;
   }
 
   /**

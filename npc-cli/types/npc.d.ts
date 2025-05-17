@@ -371,7 +371,7 @@ declare namespace NPC {
    * We also permit brace expansion in keys, e.g.
    * > `"head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },`
    */
-  type SkinReMap = Partial<Record<Key.SkinPart, SkinReMapValue>>;
+  type SkinReMap = { [skinPartKey in Key.SkinPart]?: SkinReMapValue };
 
   type SkinReMapValue = {
     /**
