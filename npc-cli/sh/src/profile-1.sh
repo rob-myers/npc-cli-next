@@ -100,4 +100,7 @@ ptags=no-pause; events | handleLoggerLinks &
 
 setupOnSlowNpc
 
+# keys ASD change azimuthal angle
+changeAngleOnKeyDown
+
 initCamAndLights rob

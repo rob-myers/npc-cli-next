@@ -244,7 +244,7 @@ call '() => "foo\nbar\nbaz"'
 ```
 
 ```sh
-$ run '({ api, home }) {  await new Promise(resolve => { api.addCleanup(home.resolve = resolve); }); yield "done"; }' &
+$ run '({ api, home }) {  await new Promise(resolve => { api.addCleanUp(home.resolve = resolve); }); yield "done"; }' &
 $ ps
 pid   ppid  pgid
 0     0     0    ▶️  ps

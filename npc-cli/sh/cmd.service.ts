@@ -751,7 +751,7 @@ class cmdServiceClass {
     ansi,
 
     /** Returns provided cleanup */
-    addCleanup(cleanup: () => void) {
+    addCleanUp(cleanup: () => void) {
       getProcess(this.meta).cleanups.push(cleanup);
       return cleanup;
     },

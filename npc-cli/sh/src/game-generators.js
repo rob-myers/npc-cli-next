@@ -35,12 +35,12 @@ export async function* click({ api, args, w }) {
 
   const clickId = operands[0] ? api.getUid() : undefined;
   if (clickId !== undefined) {
-    api.addCleanup(() => w.lib.removeFirst(w.view.clickIds, clickId));
+    api.addCleanUp(() => w.lib.removeFirst(w.view.clickIds, clickId));
   }
 
   /** @type {import('rxjs').Subscription} */
   let eventsSub;
-  api.addCleanup(() => eventsSub?.unsubscribe());
+  api.addCleanUp(() => eventsSub?.unsubscribe());
 
   while (numClicks > 0) {
     clickId !== undefined && w.view.clickIds.push(clickId);
@@ -102,7 +102,7 @@ export async function* events({ api, args, w }) {
   
   const asyncIterable = api.observableToAsyncIterable(w.events);
   // could not catch asyncIterable.throw?.(api.getKillError())
-  api.addCleanup(() => asyncIterable.return?.());
+  api.addCleanUp(() => asyncIterable.return?.());
 
   for await (const event of asyncIterable) {
     if (func === undefined || func?.(event)) {
@@ -150,6 +150,23 @@ export async function* initCamAndLights({ api, args, w }) {
   }
 
 }
+
+/**
+ * @param {RunArg} ctxt
+ */
+export const changeAngleOnKeyDown = ({ w }) => {
+  w.view.keyDowns.changeAngle = (e) => {
+    const key = e.key.toLowerCase();
+    const angle = w.lib.radRange(w.view.controls.getAzimuthalAngle());
+    const delta = Math.PI * 0.5;
+    const ratio = angle / delta; // [0..4)
+    switch (key) {
+      case "a":  w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta });  break;
+      case "s": w.view.tween({ azimuthal: angle + Math.PI }); break;
+      case "d":  w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta });  break;
+    }
+  };
+};
 
 /**
  * Make a single hard-coded polygon non-navigable,
@@ -339,7 +356,7 @@ export const setupOnSlowNpc = ({ w, args }) => {
  */
 export async function* w(ctxt) {
   const { api, args, w } = ctxt;
-  const getHandleProm = () => new Promise((resolve, reject) => api.addCleanup(
+  const getHandleProm = () => new Promise((resolve, reject) => api.addCleanUp(
     () => reject("potential ongoing computation")
   ));
 

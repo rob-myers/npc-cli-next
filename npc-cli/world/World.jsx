@@ -1,21 +1,20 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Subject, firstValueFrom } from "rxjs";
-import { filter } from "rxjs/operators";
+import { Subject } from "rxjs";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
 
-import { Vect } from "../geom";
+import { geom } from "../service/geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
-import { debug, isDevelopment, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
+import { debug, isDevelopment, removeFirst, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
 import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
 import { geomorph } from "../service/geomorph";
 import createGmsData from "../service/create-gms-data";
-import { imageLoader, toV3, toXZ } from "../service/three";
+import { imageLoader } from "../service/three";
 import { helper } from "../service/helper";
 import { TexArray } from "../service/tex-array";
 import { WorldContext } from "./world-context";
@@ -464,26 +463,12 @@ export default function World(props) {
 
 /**
  * @typedef StateUtil Utility functions and classes
- * @property {typeof filter} filter
- * @property {typeof firstValueFrom} firstValueFrom
- * @property {typeof import('../geom').Vect['isVectJson']} isVectJson
+ * @property {typeof geom['radRange']} radRange
  * @property {typeof removeFirst} removeFirst
- * @property {typeof Subject} Subject
- * @property {typeof toXZ} toXZ
- * @property {typeof toV3} toV3
- * @property {typeof toPrecision} precision
- * @property {typeof import('../geom').Vect['from']} vectFrom
  */
 
 const lib = {
-  filter,
-  firstValueFrom,
-  isVectJson: Vect.isVectJson,
-  precision: toPrecision,
   removeFirst,
-  vectFrom: Vect.from,
-  Subject,
-  toXZ,
-  toV3,
+  radRange: geom.radRange,
   ...helper,
 };

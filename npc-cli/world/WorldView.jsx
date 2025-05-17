@@ -54,6 +54,7 @@ export default function WorldView(props) {
       pixelRatio: window.devicePixelRatio,
     },
     justLongDown: false,
+    keyDowns: {},
     lastDown: undefined,
     lastScreenPoint: new Vect(),
     normal: {
@@ -215,6 +216,9 @@ export default function WorldView(props) {
       w.threeReady = true;
       w.r3f = /** @type {typeof w['r3f']} */ (rootState);
       w.update(); // e.g. show stats
+    },
+    onKeyDown(e) {
+      Object.values(state.keyDowns).forEach(handler => handler(e.nativeEvent));
     },
     onPausedTick() {
       w.timer.update();
@@ -607,6 +611,7 @@ export default function WorldView(props) {
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
       onContextMenu={e => isTouchDevice() && e.preventDefault()}
+      onKeyDown={state.onKeyDown}
       tabIndex={0}
       {...{ [popUpRootDataAttribute]: true }}
     >
@@ -693,6 +698,7 @@ export default function WorldView(props) {
  * @property {NPC.DownData} [lastDown]
  * Defined iff last pointer was down over the World.
  * @property {boolean} justLongDown
+ * @property {Record<string, (e: KeyboardEvent) => void>} keyDowns
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
  * @property {THREE.Scene} pickingScene Empty scene for picking.
@@ -719,6 +725,7 @@ export default function WorldView(props) {
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
  * @property {() => void} onControlsEnd
  * @property {() => void} onControlsStart
+ * @property {React.KeyboardEventHandler} onKeyDown
  * @property {() => void} onPausedTick
  * @property {(e: React.PointerEvent<HTMLElement>) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerLeave
