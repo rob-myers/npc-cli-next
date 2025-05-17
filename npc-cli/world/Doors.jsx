@@ -25,7 +25,7 @@ export default function Doors(props) {
     lockSigGeom: getBoxGeometry(`${w.key}-lock-lights`),
     lockSigInst: /** @type {*} */ (null),
     movingDoors: new Map(),
-    opacity: 0.6,
+    opacity: 0.4,
     ready: false,
 
     addCuboidAttributes() {
@@ -287,7 +287,7 @@ export default function Doors(props) {
 
       return true;
     },
-  }));
+  }), { reset: { opacity: true } });
 
   w.door = state;
 
