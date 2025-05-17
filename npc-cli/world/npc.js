@@ -780,16 +780,21 @@ export class Npc {
       } else if (k.includes('{') === false) {
         pending[k] = remap;
       } else {
+        let some = false;
         braces(k, { expand: true }).forEach(expanded => {
           if (helper.isSkinPart(expanded) === false) {
-            return warn(`${'expandSkinMap'}: ${'skin'}: ${this.key}: invalid skinPart "${expanded}"`);
+            return warn(`${'expandSkin'}: ${this.key}: invalid skinPart "${expanded}"`);
           }
           const uvKey = `${remap.prefix}_${remap.otherPart ?? expanded}`;
           if (!(uvKey in sheetAux[remap.classKey ?? this.def.classKey].uvMap)) {
             return; // 🔔 `remap.prefix` may not be defined for all {head,body}{,-overlay}
           }
           pending[expanded] = remap;
+          some = true;
         });
+        if (some === false) {
+          warn(`${'expandSkin'}: ${this.key}: ${k}: unused prefix "${remap.prefix}"`);
+        }
       }
     }
 
@@ -813,7 +818,7 @@ export class Npc {
       } else {
         braces(k, { expand: true }).forEach(expanded => {
           if (helper.isSkinPart(expanded) === false) {
-            return warn(`${'expandSkinMap'}: ${'tint'}: ${this.key}: invalid skinPart "${expanded}"`);
+            return warn(`${'expandTint'}: ${this.key}: invalid skinPart "${expanded}"`);
           }
           pending[expanded] = v;
         });
