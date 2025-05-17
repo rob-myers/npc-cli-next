@@ -81,10 +81,12 @@ declare namespace NPC {
   }
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
-    npcKey: string;
-    // skin?: NPC.SkinReMap;
     /**
-     * - `string` for shortcuts e.g. `soldier-0`
+     * Also support syntax `{npcKey}:{skinShortcut}`.
+     */
+    npcKey: string;
+    /**
+     * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
      * - object permits brace-expansion of keys.
      */
     skin?: string | Record<string, SkinReMapValue>;

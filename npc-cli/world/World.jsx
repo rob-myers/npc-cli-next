@@ -4,12 +4,13 @@ import { Subject } from "rxjs";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
 
-import { geom } from "../service/geom";
+import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
 import { debug, isDevelopment, removeFirst, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
+import { geom } from "../service/geom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
 import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
 import { geomorph } from "../service/geomorph";
@@ -463,11 +464,13 @@ export default function World(props) {
 
 /**
  * @typedef StateUtil Utility functions and classes
+ * @property {typeof Vect['isVectJson']} isVectJson
  * @property {typeof geom['radRange']} radRange
  * @property {typeof removeFirst} removeFirst
  */
 
 const lib = {
+  isVectJson: Vect.isVectJson,
   removeFirst,
   radRange: geom.radRange,
   ...helper,
