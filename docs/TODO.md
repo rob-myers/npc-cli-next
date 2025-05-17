@@ -9,6 +9,8 @@
   - specific size
   - scenes from films
     - ✅ can spawn with various skins easily
+    - 🚧 can spawn facing angle easily
+      - maybe `spawn foo $( click 2 )` i.e. 2nd point point we look at
     - alien chest-burster scene
 
 - 🚧 refine chosen carousel embla-carousel
@@ -69,6 +71,9 @@
 
 - ✅ blender: head-overlay-bottom uvs flipped vertically
   - fix beard on base skin
+
+- ✅ bug: tty: `echo --` is empty
+  - probably related to `getopts`
 
 - Ctrl-C "failure" unclear while paused
 - tty: run `spawn bar $( click 1 )` then pause... cannot click

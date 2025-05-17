@@ -215,12 +215,12 @@ class cmdServiceClass {
             "n", // cast as numbers
           ],
         });
-        if (opts.a) {
+        if (opts.a === true) {
           yield opts.n ? operands.map(Number) : operands;
-        } else if (opts.n) {
+        } else if (opts.n === true) {
           for (const operand of operands) yield Number(operand);
         } else {
-          yield operands.join(" ");
+          yield args.join(" ");
         }
         break;
       }
