@@ -157,7 +157,7 @@ const rootPopupCss = css`
   --top-offset: 16px;
   --side-offset: 16px;
 
-  --info-arrow-color: #ffffff77;
+  --info-arrow-color: #999999ff;
   --info-arrow-delta-x: 0px;
   --info-arrow-height: 20px;
   --info-border-color: #ffffff55;;
