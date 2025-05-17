@@ -740,7 +740,7 @@ export default function WorldView(props) {
 
 const rootCss = css`
   user-select: none;
-  background-color: rgba(10, 10, 10, 1);
+  background-color: rgba(30, 30, 30, 1);
 
   canvas[data-engine] {
     width: 100%;
