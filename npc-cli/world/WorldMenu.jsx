@@ -86,7 +86,7 @@ export default function WorldMenu(props) {
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
       w.wall.setOpacity(state.xRayOpacity / 20);
-      // w.ceil.setOpacity(state.xRayOpacity / 20)
+      w.ceil.setOpacity((state.xRayOpacity / 20) + 0.1)
       w.update();
     },
     onClickLoggerLink(e) {
