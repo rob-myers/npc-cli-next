@@ -1,29 +1,12 @@
 awaitWorld
 
-spawn '{ npcKey: "rob", skin: "soldier-0" }' '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
+spawn rob@soldier-0 '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
 
-spawn '{ npcKey: "will", skin: {
-  "head-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
-  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
-  "body-overlay-{front,back,left,right,top,bottom}": { prefix: "scientist-0" },
-  // "body-overlay-{front,back,left,right,top,bottom}": { prefix: "empty", otherPart: "body-front" },
-  //"body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-}}' '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
+spawn will@scientist-0 '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 
-spawn '{ npcKey: "kate", angle: Math.PI, skin: {
-  "head-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
-  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
-  "body-overlay-{front,back,left,right,top,bottom}": { prefix: "medic-0" },
-  //"body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-}}' '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
+spawn kate@medic-0 '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
-spawn '{ npcKey: "suit", angle: Math.PI, skin: {
-  "head-{front,back,left,right,top,bottom}": { prefix: "suit-0" },
-  // "head-overlay-front": { prefix: "empty", otherPart: "body-front" },
-  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "suit-0" },
-  "body-overlay-{front,back,left,right,top,bottom}": { prefix: "suit-0" },
-  //"body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-}}' '{ x: 0.5 * 1.5, y: 5 * 1.5 }'
+spawn suit@suit-0 '{ x: 0.5 * 1.5, y: 5 * 1.5 }'
 
 spawn '{ npcKey: "authority", angle: Math.PI, skin: {
   "head-{front,back,left,right,top,bottom}": { prefix: "police-0" },
