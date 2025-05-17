@@ -355,6 +355,24 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="brightness-filter-3" bx:preset="brightness 1 1.25" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.25"/>
+        <feFuncG type="linear" slope="1.25"/>
+        <feFuncB type="linear" slope="1.25"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="inner-shadow-filter-23" bx:preset="inner-shadow 1 0 0 25 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="25"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -426,10 +444,22 @@
       <path d="M 1008 128 L 1008 192 L 1056 128 L 1008 128 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); transform-origin: 1032px 160px; visibility: hidden;">
         <title>_triangle</title>
       </path>
-      <path d="M 928 0 L 1056 0 L 1056 128 L 1008 128 L 1008 160 L 976 160 L 976 128 L 928 128 Z" style="stroke-width: 12px; alignment-baseline: initial; fill: rgb(186, 127, 85); filter: url(&quot;#inner-shadow-filter-5&quot;);">
+      <path d="M 928 0 L 1056 0 L 1056 128 L 1008 128 L 1008 160 L 976 160 L 976 128 L 928 128 Z" style="stroke-width: 12px; alignment-baseline: initial; fill: rgb(186, 127, 85); filter: url(&quot;#inner-shadow-filter-5&quot;) url(&quot;#brightness-filter-3&quot;);">
         <title>_skin</title>
       </path>
       <path d="M 944 32 L 944 128 L 928 128 L 928 0 L 1056 0 L 1056 128 L 1040 128 L 1040 32 L 944 32 Z" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+      <rect width="128" height="160" style="stroke: rgb(255, 255, 255); stroke-width: 8px; fill: rgb(119, 119, 119); filter: url(&quot;#inner-shadow-filter-23&quot;);" y="128" x="800">
+        <title>_left</title>
+      </rect>
+      <rect width="128" height="160" style="alignment-baseline: initial; stroke: rgb(255, 255, 255); stroke-width: 8px; fill: rgb(119, 119, 119); filter: url(&quot;#inner-shadow-filter-23&quot;);" y="128" x="928">
+        <title>_front</title>
+      </rect>
+      <rect width="128" height="160" style="stroke: rgb(255, 255, 255); stroke-width: 8px; fill: rgb(119, 119, 119); filter: url(&quot;#inner-shadow-filter-23&quot;);" y="128" x="1056">
+        <title>_right</title>
+      </rect>
+      <rect width="128" height="160" style="stroke: rgb(255, 255, 255); stroke-width: 8px; fill: rgb(119, 119, 119); filter: url(&quot;#inner-shadow-filter-23&quot;);" y="128" x="1184">
+        <title>_back</title>
+      </rect>
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 0)" style="filter: url(&quot;#sepia-filter-0&quot;);">
       <title>base_head-overlay</title>

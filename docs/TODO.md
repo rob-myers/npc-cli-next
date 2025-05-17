@@ -53,6 +53,7 @@
     - `w.geomorphs.skin.uvMap`
     - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
   - could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
+- can `spawn foo soldier-0 $( click 1)`
 
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
   - ✅ invert npc (when WorldMenu invert on)
@@ -62,7 +63,7 @@
 
 - ✅ plain-0-body <-> base-0-body
 
-- improve base skin yet again: base-body too basic
+- ✅ improve base skin yet again: base-body too basic
 
 - consider fixing azimuthal rotation and having WASD for e.g.
   - `w view.tween '{ azimuthal: Math.PI/2 }`
