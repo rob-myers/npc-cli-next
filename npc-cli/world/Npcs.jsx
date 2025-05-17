@@ -238,7 +238,8 @@ export default function Npcs(props) {
     },
     async spawn(opts, p) {
       if (typeof opts === 'string') {
-        opts = { npcKey: opts };
+        const [npcKey, skinShortcut] = opts.split('@');
+        opts = { npcKey, skin: skinShortcut };
       }
 
       const point = toXZ(p);
@@ -362,7 +363,7 @@ export default function Npcs(props) {
       return npc;
     },
     tickOnceDebounced: debounce(() => {
-      w.crowd.update(1000 / 60); // agent may no longer exist
+      w.crowd.update(w.timer.getFixedDelta()); // agent may no longer exist
       state.onTick(1000 / 60);
       w.r3f.advance(Date.now()); // so they move
     }, 30, { immediate: true }),
@@ -479,15 +480,26 @@ export default function Npcs(props) {
  * @property {(npcKey: string) => void} remove
  * @property {(npc: NPC.NPC) => void} removeAgent
  * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
- * For example,
+ * Examples:
  * - `"soldier-0"`
  * - `"soldier-0//soldier-0/scientist-0"`
  * - `"soldier-0/-/-/-"`
- * @property {(opts: string | NPC.SpawnOpts, position: MaybeMeta<(Geom.VectJson | THREE.Vector3Like)>) => Promise<NPC.NPC>} spawn
- * - `spawn("rob", { x, y, meta })`
- * - `spawn("rob", { x, y, z, meta })`
- * - `spawn({ npcKey: "rob", classKey: "myClassKey" }, { x, y, z, meta })`
- * - `w npc.spawn rob $( click 1 )`
+ * @property {(
+ *  opts: string | NPC.SpawnOpts,
+ *  position: MaybeMeta<(Geom.VectJson | THREE.Vector3Like)>
+ * ) => Promise<NPC.NPC>} spawn
+ * Examples (js):
+ * ```js
+ * spawn("rob", { x, y, meta })
+ * spawn("rob@soldier-0", { x, y, z, meta })
+ * spawn({ npcKey: "rob", classKey: "myClassKey" }, { x, y, z, meta })
+ * ```
+ * 
+ * Examples (sh):
+ * ```sh
+ * w npc.spawn rob $( click 1 )
+ * w npc.spawn rob@soldier-0 $( click 1 )
+ * ```
  * @property {() => void} tickOnceDebounced
  * @property {() => Promise<void>} tickOnceDebug
  * @property {() => void} update

@@ -81,9 +81,6 @@ declare namespace NPC {
   }
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
-    /**
-     * Also support syntax `{npcKey}:{skinShortcut}`.
-     */
     npcKey: string;
     /**
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
