@@ -264,11 +264,11 @@ class cmdServiceClass {
          * - 🔔 assume keys do not contain double-quote character
          */
         yield args.reduce((agg, arg, index) => {
-          const [key, value] = arg.split(':', 2);
-          if (value === undefined) {
-            agg[index] = key;
+          const colonIndex = arg.indexOf(':');
+          if (colonIndex === -1) {
+            agg[index] = arg;
           } else {
-            agg[key] = parseJsArg(value);
+            agg[arg.slice(0, colonIndex)] = parseJsArg(arg.slice(colonIndex + 1));
           }
           return agg;
         }, {} as Record<string | number, any>);
