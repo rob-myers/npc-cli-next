@@ -12,6 +12,7 @@ import { crowdAgentParams, Npc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
+import { geom } from "../service/geom";
 
 /**
  * @param {Props} props
@@ -236,42 +237,44 @@ export default function Npcs(props) {
       }
       w.menu.measure(`npc.setupSkins`);
     },
-    async spawn(opts, p) {
-      if (typeof opts === 'string') {
-        const [npcKey, skinShortcut] = opts.split('@');
-        opts = { npcKey, skin: skinShortcut };
+    async spawn(opts) {
+      const { at } = opts;
+      const point = toXZ(at);
+
+      if (w.lib.isVectJson(opts.look) === true) {
+        opts.look = toXZ(opts.look);
+        opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
       }
 
-      const point = toXZ(p);
       if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
         throw Error(`npc key: ${JSON.stringify(opts.npcKey)} must match /^[a-z0-9-_]+$/i`);
       } else if (opts.npcKey.length > 10) {
         throw Error(`npc key: ${JSON.stringify(opts.npcKey)} must have length ≤ 10`);
       } else if (!(typeof point?.x === 'number' && typeof point.y === 'number')) {
-        throw Error(`invalid point {x, y}: ${JSON.stringify(p)}`);
+        throw Error(`invalid point {x, y}: ${JSON.stringify(at)}`);
       } else if (opts.npcKey === 'default') {
         throw Error('npc key cannot be "default"');
       }
 
-      const dstNav = p.meta?.nav === true || state.isPointInNavmesh(point);
+      const dstNav = at.meta?.nav === true || state.isPointInNavmesh(point);
       /** Attach agent iff dst navigable */
       const agent = dstNav;
 
-      if (dstNav === false && p.meta?.do !== true) {
-        throw Error(`must spawn on navPoly or do point: ${JSON.stringify(p)}`);
+      if (dstNav === false && at.meta?.do !== true) {
+        throw Error(`must spawn on navPoly or do point: ${JSON.stringify(at)}`);
       } else if (opts.classKey !== undefined && !w.lib.isNpcClassKey(opts.classKey)) {
-        throw Error(`invalid classKey: ${JSON.stringify(p)}`);
+        throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
       
       const gmRoomId = w.gmGraph.findRoomContaining(point, true);
       if (gmRoomId === null) {
-        throw Error(`must be in some room: ${JSON.stringify(p)}`);
+        throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }
 
       let npc = state.npc[opts.npcKey];
 
-      opts.angle ??= typeof p.meta?.orient === 'number'
-        ? p.meta.orient * (Math.PI / 180) // keep using "cw from north"
+      opts.angle ??= typeof at.meta?.orient === 'number'
+        ? at.meta.orient * (Math.PI / 180) // keep using "cw from north"
         : undefined
       ;
 
@@ -325,15 +328,15 @@ export default function Npcs(props) {
       }
       
       // 🔔 input `p` can be Vect (x, y) or Vector3Like (x, y, z)
-      const position = toV3(p);
+      const position = toV3(at);
       // 🔔 non-zero height must be set via `p.meta`
-      position.y = typeof p.meta?.y === 'number' ? p.meta.y : 0;
+      position.y = typeof at.meta?.y === 'number' ? at.meta.y : 0;
 
       npc.position.copy(position);
       npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
-      npc.startAnimation(p.meta ?? {});
+      npc.startAnimation(at.meta ?? {});
 
       if (npc.agent === null) {
         if (agent === true) {
@@ -355,7 +358,7 @@ export default function Npcs(props) {
       }
       
       npc.s.spawns++;
-      npc.s.doMeta = p.meta?.do === true ? p.meta : null;
+      npc.s.doMeta = at.meta?.do === true ? at.meta : null;
 
       npc.s.offMesh = null;
       w.events.next({ key: 'spawned', npcKey: npc.key, gmRoomId });
@@ -484,21 +487,12 @@ export default function Npcs(props) {
  * - `"soldier-0"`
  * - `"soldier-0//soldier-0/scientist-0"`
  * - `"soldier-0/-/-/-"`
- * @property {(
- *  opts: string | NPC.SpawnOpts,
- *  position: MaybeMeta<(Geom.VectJson | THREE.Vector3Like)>
- * ) => Promise<NPC.NPC>} spawn
+ * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
  * ```js
- * spawn("rob", { x, y, meta })
- * spawn("rob@soldier-0", { x, y, z, meta })
- * spawn({ npcKey: "rob", classKey: "myClassKey" }, { x, y, z, meta })
- * ```
- * 
- * Examples (sh):
- * ```sh
- * w npc.spawn rob $( click 1 )
- * w npc.spawn rob@soldier-0 $( click 1 )
+ * spawn({ npcKey: "rob", x, y, meta })
+ * spawn({ npcKey: "rob", skin: "soldier-0", x, y, z, meta })
+ * spawn({ npcKey: "rob", classKey: "human-0", x, y, z, meta })
  * ```
  * @property {() => void} tickOnceDebounced
  * @property {() => Promise<void>} tickOnceDebug

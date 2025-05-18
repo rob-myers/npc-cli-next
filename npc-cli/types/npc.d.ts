@@ -82,6 +82,9 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
+    at: MaybeMeta<(Geom.VectJson | THREE.Vector3Like)>;
+    /** Position to look towards (overrides `angle`) */
+    look?: Geom.VectJson | THREE.Vector3Like;
     /**
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
      * - object permits brace-expansion of keys.

@@ -75,9 +75,15 @@
 - ✅ bug: tty: `echo --` is empty
   - probably related to `getopts`
 
-- 🚧 sh: generic args approach for `spawn`
+- ✅ sh: generic args approach for `spawn`
   - e.g. `spawn npcKey:foo skin:scientist-0 at:"$( click 1 )" look:"$( click 1 )"`
   - ℹ️ more generally, avoid "args order dependency" in game shell functions
+
+- ✅ can spawn-and-look
+  - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
+
+- bug: sh: cannot type hash: #
+- bug: sh: support $@ deeply inside double quotes (?)
 
 - Ctrl-C "failure" unclear while paused
 - tty: run `spawn bar $( click 1 )` then pause... cannot click

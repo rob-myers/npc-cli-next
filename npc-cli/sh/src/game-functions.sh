@@ -8,5 +8,8 @@ gm() {
 }
 
 spawn() {
-  w npc.spawn "$@" >/dev/null
+  # jsarg "$@" | w npc.spawn - >/dev/null
+  # echo "$( jsarg $@ )" # 👈 does not work?
+  local jsArg=$( jsarg "$@" )
+  w npc.spawn "$jsArg" >/dev/null
 }

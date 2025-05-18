@@ -366,29 +366,30 @@ export class Npc {
   /**
    * Fade out, spawn, then fade in.
    * - `spawn` sets `npc.doMeta` when `meta.do === true`
-   * @param {MaybeMeta<Geom.VectJson>} point 
+   * @param {MaybeMeta<Geom.VectJson>} at 
    * @param {object} opts
    * @param {Meta} [opts.meta]
    * @param {number} [opts.angle] clockwise from north from above
    * @param {Key.NpcClass} [opts.classKey]
    * @param {boolean} [opts.requireNav]
    */
-  async fadeSpawn(point, opts = {}) {
+  async fadeSpawn(at, opts = {}) {
     try {
-      Object.assign(point.meta ??= {}, opts.meta);
+      Object.assign(at.meta ??= {}, opts.meta);
       await this.fade(0, 300);
 
       const currPoint = this.getPoint();
-      const dx = point.x - currPoint.x;
-      const dy = point.y - currPoint.y;
+      const dx = at.x - currPoint.x;
+      const dy = at.y - currPoint.y;
 
       await this.w.npc.spawn({
         angle: opts.angle ?? (
           dx === 0 && dy === 0 ? undefined : geom.clockwiseFromNorth(dy, dx)
         ),
+        at,
         classKey: opts.classKey,
         npcKey: this.key,
-      }, point);
+      });
     } finally {
       await this.fade(1, 300);
     }

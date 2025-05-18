@@ -1,19 +1,19 @@
 awaitWorld
 
-spawn rob@soldier-0 '{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
+spawn npcKey:rob skin:soldier-0 at:'{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
 
-spawn will@scientist-0 '{ x: 2.5, y: 3 * 1.5 + 0.2 }'
+spawn npcKey:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 
-spawn kate@medic-0 '{ x: 4.5 * 1.5, y: 7 * 1.5 }'
+spawn npcKey:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 
-spawn suit@suit-0 '{ x: 0.5 * 1.5, y: 5 * 1.5 }'
+spawn npcKey:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }'
 
-spawn '{ npcKey: "authority", angle: Math.PI, skin: {
+spawn npcKey:authority angle:Math.PI skin:'{
   "head-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "police-0" },
   //"body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-}}' '{ x: 1.5 * 1.5, y: 5 * 1.5 }'
+}' at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }'
 
 w n.rob.showSelector true
 selectedNpcKey="rob"
@@ -83,7 +83,6 @@ ptags=no-pause; events | handleLoggerLinks &
 
 setupOnSlowNpc
 
-# keys ASD change azimuthal angle
-changeAngleOnKeyDown
+changeAngleOnKeyDown # WASD camera azimuthal angle
 
 initCamAndLights rob
