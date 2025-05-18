@@ -39,7 +39,7 @@ export default function WorldMenu(props) {
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    xRayOpacity: 8, // [1..20]
+    xRayOpacity: w.smallViewport ? 10 : 13, // [1..20]
 
     applyControlsInitValues() {
       /** @param {any} value */
@@ -86,7 +86,7 @@ export default function WorldMenu(props) {
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
       w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity((state.xRayOpacity / 20) + 0.1)
+      w.ceil.setOpacity((state.xRayOpacity / 20))
       w.update();
     },
     onClickLoggerLink(e) {
