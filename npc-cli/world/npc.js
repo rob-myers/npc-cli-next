@@ -689,6 +689,9 @@ export class Npc {
     if (!Number.isFinite(input)) {
       throw new Error(`${'look'}: 1st arg must be radians or point`);
     }
+    if (this.s.act === 'Sit' || this.s.act === 'Lie') {
+      throw new Error(`${'look'}: cannot whilst "${this.s.act}"`);
+    }
 
     this.s.lookAngleDst = this.getEulerAngle(input);
     this.s.lookSecs = ms / 1000;
