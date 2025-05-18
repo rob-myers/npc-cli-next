@@ -158,10 +158,12 @@ export const changeAngleOnKeyDown = ({ w }) => {
     const delta = Math.PI * 0.5;
     const ratio = angle / delta; // [0..4)
     switch (key) {
-      case "w":  w.view.tween({ azimuthal: Math.round(ratio) * delta });  break;
-      case "a":  w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta });  break;
+      case "w": w.view.tween({ azimuthal: Math.round(ratio) * delta });  break;
+      case "a": w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta });  break;
+      // case "a": w.view.tween({ azimuthal: angle - delta });  break;
       case "s": w.view.tween({ azimuthal: angle + Math.PI }); break;
-      case "d":  w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta });  break;
+      case "d": w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta });  break;
+      // case "d": w.view.tween({ azimuthal: angle + delta });  break;
     }
   };
 };

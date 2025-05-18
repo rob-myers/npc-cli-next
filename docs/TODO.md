@@ -83,8 +83,10 @@
   - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
 
 - ✅ bug: sh: cannot type hash: #
-- bug: sh: support $@ deeply inside double quotes (?)
 
+- wasd camera controls does not work with follow
+  - related to w.view.controls.update(true);
+- bug: sh: support $@ deeply inside double quotes (?)
 - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
 
 - Ctrl-C "failure" unclear while paused
