@@ -25,7 +25,7 @@ export default function Doors(props) {
     lockSigGeom: getBoxGeometry(`${w.key}-lock-lights`),
     lockSigInst: /** @type {*} */ (null),
     movingDoors: new Map(),
-    opacity: 0.4,
+    opacity: 0.5,
     ready: false,
 
     addCuboidAttributes() {
@@ -309,7 +309,7 @@ export default function Doors(props) {
       ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.doorCount]}
       frustumCulled={false}
-      renderOrder={1}
+      renderOrder={3}
       visible={state.ready}
     >
       {state.ready && <instancedAtlasMaterial
@@ -319,7 +319,7 @@ export default function Doors(props) {
         atlas={w.texDecor.tex}
         diffuse={[.5, .5, .5]}
         objectPickRed={4}
-        alphaTest={0} opacity={state.opacity} depthWrite={true}
+        alphaTest={0.1} opacity={state.opacity} depthWrite={false}
       />}
     </instancedMesh>
 
