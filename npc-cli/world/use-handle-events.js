@@ -503,6 +503,7 @@ export default function useHandleEvents(w) {
     },
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
+      const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
 
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (
@@ -522,13 +523,13 @@ export default function useHandleEvents(w) {
 
         // **STOP**
         npc.stopMoving();
-        /** @type {NPC.CrowdAgent} */ (npc.agent).teleport(npc.position); 
+        agent.teleport(npc.position); 
         return;
       }
       
       if (
         offMesh.orig.dstRoomMeta.small === true // small room
-        || npc.isTargetClose(offMesh.dst) === true
+        || (agent.raw.nneis === 0 && npc.isTargetClose(offMesh.dst) === true)
       ) {
         npc.setOffMeshExitSpeed(npc.getMaxSpeed() * 0.5);
       }
