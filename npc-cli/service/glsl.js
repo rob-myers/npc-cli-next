@@ -694,7 +694,10 @@ const instancedWallsShader = {
   Vert: /*glsl*/`
 
   attribute uint instanceIds;
+
   uniform float opacity;
+  uniform float opacityCloseDivisor;
+
   flat varying uint vInstanceId;
   varying float vOpacityScale;
 
@@ -711,8 +714,11 @@ const instancedWallsShader = {
     gl_Position = projectionMatrix * modelViewPosition;
     #include <logdepthbuf_vertex>
 
-    // vOpacityScale = 1.0; // 🚧 remove hard-coded divisor
-    vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / 12.0f;
+    if (opacityCloseDivisor != 0.0) {
+      vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / opacityCloseDivisor;
+    } else {
+      vOpacityScale = 1.0;
+    }
   }
 
   `,
@@ -722,6 +728,7 @@ const instancedWallsShader = {
   uniform vec3 diffuse;
   uniform bool objectPick;
   uniform float opacity;
+
   flat varying uint vInstanceId;
   varying float vOpacityScale;
 
@@ -755,12 +762,20 @@ const instancedWallsShader = {
   `,
 };
 
+/** @type {Required<import('@/npc-cli/types/glsl').InstancedWallsProps>} */
+const instancedWallsDefaultProps = {
+  alphaTest: 0,
+  diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  objectPick: false,
+  objectPickRed: 0,
+  opacity: 1,
+  opacityCloseDivisor: 0,
+};
+
 export const InstancedWallsMaterial = shaderMaterial(
-  {
-    diffuse: new THREE.Vector3(1, 0.5, 0.5),
-    objectPick: false,
-    opacity: 1,
-  },
+  /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
+    instancedWallsDefaultProps
+  ),
   instancedWallsShader.Vert,
   instancedWallsShader.Frag,
 );

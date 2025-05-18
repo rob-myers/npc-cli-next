@@ -9,7 +9,16 @@ declare module '@react-three/fiber' {
   type Vector2Input = import('three').Vector2Tuple | import('three').Vector2;
 
   interface ThreeElements {
-
+    humanZeroMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & HumanZeroMaterialProps
+    );
+    
+    instancedAtlasMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & InstancedAtlasProps
+    );
+    
     instancedFlatMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       diffuse?: Vector3Input;
       /** Assuming model is built of quads, each with uvs covering [0, 1]x[0, 1] */
@@ -18,31 +27,20 @@ declare module '@react-three/fiber' {
       objectPickRed?: number;
     } & SupportsObjectPick;
 
-    humanZeroMaterial: (
+    instancedFloorMaterial: (
       ThreeElement<typeof import('three').ShaderMaterial>
-      & HumanZeroMaterialProps
+      & InstancedFloorProps
     );
 
     instancedLabelsMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
       map: import('three').CanvasTexture;
       diffuse?: Vector3Input;
     };
-
-    instancedWallsMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
-      diffuse?: Vector3Input;
-      opacity?: number;
-    } & SupportsObjectPick;
-
-    instancedAtlasMaterial: (
+    
+    instancedWallsMaterial: (
       ThreeElement<typeof import('three').ShaderMaterial>
-      & InstancedAtlasProps
+      & InstancedWallsProps
     );
-
-    instancedFloorMaterial: (
-      ThreeElement<typeof import('three').ShaderMaterial>
-      & InstancedFloorProps
-    );
-
   }
 }
 
@@ -57,6 +55,16 @@ export interface InstancedAtlasProps {
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;
+}
+
+export interface InstancedWallsProps {
+  alphaTest: number;
+  diffuse: Vector3Input;
+  objectPick?: boolean;
+  objectPickRed?: number;
+  opacity?: number;
+  /** Set `0` to disable */
+  opacityCloseDivisor?: number;
 }
 
 export type InstancedAtlasKeys = keyof InstancedAtlasProps;
