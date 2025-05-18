@@ -9,9 +9,9 @@
   - specific size
   - scenes from films
     - ✅ can spawn with various skins easily
-    - 🚧 can spawn facing angle easily
-      - maybe `spawn foo $( click 2 )` i.e. 2nd point point we look at
-    - alien chest-burster scene
+    - ✅ can spawn facing angle easily
+      - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
+    - 🚧 alien chest-burster scene
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
@@ -84,6 +84,8 @@
 
 - ✅ bug: sh: cannot type hash: #
 - bug: sh: support $@ deeply inside double quotes (?)
+
+- sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
 
 - Ctrl-C "failure" unclear while paused
 - tty: run `spawn bar $( click 1 )` then pause... cannot click
