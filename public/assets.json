@@ -374,7 +374,7 @@
       "obsHashes": [1562717456]
     },
     "stateroom--012--2x2": {"outputHash": 2136347352, "pngHash": 285590873},
-    "stateroom--014--2x2": {"outputHash": 902511521, "pngHash": 810806279},
+    "stateroom--014--2x2": {"outputHash": 1019399589, "pngHash": 810806279},
     "stateroom--018--2x3": {"outputHash": 2021448727, "pngHash": -932858017},
     "stateroom--019--2x3": {"outputHash": -529139179, "pngHash": 464993285},
     "stateroom--020--2x3": {"outputHash": 1946496398, "pngHash": 987326316},
@@ -19053,7 +19053,9 @@
       "doors": [
         {
           "type": "Polygon",
-          "coordinates": [[[2.8, 2.94], [2.8, 3.06], [1.7, 3.06], [1.7, 2.94]]],
+          "coordinates": [
+            [[2.85, 2.94], [2.85, 3.06], [1.7, 3.06], [1.7, 2.94]]
+          ],
           "meta": {"door": true, "locked": true}
         },
         {
