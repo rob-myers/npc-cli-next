@@ -49,8 +49,6 @@ export class ttyXtermClass {
   private linesPerUpdate = 500;
   private refreshMs = 0;
 
-  /** Useful for mobile keyboard inputs (UNUSED) */
-  forceLowerCase = false;
   /**
    * History will be disabled during initial profile,
    * which is actually pasted into the terminal.
@@ -356,11 +354,6 @@ export class ttyXtermClass {
     //   return;
     // }
 
-    if (this.forceLowerCase && data.length > 1 && !data.includes(" ")) {
-      // Force lowercase applies to "words swiped into mobile keyboard"
-      data = data.toLowerCase();
-    }
-
     if (ord == 0x1b) {
       // ansi escape sequences
       switch (data.slice(1)) {
@@ -402,6 +395,9 @@ export class ttyXtermClass {
           if (cursor != null) {
             this.setCursor(cursor);
           }
+          break;
+        case "3": // Alt + 3
+          this.handleCursorInsert('#'); // British
           break;
         case "\x7F": // Ctrl + Backspace
           this.deletePreviousWord();
@@ -471,11 +467,7 @@ export class ttyXtermClass {
           break;
         }
       }
-    } else {
-      // Visible characters
-      if (this.forceLowerCase && data.length === 1 && !this.input.includes("/")) {
-        data = data.toLowerCase();
-      }
+    } else {// Visible characters
       this.handleCursorInsert(data);
     }
   }
@@ -941,9 +933,6 @@ export class ttyXtermClass {
       const prevInput = this.input;
       const prevCursor = this.cursor;
       this.clearInput();
-      if (this.forceLowerCase && !input.includes(" ")) {
-        input = input.toLowerCase();
-      }
       this.setInput(prevInput.slice(0, prevCursor) + input + prevInput.slice(prevCursor));
     } else {
       this.warnIfNotReady();

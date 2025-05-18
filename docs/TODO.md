@@ -82,7 +82,7 @@
 - ✅ can spawn-and-look
   - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
 
-- bug: sh: cannot type hash: #
+- ✅ bug: sh: cannot type hash: #
 - bug: sh: support $@ deeply inside double quotes (?)
 
 - Ctrl-C "failure" unclear while paused
