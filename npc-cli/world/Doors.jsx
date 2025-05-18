@@ -161,15 +161,15 @@ export default function Doors(props) {
       );
     },
     getLockSigMat(door) {
-      const sx = 0.4;
-      const sz = door.hull === true ? hullDoorDepth/4 : doorDepth + 0.025 * 2;
+      const sx = 0.2;
+      const sz = door.hull === true ? hullDoorDepth / 4 : doorDepth / 2;
       const center = tmpVec1.copy(door.src).add(door.dst).scale(0.5);
       if (door.hull === true) {
         center.addScaled(door.normal, -hullDoorDepth/2);
       }
       return geomorph.embedXZMat4(
         [sx * door.dir.x, sx * door.dir.y, sz * door.normal.x, sz * door.normal.y, center.x, center.y],
-        { yScale: 0.1 / 2, yHeight: doorHeight + 0.1, mat4: tmpMatFour1 },
+        { yScale: 0.1 / 2, yHeight: doorHeight + 0.4, mat4: tmpMatFour1 },
       );
     },
     getOpenIds(gmId) {
@@ -336,6 +336,7 @@ export default function Doors(props) {
         diffuse={[1, 1, 1]}
         objectPickRed={9}
         side={THREE.DoubleSide} // fix flipped gm
+        // transparent opacity={0.6}
       />}
     </instancedMesh>
   </>;
