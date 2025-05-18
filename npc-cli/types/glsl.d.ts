@@ -47,7 +47,26 @@ declare module '@react-three/fiber' {
 type Vector4Input = import('three').Vector4Tuple | import('three').Vector4Like;
 type Vector3Input = import('three').Vector3Tuple | import('three').Vector3Like;
 
-// 🚧 migrate all custom shaders
+export interface HumanZeroMaterialProps {
+  atlas: import('three').DataArrayTexture;
+  aux: import('three').DataArrayTexture;
+  globalAux: import('three').DataArrayTexture;
+
+  diffuse: Vector3Input;
+  label: import('three').DataArrayTexture;
+  labelY: number;
+  /* A default value must be provided for object-pick to work */
+  objectPick?: boolean;
+  opacity: number;
+  uid: number;
+
+  // 🚧 move to w.texAux
+  breathTriIds: number[];
+  labelTriIds: number[];
+  selectorTriIds: number[];
+  labelUvRect4: Vector4Input;
+}
+
 export interface InstancedAtlasProps {
   alphaTest: number;
   atlas: import('three').DataArrayTexture;
@@ -55,15 +74,7 @@ export interface InstancedAtlasProps {
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;
-}
-
-export interface InstancedWallsProps {
-  alphaTest: number;
-  diffuse: Vector3Input;
-  objectPick?: boolean;
-  objectPickRed?: number;
-  opacity?: number;
-  /** Set `0` to disable */
+  /** Use value `0` to disable */
   opacityCloseDivisor?: number;
 }
 
@@ -86,24 +97,14 @@ export type InstancedFloorUniforms = Record<
   { value: any }
 >;
 
-export interface HumanZeroMaterialProps {
-  atlas: import('three').DataArrayTexture;
-  aux: import('three').DataArrayTexture;
-  globalAux: import('three').DataArrayTexture;
-
+export interface InstancedWallsProps {
+  alphaTest: number;
   diffuse: Vector3Input;
-  label: import('three').DataArrayTexture;
-  labelY: number;
-  /* A default value must be provided for object-pick to work */
   objectPick?: boolean;
-  opacity: number;
-  uid: number;
-
-  // 🚧 move to w.texAux
-  breathTriIds: number[];
-  labelTriIds: number[];
-  selectorTriIds: number[];
-  labelUvRect4: Vector4Input;
+  objectPickRed?: number;
+  opacity?: number;
+  /** Use value `0` to disable */
+  opacityCloseDivisor?: number;
 }
 
 /** From node_modules/@react-three/drei/core/shaderMaterial.d.ts */

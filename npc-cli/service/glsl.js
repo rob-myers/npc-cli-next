@@ -203,82 +203,93 @@ export const HumanZeroMaterial = shaderMaterial(
 const instancedAtlasShader = {
   Vert: /* glsl */`
 
-    attribute vec2 uvDimensions;
-    attribute vec2 uvOffsets;
-    attribute uint uvTextureIds;
-    // e.g. can be used to infer gmId
-    attribute uint instanceIds;
-  
-    varying vec3 vColor;
-    varying vec2 vUv;
-    flat varying uint vTextureId;
-    flat varying uint vInstanceId;
-    flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
+  // e.g. can be used to infer gmId
+  attribute uint instanceIds;
+  attribute vec2 uvDimensions;
+  attribute vec2 uvOffsets;
+  attribute uint uvTextureIds;
 
-    #include <common>
-    #include <logdepthbuf_pars_vertex>
+  uniform float opacity;
+  uniform float opacityCloseDivisor;
 
-    void main() {
-      // vUv = uv;
-      vUv = (uv * uvDimensions) + uvOffsets;
-      vTextureId = uvTextureIds;
-      vInstanceId = instanceIds;
-      
-      vec4 modelViewPosition = vec4(position, 1.0);
-      modelViewPosition = instanceMatrix * modelViewPosition;
-      modelViewPosition = modelViewMatrix * modelViewPosition;
-      gl_Position = projectionMatrix * modelViewPosition;
+  varying vec3 vColor;
+  flat varying uint vInstanceId;
+  flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
+  varying float vOpacityScale;
+  flat varying uint vTextureId;
+  varying vec2 vUv;
 
-      vColor = vec3(1.0);
-      #ifdef USE_INSTANCING_COLOR
-        vColor.xyz *= instanceColor.xyz;
-      #endif
+  #include <common>
+  #include <logdepthbuf_pars_vertex>
 
-      #include <logdepthbuf_vertex>
+  void main() {
+    // vUv = uv;
+    vUv = (uv * uvDimensions) + uvOffsets;
+    vTextureId = uvTextureIds;
+    vInstanceId = instanceIds;
+    
+    vec4 modelViewPosition = vec4(position, 1.0);
+    modelViewPosition = instanceMatrix * modelViewPosition;
+    modelViewPosition = modelViewMatrix * modelViewPosition;
+    gl_Position = projectionMatrix * modelViewPosition;
+
+    vColor = vec3(1.0);
+    #ifdef USE_INSTANCING_COLOR
+      vColor.xyz *= instanceColor.xyz;
+    #endif
+
+    #include <logdepthbuf_vertex>
+
+    if (opacityCloseDivisor != 0.0) {
+      vOpacityScale = opacity == 1.0 ? 1.0 : (modelViewPosition.z * -1.0) / opacityCloseDivisor;
+    } else {
+      vOpacityScale = 1.0;
     }
+  }
   `,
 
   Frag: /* glsl */`
 
-    uniform bool lit;
-    uniform vec4 litCircle;
-    uniform float alphaTest;
-    uniform bool objectPick;
-    uniform int objectPickRed;
-    uniform sampler2DArray atlas;
-    uniform vec3 diffuse;
-    uniform float opacity;
+  uniform bool lit;
+  uniform vec4 litCircle;
+  uniform float alphaTest;
+  uniform bool objectPick;
+  uniform int objectPickRed;
+  uniform sampler2DArray atlas;
+  uniform vec3 diffuse;
+  uniform float opacity;
 
-    varying vec3 vColor;
-    varying vec2 vUv;
-    flat varying uint vTextureId;
-    flat varying uint vInstanceId;
-    flat varying vec4 vLitCircle;
+  varying vec3 vColor;
+  flat varying uint vInstanceId;
+  flat varying vec4 vLitCircle;
+  varying float vOpacityScale;
+  flat varying uint vTextureId;
+  varying vec2 vUv;
 
-    #include <common>
-    #include <logdepthbuf_pars_fragment>
-  
-    void main() {
+  #include <common>
+  #include <logdepthbuf_pars_fragment>
 
-      vec4 texel = texture(atlas, vec3(vUv, vTextureId));
+  void main() {
 
-      if (objectPick == true) {
-        if (texel.a < alphaTest) discard;
+    vec4 texel = texture(atlas, vec3(vUv, vTextureId));
 
-        gl_FragColor = vec4(
-          float(objectPickRed) / 255.0,
-          float((int(vInstanceId) >> 8) & 255) / 255.0,
-          float(int(vInstanceId) & 255) / 255.0,
-          1
-        );
-      } else {
-        if (texel.a * opacity < alphaTest) discard;
-        
-        gl_FragColor = texel * vec4(vColor * diffuse, opacity);
-      }
+    if (objectPick == true) {
+      if (texel.a < alphaTest) discard;
 
-      #include <logdepthbuf_fragment>
+      gl_FragColor = vec4(
+        float(objectPickRed) / 255.0,
+        float((int(vInstanceId) >> 8) & 255) / 255.0,
+        float(int(vInstanceId) & 255) / 255.0,
+        1
+      );
+    } else {
+      if (texel.a * opacity < alphaTest) discard;
+      
+      gl_FragColor = texel * vec4(vColor * diffuse, opacity * vOpacityScale);
     }
+
+    #include <logdepthbuf_fragment>
+  }
   
   `,
 };
@@ -291,10 +302,10 @@ const instancedAtlasDefaultProps = {
   objectPick: false,
   objectPickRed: 0,
   opacity: 1,
+  opacityCloseDivisor: 0,
   // 🔔 map, mapTransform required else can get weird texture
   // map: null,
   // mapTransform: new THREE.Matrix3(),
-  // colorSpace: false,
 };
 
 /**
