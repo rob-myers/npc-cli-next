@@ -613,7 +613,7 @@ export class Npc {
       if (nei.dist < closeDist) {// maybe cancel traversal
         const other = this.w.a[nei.idx];
         
-        if (
+        if ((
           other.s.target === null &&
           geom.lineSegIntersectsCircle(
             point,
@@ -621,7 +621,12 @@ export class Npc {
             other.getPoint(),
             0.24,
           ) === false
-        ) {// 🔔 permitted if other idle and "not in the way"
+        ) || (
+          other.s.offMesh !== null
+          && this.getOtherDoorwayLead(other) >= 0.4
+        )) {
+          // 🔔 other idle and "not in the way", or
+          // 🔔 other traversing with enough lead
           continue;
         }
 
