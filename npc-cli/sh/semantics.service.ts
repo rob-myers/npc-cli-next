@@ -1,7 +1,7 @@
 import { uid } from "uid";
 
 import type * as Sh from "./parse";
-import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags } from "../service/generic";
+import { jsStringify, last, pause, tagsToMeta, textToTags } from "../service/generic";
 import { parseJsArg } from "../service/generic";
 import useSession, { ProcessStatus } from "./session.store";
 import {
@@ -636,7 +636,7 @@ class semanticsServiceClass {
    * 7. $? Exit code of last completed process
    */
   private async *ParamExp(node: Sh.ParamExp): AsyncGenerator<Expanded, void, unknown> {
-    const { meta, Param, Slice, Repl, Length, Excl, Exp,  } = node;
+    const { meta, Param, Slice, Repl, Length, Excl, Exp } = node;
     if (Repl !== null) {
       // ${_/foo/bar/baz}
       const origParam = reconstructReplParamExp(Repl);
@@ -661,6 +661,8 @@ class semanticsServiceClass {
       yield expand(`${meta.pid}`);
     } else if (Param.Value === "?") {
       yield expand(`${useSession.api.getLastExitCode(meta)}`);
+    } else if (Param.Value === "#") {
+      yield expand(`${useSession.api.getProcess(meta).positionals.slice(1).length}`);
     } else {
       yield expand(this.expandParameter(meta, Param.Value));
     }
