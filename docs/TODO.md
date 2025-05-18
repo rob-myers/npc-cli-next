@@ -75,6 +75,10 @@
 - ✅ bug: tty: `echo --` is empty
   - probably related to `getopts`
 
+- 🚧 sh: generic args approach for `spawn`
+  - e.g. `spawn npcKey:foo skin:scientist-0 at:"$( click 1 )" look:"$( click 1 )"`
+  - ℹ️ more generally, avoid "args order dependency" in game shell functions
+
 - Ctrl-C "failure" unclear while paused
 - tty: run `spawn bar $( click 1 )` then pause... cannot click
   - provide UI `cont` interactive process

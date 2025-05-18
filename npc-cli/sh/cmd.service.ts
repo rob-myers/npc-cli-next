@@ -30,6 +30,8 @@ const commandKeys = {
   false: true,
   /** Get each arg from __TODO__ */
   get: true,
+  /** Convert (possibly named) args to a single JavaScript object */
+  jsarg: true,
   /** List commands */
   help: true,
   /** List previous commands */
@@ -253,6 +255,24 @@ class cmdServiceClass {
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
         const history = ttyShell.getHistory();
         for (const line of history) yield line;
+        break;
+      }
+      case "jsarg": {
+        /**
+         * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
+         * - 'foo:42 bar' -> { "foo": 42, 1: "bar" }
+         * - 🔔 assume keys do not contain double-quote character
+         */
+        yield args.reduce((agg, arg, index) => {
+          const [key, value] = arg.split(':', 2);
+          if (value === undefined) {
+            agg[index] = key;
+          } else {
+            agg[key] = parseJsArg(value);
+          }
+          return agg;
+        }, {} as Record<string | number, any>);
+
         break;
       }
       case "kill": {
@@ -743,6 +763,7 @@ class cmdServiceClass {
     }
   }
 
+  // 🔔 core per-process api
   private readonly processApi = {
     // Overwritten via Function.prototype.bind.
     meta: {} as Sh.BaseMeta,

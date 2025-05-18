@@ -114,6 +114,11 @@ click | map xz | w n.rob.getLookAngle -
 w view.controls | assign '{minDistance:1}'
 
 w n.rob.position | w floor.setTorchTarget -
+
+foo() { jsarg "${@}"; }
+foo bar:[1,4,9] baz:baz qux:42
+foo() { echo $( jsarg "${@}" ); }
+foo bar:[1,4,9] baz:baz qux:42
 ```
 
 ## Working with a branch of `recast-navigation-js`
