@@ -623,7 +623,7 @@ export class Npc {
           ) === false
         ) || (
           other.s.offMesh !== null
-          && this.getOtherDoorwayLead(other) >= 0.4
+          && this.getOtherDoorwayLead(other) >= 0.25
         )) {
           // 🔔 other idle and "not in the way", or
           // 🔔 other traversing with enough lead
