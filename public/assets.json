@@ -3,7 +3,7 @@
     "101--hull": {"outputHash": 484592053, "pngHash": 568633107},
     "102--hull": {"outputHash": 2049753717, "pngHash": 184103855},
     "103--hull": {"outputHash": -1900416967, "pngHash": -1937509879},
-    "301--hull": {"outputHash": -895698910, "pngHash": 787602800},
+    "301--hull": {"outputHash": -1453832475, "pngHash": 787602800},
     "302--hull": {"outputHash": -233330253, "pngHash": -1557128953},
     "303--hull": {"outputHash": -246601453, "pngHash": -299838577},
     "bed--003--1x1.6": {
@@ -6291,6 +6291,62 @@
             "tilt": true,
             "img": "icon--square",
             "transform": [0.15, 0, 0, 0.225, 23.8049, 5.85]
+          }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[6.5, 9], [6.5, 9.75], [6, 9.75], [6, 9]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "nav": true,
+            "h": 0.5,
+            "y": 0,
+            "color": "#999",
+            "transform": [0.5, 0, 0, 0.75, 6, 9]
+          }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[6.5, 10.5], [6.5, 11.25], [6, 11.25], [6, 10.5]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "nav": true,
+            "h": 0.5,
+            "y": 0,
+            "color": "#966",
+            "transform": [0.5, 0, 0, 0.75, 6, 10.5]
+          }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[9, 9], [9, 9.75], [8.5, 9.75], [8.5, 9]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "nav": true,
+            "h": 0.5,
+            "y": 0,
+            "color": "#966",
+            "transform": [0.5, 0, 0, 0.75, 8.5, 9]
+          }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[9, 11.25], [9, 12], [8.5, 12], [8.5, 11.25]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "nav": true,
+            "h": 0.5,
+            "y": 0,
+            "color": "#966",
+            "transform": [0.5, 0, 0, 0.75, 8.5, 11.25]
           }
         }
       ],

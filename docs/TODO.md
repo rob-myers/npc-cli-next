@@ -7,11 +7,11 @@
 - 🚧 redo images in first carousel
   - https://squoosh.app/editor
   - specific size
-  - scenes from films
-    - ✅ can spawn with various skins easily
-    - ✅ can spawn facing angle easily
-      - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
-    - 🚧 alien chest-burster scene
+  - ✅ can spawn with various skins easily
+  - ✅ can spawn facing angle easily
+    - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
+  - 🚧 extend 301 with more decor
+  - mock up scenes from almost-top-down
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
@@ -88,6 +88,8 @@
   - related to w.view.controls.update(true);
 - bug: sh: support $@ deeply inside double quotes (?)
 - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
+
+- can show navMesh via cli
 
 - Ctrl-C "failure" unclear while paused
 - tty: run `spawn bar $( click 1 )` then pause... cannot click
