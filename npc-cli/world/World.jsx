@@ -185,8 +185,10 @@ export default function World(props) {
       const mapChanged = (
         state.mapKey !== props.mapKey ||
         next.hash.map !== state.hash.map ||
-        next.hash.mapNav !== state.hash.mapNav
+        next.hash.mapNav !== state.hash.mapNav ||
+        next.hash.mapDecor !== state.hash.mapDecor // 🔔 needed for meta.roomId in computeGmData
       );
+
       if (mapChanged === true) {
         next.mapKey = props.mapKey;
         const mapDef = next.geomorphs.map[next.mapKey];

@@ -93,6 +93,8 @@ export default function createGmsData() {
       for (const obstacle of gm.obstacles) {
         obstacle.meta.roomId ??= (gmsData.findRoomIdContaining(gm, obstacle.center) ?? -1);
       }
+
+      // 🔔 currently must recompute onchange decor
       for (const decor of gm.decor.concat(gm.labels)) {
         tmpVec1.set(decor.bounds2d.x + decor.bounds2d.width/2, decor.bounds2d.y + decor.bounds2d.height/2);
         decor.meta.roomId ??= (gmsData.findRoomIdContaining(gm, tmpVec1) ?? -1);

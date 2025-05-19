@@ -460,10 +460,7 @@ export default function Decor(props) {
     queryKey: [
       'decor',
       w.key,
-      w.mapKey,
-      w.hash.map,
       w.hash.mapDecor,
-      // w.hash.full,
     ],
 
     async queryFn() {
@@ -487,7 +484,7 @@ export default function Decor(props) {
 
       w.menu.measure('decor.addGm');
 
-      if (mapChanged || justHmr) {
+      if (mapChanged === true || justHmr === true) {
         // Re-instantiate all cleanly
         state.removeAllInstantiated();
         for (const [gmId, gm] of w.gms.entries()) {
