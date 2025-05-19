@@ -181,7 +181,12 @@ export default function World(props) {
         next.geomorphs = geomorph.deserializeGeomorphs(geomorphsJson);
       }
       
-      const mapChanged = dataChanged || state.mapKey !== props.mapKey;
+      // const mapChanged = dataChanged || state.mapKey !== props.mapKey;
+      const mapChanged = (
+        state.mapKey !== props.mapKey ||
+        next.hash.map !== state.hash.map ||
+        next.hash.mapNav !== state.hash.mapNav
+      );
       if (mapChanged === true) {
         next.mapKey = props.mapKey;
         const mapDef = next.geomorphs.map[next.mapKey];
@@ -197,7 +202,6 @@ export default function World(props) {
         GmGraphClass,
         queryFnHash,
       });
-
       
       if (mapChanged === true || gmsDataChanged === true) {
         next.gmsData = createGmsData();
@@ -215,7 +219,7 @@ export default function World(props) {
         state.menu.measure('gmsData');
       }
 
-      if (mapChanged) {
+      if (mapChanged === true) {
         const dimension = floorTextureDimension;
         state.texFloor.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texFloorLight.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
@@ -224,7 +228,7 @@ export default function World(props) {
         state.texVs.ceiling++;
       }
       
-      if (mapChanged || gmsDataChanged || gmGraphChanged) {
+      if (mapChanged === true || gmsDataChanged === true || gmGraphChanged === true) {
         await pause();
         state.menu.measure('gmGraph');
         next.gmGraph = GmGraphClass.fromGms(next.gms, { permitErrors: true });
@@ -242,8 +246,8 @@ export default function World(props) {
         state.gmGraph.dispose();
         state.gmRoomGraph.dispose();
       }
-      if (dataChanged || gmsDataChanged) {
-        // only when GmData lookup has been rebuilt
+      // 🔔 only when GmData lookup has been rebuilt
+      if (mapChanged === true || gmsDataChanged === true) {
         state.gmsData?.dispose();
       }
       Object.assign(state, next);

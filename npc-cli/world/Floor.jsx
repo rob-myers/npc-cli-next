@@ -171,9 +171,6 @@ export default function Floor(props) {
     state.addUvs();
     state.drawRadialLight();
     if (state.inst?.material) state.syncUniforms(); // hmr
-  }, [w.mapKey, w.hash.full]);
-  
-  React.useEffect(() => {
     state.draw().then(() => w.update());
   }, [w.texVs.floor]);
 

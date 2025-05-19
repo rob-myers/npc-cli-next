@@ -30,7 +30,7 @@ declare namespace Geomorph {
     /** `${maps} ${layouts} ${sheets}` */
     full: `${number} ${number} ${number}`;
     
-    /** Hash of current map */
+    /** Hash of current map i.e. a list of gmKeys and transforms. */
     map: number;
     /** 🔔 `mapGmHashes[gmId]` is hash of `map.gms[gmId] = { gmKey, transform }` */
     mapGmHashes: number[];

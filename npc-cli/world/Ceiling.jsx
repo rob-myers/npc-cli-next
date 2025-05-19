@@ -102,7 +102,7 @@ export default function Ceiling(props) {
   React.useEffect(() => {
     state.positionInstances();
     state.draw().then(() => w.update());
-  }, [w.mapKey, w.hash.full, w.texVs.ceiling]);
+  }, [w.texVs.ceiling]);
 
   return (
     <instancedMesh
