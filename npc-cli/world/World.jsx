@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Subject } from "rxjs";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
+import { deltaAngle } from "maath/misc";
 
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
@@ -464,12 +465,14 @@ export default function World(props) {
 
 /**
  * @typedef StateUtil Utility functions and classes
+ * @property {typeof deltaAngle} deltaAngle
  * @property {typeof Vect['isVectJson']} isVectJson
  * @property {typeof geom['radRange']} radRange
  * @property {typeof removeFirst} removeFirst
  */
 
 const lib = {
+  deltaAngle,
   isVectJson: Vect.isVectJson,
   removeFirst,
   radRange: geom.radRange,
