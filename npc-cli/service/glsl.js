@@ -412,12 +412,14 @@ const instancedFlatShader = {
   #include <logdepthbuf_pars_fragment>
 
   void main() {
-    vec4 diffuseColor = vec4(diffuse, 1);
+    vec3 diffuseColor = diffuse;
     #include <logdepthbuf_fragment>
     #include <map_fragment>
 
     float ambientLight = 0.1;
     float normalLight = 0.7;
+
+    diffuseColor = vColor * diffuseColor;
 
     if (quadOutlines == true) {
       float dx = vUvScale.x, dy = vUvScale.y;
@@ -427,13 +429,14 @@ const instancedFlatShader = {
         || vUv.y <= dy
         || vUv.y >= 1.0 - dy
       ) {
-        ambientLight = 0.5;
+        // ambientLight = 0.5;
+        diffuseColor = vec3(0.5);
       }
     }
 
     gl_FragColor = vec4(
-      vColor * vec3(diffuseColor) * (ambientLight + normalLight * dotProduct),
-      diffuseColor.a * opacity
+      diffuseColor * (ambientLight + normalLight * dotProduct),
+      opacity
     );
 
     if (objectPick == true) {
@@ -448,6 +451,18 @@ const instancedFlatShader = {
   `,
 };
 
+/** @type {Required<import('@/npc-cli/types/glsl').InstancedFlatProps>} */
+const instancedFlatDefaultProps = {
+  diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  // map: null,
+  // mapTransform: new THREE.Matrix3(),
+  objectPick: false,
+  objectPickRed: 0,
+  opacity: 1,
+  quadOutlines: false,
+};
+
+
 /**
  * Instanced Flat Shading
  * - Decor cuboids
@@ -455,16 +470,9 @@ const instancedFlatShader = {
  * - Optional quadOutlines (geometry dependent)
  */
 export const InstancedFlatMaterial = shaderMaterial(
-  {
-    diffuse: new THREE.Vector3(1, 0.9, 0.6),
-    // 🔔 map, mapTransform required else can get weird texture
-    map: null,
-    mapTransform: new THREE.Matrix3(),
-    objectPick: false,
-    objectPickRed: 0,
-    opacity: 1,
-    quadOutlines: false,
-  },
+  /** @type {import('@/npc-cli/types/glsl').ShaderMaterialArg} */ (
+    instancedFlatDefaultProps
+  ),
   instancedFlatShader.Vert,
   instancedFlatShader.Frag,
 );

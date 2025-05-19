@@ -19,13 +19,10 @@ declare module '@react-three/fiber' {
       & InstancedAtlasProps
     );
     
-    instancedFlatMaterial: ThreeElement<typeof import('three').ShaderMaterial> & {
-      diffuse?: Vector3Input;
-      /** Assuming model is built of quads, each with uvs covering [0, 1]x[0, 1] */
-      quadOutlines?: boolean;
-      opacity?: number;
-      objectPickRed?: number;
-    } & SupportsObjectPick;
+    instancedFlatMaterial: (
+      ThreeElement<typeof import('three').ShaderMaterial>
+      & InstancedFlatProps
+    );
 
     instancedFloorMaterial: (
       ThreeElement<typeof import('three').ShaderMaterial>
@@ -79,6 +76,15 @@ export interface InstancedAtlasProps {
 }
 
 export type InstancedAtlasKeys = keyof InstancedAtlasProps;
+
+export interface InstancedFlatProps {
+  diffuse?: Vector3Input;
+  /** Assuming model is built of quads, each with uvs covering [0, 1]x[0, 1] */
+  quadOutlines?: boolean;
+  opacity?: number;
+  objectPick?: boolean;
+  objectPickRed?: number;
+}
 
 export interface InstancedFloorProps extends InstancedAtlasProps {
   lightAtlas: import('three').DataArrayTexture;
