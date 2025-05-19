@@ -362,12 +362,12 @@
     <title>decor cuboid table nav h=0.5 y=0 color=#999</title>
   </use>
   <use width="1" height="1" style="transform-origin: 0px 0.5px;" href="#symbol-0" transform="matrix(100, 0, 0, 150, 1200, 2174.5)">
-    <title>decor cuboid table nav h=0.5 y=0 color=#966</title>
+    <title>decor cuboid table nav h=0.5 y=0 color=#666 outline=0.2</title>
   </use>
   <use width="1" height="1" style="transform-origin: 0px 0.5px;" href="#symbol-0" transform="matrix(100, 0, 0, 150, 1700, 1874.5)">
-    <title>decor cuboid table nav h=0.5 y=0 color=#966</title>
+    <title>decor cuboid table nav h=0.5 y=0 color=#888</title>
   </use>
   <use width="1" height="1" style="transform-origin: 0px 0.5px;" href="#symbol-0" transform="matrix(100, 0, 0, 150, 1700, 2324.5)">
-    <title>decor cuboid table nav h=0.5 y=0 color=#966</title>
+    <title>decor cuboid table nav h=0.5 y=0 color=#888</title>
   </use>
 </svg>

@@ -105,6 +105,11 @@ export default function Decor(props) {
       state.cuboidGeom.setAttribute('instanceIds',
         new THREE.InstancedBufferAttribute(new Uint32Array(instanceIds), 1),
       );
+      const outlineShades = state.cuboids.map(({ meta }) => typeof meta.outline === 'number' ? meta.outline : 0.25);
+      state.cuboidGeom.deleteAttribute('outlineShade');
+      state.cuboidGeom.setAttribute('outlineShade',
+        new THREE.InstancedBufferAttribute(new Float32Array(outlineShades), 1),
+      );
     },
     addLabelUvs() {
       const uvOffsets = /** @type {number[]} */ ([]);

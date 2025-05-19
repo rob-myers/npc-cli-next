@@ -330,24 +330,27 @@ export const InstancedAtlasMaterial = shaderMaterial(
  */
 const instancedFlatShader = {
   Vert: /*glsl*/`
+  
+  attribute uint instanceIds;
+  attribute float outlineShade;
 
   uniform bool quadOutlines;
 
   varying float dotProduct;
   varying vec3 vColor;
   flat varying uint vInstanceId;
+  varying float vOutlineShade;
   varying vec2 vUv;
   varying vec2 vUvScale;
-
-  attribute uint instanceIds;
 
   #include <common>
   #include <uv_pars_vertex>
   #include <logdepthbuf_pars_vertex>
 
   void main() {
-    #include <uv_vertex>
+    
     vInstanceId = instanceIds;
+    vOutlineShade = outlineShade;
     vUv = uv;
 
     if (quadOutlines == true) {
@@ -364,7 +367,6 @@ const instancedFlatShader = {
         vUvScale.y = edgeWidth * (1.0 / length(instanceMatrix[1]));
       }
     }
-
 
     vec3 objectNormal = vec3(normal);
     vec3 transformed = vec3(position);
@@ -401,6 +403,7 @@ const instancedFlatShader = {
   uniform bool quadOutlines;
 
   flat varying uint vInstanceId;
+  varying float vOutlineShade;
   varying vec2 vUv;
   varying vec2 vUvScale;
 	varying float dotProduct;
@@ -429,8 +432,7 @@ const instancedFlatShader = {
         || vUv.y <= dy
         || vUv.y >= 1.0 - dy
       ) {
-        // ambientLight = 0.5;
-        diffuseColor = vec3(0.5);
+        diffuseColor = vec3(vOutlineShade);
       }
     }
 
