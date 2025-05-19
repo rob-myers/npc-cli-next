@@ -129,14 +129,14 @@ export async function* initCamAndLights({ api, args, w }) {
   w.floor.showLights = true;
   w.update();
   
-  await w.view.tween({ azimuthal: 0, polar: Math.PI/8 }).catch(() => {});
+  await w.view.tween({ azimuthal: 0, polar: Math.PI / 5.75 }).catch(() => {});
 
   if (w.smallViewport) {
     w.view.ctrlOpts.minAzimuthAngle = 0;
     w.view.ctrlOpts.maxAzimuthAngle = 0;
-    w.view.ctrlOpts.maxPolarAngle = Math.PI/4;
     w.view.ctrlOpts.maxDistance = 25;
   }
+  w.view.ctrlOpts.maxPolarAngle = Math.PI/5;
   
   w.view.canTweenPaused = true;
 
@@ -160,10 +160,8 @@ export const changeAngleOnKeyDown = ({ w }) => {
     switch (key) {
       case "w": w.view.tween({ azimuthal: Math.round(ratio) * delta });  break;
       case "a": w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta });  break;
-      // case "a": w.view.tween({ azimuthal: angle - delta });  break;
       case "s": w.view.tween({ azimuthal: angle + Math.PI }); break;
       case "d": w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta });  break;
-      // case "d": w.view.tween({ azimuthal: angle + delta });  break;
     }
   };
 };

@@ -131,7 +131,7 @@ export default function Walls(props) {
         depthWrite={!transparent}
         transparent={transparent}
         opacity={state.opacity}
-        opacityCloseDivisor={16}
+        opacityCloseDivisor={24}
       />
     </instancedMesh>
   );
