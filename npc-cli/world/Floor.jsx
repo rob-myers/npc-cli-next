@@ -19,11 +19,11 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
-    largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(120, 120, 120, 0.25)'),
+    largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(220, 220, 220, 0.05)'),
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: false,
     showTorch: false,
-    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.1)'),
+    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.05)'),
     torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
     torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
