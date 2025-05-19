@@ -83,7 +83,7 @@ export default function Floor(props) {
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
-      drawPolygons(ct, navPoly, ['#00000055', '#434340', 0.02]);
+      drawPolygons(ct, navPoly, ['#00000077', '#434340', 0.02]);
 
       // grids
       ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);

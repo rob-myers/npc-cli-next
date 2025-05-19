@@ -34,8 +34,8 @@ export default function WorldMenu(props) {
     durationKeys: {},
     invertColor: false,
     logger: /** @type {*} */ (null),
-    loggerHeight: (tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? defaultLoggerHeightPx) / loggerHeightDelta,
-    loggerWidth: (tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? defaultLoggerWidthPx) / defaultLoggerWidthDelta,
+    loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? (defaultLoggerHeightPx) / loggerHeightDelta,
+    loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? (defaultLoggerWidthPx) / defaultLoggerWidthDelta,
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
@@ -291,7 +291,7 @@ const defaultLoggerHeightPx = isSmallViewport() ? 40 : 100;
 const defaultLoggerWidthPx = 800;
 /** Must be a factor of default height */
 const loggerHeightDelta = 20;
-const defaultLoggerWidthDelta = 80;
+const defaultLoggerWidthDelta = 40;
 
 const loggerAndPopUpCss = css`
   position: absolute;

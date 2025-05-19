@@ -317,7 +317,7 @@ export default function Doors(props) {
         side={THREE.DoubleSide}
         transparent
         atlas={w.texDecor.tex}
-        diffuse={[.5, .5, .5]}
+        diffuse={[.3, .3, .3]}
         objectPickRed={4}
         alphaTest={0.1} opacity={state.opacity} depthWrite={true}
       />}
