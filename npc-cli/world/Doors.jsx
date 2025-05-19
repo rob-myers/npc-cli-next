@@ -161,8 +161,8 @@ export default function Doors(props) {
       );
     },
     getLockSigMat(door) {
-      const sx = 0.2;
-      const sz = door.hull === true ? hullDoorDepth / 4 : doorDepth / 2;
+      const sx = 0.3;
+      const sz = door.hull === true ? hullDoorDepth / 2 : doorDepth / 2;
       const center = tmpVec1.copy(door.src).add(door.dst).scale(0.5);
       if (door.hull === true) {
         center.addScaled(door.normal, -hullDoorDepth/2);
@@ -309,7 +309,7 @@ export default function Doors(props) {
       ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.doorCount]}
       frustumCulled={false}
-      renderOrder={3}
+      renderOrder={1}
       visible={state.ready}
     >
       {state.ready && <instancedAtlasMaterial
@@ -319,7 +319,7 @@ export default function Doors(props) {
         atlas={w.texDecor.tex}
         diffuse={[.5, .5, .5]}
         objectPickRed={4}
-        alphaTest={0.1} opacity={state.opacity} depthWrite={false}
+        alphaTest={0.1} opacity={state.opacity} depthWrite={true}
       />}
     </instancedMesh>
 
