@@ -129,7 +129,7 @@ export async function* initCamAndLights({ api, args, w }) {
   w.floor.showLights = true;
   w.update();
   
-  await w.view.tween({ azimuthal: 0, polar: Math.PI/4 }).catch(() => {});
+  await w.view.tween({ azimuthal: 0, polar: Math.PI/8 }).catch(() => {});
 
   if (w.smallViewport) {
     w.view.ctrlOpts.minAzimuthAngle = 0;
