@@ -84,8 +84,8 @@
       "obsHashes": [-446494730]
     },
     "console--051--0.4x0.6": {
-      "outputHash": 1787622651,
-      "pngHash": -874799556,
+      "outputHash": 277664182,
+      "pngHash": -282089648,
       "obsHashes": [-1250375694]
     },
     "couch-and-chairs--006--0.4x2": {
@@ -11246,6 +11246,25 @@
       "doors": [],
       "windows": [],
       "decor": [
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [0.7184, 0.0917],
+              [0.7184, 0.6595],
+              [0.0335, 0.6595],
+              [0.0335, 0.0917]
+            ]
+          ],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 0.2,
+            "y": -0.2,
+            "color": "#999",
+            "transform": [0.6849, 0, 0, 0.5678, 0.0335, 0.0917]
+          }
+        },
         {
           "type": "Polygon",
           "coordinates": [
