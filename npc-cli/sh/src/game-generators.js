@@ -158,16 +158,23 @@ export const changeAngleOnKeyDown = ({ w }) => {
   w.view.keyDowns.changeAngle = async (e) => {
     const key = e.key.toLowerCase();
 
-    if (key === 'w') {
-      return await w.view.tween({
-        polar: Math.abs(w.lib.deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0
-      });
-    }
-
+    // if (key === 'w') {
+    //   return await w.view.tween({
+    //     polar: Math.abs(w.lib.deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0
+    //   });
+    // }
+    
     const angle = w.lib.radRange(w.view.controls.getAzimuthalAngle());
     const delta = Math.PI * 0.5;
     const ratio = angle / delta; // [0..4)
     switch (key) {
+      case "w": {
+        await w.view.tween({
+          azimuthal: Math.round(ratio) * delta,
+          polar: Math.abs(w.lib.deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0,
+        });
+        break;
+      }
       case "a": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
       case "s": await w.view.tween({ azimuthal: angle + Math.PI }); break;
       case "d": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
