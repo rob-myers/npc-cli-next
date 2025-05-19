@@ -24,7 +24,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 15, 0],
+    camInitPos: [0, 25, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -34,7 +34,7 @@ export default function WorldView(props) {
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
       minDistance: 1.5, // target could be ground or npc head
-      maxDistance: 25,
+      maxDistance: 35,
       panSpeed: 2,
       zoomSpeed: 0.5,
     },

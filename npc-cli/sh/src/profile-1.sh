@@ -1,6 +1,6 @@
 awaitWorld
 
-spawn npcKey:rob skin:soldier-0 at:'{ x: 5 * 1.5, y: 6 * 1.5 + 0.2 }'
+spawn npcKey:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 
 spawn npcKey:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }'
 

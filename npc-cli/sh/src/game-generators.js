@@ -129,7 +129,10 @@ export async function* initCamAndLights({ api, args, w }) {
   w.floor.showLights = true;
   w.update();
   
-  await w.view.tween({ azimuthal: 0, polar: Math.PI / 5.75 }).catch(() => {});
+  await w.view.tween({
+    azimuthal: w.smallViewport ? 0  : Math.PI / 5.75,
+    polar: w.smallViewport ? Math.PI / 8 : Math.PI/5,
+  }).catch(() => {});
 
   if (w.smallViewport) {
     w.view.ctrlOpts.minAzimuthAngle = 0;
@@ -143,7 +146,7 @@ export async function* initCamAndLights({ api, args, w }) {
   if (npcKey in w.n) {
     w.view.lockDistance(); // prevent zoom-in while look
     await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-    await w.view.tween({ distance: 18 });
+    await w.view.tween({ distance: 25 });
   }
 
 }
