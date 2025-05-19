@@ -82,9 +82,9 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
-    at: MaybeMeta<(Geom.VectJson | THREE.Vector3Like)>;
+    at: MaybeMeta<(Geom.VectJson | import('three').Vector3Like)>;
     /** Position to look towards (overrides `angle`) */
-    look?: Geom.VectJson | THREE.Vector3Like;
+    look?: Geom.VectJson | import('three').Vector3Like;
     /**
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
      * - object permits brace-expansion of keys.
@@ -285,7 +285,7 @@ declare namespace NPC {
   type Obstacle = {
     id: number;
     o: import("@recast-navigation/core").Obstacle;
-    mesh: THREE.Mesh;
+    mesh: import('three').Mesh;
   };
 
   type ObstacleRef = import("@recast-navigation/core").ObstacleRef;
@@ -328,7 +328,7 @@ declare namespace NPC {
   }
 
   interface ContextMenuContextDef {
-    position: THREE.Vector3;
+    position: import('three').Vector3;
     meta: Meta;
   }
 

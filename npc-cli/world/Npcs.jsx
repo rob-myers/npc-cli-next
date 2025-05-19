@@ -272,6 +272,12 @@ export default function Npcs(props) {
       }
 
       let npc = state.npc[opts.npcKey];
+      
+      // prevent look e.g. if will Lie
+      const nextAnimKey = helper.getAnimKeyFromMeta(at.meta ?? {});
+      if (helper.canAnimKeyLook(nextAnimKey) === false) {
+        opts.angle = opts.look = undefined;
+      }
 
       opts.angle ??= typeof at.meta?.orient === 'number'
         ? at.meta.orient * (Math.PI / 180) // keep using "cw from north"
@@ -336,7 +342,7 @@ export default function Npcs(props) {
       npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
-      npc.startAnimation(at.meta ?? {});
+      npc.startAnimation(at.meta ?? {}); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
         if (agent === true) {

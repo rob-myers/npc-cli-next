@@ -409,23 +409,6 @@ export class Npc {
   }
 
   /**
-   * @param {Meta} meta 
-   * @returns {Key.Anim}
-   */
-  getAnimKeyFromMeta(meta) {
-    switch (true) {
-      case meta.sit:
-        return 'Sit';
-      case meta.stand:
-        return 'Idle';
-      case meta.lie:
-        return 'Lie';
-      default:
-        return 'Idle';
-    }
-  }
-
-  /**
    * Cannot use agent.corners() because ag->ncorners is 0 on offMeshConnection
    */
   getCornerAfterOffMesh() {
@@ -695,7 +678,7 @@ export class Npc {
     if (!Number.isFinite(input)) {
       throw new Error(`${'look'}: 1st arg must be radians or point`);
     }
-    if (this.s.act === 'Sit' || this.s.act === 'Lie') {
+    if (helper.canAnimKeyLook(this.s.act) === false) {
       throw new Error(`${'look'}: cannot whilst "${this.s.act}"`);
     }
 
@@ -1216,7 +1199,7 @@ export class Npc {
    */
   startAnimation(input) {
     if (typeof input !== 'string') {
-      input = this.getAnimKeyFromMeta(input);
+      input = helper.getAnimKeyFromMeta(input);
     }
     const curr = this.m.toAct[this.s.act];
     const next = this.m.toAct[input];

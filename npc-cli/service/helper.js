@@ -126,6 +126,15 @@ export const helper = {
     Walk: true,
   },
 
+  /** @type {Record<Key.Anim, boolean>} */
+  toAnimKeyLookable: {
+    Idle: true,
+    Lie: false,
+    Run: true,
+    Sit: false,
+    Walk: true,
+  },
+
   fromSkinPart: /** @type {const} */ ({
     'head-front': true,
     'head-back': true,
@@ -161,6 +170,13 @@ export const helper = {
   }),
 
   /**
+   * @param {Key.Anim} animKey 
+   */
+  canAnimKeyLook(animKey) {
+    return helper.toAnimKeyLookable[animKey];
+  },
+
+  /**
    * Try construct degenerate "id" from partial.
    * @param {Partial<Geomorph.GmDoorId>} meta 
    * @returns {null | Geomorph.GmDoorId}
@@ -180,6 +196,23 @@ export const helper = {
       };
     } else {
       return null;
+    }
+  },
+
+  /**
+   * @param {Meta} meta 
+   * @returns {Key.Anim}
+   */
+  getAnimKeyFromMeta(meta) {
+    switch (true) {
+      case meta.sit:
+        return 'Sit';
+      case meta.stand:
+        return 'Idle';
+      case meta.lie:
+        return 'Lie';
+      default:
+        return 'Idle';
     }
   },
 
