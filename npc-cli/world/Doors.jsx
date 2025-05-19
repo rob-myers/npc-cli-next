@@ -169,7 +169,7 @@ export default function Doors(props) {
       }
       return geomorph.embedXZMat4(
         [sx * door.dir.x, sx * door.dir.y, sz * door.normal.x, sz * door.normal.y, center.x, center.y],
-        { yScale: 0.1 / 2, yHeight: doorHeight + 0.4, mat4: tmpMatFour1 },
+        { yScale: 0.1 / 2, yHeight: doorHeight + 0.1, mat4: tmpMatFour1 },
       );
     },
     getOpenIds(gmId) {
