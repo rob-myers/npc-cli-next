@@ -203,7 +203,7 @@ export default function World(props) {
         
         // ensure GmData per gmKey in map
         state.menu.measure('gmsData');
-        const breathingSpaceMs = 100;
+        const breathingSpaceMs = 0;
         for (const gmKey of new Set(next.gms.map(({ key }) => key))) {
           if (next.gmsData[gmKey].unseen) {
             await pause(breathingSpaceMs);
