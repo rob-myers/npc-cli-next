@@ -97,7 +97,7 @@ export default function Floor(props) {
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
-      drawPolygons(ct, shadowPolys, ['#000', null]);
+      drawPolygons(ct, shadowPolys, ['#101010', null]);
 
       // walls
       // drawPolygons(ct, gm.walls, ['#000', null]);
