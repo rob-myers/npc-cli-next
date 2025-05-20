@@ -49,13 +49,13 @@ export default function Ceiling(props) {
       const black = 'black';
       const grey90 = 'rgb(90, 90, 90)';
       const wallsColor = '#333';
-      const wallsHighlight = '#666';
+      const wallsHighlight = '#999';
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      drawPolygons(ct, tops.nonHull, ['#001', wallsHighlight, thickLineWidth]);
-      // drawPolygons(ct, tops.nonHull, [wallsHighlight, '#001', thickLineWidth]);
-      drawPolygons(ct, tops.window, [black, wallsColor, thinLineWidth]);
+      // drawPolygons(ct, tops.nonHull, ['#001', wallsHighlight, thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, [wallsHighlight, '#001', thickLineWidth]);
+      drawPolygons(ct, tops.window, [black, wallsHighlight, thickLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
       // drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
