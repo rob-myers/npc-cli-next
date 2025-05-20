@@ -256,7 +256,7 @@ export class GmGraphClass extends BaseGraph {
     const adjRoomId = /** @type {number} */ (roomIds.find(x => typeof x === 'number'));
     const adjGmRoomKey = helper.getGmRoomKey(adjGmId, adjRoomId);
 
-    cached = { adjGmId, adjRoomId, adjHullId: dstHullDoorId, adjDoorId, adjGmRoomKey }
+    cached = { adjGmId, adjRoomId, adjHullId: dstHullDoorId, adjDoorId, adjGmRoomKey, adjGdKey: `g${adjGmId}d${adjDoorId}` }
     return this.adjRoomCtxt.set(cacheKey, cached), cached;
   }
 
