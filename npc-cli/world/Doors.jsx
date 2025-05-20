@@ -162,7 +162,7 @@ export default function Doors(props) {
     },
     getLockSigMat(door) {
       const sx = 0.3;
-      const sz = door.hull === true ? hullDoorDepth / 2 : doorDepth / 2;
+      const sz = door.hull === true ? hullDoorDepth / 2 : doorDepth * 1.5;
       const center = tmpVec1.copy(door.src).add(door.dst).scale(0.5);
       if (door.hull === true) {
         center.addScaled(door.normal, -hullDoorDepth/2);
