@@ -289,6 +289,18 @@ export default function useHandleEvents(w) {
         case "try-close-door":
           state.tryCloseDoor(e.gmId, e.doorId, e.meta);
           break;
+        case "locked-door":
+          if (e.meta.hull === true) {
+            const adj = w.gmGraph.getAdjacentRoomCtxt(e.gmId, e.doorId);
+            adj?.adjGdKey && state.toggleLock(adj.adjGdKey, { lock: true, access: true });
+          }
+          break;
+        case "unlocked-door":
+          if (e.meta.hull === true) {
+            const adj = w.gmGraph.getAdjacentRoomCtxt(e.gmId, e.doorId);
+            adj?.adjGdKey && state.toggleLock(adj.adjGdKey, { unlock: true, access: true });
+          }
+          break;
       }
     },
     handleNpcEvents(e) {
@@ -456,9 +468,9 @@ export default function useHandleEvents(w) {
         return; // door already open
       }
 
-      if (door.auto === true && door.locked === false) {
+      if (door.auto === true) {// open auto door if unlocked or accessible
         state.toggleDoor(e.gdKey, { open: true, npcKey: e.npcKey });
-        return; // opened auto unlocked door
+        return;
       }
     },
     onEnterOffMeshConnection(e, npc) {
@@ -726,7 +738,7 @@ export default function useHandleEvents(w) {
 
       // clear if already closed and offMeshConnection free
       opts.clear = door.open === false || !(state.doorToOffMesh[gdKey]?.length > 0);
-      
+
       opts.access ??= (
         opts.npcKey === undefined
         || (door.auto === true && door.locked === false)

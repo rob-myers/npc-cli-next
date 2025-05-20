@@ -279,10 +279,8 @@ export default function Doors(props) {
       state.lockSigInst.setColorAt(door.instanceId, getColor(door.locked ? doorLockedColor : doorUnlockedColor));
       /** @type {THREE.InstancedBufferAttribute} */ (state.lockSigInst.instanceColor).needsUpdate = true;
 
-      w.events.next(door.locked ? {
-        key: 'locked-door', gmId: door.gmId, doorId: door.doorId,
-      } : {
-        key: 'unlocked-door', gmId: door.gmId, doorId: door.doorId,
+      w.events.next({
+        key: door.locked ? 'locked-door' : 'unlocked-door', gmId: door.gmId, doorId: door.doorId, meta: door.door.meta,
       });
 
       return true;
