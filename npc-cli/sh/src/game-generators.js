@@ -146,7 +146,7 @@ export async function* initCamAndLights({ api, args, w }) {
   if (npcKey in w.n) {
     w.view.lockDistance(); // prevent zoom-in while look
     await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-    await w.view.tween({ distance: 25 });
+    await w.view.tween({ distance: 12 });
   }
 
 }
