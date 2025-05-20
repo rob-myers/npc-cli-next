@@ -354,7 +354,7 @@ export default function World(props) {
         {state.geomorphs && (
           <group>
             <React.Suspense>
-              {state.crowd && <>
+              {state.crowd !== null && <>
                 <Decor />
                 <Npcs />
                 <Debug
