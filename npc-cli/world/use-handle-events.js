@@ -290,13 +290,13 @@ export default function useHandleEvents(w) {
           state.tryCloseDoor(e.gmId, e.doorId, e.meta);
           break;
         case "locked-door":
-          if (e.meta.hull === true) {
+          if (e.meta.hull === true) {// sync other door
             const adj = w.gmGraph.getAdjacentRoomCtxt(e.gmId, e.doorId);
             adj?.adjGdKey && state.toggleLock(adj.adjGdKey, { lock: true, access: true });
           }
           break;
         case "unlocked-door":
-          if (e.meta.hull === true) {
+          if (e.meta.hull === true) {// sync other door
             const adj = w.gmGraph.getAdjacentRoomCtxt(e.gmId, e.doorId);
             adj?.adjGdKey && state.toggleLock(adj.adjGdKey, { unlock: true, access: true });
           }
@@ -511,6 +511,11 @@ export default function useHandleEvents(w) {
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
 
       w.door.toggleDoorRaw(door, { open: true, access: true }); // force open door (open longer)
+      if (door.hull === true) {// sync other door
+        const adj = w.gmGraph.getAdjacentRoomCtxt(door.gmId, door.doorId);
+        adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
+      }
+
       w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.srcGrKey) });
     },
     onEnterOffMeshConnectionMain(e, npc) {
