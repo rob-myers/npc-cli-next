@@ -36,6 +36,7 @@ export default function WorldView(props) {
       minDistance: 1.5, // target could be ground or npc head
       maxDistance: 35,
       panSpeed: 2,
+      rotateSpeed: 0.5,
       zoomSpeed: 0.5,
     },
     cssFilter: [
