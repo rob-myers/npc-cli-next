@@ -487,15 +487,26 @@ class cmdServiceClass {
         );
       }
       case "rm": {
+        const { opts, operands } = getOpts(args, {
+          boolean: ["f"],
+        });
+
         const root = this.provideProcessCtxt(meta);
         const pwd = useSession.api.getVar<string>(meta, "PWD");
-        for (const path of args) {
+        const force = opts.f === true;
+
+        for (const path of operands) {
           const parts = computeNormalizedParts(path, pwd);
           if (parts[0] === "home" && parts.length > 1) {
             const last = parts.pop() as string;
-            delete resolveNormalized(parts, root)[last];
-          } else {
-            throw new ShError(`cannot delete ${path}`, 1);
+            const parent = resolveNormalized(parts, root);
+            if (last in parent) {
+              delete resolveNormalized(parts, root)[last]
+            } else if (!force) {
+              throw new ShError(`${path}: not found`, 1);
+            }
+          } else if (!force) {
+            throw new ShError(`${path}: only /home/* writable`, 1);
           }
         }
         break;
