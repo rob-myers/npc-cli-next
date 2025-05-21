@@ -83,6 +83,7 @@
 - ✅ bug: sh: cannot type hash: #
 
 - 🚧 sh: `move` command?
+  - 🚧 npc.move has single arg
   - cleanUp will move.reject
   - onSleep will pin to current position
   - onResume will replan

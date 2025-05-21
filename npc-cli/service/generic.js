@@ -349,6 +349,26 @@ export function mapValues(input, transform) {
 }
 
 /**
+ * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
+ * - 'foo:42 bar' -> { "foo": 42, 1: "bar" }
+ * - 🔔 assume keys do not contain double-quote character
+ * 
+ * @param {string[]} args
+ * @returns {Record<string | number, any>}
+ */
+export function parseArgsAsJs(args) {
+  return args.reduce((agg, arg, index) => {
+    const colonIndex = arg.indexOf(':');
+    if (colonIndex === -1) {
+      agg[index] = arg;
+    } else {
+      agg[arg.slice(0, colonIndex)] = parseJsArg(arg.slice(colonIndex + 1));
+    }
+    return agg;
+  }, /** @type {Record<string | number, any>} */ ({}))
+}
+
+/**
  * Parse input with string fallback
  * - preserves `undefined`
  * - preserves empty-string

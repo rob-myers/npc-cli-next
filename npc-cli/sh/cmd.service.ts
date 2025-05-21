@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsonCompact } from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsonCompact, parseArgsAsJs } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
@@ -258,21 +258,7 @@ class cmdServiceClass {
         break;
       }
       case "jsarg": {
-        /**
-         * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
-         * - 'foo:42 bar' -> { "foo": 42, 1: "bar" }
-         * - 🔔 assume keys do not contain double-quote character
-         */
-        yield args.reduce((agg, arg, index) => {
-          const colonIndex = arg.indexOf(':');
-          if (colonIndex === -1) {
-            agg[index] = arg;
-          } else {
-            agg[arg.slice(0, colonIndex)] = parseJsArg(arg.slice(colonIndex + 1));
-          }
-          return agg;
-        }, {} as Record<string | number, any>);
-
+        yield parseArgsAsJs(args);
         break;
       }
       case "kill": {
@@ -860,6 +846,8 @@ class cmdServiceClass {
     },
 
     observableToAsyncIterable,
+
+    parseArgsAsJs,
 
     /** js parse with string fallback */
     parseJsArg,

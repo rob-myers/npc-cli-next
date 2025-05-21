@@ -30,7 +30,9 @@ export const changeAngleOnKeyDown = ({ w }) => {
 };
 
 /**
- * e.g. events | handleContextMenu
+ * ```sh
+ * events | handleContextMenu
+ * ```
  * @param {import('./').RunArg<NPC.Event>} ctxt
  */
 export async function* handleContextMenu({ api, w, datum: e }) {
@@ -144,6 +146,19 @@ export async function* initCamAndLights({ api, args, w }) {
     await w.view.tween({ distance: 12 });
   }
 
+}
+
+/**
+ * ```sh
+ * move npcKey:rob arriveAnim:none
+ * ```
+ * @param {import('./').RunArg} ctxt
+ */
+export async function* move({ api, args, w, datum }) {
+  // 🚧
+  const jsArg = api.parseArgsAsJs(args);
+  yield jsArg;
+  
 }
 
 /**
