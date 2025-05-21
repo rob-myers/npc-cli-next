@@ -1,42 +1,4 @@
 /**
- * ```sh
- * initCamAndLights rob # initially look at rob
- * ```
- * @param {import('./').RunArg} ctxt
- */
-export async function* initCamAndLights({ api, args, w }) {
-
-  const [npcKey] = args;
-
-  // turn off "tween while paused" so can pause profile
-  w.view.canTweenPaused = false;
-  w.floor.showTorch = false;
-  w.floor.showLights = true;
-  w.update();
-  
-  await w.view.tween({
-    azimuthal: 0,
-    polar: w.smallViewport ? Math.PI / 8 : Math.PI/5,
-  }).catch(() => {});
-
-  // if (w.smallViewport) {
-  //   w.view.ctrlOpts.minAzimuthAngle = 0;
-  //   w.view.ctrlOpts.maxAzimuthAngle = 0;
-  //   w.view.ctrlOpts.maxDistance = 25;
-  // }
-  w.view.ctrlOpts.maxPolarAngle = Math.PI/5;
-  
-  w.view.canTweenPaused = true;
-
-  if (npcKey in w.n) {
-    w.view.lockDistance(); // prevent zoom-in while look
-    await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-    await w.view.tween({ distance: 12 });
-  }
-
-}
-
-/**
  * @param {import('./').RunArg} ctxt
  */
 export const changeAngleOnKeyDown = ({ w }) => {
@@ -66,78 +28,6 @@ export const changeAngleOnKeyDown = ({ w }) => {
     }
   };
 };
-
-/**
- * Make a single hard-coded polygon non-navigable,
- * and also indicate it via debug polygon.
- * ```sh
- * selectPolysDemo [{queryFilterType}=0]
- * ```
- * @param {import('./').RunArg} ctxt
- */
-export async function* selectPolysDemo({ w, args }) {
-    const queryFilterType = Number(args[0]) || 0;
-    const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
-      { x: 3.5 * 1.5, y: 0, z: 7 * 1.5 },
-      { x: 0.01, y: 0.1, z: 0.01 },
-      { maxPolys: 1 },
-    );
-    console.log({ polyRefs });
-
-    const filter = w.crowd.getFilter(queryFilterType);
-    const { navPolyFlag } = w.lib;
-    // by default all polys should not match this bitmask:
-    filter.excludeFlags = navPolyFlag.unWalkable;
-    polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
-    w.debug.selectNavPolys(...polyRefs); // display via debug
-}
-
-/**
- * 🔔 "export const" uses `call` rather than `map`
- * @param {import('./').RunArg} ctxt
- */
-export const setupContextMenu = ({ w }) => {
-
-  w.cm.match.door = ({ meta }) => {
-    const showLinks = /** @type {NPC.ContextMenuLink[]} */ ([]);
-
-    showLinks.push({ key: "look", label: "look" });
-
-    if (typeof meta.switch === "number") {
-      showLinks.push(
-        { key: "open", label: "open" },
-        { key: "close", label: "close" },
-        { key: "lock", label: "lock" },
-        { key: "unlock", label: "unlock" },
-        // 🚧 ring bell
-      );
-    }
-
-    if (meta.door === true) {
-      showLinks.push(
-        { key: "open", label: "open" },
-        { key: "close", label: "close" },
-        { key: "lock", label: "lock" },
-        { key: "unlock", label: "unlock" },
-        // 🚧 knock
-      );
-    }
-
-    if (typeof meta.npcKey === "string") {
-      showLinks.push({
-        key: "follow",
-        label: "follow",
-        selected() {
-          return w.e.isFollowingNpc(meta.npcKey);
-        },
-      });
-    }
-
-    return { showLinks };
-  };
-
-  w.cm.toggleDocked(true);
-}
 
 /**
  * e.g. events | handleContextMenu
@@ -216,6 +106,116 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
     }
 
   }
+}
+
+/**
+ * ```sh
+ * initCamAndLights rob # initially look at rob
+ * ```
+ * @param {import('./').RunArg} ctxt
+ */
+export async function* initCamAndLights({ api, args, w }) {
+
+  const [npcKey] = args;
+
+  // turn off "tween while paused" so can pause profile
+  w.view.canTweenPaused = false;
+  w.floor.showTorch = false;
+  w.floor.showLights = true;
+  w.update();
+  
+  await w.view.tween({
+    azimuthal: 0,
+    polar: w.smallViewport ? Math.PI / 8 : Math.PI/5,
+  }).catch(() => {});
+
+  // if (w.smallViewport) {
+  //   w.view.ctrlOpts.minAzimuthAngle = 0;
+  //   w.view.ctrlOpts.maxAzimuthAngle = 0;
+  //   w.view.ctrlOpts.maxDistance = 25;
+  // }
+  w.view.ctrlOpts.maxPolarAngle = Math.PI/5;
+  
+  w.view.canTweenPaused = true;
+
+  if (npcKey in w.n) {
+    w.view.lockDistance(); // prevent zoom-in while look
+    await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
+    await w.view.tween({ distance: 12 });
+  }
+
+}
+
+/**
+ * Make a single hard-coded polygon non-navigable,
+ * and also indicate it via debug polygon.
+ * ```sh
+ * selectPolysDemo [{queryFilterType}=0]
+ * ```
+ * @param {import('./').RunArg} ctxt
+ */
+export async function* selectPolysDemo({ w, args }) {
+    const queryFilterType = Number(args[0]) || 0;
+    const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
+      { x: 3.5 * 1.5, y: 0, z: 7 * 1.5 },
+      { x: 0.01, y: 0.1, z: 0.01 },
+      { maxPolys: 1 },
+    );
+    console.log({ polyRefs });
+
+    const filter = w.crowd.getFilter(queryFilterType);
+    const { navPolyFlag } = w.lib;
+    // by default all polys should not match this bitmask:
+    filter.excludeFlags = navPolyFlag.unWalkable;
+    polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
+    w.debug.selectNavPolys(...polyRefs); // display via debug
+}
+
+/**
+ * 🔔 "export const" uses `call` rather than `map`
+ * @param {import('./').RunArg} ctxt
+ */
+export const setupContextMenu = ({ w }) => {
+
+  w.cm.match.door = ({ meta }) => {
+    const showLinks = /** @type {NPC.ContextMenuLink[]} */ ([]);
+
+    showLinks.push({ key: "look", label: "look" });
+
+    if (typeof meta.switch === "number") {
+      showLinks.push(
+        { key: "open", label: "open" },
+        { key: "close", label: "close" },
+        { key: "lock", label: "lock" },
+        { key: "unlock", label: "unlock" },
+        // 🚧 ring bell
+      );
+    }
+
+    if (meta.door === true) {
+      showLinks.push(
+        { key: "open", label: "open" },
+        { key: "close", label: "close" },
+        { key: "lock", label: "lock" },
+        { key: "unlock", label: "unlock" },
+        // 🚧 knock
+      );
+    }
+
+    if (typeof meta.npcKey === "string") {
+      showLinks.push({
+        key: "follow",
+        label: "follow",
+        selected() {
+          return w.e.isFollowingNpc(meta.npcKey);
+        },
+      });
+    }
+
+    return { showLinks };
+  };
+
+  w.cm.toggleDocked(true);
 }
 
 /**
