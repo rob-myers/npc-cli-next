@@ -342,6 +342,73 @@ export class Npc {
   }
 
   /**
+   * Brace expansion of keys of `this.skin` e.g.
+   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
+   * - Any keys with braces will be expanded and removed.
+   * - Later keys override earlier ones.
+   * - We ignore unresolved expansions (they needn't be errors).
+   */
+  expandSkin() {
+    const lookup = this.skin;
+    const pending = /** @type {typeof lookup} */ ({});
+    const { sheetAux } = this.w.npc;
+
+    for (const k of keys(lookup)) {
+      const remap = lookup[k];
+      if (remap === undefined) {
+        continue;
+      } else if (k.includes('{') === false) {
+        pending[k] = remap;
+      } else {
+        let some = false;
+        braces(k, { expand: true }).forEach(expanded => {
+          if (helper.isSkinPart(expanded) === false) {
+            return warn(`${'expandSkin'}: ${this.key}: invalid skinPart "${expanded}"`);
+          }
+          const uvKey = `${remap.prefix}_${remap.otherPart ?? expanded}`;
+          if (!(uvKey in sheetAux[remap.classKey ?? this.def.classKey].uvMap)) {
+            return; // 🔔 `remap.prefix` may not be defined for all {head,body}{,-overlay}
+          }
+          pending[expanded] = remap;
+          some = true;
+        });
+        if (some === false) {
+          warn(`${'expandSkin'}: ${this.key}: ${k}: unused prefix "${remap.prefix}"`);
+        }
+      }
+    }
+
+    this.skin = pending;
+  }
+
+  /**
+   * Brace expansion of keys of `this.tint`, e.g.
+   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
+   * - Any keys with braces will be expanded and removed.
+   * - Later keys override earlier ones.
+   */
+  expandTint() {
+    const lookup = this.tint;
+    const pending = /** @type {typeof lookup} */ ({});
+
+    for (const k of keys(lookup)) {
+      const v = lookup[k];
+      if (k.includes('{') === false) {
+        pending[k] = v;
+      } else {
+        braces(k, { expand: true }).forEach(expanded => {
+          if (helper.isSkinPart(expanded) === false) {
+            return warn(`${'expandTint'}: ${this.key}: invalid skinPart "${expanded}"`);
+          }
+          pending[expanded] = v;
+        });
+      }
+    }
+
+    this.tint = pending;
+  }
+
+  /**
    * @param {number} [opacityDst] 
    * @param {number} [ms] 
    */
@@ -479,6 +546,12 @@ export class Npc {
     ;
   }
 
+  getMaxSpeed() {
+    // return 0.5;
+    // return this.def.runSpeed;
+    return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
+  }
+
   getNextCorner() {
     const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
     const offset = agent.state() === 2 ? 6 : 0;
@@ -487,6 +560,16 @@ export class Npc {
       y: agent.raw.get_cornerVerts(offset + 1),
       z: agent.raw.get_cornerVerts(offset + 2),
     };
+  }
+
+  /**
+   * Given another npc in the same doorway, get how far ahead it is.
+   * @param {NPC.NPC} other an npc in same doorway
+   */
+  getOtherDoorwayLead(other) {
+    const offMesh = /** @type {NPC.OffMeshState} */ (other.s.offMesh);
+    const direction = tmpVect1.copy(offMesh.dst).sub(offMesh.src).normalize();
+    return ((other.position.x - this.position.x) * direction.x) + ((other.position.z - this.position.z) * direction.y);
   }
 
   /** @returns {Geom.VectJson} */
@@ -506,22 +589,6 @@ export class Npc {
     } else {
       return helper.defaults.radius;
     }
-  }
-
-  getMaxSpeed() {
-    // return 0.5;
-    // return this.def.runSpeed;
-    return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
-  }
-
-  /**
-   * Given another npc in the same doorway, get how far ahead it is.
-   * @param {NPC.NPC} other an npc in same doorway
-   */
-  getOtherDoorwayLead(other) {
-    const offMesh = /** @type {NPC.OffMeshState} */ (other.s.offMesh);
-    const direction = tmpVect1.copy(offMesh.dst).sub(offMesh.src).normalize();
-    return ((other.position.x - this.position.x) * direction.x) + ((other.position.z - this.position.z) * direction.y);
   }
 
   /**
@@ -755,73 +822,6 @@ export class Npc {
   }
 
   /**
-   * Brace expansion of keys of `this.skin` e.g.
-   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
-   * - Any keys with braces will be expanded and removed.
-   * - Later keys override earlier ones.
-   * - We ignore unresolved expansions (they needn't be errors).
-   */
-  expandSkin() {
-    const lookup = this.skin;
-    const pending = /** @type {typeof lookup} */ ({});
-    const { sheetAux } = this.w.npc;
-
-    for (const k of keys(lookup)) {
-      const remap = lookup[k];
-      if (remap === undefined) {
-        continue;
-      } else if (k.includes('{') === false) {
-        pending[k] = remap;
-      } else {
-        let some = false;
-        braces(k, { expand: true }).forEach(expanded => {
-          if (helper.isSkinPart(expanded) === false) {
-            return warn(`${'expandSkin'}: ${this.key}: invalid skinPart "${expanded}"`);
-          }
-          const uvKey = `${remap.prefix}_${remap.otherPart ?? expanded}`;
-          if (!(uvKey in sheetAux[remap.classKey ?? this.def.classKey].uvMap)) {
-            return; // 🔔 `remap.prefix` may not be defined for all {head,body}{,-overlay}
-          }
-          pending[expanded] = remap;
-          some = true;
-        });
-        if (some === false) {
-          warn(`${'expandSkin'}: ${this.key}: ${k}: unused prefix "${remap.prefix}"`);
-        }
-      }
-    }
-
-    this.skin = pending;
-  }
-
-  /**
-   * Brace expansion of keys of `this.tint`, e.g.
-   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
-   * - Any keys with braces will be expanded and removed.
-   * - Later keys override earlier ones.
-   */
-  expandTint() {
-    const lookup = this.tint;
-    const pending = /** @type {typeof lookup} */ ({});
-
-    for (const k of keys(lookup)) {
-      const v = lookup[k];
-      if (k.includes('{') === false) {
-        pending[k] = v;
-      } else {
-        braces(k, { expand: true }).forEach(expanded => {
-          if (helper.isSkinPart(expanded) === false) {
-            return warn(`${'expandTint'}: ${this.key}: invalid skinPart "${expanded}"`);
-          }
-          pending[expanded] = v;
-        });
-      }
-    }
-
-    this.tint = pending;
-  }
-
-  /**
    * @param {MaybeMeta<Geom.VectJson>} point 
    */
   async offMeshDo(point) {
@@ -1051,14 +1051,6 @@ export class Npc {
   }
 
   /** @param {NPC.CrowdAgent} agent */
-  onTickTurnTarget(agent) {
-    const vel = agent.velocity();
-    this.s.lookAngleDst = this.getEulerAngle(
-      geom.clockwiseFromNorth(vel.z, vel.x)
-    );
-  }
-
-  /** @param {NPC.CrowdAgent} agent */
   onTickTurnNoTarget(agent) {
     if (agent.raw.nneis === 0) {
       return;
@@ -1083,6 +1075,14 @@ export class Npc {
       );
     }
     
+  }
+
+  /** @param {NPC.CrowdAgent} agent */
+  onTickTurnTarget(agent) {
+    const vel = agent.velocity();
+    this.s.lookAngleDst = this.getEulerAngle(
+      geom.clockwiseFromNorth(vel.z, vel.x)
+    );
   }
 
   resetSkin() {
