@@ -287,6 +287,7 @@ export default function Npcs(props) {
       if (npc !== undefined) {// Respawn
         npc.cancel();
         npc.epochMs = Date.now();
+        npc.s.lookAngleDst = null;
 
         npc.def = {
           key: opts.npcKey,
