@@ -1,3 +1,8 @@
+# overriding click that won't terminate anytime soon
+click! () {
+  click $( expr Number.MAX_SAFE_INTEGER )
+}
+
 # Usage: gm [gmId] [selector]
 # e.g. gm 0 key
 # e.g. gm 0 rooms | split | map meta

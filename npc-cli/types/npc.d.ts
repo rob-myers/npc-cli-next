@@ -411,4 +411,14 @@ declare namespace NPC {
     animHeights: Record<Key.Anim, number>;
     labelHeight: number;
   }
+
+  interface MoveToOpts {
+    debugPath?: boolean;
+    /**
+     * Animation to play once we arrive.
+     * - default is `Idle`.
+     * - use 'none' for continuous movement
+     */
+    arriveAnim?: 'none' | Key.Anim;
+  }
 }

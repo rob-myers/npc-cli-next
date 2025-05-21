@@ -64,8 +64,9 @@ export class Npc {
 
   /** State */
   s = {
-    act: /** @type {Key.Anim} */ ('Idle'),
+    act: /** @type {Key.Anim} */ ('Idle'), // 🚧 rename as `anim`
     agentState: /** @type {null | number} */ (null),
+    arriveAnim: /** @type {NPC.MoveToOpts['arriveAnim']} */ (undefined),
     doMeta: /** @type {null | Meta} */ (null),
     fadeSecs: 0.3,
     label: /** @type {null | string} */ (null),
@@ -307,7 +308,7 @@ export class Npc {
     if (point.meta.nav === true && this.s.doMeta !== null) {
       if (srcNav === true) {
         this.s.doMeta = null;
-        await this.moveTo(point);
+        await this.move(point);
       // } else if (w.npc.canSee(this.getPosition(), point, this.getInteractRadius())) {
       // } else if (true) {
       } else if (
@@ -698,10 +699,9 @@ export class Npc {
 
   /**
    * @param {MaybeMeta<Geom.VectJson | THREE.Vector3Like>} dst
-   * @param {object} [opts]
-   * @param {boolean} [opts.debugPath]
+   * @param {NPC.MoveToOpts} [opts]
    */
-  async moveTo(dst, opts = {}) {
+  async move(dst, opts = {}) {
     if (this.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
     }
@@ -712,6 +712,7 @@ export class Npc {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(dst)}`);
     }
 
+    this.s.arriveAnim = opts.arriveAnim;
     this.s.lookSecs = 0.2;
 
     this.agent.updateParameters({
@@ -916,7 +917,7 @@ export class Npc {
       /**
        * Walk, [Turn], Do
        */
-      await this.moveTo(doPoint);
+      await this.move(doPoint);
       if (typeof dstRadians === 'number') {
         await this.look(dstRadians, 500 * geom.compareAngles(this.getAngle(), dstRadians));
       }
@@ -1021,7 +1022,7 @@ export class Npc {
     const distance = this.s.target.distanceTo(pos);
 
     if (distance < npcTargetArriveDistance) {// Reached target
-      this.stopMoving();
+      this.stopMoving(true);
       return;
     }
 
@@ -1211,7 +1212,7 @@ export class Npc {
     this.updateLabelOffsets();
   }
 
-  stopMoving() {
+  stopMoving(arrived = false) {
     if (this.agent === null || this.s.target === null) {
       return;
     }
@@ -1232,7 +1233,13 @@ export class Npc {
       // updateFlags: 1,
     });
     
-    this.startAnimation('Idle');
+    if (arrived === true) {
+      if (this.s.arriveAnim !== 'none') {
+        this.startAnimation(this.s.arriveAnim ?? 'Idle');
+      }
+    } else {
+      this.startAnimation('Idle');
+    }
 
     const pos = this.agent.position(); // reset small motions:
     const position = this.lastStart.distanceTo(pos) <= 0.05 ? this.lastStart : pos;

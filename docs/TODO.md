@@ -5,13 +5,11 @@
 ### Site
 
 - 🚧 redo images in first carousel
-  - https://squoosh.app/editor
-  - specific size
+  - ℹ️ https://squoosh.app/editor | size?
   - ✅ can spawn with various skins easily
   - ✅ can spawn facing angle easily
     - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
   - 🚧 extend 301 with more decor
-  - mock up scenes from almost-top-down
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
@@ -83,6 +81,12 @@
   - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
 
 - ✅ bug: sh: cannot type hash: #
+
+- sh: `move` command?
+  - cleanUp will move.reject
+  - sleep/resume will pause/resume (?)
+    - maxSpeed 0 ?
+    - tweens
 
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);
