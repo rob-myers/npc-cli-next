@@ -48,7 +48,7 @@ export default function Npcs(props) {
       }
       return npc.agent;
     },
-    findPath(src, dst) {// 🔔 agent only use path as a guide
+    findPath(src, dst) {// 🔔 agent only uses path as a guide
       const query = w.crowd.navMeshQuery;
       const { path, success } = query.computePath(src, dst, {
         filter: w.crowd.getFilter(0),
@@ -132,7 +132,7 @@ export default function Npcs(props) {
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
           npc.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
-          npc.move(toXZ(npc.s.target));
+          npc.move({ to: toXZ(npc.s.target) });
         } else {// so they'll move "out of the way" of other npcs
           agent.requestMoveTarget(npc.position);
         }

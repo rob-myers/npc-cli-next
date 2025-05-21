@@ -66,7 +66,7 @@ ptags=no-pause; click | filter meta.floor | map --forever '(input, { w, home }) 
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;
-  npc.move(input).catch(() => {}); // can override
+  npc.move({ to: input }).catch(() => {}); // can override
 }' &
 
 w update 'w => w.decor.showLabels = true'

@@ -347,7 +347,7 @@ export class FifoDevice implements Device {
 
 //#region var device
 
-export type VarDeviceMode = "array" | "last";
+export type VarDeviceMode = "array" | "fresh-array" | "last";
 
 export class VarDevice implements Device {
   public key: string;
@@ -359,10 +359,14 @@ export class VarDevice implements Device {
   }
 
   public async writeData(data: any) {
-    if (this.mode === "array") {
+    if (this.mode === "array" || this.mode === "fresh-array") {
       if (!this.buffer) {
-        this.buffer = useSessionStore.api.getVarDeep(this.meta, this.varPath);
-        if (!Array.isArray(this.buffer)) {
+        if (this.mode === "array") {
+          this.buffer = useSessionStore.api.getVarDeep(this.meta, this.varPath);
+          if (!Array.isArray(this.buffer)) {
+            useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
+          }
+        } else {// "fresh-array"
           useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
         }
       }

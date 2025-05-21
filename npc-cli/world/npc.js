@@ -66,7 +66,7 @@ export class Npc {
   s = {
     act: /** @type {Key.Anim} */ ('Idle'), // 🚧 rename as `anim`
     agentState: /** @type {null | number} */ (null),
-    arriveAnim: /** @type {NPC.MoveToOpts['arriveAnim']} */ (undefined),
+    arriveAnim: /** @type {NPC.MoveOpts['arriveAnim']} */ (undefined),
     doMeta: /** @type {null | Meta} */ (null),
     fadeSecs: 0.3,
     label: /** @type {null | string} */ (null),
@@ -308,7 +308,7 @@ export class Npc {
     if (point.meta.nav === true && this.s.doMeta !== null) {
       if (srcNav === true) {
         this.s.doMeta = null;
-        await this.move(point);
+        await this.move({ to: point });
       // } else if (w.npc.canSee(this.getPosition(), point, this.getInteractRadius())) {
       // } else if (true) {
       } else if (
@@ -765,14 +765,14 @@ export class Npc {
   }
 
   /**
-   * @param {MaybeMeta<Geom.VectJson | THREE.Vector3Like>} dst
-   * @param {NPC.MoveToOpts} [opts]
+   * @param {NPC.MoveOpts} opts
    */
-  async move(dst, opts = {}) {
+  async move(opts) {
     if (this.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
     }
 
+    const dst = opts.to;
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
     const closest = this.w.npc.getClosestNavigable(toV3(dst), 0.5);
     if (closest === null) {
@@ -917,7 +917,7 @@ export class Npc {
       /**
        * Walk, [Turn], Do
        */
-      await this.move(doPoint);
+      await this.move({ to: doPoint });
       if (typeof dstRadians === 'number') {
         await this.look(dstRadians, 500 * geom.compareAngles(this.getAngle(), dstRadians));
       }

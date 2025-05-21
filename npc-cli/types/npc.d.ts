@@ -412,13 +412,17 @@ declare namespace NPC {
     labelHeight: number;
   }
 
-  interface MoveToOpts {
-    debugPath?: boolean;
+  interface MoveOpts {
+    to: MaybeMeta<Geom.VectJson | THREE.Vector3Like>;
     /**
      * Animation to play once we arrive.
      * - default is `Idle`.
      * - use 'none' for continuous movement
      */
     arriveAnim?: 'none' | Key.Anim;
+    /**
+     * Show possible path of agent path (only a guide).
+     */
+    debugPath?: boolean;
   }
 }

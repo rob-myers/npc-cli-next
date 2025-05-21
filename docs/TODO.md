@@ -83,7 +83,7 @@
 - ✅ bug: sh: cannot type hash: #
 
 - 🚧 sh: `move` command?
-  - 🚧 npc.move has single arg
+  - ✅ npc.move has single arg
   - cleanUp will move.reject
   - onSleep will pin to current position
   - onResume will replan
@@ -97,6 +97,8 @@
   - `w n.rob.agent.raw.params.set_maxSpeed 1.5`
   - ℹ️ while World paused also need to `w crowd.update`
   - ℹ️ not actually using this as yet
+
+- ✅ sh: support initially-overwriting-append e.g. `click 2 &>> foo`
 
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);

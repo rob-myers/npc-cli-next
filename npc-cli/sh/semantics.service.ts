@@ -669,7 +669,7 @@ class semanticsServiceClass {
   }
 
   private async Redirect(node: Sh.Redirect) {
-    if (node.Op === ">" || node.Op === ">>") {
+    if (node.Op === ">" || node.Op === ">>" || node.Op === '&>>') {
       const { value } = await this.lastExpanded(sem.Expand(node.Word));
       if (value === "/dev/null") {
         return redirectNode(node.parent!, { 1: "/dev/null" });
@@ -679,7 +679,10 @@ class semanticsServiceClass {
         const varDevice = useSession.api.createVarDevice(
           node.meta,
           value,
-          node.Op === ">" ? "last" : "array"
+          node.Op === ">"
+            ? "last"
+            : node.Op === ">>" ? "array" : "fresh-array"
+          ,
         );
         return redirectNode(node.parent!, { 1: varDevice.key });
       }
