@@ -82,11 +82,20 @@
 
 - ✅ bug: sh: cannot type hash: #
 
-- sh: `move` command?
+- 🚧 sh: `move` command?
   - cleanUp will move.reject
-  - sleep/resume will pause/resume (?)
-    - maxSpeed 0 ?
-    - tweens
+  - onSleep will pin to current position
+  - onResume will replan
+
+- ✅ split game-generators.js into 2 files
+  - game-generators.js
+  - game-generators-wip.js
+
+- ✅ could pause/resume move via maxSpeed
+  - `w n.rob.agent.raw.params.set_maxSpeed 0`
+  - `w n.rob.agent.raw.params.set_maxSpeed 1.5`
+  - ℹ️ while World paused also need to `w crowd.update`
+  - ℹ️ not actually using this as yet
 
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);
