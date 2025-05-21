@@ -162,7 +162,7 @@ export default function Doors(props) {
     },
     getLockSigMat(door) {
       const sx = 0.3;
-      const sz = door.hull === true ? hullDoorDepth / 2 : doorDepth / 2;
+      const sz = door.hull === true ? hullDoorDepth / 2 : doorDepth * 1.5;
       const center = tmpVec1.copy(door.src).add(door.dst).scale(0.5);
       if (door.hull === true) {
         center.addScaled(door.normal, -hullDoorDepth/2);
@@ -279,10 +279,8 @@ export default function Doors(props) {
       state.lockSigInst.setColorAt(door.instanceId, getColor(door.locked ? doorLockedColor : doorUnlockedColor));
       /** @type {THREE.InstancedBufferAttribute} */ (state.lockSigInst.instanceColor).needsUpdate = true;
 
-      w.events.next(door.locked ? {
-        key: 'locked-door', gmId: door.gmId, doorId: door.doorId,
-      } : {
-        key: 'unlocked-door', gmId: door.gmId, doorId: door.doorId,
+      w.events.next({
+        key: door.locked ? 'locked-door' : 'unlocked-door', gmId: door.gmId, doorId: door.doorId, meta: door.door.meta,
       });
 
       return true;

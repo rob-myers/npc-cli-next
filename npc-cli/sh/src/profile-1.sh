@@ -38,16 +38,11 @@ w n.rob.position | w floor.setTorchTarget -
 
 w e.grantAccess . rob will kate suit authority
 
-# de/select selectedNpcKey on click npc
+# select selectedNpcKey on click npc
 ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.showSelector(false);
-
-  if (meta.npcKey !== home.selectedNpcKey) {
-    w.n[meta.npcKey].showSelector(true);
-    home.selectedNpcKey = meta.npcKey;
-  } else {
-    home.selectedNpcKey = undefined;
-  }
+  w.n[meta.npcKey].showSelector(true);
+  home.selectedNpcKey = meta.npcKey;
 }' &
 
 # open door on click

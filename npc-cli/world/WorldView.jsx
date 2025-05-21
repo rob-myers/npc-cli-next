@@ -36,6 +36,7 @@ export default function WorldView(props) {
       minDistance: 1.5, // target could be ground or npc head
       maxDistance: 35,
       panSpeed: 2,
+      rotateSpeed: 0.5,
       zoomSpeed: 0.5,
     },
     cssFilter: [
@@ -747,7 +748,7 @@ export default function WorldView(props) {
 
 const rootCss = css`
   user-select: none;
-  background-color: rgba(50, 50, 50, 1);
+  background-color: rgba(0, 0, 0, 1);
 
   canvas[data-engine] {
     width: 100%;

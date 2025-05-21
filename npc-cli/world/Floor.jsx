@@ -21,7 +21,7 @@ export default function Floor(props) {
     inst: /** @type {*} */ (null),
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(220, 220, 220, 0.05)'),
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
-    showLights: false,
+    showLights: true,
     showTorch: false,
     smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.05)'),
     torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
@@ -193,7 +193,7 @@ export default function Floor(props) {
         alphaTest={0.5}
 
         lightAtlas={w.texFloorLight.tex}
-        showLights={state.showLights}
+        showLights={w.crowd !== null && state.showLights === true}
         showTorch={state.showTorch}
         torchData={state.torchData}
         torchTarget={state.torchTarget}

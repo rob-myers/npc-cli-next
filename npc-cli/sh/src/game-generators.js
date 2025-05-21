@@ -130,15 +130,15 @@ export async function* initCamAndLights({ api, args, w }) {
   w.update();
   
   await w.view.tween({
-    azimuthal: w.smallViewport ? 0  : Math.PI / 5.75,
+    azimuthal: 0,
     polar: w.smallViewport ? Math.PI / 8 : Math.PI/5,
   }).catch(() => {});
 
-  if (w.smallViewport) {
-    w.view.ctrlOpts.minAzimuthAngle = 0;
-    w.view.ctrlOpts.maxAzimuthAngle = 0;
-    w.view.ctrlOpts.maxDistance = 25;
-  }
+  // if (w.smallViewport) {
+  //   w.view.ctrlOpts.minAzimuthAngle = 0;
+  //   w.view.ctrlOpts.maxAzimuthAngle = 0;
+  //   w.view.ctrlOpts.maxDistance = 25;
+  // }
   w.view.ctrlOpts.maxPolarAngle = Math.PI/5;
   
   w.view.canTweenPaused = true;
@@ -146,7 +146,7 @@ export async function* initCamAndLights({ api, args, w }) {
   if (npcKey in w.n) {
     w.view.lockDistance(); // prevent zoom-in while look
     await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-    await w.view.tween({ distance: 25 });
+    await w.view.tween({ distance: 12 });
   }
 
 }

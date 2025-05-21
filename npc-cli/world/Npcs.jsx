@@ -287,6 +287,7 @@ export default function Npcs(props) {
       if (npc !== undefined) {// Respawn
         npc.cancel();
         npc.epochMs = Date.now();
+        npc.s.lookAngleDst = null;
 
         npc.def = {
           key: opts.npcKey,
@@ -553,7 +554,7 @@ function NPC({ npc }) {
           globalAux={npc.w.texAux.tex}
           
           // diffuse={[1, 1, 1]}
-          diffuse={[0.6, 0.6, 0.6]}
+          diffuse={[0.8, 0.8, 0.8]}
           label={npc.w.texNpcLabel.tex}
           labelY={npc.s.labelY}
           opacity={npc.s.opacity}

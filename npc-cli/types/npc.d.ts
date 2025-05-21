@@ -118,8 +118,7 @@ declare namespace NPC {
     }
     | { key: "opened-door"; gmId: number; doorId: number; meta?: Meta }
     | { key: "closed-door"; gmId: number; doorId: number; meta?: Meta }
-    | { key: "locked-door"; gmId: number; doorId: number; meta?: Meta }
-    | { key: "unlocked-door"; gmId: number; doorId: number; meta?: Meta }
+    | { key: "locked-door" | "unlocked-door"; gmId: number; doorId: number; meta: Meta }
     | { key: "enter-collider"; npcKey: string; } & BaseColliderEvent
     | { key: "exit-collider"; npcKey: string; } & BaseColliderEvent
     | {

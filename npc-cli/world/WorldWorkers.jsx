@@ -120,22 +120,21 @@ export default function WorldWorkers() {
         return agg;
       }, /** @type {NPC.DoorToOffMeshLookup} */ ({}));
 
-
-      if (w.crowd) {
+      if (w.crowd !== null) {
         disposeCrowd(w.crowd, w.nav.navMesh);
       }
+
       w.crowd = new Crowd(w.nav.navMesh, {
         maxAgents: 200,
         // 🔔 maxAgentRadius influences m_agentPlacementHalfExtents
         // 🔔 maxAgentRadius influences proximity grid
         // https://github.com/recastnavigation/recastnavigation/blob/77f7e54bc8cf5a816f9f087a3e0ac391d2043be3/DetourCrowd/Source/DetourCrowd.cpp#L394
         maxAgentRadius: helper.defaults.radius,
-        // maxAgentRadius: helper.defaults.radius * 0.5,
       });
 
+      // 🚧 try modify dtObstacleAvoidanceParams
       // const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = w.crowd.raw.getObstacleAvoidanceParams(0);
       // info('dtObstacleAvoidanceParams', { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi });
-      // 🚧 try modify dtObstacleAvoidanceParams
       // const oap = new RecastWasm.dtObstacleAvoidanceParams();
       
       w.npc?.restore();
