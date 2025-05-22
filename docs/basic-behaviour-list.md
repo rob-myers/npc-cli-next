@@ -10,12 +10,13 @@ click | filter meta.nav | take 2 &>> points
 spawn npcKey:rob at:$( click 1 )
 w e.grantAccess . rob # all doors permitted
 
-# 🚧 how to fix "potential ongoing computation" ?
 while true; do
-  w n.rob.move "{ to: $( points/0 ), arriveAnim: 'none' }" &&
-  w n.rob.move "{ to: $( points/1 ), arriveAnim: 'none' }"
+  # w n.rob.move "{ to: $( points/0 ), arriveAnim: 'none' }" &&
+  # w n.rob.move "{ to: $( points/1 ), arriveAnim: 'none' }"
   # points/0 | map 'to => ({ to, arriveAnim: "none" })' | w n.rob.move - &&
   # points/1 | map 'to => ({ to, arriveAnim: "none" })' | w n.rob.move -
+  move npcKey:rob arriveAnim:none to:$( points/0 ) &&
+  move npcKey:rob arriveAnim:none to:$( points/1 )
 done
 ```
 

@@ -84,9 +84,10 @@
 
 - 🚧 sh: `move` command?
   - ✅ npc.move has single arg
-  - cleanUp will move.reject
-  - onSleep will pin to current position
-  - onResume will replan
+  - ✅ cleanUp will move.reject
+  - 🚧 onSleep will pin to current position
+  - 🚧 onResume will replan
+  - cleanUp also stops whilst paused
 
 - ✅ split game-generators.js into 2 files
   - game-generators.js

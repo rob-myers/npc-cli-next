@@ -150,15 +150,22 @@ export async function* initCamAndLights({ api, args, w }) {
 
 /**
  * ```sh
- * move npcKey:rob arriveAnim:none
+ * move npcKey:rob to:$( click 1 ) arriveAnim:none
  * ```
  * @param {import('./').RunArg} ctxt
  */
-export async function* move({ api, args, w, datum }) {
-  // 🚧
-  const jsArg = api.parseArgsAsJs(args);
-  yield jsArg;
+export async function* move({ api, args, w }) {
+  // 🚧 onSleep/onResume
+  const { npcKey, ...rest } = /** @type {{ npcKey: string } & NPC.MoveOpts} */ (
+    api.parseArgsAsJs(args)
+  );
+  const npc = w.n[npcKey];
   
+  const cancelMove = () => npc.reject.move?.('cancelled');
+  cancelMove(); // stop extant
+  api.addCleanUp(cancelMove); // for Ctrl+C
+
+  await npc.move(rest);  
 }
 
 /**

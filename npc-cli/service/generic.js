@@ -353,11 +353,12 @@ export function mapValues(input, transform) {
  * - 'foo:42 bar' -> { "foo": 42, 1: "bar" }
  * - 🔔 assume keys do not contain double-quote character
  * 
+ * @template {Record<string, any>} [T=Record<string, any>]
  * @param {string[]} args
- * @returns {Record<string | number, any>}
+ * @returns {T}
  */
 export function parseArgsAsJs(args) {
-  return args.reduce((agg, arg, index) => {
+  return /** @type {T} */ (args.reduce((agg, arg, index) => {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
       agg[index] = arg;
@@ -365,7 +366,7 @@ export function parseArgsAsJs(args) {
       agg[arg.slice(0, colonIndex)] = parseJsArg(arg.slice(colonIndex + 1));
     }
     return agg;
-  }, /** @type {Record<string | number, any>} */ ({}))
+  }, /** @type {Record<string, any>} */ ({})));
 }
 
 /**
