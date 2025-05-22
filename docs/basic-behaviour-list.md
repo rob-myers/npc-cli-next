@@ -11,10 +11,6 @@ spawn npcKey:rob at:$( click 1 )
 w e.grantAccess . rob # all doors permitted
 
 while true; do
-  # w n.rob.move "{ to: $( points/0 ), arriveAnim: 'none' }" &&
-  # w n.rob.move "{ to: $( points/1 ), arriveAnim: 'none' }"
-  # points/0 | map 'to => ({ to, arriveAnim: "none" })' | w n.rob.move - &&
-  # points/1 | map 'to => ({ to, arriveAnim: "none" })' | w n.rob.move -
   move npcKey:rob arriveAnim:none to:$( points/0 ) &&
   move npcKey:rob arriveAnim:none to:$( points/1 )
 done
@@ -31,3 +27,14 @@ done
 - Wake up, get out of bed, drink tea, shit, shower and shave.
 
 - Ill in bed (moaning), escorted to medical area, lies down, nurse comes to see them, starts diagnosis.
+
+
+# Scratchpad
+
+```sh
+# variants on move command
+move npcKey:rob to:$( click 1 )
+# these do not handle suspend/resume:
+w n.rob.move "{ to: $( click 1 ), arriveAnim: 'none' }"
+click 1 | map 'to => ({ to, arriveAnim: "none" })' | w n.rob.move -
+```
