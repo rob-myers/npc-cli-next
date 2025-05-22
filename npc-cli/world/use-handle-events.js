@@ -429,8 +429,7 @@ export default function useHandleEvents(w) {
           break;
       }
     },
-    async lookAt(input) {
-      const lookAtOpts = /** @type {import("./WorldView").LookAtOpts} */ ({});
+    async lookAt(input, lookAtOpts = {}) {
       if (typeof input === 'string') {// npcKey
         input = w.n[input].position;
         lookAtOpts.height = w.lib.defaults.height;
@@ -834,7 +833,7 @@ export default function useHandleEvents(w) {
  * @property {(regexDef: string, ...npcKeys: string[]) => void} grantAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
- * @property {(input: string | THREE.Vector3 | Vect) => Promise<void>} lookAt
+ * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
