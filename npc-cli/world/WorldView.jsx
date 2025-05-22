@@ -772,7 +772,7 @@ const statsCss = css`
   right: 0px;
 
   &.disabled canvas {
-    filter: grayscale(1) brightness(0.75);
+    filter: grayscale(1) brightness(0.2);
     pointer-events: none;
   }
 
@@ -788,7 +788,7 @@ const statsCss = css`
     align-items: center;
 
     color: #ddd;
-    background-color: rgba(0, 0, 0, 0.5);
+    /* background-color: rgba(0, 0, 0, 0.75); */
     font-size: small;
 
     letter-spacing: 2px;
