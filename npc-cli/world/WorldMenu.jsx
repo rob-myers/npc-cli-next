@@ -160,14 +160,16 @@ export default function WorldMenu(props) {
 
   return <>
 
-    {w.disabled && <div css={pausedControlsCss}>
-      <button
-        onClick={state.toggleXRay}
-        className={state.xRayOpacity < 20 ? 'text-green' : undefined}
-      >
-        x-ray
-      </button>
-    </div>}
+    {w.disabled === true && (
+      <div css={pausedControlsCss}>
+        <button
+          onClick={state.toggleXRay}
+          className={state.xRayOpacity < 20 ? 'text-green' : undefined}
+        >
+          x-ray
+        </button>
+    </div>
+    )}
 
     {w.view.rootEl !== null && createPortal(
       <Draggable

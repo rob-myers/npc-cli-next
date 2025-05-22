@@ -790,7 +790,6 @@ const statsCss = css`
     color: #ddd;
     background-color: rgba(0, 0, 0, 0.5);
     font-size: small;
-    font-style: italic;
 
     letter-spacing: 2px;
 
