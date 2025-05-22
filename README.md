@@ -119,6 +119,9 @@ foo() { jsarg "${@}"; }
 foo bar:[1,4,9] baz:baz qux:42
 foo() { echo $( jsarg "${@}" ); }
 foo bar:[1,4,9] baz:baz qux:42
+
+while { false; test ${?}; }; do echo foo; done
+while { true; ! test ${?}; }; do echo foo; done
 ```
 
 ## Working with a branch of `recast-navigation-js`

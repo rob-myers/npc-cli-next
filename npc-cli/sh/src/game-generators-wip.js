@@ -149,26 +149,42 @@ export async function* initCamAndLights({ api, args, w }) {
 }
 
 /**
+ * Supports Ctrl+C and process suspend/resume
  * ```sh
  * move npcKey:rob to:$( click 1 ) arriveAnim:none
  * ```
  * @param {import('./').RunArg} ctxt
  */
 export async function* move({ api, args, w }) {
-  const { npcKey, ...rest } = /** @type {{ npcKey: string } & NPC.MoveOpts} */ (
-    api.parseArgsAsJs(args)
-  );
-  const npc = w.n[npcKey];
+  const opts = /** @type {{ npcKey: string } & NPC.MoveOpts} */ (api.parseArgsAsJs(args));
+  const npc = w.n[opts.npcKey];
   if (!npc) {
-    throw Error(`npcKey invalid: ${npcKey}`)
+    throw Error(`npcKey invalid: ${opts.npcKey}`)
   }
   
-  // 🚧 onSleep/onResume
-  const cancelMove = () => npc.reject.move?.('cancelled');
-  cancelMove(); // stop extant
-  api.addCleanUp(cancelMove); // for Ctrl+C
+  api.addCleanUp(// for Ctrl+C and initially
+    () => npc.reject.move?.('cancelled')
+  )(); 
+  
+  while (true) {
+    try {
+      return await Promise.race([
+        npc.move(opts),
+        new Promise((_, rej) => api.addSuspend(() => rej('paused'))),
+      ]);
+    } catch (e) {
+      if (e !== 'paused') {
+        throw e;
+      }
+    }
 
-  await npc.move(rest);  
+    npc.stopMoving();
+    await /** @type {Promise<void>} */ (new Promise((res, rej) => (
+      api.addCleanUp(rej),
+      api.addResume(res)
+    )));
+  }
+
 }
 
 /**
