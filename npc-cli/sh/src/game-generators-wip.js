@@ -155,12 +155,15 @@ export async function* initCamAndLights({ api, args, w }) {
  * @param {import('./').RunArg} ctxt
  */
 export async function* move({ api, args, w }) {
-  // 🚧 onSleep/onResume
   const { npcKey, ...rest } = /** @type {{ npcKey: string } & NPC.MoveOpts} */ (
     api.parseArgsAsJs(args)
   );
   const npc = w.n[npcKey];
+  if (!npc) {
+    throw Error(`npcKey invalid: ${npcKey}`)
+  }
   
+  // 🚧 onSleep/onResume
   const cancelMove = () => npc.reject.move?.('cancelled');
   cancelMove(); // stop extant
   api.addCleanUp(cancelMove); // for Ctrl+C

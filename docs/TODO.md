@@ -85,6 +85,10 @@
 - 🚧 sh: `move` command?
   - ✅ npc.move has single arg
   - ✅ cleanUp will move.reject
+  - ✅ Ctrl-C working for single move
+    - `move npcKey:rob arriveAnim:none to:$( click 1 )`
+  - ✅ Ctrl-C working for while
+    - `move` needs non-zero exit code on Ctrl-C
   - 🚧 onSleep will pin to current position
   - 🚧 onResume will replan
   - cleanUp also stops whilst paused

@@ -818,6 +818,7 @@ export class Npc {
       await this.waitUntilStopped();
     } catch (e) {
       this.stopMoving();
+      throw e;
     }
   }
 
