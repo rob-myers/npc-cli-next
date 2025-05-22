@@ -39,7 +39,7 @@ w n.rob.position | w floor.setTorchTarget -
 w e.grantAccess . rob will kate suit authority
 
 # select selectedNpcKey on click npc
-ptags=no-pause; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
+ptags=always; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.showSelector(false);
   w.n[meta.npcKey].showSelector(true);
   home.selectedNpcKey = meta.npcKey;
@@ -62,7 +62,7 @@ click --long | map --forever 'async (input, {home, w}) => {
 }' &
 
 # click navmesh to move selectedNpcKey
-ptags=no-pause; click | filter meta.floor | map --forever '(input, { w, home }) => {
+ptags=always; click | filter meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;
@@ -72,9 +72,9 @@ ptags=no-pause; click | filter meta.floor | map --forever '(input, { w, home }) 
 w update 'w => w.decor.showLabels = true'
 
 setupContextMenu
-ptags=no-pause; events | handleContextMenu &
+ptags=always; events | handleContextMenu &
 
-ptags=no-pause; events | handleLoggerLinks & 
+ptags=always; events | handleLoggerLinks & 
 
 setupOnSlowNpc
 

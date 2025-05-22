@@ -203,4 +203,4 @@ const rootCss = css`
   padding: 4px;
 `;
 
-const noPausePtag = 'no-pause';
+const noPausePtag = 'always';

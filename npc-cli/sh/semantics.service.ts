@@ -281,8 +281,8 @@ class semanticsServiceClass {
   /**
    * We support process tagging like:
    * - `ptags='foo bar=baz' sleep 10 &`
-   * - `{ ptags=no-pause; sleep 10; } &`
-   * - `ptags=no-pause; foo | bar &` (via inheritance)
+   * - `{ ptags=always; sleep 10; } &`
+   * - `ptags=always; foo | bar &` (via inheritance)
    */
   private async supportPTags(node: Sh.CallExpr) {
     const assign = node.Assigns.find(x => x.Name?.Value === 'ptags');

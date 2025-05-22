@@ -86,8 +86,8 @@ while true; do
   c+=1
 done
 
-# commands work while paused via prefix `ptags=no-pause;`
-ptags=no-pause events
+# commands work while paused via prefix `ptags=always;`
+ptags=always events
 
 # reset or save control state i.e. current view
 w view.controls.reset

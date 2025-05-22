@@ -6,7 +6,7 @@
 # store two navigable points in a fresh array
 click | filter meta.nav | take 2 &>> points
 
-# spawn an npc at a navigable point, or a "do point"
+# spawn an npc at a navigable point (not a "do point")
 spawn npcKey:rob at:$( click 1 )
 w e.grantAccess . rob # all doors permitted
 
@@ -17,6 +17,18 @@ done
 ```
 
 - Walk in a loop (n points).
+
+```sh
+# 🚧 click supports filter?
+# 🚧 can send output to stderr
+
+rm -f points
+ptags=always; click | filter meta.nav | take 5 | while take 1 >> points; do 
+  echo added point
+done
+
+
+```
 
 - Go to bedroom, get into bed, say "good night", breath for a bit, start snoring.
 
