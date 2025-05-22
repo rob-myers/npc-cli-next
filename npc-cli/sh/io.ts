@@ -83,6 +83,8 @@ class shellWireClass<T> {
  * Redirect a node and its descendants e.g.
  * - `echo foo; echo bar >/dev/null; echo baz`.
  * - `echo foo; { echo bar; } >/dev/null; echo baz`.
+ * 
+ * We clone to avoid mutating ancestors.
  */
 export function redirectNode(node: Sh.ParsedSh, fdUpdates: Record<number, string>) {
   const newMeta = deepClone(node.meta);

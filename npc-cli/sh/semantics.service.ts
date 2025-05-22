@@ -1,7 +1,7 @@
 import { uid } from "uid";
 
 import type * as Sh from "./parse";
-import { jsStringify, last, pause, tagsToMeta, textToTags } from "../service/generic";
+import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags } from "../service/generic";
 import { parseJsArg } from "../service/generic";
 import useSession, { ProcessStatus } from "./session.store";
 import {
@@ -669,6 +669,16 @@ class semanticsServiceClass {
   }
 
   private async Redirect(node: Sh.Redirect) {
+    if (node.Op === ">&") {
+      const { value } = await this.lastExpanded(sem.Expand(node.Word));
+      const fd = safeJsonParse(value);
+      if (typeof fd === 'number' && Number.isInteger(fd) && fd >= 0) {
+        return redirectNode(node.parent!, { 1: node.meta.fd[fd] })
+      } else {
+        throw new ShError(`${node.Op}: bad file descriptor: "${value}"`, 127);
+      }
+    }
+
     if (node.Op === ">" || node.Op === ">>" || node.Op === '&>>') {
       const { value } = await this.lastExpanded(sem.Expand(node.Word));
       if (value === "/dev/null") {
@@ -687,6 +697,7 @@ class semanticsServiceClass {
         return redirectNode(node.parent!, { 1: varDevice.key });
       }
     }
+
     throw new ShError(`${node.Op}: unsupported redirect`, 127);
   }
 

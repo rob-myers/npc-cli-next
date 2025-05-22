@@ -105,6 +105,10 @@
 
 - ✅ sh: support initially-overwriting-append e.g. `click 2 &>> foo`
 
+- ✅ sh: `echo foo >&2` goes to stderr
+  - ℹ️ e.g. `{ echo foo >&2 ; echo bar; } >baz`
+  - ℹ️ permits debug messaging
+
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);
 - bug: sh: support $@ deeply inside double quotes (?)
