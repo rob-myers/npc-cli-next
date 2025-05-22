@@ -50,7 +50,7 @@ export async function* handleContextMenu({ api, w, datum: e }) {
         if (typeof meta.npcKey === "string") {
           w.e.lookAt(meta.npcKey).catch(() => {});
         } else {
-          w.view.lookAt(w.cm.position).catch(() => {});
+          w.e.lookAt(w.cm.position, { height: w.cm.position.y }).catch(() => {});
         }
         w.cm.update(); // Might have stopped follow
         break;

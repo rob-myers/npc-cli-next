@@ -643,6 +643,7 @@ class srcServiceClass {
         switch (node.Op) {
           case ">":
           case ">>":
+          case "&>>":
             const [part] = node.Word.Parts;
             const move = part?.type === "Lit" && part.Value.endsWith("-");
             return `${fd}${node.Op}${this.src(node.Word)}${move ? "-" : ""}`;
