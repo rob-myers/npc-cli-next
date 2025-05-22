@@ -15,6 +15,8 @@ export async function* awaitWorld({ api, home: { WORLD_KEY } }) {
  * click 1
  * click --right
  * click --any
+ * click 5 '({ meta }) => meta.nav'
+ * click 5 meta.nav
  * ```
  * @param {import('./').RunArg} ctxt
  */
@@ -24,6 +26,7 @@ export async function* click({ api, args, w }) {
     // --left (left only) --right (right only) --any (either)
     // --long (long-press only)
   });
+
   if (!opts["left"] && !opts["right"] && !opts["any"]) {
     opts.left = true; // default to left clicks only
   }
@@ -37,6 +40,11 @@ export async function* click({ api, args, w }) {
   if (clickId !== undefined) {
     api.addCleanUp(() => w.lib.removeFirst(w.view.clickIds, clickId));
   }
+
+  const filter = operands[1] ? api.generateSelector(
+    api.parseFnOrStr(operands[1]),
+    []
+  ) : undefined;
 
   /** @type {import('rxjs').Subscription} */
   let eventsSub;
@@ -80,8 +88,10 @@ export async function* click({ api, args, w }) {
       xz: {...e.point},
     };
 
-    numClicks--;
-    yield output;
+    if (filter === undefined || filter?.(output)) {
+      numClicks--;
+      yield output;
+    }
   }
 }
 
@@ -95,9 +105,9 @@ export async function* click({ api, args, w }) {
  * @param {import('./').RunArg} ctxt
  */
 export async function* events({ api, args, w }) {
-  const func = args[0] ? api.generateSelector(
+  const filter = args[0] ? api.generateSelector(
     api.parseFnOrStr(args[0]),
-    args.slice(1).map((x) => api.parseJsArg(x))
+    [],
   ) : undefined;
   
   const asyncIterable = api.observableToAsyncIterable(w.events);
@@ -105,7 +115,7 @@ export async function* events({ api, args, w }) {
   api.addCleanUp(() => asyncIterable.return?.());
 
   for await (const event of asyncIterable) {
-    if (func === undefined || func?.(event)) {
+    if (filter === undefined || filter?.(event)) {
       yield event;
     }
   }

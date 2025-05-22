@@ -19,11 +19,8 @@ done
 - Walk in a loop (n points).
 
 ```sh
-# 🚧 click supports filter?
-# 🚧 can send output to stderr
-
 rm -f points
-ptags=always; click | filter meta.nav | take 5 | while take 1 >> points; do 
+ptags=always; click 5 meta.nav | while take 1 >> points; do 
   echo added point
 done
 
