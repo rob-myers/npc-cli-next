@@ -771,9 +771,12 @@ const statsCss = css`
   left: unset !important;
   right: 0px;
 
+  &.disabled {
+    pointer-events: none;
+  }
+
   &.disabled canvas {
     filter: grayscale(1) brightness(0.2);
-    pointer-events: none;
   }
 
   &.disabled:before {
