@@ -19,15 +19,25 @@ export default function TtyWithFunctions(props: Props) {
   return (
     <Tty
       {...props}
+      jsFunctions={jsFunctions}
       functionFiles={functionFiles}
       profile={profile[props.profileKey]}
     />
   );
 }
 
-interface Props extends Omit<TtyProps, 'functionFiles' | 'profile'> {
+interface Props extends Omit<TtyProps, 'functionFiles' | 'profile' | 'jsFunctions'> {
   profileKey: ProfileKey;
 }
+
+// we also provide functions directly
+const jsFunctions = {
+  ...utilGeneratorsJs,
+  ...gameGeneratorsJs,
+  ...gameGeneratorsWipJs,
+};
+
+export type TtyJsFunctions = typeof jsFunctions;
 
 const generatorConstructorNames = ['AsyncGeneratorFunction', 'GeneratorFunction'];
 

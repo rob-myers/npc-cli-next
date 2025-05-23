@@ -18,6 +18,7 @@ export const profile = {
 * }} api
 * @property {string[]} args
 * @property {{ [key: string]: any; WORLD_KEY: '__WORLD_KEY_VALUE__' }} home
+* @property {import('../../terminal/TtyWithFunctions').TtyJsFunctions} lib
 * @property {import('../../world/World').State} w See `CACHE_SHORTCUTS`
 * @property {T} datum A shortcut for declaring a variable
 */

@@ -918,6 +918,7 @@ class cmdServiceClass {
       {
         home: session.var,
         etc: session.etc,
+        lib: session.jsFunc,
         // cache: queryCache,
         // dev: useSession.getState().device,
       },

@@ -100,6 +100,9 @@ export default function Tty(props: Props) {
           }
         })
       ));
+
+      // store original functions too
+      session.jsFunc = props.jsFunctions;
     },
     writeError(sessionKey: string, message: string, origError: any) {
       useSession.api.writeMsgCleanly(sessionKey, `${message} (see console)`, { level: 'error' }).catch(
@@ -191,6 +194,7 @@ export interface Props extends BaseTabProps {
   sessionKey: string;
   /** Can initialize variables */
   env: Partial<Session["var"]>;
+  jsFunctions: import('./TtyWithFunctions').TtyJsFunctions;
   /** Synced with e.g. game-generators.sh */
   functionFiles: Record<string, string>;
   /** Synced with e.g. profile-1.sh */

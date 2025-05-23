@@ -120,6 +120,8 @@ export interface Session {
     /** `processApi[key]` is `processApi.getCached(var[CACHE_SHORTCUTS[key]])` */
     CACHE_SHORTCUTS?: { [key: string]: string };
   };
+  jsFunc: import('../terminal/TtyWithFunctions').TtyJsFunctions;
+
   nextPid: number;
   /** Last exit code: */
   lastExit: {
@@ -267,6 +269,7 @@ const useStore = create<State>()(
                 ...persisted.var,
                 ...deepClone(env),
               },
+              jsFunc: {} as any,
               nextPid: 0,
               process: {},
               lastExit: { fg: 0, bg: 0 },
