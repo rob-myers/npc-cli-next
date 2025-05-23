@@ -264,7 +264,7 @@ function ContextMenuLinks({ state }) {
         css={optsPopUpCss}
         label="opts"
         onChange={state.onToggleOptsPopup.bind(state)}
-        width={200}
+        width={100}
       >
         <button
           key="toggle-scaled"
