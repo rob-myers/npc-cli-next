@@ -773,29 +773,7 @@ const statsCss = css`
 
   &.disabled {
     pointer-events: none;
-  }
-
-  &.disabled canvas {
-    filter: grayscale(1) brightness(0.2);
-  }
-
-  &.disabled:before {
-    content: "paused";
-    position: absolute;
-    z-index: 1;
-    height: 100%;
-    width: 100%;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    color: #ddd;
-    /* background-color: rgba(0, 0, 0, 0.75); */
-    font-size: small;
-
-    letter-spacing: 2px;
-
+    filter: grayscale(1) brightness(0.5);
   }
 `;
 
