@@ -467,7 +467,8 @@ export default function useHandleEvents(w) {
         return; // door already open
       }
 
-      if (door.auto === true) {// open auto door if unlocked or accessible
+      if (door.auto === true && door.locked === false) {
+        // only auto-open doors which are auto and unlocked
         state.toggleDoor(e.gdKey, { open: true, npcKey: e.npcKey });
         return;
       }
@@ -685,7 +686,7 @@ export default function useHandleEvents(w) {
       }
       state.npcToDoors[npcKey]?.nearby.clear();
     },
-    revokeNpcAccess(npcKey, regexDef) {
+    revokeNpcAccess(regexDef, npcKey) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
     async say(npcKey, ...parts) {// ensure/change/delete
@@ -847,7 +848,7 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string) => void} removeFromSensors
  * @property {() => void} showDefaultContextMenu
  * Default context menu, unless clicked on an npc
- * @property {(npcKey: string, regexDef: string) => void} revokeNpcAccess
+ * @property {(regexDef: string, npcKey: string) => void} revokeNpcAccess
  * @property {(npcKey: string, ...parts: string[]) => void} say
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
  * @property {(offMesh1: NPC.OffMeshState, offMesh2: NPC.OffMeshState) => boolean} testOffMeshDisjoint
