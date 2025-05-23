@@ -19,11 +19,15 @@ done
 - Walk in a loop (n points).
 
 ```sh
-rm -f points
-ptags=always; click 5 meta.nav | while take 1 >> points; do 
-  echo added point
-done
+ptags=always; click 5 meta.nav | while take 1; do 
+  points/at'(-1)' >&2 
+done &>> points
 
+# 🚧 prefer js but need to expose "move generator" to other generators e.g. via lib.move ?
+c=0; while c+=1; do
+  test $( expr "$c >= 5" ) && c=0
+  move npcKey:rob arriveAnim:none to:"$( points/$c )"
+done
 
 ```
 
