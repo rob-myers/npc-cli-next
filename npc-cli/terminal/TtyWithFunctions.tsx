@@ -32,9 +32,9 @@ interface Props extends Omit<TtyProps, 'functionFiles' | 'profile' | 'jsFunction
 
 // we also provide functions directly
 const jsFunctions = {
-  ...utilGeneratorsJs,
-  ...gameGeneratorsJs,
   ...gameGeneratorsWipJs,
+  ...gameGeneratorsJs,
+  ...utilGeneratorsJs,
 };
 
 export type TtyJsFunctions = typeof jsFunctions;

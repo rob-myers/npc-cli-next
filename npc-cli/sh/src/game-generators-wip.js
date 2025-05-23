@@ -161,7 +161,7 @@ export async function* move({ api, args, w }) {
   if (!npc) {
     throw Error(`npcKey invalid: ${opts.npcKey}`)
   }
-  
+
   api.addCleanUp(// for Ctrl+C and initially
     () => npc.reject.move?.('cancelled')
   )(); 
@@ -183,6 +183,33 @@ export async function* move({ api, args, w }) {
       api.addCleanUp(rej),
       api.addResume(res)
     )));
+  }
+
+}
+
+/**
+ * ```sh
+ * moveCycle npcKey:rob to:"$( click 5 )"
+ * moveCycle npcKey:rob to:"$( click 5 | sponge )"
+ * moveCycle npcKey:rob to:"$( points )"
+ * ```
+ * @param {import('./').RunArg} ctxt
+ */
+export async function* moveCycle(ctxt) {
+  const { api, args } = ctxt;
+
+  // 🚧 change type of `to`
+  const opts = /** @type {{ npcKey: string; to: NPC.ClickOutput[] }} */ (
+    api.parseArgsAsJs(args, { to: 'array' })
+  );
+  
+  while (true) {
+    for (const to of opts.to) {
+      // 🚧 provide opts directly somehow?
+      ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`, `arriveAnim:none`];
+      yield* ctxt.lib.move(ctxt);
+      await api.sleep(0.3);
+    }
   }
 
 }

@@ -111,7 +111,12 @@
 
 - 🚧 can invoke `move` generator from another generator e.g. `moveCycle`
   - ✅ pass generators into session.lib
-  - 🚧 create `moveCycle` and invoke `move`
+  - ✅ create `moveCycle` and invoke `move`
+  - ✅ implement `moveCycle`
+  - 🚧 improve `moveCycle`
+
+- look towards neighbour should be optional
+  - could also improve it
 
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);

@@ -355,15 +355,21 @@ export function mapValues(input, transform) {
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
  * @param {string[]} args
+ * @param {{ [key: string]: 'array' }} [opts]
  * @returns {T}
  */
-export function parseArgsAsJs(args) {
+export function parseArgsAsJs(args, opts = {}) {
   return /** @type {T} */ (args.reduce((agg, arg, index) => {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
       agg[index] = arg;
     } else {
-      agg[arg.slice(0, colonIndex)] = parseJsArg(arg.slice(colonIndex + 1));
+      const key = arg.slice(0, colonIndex);
+      agg[key] = parseJsArg(arg.slice(colonIndex + 1));
+      if (opts[key] === 'array' && typeof agg[key] === 'string') {
+        // try split by spaces
+        agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
+      }
     }
     return agg;
   }, /** @type {Record<string, any>} */ ({})));
