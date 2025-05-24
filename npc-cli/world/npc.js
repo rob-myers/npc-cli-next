@@ -670,7 +670,7 @@ export class Npc {
             point,
             offMesh.src,
             other.getPoint(),
-            0.24,
+            0.3,
           ) === false
         ) || (
           other.s.offMesh !== null
@@ -768,6 +768,8 @@ export class Npc {
    * @param {NPC.MoveOpts} opts
    */
   async move(opts) {
+    this.reject.move?.('cancelled-by-move');
+
     if (this.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
     }
@@ -817,7 +819,7 @@ export class Npc {
     try {
       await this.waitUntilStopped();
     } catch (e) {
-      this.stopMoving();
+      if (e !== 'cancelled-by-move') this.stopMoving();
       throw e;
     }
   }
@@ -1067,14 +1069,14 @@ export class Npc {
       return;
     }
 
-    // 🚧 rethink e.g. this.rotation.__damp
-    if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
-      this.s.lookAngleDst = null;
-    } else {// turn towards "closest neighbour" if they have a target
-      this.s.lookAngleDst = this.getEulerAngle(
-        geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
-      );
-    }
+    // /🚧 optional behaviour e.g. randomly look at nearest neighbour
+    // if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
+    //   this.s.lookAngleDst = null;
+    // } else {// turn towards "closest neighbour" if they have a target
+    //   this.s.lookAngleDst = this.getEulerAngle(
+    //     geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
+    //   );
+    // }
     
   }
 

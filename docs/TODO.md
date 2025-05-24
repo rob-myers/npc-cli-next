@@ -113,10 +113,17 @@
   - ✅ pass generators into session.lib
   - ✅ create `moveCycle` and invoke `move`
   - ✅ implement `moveCycle`
-  - 🚧 improve `moveCycle`
+  - ✅ `move` should work onchange `npc.js`
+    - breaks if pause Tabs then change `npc.js`
+  - improve `moveCycle`
 
-- look towards neighbour should be optional
+- 🚧 only mutate `npc`
+  - idea: npc.api is a class instance which we replace on hmr
+
+- 🚧 look towards neighbour should be optional
   - could also improve it
+
+- ✅ locked doors should not open on accessible npc enter collider
 
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);
