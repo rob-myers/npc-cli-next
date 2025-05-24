@@ -8,8 +8,8 @@ import { entries, hashText, isDevelopment, mapValues, pause, range, takeFirst, w
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
-import { Npc } from "./npc";
-import { createBaseNpc, NpcApi, crowdAgentParams } from "./npc-new";
+// import { Npc } from "./npc";
+import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc-new";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -29,7 +29,6 @@ export default function Npcs(props) {
     gltf: /** @type {*} */ ({}),
     gltfAux: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
-    hmr: /** @type {*} */ ({}),
     idToKey: new Map(),
     sheetAux: /** @type {*} */ ({}),
     npc: {},
@@ -92,29 +91,35 @@ export default function Npcs(props) {
     },
     hotReloadNpc(prevNpc) {// 🚧 old
     
-      // 🔔 HMR by copying prevNpc non-methods into nextNpc
-      // 🔔 supports variable re-naming in `npc.s`
-      // const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
-      const nextNpc = state.npc[prevNpc.key] = new Npc(prevNpc.def, w)
-      const { s, ...rest } = nextNpc; //@ts-ignore
-      Object.keys(s).forEach(k => k in prevNpc.s && (s[k] = prevNpc.s[k])); //@ts-ignore
-      Object.keys(rest).forEach(k => k in prevNpc && (nextNpc[k] = prevNpc[k]));
+      // // 🔔 HMR by copying prevNpc non-methods into nextNpc
+      // // 🔔 supports variable re-naming in `npc.s`
+      // // const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
+      // const nextNpc = state.npc[prevNpc.key] = new Npc(prevNpc.def, w)
+      // const { s, ...rest } = nextNpc; //@ts-ignore
+      // Object.keys(s).forEach(k => k in prevNpc.s && (s[k] = prevNpc.s[k])); //@ts-ignore
+      // Object.keys(rest).forEach(k => k in prevNpc && (nextNpc[k] = prevNpc[k]));
       
-      nextNpc.epochMs = Date.now(); // invalidate React.Memo
-      if (nextNpc.agent !== null) {// avoid stale ref
-        state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
-      }
-      // track npc class meta
-      nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
+      // nextNpc.epochMs = Date.now(); // invalidate React.Memo
+      // if (nextNpc.agent !== null) {// avoid stale ref
+      //   state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
+      // }
+      // // track npc class meta
+      // nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
 
-      nextNpc.applySkin();
-      nextNpc.applyTint();
+      // nextNpc.applySkin();
+      // nextNpc.applyTint();
     },
 
-    hotReloadNpcs(changed) {
-      console.info({ changed });
-      // 🚧 onchange baseNpc copy in new, delete old, also for `s`
-      // 🚧 onchange NpcApi replace it
+    hotReloadNpcs() {// 🚧
+      
+      const npcs = Object.values(state.npc);
+      if (npcs.length === 0) {
+        return
+      }
+
+      // 🚧 baseNpc: copy in new, delete old, also for `s`
+      // 🚧 NpcApi: replace it
+
     },
 
     isPointInNavmesh(input) {
@@ -123,7 +128,7 @@ export default function Npcs(props) {
       return success === true && Math.abs(point.x - v3.x) < smallHalfExtent && Math.abs(point.z - v3.z) < smallHalfExtent;
     },
     onTick(deltaMs) {
-      Object.values(state.npc).forEach(npc => npc.onTick(deltaMs, state.physicsPositions));
+      Object.values(state.npc).forEach(npc => npc.api.onTick(deltaMs, state.physicsPositions));
       // 🔔 Float32Array caused issues i.e. decode failed
       const positions = new Float64Array(state.physicsPositions);
       w.physics.worker.postMessage({ type: 'send-npc-positions', positions}, [positions.buffer]);
@@ -140,9 +145,9 @@ export default function Npcs(props) {
         const agent = state.attachAgent(npc);
         const closest = state.getClosestNavigable(npc.position);
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
-          npc.startAnimation(animKeys[i]);
+          npc.api.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
-          npc.move({ to: toXZ(npc.s.target) });
+          npc.api.move({ to: toXZ(npc.s.target) });
         } else {// so they'll move "out of the way" of other npcs
           agent.requestMoveTarget(npc.position);
         }
@@ -152,7 +157,7 @@ export default function Npcs(props) {
       try {
         for (const npcKey of npcKeys) {
           const npc = state.getNpc(npcKey); // throw if n'exist pas
-          npc.cancel(); // rejects promises
+          npc.api.cancel(); // rejects promises
           state.removeAgent(npc);
           
           delete state.npc[npcKey];
@@ -295,14 +300,14 @@ export default function Npcs(props) {
       ;
 
       if (npc !== undefined) {// Respawn
-        npc.cancel();
+        npc.api.cancel();
         npc.epochMs = Date.now();
         npc.s.lookAngleDst = null;
 
         npc.def = {
           key: opts.npcKey,
           uid: npc.def.uid,
-          angle: opts.angle ?? npc.getAngle(), // prev angle fallback
+          angle: opts.angle ?? npc.api.getAngle(), // prev angle fallback
           classKey: opts.classKey ?? npc.def.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
@@ -314,7 +319,15 @@ export default function Npcs(props) {
       } else {
         
         // Spawn
-        npc = state.npc[opts.npcKey] = new Npc({
+        // npc = state.npc[opts.npcKey] = new Npc({
+        //   key: opts.npcKey,
+        //   uid: takeFirst(state.freeId),
+        //   angle: opts.angle ?? Math.PI/2, // default face along x axis
+        //   classKey: opts.classKey ?? defaultClassKey,
+        //   runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
+        //   walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
+        // }, w);
+        npc = state.npc[opts.npcKey] = createNpc({
           key: opts.npcKey,
           uid: takeFirst(state.freeId),
           angle: opts.angle ?? Math.PI/2, // default face along x axis
@@ -324,7 +337,7 @@ export default function Npcs(props) {
         }, w);
         state.idToKey.set(npc.def.uid, opts.npcKey);
 
-        npc.initialize(state.gltf[npc.def.classKey]);
+        npc.api.initialize(state.gltf[npc.def.classKey]);
       }
 
       if (typeof opts.skin === 'string') {
@@ -334,7 +347,7 @@ export default function Npcs(props) {
       if (opts.skin !== undefined) {
         // 🔔 opts.skin keys may be brace-expansions (normalized by applySkin)
         Object.assign(npc.skin, opts.skin);
-        npc.applySkin();
+        npc.api.applySkin();
       }
 
       if (npc.s.spawns === 0) {
@@ -350,10 +363,10 @@ export default function Npcs(props) {
       position.y = typeof at.meta?.y === 'number' ? at.meta.y : 0;
 
       npc.position.copy(position);
-      npc.rotation.y = npc.getEulerAngle(npc.def.angle);
+      npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
-      npc.startAnimation(at.meta ?? {}); // 🔔 at.meta.y important
+      npc.api.startAnimation(at.meta ?? {}); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
         if (agent === true) {
@@ -393,10 +406,6 @@ export default function Npcs(props) {
       await pause(100);
       w.r3f.advance(Date.now());
     },
-    trackHmr(nextHmr) {
-      const output = mapValues(state.hmr, (prev, key) => prev !== nextHmr[key])
-      return state.hmr = nextHmr, output;
-    },
     update,
   }), { reset: { showLastNavPath: true } });
 
@@ -417,16 +426,9 @@ export default function Npcs(props) {
     }
   }, []);
 
-  React.useEffect(() => {
+  React.useEffect(() => {// hmr
     if (process.env.NODE_ENV === 'development') {
-      const changed = state.trackHmr({
-        baseNpc: hashText(createBaseNpc.toString()),
-        npcApi: hashText(NpcApi.toString()),
-      });
-      if (changed.baseNpc || changed.npcApi) {
-        // changed function createBaseNpc and/or class NpcApi
-        state.hotReloadNpcs(changed);
-      }
+      state.hotReloadNpcs();
     }
   }, [createBaseNpc, NpcApi]);
   
@@ -439,7 +441,7 @@ export default function Npcs(props) {
 
       if (npc.m.animations !== state.gltf[npc.def.classKey].animations) {
         // reinitialize if changed meshes
-        npc.initialize(state.gltf[npc.def.classKey]);
+        npc.api.initialize(state.gltf[npc.def.classKey]);
         npc.mixer = emptyAnimationMixer; // overwritten on remount
         npc.epochMs = Date.now(); // invalidate cache
       }
@@ -476,7 +478,8 @@ export default function Npcs(props) {
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
- * @property {{ [npcKey: string]: Npc }} npc
+ * //@property {{ [npcKey: string]: Npc }} npc
+ * @property {{ [npcKey: string]: NPC.NPCNew }} npc
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * Custom callback to handle npc slow down.
  * We don't use an event because it can happen too often.
@@ -504,17 +507,13 @@ export default function Npcs(props) {
  * - initial mapping `partToUv` from skinPartKey to uvRect
  * - initial mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
  *
- * @property {{ baseNpc: number; npcApi: number; }} hmr
- * Change-tracking for Hot Module Reloading (HMR) only.
- * Numeric values are usually hashes.
- *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} setupSkins
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
  * @property {(prevNpc: NPC.NPC) => void} hotReloadNpc
- * @property {(changed: { baseNpc: boolean; npcApi: boolean; }) => void} hotReloadNpcs
+ * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore
@@ -535,7 +534,6 @@ export default function Npcs(props) {
  * ```
  * @property {() => void} tickOnceDebounced
  * @property {() => Promise<void>} tickOnceDebug
- * @property {(next: State['hmr']) => Record<keyof State['hmr'], boolean>} trackHmr
  * @property {() => void} update
  * - Ensures incomingLabels i.e. does not replace.
  * - Returns `true` iff the label sprite-sheet had to be updated.
@@ -552,7 +550,7 @@ function NPC({ npc }) {
   return (
     <group
       key={npc.key}
-      ref={npc.onMount.bind(npc)}
+      ref={npc.api.onMount.bind(npc.api)}
       scale={npc.m.scale}
       // dispose={null}
     >

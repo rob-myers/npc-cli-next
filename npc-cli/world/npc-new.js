@@ -18,8 +18,7 @@ import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
  * @returns {NPCNew}
  */
 export function createNpc(def, w) {
-  const bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics);
-  const baseNpc = createBaseNpc(def, bodyUid);
+  const baseNpc = createBaseNpc(def, w);
   const api = new NpcApi(baseNpc, w);
   return Object.assign(baseNpc, { api });
 }
@@ -43,9 +42,11 @@ const preOffMeshCloseDist = helper.defaults.radius;
 
 /**
  * @param {NPC.NPCDef} def 
- * @param {number} bodyUid 
+ * @param {import('./World').State} w 
  */
-export function createBaseNpc(def, bodyUid) {
+export function createBaseNpc(def, w) {
+
+  const bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics);
 
   return {
     /** @type {string} User specified e.g. `rob` */
@@ -162,6 +163,8 @@ export function createBaseNpc(def, bodyUid) {
       // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
       turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
     },
+
+    w,
   };
 }
 
@@ -175,7 +178,6 @@ export class NpcApi {
   
   //#region shortcuts
   /** @type {string} */ key;
-  /** @type {NPC.CrowdAgent | null} */ agent;
   /** @type {NPC.NPCDef} */ def;
   /** @type {BaseNpc['m']} */ m;
   /** @type {BaseNpc['reject']} */ reject;
@@ -193,7 +195,6 @@ export class NpcApi {
   constructor(base, w) {
     this.base = base;
 
-    this.agent = base.agent;
     this.def = base.def;
     this.key = base.key;
     this.m = base.m;
@@ -391,10 +392,10 @@ export class NpcApi {
   }
 
   ensureAnimationMixer() {
-    if (this.mixer !== emptyAnimationMixer) {
+    if (this.base.mixer !== emptyAnimationMixer) {
       return;
     }
-    this.mixer = new THREE.AnimationMixer(this.m.group);
+    this.base.mixer = new THREE.AnimationMixer(this.m.group);
     this.m.toAct = this.m.animations.reduce((agg, a) => helper.isAnimKey(a.name)
       ? (agg[a.name] = this.base.mixer.clipAction(a), agg)
       : (warn(`ignored unexpected animation: ${a.name}`), agg)
@@ -541,8 +542,8 @@ export class NpcApi {
    */
   getCornerAfterOffMesh() {
     return {
-      x: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 0),
-      y: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 2),
+      x: /** @type {NPC.CrowdAgent} */ (this.base.agent).raw.get_cornerVerts(6 + 0),
+      y: /** @type {NPC.CrowdAgent} */ (this.base.agent).raw.get_cornerVerts(6 + 2),
     };
   }
 
@@ -573,7 +574,7 @@ export class NpcApi {
    * @returns {Geom.VectJson}
    */
   getFurtherAlongOffMesh(offMesh, extraDistance) {
-    const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (this.base.agentAnim);
+    const anim = /** @type {dtCrowdAgentAnimation} */ (this.base.agentAnim);
     const dstT = anim.t + (extraDistance / offMesh.tToDist);
     if (dstT < anim.tmid) {// look at 'init' seg
       return {
@@ -613,7 +614,7 @@ export class NpcApi {
   }
 
   getNextCorner() {
-    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     const offset = agent.state() === 2 ? 6 : 0;
     return {// agent.corners() empty while offMeshConnection
       x: agent.raw.get_cornerVerts(offset + 0),
@@ -729,7 +730,7 @@ export class NpcApi {
           geom.lineSegIntersectsCircle(
             point,
             offMesh.src,
-            other.getPoint(),
+            other.api.getPoint(),
             0.3,
           ) === false
         ) || (
@@ -779,7 +780,7 @@ export class NpcApi {
     this.applySkin();
     this.applyTint();
 
-    this.gltfAux = this.w.npc.gltfAux[this.def.classKey];
+    this.base.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
   /**
@@ -830,7 +831,7 @@ export class NpcApi {
   async move(opts) {
     this.reject.move?.('cancelled-by-move');
 
-    if (this.agent === null) {
+    if (this.base.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
     }
 
@@ -844,7 +845,7 @@ export class NpcApi {
     this.s.arriveAnim = opts.arriveAnim;
     this.s.lookSecs = 0.2;
 
-    this.agent.updateParameters({
+    this.base.agent.updateParameters({
       maxAcceleration: movingMaxAcceleration,
       maxSpeed: this.getMaxSpeed(),
       // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
@@ -858,12 +859,12 @@ export class NpcApi {
     this.s.target = this.base.lastTarget.copy(closest);
 
     if (this.tryStopOffMesh() === true) {
-      this.agent.teleport(this.base.position);
+      this.base.agent.teleport(this.base.position);
       if (this.s.agentState === 2) {// in case of immediate new offMeshConnection
         this.s.agentState = -1;
       }
     }
-    this.agent.requestMoveTarget(closest);
+    this.base.agent.requestMoveTarget(closest);
 
     const nextAct = this.s.run ? 'Run' : 'Walk';
     if (this.s.act !== nextAct) {
@@ -986,7 +987,7 @@ export class NpcApi {
       }
       // this.startAnimation('Idle');
       this.startAnimation(meta);
-      this.doMeta = meta.do === true ? meta : null;
+      this.s.doMeta = meta.do === true ? meta : null;
     } else {
       // sets `this.s.doMeta` because `meta.do === true`
       await this.fadeSpawn(doPoint, {
@@ -1005,15 +1006,15 @@ export class NpcApi {
     if (group !== null) {
       this.m.group = group;
       // Setup shortcut
-      this.position = group.position;
-      this.rotation = group.rotation;
+      this.base.position = group.position;
+      this.base.rotation = group.rotation;
       // Resume `w.npc.spawn`
       this.resolve.spawn?.();
       // Ensure non-empty animation mixer
       this.ensureAnimationMixer();
     } else {
       this.m.group = emptyGroup;
-      this.position = tmpVectThree1;
+      this.base.position = tmpVectThree1;
     }
   }
 
@@ -1040,13 +1041,13 @@ export class NpcApi {
       this.setUniform('opacity', this.s.opacity);
     }
 
-    if (this.agent === null) {
+    if (this.base.agent === null) {
       return;
     }
 
-    this.onTickAgent(deltaMs, this.agent);
+    this.onTickAgent(deltaMs, this.base.agent);
 
-    if (this.agent.raw.dvel !== 0 || this.s.offMesh !== null) {
+    if (this.base.agent.raw.dvel !== 0 || this.s.offMesh !== null) {
       const { x, y, z } = this.base.position;
       positions.push(this.base.bodyUid, x, y, z);
     }
@@ -1110,8 +1111,9 @@ export class NpcApi {
       return;
     }
 
-    // 🚧
-    // this.w.npc.onStuckCustom?.(this, agent);
+    // 🔔 also fixes "cannot arrive close enough to npcTargetArriveDistance"
+    // 🚧 this.base should have type NPC.NPC
+    this.w.npc.onStuckCustom?.(/** @type {NPC.NPC} */ (this.base), agent);
   }
 
   /** @param {NPC.CrowdAgent} agent */
@@ -1135,7 +1137,7 @@ export class NpcApi {
     //   this.s.lookAngleDst = null;
     // } else {// turn towards "closest neighbour" if they have a target
     //   this.s.lookAngleDst = this.getEulerAngle(
-    //     geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
+    //     geom.clockwiseFromNorth((other.position.z - this.base.position.z), (other.position.x - this.base.position.x))
     //   );
     // }
     
@@ -1219,7 +1221,7 @@ export class NpcApi {
       dst: exitSpeed / maxSpeed,
     };
 
-    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.updateParameters({ maxSpeed: exitSpeed });
 
     if (exitSpeed >= maxSpeed) {
@@ -1277,7 +1279,7 @@ export class NpcApi {
   }
 
   stopMoving(arrived = false) {
-    if (this.agent === null || this.s.target === null) {
+    if (this.base.agent === null || this.s.target === null) {
       return;
     }
 
@@ -1286,7 +1288,7 @@ export class NpcApi {
     this.s.slowBegin = null;
     this.s.target = null;
 
-    this.agent.updateParameters({
+    this.base.agent.updateParameters({
       maxSpeed: this.getMaxSpeed() * 0.75,
       maxAcceleration: staticMaxAcceleration,
       updateFlags: defaultAgentUpdateFlags,
@@ -1305,15 +1307,15 @@ export class NpcApi {
       this.startAnimation('Idle');
     }
 
-    const pos = this.agent.position(); // reset small motions:
+    const pos = this.base.agent.position(); // reset small motions:
     const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
       this.tryStopOffMesh();
-      this.agent.teleport(position);
-      this.agent.requestMoveTarget(position);
+      this.base.agent.teleport(position);
+      this.base.agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
-      this.agent.requestMoveTarget(toV3(this.s.offMesh.dst));
+      this.base.agent.requestMoveTarget(toV3(this.s.offMesh.dst));
     }
 
     this.resolve.move?.();

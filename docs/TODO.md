@@ -123,9 +123,11 @@
   - 🚧 new hmr strategy
     - ✅ detect change of function `createBaseNpc`
     - ✅ detect change of class `NpcApi`
-    - 🚧 onchange baseNpc copy in new, delete old, also for `s`
-    - 🚧 onchange NpcApi replace it
-  - 🚧 try replace `Npc`
+    - ✅ simplify strategy: even if function didn't change, its make contain stale refs
+    - 🚧 baseNpc: copy in new, delete old, also for `s`
+    - 🚧 NpcApi: replace it
+  - ✅ try replace `Npc`
+  - 🚧 tidy
 
 - 🚧 look towards neighbour should be optional
   - could also improve it

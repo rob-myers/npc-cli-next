@@ -1,8 +1,9 @@
 declare namespace NPC {
 
-  type NPC = import('../world/npc').Npc;
-
+  // 🚧
+  // type NPC = import('../world/npc').Npc;
   type NPCNew = import('../world/npc-new').NPCNew;
+  type NPC = import('../world/npc-new').NPCNew;
 
   interface NPCDef {
     /** User specified e.g. `rob` */
