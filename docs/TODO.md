@@ -124,8 +124,8 @@
     - ✅ detect change of function `createBaseNpc`
     - ✅ detect change of class `NpcApi`
     - ✅ simplify strategy: even if function didn't change, its make contain stale refs
-    - 🚧 baseNpc: copy in new, delete old, also for `s`
-    - 🚧 NpcApi: replace it
+    - ✅ baseNpc: copy in new, delete old, also for `s`
+    - ✅ NpcApi: replace it
   - ✅ try replace `Npc`
   - 🚧 tidy
 

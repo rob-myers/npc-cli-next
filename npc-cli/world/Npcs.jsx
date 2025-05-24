@@ -3,12 +3,11 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
-import { entries, hashText, isDevelopment, mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
+import { entries, isDevelopment, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
-// import { Npc } from "./npc";
 import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc-new";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -89,37 +88,50 @@ export default function Npcs(props) {
         return npc;
       }
     },
-    hotReloadNpc(prevNpc) {// 🚧 old
-    
-      // // 🔔 HMR by copying prevNpc non-methods into nextNpc
-      // // 🔔 supports variable re-naming in `npc.s`
-      // // const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
-      // const nextNpc = state.npc[prevNpc.key] = new Npc(prevNpc.def, w)
-      // const { s, ...rest } = nextNpc; //@ts-ignore
-      // Object.keys(s).forEach(k => k in prevNpc.s && (s[k] = prevNpc.s[k])); //@ts-ignore
-      // Object.keys(rest).forEach(k => k in prevNpc && (nextNpc[k] = prevNpc[k]));
-      
-      // nextNpc.epochMs = Date.now(); // invalidate React.Memo
-      // if (nextNpc.agent !== null) {// avoid stale ref
-      //   state.byAgId[nextNpc.agent.agentIndex] = nextNpc;
-      // }
-      // // track npc class meta
-      // nextNpc.m.scale = npcClassToMeta[nextNpc.def.classKey].scale;
-
-      // nextNpc.applySkin();
-      // nextNpc.applyTint();
-    },
-
-    hotReloadNpcs() {// 🚧
-      
+    hotReloadNpcs() {
       const npcs = Object.values(state.npc);
-      if (npcs.length === 0) {
-        return
+      let hmrKeys = /**
+        * @type {undefined | {
+        *  add: (keyof NPC.BaseNPC)[];
+        *  del: (keyof NPC.NPC)[];
+        *  s: { add: (keyof NPC.BaseNPC['s'])[]; del: (keyof NPC.NPC['s'])[]; }
+        * }}
+        **/ (undefined);
+
+      for (const npc of npcs) {
+        const base = createBaseNpc(npc.def, w);
+
+        // copy in new from `base`, delete old from `npc`, also for `s`
+        // 🤔 we don't support type-change (should overwrite with base[x])
+        if (hmrKeys === undefined) {
+          // only compute keys to add/delete once
+          hmrKeys = {
+            add: keys(base).filter(x => !(x in npc) && Object.assign(npc, { [x]: base[x] })),
+            del: keys(npc).filter(x => !(x in base) && delete npc[x]),
+            s: {
+              add: keys(base.s).filter(x => !(x in npc.s) && Object.assign(npc.s, { [x]: base.s[x] })),
+              del: keys(npc.s).filter(x => !(x in base.s) && delete npc.s[x]),
+            },
+          };
+        } else {
+          hmrKeys.add.forEach(x => Object.assign(npc, { [x]: base[x] }));
+          hmrKeys.del.forEach(x => delete npc[x]);
+          hmrKeys.s.add.forEach(x => Object.assign(npc.s, { [x]: base.s[x] }));
+          hmrKeys.s.del = keys(npc.s).filter(x => !(x in base.s) && delete npc.s[x])
+        }
+
+        npc.api = new NpcApi(npc, w); // replace NpcApi
+        npc.epochMs = Date.now(); // invalidate React.Memo
+        if (npc.agent !== null) {// avoid stale ref
+          state.byAgId[npc.agent.agentIndex] = npc;
+        }
+        // track npc class meta
+        npc.m.scale = npcClassToMeta[npc.def.classKey].scale;
+
+        // 🚧 needed?
+        // npc.applySkin();
+        // npc.applyTint();
       }
-
-      // 🚧 baseNpc: copy in new, delete old, also for `s`
-      // 🚧 NpcApi: replace it
-
     },
 
     isPointInNavmesh(input) {
@@ -420,17 +432,12 @@ export default function Npcs(props) {
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
   
-  React.useEffect(() => {// hmr 🚧 old
-    if (process.env.NODE_ENV === 'development') {
-      Object.values(state.npc).forEach(state.hotReloadNpc);
-    }
-  }, []);
 
   React.useEffect(() => {// hmr
     if (process.env.NODE_ENV === 'development') {
       state.hotReloadNpcs();
     }
-  }, [createBaseNpc, NpcApi]);
+  }, []);
   
   React.useEffect(() => {// onchange gltf or sheets
     state.setupSkins();
@@ -479,7 +486,7 @@ export default function Npcs(props) {
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
  * //@property {{ [npcKey: string]: Npc }} npc
- * @property {{ [npcKey: string]: NPC.NPCNew }} npc
+ * @property {{ [npcKey: string]: NPC.NPC }} npc
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * Custom callback to handle npc slow down.
  * We don't use an event because it can happen too often.
@@ -512,7 +519,6 @@ export default function Npcs(props) {
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
- * @property {(prevNpc: NPC.NPC) => void} hotReloadNpc
  * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh

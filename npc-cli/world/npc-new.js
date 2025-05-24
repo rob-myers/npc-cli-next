@@ -15,17 +15,13 @@ import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 /**
  * @param {NPC.NPCDef} def 
  * @param {import('./World').State} w 
- * @returns {NPCNew}
+ * @returns {NPC.NPC}
  */
 export function createNpc(def, w) {
   const baseNpc = createBaseNpc(def, w);
   const api = new NpcApi(baseNpc, w);
   return Object.assign(baseNpc, { api });
 }
-
-/**
- * @typedef {BaseNpc & { api: NpcApi }} NPCNew
- */
 
 const lookSecsNoTarget = 0.75;
 
@@ -169,27 +165,27 @@ export function createBaseNpc(def, w) {
 }
 
 /**
- * @typedef {ReturnType<typeof createBaseNpc>} BaseNpc
+ * @typedef {ReturnType<typeof createBaseNpc>} BaseNPC
  */
 
 export class NpcApi {
 
-  /** @type {BaseNpc} */ base;
+  /** @type {BaseNPC} */ base;
   
   //#region shortcuts
   /** @type {string} */ key;
   /** @type {NPC.NPCDef} */ def;
-  /** @type {BaseNpc['m']} */ m;
-  /** @type {BaseNpc['reject']} */ reject;
-  /** @type {BaseNpc['resolve']} */ resolve;
-  /** @type {BaseNpc['s']} */ s;
+  /** @type {BaseNPC['m']} */ m;
+  /** @type {BaseNPC['reject']} */ reject;
+  /** @type {BaseNPC['resolve']} */ resolve;
+  /** @type {BaseNPC['s']} */ s;
   //#endregion
 
   /** @type {import('./World').State} World API */
   w;
 
   /**
-   * @param {BaseNpc} base
+   * @param {BaseNPC} base
    * @param {import('./World').State} w
    */
   constructor(base, w) {
