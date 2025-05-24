@@ -120,8 +120,12 @@
 - 🚧 only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
   - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
-  - 🚧 try replace `Npc`
   - 🚧 new hmr strategy
+    - ✅ detect change of function `createBaseNpc`
+    - ✅ detect change of class `NpcApi`
+    - 🚧 onchange baseNpc copy in new, delete old, also for `s`
+    - 🚧 onchange NpcApi replace it
+  - 🚧 try replace `Npc`
 
 - 🚧 look towards neighbour should be optional
   - could also improve it

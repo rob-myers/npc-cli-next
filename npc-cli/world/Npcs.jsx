@@ -4,11 +4,12 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
-import { entries, isDevelopment, mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { entries, hashText, isDevelopment, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
-import { crowdAgentParams, Npc } from "./npc";
+import { Npc } from "./npc";
+import { createBaseNpc, NpcApi, crowdAgentParams } from "./npc-new";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -28,6 +29,7 @@ export default function Npcs(props) {
     gltf: /** @type {*} */ ({}),
     gltfAux: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
+    hmr: /** @type {*} */ ({}),
     idToKey: new Map(),
     sheetAux: /** @type {*} */ ({}),
     npc: {},
@@ -88,7 +90,8 @@ export default function Npcs(props) {
         return npc;
       }
     },
-    hotReloadNpc(prevNpc) {
+    hotReloadNpc(prevNpc) {// 🚧 old
+    
       // 🔔 HMR by copying prevNpc non-methods into nextNpc
       // 🔔 supports variable re-naming in `npc.s`
       // const nextNpc = state.npc[prevNpc.key] = Object.assign(new Npc(prevNpc.def, w), {...prevNpc});
@@ -107,6 +110,13 @@ export default function Npcs(props) {
       nextNpc.applySkin();
       nextNpc.applyTint();
     },
+
+    hotReloadNpcs(changed) {
+      console.info({ changed });
+      // 🚧 onchange baseNpc copy in new, delete old, also for `s`
+      // 🚧 onchange NpcApi replace it
+    },
+
     isPointInNavmesh(input) {
       const v3 = toV3(input);
       const { success, point } = w.crowd.navMeshQuery.findClosestPoint(v3, { halfExtents: { x: smallHalfExtent, y: smallHalfExtent, z: smallHalfExtent } });
@@ -383,6 +393,10 @@ export default function Npcs(props) {
       await pause(100);
       w.r3f.advance(Date.now());
     },
+    trackHmr(nextHmr) {
+      const output = mapValues(state.hmr, (prev, key) => prev !== nextHmr[key])
+      return state.hmr = nextHmr, output;
+    },
     update,
   }), { reset: { showLastNavPath: true } });
 
@@ -397,11 +411,24 @@ export default function Npcs(props) {
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
   
-  React.useEffect(() => {// hmr
+  React.useEffect(() => {// hmr 🚧 old
     if (process.env.NODE_ENV === 'development') {
       Object.values(state.npc).forEach(state.hotReloadNpc);
     }
   }, []);
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      const changed = state.trackHmr({
+        baseNpc: hashText(createBaseNpc.toString()),
+        npcApi: hashText(NpcApi.toString()),
+      });
+      if (changed.baseNpc || changed.npcApi) {
+        // changed function createBaseNpc and/or class NpcApi
+        state.hotReloadNpcs(changed);
+      }
+    }
+  }, [createBaseNpc, NpcApi]);
   
   React.useEffect(() => {// onchange gltf or sheets
     state.setupSkins();
@@ -477,12 +504,17 @@ export default function Npcs(props) {
  * - initial mapping `partToUv` from skinPartKey to uvRect
  * - initial mapping `triToKey` from triangleId to { uvRectKey, skinPartKey }.
  *
+ * @property {{ baseNpc: number; npcApi: number; }} hmr
+ * Change-tracking for Hot Module Reloading (HMR) only.
+ * Numeric values are usually hashes.
+ *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} setupSkins
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
  * @property {(prevNpc: NPC.NPC) => void} hotReloadNpc
+ * @property {(changed: { baseNpc: boolean; npcApi: boolean; }) => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore
@@ -503,6 +535,7 @@ export default function Npcs(props) {
  * ```
  * @property {() => void} tickOnceDebounced
  * @property {() => Promise<void>} tickOnceDebug
+ * @property {(next: State['hmr']) => Record<keyof State['hmr'], boolean>} trackHmr
  * @property {() => void} update
  * - Ensures incomingLabels i.e. does not replace.
  * - Returns `true` iff the label sprite-sheet had to be updated.
