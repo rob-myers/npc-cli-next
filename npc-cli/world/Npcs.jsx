@@ -8,7 +8,7 @@ import { entries, isDevelopment, keys, mapValues, pause, range, takeFirst, warn 
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
-import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc-new";
+import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";

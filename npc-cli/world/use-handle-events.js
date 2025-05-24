@@ -655,7 +655,7 @@ export default function useHandleEvents(w) {
       const speed = npc.api.getMaxSpeed();
 
       // adjust RecastDetour dtCrowdAgentAnimation
-      const anim = /** @type {import("./npc-new").dtCrowdAgentAnimation} */ (npc.agentAnim);
+      const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
       anim.set_initPos(0, npcPoint.x);
       anim.set_initPos(2, npcPoint.y);
       anim.set_startPos(0, newSrc.x);
