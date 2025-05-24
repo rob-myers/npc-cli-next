@@ -157,19 +157,21 @@ export async function* initCamAndLights({ api, args, w }) {
  */
 export async function* move({ api, args, w }) {
   const opts = /** @type {{ npcKey: string } & NPC.MoveOpts} */ (api.parseArgsAsJs(args));
-  const npc = w.n[opts.npcKey];
-  if (!npc) {
+
+  // ✅ avoid stale ref to npc
+  // 🚧 npc should be vanilla object with npc.api replaced on HMR
+
+  if (!w.n[opts.npcKey]) {
     throw Error(`npcKey invalid: ${opts.npcKey}`)
   }
 
-  api.addCleanUp(// for Ctrl+C and initially
-    () => npc.reject.move?.('cancelled')
-  )(); 
+  // for Ctrl+C
+  api.addCleanUp(() => w.n[opts.npcKey].reject.move?.('cancelled')); 
   
   while (true) {
     try {
       return await Promise.race([
-        npc.move(opts),
+        w.n[opts.npcKey].move(opts),
         new Promise((_, rej) => api.addSuspend(() => rej('paused'))),
       ]);
     } catch (e) {
@@ -178,7 +180,7 @@ export async function* move({ api, args, w }) {
       }
     }
 
-    npc.stopMoving();
+    w.n[opts.npcKey].stopMoving();
     await /** @type {Promise<void>} */ (new Promise((res, rej) => (
       api.addCleanUp(rej),
       api.addResume(res)
