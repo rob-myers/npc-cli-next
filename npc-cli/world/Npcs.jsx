@@ -266,21 +266,19 @@ export default function Npcs(props) {
     },
     async spawn(opts) {
       const { at } = opts;
-      const point = toXZ(at);
+      const point = toXZ(at ?? {});
+
+      if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
+        throw Error(`opts.npcKey must match /^[a-z0-9-_]+$/i`);
+      } else if (opts.npcKey.length > 10) {
+        throw Error(`opts.npcKey must have length ≤ 10`);
+      } else if (!(typeof point?.x === 'number' && typeof point.y === 'number')) {
+        throw Error(`opts.at must be a valid point`);
+      }
 
       if (w.lib.isVectJson(opts.look) === true) {
         opts.look = toXZ(opts.look);
         opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
-      }
-
-      if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
-        throw Error(`npc key: ${JSON.stringify(opts.npcKey)} must match /^[a-z0-9-_]+$/i`);
-      } else if (opts.npcKey.length > 10) {
-        throw Error(`npc key: ${JSON.stringify(opts.npcKey)} must have length ≤ 10`);
-      } else if (!(typeof point?.x === 'number' && typeof point.y === 'number')) {
-        throw Error(`invalid point {x, y}: ${JSON.stringify(at)}`);
-      } else if (opts.npcKey === 'default') {
-        throw Error('npc key cannot be "default"');
       }
 
       const dstNav = at.meta?.nav === true || state.isPointInNavmesh(point);
@@ -331,14 +329,6 @@ export default function Npcs(props) {
       } else {
         
         // Spawn
-        // npc = state.npc[opts.npcKey] = new Npc({
-        //   key: opts.npcKey,
-        //   uid: takeFirst(state.freeId),
-        //   angle: opts.angle ?? Math.PI/2, // default face along x axis
-        //   classKey: opts.classKey ?? defaultClassKey,
-        //   runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
-        //   walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
-        // }, w);
         npc = state.npc[opts.npcKey] = createNpc({
           key: opts.npcKey,
           uid: takeFirst(state.freeId),
