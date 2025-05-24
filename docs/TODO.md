@@ -119,6 +119,23 @@
     - try avoid send args to `move`
     - clean
 
+- moveCycle fixes
+  - loop gets stuck if other blocks door
+    - seems fixed by `setupOnSlowNpc`
+  - two loops: npcs warp through each other
+    - moving "too soon" after collision?
+  - two loops: npcs do not move correctly through door
+
+```sh
+w e.grantAccess . rob kate
+
+spawn npcKey:rob at:$( click 1 )
+spawn npcKey:kate at:$( click 1 ) skin:medic-0
+
+moveCycle npcKey:rob to:"$( click 4 )" &
+moveCycle npcKey:kate to:"$( click 4 )" &
+```
+
 - 🚧 only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
   - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
