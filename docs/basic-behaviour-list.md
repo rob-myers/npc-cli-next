@@ -23,12 +23,18 @@ ptags=always; click 5 meta.nav | while take 1; do
   points/at'(-1)' >&2 
 done &>> points
 
-# 🚧 prefer js but need to expose "move generator" to other generators e.g. via lib.move ?
+# 1st attempt
 c=0; while c+=1; do
   test $( expr "$c >= 5" ) && c=0
   move npcKey:rob arriveAnim:none to:"$( points/$c )"
 done
 
+# 2nd attempt
+# (a) js
+# 🚧
+
+# (b) sh
+moveCycle npcKey:rob to:"$( click 4 )" 
 ```
 
 - Go to bedroom, get into bed, say "good night", breath for a bit, start snoring.

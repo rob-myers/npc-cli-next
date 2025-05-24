@@ -115,7 +115,9 @@
   - ✅ implement `moveCycle`
   - ✅ `move` should work onchange `npc.js`
     - breaks if pause Tabs then change `npc.js`
-  - improve `moveCycle`
+  - 🚧 refine `moveCycle`
+    - try avoid send args to `move`
+    - clean
 
 - 🚧 only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
