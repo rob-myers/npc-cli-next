@@ -2,6 +2,8 @@ declare namespace NPC {
 
   type NPC = import('../world/npc').Npc;
 
+  type NPCNew = import('../world/npc-new').NPCNew;
+
   interface NPCDef {
     /** User specified e.g. `rob` */
     key: string;

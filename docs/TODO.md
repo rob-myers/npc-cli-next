@@ -117,8 +117,11 @@
     - breaks if pause Tabs then change `npc.js`
   - improve `moveCycle`
 
-- 🚧 only mutate `npc`
-  - idea: npc.api is a class instance which we replace on hmr
+- 🚧 only mutate `npc` i.e. do not re-instantiate on hmr
+  - ℹ️ idea: npc.api is a class instance which we replace on hmr
+  - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
+  - 🚧 try replace `Npc`
+  - 🚧 new hmr strategy
 
 - 🚧 look towards neighbour should be optional
   - could also improve it
