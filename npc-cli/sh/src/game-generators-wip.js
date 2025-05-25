@@ -209,7 +209,8 @@ export async function* moveCycle(ctxt) {
   while (true) {
     for (const to of opts.to) {
       try {
-        ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`, `arriveAnim:none`];
+        // ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`, `arriveAnim:none`];
+        ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`];
         yield* ctxt.lib.move(ctxt);
         await api.sleep(0.8);
       } catch (e) {

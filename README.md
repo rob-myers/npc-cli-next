@@ -149,8 +149,9 @@ brew install cmake
 # at repo root
 git checkout feat/expose-all-mesh-anim
 # yarn build does not work, but we can:
-# might have to manually delete packages/recast-navigation-wasm/{build,dist}
 yarn build:packages2
+
+# might have to manually delete packages/recast-navigation-wasm/{build,dist}
 ```
 
 ## Bits and bobs

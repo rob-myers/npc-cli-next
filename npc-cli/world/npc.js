@@ -27,9 +27,14 @@ const lookSecsNoTarget = 0.75;
 
 const staticMaxAcceleration = 4;
 const movingMaxAcceleration = 6;
+
+/**
+ * 🔔 sudden change can cause jerk onexit doorway
+ * 🔔 relevant to reachability of arrival distance
+ * 🚧 support separation weight tweening
+ */
 // const staticSeparationWeight = 1;
 const staticSeparationWeight = 0.25;
-// 🔔 sudden change can cause jerk onexit doorway
 const movingSeparationWeight = 0.5;
 const staticCollisionQueryRange = 2;
 const movingCollisionQueryRange = 2;
@@ -1376,6 +1381,9 @@ export class NpcApi {
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
   radius: helper.defaults.radius, // 🔔 too large causes jerky collisions
+  // slowDownRadius: helper.defaults.radius * 2,
+  // slowDownRadius: npcTargetArriveDistance,
+  slowDownRadius: helper.defaults.radius,
   height: 1.5,
   maxAcceleration: staticMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,

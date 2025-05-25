@@ -137,23 +137,39 @@
   - works when Tabs not paused
   - issue happens whilst paused i.e. error is `true`
 
+- ✅ locked doors should not open on accessible npc enter collider
+
 - 🚧 do not rely on stuck detection to fix "cannot get close enough to arrive"
   - ℹ️ can repro when another npc nearby (`separationWeight`)
 ```sh
 # repro
 setupOnSlowNpc # stops npc when "too slow"
-
 spawn npcKey:rob at:$( click 1 )
 w e.grantAccess . rob
 move npcKey:rob to:$( click 1 )
 ```
-  - 🚧 try turning off slow down radius in recastnavigation repo
-  - expose wasm interface
+  - ✅ add slow down radius param to recastnavigation repo
+  - ✅ expose slow down radius in recast-navigation-js repo
+    - expose wasm interface
+  - ✅ can see in npc-cli-next while connected by tsconfig paths
+  - ✅ can change in npc-cli-next and see difference
+    - 0.05 fixes issue
+  - ✅ try slower transition Walk -> Idle
+  - 🚧 publish and bump
+  - 🚧 related to separation weight of idle vs moving
+  - onSlowNpcCustom probably needs a default/fallback
+
+- moveCycle: what if npc keeps getting blocked from leaving room
+  - e.g. npc near door has higher weight (more accommodating)
+  - e.g. blocking npc tweens separationWeight
+
+- 🚧 avoid Tabs reload on edit service/const
+  - ✅ fix Viewer, ViewerControls
+  - 🚧 other components should not export const
 
 - 🚧 look towards neighbour should be optional
   - could also improve it
 
-- ✅ locked doors should not open on accessible npc enter collider
 
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);
