@@ -116,30 +116,25 @@
   - ✅ `move` should work onchange `npc.js`
     - breaks if pause Tabs then change `npc.js`
   - 🚧 refine `moveCycle`
-    - try avoid send args to `move`
+    - keeps trying by default?
+    - avoid send args to `move`
     - clean
-
-- moveCycle fixes
-  - loop gets stuck if other blocks door
-    - seems fixed by `setupOnSlowNpc`
-  - two loops: npcs warp through each other
-    - moving "too soon" after collision?
-  - two loops: npcs do not move correctly through door
 
 ```sh
 w e.grantAccess . rob kate
+setupOnSlowNpc
 
 spawn npcKey:rob at:$( click 1 )
 spawn npcKey:kate at:$( click 1 ) skin:medic-0
 
-moveCycle npcKey:rob to:"$( click 4 )" &
-moveCycle npcKey:kate to:"$( click 4 )" &
+moveCycle npcKey:rob to:"$( click 2 )" &
+moveCycle npcKey:kate to:"$( click 2 )" &
 ```
 
 - 🚧 only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
   - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
-  - 🚧 new hmr strategy
+  - ✅ new hmr strategy
     - ✅ detect change of function `createBaseNpc`
     - ✅ detect change of class `NpcApi`
     - ✅ simplify strategy: even if function didn't change, its make contain stale refs
@@ -147,6 +142,8 @@ moveCycle npcKey:kate to:"$( click 4 )" &
     - ✅ NpcApi: replace it
   - ✅ try replace `Npc`
   - 🚧 tidy
+
+- do not rely on stuck detection to fix "cannot get close enough to arrive"
 
 - 🚧 look towards neighbour should be optional
   - could also improve it
@@ -211,6 +208,7 @@ moveCycle npcKey:kate to:"$( click 4 )" &
 - ✅ floor torch: more efficient approach
   - use single varying vec2 vFoo i.e. uvs into radial light fill texture
 
+- sh: strategy for stale `ps` after Tabs pause
 - bug: sh
   - multi-line edit using Option+Enter not working (need repro)
   - paste multiline command and start Option-Deleting midway  (need repro)

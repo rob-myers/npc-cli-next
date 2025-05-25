@@ -155,7 +155,7 @@ export function createBaseNpc(def, w) {
   
     reject: {
       fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
-      move: /** @type {undefined | ((error: any) => void)} */ (undefined),
+      move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
       // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
       turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
     },
@@ -303,11 +303,14 @@ export class NpcApi {
     texNpcAux.updateIndex(this.def.uid, data, 1);
   }
 
-  cancel() {
+  /**
+   * @param {'removed' | 'respawned'} reason 
+   */
+  cancel(reason) {
     info(`${'cancel'}: cancelling ${this.key}`);
 
     this.reject.fade?.(`${'cancel'}: cancelled fade`);
-    this.reject.move?.(`${'cancel'}: cancelled move`);
+    this.reject.move?.({ type: 'stop-reason', key: reason });
     this.reject.turn?.(`${'cancel'}: cancelled turn`);
 
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
@@ -738,7 +741,7 @@ export class NpcApi {
           continue;
         }
 
-        this.stopMoving();
+        this.stopMoving({ type: 'stop-reason', key: 'collided' });
         break;
       }
     }
@@ -825,7 +828,7 @@ export class NpcApi {
    * @param {NPC.MoveOpts} opts
    */
   async move(opts) {
-    this.reject.move?.('cancelled-by-move');
+    this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
 
     if (this.base.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
@@ -876,7 +879,9 @@ export class NpcApi {
     try {
       await this.waitUntilStopped();
     } catch (e) {
-      if (e !== 'cancelled-by-move') this.stopMoving();
+      if (this.s.target !== null) {// manual reject.move()
+        this.stopMoving();
+      }
       throw e;
     }
   }
@@ -1082,7 +1087,7 @@ export class NpcApi {
     const distance = this.s.target.distanceTo(pos);
 
     if (distance < npcTargetArriveDistance) {// Reached target
-      this.stopMoving(true);
+      this.stopMoving({ type: 'stop-reason', key: 'arrived' });
       return;
     }
 
@@ -1274,7 +1279,8 @@ export class NpcApi {
     this.updateLabelOffsets();
   }
 
-  stopMoving(arrived = false) {
+  /** @param {NPC.StopReason} reason */
+  stopMoving(reason = { type: 'stop-reason', key: 'stopped' }) {
     if (this.base.agent === null || this.s.target === null) {
       return;
     }
@@ -1295,7 +1301,7 @@ export class NpcApi {
       // updateFlags: 1,
     });
     
-    if (arrived === true) {
+    if (reason.key === 'arrived') {
       if (this.s.arriveAnim !== 'none') {
         this.startAnimation(this.s.arriveAnim ?? 'Idle');
       }
@@ -1314,7 +1320,12 @@ export class NpcApi {
       this.base.agent.requestMoveTarget(toV3(this.s.offMesh.dst));
     }
 
-    this.resolve.move?.();
+    if (reason.key === 'arrived') {
+      this.resolve.move?.();
+    } else {
+      this.reject.move?.(reason);
+    }
+    // 🚧 provide reason in event
     this.w.events.next({ key: 'stopped-moving', npcKey: this.key });
   }
 

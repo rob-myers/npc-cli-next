@@ -484,7 +484,7 @@ export default function useHandleEvents(w) {
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
         const nextCorner = npc.api.getNextCorner();
-        npc.api.stopMoving();
+        npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door' });
         npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(nextCorner));
         return;
       }
@@ -539,7 +539,7 @@ export default function useHandleEvents(w) {
         }
 
         // **STOP**
-        npc.api.stopMoving();
+        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway' });
         agent.teleport(npc.position); 
         return;
       }
@@ -853,8 +853,6 @@ export default function useHandleEvents(w) {
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
  * @property {(offMesh1: NPC.OffMeshState, offMesh2: NPC.OffMeshState) => boolean} testOffMeshDisjoint
  * Are two offMeshConnection traversals disjoint?
- * We assume they have the same direction i.e.
- * > `offMesh1.orig.srcGrKey === offMesh2.orig.srcGrKey`
  * @property {(gdKey: Geomorph.GmDoorKey, opts?: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
  * Returns `true` iff successful.
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; point?: Geom.VectJson; } & Geomorph.ToggleLockOpts) => boolean} toggleLock

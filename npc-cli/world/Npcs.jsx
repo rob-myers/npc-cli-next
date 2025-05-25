@@ -169,7 +169,7 @@ export default function Npcs(props) {
       try {
         for (const npcKey of npcKeys) {
           const npc = state.getNpc(npcKey); // throw if n'exist pas
-          npc.api.cancel(); // rejects promises
+          npc.api.cancel('removed'); // rejects promises
           state.removeAgent(npc);
           
           delete state.npc[npcKey];
@@ -310,7 +310,7 @@ export default function Npcs(props) {
       ;
 
       if (npc !== undefined) {// Respawn
-        npc.api.cancel();
+        npc.api.cancel('respawned');
         npc.epochMs = Date.now();
         npc.s.lookAngleDst = null;
 

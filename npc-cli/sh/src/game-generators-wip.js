@@ -163,7 +163,7 @@ export async function* move({ api, args, w }) {
   }
 
   // for Ctrl+C
-  api.addCleanUp(() => npc.reject.move?.('cancelled')); 
+  api.addCleanUp(() => npc.reject.move?.(api.getKillError(1))); 
   
   while (true) {
     try {
@@ -172,16 +172,17 @@ export async function* move({ api, args, w }) {
         new Promise((_, rej) => api.addSuspend(() => rej('paused'))),
       ]);
     } catch (e) {
-      if (e !== 'paused') {
-        throw e;
+      if (e === 'paused') {
+        npc.api.stopMoving();
+        await /** @type {Promise<void>} */ (new Promise((res, rej) => (
+          api.addCleanUp(rej),
+          api.addResume(res)
+        )));
+        continue;
       }
+      throw e;
     }
 
-    npc.api.stopMoving();
-    await /** @type {Promise<void>} */ (new Promise((res, rej) => (
-      api.addCleanUp(rej),
-      api.addResume(res)
-    )));
   }
 
 }
@@ -197,17 +198,28 @@ export async function* move({ api, args, w }) {
 export async function* moveCycle(ctxt) {
   const { api, args } = ctxt;
 
+  // 🚧 should keep trying to reach point (possibly optionally)
   // 🚧 change type of `to`
+  // 🚧 provide opts directly (not args)
+
   const opts = /** @type {{ npcKey: string; to: NPC.ClickOutput[] }} */ (
     api.parseArgsAsJs(args, { to: 'array' })
   );
   
   while (true) {
     for (const to of opts.to) {
-      // 🚧 provide opts directly somehow?
-      ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`, `arriveAnim:none`];
-      yield* ctxt.lib.move(ctxt);
-      await api.sleep(0.3);
+      try {
+        ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`, `arriveAnim:none`];
+        yield* ctxt.lib.move(ctxt);
+        await api.sleep(0.8);
+      } catch (e) {
+        if (/** @type {NPC.StopReason} */ (e)?.type === 'stop-reason') {
+          await api.sleep(0.4);
+          continue;
+        }
+        throw e;
+      }
+      
     }
   }
 
@@ -296,7 +308,7 @@ export const setupOnSlowNpc = ({ w, args }) => {
       case 'noop': // do nothing
         break;
       default: // both stop
-        npc.api.stopMoving();
+        npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
         break;
     }
   };

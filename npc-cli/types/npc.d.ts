@@ -426,4 +426,19 @@ declare namespace NPC {
      */
     debugPath?: boolean;
   }
+
+  interface StopReason {
+    type: 'stop-reason';
+    key: (
+      | 'arrived'
+      | 'blocked-doorway'
+      | 'collided'
+      | 'locked-door'
+      | 'move-again'
+      | 'removed'
+      | 'respawned'
+      | 'stopped'
+      | 'stuck'
+    );
+  }
 }
