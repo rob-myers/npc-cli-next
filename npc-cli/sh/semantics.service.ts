@@ -669,22 +669,28 @@ class semanticsServiceClass {
   }
 
   private async Redirect(node: Sh.Redirect) {
+    const srcValue = node.N === null ? null : node.N.Value;
+    const srcFd = srcValue === null ? 1 : safeJsonParse(srcValue);
+    if (!(typeof srcFd === 'number' && Number.isInteger(srcFd) === true && srcFd >= 0)) {
+      throw new ShError(`${node.Op}: bad file descriptor: "${srcValue}"`, 127);
+    }
+    
     if (node.Op === ">&") {
-      const { value } = await this.lastExpanded(sem.Expand(node.Word));
-      const fd = safeJsonParse(value);
-      if (typeof fd === 'number' && Number.isInteger(fd) && fd >= 0) {
-        return redirectNode(node.parent!, { 1: node.meta.fd[fd] })
-      } else {
-        throw new ShError(`${node.Op}: bad file descriptor: "${value}"`, 127);
+      const { value: dstValue } = await this.lastExpanded(sem.Expand(node.Word));
+      const dstFd = safeJsonParse(dstValue);
+      if (!(typeof dstFd === 'number' && Number.isInteger(dstFd) === true && dstFd >= 0)) {
+        throw new ShError(`${node.Op}: bad file descriptor: "${dstValue}"`, 127);
       }
+
+      return redirectNode(node.parent!, { [srcFd]: node.meta.fd[dstFd] })
     }
 
     if (node.Op === ">" || node.Op === ">>" || node.Op === '&>>') {
       const { value } = await this.lastExpanded(sem.Expand(node.Word));
       if (value === "/dev/null") {
-        return redirectNode(node.parent!, { 1: "/dev/null" });
+        return redirectNode(node.parent!, { [srcFd]: "/dev/null" });
       } else if (value === "/dev/voice") {
-        return redirectNode(node.parent!, { 1: "/dev/voice" });
+        return redirectNode(node.parent!, { [srcFd]: "/dev/voice" });
       } else {
         const varDevice = useSession.api.createVarDevice(
           node.meta,
@@ -694,7 +700,7 @@ class semanticsServiceClass {
             : node.Op === ">>" ? "array" : "fresh-array"
           ,
         );
-        return redirectNode(node.parent!, { 1: varDevice.key });
+        return redirectNode(node.parent!, { [srcFd]: varDevice.key });
       }
     }
 
