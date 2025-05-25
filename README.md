@@ -126,11 +126,11 @@ while { true; ! test ${?}; }; do echo foo; done
 # redirecting
 
 # playing with loops
-w e.grantAccess . rob kate
 setupOnSlowNpc
 
 spawn npcKey:rob at:$( click 1 )
 spawn npcKey:kate at:$( click 1 ) skin:medic-0
+w e.grantAccess . rob kate
 
 moveCycle npcKey:rob to:"$( click 2 )" &
 moveCycle npcKey:kate to:"$( click 2 )" &

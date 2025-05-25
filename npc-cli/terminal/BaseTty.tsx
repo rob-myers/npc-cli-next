@@ -43,8 +43,8 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
       // mobile: can select single word via long press
       rightClickSelectsWord: true,
       theme: xtermJsTheme,
-      convertEol: false,
-      scrollback: scrollback,
+      convertEol: true,
+      scrollback,
       rows: 50,
     });
   

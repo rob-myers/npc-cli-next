@@ -324,14 +324,14 @@ export class ttyXtermClass {
       return;
     }
 
-    if (data.length === 1 || !data.includes("\r")) {
+    if (data.length === 1 || data.includes("\r") === false) {
       this.handleXtermKeypresses(data);
     } else if (data === '\u001b\r') {
       // "Alt + Enter" -> newline (see Ctrl + J)
       this.handleXtermKeypresses('\n')
     } else {// Handle multi-line paste
-      // ℹ️ xterm.js normalizes pasted newlines as '\r'
-      const text = data.replace(/\r/g, "\r\n");
+      // since convertEol: true we don't need \r
+      const text = data.replace(/\r/g, "\n");
       const { input, cursor } = this;
       this.clearInput();
       this.setInput(`${input.slice(0, cursor)}${text}${input.slice(cursor)}`)
