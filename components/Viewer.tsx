@@ -7,7 +7,7 @@ import { useBeforeunload } from "react-beforeunload";
 
 import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
 
-import { view } from "./const";
+import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 
@@ -21,9 +21,8 @@ import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
 
-import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
+import ViewerControls from "./ViewerControls";
 import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
-
 
 export default function Viewer() {
 
@@ -235,7 +234,6 @@ export default function Viewer() {
     </aside>
   );
 }
-
 export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
@@ -248,8 +246,6 @@ export interface State {
   onModelChange(updateLayout: boolean): void;
   update(): void;
 }
-
-export const viewerBaseCssVar = '--viewer-base';
 
 const viewerCss = css`
   ${css`

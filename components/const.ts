@@ -61,3 +61,7 @@ export const zIndexSite = /** @type {const} */ ({
 });
 
 export const sideNoteRootDataAttribute = 'data-side-note-root';
+
+export const viewerBaseCssVar = '--viewer-base';
+export const viewBarSizeCssVar = '--view-bar-size';
+export const viewIconSizeCssVar = '--view-icon-size';

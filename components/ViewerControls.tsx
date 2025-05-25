@@ -5,7 +5,7 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 
 import useSite from "./site.store";
-import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
+import { afterBreakpoint, breakpoint, nav, view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar, zIndexSite } from "./const";
 import { getNavWidth, isSmallView } from "./layout";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import { tryLocalStorageSet } from "@/npc-cli/service/generic";
@@ -14,7 +14,7 @@ import { localStorageKey } from "@/npc-cli/service/const";
 import useLongPress from "@/npc-cli/hooks/use-long-press";
 import useUpdate from "@/npc-cli/hooks/use-update";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
-import { type State, viewerBaseCssVar } from "./Viewer";
+import { type State } from "./Viewer";
 import {
   FontAwesomeIcon,
   faRefreshThin,
@@ -24,7 +24,6 @@ import {
   faGrip,
   faCirclePlay,
 } from "./Icon";
-
 
 export default function ViewerControls({ api }: Props) {
   const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
@@ -223,9 +222,6 @@ interface Props {
   /** Viewer API */
   api: State;
 }
-
-export const viewBarSizeCssVar = '--view-bar-size';
-export const viewIconSizeCssVar = '--view-icon-size';
 
 const buttonsCss = css`
   z-index: ${zIndexSite.aboveViewerFocusOutline};
