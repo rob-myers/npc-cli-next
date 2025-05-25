@@ -334,6 +334,19 @@ export function jsStringify(input, pretty = false) {
 }
 
 /**
+ * Outputs JS expressions, with toString fallback.
+ * @param {*} input 
+ * @returns {string}
+ */
+export function safeJsStringify(input) {
+  try {
+    return jsStringify(input);
+  } catch {
+    return `${input}`;
+  }
+}
+
+/**
  * @template SrcValue
  * @template DstValue
  * @template {string | number} Key
