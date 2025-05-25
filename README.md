@@ -122,6 +122,20 @@ foo bar:[1,4,9] baz:baz qux:42
 
 while { false; test ${?}; }; do echo foo; done
 while { true; ! test ${?}; }; do echo foo; done
+
+# redirecting
+
+# playing with loops
+w e.grantAccess . rob kate
+setupOnSlowNpc
+
+spawn npcKey:rob at:$( click 1 )
+spawn npcKey:kate at:$( click 1 ) skin:medic-0
+
+moveCycle npcKey:rob to:"$( click 2 )" &
+moveCycle npcKey:kate to:"$( click 2 )" &
+
+
 ```
 
 ## Working with a branch of `recast-navigation-js`

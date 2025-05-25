@@ -109,27 +109,17 @@
   - ℹ️ e.g. `{ echo foo >&2 ; echo bar; } >baz`
   - ℹ️ permits debug messaging
 
-- 🚧 can invoke `move` generator from another generator e.g. `moveCycle`
+- ✅ can invoke `move` generator from another generator e.g. `moveCycle`
   - ✅ pass generators into session.lib
   - ✅ create `moveCycle` and invoke `move`
   - ✅ implement `moveCycle`
   - ✅ `move` should work onchange `npc.js`
     - breaks if pause Tabs then change `npc.js`
-  - 🚧 refine `moveCycle`
-    - keeps trying by default?
-    - avoid send args to `move`
-    - clean
 
-```sh
-w e.grantAccess . rob kate
-setupOnSlowNpc
-
-spawn npcKey:rob at:$( click 1 )
-spawn npcKey:kate at:$( click 1 ) skin:medic-0
-
-moveCycle npcKey:rob to:"$( click 2 )" &
-moveCycle npcKey:kate to:"$( click 2 )" &
-```
+- 🚧 refine `moveCycle`
+  - keeps trying by default?
+  - avoid send args to `move`
+  - clean
 
 - ✅ only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
