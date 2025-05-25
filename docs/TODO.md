@@ -131,7 +131,7 @@ moveCycle npcKey:rob to:"$( click 2 )" &
 moveCycle npcKey:kate to:"$( click 2 )" &
 ```
 
-- 🚧 only mutate `npc` i.e. do not re-instantiate on hmr
+- ✅ only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
   - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
   - ✅ new hmr strategy
@@ -141,7 +141,7 @@ moveCycle npcKey:kate to:"$( click 2 )" &
     - ✅ baseNpc: copy in new, delete old, also for `s`
     - ✅ NpcApi: replace it
   - ✅ try replace `Npc`
-  - 🚧 tidy
+  - ✅ tidy
 
 - do not rely on stuck detection to fix "cannot get close enough to arrive"
 

@@ -1281,7 +1281,9 @@ export class NpcApi {
 
   /** @param {NPC.StopReason} reason */
   stopMoving(reason = { type: 'stop-reason', key: 'stopped' }) {
-    if (this.base.agent === null || this.s.target === null) {
+    const agent = this.base.agent;
+
+    if (agent === null || this.s.target === null) {
       return;
     }
 
@@ -1290,7 +1292,7 @@ export class NpcApi {
     this.s.slowBegin = null;
     this.s.target = null;
 
-    this.base.agent.updateParameters({
+    agent.updateParameters({
       maxSpeed: this.getMaxSpeed() * 0.75,
       maxAcceleration: staticMaxAcceleration,
       updateFlags: defaultAgentUpdateFlags,
@@ -1309,15 +1311,15 @@ export class NpcApi {
       this.startAnimation('Idle');
     }
 
-    const pos = this.base.agent.position(); // reset small motions:
+    const pos = agent.position(); // reset small motions:
     const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
       this.tryStopOffMesh();
-      this.base.agent.teleport(position);
-      this.base.agent.requestMoveTarget(position);
+      agent.teleport(position);
+      agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
-      this.base.agent.requestMoveTarget(toV3(this.s.offMesh.dst));
+      agent.requestMoveTarget(toV3(this.s.offMesh.dst));
     }
 
     if (reason.key === 'arrived') {
@@ -1325,8 +1327,8 @@ export class NpcApi {
     } else {
       this.reject.move?.(reason);
     }
-    // 🚧 provide reason in event
-    this.w.events.next({ key: 'stopped-moving', npcKey: this.key });
+
+    this.w.events.next({ key: 'stopped-moving', npcKey: this.key, reason });
   }
 
   tryStopOffMesh() {
