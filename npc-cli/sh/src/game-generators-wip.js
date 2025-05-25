@@ -162,8 +162,8 @@ export async function* move({ api, args, w }) {
     throw Error(`npcKey invalid: ${opts.npcKey}`)
   }
 
-  // for Ctrl+C
-  api.addCleanUp(() => npc.reject.move?.(api.getKillError(1))); 
+  const ctrlCError = Error('cancelled');
+  api.addCleanUp(() => npc.reject.move?.(ctrlCError)); 
   
   while (true) {
     try {
@@ -172,10 +172,10 @@ export async function* move({ api, args, w }) {
         new Promise((_, rej) => api.addSuspend(() => rej('paused'))),
       ]);
     } catch (e) {
-      if (e === 'paused') {
+      if (e === 'paused') {// via `ps` or Tabs
         npc.api.stopMoving();
         await /** @type {Promise<void>} */ (new Promise((res, rej) => (
-          api.addCleanUp(rej),
+          api.addCleanUp(() => rej(ctrlCError)),
           api.addResume(res)
         )));
         continue;

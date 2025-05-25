@@ -133,7 +133,22 @@
   - ✅ try replace `Npc`
   - ✅ tidy
 
-- do not rely on stuck detection to fix "cannot get close enough to arrive"
+- ✅ improve ctrl-c error log for `move`
+  - works when Tabs not paused
+  - issue happens whilst paused i.e. error is `true`
+
+- 🚧 do not rely on stuck detection to fix "cannot get close enough to arrive"
+  - ℹ️ can repro when another npc nearby (`separationWeight`)
+```sh
+# repro
+setupOnSlowNpc # stops npc when "too slow"
+
+spawn npcKey:rob at:$( click 1 )
+w e.grantAccess . rob
+move npcKey:rob to:$( click 1 )
+```
+  - 🚧 try turning off slow down radius in recastnavigation repo
+  - expose wasm interface
 
 - 🚧 look towards neighbour should be optional
   - could also improve it
