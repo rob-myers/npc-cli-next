@@ -215,7 +215,7 @@ export async function* moveCycle(ctxt) {
         await api.sleep(0.8);
       } catch (e) {
         if (/** @type {NPC.StopReason} */ (e)?.type === 'stop-reason') {
-          await api.sleep(0.4);
+          await api.sleep(0.8);
           continue;
         }
         throw e;

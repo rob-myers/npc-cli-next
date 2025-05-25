@@ -1381,9 +1381,9 @@ export class NpcApi {
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
   radius: helper.defaults.radius, // 🔔 too large causes jerky collisions
-  // slowDownRadius: helper.defaults.radius * 2,
+  slowDownRadius: helper.defaults.radius * 2,
   // slowDownRadius: npcTargetArriveDistance,
-  slowDownRadius: helper.defaults.radius,
+  // slowDownRadius: helper.defaults.radius,
   height: 1.5,
   maxAcceleration: staticMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,
