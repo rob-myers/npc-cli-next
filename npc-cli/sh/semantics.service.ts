@@ -1,5 +1,6 @@
 import { uid } from "uid";
 
+import { ansi } from "./const";
 import type * as Sh from "./parse";
 import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags } from "../service/generic";
 import { parseJsArg } from "../service/generic";
@@ -56,21 +57,28 @@ class semanticsServiceClass {
 
   private handleShError(node: Sh.ParsedSh, e: any, prefix?: string) {
     if (e instanceof ProcessError) {
-      // We rethrow (unless returning from a shell function)
-      handleProcessError(node, e);
-    } else if (e instanceof ShError) {
-      // We do not rethrow
-      const message = [prefix, e.message].filter(Boolean).join(": ");
-      useSession.api.writeMsg(node.meta.sessionKey, message, "error");
+      // Rethrow unless returning from a shell function
+      return handleProcessError(node, e);
+    }
+    
+    // We do not rethrow
+    const message = [prefix, e.message].filter(Boolean).join(": ");
+    
+    if (e instanceof ShError) {
       ttyError(`ShError: ${node.meta.sessionKey}: ${message} (${e.exitCode})`);
       node.exitCode = e.exitCode;
     } else {
-      // We do not rethrow
-      const message = [prefix, e?.message].filter(Boolean).join(": ");
-      useSession.api.writeMsg(node.meta.sessionKey, message, "error");
       ttyError(`Internal ShError: ${node.meta.sessionKey}: ${message}`);
       ttyError(e);
       node.exitCode = 2;
+    }
+
+    // write to stderr
+    const device = useSession.api.resolve(2, node.meta);
+    if (device !== undefined) {
+      device.writeData(`${ansi.Red}${message}${ansi.Reset}`); // 🔔 non-blocking promise
+    } else {
+      ttyError(`ShError: ${node.meta.sessionKey}: stderr does not exist`);
     }
   }
 

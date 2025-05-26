@@ -122,7 +122,8 @@
   - ✅ `moveCycle` -> `tour`
   - ✅ simplify: no loop, but can:
 ```sh
-# this will skip to next point if stopped
+click 5 &>> points
+# skips to next point if stopped
 while true; do
   tour npcKey:kate to:"$( points )"
 done &
@@ -147,8 +148,11 @@ done &
 
 - ✅ locked doors should not open on accessible npc enter collider
 
+- ✅ BUG: sh: can redirect error messages to /dev/null 
+  - `call '() => { throw "oh no!"; }' 2>/dev/null`
+
 - 🚧 do not rely on stuck detection to fix "cannot get close enough to arrive"
-  - ℹ️ can repro when another npc nearby (`separationWeight`)
+  - ℹ️ can repro when another npc nearby-ish (`separationWeight`)
 
 ```sh
 # repro
