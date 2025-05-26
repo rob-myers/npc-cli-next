@@ -546,9 +546,10 @@ export default function useHandleEvents(w) {
       
       if (
         offMesh.orig.dstRoomMeta.small === true // small room
-        || (agent.raw.nneis === 0 && npc.api.isTargetClose(offMesh.dst) === true)
       ) {
         npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
+        // avoid speed up after slow down in doorway
+        agent.raw.params.set_slowDownRadius(2 * w.lib.defaults.radius);
       }
     },
     onExitDoorCollider(e) {// e.type === 'nearby'

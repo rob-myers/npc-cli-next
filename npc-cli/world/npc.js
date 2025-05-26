@@ -33,7 +33,6 @@ const movingMaxAcceleration = 6;
  * 🔔 relevant to reachability of arrival distance
  * 🚧 support separation weight tweening
  */
-// const staticSeparationWeight = 1;
 const staticSeparationWeight = 0.25;
 const movingSeparationWeight = 0.5;
 const staticCollisionQueryRange = 2;
@@ -833,17 +832,19 @@ export class NpcApi {
    * @param {NPC.MoveOpts} opts
    */
   async move(opts) {
-    this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
-
+    
     if (this.base.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
+    } else if (Vect.isVectJson(opts.to) === false) {
+      throw new Error(`${this.key}: opts.to must be a point`);
     }
 
-    const dst = opts.to;
+    this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
+
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
-    const closest = this.w.npc.getClosestNavigable(toV3(dst), 0.5);
+    const closest = this.w.npc.getClosestNavigable(toV3(opts.to), 0.5);
     if (closest === null) {
-      throw new Error(`${this.key}: not navigable: ${JSON.stringify(dst)}`);
+      throw new Error(`${this.key}: not navigable: ${JSON.stringify(opts.to)}`);
     }
 
     this.s.arriveAnim = opts.arriveAnim;
@@ -854,6 +855,7 @@ export class NpcApi {
       maxSpeed: this.getMaxSpeed(),
       // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
       radius: helper.defaults.radius,
+      slowDownRadius: helper.defaults.radius,
       collisionQueryRange: movingCollisionQueryRange,
       separationWeight: movingSeparationWeight ,
       queryFilterType: this.w.lib.queryFilterType.excludeDoors,
@@ -1033,7 +1035,7 @@ export class NpcApi {
     this.base.mixer.update(deltaMs);
 
     if (this.s.lookAngleDst !== null) {
-      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
+      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, 8, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
       }
