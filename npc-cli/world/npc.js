@@ -886,7 +886,7 @@ export class NpcApi {
     try {
       await this.waitUntilStopped();
     } catch (e) {
-      if (this.s.target !== null) {// manual reject.move()
+      if (/** @type {NPC.StopReason} */ (e)?.key !== 'move-again') {
         this.stopMoving();
       }
       throw e;
