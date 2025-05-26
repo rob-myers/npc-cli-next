@@ -5,11 +5,14 @@
 ```sh
 # store two navigable points in a fresh array
 click | filter meta.nav | take 2 &>> points
+# equivalently:
+click 2 meta.nav &>> points
 
-# spawn an npc at a navigable point (not a "do point")
+# spawn npc on navmesh
 spawn npcKey:rob at:$( click 1 )
 w e.grantAccess . rob # all doors permitted
 
+# note: not much time to turn
 while true; do
   move npcKey:rob arriveAnim:none to:$( points/0 ) &&
   move npcKey:rob arriveAnim:none to:$( points/1 )
@@ -19,6 +22,7 @@ done
 - Take a tour i.e. walk to n points.
 
 ```sh
+# 🚧
 
 # ptags=always; click 5 meta.nav | while take 1; do 
 #   points/at'(-1)' >&2 
