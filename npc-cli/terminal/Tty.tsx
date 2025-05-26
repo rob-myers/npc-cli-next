@@ -49,7 +49,7 @@ export default function Tty(props: Props) {
       Object.values(state.base.session.process ?? {})
         .filter((p) => p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true)
         .forEach((p) => {
-          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend());
+          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
           p.status = ProcessStatus.Suspended;
           state.pausedPids[p.key] = true;
         });

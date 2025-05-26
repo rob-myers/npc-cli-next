@@ -165,8 +165,10 @@ export interface ProcessMeta {
   /**
    * Executed on suspend, without clearing `true` returners.
    * The latter should be idempotent, e.g. unsubscribe, pause.
+   * 
+   * `global` is true iff the suspension was triggered by disabling the `<Tty>`.
    */
-  onSuspends: (() => void | boolean)[];
+  onSuspends: ((global: boolean) => void | boolean)[];
   /**
    * Executed on resume, without clearing `true` returners.
    * The latter should be idempotent, e.g. reject, resolve.

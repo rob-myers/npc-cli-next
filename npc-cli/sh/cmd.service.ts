@@ -726,7 +726,7 @@ class cmdServiceClass {
       // onSuspend onResume are "first-in first-invoked"
       for (const p of processes) {
         if (opts.STOP) {
-          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend());
+          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
           p.status = ProcessStatus.Suspended;
         } else if (opts.CONT) {
           p.onResumes = p.onResumes.filter((onResume) => onResume());
@@ -784,7 +784,7 @@ class cmdServiceClass {
      * Executed on suspend, without clearing `true` returners.
      * The latter should be idempotent, e.g. unsubscribe, pause.
      */
-    addSuspend(cleanup: () => void) {
+    addSuspend(cleanup: (global?: boolean) => void) {
       getProcess(this.meta).onSuspends.push(cleanup);
     },
 
