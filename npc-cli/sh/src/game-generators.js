@@ -17,34 +17,41 @@ export async function* awaitWorld({ api, home: { WORLD_KEY } }) {
  * click --any
  * click 5 '({ meta }) => meta.nav'
  * click 5 meta.nav
+ * click meta.nav
  * ```
  * @param {import('./').RunArg} ctxt
  */
 export async function* click({ api, args, w }) {
   const { opts, operands } = api.getOpts(args, {
-    boolean: ["left", "right", "any", "long"],
-    // --left (left only) --right (right only) --any (either)
-    // --long (long-press only)
+    boolean: [
+      "left",     // left clicks only
+      "right",    // right clicks only
+      "long",     // long press only
+      "any",      // any permitted
+      "blocking", // e.g. `click --blocking`
+    ],
   });
 
-  if (!opts["left"] && !opts["right"] && !opts["any"]) {
+  if (opts["left"] === false && opts["right"] === false && opts["any"] === false)  {
     opts.left = true; // default to left clicks only
   }
 
-  let numClicks = Number(operands[0] || Number.MAX_SAFE_INTEGER);
-  if (!Number.isFinite(numClicks)) {
-    throw new Error("format: \`click [{numberOfClicks}]\`");
-  }
-
-  const clickId = operands[0] ? api.getUid() : undefined;
+  let numClicks = Number(operands[0]) || Number.MAX_SAFE_INTEGER;
+  // if (!Number.isFinite(numClicks)) {
+  //   throw new Error("format: \`click [{numberOfClicks}]\`");
+  // }
+  
+  const clickId = numClicks < Number.MAX_SAFE_INTEGER || opts.blocking === true
+    ? api.getUid()
+    : undefined
+  ;
   if (clickId !== undefined) {
     api.addCleanUp(() => w.lib.removeFirst(w.view.clickIds, clickId));
   }
 
-  const filter = operands[1] ? api.generateSelector(
-    api.parseFnOrStr(operands[1]),
-    []
-  ) : undefined;
+  // support `click meta.nav`
+  const filterDef = numClicks === Number.MAX_SAFE_INTEGER ? operands[0] : operands[1];
+  const filter = filterDef ? api.generateSelector(api.parseFnOrStr(filterDef), []) : undefined;
 
   /** @type {import('rxjs').Subscription} */
   let eventsSub;

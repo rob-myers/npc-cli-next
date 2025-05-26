@@ -125,7 +125,7 @@
 
 - ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
 
-- sh: support `click {filter}` (currently only `click {n} {filter}`)
+- ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
 
 - ✅ only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
