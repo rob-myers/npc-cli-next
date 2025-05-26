@@ -153,10 +153,12 @@ export async function* initCamAndLights({ api, args, w }) {
  * ```sh
  * move npcKey:rob to:$( click 1 ) arriveAnim:none
  * ```
- * @param {import('./').RunArg} ctxt
+ * @typedef {{ npcKey: string } & NPC.MoveOpts} MoveCommandArg
+ * @param {import('./').RunArg<any, MoveCommandArg>} ctxt
  */
-export async function* move({ api, args, w }) {
-  const opts = /** @type {{ npcKey: string } & NPC.MoveOpts} */ (api.parseArgsAsJs(args));
+export async function* move({ api, args, w, jsArg }) {
+
+  const opts = jsArg ?? api.parseArgsAsJs(args);
   const npc = w.n[opts.npcKey];
   if (!npc) {
     throw Error(`npcKey invalid: ${opts.npcKey}`)
@@ -168,10 +170,10 @@ export async function* move({ api, args, w }) {
     try {
       return await Promise.race([
         npc.api.move(opts),
-        api.throwOnPause('pause', false),
+        api.throwOnPause('manual-pause', false),
       ]);
     } catch (e) {
-      if (e === 'pause') {// manual pause
+      if (e === 'manual-pause') {
         npc.api.stopMoving();
         await api.awaitResume();
         continue;
@@ -179,7 +181,6 @@ export async function* move({ api, args, w }) {
       throw e;
     }
   }
-
 }
 
 /**
@@ -188,25 +189,21 @@ export async function* move({ api, args, w }) {
  * moveCycle npcKey:rob to:"$( click 5 | sponge )"
  * moveCycle npcKey:rob to:"$( points )"
  * ```
- * @param {import('./').RunArg} ctxt
+ * @typedef {{ npcKey: string; to: NPC.MoveOpts['to'][] }} MoveCycleCommandArg
+ * @param {import('./').RunArg} ct
  */
-export async function* moveCycle(ctxt) {
-  const { api, args } = ctxt;
-
-  // ❌ should keep trying to reach point (possibly optionally)
-  // 🚧 change type of `to`
-  // 🚧 provide opts directly (not args)
-
-  const opts = /** @type {{ npcKey: string; to: NPC.ClickOutput[] }} */ (
+export async function* moveCycle(ct) {
+  const { api, args } = ct;
+  const opts = /** @type {MoveCycleCommandArg} */ (
     api.parseArgsAsJs(args, { to: 'array' })
   );
   
   while (true) {
     for (const to of opts.to) {
       try {
-        // ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`, `arriveAnim:none`];
-        ctxt.args = [`npcKey:${opts.npcKey}`, `to:${JSON.stringify(to)}`];
-        yield* ctxt.lib.move(ctxt);
+        /** @type {MoveCommandArg} */
+        const _jsArg = ct.jsArg = { npcKey: opts.npcKey, to };
+        yield* ct.lib.move(ct);
         await api.sleep(0.8);
       } catch (e) {
         if (/** @type {NPC.StopReason} */ (e)?.type === 'stop-reason') {
@@ -215,7 +212,6 @@ export async function* moveCycle(ctxt) {
         }
         throw e;
       }
-      
     }
   }
 

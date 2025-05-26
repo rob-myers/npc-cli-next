@@ -118,7 +118,7 @@
 
 - 🚧 refine `moveCycle`
   - ❌ keeps trying by default?
-  - 🚧 avoid send args to `move`
+  - ✅ avoid send args to `move`
   - simplify
   - clean
 
@@ -166,6 +166,8 @@ move npcKey:rob to:$( click 1 )
   - ❌ e.g. npc near door has higher weight (more accommodating)
   - ❌ e.g. blocking npc tweens separationWeight
   - ℹ️ won't solve yet
+
+- better approach to js to shell function naming?
 
 - 🚧 avoid Tabs reload on edit service/const
   - ✅ fix Viewer, ViewerControls
