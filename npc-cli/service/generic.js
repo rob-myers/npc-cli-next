@@ -379,8 +379,8 @@ export function parseArgsAsJs(args, opts = {}) {
     } else {
       const key = arg.slice(0, colonIndex);
       agg[key] = parseJsArg(arg.slice(colonIndex + 1));
-      if (opts[key] === 'array' && typeof agg[key] === 'string') {
-        // try split by spaces
+      if (opts[key] === 'array' && Array.isArray(agg[key]) === false) {
+        // try split by spaces instead
         agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
       }
     }
