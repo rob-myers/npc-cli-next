@@ -116,11 +116,18 @@
   - ✅ `move` should work onchange `npc.js`
     - breaks if pause Tabs then change `npc.js`
 
-- 🚧 refine `moveCycle`
+- 🚧 refine `moveCycle` aka `tour`
   - ❌ keeps trying by default?
   - ✅ avoid send args to `move`
-  - simplify
-  - clean
+  - ✅ `moveCycle` -> `tour`
+  - ✅ simplify: no loop, but can:
+```sh
+# this will skip to next point if stopped
+while true; do
+  tour npcKey:kate to:"$( points )"
+done &
+```
+  - 🚧 clean
 
 - ✅ only mutate `npc` i.e. do not re-instantiate on hmr
   - ℹ️ idea: npc.api is a class instance which we replace on hmr
@@ -169,9 +176,8 @@ move npcKey:rob to:$( click 1 )
 
 - better approach to js to shell function naming?
 
-- 🚧 avoid Tabs reload on edit service/const
+- ✅ avoid Tabs reload on edit service/const
   - ✅ fix Viewer, ViewerControls
-  - 🚧 other components should not export const
 
 - 🚧 look towards neighbour should be optional
   - could also improve it

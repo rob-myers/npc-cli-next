@@ -185,36 +185,25 @@ export async function* move({ api, args, w, jsArg }) {
 
 /**
  * ```sh
- * moveCycle npcKey:rob to:"$( click 5 )"
- * moveCycle npcKey:rob to:"$( click 5 | sponge )"
- * moveCycle npcKey:rob to:"$( points )"
+ * tour npcKey:rob to:"$( click 5 )"
+ * tour npcKey:rob to:"$( click 5 | sponge )"
+ * tour npcKey:rob to:"$( points )"
  * ```
- * @typedef {{ npcKey: string; to: NPC.MoveOpts['to'][] }} MoveCycleCommandArg
+ * @typedef {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} TourCommandArg
  * @param {import('./').RunArg} ct
  */
-export async function* moveCycle(ct) {
+export async function* tour(ct) {
   const { api, args } = ct;
-  const opts = /** @type {MoveCycleCommandArg} */ (
+  const opts = /** @type {TourCommandArg} */ (
     api.parseArgsAsJs(args, { to: 'array' })
   );
   
-  while (true) {
-    for (const to of opts.to) {
-      try {
-        /** @type {MoveCommandArg} */
-        const _jsArg = ct.jsArg = { npcKey: opts.npcKey, to };
-        yield* ct.lib.move(ct);
-        await api.sleep(0.8);
-      } catch (e) {
-        if (/** @type {NPC.StopReason} */ (e)?.type === 'stop-reason') {
-          await api.sleep(0.8);
-          continue;
-        }
-        throw e;
-      }
-    }
+  for (const to of opts.to) {
+    /** @type {MoveCommandArg} */
+    const _jsArg = ct.jsArg = { npcKey: opts.npcKey, to };
+    yield* ct.lib.move(ct);
+    await api.sleep(opts.pauseMs ?? 0.8);
   }
-
 }
 
 /**

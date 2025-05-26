@@ -132,9 +132,8 @@ spawn npcKey:rob at:$( click 1 )
 spawn npcKey:kate at:$( click 1 ) skin:medic-0
 w e.grantAccess . rob kate
 
-moveCycle npcKey:rob to:"$( click 2 )" &
-moveCycle npcKey:kate to:"$( click 2 )" &
-
+tour npcKey:rob to:"$( click 2 )" &
+tour npcKey:kate to:"$( click 2 )" &
 
 spawn npcKey:kate at:$( click 1 ) skin:soldier-0///medic-0
 spawn npcKey:kate at:$( click 1 ) skin:soldier-0///suit-0

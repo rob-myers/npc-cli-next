@@ -16,25 +16,25 @@ while true; do
 done
 ```
 
-- Walk in a loop (n points).
+- Take a tour i.e. walk to n points.
 
 ```sh
-ptags=always; click 5 meta.nav | while take 1; do 
-  points/at'(-1)' >&2 
-done &>> points
 
-# 1st attempt
-c=0; while c+=1; do
-  test $( expr "$c >= 5" ) && c=0
-  move npcKey:rob arriveAnim:none to:"$( points/$c )"
-done
+# ptags=always; click 5 meta.nav | while take 1; do 
+#   points/at'(-1)' >&2 
+# done &>> points
 
-# 2nd attempt
+# # 1st attempt
+# c=0; while c+=1; do
+#   test $( expr "$c >= 5" ) && c=0
+#   move npcKey:rob arriveAnim:none to:"$( points/$c )"
+# done
+
 # (a) js
 # 🚧
 
 # (b) sh
-moveCycle npcKey:rob to:"$( click 4 )" 
+tour npcKey:rob to:"$( click 4 )" 
 ```
 
 - Go to bedroom, get into bed, say "good night", breath for a bit, start snoring.
