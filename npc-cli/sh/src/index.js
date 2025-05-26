@@ -12,7 +12,10 @@ export const profile = {
 
 /**
  * @template {any} [T=any]
+ * @template {any} [U=any]
+ *
  * @typedef RunArg
+ *
  * @property {import('../cmd.service').CmdService['processApi'] & {
 *   getCached(key: '__WORLD_KEY_VALUE__'): import('../../world/World').State;
 * }} api
@@ -20,5 +23,7 @@ export const profile = {
 * @property {{ [key: string]: any; WORLD_KEY: '__WORLD_KEY_VALUE__' }} home
 * @property {import('../../terminal/TtyWithFunctions').TtyJsFunctions} lib
 * @property {import('../../world/World').State} w See `CACHE_SHORTCUTS`
+*
 * @property {T} datum A shortcut for declaring a variable
+* @property {U} jsArg Can send directly from other generators
 */
