@@ -118,7 +118,7 @@
 
 - 🚧 refine `moveCycle`
   - ❌ keeps trying by default?
-  - avoid send args to `move`
+  - 🚧 avoid send args to `move`
   - simplify
   - clean
 
@@ -174,6 +174,8 @@ move npcKey:rob to:$( click 1 )
 - 🚧 look towards neighbour should be optional
   - could also improve it
 
+- can only close tab after hover for a while
+  - to avoid accidental closure
 
 - wasd camera controls does not work with follow
   - related to w.view.controls.update(true);

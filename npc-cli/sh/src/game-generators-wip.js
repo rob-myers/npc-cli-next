@@ -162,27 +162,22 @@ export async function* move({ api, args, w }) {
     throw Error(`npcKey invalid: ${opts.npcKey}`)
   }
 
-  const ctrlCError = Error('cancelled');
-  api.addCleanUp(() => npc.reject.move?.(ctrlCError)); 
+  api.addCleanUp(() => npc.reject.move?.(Error('cancelled'))); 
   
   while (true) {
     try {
       return await Promise.race([
         npc.api.move(opts),
-        new Promise((_, rej) => api.addSuspend((global) => !global && rej('ps-pause'))),
+        api.throwOnPause('pause', false),
       ]);
     } catch (e) {
-      if (e === 'ps-pause') {
+      if (e === 'pause') {// manual pause
         npc.api.stopMoving();
-        await /** @type {Promise<void>} */ (new Promise((res, rej) => (
-          api.addCleanUp(() => rej(ctrlCError)),
-          api.addResume(res)
-        )));
+        await api.awaitResume();
         continue;
       }
       throw e;
     }
-
   }
 
 }
