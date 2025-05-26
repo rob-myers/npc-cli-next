@@ -8,9 +8,8 @@ click | filter meta.nav | take 2 &>> points
 # equivalently:
 click 2 meta.nav &>> points
 
-# spawn npc on navmesh
-spawn npcKey:rob at:$( click 1 )
-w e.grantAccess . rob # all doors permitted
+# spawn npc granting full access
+spawn npcKey:rob at:$( click 1 ) grant:.
 
 # note: not much time to turn
 while true; do
@@ -22,23 +21,27 @@ done
 - Take a tour i.e. walk to n points.
 
 ```sh
-# 🚧
+# choose 4 nav points
+click 4 meta.nav &>> points
+# spawn npc with full access
+spawn npcKey:rob at:$( click 1 ) grant:.
+# take a tour
+tour npcKey:rob to:"$( points )" 
+```
 
-# ptags=always; click 5 meta.nav | while take 1; do 
-#   points/at'(-1)' >&2 
-# done &>> points
-
-# # 1st attempt
-# c=0; while c+=1; do
-#   test $( expr "$c >= 5" ) && c=0
-#   move npcKey:rob arriveAnim:none to:"$( points/$c )"
-# done
-
-# (a) js
-# 🚧
-
-# (b) sh
-tour npcKey:rob to:"$( click 4 )" 
+```js
+export async function* tour(ct) {
+  const { api, args } = ct;
+  const opts = /** @type {TourCommandArg} */ (
+    api.parseArgsAsJs(args, { to: 'array' })
+  );
+  for (const to of opts.to) {
+    /** @type {MoveCommandArg} */
+    const _jsArg = ct.jsArg = { npcKey: opts.npcKey, to };
+    yield* ct.lib.move(ct);
+    await api.sleep(opts.pauseMs ?? 0.8);
+  }
+}
 ```
 
 - Go to bedroom, get into bed, say "good night", breath for a bit, start snoring.

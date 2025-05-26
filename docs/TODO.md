@@ -116,12 +116,12 @@
   - ✅ `move` should work onchange `npc.js`
     - breaks if pause Tabs then change `npc.js`
 
-- 🚧 refine `moveCycle` aka `tour`
+- ✅ refine `moveCycle` aka `tour`
   - ❌ keeps trying by default?
   - ✅ avoid send args to `move`
   - ✅ `moveCycle` -> `tour`
   - ✅ simplify: no loop, but can:
-  - 🚧 clean
+  - ✅ clean i.e. add to basic behaviour list
 
 - ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
 

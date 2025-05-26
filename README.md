@@ -123,7 +123,17 @@ foo bar:[1,4,9] baz:baz qux:42
 while { false; test ${?}; }; do echo foo; done
 while { true; ! test ${?}; }; do echo foo; done
 
-# redirecting
+# more stuff
+
+ptags=always; click 5 meta.nav | while take 1; do 
+  points/at'(-1)' >&2 
+done &>> points
+
+c=0; while c+=1; do
+  test $( expr "$c >= 5" ) && c=0
+  move npcKey:rob arriveAnim:none to:"$( points/$c )"
+done
+
 
 # playing with loops
 setupOnSlowNpc
