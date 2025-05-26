@@ -76,8 +76,6 @@ ptags=always; events | handleContextMenu &
 
 ptags=always; events | handleLoggerLinks & 
 
-setupOnSlowNpc
-
 changeAngleOnKeyDown # WASD camera azimuthal angle
 
 initCamAndLights rob

@@ -294,20 +294,12 @@ export const setupContextMenu = ({ w }) => {
   w.cm.toggleDocked(true);
 }
 
-/**
- * @param {import('./').RunArg} ctxt
- */
-export const setupOnSlowNpc = ({ w, args }) => {
-
-  w.npc.onStuckCustom = (npc, agent) => {
-    // console.warn(`${npc.key}: going slow`);
-    switch (args[0]) {
-      case 'noop': // do nothing
-        break;
-      default: // both stop
-        npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
-        break;
-    }
-  };
-
-}
+// /**
+//  * @param {import('./').RunArg} ctxt
+//  */
+// export const setupOnSlowNpc = ({ w, args }) => {
+//   w.npc.onStuckCustom = (npc, agent) => {
+//     // console.warn(`${npc.key}: going slow`);
+//     npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
+//   };
+// }

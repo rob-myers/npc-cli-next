@@ -148,17 +148,8 @@
 - ✅ BUG: sh: can redirect error messages to /dev/null 
   - `call '() => { throw "oh no!"; }' 2>/dev/null`
 
-- 🚧 do not rely on stuck detection to fix "cannot get close enough to arrive"
+- ✅ do not rely on stuck detection to fix "cannot get close enough to arrive"
   - ℹ️ can repro when another npc nearby-ish (`separationWeight`)
-
-```sh
-# repro
-setupOnSlowNpc # stops npc when "too slow"
-spawn npcKey:rob at:$( click 1 )
-w e.grantAccess . rob
-move npcKey:rob to:$( click 1 )
-```
-
   - ✅ add slow down radius param to recastnavigation repo
   - ✅ expose slow down radius in recast-navigation-js repo
     - expose wasm interface
@@ -168,7 +159,7 @@ move npcKey:rob to:$( click 1 )
   - ✅ try slower transition Walk -> Idle
   - ✅ publish and bump
   - ℹ️ related to separation weight of idle vs moving
-  - 🚧 onSlowNpcCustom probably needs a default/fallback
+  - ✅ onSlowNpcCustom has a default
 
 - ❌ moveCycle: what if npc keeps getting blocked from leaving room
   - ❌ e.g. npc near door has higher weight (more accommodating)

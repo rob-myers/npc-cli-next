@@ -174,11 +174,12 @@ export function createBaseNpc(def, w) {
 
 export class NpcApi {
 
-  /** @type {BaseNPC} */ base;
+  /** @type {NPC.NPC} */ base;
   
-  //#region shortcuts
+  //#region shortcuts for unchanging references
   /** @type {string} */ key;
   /** @type {NPC.NPCDef} */ def;
+  /** @type {THREE.Vector3} */ delta;
   /** @type {BaseNPC['m']} */ m;
   /** @type {BaseNPC['reject']} */ reject;
   /** @type {BaseNPC['resolve']} */ resolve;
@@ -193,9 +194,10 @@ export class NpcApi {
    * @param {import('./World').State} w
    */
   constructor(base, w) {
-    this.base = base;
-
+    // we attach `this` as `base.api` later
+    this.base = /** @type {NPC.NPC} */ (base);
     this.def = base.def;
+    this.delta = base.delta;
     this.key = base.key;
     this.m = base.m;
     this.reject = base.reject;
@@ -1102,26 +1104,29 @@ export class NpcApi {
   }
 
   /**
+   * 🚧 hard-coding: small distance, long enough time
    * @param {number} deltaMs 
    * @param {NPC.CrowdAgent} agent 
    */
-  onTickDetectStuck(deltaMs, agent) {// 🔔 customise smallDist and time
+  onTickDetectStuck(deltaMs, agent) {
     const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
 
-    if (Math.abs(this.base.delta.x) > smallDist || Math.abs(this.base.delta.z) > smallDist) {
-      this.s.slowBegin = null; // reset
-      return;
+    if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
+      return this.s.slowBegin = null; // reset tracking
     }
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
     if (elapsedTime - this.s.slowBegin < 0.3) {
-      return;
+      return; // too short
     }
 
-    // 🔔 also fixes "cannot arrive close enough to npcTargetArriveDistance"
-    // 🚧 this.base should have type NPC.NPC
-    this.w.npc.onStuckCustom?.(/** @type {NPC.NPC} */ (this.base), agent);
+    if (this.w.npc.onStuckCustom === null) {
+      // 🔔 fixes "cannot arrive close enough" due to nearby npc
+      this.stopMoving({ type: 'stop-reason', key: 'stuck' });
+    } else {
+      this.w.npc.onStuckCustom?.(this.base, agent);
+    }
   }
 
   /** @param {NPC.CrowdAgent} agent */

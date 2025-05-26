@@ -136,8 +136,6 @@ done
 
 
 # playing with loops
-setupOnSlowNpc
-
 spawn npcKey:rob at:$( click 1 )
 spawn npcKey:kate at:$( click 1 ) skin:medic-0
 w e.grantAccess . rob kate
