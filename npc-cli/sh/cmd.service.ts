@@ -978,15 +978,12 @@ class cmdServiceClass {
             return (target as any)[key];
           }
         },
-        set: (target, key, value) => {
+        set: (_, key, value) => {
           if (key === "args") {
             // Assume `posPositionals` is fresh i.e. just sliced
             posPositionals.length = 0;
             posPositionals.push(...value);
             return true;
-          } else if (key === 'jsArg') {
-            // can pass data directly between generators
-            (target as any)[key] = value;
           }
           return false;
         },

@@ -12,7 +12,6 @@ export const profile = {
 
 /**
  * @template {any} [Datum=any]
- * @template {any} [JsArg=any]
  *
  * @typedef RunArg
  *
@@ -25,5 +24,4 @@ export const profile = {
 * @property {import('../../world/World').State} w See `CACHE_SHORTCUTS`
 *
 * @property {Datum} datum A shortcut for declaring a variable
-* @property {JsArg} jsArg Can send directly from other generators
 */

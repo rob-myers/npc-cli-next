@@ -153,12 +153,10 @@ export async function* initCamAndLights({ api, args, w }) {
  * ```sh
  * move npcKey:rob to:$( click 1 ) arriveAnim:none
  * ```
- * @typedef {{ npcKey: string } & NPC.MoveOpts} MoveCommandArg
- * @param {import('./').RunArg<any, MoveCommandArg>} ctxt
+ * @param {import('./').RunArg} ctxt
+ * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
  */
-export async function* move({ api, args, w, jsArg }) {
-
-  const opts = jsArg ?? api.parseArgsAsJs(args);
+export async function* move({ api, args, w }, opts = api.parseArgsAsJs(args)) {
   const npc = w.n[opts.npcKey];
   if (!npc) {
     throw Error(`npcKey invalid: ${opts.npcKey}`)
@@ -188,11 +186,10 @@ export async function* move({ api, args, w, jsArg }) {
  * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
  * spawn npcKey:rob at:$( click 1 ) grant:.
  * ```
- * @typedef {{ grant?: string } & NPC.SpawnOpts} SpawnCommandArg
- * @param {import('./').RunArg<any, SpawnCommandArg>} ctxt
+ * @param {import('./').RunArg} ctxt
+ * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
  */
-export async function* spawn({ api, args, w, jsArg }) {
-  const opts = jsArg ?? api.parseArgsAsJs(args);
+export async function* spawn({ api, args, w }, opts = api.parseArgsAsJs(args)) {
   await w.npc.spawn(opts);
   if (typeof opts.grant === 'string') {
     w.e.grantAccess(opts.grant, opts.npcKey);
@@ -205,20 +202,13 @@ export async function* spawn({ api, args, w, jsArg }) {
  * tour npcKey:rob to:"$( click 5 | sponge )"
  * tour npcKey:rob to:"$( points )"
  * ```
- * @typedef {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} TourCommandArg
  * @param {import('./').RunArg} ct
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
-export async function* tour(ct) {
-  const { api, args } = ct;
-  const opts = /** @type {TourCommandArg} */ (
-    api.parseArgsAsJs(args, { to: 'array' })
-  );
-  
+export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
   for (const to of opts.to) {
-    /** @type {MoveCommandArg} */
-    const _jsArg = ct.jsArg = { npcKey: opts.npcKey, to };
-    yield* ct.lib.move(ct);
-    await api.sleep(opts.pauseMs ?? 0.8);
+    yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
+    await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
 

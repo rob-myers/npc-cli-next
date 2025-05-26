@@ -176,7 +176,8 @@
     - better names i.e. not game-generators-wip
     - maybe can specify initially sourced via prop
   - session.jsFuncs should only contain respective functions too
-    - so, provide keyed lookup `jsFunctions`
+    - provide keyed lookup `jsFunctions`
+    - but how to fix types? need to separate to avoid collisions
 
 
 - ✅ avoid Tabs reload on edit service/const
@@ -189,6 +190,7 @@
   - to avoid accidental closure
 
 - wasd camera controls does not work with follow
+  - ℹ️ need to start porting to our own camera controller
   - related to w.view.controls.update(true);
 - bug: sh: support $@ deeply inside double quotes (?)
 - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
@@ -210,6 +212,9 @@
   - probably don't want this in general
   - it avoids jerk onexit doorway "in parallel"
 
+- try "turn around before moving" via small acceleration initially
+  - could also "pause before moving"
+
 - ✅ support decor cuboid meta `max-height` e.g. cuboid under obstacle
 
 - 🚧 cleanup human-0 skin
@@ -222,9 +227,7 @@
   - small-eyes -> robot-face-0
   - confused -> robot-face-1
 
-- try "turn around before moving" via small acceleration initially
-  - could also "pause before moving"
-- profile-1 camera target y should always be 1.5?
+- ❌ profile-1 camera target y should always be 1.5?
 - consider "hot keys" e.g. 1, 2, 3, also tapable
   - could use to change camera settings
   - could use to change input settings e.g. drag select
