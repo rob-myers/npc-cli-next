@@ -33,7 +33,7 @@ export default function Tty(props: Props) {
     booted: false,
     bounds,
     fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
-    functionFiles: {} as Props['functionFiles'],
+    functionFiles: {} as Props['shFiles'],
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
     pausedPids: {} as Record<number, true>,
@@ -88,10 +88,10 @@ export default function Tty(props: Props) {
       const session = state.base.session;
       Object.assign(session.etc, state.functionFiles);
 
-      await Promise.all(keys(props.functionFiles).map(filename =>
+      await Promise.all(keys(props.shFiles).map(filename =>
         session.ttyShell.sourceEtcFile(filename).catch(e => {
           if (typeof e?.$type === 'string') {// mvdan.cc/sh/v3/syntax.ParseError
-            const fileContents = props.functionFiles[filename];
+            const fileContents = props.shFiles[filename];
             const [line, column] = [e.Pos.Line(), e.Pos.Col()];
             const errorMsg = `${e.Error()}:\n${fileContents.split('\n')[line - 1]}` ;
             state.writeError(session.key, `/etc/${filename}: ${e.$type}`, errorMsg);
@@ -113,7 +113,7 @@ export default function Tty(props: Props) {
     },
   }));
 
-  state.functionFiles = props.functionFiles;
+  state.functionFiles = props.shFiles;
 
   React.useEffect(() => {// Pause/resume
     if (props.disabled && state.base.session) {
@@ -147,7 +147,7 @@ export default function Tty(props: Props) {
     if (state.base.session?.ttyShell.initialized === true) {
       state.sourceFuncs();
     }
-  }, [state.base.session, ...Object.values(props.functionFiles)]);
+  }, [state.base.session, ...Object.entries(props.shFiles).flatMap(x => x)]);
 
   React.useEffect(() => {// sync ~/PROFILE
     if (state.base.session) {
@@ -196,7 +196,7 @@ export interface Props extends BaseTabProps {
   env: Partial<Session["var"]>;
   jsFunctions: import('./TtyWithFunctions').TtyJsFunctions;
   /** Synced with e.g. game-generators.sh */
-  functionFiles: Record<string, string>;
+  shFiles: Record<string, string>;
   /** Synced with e.g. profile-1.sh */
   profile: string;
   onKey?(e: KeyboardEvent): void;

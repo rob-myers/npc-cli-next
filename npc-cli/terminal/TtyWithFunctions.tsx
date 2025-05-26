@@ -20,16 +20,17 @@ export default function TtyWithFunctions(props: Props) {
     <Tty
       {...props}
       jsFunctions={jsFunctions}
-      functionFiles={functionFiles}
+      shFiles={shellFunctionFiles}
       profile={profile[props.profileKey]}
     />
   );
 }
 
-interface Props extends Omit<TtyProps, 'functionFiles' | 'profile' | 'jsFunctions'> {
+interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunctions'> {
   profileKey: ProfileKey;
 }
 
+// 🚧 by key?
 // we also provide functions directly
 const jsFunctions = {
   ...gameGeneratorsWipJs,
@@ -41,18 +42,31 @@ export type TtyJsFunctions = typeof jsFunctions;
 
 const generatorConstructorNames = ['AsyncGeneratorFunction', 'GeneratorFunction'];
 
-const functionFiles = {
-  'util-functions.sh': utilFunctionsSh,
-  'game-functions.sh': gameFunctionsSh,
-  'util-generators.sh': Object.entries(utilGeneratorsJs).map(
-    ([key, fn]) => jsFunctionToShellFunction(key, fn)
-  ).join('\n\n'),
-  'game-generators.sh': Object.entries(gameGeneratorsJs).map(
-    ([key, fn]) => jsFunctionToShellFunction(key, fn)
-  ).join('\n\n'),
-  'game-generators-wip.sh': Object.entries(gameGeneratorsWipJs).map(
-    ([key, fn]) => jsFunctionToShellFunction(key, fn)
-  ).join('\n\n'),
+const shellFunctionFiles = {
+
+  ...Object.entries({
+    
+    // these files contain shell functions
+    utilFunctionsSh,
+    gameFunctionsSh,
+
+  }).reduce((agg, [key, rawModule]) => ({ ...agg,
+    [`${key.slice(0, -'Sh'.length)}.sh`]: rawModule,
+  }), {} as Record<string, string>),
+
+  ...Object.entries({
+    
+    // these files contain JS (async) generators and functions
+    utilGeneratorsJs,
+    gameGeneratorsJs,
+    gameGeneratorsWipJs,
+
+  }).reduce((agg, [key, module]) => ({ ...agg,
+    [`${key.slice(0, -'Js'.length)}.sh`]: Object.entries(module).map(
+      ([key, fn]) => jsFunctionToShellFunction(key, fn)
+    ).join('\n\n'),
+  }), {} as Record<string, string>),
+
 };
 
 /**

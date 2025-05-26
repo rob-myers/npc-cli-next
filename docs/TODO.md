@@ -166,7 +166,18 @@
   - ❌ e.g. blocking npc tweens separationWeight
   - ℹ️ won't solve yet
 
-- better approach to js to shell function naming?
+- 🚧 better approach to js to shell function naming?
+  - ℹ️ want to permit mutually inconsistent files (only source one)
+  - ℹ️ want to optionally exclude certain files
+  - ℹ️ want to avoid special names to avoid collisions
+  - ✅ extendable approach
+  - 🚧 can specify functions to auto-source
+    - maybe auto track after `source /etc/foo`
+    - better names i.e. not game-generators-wip
+    - maybe can specify initially sourced via prop
+  - session.jsFuncs should only contain respective functions too
+    - so, provide keyed lookup `jsFunctions`
+
 
 - ✅ avoid Tabs reload on edit service/const
   - ✅ fix Viewer, ViewerControls
