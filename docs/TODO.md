@@ -117,8 +117,9 @@
     - breaks if pause Tabs then change `npc.js`
 
 - 🚧 refine `moveCycle`
-  - keeps trying by default?
+  - ❌ keeps trying by default?
   - avoid send args to `move`
+  - simplify
   - clean
 
 - ✅ only mutate `npc` i.e. do not re-instantiate on hmr
@@ -141,6 +142,7 @@
 
 - 🚧 do not rely on stuck detection to fix "cannot get close enough to arrive"
   - ℹ️ can repro when another npc nearby (`separationWeight`)
+
 ```sh
 # repro
 setupOnSlowNpc # stops npc when "too slow"
@@ -148,6 +150,7 @@ spawn npcKey:rob at:$( click 1 )
 w e.grantAccess . rob
 move npcKey:rob to:$( click 1 )
 ```
+
   - ✅ add slow down radius param to recastnavigation repo
   - ✅ expose slow down radius in recast-navigation-js repo
     - expose wasm interface
@@ -155,13 +158,14 @@ move npcKey:rob to:$( click 1 )
   - ✅ can change in npc-cli-next and see difference
     - 0.05 fixes issue
   - ✅ try slower transition Walk -> Idle
-  - 🚧 publish and bump
-  - 🚧 related to separation weight of idle vs moving
-  - onSlowNpcCustom probably needs a default/fallback
+  - ✅ publish and bump
+  - ℹ️ related to separation weight of idle vs moving
+  - 🚧 onSlowNpcCustom probably needs a default/fallback
 
-- moveCycle: what if npc keeps getting blocked from leaving room
-  - e.g. npc near door has higher weight (more accommodating)
-  - e.g. blocking npc tweens separationWeight
+- ❌ moveCycle: what if npc keeps getting blocked from leaving room
+  - ❌ e.g. npc near door has higher weight (more accommodating)
+  - ❌ e.g. blocking npc tweens separationWeight
+  - ℹ️ won't solve yet
 
 - 🚧 avoid Tabs reload on edit service/const
   - ✅ fix Viewer, ViewerControls
