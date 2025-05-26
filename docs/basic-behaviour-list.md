@@ -30,16 +30,10 @@ tour npcKey:rob to:"$( points )"
 ```
 
 ```js
-export async function* tour(ct) {
-  const { api, args } = ct;
-  const opts = /** @type {TourCommandArg} */ (
-    api.parseArgsAsJs(args, { to: 'array' })
-  );
+export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
   for (const to of opts.to) {
-    /** @type {MoveCommandArg} */
-    const _jsArg = ct.jsArg = { npcKey: opts.npcKey, to };
-    yield* ct.lib.move(ct);
-    await api.sleep(opts.pauseMs ?? 0.8);
+    yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
+    await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
 ```
