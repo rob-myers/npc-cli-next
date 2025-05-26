@@ -149,7 +149,7 @@ export async function* initCamAndLights({ api, args, w }) {
 }
 
 /**
- * Supports Ctrl+C and process suspend/resume
+ * Supports manual process suspend/resume
  * ```sh
  * move npcKey:rob to:$( click 1 ) arriveAnim:none
  * ```
@@ -180,6 +180,22 @@ export async function* move({ api, args, w, jsArg }) {
       }
       throw e;
     }
+  }
+}
+
+/**
+ * ```sh
+ * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
+ * spawn npcKey:rob at:$( click 1 ) grant:.
+ * ```
+ * @typedef {{ grant?: string } & NPC.SpawnOpts} SpawnCommandArg
+ * @param {import('./').RunArg<any, SpawnCommandArg>} ctxt
+ */
+export async function* spawn({ api, args, w, jsArg }) {
+  const opts = jsArg ?? api.parseArgsAsJs(args);
+  await w.npc.spawn(opts);
+  if (typeof opts.grant === 'string') {
+    w.e.grantAccess(opts.grant, opts.npcKey);
   }
 }
 

@@ -12,9 +12,9 @@ gm() {
   call '({ w }) => w.gms['$gmId']' | map "$selector" "$@"
 }
 
-spawn() {
-  # jsarg "$@" | w npc.spawn - >/dev/null
-  # echo "$( jsarg $@ )" # 👈 does not work?
-  local jsArg=$( jsarg "$@" )
-  w npc.spawn "$jsArg" >/dev/null
-}
+# spawn() {
+#   # jsarg "$@" | w npc.spawn - >/dev/null
+#   # echo "$( jsarg $@ )" # 👈 does not work?
+#   local jsArg=$( jsarg "$@" )
+#   w npc.spawn "$jsArg" >/dev/null
+# }

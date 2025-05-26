@@ -11,8 +11,8 @@ export const profile = {
  */
 
 /**
- * @template {any} [T=any]
- * @template {any} [U=any]
+ * @template {any} [Datum=any]
+ * @template {any} [JsArg=any]
  *
  * @typedef RunArg
  *
@@ -24,6 +24,6 @@ export const profile = {
 * @property {import('../../terminal/TtyWithFunctions').TtyJsFunctions} lib
 * @property {import('../../world/World').State} w See `CACHE_SHORTCUTS`
 *
-* @property {T} datum A shortcut for declaring a variable
-* @property {U} jsArg Can send directly from other generators
+* @property {Datum} datum A shortcut for declaring a variable
+* @property {JsArg} jsArg Can send directly from other generators
 */
