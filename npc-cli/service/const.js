@@ -78,7 +78,7 @@ export const precision = 4;
 
 export const wallOutset = 12 * sguToWorldScale;
 
-export const obstacleOutset = 10 * sguToWorldScale;
+export const obstacleOutset = 8 * sguToWorldScale;
 
 /**
  * Walls with any of these tags will not be merged with adjacent walls
