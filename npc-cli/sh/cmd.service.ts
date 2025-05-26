@@ -760,7 +760,12 @@ class cmdServiceClass {
     }
   }
 
-  // 🔔 core per-process api
+  /**
+   * 🔔 Core per-process API.
+   *
+   * Currently, methods only have access to `this.meta` and `this.session`.
+   * Sometimes this means working directly with the process object.
+   */
   private readonly processApi = {
     // Overwritten via Function.prototype.bind.
     meta: {} as Sh.BaseMeta,
@@ -790,6 +795,14 @@ class cmdServiceClass {
 
     addStdinToArgs,
 
+    awaitResume(cleanUpError = Error('cancelled')) {
+      return new Promise<void>((resolve, reject) => {
+        const { cleanups, onResumes } = getProcess(this.meta);
+        cleanups.push(() => reject(cleanUpError));
+        onResumes.push(resolve);
+      });
+    },
+    
     dataChunk,
 
     eof: EOF,
@@ -899,6 +912,15 @@ class cmdServiceClass {
       await sleep(this.meta, seconds);
     },
 
+    throwOnPause(pauseError: any, global?: boolean) {
+      return new Promise((_, reject) => {
+        const { onSuspends } = getProcess(this.meta);
+        onSuspends.push((isGlobal) => (
+          global === undefined || global === isGlobal
+        ) && reject(pauseError))
+      });
+    },
+
     verbose(e: any) {
       if (this.session.verbose) {
         useSession.api.writeMsgCleanly(this.meta.sessionKey, `${e?.message ?? e}`, {
@@ -928,6 +950,7 @@ class cmdServiceClass {
             return new Proxy(this.processApi, {
               get(target, key: keyof cmdServiceClass["processApi"]) {
                 if (typeof target[key] === "function") {
+                  // 🤔 could provide context cmdService.processApi
                   return (target[key] as Function).bind({ meta, session });
                 }
                 if (key === "meta") {
