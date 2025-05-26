@@ -169,10 +169,10 @@ export async function* move({ api, args, w }) {
     try {
       return await Promise.race([
         npc.api.move(opts),
-        new Promise((_, rej) => api.addSuspend(() => rej('paused'))),
+        new Promise((_, rej) => api.addSuspend((global) => !global && rej('ps-pause'))),
       ]);
     } catch (e) {
-      if (e === 'paused') {// via `ps` or Tabs
+      if (e === 'ps-pause') {
         npc.api.stopMoving();
         await /** @type {Promise<void>} */ (new Promise((res, rej) => (
           api.addCleanUp(() => rej(ctrlCError)),
@@ -198,7 +198,7 @@ export async function* move({ api, args, w }) {
 export async function* moveCycle(ctxt) {
   const { api, args } = ctxt;
 
-  // 🚧 should keep trying to reach point (possibly optionally)
+  // ❌ should keep trying to reach point (possibly optionally)
   // 🚧 change type of `to`
   // 🚧 provide opts directly (not args)
 
