@@ -198,14 +198,15 @@ export default function ViewerControls({ api }: Props) {
 
       <button
         className="top-level"
-        title="max/min tabs"
+        title="maximise tabs"
         onClick={state.onMaximize}
-      >
+        >
         <FontAwesomeIcon icon={faExpandThin} size="1x" />
       </button>
 
       <button
         className="top-level"
+        title={site.viewOpen ? "hide tabs" : "show tabs"}
         onClick={() => state.toggleCollapsed()}
       >
         <FontAwesomeIcon
