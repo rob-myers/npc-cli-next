@@ -10,16 +10,18 @@
   - ✅ can spawn with various skins easily
   - ✅ can spawn facing angle easily
     - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
-  - 🚧 extend 301 with more decor
+  - ✅ extend 301 with more decor
     - ✅ add some crates
-    - 🚧 add a cuboid with a decor quad e.g. computer screen
+    - ✅ add a cuboid with a decor quad e.g. computer screen
       - ℹ️ `decor quad tilt` tilts around center
-    -  try use nodeCanvas for decor svg detail
+    - ✅ try use nodeCanvas for decor svg detail
+  - three images
+    - 1st ✅ 2nd 3rd
 
-- 🚧 refine chosen carousel embla-carousel
+- ❌ refine chosen carousel embla-carousel
   - ✅ carousel has labels
-  - clean carousel css e.g. more css variables
-  - auto png to webp in public/images
+  - ❌ clean carousel css e.g. more css variables
+  - ❌ auto png to webp in public/images
 
 - more content
 - mention Starship Geomorphs early
