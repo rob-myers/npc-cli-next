@@ -243,12 +243,13 @@ export default function WorldMenu(props) {
                 onChange={state.onChangeLoggerLog}
               />
             </label>
-            <label>
-              paused-tweens
+            <label title="tween camera while paused?">
+              tween
               <input
                 type="checkbox"
                 onChange={state.onChangeCanTweenPaused}
                 checked={w.view.canTweenPaused}
+                disabled={w.disabled === false}
               />
             </label>
             <label>
@@ -396,6 +397,10 @@ const popUpCss = css`
       align-items: center;
       gap: 8px;
       font-family: 'Courier New', Courier, monospace;
+
+      &:has(> input:disabled) {
+        color: #aaa;
+      }
     }
 
     /** https://www.smashingmagazine.com/2021/12/create-custom-range-input-consistent-browsers/ */
