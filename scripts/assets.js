@@ -27,9 +27,17 @@ import { performance, PerformanceObserver } from 'perf_hooks'
 //@ts-ignore
 import getopts from 'getopts';
 import stringify from 'json-stringify-pretty-compact';
-import { Canvas, loadImage } from '@napi-rs/canvas';
+import napiRsCanvas from '@napi-rs/canvas';
 import nodeCanvas from 'canvas';
 import PQueue from 'p-queue-compat';
+
+// 🔔 node-canvas supports more SVG features
+// const canvasLib = nodeCanvas;
+/** //@typedef {import('canvas').Image} CanvasLibImage */
+
+// 🔔 @napi-rs/canvas is faster and avoids nondeterminism
+const canvasLib = napiRsCanvas;
+/** @typedef {import('@napi-rs/canvas').Image} CanvasLibImage */
 
 // relative urls for sucrase-node
 import { Poly } from "../npc-cli/geom";
@@ -534,7 +542,7 @@ async function drawObstaclesSheet(assets, prev) {
   
   const { obstacle: allObstacles, maxObstacleDim, obstacleDims } = assets.sheet;
   const obstacles = Object.values(allObstacles);
-  const ct = new Canvas(maxObstacleDim.width, maxObstacleDim.height).getContext('2d')
+  const ct = new canvasLib.Canvas(maxObstacleDim.width, maxObstacleDim.height).getContext('2d')
 
   const { changed: changedObstacles, removed: removedObstacles } = detectChangedObstacles(obstacles, assets, prev);
   info({ changedObstacles, removedObstacles });
@@ -570,7 +578,7 @@ async function drawObstaclesSheet(assets, prev) {
         if (!changedObstacles.has(`${symbolKey} ${obstacleId}`)) {
           // info(`${symbolKey} ${obstacleId} obstacle did not change`);
           const prevObs = /** @type {Geomorph.AssetsJson} */ (prev.assets).sheet.obstacle[`${symbolKey} ${obstacleId}`];
-          ct.drawImage(/** @type {import('@napi-rs/canvas').Image} */ (prev.obstaclePngs[prevObs.sheetId]),
+          ct.drawImage(/** @type {CanvasLibImage} */ (prev.obstaclePngs[prevObs.sheetId]),
             prevObs.x, prevObs.y, prevObs.width, prevObs.height,
             x, y, width, height,
           );
@@ -585,7 +593,7 @@ async function drawObstaclesSheet(assets, prev) {
            * 🔔 Consider larger image, or avoid using as source for obstacles.
            */
           const dataUrl = assertNonNull(matched)[0].slice(1, -1);
-          const image = await loadImage(dataUrl);
+          const image = await canvasLib.loadImage(dataUrl);
           ct.save();
           drawPolygons(ct, dstPngPoly, ['white', null], 'clip');
           ct.drawImage(image, srcPngRect.x, srcPngRect.y, srcPngRect.width, srcPngRect.height, x, y, width, height);
@@ -658,7 +666,8 @@ function getObstaclePngPaths(assets) {
  * 
  * @param {Geomorph.AssetsJson} assets
  * @param {Prev} prev
- * @returns {Promise<{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }>}
+ * //@returns {Promise<{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }>}
+ * @returns {Promise<{ [key in Key.DecorImg]?: CanvasLibImage }>}
  */
 async function createDecorSheetJson(assets, prev) {
 
@@ -681,21 +690,24 @@ async function createDecorSheetJson(assets, prev) {
   ;
 
   const imgKeyToRect = /** @type {Record<Key.DecorImg, { width: number; height: Number; data: Geomorph.DecorSheetRectCtxt }>} */ ({});
-  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }} */ ({});
+  // const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: import('@napi-rs/canvas').Image }} */ ({});
+  const imgKeyToImg = /** @type {{ [key in Key.DecorImg]?: CanvasLibImage }} */ ({});
 
   // Compute changed images in parallel
   const promQueue = new PQueue({ concurrency: 5 });
   // const promQueue = new PQueue({ concurrency: 1 }); // 🔔 for debug
+
   await Promise.all(changedSvgBasenames.map(baseName => promQueue.add(async () => {
     const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
-    // svg contents -> data url
+
     const svgPathName = path.resolve(decorDir, baseName);
     if (fs.existsSync(svgPathName) === false) {
       return warn(`createDecorSheetJson: could not read "${svgPathName}"`);
     }
-    // 🚧 `bun` is failing on `loadImage`
+
     // 🔔 svg without "width", "height" is not rendered properly
-    imgKeyToImg[decorImgKey] = await loadImage(svgPathName);
+    // imgKeyToImg[decorImgKey] = await loadImage(svgPathName);
+    imgKeyToImg[decorImgKey] = await canvasLib.loadImage(svgPathName);
   })));
 
   /**
@@ -761,12 +773,14 @@ async function createDecorSheetJson(assets, prev) {
  * Create the actual sprite-sheet PNG(s).
  * 
  * @param {Geomorph.AssetsJson} assets
- * @param {Partial<Record<Key.DecorImg, import('@napi-rs/canvas').Image>>} decorImgKeyToImage
+ * //@param {Partial<Record<Key.DecorImg, import('@napi-rs/canvas').Image>>} decorImgKeyToImage
+ * @param {Partial<Record<Key.DecorImg, CanvasLibImage>>} decorImgKeyToImage
  * @param {Prev} prev
  */
 async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
   const { decor: allDecor, decorDims } = assets.sheet;
-  const ct = new Canvas(0, 0).getContext('2d');
+  // const ct = new Canvas(0, 0).getContext('2d');
+  const ct = new canvasLib.Canvas(0, 0).getContext('2d');
   const prevDecor = prev.assets?.sheet.decor;
   
   // group global decor lookup by sheet
@@ -789,7 +803,8 @@ async function drawDecorSheet(assets, decorImgKeyToImage, prev) {
       } else {
         // assume image available in previous sprite-sheet
         const prevItem = /** @type {Geomorph.SpriteSheet['decor']} */ (prevDecor)[decorImgKey];
-        ct.drawImage(/** @type {import('@napi-rs/canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
+        // ct.drawImage(/** @type {import('@napi-rs/canvas').Image} */ (prev.decorPngs[prevItem.sheetId]),
+        ct.drawImage(/** @type {CanvasLibImage} */ (prev.decorPngs[prevItem.sheetId]),
           prevItem.x, prevItem.y, prevItem.width, prevItem.height,
           x, y, width, height,
         );
@@ -899,19 +914,16 @@ async function createNpcTexAndUv(assets, prev) {
       skin.numSheets[npcClassKey]++;
       
       // extract uv-mapping from top-level folder "uv-map"
-      // merge sheets (must use distinct names in different SVGs for same skin)
+      // 🔔 merge sheets: must use distinct names in different SVGs for same skin
       const { width, height, uvMap } = geomorph.parseUvMapRects(svgContents, skinSheetId, svgBaseName);
       Object.assign(skin.uvMap[npcClassKey] ??= {}, uvMap);
       skin.uvMapDim[npcClassKey] = { width, height };
 
       skin.svgHashes[npcClassKey].push(hashText(svgContents));
       
-      // convert SVG to PNG
-      // const image = await loadImage(svgPath);
-      // const canvas = new Canvas(image.width, image.height);
-      // canvas.getContext('2d').drawImage(image, 0, 0);
-      // await saveCanvasAsFile(canvas, pngPath);
-      await convertSvgToPng(svgPath, pngPath, 'node-canvas');
+      // 🔔 must use node-canvas e.g. for SVG filters
+      // no nondeterminism issue has been witnessed for skins
+      await convertSvgToPngNodeCanvas(svgPath, pngPath);
     }
   }
 
@@ -944,8 +956,8 @@ function getSkinSvgPaths(npcTexMetas) {
 /**
  * @typedef Prev
  * @property {Geomorph.AssetsJson | null} assets
- * @property {(import('@napi-rs/canvas').Image | null)[]} obstaclePngs
- * @property {(import('@napi-rs/canvas').Image | null)[]} decorPngs
+ * @property {(CanvasLibImage | null)[]} obstaclePngs
+ * @property {(CanvasLibImage | null)[]} decorPngs
  * @property {NPC.TexMeta[]} npcTexMetas
  * @property {boolean} skipMaps
  * @property {boolean} skipObstacles
@@ -973,44 +985,39 @@ function perf(label, initMessage) {
 
 /**
  * Read image server-side, or `null` on error.
- * @param {string} filePath 
+ * @param {string} filePath
+ * @returns {Promise<CanvasLibImage | null>}
  */
 async function tryLoadImage(filePath) {
   try {
-    return await loadImage(filePath);
+    return await canvasLib.loadImage(filePath);
   } catch (e) {// assume doesn't exist
     return null;
   }
 }
 
 /**
- * @param {import('@napi-rs/canvas').Canvas} canvas 
+ * @param {nodeCanvas.Canvas | napiRsCanvas.Canvas} canvas 
  * @param {string} outputPath 
  */
 async function saveCanvasAsFile(canvas, outputPath) {
-  const pngData = await canvas.encode('png');
-  await fs.promises.writeFile(outputPath, pngData);
+  if (canvas instanceof nodeCanvas.Canvas) {
+    await stream.pipeline(
+      canvas.createPNGStream({}),
+      fs.createWriteStream(outputPath),
+    );
+  } else {
+    const pngData = await canvas.encode('png');
+    await fs.promises.writeFile(outputPath, pngData);
+  }
 }
 /**
- * 
  * @param {string} svgPath
  * @param {string} pngPath
- * @param {'node-canvas'} using or 🚧 @napi-rs/canvas in case of nondeterminism
  */
-async function convertSvgToPng(svgPath, pngPath, using) {
-  // 🚧 try normalize SVG to support e.g. rect with transform-box fill
-  // let contents = (await fs.promises.readFile(svgPath)).toString();
-  // const dataUrl = `data:image/svg+xml;utf8,${contents}`;
-  // const image = await nodeCanvas.loadImage(dataUrl);
-
+async function convertSvgToPngNodeCanvas(svgPath, pngPath) {
   const image = await nodeCanvas.loadImage(svgPath);
-
   const canvas = new nodeCanvas.Canvas(image.width, image.height);
   canvas.getContext('2d').drawImage(image, 0, 0);
-  await stream.pipeline(
-    canvas.createPNGStream({
-      // ...
-    }),
-    fs.createWriteStream(pngPath),
-  );
+  await saveCanvasAsFile(canvas, pngPath);
 }
