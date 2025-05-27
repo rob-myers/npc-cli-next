@@ -32,12 +32,12 @@ import nodeCanvas from 'canvas';
 import PQueue from 'p-queue-compat';
 
 // 🔔 node-canvas supports more SVG features
-// const canvasLib = nodeCanvas;
-/** //@typedef {import('canvas').Image} CanvasLibImage */
+const canvasLib = nodeCanvas;
+/** @typedef {import('canvas').Image} CanvasLibImage */
 
 // 🔔 @napi-rs/canvas is faster and avoids nondeterminism
-const canvasLib = napiRsCanvas;
-/** @typedef {import('@napi-rs/canvas').Image} CanvasLibImage */
+// const canvasLib = napiRsCanvas;
+// /** @typedef {import('@napi-rs/canvas').Image} CanvasLibImage */
 
 // relative urls for sucrase-node
 import { Poly } from "../npc-cli/geom";

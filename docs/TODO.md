@@ -14,7 +14,7 @@
     - ✅ add some crates
     - 🚧 add a cuboid with a decor quad e.g. computer screen
       - ℹ️ `decor quad tilt` tilts around center
-      - convert decor svg to png uses same technique as skins?
+    -  try use nodeCanvas for decor svg detail
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
@@ -269,6 +269,8 @@
 - 🚧 BUG: on add decor image i.e. decor spritesheet out-of-sync
   - w.geomorphs.sheet.decor is synced
   - `<Decor>` was not but fixed by editing its query
+
+- node-canvas: is it still nondeterministic onchange decor pngs?
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
