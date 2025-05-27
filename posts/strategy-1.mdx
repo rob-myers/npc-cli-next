@@ -3,3 +3,23 @@ export const metadata = {
 };
 
 ## Strategy 1
+
+🚧
+
+```sh
+# choose 4 nav points
+click 4 meta.nav &>> points
+# spawn npc with full access
+spawn npcKey:rob at:$( click 1 ) grant:.
+# take a tour
+tour npcKey:rob to:"$( points )" 
+```
+
+```js
+export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
+  for (const to of opts.to) {
+    yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
+    await ct.api.sleep(opts.pauseMs ?? 0.8);
+  }
+}
+```
