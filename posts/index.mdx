@@ -11,9 +11,11 @@ export const metadata = {
 import Carousel from '../components/Carousel';
 import Image from 'next/image';
 
+{/* 🚧 */}
 import TestWebp from '../public/images/first-carousel-image-test.webp';
 import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
 import FirstWithTtyWebp from '../public/images/first-example-with-tty.png.webp';
+import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__27-05-2025.webp';
 
 # Home
 
@@ -41,8 +43,10 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 <Carousel
   items={[
     {
-      img: TestWebp,
+      // img: TestWebp,
+      img: DesktopEmptyWorldWebp,
       label: <>Our system <em>NPC CLI</em> is built into this site.</>,
+      objectPosition: '0% 50%',
     },
     {
       img: WorldTwoNpcWebp,

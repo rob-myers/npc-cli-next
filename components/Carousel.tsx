@@ -12,7 +12,7 @@ import useUpdate from '@/npc-cli/hooks/use-update';
 
 export default function Carousel(props: Props) {
 
-  // 🚧 for better hmr move "innards" into own component
+  // 🚧 for better hmr move inwards into own component
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
   }, []);
@@ -248,7 +248,7 @@ const carouselCss = css`
 
     padding: 0 calc(2 * var(--slider-next-button-width) + 8px);
     color: #99a;
-    background-color: #00000099;
+    background-color: #00000055;
     border-radius: 0 0 var(--slider-border-radius) var(--slider-border-radius);
     text-align: center;
     

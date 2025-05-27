@@ -6,10 +6,13 @@
 
 - 🚧 redo images in first carousel
   - ℹ️ https://squoosh.app/editor | size?
+    - webp quality 70
   - ✅ can spawn with various skins easily
   - ✅ can spawn facing angle easily
     - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
   - 🚧 extend 301 with more decor
+    - ✅ add some crates
+    - 🚧 add a cuboid with a decor quad e.g. computer screen
 
 - 🚧 refine chosen carousel embla-carousel
   - ✅ carousel has labels
