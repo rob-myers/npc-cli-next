@@ -361,6 +361,12 @@
   <use width="1" height="1" style="transform-origin: 0.5px 0.5px;" href="#symbol-0" transform="matrix(100, 0, 0, 150, 1249.5, 1874.5)">
     <title>decor cuboid table nav h=0.5 y=0 color=#999</title>
   </use>
+  <use width="1" height="1" style="" href="#symbol-0" transform="matrix(25, 0, 0, 150, 1260, 1800)">
+    <title>decor cuboid screen nav h=0.75 y=0.75 color=#999</title>
+  </use>
+  <use width="1" height="1" transform="matrix(0.006535, 150, -149.999878, 0.189485, 1285.777222, 1874.5)" style="transform-origin: 0.497029px 0.499996px;" href="#symbol-0">
+    <title>decor quad tilt img=screen--1x1 y=1.125</title>
+  </use>
   <use width="1" height="1" style="transform-origin: 0px 0.5px;" href="#symbol-0" transform="matrix(100, 0, 0, 150, 1200, 2174.5)">
     <title>decor cuboid table nav h=0.5 y=0 color=#666 outline=0.2</title>
   </use>

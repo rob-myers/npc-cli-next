@@ -201,6 +201,7 @@ export const fromDecorImgKey = /** @type {const} */ ({// 🔔 must extend when a
   'icon--robot': true,
   'icon--square': true,
   'icon--warn': true,
+  'screen--1x1': true,
 });
 
 /**
