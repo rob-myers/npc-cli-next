@@ -74,6 +74,9 @@ export default function WorldMenu(props) {
     onChangeCanTweenPaused(e) {
       w.view.canTweenPaused = e.currentTarget.checked;
       w.update();
+      if (w.disabled === true && w.view.canTweenPaused === true)  {
+        w.view.onPausedTick();
+      }
     },
     onChangeInvertColor(e) {
       state.invertColor = e.currentTarget.checked;

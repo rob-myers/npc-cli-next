@@ -382,6 +382,24 @@ export default function WorldView(props) {
       state.handleClickInDebugMode(e); // step world in debug mode
     },
     onTick(deltaMs) {
+      if (state.dst.azimuthal !== undefined) {// azimuthal angle
+        if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
+          delete state.dst.azimuthal;
+          state.resolve.azimuthal?.();
+        }
+      }
+
+      if (state.dst.polar !== undefined) {// polar angle
+        if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
+          delete state.dst.polar;
+          state.resolve.polar?.();
+        }
+      }
+
+      if (w.disabled === true && state.canTweenPaused === false) {
+        return;
+      }
+
       const { camera } = w.r3f;
 
       if (state.dst.fov !== undefined) {// change fov
@@ -409,20 +427,6 @@ export default function WorldView(props) {
         if (damp3(camera.position, targetCamPos, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
           delete state.dst.distance;
           state.resolve.distance?.();
-        }
-      }
-
-      if (state.dst.azimuthal !== undefined) {// azimuthal angle
-        if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
-          delete state.dst.azimuthal;
-          state.resolve.azimuthal?.();
-        }
-      }
-
-      if (state.dst.polar !== undefined) {// polar angle
-        if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
-          delete state.dst.polar;
-          state.resolve.polar?.();
         }
       }
 
