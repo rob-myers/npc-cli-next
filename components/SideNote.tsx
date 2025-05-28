@@ -103,6 +103,7 @@ const iconTriggerCss = css`
   white-space: nowrap;
   
   padding: 0 4px;
+  margin-left: 2px;
   border-radius: 10px;
   border: 1px solid #aaaaaa;
   background-color: white;
