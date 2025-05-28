@@ -24,7 +24,7 @@ export default async function BlogPage(props: {
           if (props.href?.startsWith('/internal/')) {
             return <a {...props} href={`#${decodeURIComponent(props.href)}`}>{props.children}</a>
           } else {
-            return <a {...props}>{props.children}</a>;
+            return <a {...props} target="_blank" >{props.children}</a>;
           }
         },
       },
