@@ -64,24 +64,23 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   minHeight={400}
 />
 
-This problem can be "solved" by restricting interactivity.
+The underlying problem is in some sense "solved" by restricting interactivity.
 Racing games only permit physical collisions.
 Puzzle games are often too abstract to express human behaviour.
-In fact, many games only offer *aggressive* NPCs additionally constrained by their time-limited existence.
+Many 3D games only offer *aggressive* NPCs additionally constrained by their time-limited existence.
 So let's assume the NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
 (or even comes close). But why?
 
 > Because it's too damn hard!
 
-{/* Developers are wary of state-space explosions. */}
-As behaviours become more complex the Game's state-space explodes.
-The number of possible states becomes too large to be effectively explored.
+Complex interacting behaviours yield state-space explosions.
+The Game's number of possible states becomes too large to be effectively explored.
 How can composite behaviour be resolved if the developer has never encountered it?
 Even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
-Importantly we're entertaining the Player,
-not creating a World in which the Player is situated.
-Reacting directly to the Player may be the key to avoiding state-space explosions.
+Importantly, reacting directly to the Player may avoid these problems.
+{/* Importantly we're entertaining the Player,
+not creating a World in which the Player is situated. */}
 
 This leads us to intermediate objectives.
 
