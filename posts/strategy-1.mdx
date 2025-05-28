@@ -2,11 +2,14 @@ export const metadata = {
   key: 'strategy-1',
 };
 
+import Code from '../components/Code';
+
 ## Strategy 1
 
 🚧
 
-```sh
+<Code>
+```sh title="my title" caption="my caption"
 # choose 4 nav points
 click 4 meta.nav &>> points
 # spawn npc with full access
@@ -14,8 +17,10 @@ spawn npcKey:rob at:$( click 1 ) grant:.
 # take a tour
 tour npcKey:rob to:"$( points )" 
 ```
+</Code>
 
-```js
+<Code>
+```js {1-2,4}
 export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
   for (const to of opts.to) {
     yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
@@ -23,3 +28,4 @@ export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'arra
   }
 }
 ```
+</Code>
