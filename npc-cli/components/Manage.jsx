@@ -68,7 +68,7 @@ const manageCss = css`
   padding: 16px;
 
   h2 {
-    font-size: large;
+    font-size: medium;
     margin-bottom: 8px;
   }
 
@@ -82,14 +82,15 @@ const manageCss = css`
     color: #ccc;
   }
   li {
-    padding: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    
     display: flex;
     gap: 4px;
+    
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: small;
   }
   li > span.world-key, li > span.map-key {
-    color: #aaa;
+    color: #aa8;
   }
 
   .demo-links {
