@@ -11,7 +11,7 @@ import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopm
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset } from "@/npc-cli/tabs/tab-util";
+import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -92,7 +92,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
     },
 
-    restoreLayoutFallback(fallbackLayout, opts = {}) {
+    restoreLayoutWithFallback(fallbackLayout, opts = {}) {
       if (typeof fallbackLayout === 'string') {
         fallbackLayout = resolveLayoutPreset(fallbackLayout);
       }
@@ -113,7 +113,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         started: deepClone(next),
         synced: next,
         saved: restorable,
-      }}));
+      }}), undefined, 'restore-layout-with-fallback');
 
       return next;
     },
@@ -129,7 +129,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         },
         // force <Tabs> to compute new model, else revert only works 1st time
         tabsetUpdates: tabsetUpdates + 1,
-      }));
+      }), undefined, 'revert-current-tabset');
       
       // overwrite localStorage too
       tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(next));
@@ -150,7 +150,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
           synced: deepClone(layout),
         },
         ...opts?.overwrite === true && { tabsetUpdates: tabsetUpdates + 1, }
-      }));
+      }), undefined, 'set-tabset');
     },
 
     storeCurrentLayout(model) {
@@ -197,9 +197,13 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
       try {
         let restored = JSON.parse(jsonModelString) as IJsonRowNode;
-        // create Model and serialize to validate
-        // 🔔 assume rootOrientationVertical true
+        /**
+         * - we create Model and serialize it to validate
+         * - we assume rootOrientationVertical true
+         */
         restored = Model.fromJson(layoutToModelJson(restored, true)).toJson().layout;
+        restored = ensureManageTab(restored);
+        
         // props could change over time
         restored = useSite.api.migrateRestoredLayout(restored);
 
@@ -256,7 +260,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
       ) ?? {};
       if (topLevel.viewOpen) {
-        set(() => ({ viewOpen: topLevel.viewOpen }));
+        set(() => ({ viewOpen: topLevel.viewOpen }), undefined, 'restore-view-open');
       }
       if (topLevel.navOpen) {
         set(() => ({ navOpen: topLevel.navOpen }));
@@ -339,7 +343,7 @@ export type State = {
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     /** Restore layout from localStorage or use fallback */
-    restoreLayoutFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
+    restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;

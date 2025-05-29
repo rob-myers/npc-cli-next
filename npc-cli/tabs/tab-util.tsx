@@ -46,10 +46,36 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
   };
 }
 
+/**
+ * Ensure at least one manage tab in layout.
+ */
+export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
+  const tabsets = extractTabsetNodes(layout);
+
+  if (tabsets.length === 0) {
+    return createLayoutFromBasicLayout([[
+      { type: 'component', class: 'Manage', filepath: 'manage', props: {} },
+    ]]);
+  }
+
+  const tabset = tabsets.find(x => x.children.find(y => isManageTabDef(y.config)));
+
+  if (tabset === undefined) {// add manage tab to final tabset
+    tabsets.at(-1)!.children.push(createTabNodeFromDef({
+      type: 'component', class: 'Manage', filepath: 'manage', props: {}
+    }));
+  }
+
+  return layout;
+}
+
+/**
+ * 🔔 All layouts should be created this way.
+ */
 export function createLayoutFromBasicLayout(
   basicLayout: BasicTabsLayout,
 ): IJsonRowNode {
-  return {
+  return ensureManageTab({
     type: "row",
     // One row for each list in `tabs`.
     children: basicLayout.map((defs) => ({
@@ -61,7 +87,7 @@ export function createLayoutFromBasicLayout(
         children: defs.map(createTabNodeFromDef),
       }],
     })),
-  };
+  });
 }
 
 function createTabNodeFromDef(def: TabDef) {
@@ -126,11 +152,30 @@ export function isComponentClassKey(input: string): input is ComponentClassKey {
   return input in fromComponentClassKey;
 }
 
+function isManageTabDef(def: TabDef) {
+  return def.type === 'component' && def.class === 'Manage';
+}
+
 export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
-  for (const tabset of extractTabsetNodes(layout)) {
+  
+  const tabsets = extractTabsetNodes(layout);
+
+  const manageTabCount = tabsets.reduce((sum, tabset) =>
+    sum + tabset.children.filter(x => isManageTabDef(x.config)).length,
+    0,
+  );
+  if (manageTabCount === 0) {
+    warn(`${'removeTabFromLayout'}: layout lacks a "manage tab"`);
+  }
+
+  for (const tabset of tabsets) {
     const index = tabset.children.findIndex(x => x.id === tabId);
+    
     if (index === -1) {
       continue;
+    }
+    if (isManageTabDef(tabset.children[index].config) && manageTabCount === 1) {
+      throw Error(`${'removeTabFromLayout'}: cannot remove last "manage tab"`);
     }
 
     tabset.children.splice(index, 1);
@@ -155,8 +200,10 @@ export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
 export function computeStoredTabsetLookup(): AllTabsets {
   
   function restoreLayout(key: keyof AllTabsets) {
-    return tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
-      ?? deepClone(emptyTabsetLayout);
+    return ensureManageTab(
+      tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
+      ?? deepClone(emptyTabsetLayout)
+    );
   }
   
   const output = {

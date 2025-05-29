@@ -17,7 +17,9 @@ export default function Manage(props) {
 }
 
 const manageCss = css`
+  color: white;
   background-color: #222;
+  padding: 16px;
 `;
 
 /**

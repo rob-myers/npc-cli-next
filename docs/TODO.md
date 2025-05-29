@@ -201,7 +201,7 @@
 - 🚧 Tabs has manage tab
   - ✅ cannot close tabs directly 
   - ✅ manage tab component exists
-  - 🚧 ensure manage tab in all layouts
+  - ✅ ensure manage tab in all layouts
   - move links into manage tab
   - manage tab has ui
 
