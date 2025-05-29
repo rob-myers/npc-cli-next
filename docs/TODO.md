@@ -210,6 +210,7 @@
 - 🚧 manage tab
   - can close tab
   - can open new tab
+  - tab grey if disabled (e.g. never mounted)
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller
