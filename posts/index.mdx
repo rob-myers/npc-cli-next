@@ -64,7 +64,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   minHeight={400}
 />
 
-We need to be more precise,
+We need to be more precise
 because if we restrict interactivity the underlying problem disappears.
 For example, racing games only permit physical collisions, which isn't enough to express interesting behaviour.
 Likewise abstract puzzle games are too inflexible.
@@ -76,10 +76,10 @@ Under this assumption, no known game solves the underlying problem
 > Because it's too damn hard!
 
 Freely combining behaviours leads to state-space explosions.<SideNote>Even in very restricted settings e.g. [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).</SideNote>
-In other words, the number of states becomes too large to be effectively explorable.
+The number of states becomes too large to effectively explore.
 How can composite behaviour be resolved if the developer has never encountered it?
 Even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
-However, there's a way to solve both problems: react directly to the Player.
+But there's a way to solve both problems i.e. always react to the Player.
 We could fabricate everything around them, as and when we need to.
 
 This leads us to intermediate objectives.
