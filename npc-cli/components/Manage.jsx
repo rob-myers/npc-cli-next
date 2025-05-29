@@ -1,18 +1,38 @@
 import React from "react";
 import { css } from "@emotion/react";
 import useStateRef from "../hooks/use-state-ref";
+import useSite from "@/components/site.store";
+import { extractTabNodes } from "../tabs/tab-util";
 
 /** @param {Props} props */
 export default function Manage(props) {
+
+  const layout = useSite(({ tabset: { synced } }) => synced);
 
   const state = useStateRef(/** @returns {State} */ () => ({
     foo: "bar",
   }));
 
+  const tabDefs = React.useMemo(() => {
+    const defs = extractTabNodes(layout).map(x => x.config);
+    return defs;
+  }, [layout]);
+
   return (
     <div css={manageCss}>
       <div>
         <h2>Manage Tabs</h2>
+
+        <ul className="tab-defs">
+          {tabDefs.map(def =>
+            <li key={def.filepath}>
+              {/* {JSON.stringify(def)} */}
+              <span>{def.filepath}</span>
+              <span className="world-key">{def.type === 'terminal' && `(${def.env?.WORLD_KEY})`}</span>
+              <span className="map-key">{def.type === 'component' && def.class === 'World' && `(${def.props.mapKey})`}</span>
+            </li>
+          )}
+        </ul>
       </div>
       
       <div>
@@ -39,6 +59,10 @@ export default function Manage(props) {
 }
 
 const manageCss = css`
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+
   color: white;
   background-color: #111;
   padding: 16px;
@@ -48,22 +72,31 @@ const manageCss = css`
     margin-bottom: 8px;
   }
 
+  > div {
+    margin-bottom: 12px;
+    width: 300px;
+  }
+
+  ul {
+    /* background-color: #333; */
+    color: #ccc;
+  }
+  li {
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    
+    display: flex;
+    gap: 4px;
+  }
+  li > span.world-key, li > span.map-key {
+    color: #aaa;
+  }
 
   .demo-links {
-    height: 100px;
-    width: 240px;
-    overflow: auto;
-
     display: flex;
     flex-direction: column;
-    align-items: start;
-    background-color: #333;
-    padding: 0 8px;
     a {
       font-size: small;
-    }
-    li:before {
-      content: '- ';
     }
   }
 

@@ -198,14 +198,18 @@
   - to avoid accidental closure
   - ℹ️ Tabs will have "manage" tab instead
 
-- 🚧 Tabs has manage tab
+- ✅ Tabs has manage tab
   - ✅ cannot close tabs directly 
   - ✅ manage tab component exists
   - ✅ ensure manage tab in all layouts
   - ✅ move links into manage tab
     - use `#/internal` link
     - remove `/internal/...` -> `#/internal/...` transformer in markdown
-  - 🚧 manage tab has ui
+  - ✅ manage tab has ui
+
+- 🚧 manage tab
+  - can close tab
+  - can open new tab
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller
