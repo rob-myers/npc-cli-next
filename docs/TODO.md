@@ -202,8 +202,10 @@
   - ✅ cannot close tabs directly 
   - ✅ manage tab component exists
   - ✅ ensure manage tab in all layouts
-  - move links into manage tab
-  - manage tab has ui
+  - ✅ move links into manage tab
+    - use `#/internal` link
+    - remove `/internal/...` -> `#/internal/...` transformer in markdown
+  - 🚧 manage tab has ui
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller

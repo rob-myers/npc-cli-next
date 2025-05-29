@@ -18,14 +18,18 @@ export default async function BlogPage(props: {
         SideNote: (props: React.ComponentProps<typeof SideNote>) => (
           <SideNote bubbleClassName="not-prose" {...props} />
         ),
-        // 🔔 convert href "/internal/..." to fragment identifier, enacted elsewhere
-        // 🔔 apply decodeURIComponent to support spaces via %20
         a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
-          if (props.href?.startsWith('/internal/')) {
-            return <a {...props} href={`#${decodeURIComponent(props.href)}`}>{props.children}</a>
-          } else {
-            return <a {...props} target="_blank" >{props.children}</a>;
-          }
+          return (
+            <a
+              {...props} // suffix #new-tab or &new-tab induces new tab
+              {.../(#|&)new-tab$/.test(props.href ??= '') && {
+                href: props.href.slice(0, -'#new-tab'.length),
+                target: "_blank",
+              }}
+            >
+              {props.children}
+            </a>
+          );
         },
       },
     })}
