@@ -43,6 +43,7 @@ export default function Viewer() {
 
       switch (classKey) {
         case 'Debug':
+        case 'Manage':
         case 'HelloWorld': {
           const filepath = `${toComponentClassPrefix[classKey]}-${opts.suffix ?? '0'}`;
           tabDef = {

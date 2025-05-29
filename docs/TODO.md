@@ -15,7 +15,7 @@
     - ✅ add a cuboid with a decor quad e.g. computer screen
       - ℹ️ `decor quad tilt` tilts around center
     - ✅ try use nodeCanvas for decor svg detail
-  - three images
+  - 🚧 three images
     - 1st ✅ 2nd 3rd
 
 - ❌ refine chosen carousel embla-carousel
@@ -173,18 +173,19 @@
   - ❌ e.g. blocking npc tweens separationWeight
   - ℹ️ won't solve yet
 
-- 🚧 better approach to js to shell function naming?
+- ❌ better approach to js to shell function naming?
   - ℹ️ want to permit mutually inconsistent files (only source one)
   - ℹ️ want to optionally exclude certain files
   - ℹ️ want to avoid special names to avoid collisions
   - ✅ extendable approach
-  - 🚧 can specify functions to auto-source
+  - ❌ can specify functions to auto-source
     - maybe auto track after `source /etc/foo`
     - better names i.e. not game-generators-wip
     - maybe can specify initially sourced via prop
-  - session.jsFuncs should only contain respective functions too
+  - ❌ session.jsFuncs should only contain respective functions too
     - provide keyed lookup `jsFunctions`
     - but how to fix types? need to separate to avoid collisions
+  - ℹ️ seems too complicated
 
 
 - ✅ avoid Tabs reload on edit service/const
@@ -193,8 +194,16 @@
 - 🚧 look towards neighbour should be optional
   - could also improve it
 
-- can only close tab after hover for a while
+- ❌ can only close tab after hover for a while
   - to avoid accidental closure
+  - ℹ️ Tabs will have "manage" tab instead
+
+- 🚧 Tabs has manage tab
+  - ✅ cannot close tabs directly 
+  - ✅ manage tab component exists
+  - 🚧 ensure manage tab in all layouts
+  - move links into manage tab
+  - manage tab has ui
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller

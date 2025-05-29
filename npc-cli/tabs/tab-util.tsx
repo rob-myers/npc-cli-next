@@ -34,8 +34,7 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
     global: {
       tabEnableRename: false,
       rootOrientationVertical,
-      // tabEnableClose: false,
-      tabEnableClose: true,
+      tabEnableClose: false, // use "manage" tab to close tabs
       tabSetMinHeight: 100,
       tabSetMinWidth: 200,
       tabSetEnableDivide: !isTouchDevice(),
@@ -108,12 +107,14 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
 const fromComponentClassKey: Record<ComponentClassKey, true> = {
   Debug: true,
   HelloWorld: true,
+  Manage: true,
   World: true,
 };
 
 export const toComponentClassPrefix: Record<ComponentClassKey, string> = {
   Debug: 'debug',
   HelloWorld: 'hello-world',
+  Manage: 'manage',
   World: 'world',
 };
 
