@@ -23,7 +23,16 @@
   - ❌ clean carousel css e.g. more css variables
   - ❌ auto png to webp in public/images
 
-- more content
+- lead into "basic behaviour list"
+  - need `<Code>`
+    - can copy line-by-line
+    - can copy all
+    - can send directly into tty?
+  - clarify initial PROFILE
+  - step through spawning and removing an npc
+  - step through making an npc walk back-and-forth
+  - next time we'll implement "selection"
+
 - mention Starship Geomorphs early
 - mention recent improvements in AI
   - NPC CLI could use them as tools

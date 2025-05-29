@@ -79,11 +79,8 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 ## Example NPC-CLI shell commands
 
 ```sh
-c=0
-while true; do
-  spawn "rob_${c}" $( click 1 )
-  w e.grantAccess . "rob_${c}"
-  c+=1
+c=-1; while c+=1; do
+  spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
 done
 
 # commands work while paused via prefix `ptags=always;`
