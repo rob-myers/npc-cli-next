@@ -63,6 +63,10 @@ const manageCss = css`
   width: 100%;
   overflow: auto;
 
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
   color: white;
   background-color: #111;
   padding: 16px;

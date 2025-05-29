@@ -37,7 +37,7 @@ export default function Debug(props) {
 
   return (
     <div css={debugCss}>
-      Debug
+      <h2>Debug</h2>
       <canvas
         ref={state.ref('canvas')}
         width={width}
@@ -54,7 +54,7 @@ const debugCss = css`
   overflow: scroll;
 
   canvas {
-    border: 1px solid #777;
+    /* border: 1px solid #777; */
     /* background-color: red; */
   }
 `;
