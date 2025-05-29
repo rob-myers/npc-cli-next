@@ -8,7 +8,10 @@ import useStateRef from '@/npc-cli/hooks/use-state-ref';
  * Usage: directly provide mdx code block as child,
  * in order for rehype to parse it.
  * 
- * 🚧 can copy code to clipboard
+ * 🚧 can copy all code to clipboard
+ * 🚧 can copy line of code to clipboard
+ * - e.g. by clicking line number, detected via click on line and relative position
+ * - could select line rather than actually copy
  */
 export default function Code({ children }: React.PropsWithChildren<Props>) {
   
@@ -36,6 +39,22 @@ interface Props {
 const codeContainerCss = css`
   figure > div[data-rehype-pretty-code-title] {
     text-align: center;
+  }
+
+  code[data-line-numbers] {
+    counter-reset: line;
+  }
+  code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+  
+    display: inline-block;
+    width: 0.75rem;
+    margin-right: 2rem;
+    text-align: right;
+    color: gray;
+
+    /* cursor: pointer; */
   }
 
   // selected line

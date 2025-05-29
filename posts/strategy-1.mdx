@@ -9,7 +9,7 @@ import Code from '../components/Code';
 🚧
 
 <Code>
-```sh title="my title" caption="my caption"
+```sh title="my title" caption="my caption" showLineNumbers
 # choose 4 nav points
 click 4 meta.nav &>> points
 # spawn npc with full access
@@ -20,7 +20,7 @@ tour npcKey:rob to:"$( points )"
 </Code>
 
 <Code>
-```js {1-2,4}
+```js {3} showLineNumbers
 export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
   for (const to of opts.to) {
     yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
