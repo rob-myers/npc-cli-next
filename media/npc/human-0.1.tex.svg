@@ -13,18 +13,6 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
-    <filter id="saturate-filter-9" bx:preset="saturate 1 2" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
-      <feColorMatrix type="saturate" values="2"/>
-    </filter>
-    <filter id="outline-filter-1" bx:preset="outline 1 2 #000" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
-      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="2"/>
-      <feFlood flood-color="#000" result="flood"/>
-      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
-      <feMerge>
-        <feMergeNode in="outline"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
     <filter id="sepia-filter-0" bx:preset="sepia 1 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0 0.349 0.686 0.168 0 0 0.272 0.534 0.131 0 0 0 0 0 1 0"/>
     </filter>
@@ -49,9 +37,9 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <filter id="inner-shadow-filter-0" bx:preset="inner-shadow 1 0 0 10 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+    <filter id="inner-shadow-filter-0" bx:preset="inner-shadow 1 0 0 17 0.5 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feOffset dx="0" dy="0"/>
-      <feGaussianBlur stdDeviation="10"/>
+      <feGaussianBlur stdDeviation="17"/>
       <feComposite operator="out" in="SourceGraphic"/>
       <feComponentTransfer result="choke">
         <feFuncA type="linear" slope="1"/>
@@ -60,11 +48,32 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="saturate-filter-0" bx:preset="saturate 1 2" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="saturate" values="2"/>
+    </filter>
+    <filter id="brightness-filter-0" bx:preset="brightness 1 1.84" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.84"/>
+        <feFuncG type="linear" slope="1.84"/>
+        <feFuncB type="linear" slope="1.84"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="filter-1" bx:preset="inner-shadow 1 0 0 17 0.7 rgba(0,0,0,0.7)" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur stdDeviation="17"/>
+      <feComposite operator="out" in="SourceGraphic"/>
+      <feComponentTransfer result="choke">
+        <feFuncA type="linear" slope="1.4"/>
+      </feComponentTransfer>
+      <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
+      <feComposite operator="in" in="color" in2="choke" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
   </defs>
-  <g style="pointer-events: none;">
+  <g style="">
     <title>uv-map</title>
     <g transform="matrix(1, 0, 0, 1, 32, 0)">
-      <title>astronaut_head</title>
+      <title>astronaut-0_head</title>
       <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(0, 0, 0);" x="512">
         <title>front</title>
       </rect>
@@ -101,10 +110,28 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQUlEQVQYGWP8DwQMQPDhz3cQxfDyLTuYhhFMMAYumgWmE5cCwiYg2/ny8H8GDlVUswiaQJoCcVtGhh+3wb6G2wMAb1cTj+DO7lAAAAAASUVORK5CYII=" width="128" height="128" x="640" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-0&quot;);">
         <title>_back</title>
       </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWklEQVQYGWO88eLvfwYkIC78E8wTYOEE0ywgMlA7DcwBEQqsXGC2yjtuhkk/2xkYNYWTUUyAKYDpYIIxcNEsH//fRZF78FsZhU/QBMIK1u/bi2IkMmf91VkMAHWrFC8OBDVpAAAAAElFTkSuQmCC" width="128" height="128" x="512" style="image-rendering: pixelated; filter: url(&quot;#filter-1&quot;);">
+        <title>_front</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAL0lEQVQYGWM8eeHvfwYo+HH7P4O4LSOMC6aZUHhYOCgKOFRRdYPUoyjAYsCgUAAA5dYG+q0P6aYAAAAASUVORK5CYII=" width="128" height="128" x="640" y="256" style="image-rendering: pixelated; filter: url(&quot;#filter-1&quot;);">
+        <title>_bottom</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAM0lEQVQYGWO88eLvfwY8gAmPHFgKr4JA7TQGvApARrB8fIHbkpe/zxA2gaAVjCcv4PcmAN9CDM3z+zI4AAAAAElFTkSuQmCC" width="128" height="128" x="512" y="128" style="image-rendering: pixelated; filter: url(&quot;#filter-1&quot;);">
+        <title>_left</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAANklEQVQYGWP8DwQMeAATHjmwFJOXZB7Dhz/fcWKCJrA8+P2N4eVbdpw2ETSBoALGGy/+4vUmAL2cIX2W4anIAAAAAElFTkSuQmCC" width="128" height="128" x="640" y="128" style="image-rendering: pixelated; filter: url(&quot;#filter-1&quot;);">
+        <title>_right</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAIUlEQVQYGWO88eLvfwYkIC78E8wTYOEE00xIcliZw0MBAAuVBQybtt15AAAAAElFTkSuQmCC" width="128" height="128" x="512" y="256" style="image-rendering: pixelated; filter: url(&quot;#filter-1&quot;);">
+        <title>_top</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQUlEQVQYGWP8DwQMQPDhz3cQxfDyLTuYhhFMMAYumgWmE5cCwiYg2/ny8H8GDlVUswiaQJoCcVtGhh+3wb6G2wMAb1cTj+DO7lAAAAAASUVORK5CYII=" width="128" height="128" x="640" style="image-rendering: pixelated; filter: url(&quot;#filter-1&quot;);">
+        <title>_back</title>
+      </image>
     </g>
     <g>
-      <title>astronaut_body</title>
-      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="128">
+      <title>astronaut-0_body</title>
+      <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px; fill: rgb(255, 255, 255);" x="128">
         <title>top</title>
       </rect>
       <rect width="128" height="128" style="stroke: rgb(255, 255, 255); stroke-width: 16px;" x="256">
@@ -130,7 +157,7 @@
       </image>
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 0)">
-      <title>astronaut_head-overlay</title>
+      <title>astronaut-0_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
         <title>front</title>
       </rect>
@@ -158,24 +185,24 @@
           <title>_right</title>
         </circle>
       </g>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASUlEQVQYGWNgIAAYYfKawsn/QWwFVi6w0PYXk8FyTCAeTBIsAyU8JXLBGsAKkCXQ2SwggY//78LFH/xWhrNBDIImEFSAYhw2DgACpAxEZSy/5QAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-9&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAASUlEQVQYGWNgIAAYYfKawsn/QWwFVi6w0PYXk8FyTCAeTBIsAyU8JXLBGsAKkCXQ2SwggY//78LFH/xWhrNBDIImEFSAYhw2DgACpAxEZSy/5QAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated; filter: url(&quot;#brightness-filter-0&quot;); opacity: 0.64;">
         <title>_front</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWUlEQVQYGWNgIAAYYfLvf3/7D2K/fMsOFtKQYAbLMYF4MEmwDJS48eIvWANYAbIEOpsFJAAz9uXh/wwcqqhKUEywD2WBuwmmDC4AshNiAkTI3ADiSJhCnDQAaJ8Z9rbnGZwAAAAASUVORK5CYII=" width="128" height="128" x="640" y="412" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-9&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWUlEQVQYGWNgIAAYYfLvf3/7D2K/fMsOFtKQYAbLMYF4MEmwDJS48eIvWANYAbIEOpsFJAAz9uXh/wwcqqhKUEywD2WBuwmmDC4AshNiAkTI3ADiSJhCnDQAaJ8Z9rbnGZwAAAAASUVORK5CYII=" width="128" height="128" x="640" y="412" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;);">
         <title>_back</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAPklEQVQYGWNgIAAYYfI3Xvz9D2ODaA0JZrAcmECXhCkEKWKCcXDRLCCJjy9wSTMwEDQBrMDcAOIg3ObgkQEAcCcKUbsL/+oAAAAASUVORK5CYII=" width="128" height="128" x="512" y="544" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-9&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAPklEQVQYGWNgIAAYYfI3Xvz9D2ODaA0JZrAcmECXhCkEKWKCcXDRLCCJjy9wSTMwEDQBrMDcAOIg3ObgkQEAcCcKUbsL/+oAAAAASUVORK5CYII=" width="128" height="128" x="512" y="544" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;);">
         <title>_left</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAR0lEQVQYGWNgIAAYYfL/gQDGBtGMQACmQcT7399QJEFiICDIysXIBGHiJllAUi/fsuNUQdAEuCNvvPiL4g4NCWa4HE7jQRIAOZ8N6eikhhkAAAAASUVORK5CYII=" width="128" height="128" x="640" y="544" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-9&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAR0lEQVQYGWNgIAAYYfL/gQDGBtGMQACmQcT7399QJEFiICDIysXIBGHiJllAUi/fsuNUQdAEuCNvvPiL4g4NCWa4HE7jQRIAOZ8N6eikhhkAAAAASUVORK5CYII=" width="128" height="128" x="640" y="544" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;);">
         <title>_right</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQUlEQVQYGWNgIAAYYfI3Xvz9D2KLC/8ECwmycoHlmEA8mCRYBkr8BwIQE6wAWQKdTSUFGhLMcMfCrGAEAhgbLw0A0VYNDH7lPX0AAAAASUVORK5CYII=" width="128" height="128" x="512" y="672" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-9&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQUlEQVQYGWNgIAAYYfI3Xvz9D2KLC/8ECwmycoHlmEA8mCRYBkr8BwIQE6wAWQKdTSUFGhLMcMfCrGAEAhgbLw0A0VYNDH7lPX0AAAAASUVORK5CYII=" width="128" height="128" x="512" y="672" style="image-rendering: pixelated; filter: url(&quot;#saturate-filter-0&quot;);">
         <title>_top</title>
       </image>
     </g>
     <g>
-      <title>astronaut_body-overlay</title>
+      <title>astronaut-0_body-overlay</title>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="128" y="416">
         <title>top</title>
       </rect>
@@ -194,9 +221,12 @@
       <rect width="128" height="256" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="384">
         <title>back</title>
       </rect>
-      <path d="M 191.816 607.493 C 194.46 607.493 196.598 609.629 196.598 612.275 L 196.598 621.838 L 214.528 621.838 C 220.475 621.838 225.287 626.65 225.287 632.597 L 225.287 673.24 C 225.287 679.188 220.475 683.999 214.528 683.999 L 169.103 683.999 C 163.156 683.999 158.344 679.188 158.344 673.24 L 158.344 632.597 C 158.344 626.65 163.156 621.838 169.103 621.838 L 187.035 621.838 L 187.035 612.275 C 187.035 609.629 189.171 607.493 191.816 607.493 Z M 206.16 651.724 C 210.761 651.724 213.637 646.742 211.336 642.758 C 210.269 640.909 208.296 639.769 206.16 639.769 C 201.559 639.769 198.684 644.75 200.983 648.734 C 202.051 650.584 204.024 651.724 206.16 651.724 Z M 183.448 645.745 C 183.448 641.146 178.468 638.27 174.482 640.569 C 172.633 641.638 171.494 643.611 171.494 645.745 C 171.494 650.346 176.474 653.223 180.459 650.922 C 182.308 649.854 183.448 647.881 183.448 645.745 Z M 203.769 664.872 C 202.454 664.872 201.378 665.947 201.378 667.263 C 201.378 668.577 202.454 669.654 203.769 669.654 L 208.551 669.654 C 209.866 669.654 210.941 668.577 210.941 667.263 C 210.941 665.947 209.866 664.872 208.551 664.872 L 203.769 664.872 Z M 189.425 664.872 C 188.109 664.872 187.035 665.947 187.035 667.263 C 187.035 668.577 188.109 669.654 189.425 669.654 L 194.205 669.654 C 195.52 669.654 196.598 668.577 196.598 667.263 C 196.598 665.947 195.52 664.872 194.205 664.872 L 189.425 664.872 Z M 175.08 664.872 C 173.765 664.872 172.689 665.947 172.689 667.263 C 172.689 668.577 173.765 669.654 175.08 669.654 L 179.862 669.654 C 181.177 669.654 182.252 668.577 182.252 667.263 C 182.252 665.947 181.177 664.872 179.862 664.872 L 175.08 664.872 Z" style="text-wrap-mode: nowrap; stroke-width: 1.54496px; fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); filter: url(&quot;#outline-filter-1&quot;); visibility: hidden;">
-        <title>_robot-icon</title>
-      </path>
+      <g>
+        <title>_top</title>
+        <ellipse style="fill-opacity: 0.3; stroke-width: 1;" cx="192" cy="480" rx="48" ry="48">
+          <title>_shadow</title>
+        </ellipse>
+      </g>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAJUlEQVQYGWNgGGrAdurF/+9/fwNjmNtZYAyQBIyNTDMhcwYrGwByog5GItsKuQAAAABJRU5ErkJggg==" width="8" height="12" x="128" y="544" transform="matrix(16, 0, 0, 21.333334, -1920, -11061.333008)" style="image-rendering: pixelated;">
         <title>_front</title>
       </image>
