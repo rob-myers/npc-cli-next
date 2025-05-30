@@ -300,7 +300,8 @@ We'll try to re-map publicly available Minecraft Skins.
 
 - https://namemc.com/minecraft-skins/tag/soldier
   - 🚧 https://namemc.com/skin/45461862ef51524e
-  - 🚧 https://namemc.com/skin/e5aebae082bea6ec
+  - 🚧 https://namemc.com/skin/e5aebae082bea6ec-
+  - 🚧 https://namemc.com/skin/5556dc93d001adea
 - https://namemc.com/minecraft-skins/tag/scientist
   - 🚧 https://namemc.com/skin/7161dce64d6b12be
   - 🚧 https://namemc.com/skin/72474583457b91c0

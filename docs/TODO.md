@@ -200,6 +200,10 @@
 - ✅ avoid Tabs reload on edit service/const
   - ✅ fix Viewer, ViewerControls
 
+- ✅ replace soldier-0 head, head-overlay
+  - https://namemc.com/skin/5556dc93d001adea
+- replace police-0 head, head-overlay
+
 - 🚧 look towards neighbour should be optional
   - could also improve it
 
