@@ -476,6 +476,14 @@
         <title>_robot-icon</title>
       </path>
       <ellipse style="fill-opacity: 0.3;" cx="192" cy="480" rx="48" ry="48"/>
+      <g transform="matrix(0.34375, 0, 0, 1, -275.001831, 41.052002)" style="visibility: hidden;">
+        <title>_belt</title>
+        <path d="M 800 218.948 L 1312 218.948 L 1312 242.662 L 800 242.662 L 800 218.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(102, 78, 67);"/>
+        <path d="M 1405.1 218.948 L 2289.46 218.948 L 2289.46 242.948 L 1405.1 242.948 L 1405.1 218.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(102, 78, 67);"/>
+        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAqADAAQAAAABAAAAAgAAAADtGLyqAAAAG0lEQVQIHWP4///T/3fXwv8z/WNoYXh64DYDAHOGCw5Gmk+GAAAAAElFTkSuQmCC" width="32" height="32" x="176" y="656" style="image-rendering: pixelated; filter: url(&quot;#outline-filter-2&quot;);" transform="matrix(2.909091, 0, 0, 1, 800.00531, -441.052002)">
+          <title>buckle</title>
+        </image>
+      </g>
     </g>
     <rect width="128" height="128" style="fill: none;" x="384" y="832">
       <title>default_breath</title>
@@ -1208,22 +1216,22 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAhUlEQVQYGWNkgAKb2Cn/QUxWdk6wyP45yYwgBhOIAEnCJH7//A4SYnBMmQvWAFYAkgRJHFmcwwjCMEUghYwwo0ESIAEYgIkzwYw2D20GGwlSAGOD5FhAAuiKWDkE4WIsIPtACmAYxgdpBLHB9oLs+/3jPcOJFbwMDO/3M1hkmjCATAG5CwC8cjXvkkqYxAAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="256" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-25&quot;); visibility: hidden;">
         <title>_top</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAL0lEQVQYGWNgAIJ79+79//fvHwoGiYHkGEASYAYWAp8cFuW0E4K7FosVcDl83gQA3ME9UaX4fBkAAAAASUVORK5CYII=" width="128" height="128" x="512" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAL0lEQVQYGWNgAIJ79+79//fvHwoGiYHkGEASYAYWAp8cFuW0E4K7FosVcDl83gQA3ME9UaX4fBkAAAAASUVORK5CYII=" width="128" height="128" x="512" style="image-rendering: pixelated; filter: none;">
         <title>_front</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAV0lEQVQYGWNkAIJZs2b9B9EgoKysDGEASWdnZ0ZGkGRaWhrj3r17wYoUFRXhCkAMFmQesqSSkhIjSI4JWQE2NuUKUNxw//59sC0gt9y7dw/saLBD8HkTAKGrFw6pKhiWAAAAAElFTkSuQmCC" width="128" height="128" x="512" y="128" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAV0lEQVQYGWNkAIJZs2b9B9EgoKysDGEASWdnZ0ZGkGRaWhrj3r17wYoUFRXhCkAMFmQesqSSkhIjSI4JWQE2NuUKUNxw//59sC0gt9y7dw/saLBD8HkTAKGrFw6pKhiWAAAAAElFTkSuQmCC" width="128" height="128" x="512" y="128" style="image-rendering: pixelated; filter: none;">
         <title>_left</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAT0lEQVQYGWNkAIK9e/f+B9EgcPfuXQgDSKalpTEy3rt3Dy4Jkrl//z5YAUwhk5KSEiMIg0WBhKKiIowJpplQeFg4lCtgweVImG1gx+HzJgAR3B5EctaKIQAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="128" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAT0lEQVQYGWNkAIK9e/f+B9EgcPfuXQgDSKalpTEy3rt3Dy4Jkrl//z5YAUwhk5KSEiMIg0WBhKKiIowJpplQeFg4lCtgweVImG1gx+HzJgAR3B5EctaKIQAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="128" style="image-rendering: pixelated; filter: none;">
         <title>_right</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXklEQVQYGV1PgQnAIAyzY4dUPKW/eJS/Sf1ks4FANaCxSVqslI0xxhd8o/cuQrO1dvhzTtRPVmutJU4GArlbVeFTOyaEs9ZCgBcCZiYUyPzDSyHY3XOJNzq5ye3Gmj8kmxhzC9l2owAAAABJRU5ErkJggg==" width="128" height="128" x="640" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAXklEQVQYGV1PgQnAIAyzY4dUPKW/eJS/Sf1ks4FANaCxSVqslI0xxhd8o/cuQrO1dvhzTtRPVmutJU4GArlbVeFTOyaEs9ZCgBcCZiYUyPzDSyHY3XOJNzq5ye3Gmj8kmxhzC9l2owAAAABJRU5ErkJggg==" width="128" height="128" x="640" style="image-rendering: pixelated; filter: none;">
         <title>_back</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAc0lEQVQYGWNkAIJZs2b9B9HoIC0tjZERJLlTN4VBkpOBQe/UHHQ1DEwgkbXPGBief2dgSElJwVDAuHfv3v93796FS4AUzZkDMUlZWZmBBSQDYiADZD7YCmRJZLaioiID471797D6AFkhA0jRv3//UDBMIwDY1jORcwOTKAAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="256" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAc0lEQVQYGWNkAIJZs2b9B9HoIC0tjZERJLlTN4VBkpOBQe/UHHQ1DEwgkbXPGBief2dgSElJwVDAuHfv3v93796FS4AUzZkDMUlZWZmBBSQDYiADZD7YCmRJZLaioiID471797D6AFkhA0jRv3//UDBMIwDY1jORcwOTKAAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="256" style="image-rendering: pixelated; filter: none;">
         <title>_top</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQ0lEQVQYGWNkAIJZs2b9B9HoIC0tjZERlyRMMROMgYtmUVZWxiUHFidoAkEFLIqKinitAEveu3fv/79//1AwSAwkCQBLHR7AY6CuGQAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="256" style="image-rendering: pixelated;">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAQ0lEQVQYGWNkAIJZs2b9B9HoIC0tjZERlyRMMROMgYtmUVZWxiUHFidoAkEFLIqKinitAEveu3fv/79//1AwSAwkCQBLHR7AY6CuGQAAAABJRU5ErkJggg==" width="128" height="128" x="640" y="256" style="image-rendering: pixelated; filter: none;">
         <title>_bottom</title>
       </image>
     </g>
@@ -1267,14 +1275,6 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAiklEQVQYGVWQXQ6DMAyDQxSExql2mR1rR5z2sh86KgEfzCj1Q9zEtVO1u97uy1y+Bpb62ZnSxWj9cLGg4bBjYy6f/Tb03/txiP+aU9CcKEGr1KO5Ghh3NjDzHMkg70drErJb65oLJACJnJtHZpH4WsvxD3LokRIxxDw9YYsYTgdOUMrLnAI0FGu+AvsWUiYtBYXXAAAAAElFTkSuQmCC" width="128" height="192" x="384" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-14&quot;);">
         <title>_back</title>
       </image>
-      <g transform="matrix(0.34375, 0, 0, 1, -275.001831, 449.052002)" style="">
-        <title>_belt</title>
-        <path d="M 800 218.948 L 1312 218.948 L 1312 242.662 L 800 242.662 L 800 218.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(102, 78, 67);"/>
-        <path d="M 1405.1 218.948 L 2289.46 218.948 L 2289.46 242.948 L 1405.1 242.948 L 1405.1 218.948 Z" style="stroke: rgb(0, 0, 0); stroke-width: 4px; fill: rgb(102, 78, 67);"/>
-        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAqADAAQAAAABAAAAAgAAAADtGLyqAAAAG0lEQVQIHWP4///T/3fXwv8z/WNoYXh64DYDAHOGCw5Gmk+GAAAAAElFTkSuQmCC" width="32" height="32" x="176" y="656" style="image-rendering: pixelated; filter: url(&quot;#outline-filter-2&quot;);" transform="matrix(2.909091, 0, 0, 1, 800.00531, -441.052002)">
-          <title>buckle</title>
-        </image>
-      </g>
     </g>
   </g>
 </svg>
