@@ -352,6 +352,7 @@ const buttonsCss = css`
     font-size: small;
     color: rgba(255, 150, 150, 1);
     background-color: rgba(0, 0, 0, 1);
+    user-select: none;
 
     transition: opacity 300ms;
     opacity: 0;
