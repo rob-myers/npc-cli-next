@@ -51,6 +51,12 @@ export default function Manage(props) {
       </div>
       
       <div>
+        <h2>Open Tabs</h2>
+        
+        {/* 🚧 list of permitted defs */}
+      </div>
+
+      <div>
         <h2>Demo links</h2>
 
         <ul className="demo-links">
@@ -84,7 +90,7 @@ const manageCss = css`
 
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
 
   color: white;
   background-color: #111;
@@ -128,8 +134,12 @@ const manageCss = css`
 
     .${cssName.closeTab} {
       padding: 0 4px;
-      font-family: monospace;
       cursor: pointer;
+      font-family: monospace;
+      font-size: medium;
+      color: #f77;
+      user-select: none;
+
       &:hover {
         background-color: #555;
       }
