@@ -1120,40 +1120,12 @@ export class NpcApi {
       return; // too short
     }
 
-    if (this.w.npc.onStuckCustom === null) {
+    if (this.w.npc.onStuckNpc === null) {
       // 🔔 fixes "cannot arrive close enough" due to nearby npc
       this.stopMoving({ type: 'stop-reason', key: 'stuck' });
     } else {
-      this.w.npc.onStuckCustom?.(this.base, agent);
+      this.w.npc.onStuckNpc?.(this.base, agent);
     }
-  }
-
-  /** @param {NPC.CrowdAgent} agent */
-  onTickIdleTurn(agent) {// 🚧 remove
-    
-    // if (agent.raw.nneis === 0) {
-    //   return;
-    // }
-    // // if (agent.raw.desiredSpeed < 0.5) {
-    // //   return;
-    // // }
-
-    // const nei = agent.raw.get_neis(0); // 0th closest
-    // const other = this.w.a[nei.idx];
-
-    // if (other.s.target === null) {
-    //   return;
-    // }
-
-    // // 🚧 optional behaviour e.g. randomly look at nearest neighbour
-    // // if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
-    // //   this.s.lookAngleDst = null;
-    // // } else {// turn towards "closest neighbour" if they have a target
-    // //   this.s.lookAngleDst = this.getEulerAngle(
-    // //     geom.clockwiseFromNorth((other.position.z - this.base.position.z), (other.position.x - this.base.position.x))
-    // //   );
-    // // }
-    
   }
 
   /** @param {NPC.CrowdAgent} agent */

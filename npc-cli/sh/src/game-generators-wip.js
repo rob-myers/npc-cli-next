@@ -11,7 +11,7 @@ export const changeAngleOnKeyDown = ({ w }) => {
     //   });
     // }
     
-    const angle = w.lib.radRange(w.view.controls.getAzimuthalAngle());
+    const angle = w.lib.geom.radRange(w.view.controls.getAzimuthalAngle());
     const delta = Math.PI * 0.5;
     const ratio = angle / delta; // [0..4)
     switch (key) {
@@ -254,13 +254,48 @@ w.cm.toggleDocked(true);
 // /**
 //  * @param {import('./').RunArg} ctxt
 //  */
-// export const setupOnSlowNpc = ({ w, args }) => {
+// export const setupOnStuckNpc = ({ w, args }) => {
 //   w.npc.onStuckCustom = (npc, agent) => {
 //     // console.warn(`${npc.key}: going slow`);
 //     npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
 //   };
 // }
 
+/**
+ * @param {import('./').RunArg} ctxt
+ */
+export const setupOnTickIdleTurn = ({ w, args }) => {
+  w.npc.onTickIdleTurn = (npc, agent) => {
+
+    if (agent.raw.nneis === 0) {
+      return;
+    }
+    // if (agent.raw.desiredSpeed < 0.5) {
+    //   return;
+    // }
+
+    // 0th is closest
+    const nei = agent.raw.get_neis(0);
+    const other = w.a[nei.idx];
+
+    if (other.s.target === null) {
+      return;
+    }
+
+    if (nei.dist <= (other.s.run === true ? 0.8 : 0.6)) {
+      // turn towards "closest neighbour" if they have a target
+      npc.s.lookAngleDst = npc.api.getEulerAngle(
+        w.lib.geom.clockwiseFromNorth((
+          other.position.z - npc.position.z),
+          (other.position.x - npc.position.x)
+        )
+      );
+    } else {
+      npc.s.lookAngleDst = null;
+    }
+
+  };
+}
 
 /**
  * ```sh

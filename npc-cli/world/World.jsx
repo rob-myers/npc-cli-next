@@ -472,15 +472,15 @@ export default function World(props) {
 /**
  * @typedef StateUtil Utility functions and classes
  * @property {typeof deltaAngle} deltaAngle
+ * @property {typeof geom} geom
  * @property {typeof Vect['isVectJson']} isVectJson
- * @property {typeof geom['radRange']} radRange
  * @property {typeof removeFirst} removeFirst
  */
 
 const lib = {
   deltaAngle,
+  geom,
   isVectJson: Vect.isVectJson,
   removeFirst,
-  radRange: geom.radRange,
   ...helper,
 };

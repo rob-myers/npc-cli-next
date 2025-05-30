@@ -213,10 +213,10 @@
   - ✅ rename astronaut-0 -> robot-1
   - ✅ soldier-0 should be lighter
 
-- 🚧 on collide look towards neighbour should be optional callback
+- ✅ on collide look towards neighbour should be optional callback
   - ✅ optional callback `w.npc.onTickIdleTurn`
-  - 🚧 provide example
-  - could also improve it
+  - ✅ provide example
+    - `setupOnTickIdleTurn`
 
 - ❌ can only close tab after hover for a while
   - to avoid accidental closure
