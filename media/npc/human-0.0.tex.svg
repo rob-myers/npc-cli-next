@@ -325,6 +325,20 @@
     <filter id="saturate-filter-1" bx:preset="saturate 1 1.66" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feColorMatrix type="saturate" values="1.66"/>
     </filter>
+    <filter id="brightness-filter-4" bx:preset="brightness 1 1.67" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.67"/>
+        <feFuncG type="linear" slope="1.67"/>
+        <feFuncB type="linear" slope="1.67"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="brightness-filter-5" bx:preset="brightness 1 1.51" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.51"/>
+        <feFuncG type="linear" slope="1.51"/>
+        <feFuncB type="linear" slope="1.51"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -590,14 +604,14 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAfUlEQVQYGWPUMtb4z4AHMOGRA0sxrl29DMOEd+8/w/UxepnqwhW8/PgVLCHOzw1XwGKuIs3w7/9/hg/ffsAFVSWFGAS4OBiYGBkZWMREBBj+/fvHICrMzyAJZIMcxc3JDlbMxMTEwPIXKAkDPFAJmJ0gOSYxGSmYPAYNkgMApMgeRhaCJzMAAAAASUVORK5CYII=" width="128" height="128" x="640" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-0&quot;) url(&quot;#saturate-filter-1&quot;);">
         <title>_back</title>
       </image>
-      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAF0lEQVQYGWPUMtb4z4AHMOGRA0sNDwUAlHMBlGzAm4YAAAAASUVORK5CYII=" width="128" height="128" x="512" y="256" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-0&quot;);">
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAF0lEQVQYGWPUMtb4z4AHMOGRA0sNDwUAlHMBlGzAm4YAAAAASUVORK5CYII=" width="128" height="128" x="512" y="256" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-0&quot;) url(&quot;#brightness-filter-5&quot;);">
         <title>_top</title>
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAU0lEQVQYGWMs9Hf4z4AHsIDk3rz9gFWJiLAAAwsrCzNY8t8/VIOYmBgZQHJMWLUiCeJVwMzExMDEwcaKpB6VCbIC7EiQMMhObACsQFFWApscWAwAEQ0IsEpcjb4AAAAASUVORK5CYII=" width="128" height="128" x="640" y="256" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-0&quot;);">
         <title>_bottom</title>
       </image>
     </g>
-    <g transform="matrix(1, 0, 0, 1, -800, 992)">
+    <g transform="matrix(1, 0, 0, 1, -800, 992)" style="filter: url(&quot;#brightness-filter-4&quot;);">
       <title>soldier-0_body</title>
       <rect width="128" height="256" style="stroke: rgb(0, 0, 0); transform-origin: 992px 672px; fill-opacity: 0.3; fill: none;" y="544" x="928">
         <title>front</title>

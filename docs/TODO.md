@@ -211,6 +211,8 @@
 
 - rename astronaut-0 -> robot-1
 
+- soldier-0 should be lighter
+
 - 🚧 look towards neighbour should be optional
   - could also improve it
 
