@@ -196,7 +196,6 @@
     - but how to fix types? need to separate to avoid collisions
   - ℹ️ seems too complicated
 
-
 - ✅ avoid Tabs reload on edit service/const
   - ✅ fix Viewer, ViewerControls
 
@@ -236,6 +235,9 @@
   - 🚧 can open new tab
     - provide UI for useSite.api.computeTabDef
   - tab grey if disabled (e.g. never mounted)
+
+- change robot-0 body, body-overlay
+- change robot-1
 
 - rehype: example of dynamic ansi highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
