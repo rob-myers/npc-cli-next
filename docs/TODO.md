@@ -204,7 +204,9 @@
   - https://namemc.com/skin/5556dc93d001adea
 
 - 🚧 replace police-0 -> robot-0
-  - 
+  - ✅ replace head, head-overlay
+  - replace body, body-overlay
+  - rename police-0 -> robot-0
 
 - 🚧 look towards neighbour should be optional
   - could also improve it
