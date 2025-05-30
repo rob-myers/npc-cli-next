@@ -66,7 +66,6 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   minHeight={400}
 />
 
-{/* 🚧 */}
 Actually we need to be more precise:
 the underlying problem only makes sense when human behaviour can be expressed.
 Racing games only permit physical collisions which ain't enough wiggle room.
@@ -79,14 +78,14 @@ Under this assumption, no known game solves the underlying problem
 
 > Because it's too damn hard!
 
-Freely combining behaviours naturally leads to state-space explosions.<SideNote>Even in very restricted settings e.g. [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).</SideNote>
+Freely combining behaviours inevitably leads to state-space explosions.<SideNote>Even in very restricted settings e.g. [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).</SideNote>
 The number of possible states becomes too large to effectively explore.
 How can composite behaviour be resolved if the developer has never encountered it?
 Even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
-But there's a way to solve both problems i.e. always react to the Player.
+But there's a way to solve both problems i.e. only react to the Player.
 We could fabricate everything around them, as and when we need to.
 
-This leads us to intermediate objectives.
+This leads us to intermediate objectives, stepping stones towards the underlying problem.
 
 <Card id="underlying-problem"> 
 **Our Objectives**
@@ -96,7 +95,7 @@ This leads us to intermediate objectives.
   A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
 </Card>
 
-They are a step towards the Underlying Problem.
-If one human can appear as many,
-we can try to learn how to simulate his/her behaviour.
-Let's begin by seeing the system in action.
+Reacting to the Player requires real-time control systems.
+Solving the underlying problem would also require an "automated director" of these control systems.
+As an intermediate step we permit a human Game Master to control these systems.
+Then the underlying problem becomes (2) above: can a single human act indistinguishably from many?
