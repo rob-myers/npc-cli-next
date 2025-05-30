@@ -12,6 +12,7 @@ spawn npcKey:rada angle:Math.PI skin:'{
   "head-{front,back,left,right,top,bottom}": { prefix: "robot-0" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-0" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-0" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "robot-0" },
   //"body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
 }' at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }'
 
