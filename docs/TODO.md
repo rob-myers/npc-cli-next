@@ -206,9 +206,9 @@
 - 🚧 replace police-0 -> robot-0
   - ✅ replace head, head-overlay
   - ✅ replace body
-  - 🚧 replace body-overlay
+  - ✅ replace body-overlay
     - put in second sheet (overwrite bare-0)
-  - rename police-0 -> robot-0
+  - 🚧 rename police-0 -> robot-0
 
 - rename astronaut-0 -> robot-1
 
