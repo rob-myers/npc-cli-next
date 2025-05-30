@@ -299,25 +299,27 @@ Then we know:
 We'll try to re-map publicly available Minecraft Skins.
 
 - https://namemc.com/minecraft-skins/tag/soldier
-  - 🚧 https://namemc.com/skin/45461862ef51524e
-  - 🚧 https://namemc.com/skin/e5aebae082bea6ec-
-  - 🚧 https://namemc.com/skin/5556dc93d001adea
+  - ✅ https://namemc.com/skin/45461862ef51524e (body)
+  - ❌ https://namemc.com/skin/e5aebae082bea6ec
+  - ✅ https://namemc.com/skin/5556dc93d001adea (head)
 - https://namemc.com/minecraft-skins/tag/scientist
-  - 🚧 https://namemc.com/skin/7161dce64d6b12be
-  - 🚧 https://namemc.com/skin/72474583457b91c0
+  - ✅ https://namemc.com/skin/7161dce64d6b12be
+  - ❌ https://namemc.com/skin/72474583457b91c0
   - https://namemc.com/skin/3a335a2ec786efdb
 - https://namemc.com/minecraft-skins/tag/medic
-  - 🚧 https://namemc.com/skin/194c3366860674c0
+  - ✅ https://namemc.com/skin/194c3366860674c0
 - https://namemc.com/minecraft-skins/tag/suit
-  - 🚧 https://namemc.com/skin/7271372bc0b9bc89
+  - ✅ https://namemc.com/skin/7271372bc0b9bc89
 - https://namemc.com/minecraft-skins/tag/police
-  - 🚧 https://namemc.com/skin/c06caf409cd8427e
+  - ❌ https://namemc.com/skin/c06caf409cd8427e (does not fit theme)
 - https://namemc.com/minecraft-skins/tag/astronaut
-  - 🚧 https://namemc.com/skin/0668665d67015d4c
+  - ❌ https://namemc.com/skin/0668665d67015d4c
 - https://namemc.com/minecraft-skins/tag/beard
-  - 🚧 https://namemc.com/skin/12708b02a8e4cc10
+  - ✅ https://namemc.com/skin/12708b02a8e4cc10 (head)
 - https://namemc.com/minecraft-skins/tag/breaking-bad
-  - 🚧 https://namemc.com/skin/354790babeda2bc0
+  - ❌ https://namemc.com/skin/354790babeda2bc0
+- https://namemc.com/minecraft-skins/tag/robot
+  - 🚧 https://namemc.com/skin/4718725ab9582b06
 
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/business

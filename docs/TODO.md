@@ -202,7 +202,9 @@
 
 - ✅ replace soldier-0 head, head-overlay
   - https://namemc.com/skin/5556dc93d001adea
-- replace police-0 head, head-overlay
+
+- 🚧 replace police-0 -> robot-0
+  - 
 
 - 🚧 look towards neighbour should be optional
   - could also improve it
