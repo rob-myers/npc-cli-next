@@ -210,11 +210,12 @@
     - put in second sheet (overwrite bare-0)
   - ✅ rename police-0 -> robot-0
 
-- rename astronaut-0 -> robot-1
+  - ✅ rename astronaut-0 -> robot-1
+  - ✅ soldier-0 should be lighter
 
-- soldier-0 should be lighter
-
-- 🚧 look towards neighbour should be optional
+- 🚧 on collide look towards neighbour should be optional callback
+  - ✅ optional callback `w.npc.onTickIdleTurn`
+  - 🚧 provide example
   - could also improve it
 
 - ❌ can only close tab after hover for a while

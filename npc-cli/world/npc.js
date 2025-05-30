@@ -1087,7 +1087,7 @@ export class NpcApi {
     // this.speed = tmpVectThree1.copy(agent.velocity()).length();
 
     if (this.s.target === null) {
-      this.onTickTurnNoTarget(agent);
+      this.w.npc.onTickIdleTurn?.(this.base, agent);
       return;
     }
 
@@ -1104,11 +1104,10 @@ export class NpcApi {
   }
 
   /**
-   * 🚧 hard-coding: small distance, long enough time
    * @param {number} deltaMs 
    * @param {NPC.CrowdAgent} agent 
    */
-  onTickDetectStuck(deltaMs, agent) {
+  onTickDetectStuck(deltaMs, agent) {// 🚧 hard-coding: small distance, long enough time
     const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
@@ -1130,29 +1129,30 @@ export class NpcApi {
   }
 
   /** @param {NPC.CrowdAgent} agent */
-  onTickTurnNoTarget(agent) {
-    if (agent.raw.nneis === 0) {
-      return;
-    }
-    if (agent.raw.desiredSpeed < 0.5) {
-      return;
-    }
-
-    const nei = agent.raw.get_neis(0); // 0th closest
-    const other = this.w.a[nei.idx];
-
-    if (other.s.target === null) {
-      return;
-    }
-
-    // /🚧 optional behaviour e.g. randomly look at nearest neighbour
-    // if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
-    //   this.s.lookAngleDst = null;
-    // } else {// turn towards "closest neighbour" if they have a target
-    //   this.s.lookAngleDst = this.getEulerAngle(
-    //     geom.clockwiseFromNorth((other.position.z - this.base.position.z), (other.position.x - this.base.position.x))
-    //   );
+  onTickIdleTurn(agent) {// 🚧 remove
+    
+    // if (agent.raw.nneis === 0) {
+    //   return;
     // }
+    // // if (agent.raw.desiredSpeed < 0.5) {
+    // //   return;
+    // // }
+
+    // const nei = agent.raw.get_neis(0); // 0th closest
+    // const other = this.w.a[nei.idx];
+
+    // if (other.s.target === null) {
+    //   return;
+    // }
+
+    // // 🚧 optional behaviour e.g. randomly look at nearest neighbour
+    // // if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
+    // //   this.s.lookAngleDst = null;
+    // // } else {// turn towards "closest neighbour" if they have a target
+    // //   this.s.lookAngleDst = this.getEulerAngle(
+    // //     geom.clockwiseFromNorth((other.position.z - this.base.position.z), (other.position.x - this.base.position.x))
+    // //   );
+    // // }
     
   }
 

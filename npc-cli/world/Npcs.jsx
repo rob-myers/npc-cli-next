@@ -31,7 +31,6 @@ export default function Npcs(props) {
     idToKey: new Map(),
     sheetAux: /** @type {*} */ ({}),
     npc: {},
-    onStuckCustom: null,
     physicsPositions: [],
     showLastNavPath: false, // 🔔 for debug
 
@@ -139,6 +138,7 @@ export default function Npcs(props) {
       const { success, point } = w.crowd.navMeshQuery.findClosestPoint(v3, { halfExtents: { x: smallHalfExtent, y: smallHalfExtent, z: smallHalfExtent } });
       return success === true && Math.abs(point.x - v3.x) < smallHalfExtent && Math.abs(point.z - v3.z) < smallHalfExtent;
     },
+    onStuckCustom: null,
     onTick(deltaMs) {
       Object.values(state.npc).forEach(npc => npc.api.onTick(deltaMs, state.physicsPositions));
       // 🔔 Float32Array caused issues i.e. decode failed
@@ -146,6 +146,7 @@ export default function Npcs(props) {
       w.physics.worker.postMessage({ type: 'send-npc-positions', positions}, [positions.buffer]);
       state.physicsPositions.length = 0;
     },
+    onTickIdleTurn: null,
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
       const animKeys = npcs.map(x => x.s.act);
@@ -477,7 +478,6 @@ export default function Npcs(props) {
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
  * //@property {{ [npcKey: string]: Npc }} npc
  * @property {{ [npcKey: string]: NPC.NPC }} npc
- * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * Custom callback to handle npc slow down.
  * We don't use an event because it can happen too often.
  * @property {number[]} physicsPositions
@@ -513,7 +513,10 @@ export default function Npcs(props) {
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore
+ * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckCustom
  * @property {(deltaMs: number) => void} onTick
+ * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onTickIdleTurn
+ * Handle turning of idle npcs e.g. turn towards nearby npcs.
  * @property {(npcKey: string) => void} remove
  * @property {(npc: NPC.NPC) => void} removeAgent
  * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
