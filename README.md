@@ -149,6 +149,9 @@ click 5 &>> points
 while true; do
   tour npcKey:kate to:"$( points )"
 done &
+
+call Math.random
+expr 'Math.random() * 2 * Math.PI
 ```
 
 ## Working with a branch of `recast-navigation-js`
