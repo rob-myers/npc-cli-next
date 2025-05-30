@@ -182,6 +182,87 @@ export async function* move({ api, args, w }, opts = api.parseArgsAsJs(args)) {
 }
 
 /**
+ * - Make a single hard-coded polygon non-navigable,
+ *   using `w.lib.queryFilterType.respectUnwalkable`
+ * - Indicate it via debug polygon in `<Debug />`.
+ * 
+ * ```sh
+ * selectPolysDemo
+ * ```
+ * @param {import('./').RunArg} ctxt
+ */
+export async function* selectPolysDemo({ w }) {
+  const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
+    { x: 1.5 * 1.5, y: 0, z: 2 * 1.5 },
+    { x: 0.1, y: 0.1, z: 0.1 },
+    { maxPolys: 1 },
+  );
+  console.log({ polyRefs });
+
+  const { navPolyFlag } = w.lib;
+  polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
+  w.debug.selectNavPolys(...polyRefs); // display via debug
+}
+
+/**
+* 🔔 "export const" uses `call` rather than `map`
+* @param {import('./').RunArg} ctxt
+*/
+export const setupContextMenu = ({ w }) => {
+
+w.cm.match.door = ({ meta }) => {
+  const showLinks = /** @type {NPC.ContextMenuLink[]} */ ([]);
+
+  showLinks.push({ key: "look", label: "look" });
+
+  if (typeof meta.switch === "number") {
+    showLinks.push(
+      { key: "open", label: "open" },
+      { key: "close", label: "close" },
+      { key: "lock", label: "lock" },
+      { key: "unlock", label: "unlock" },
+      // 🚧 ring bell
+    );
+  }
+
+  if (meta.door === true) {
+    showLinks.push(
+      { key: "open", label: "open" },
+      { key: "close", label: "close" },
+      { key: "lock", label: "lock" },
+      { key: "unlock", label: "unlock" },
+      // 🚧 knock
+    );
+  }
+
+  if (typeof meta.npcKey === "string") {
+    showLinks.push({
+      key: "follow",
+      label: "follow",
+      selected() {
+        return w.e.isFollowingNpc(meta.npcKey);
+      },
+    });
+  }
+
+  return { showLinks };
+};
+
+w.cm.toggleDocked(true);
+}
+
+// /**
+//  * @param {import('./').RunArg} ctxt
+//  */
+// export const setupOnSlowNpc = ({ w, args }) => {
+//   w.npc.onStuckCustom = (npc, agent) => {
+//     // console.warn(`${npc.key}: going slow`);
+//     npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
+//   };
+// }
+
+
+/**
  * ```sh
  * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
  * spawn npcKey:rob at:$( click 1 ) grant:.
@@ -211,85 +292,3 @@ export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'arra
     await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
-
-/**
- * Make a single hard-coded polygon non-navigable,
- * and also indicate it via debug polygon.
- * ```sh
- * selectPolysDemo [{queryFilterType}=0]
- * ```
- * @param {import('./').RunArg} ctxt
- */
-export async function* selectPolysDemo({ w, args }) {
-    const queryFilterType = Number(args[0]) || 0;
-    const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
-      { x: 3.5 * 1.5, y: 0, z: 7 * 1.5 },
-      { x: 0.01, y: 0.1, z: 0.01 },
-      { maxPolys: 1 },
-    );
-    console.log({ polyRefs });
-
-    const filter = w.crowd.getFilter(queryFilterType);
-    const { navPolyFlag } = w.lib;
-    // by default all polys should not match this bitmask:
-    filter.excludeFlags = navPolyFlag.unWalkable;
-    polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
-    w.debug.selectNavPolys(...polyRefs); // display via debug
-}
-
-/**
- * 🔔 "export const" uses `call` rather than `map`
- * @param {import('./').RunArg} ctxt
- */
-export const setupContextMenu = ({ w }) => {
-
-  w.cm.match.door = ({ meta }) => {
-    const showLinks = /** @type {NPC.ContextMenuLink[]} */ ([]);
-
-    showLinks.push({ key: "look", label: "look" });
-
-    if (typeof meta.switch === "number") {
-      showLinks.push(
-        { key: "open", label: "open" },
-        { key: "close", label: "close" },
-        { key: "lock", label: "lock" },
-        { key: "unlock", label: "unlock" },
-        // 🚧 ring bell
-      );
-    }
-
-    if (meta.door === true) {
-      showLinks.push(
-        { key: "open", label: "open" },
-        { key: "close", label: "close" },
-        { key: "lock", label: "lock" },
-        { key: "unlock", label: "unlock" },
-        // 🚧 knock
-      );
-    }
-
-    if (typeof meta.npcKey === "string") {
-      showLinks.push({
-        key: "follow",
-        label: "follow",
-        selected() {
-          return w.e.isFollowingNpc(meta.npcKey);
-        },
-      });
-    }
-
-    return { showLinks };
-  };
-
-  w.cm.toggleDocked(true);
-}
-
-// /**
-//  * @param {import('./').RunArg} ctxt
-//  */
-// export const setupOnSlowNpc = ({ w, args }) => {
-//   w.npc.onStuckCustom = (npc, agent) => {
-//     // console.warn(`${npc.key}: going slow`);
-//     npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
-//   };
-// }

@@ -132,6 +132,10 @@ export default function WorldWorkers() {
         maxAgentRadius: helper.defaults.radius,
       });
 
+      // The "respectUnwalkable" query filter respects unwalkable polygons marked via unWalkable bit.
+      const filter = w.crowd.getFilter(helper.queryFilterType.respectUnwalkable);
+      filter.excludeFlags = helper.navPolyFlag.unWalkable;
+
       // 🚧 try modify dtObstacleAvoidanceParams
       // const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = w.crowd.raw.getObstacleAvoidanceParams(0);
       // info('dtObstacleAvoidanceParams', { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi });

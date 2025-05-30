@@ -132,17 +132,17 @@ export default function Debug(props) {
 
   w.debug = state;
 
-  React.useMemo(() => {
+  React.useMemo(() => {// navMesh
     state.navMesh = new NavMeshHelper(w.nav.navMesh, {
       navMeshMaterial: navPolyMaterial,
     });
 
     /** Use offMeshLookup to exclude non-existent ones through isolated hull doors  */
     const offMeshParams = Object.values(w.nav.offMeshLookup).map(x => ({
-        startPosition: x.src,
-        endPosition: x.dst,
-        radius: 0.04,
-        bidirectional: true,
+      startPosition: x.src,
+      endPosition: x.dst,
+      radius: 0.04,
+      bidirectional: true,
     }));
     // const offMeshParams = computeOffMeshConnectionsParams(w.gms);
 
@@ -165,7 +165,7 @@ export default function Debug(props) {
     }
   }, [props.showStaticColliders, w.physics.rebuilds]);
 
-  React.useEffect(() => {
+  React.useEffect(() => {// original navMesh
     w.gms.forEach(gm => state.ensureNavPoly(gm.key));
     w.update();
   }, [props.showOrigNavPoly]);

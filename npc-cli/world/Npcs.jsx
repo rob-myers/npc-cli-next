@@ -39,7 +39,7 @@ export default function Npcs(props) {
         npc.agent = npc.w.crowd.addAgent(npc.position, {
           ...crowdAgentParams,
           maxSpeed: npc.s.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
-          queryFilterType: npc.w.lib.queryFilterType.excludeDoors,
+          queryFilterType: npc.w.lib.queryFilterType.respectUnwalkable,
         });
         npc.agentAnim = npc.w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
 

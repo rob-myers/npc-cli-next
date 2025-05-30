@@ -75,8 +75,7 @@ export const helper = {
   /** Recast-Detour */
   queryFilterType: /** @type {const} */ ({
     default: 0,
-    /** Constructed lazily */
-    excludeDoors: 1,
+    respectUnwalkable: 1,
   }),
 
   /** @type {Record<Key.GeomorphNumber, Key.Geomorph>} */

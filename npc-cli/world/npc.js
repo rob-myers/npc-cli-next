@@ -860,7 +860,7 @@ export class NpcApi {
       slowDownRadius: helper.defaults.radius,
       collisionQueryRange: movingCollisionQueryRange,
       separationWeight: movingSeparationWeight ,
-      queryFilterType: this.w.lib.queryFilterType.excludeDoors,
+      queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
     });
 
     this.base.lastStart.copy(this.base.position);
