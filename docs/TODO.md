@@ -231,9 +231,9 @@
     - remove `/internal/...` -> `#/internal/...` transformer in markdown
   - ✅ manage tab has ui
 
-- 🚧 manage tab
-  - can close tab
-  - can open new tab
+- 🚧 manage tabs
+  - ✅ can close tab
+  - 🚧 can open new tab
   - tab grey if disabled (e.g. never mounted)
 
 - wasd camera controls does not work with follow

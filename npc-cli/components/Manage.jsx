@@ -10,7 +10,16 @@ export default function Manage(props) {
   const layout = useSite(({ tabset: { synced } }) => synced);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    foo: "bar",
+    onClickManageTabs({ target: el }) {
+      const tabId = el.closest('li')?.dataset.tabId;
+      if (typeof tabId !== 'string') {
+        return;
+      }
+
+      if (el.classList.contains(cssName.closeTab)) {
+        useSite.api.closeTab(tabId);
+      }
+    },
   }));
 
   const tabDefs = React.useMemo(() => {
@@ -20,16 +29,22 @@ export default function Manage(props) {
 
   return (
     <div css={manageCss}>
-      <div>
-        <h2>Manage Tabs</h2>
+      <div onClick={state.onClickManageTabs}>
+        <h2>
+          Manage Tabs
+        </h2>
 
         <ul className="tab-defs">
           {tabDefs.map(def =>
-            <li key={def.filepath}>
-              {/* {JSON.stringify(def)} */}
-              <span>{def.filepath}</span>
-              <span className="world-key">{def.type === 'terminal' && `(${def.env?.WORLD_KEY})`}</span>
-              <span className="map-key">{def.type === 'component' && def.class === 'World' && `(${def.props.mapKey})`}</span>
+            <li key={def.filepath} data-tab-id={def.filepath}>
+              <span className="tab-def">
+                <span>{def.filepath}</span>
+                {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
+                {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
+              </span>
+              <span className={cssName.closeTab}>
+                x
+              </span>
             </li>
           )}
         </ul>
@@ -57,6 +72,10 @@ export default function Manage(props) {
     </div>
   );
 }
+
+const cssName = {
+  closeTab: 'close-tab',
+};
 
 const manageCss = css`
   height: 100%;
@@ -92,10 +111,31 @@ const manageCss = css`
     padding: 4px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     font-size: small;
+
   }
-  li > span.world-key, li > span.map-key {
-    color: #aa8;
+
+  ul.tab-defs li {
+    justify-content: space-between;
+
+    .tab-def {
+      display: flex;
+      gap: 4px;
+    }
+
+    .world-key, .map-key {
+      color: #aa8;
+    }
+
+    .${cssName.closeTab} {
+      padding: 0 4px;
+      font-family: monospace;
+      cursor: pointer;
+      &:hover {
+        background-color: #555;
+      }
+    }
   }
+
 
   .demo-links {
     display: flex;
@@ -116,5 +156,5 @@ const manageCss = css`
 
 /**
  * @typedef State
- * @property {'bar'} foo
+ * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickManageTabs
  */

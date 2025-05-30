@@ -42,7 +42,7 @@ export const helper = {
         {
           type: "component",
           class: "Debug",
-          filepath: "debug-1",
+          filepath: "debug",
           props: {},
         },
       ],
