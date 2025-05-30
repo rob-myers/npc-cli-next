@@ -33,6 +33,8 @@ namespace Key {
     | 'layout-preset-0'
   );
 
+  type Map = import('../world/World.jsx').MapKey;
+
   /**
    * Corresponds to Blender model and its exported GLB/GLTF.
    */

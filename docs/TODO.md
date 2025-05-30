@@ -234,7 +234,12 @@
 - 🚧 manage tabs
   - ✅ can close tab
   - 🚧 can open new tab
+    - provide UI for useSite.api.computeTabDef
   - tab grey if disabled (e.g. never mounted)
+
+- rehype: example of dynamic ansi highlighting 
+  - https://rehype-pretty.pages.dev/#ansi-highlighting
+  - would like to highlight shell functions
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller

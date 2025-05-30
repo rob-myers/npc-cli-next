@@ -11,11 +11,10 @@ import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from ".
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 
-import { parseJsArg, testNever, tryLocalStorageGet } from "@/npc-cli/service/generic";
+import { parseJsArg, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { helper } from "@/npc-cli/service/helper";
-import { isComponentClassKey, toComponentClassPrefix } from "@/npc-cli/tabs/tab-util";
-import type { ComponentClassKey, TabDef } from "@/npc-cli/tabs/tab-factory";
+import { computeTabDef, isComponentClassKey } from "@/npc-cli/tabs/tab-util";
 
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
@@ -38,49 +37,6 @@ export default function Viewer() {
     rootEl: null as any,
     tabs: {} as TabsState,
 
-    computeTabDef(classKey, opts) {
-      let tabDef: TabDef;
-
-      switch (classKey) {
-        case 'Debug':
-        case 'Manage':
-        case 'HelloWorld': {
-          const filepath = `${toComponentClassPrefix[classKey]}-${opts.suffix ?? '0'}`;
-          tabDef = {
-            type: 'component',
-            class: classKey,
-            filepath,
-            props: {},
-          };
-          break;
-        }
-        case 'World': {
-          const worldKey = `${toComponentClassPrefix[classKey]}-${opts.suffix ?? '0'}`;
-          tabDef = {
-            type: 'component',
-            class: classKey,
-            filepath: worldKey,
-            props: {
-              worldKey,
-              mapKey: opts.mapKey ?? "demo-map-1"
-            },
-          };
-          break;
-        }
-        case 'Tty':
-          tabDef = {
-            type: 'terminal',
-            filepath: `tty-${opts.suffix}`,
-            profileKey: helper.isProfileKey(opts.profileKey) ? opts.profileKey : 'profileAwaitWorldSh',
-            env: opts.env ?? {},
-          };
-          break;
-        default:
-          throw testNever(classKey);
-      }
-
-      return tabDef;
-    },
     onChangeIntersect: debounce((intersects: boolean) => {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
@@ -122,7 +78,7 @@ export default function Viewer() {
             throw Error(`${'onInternalApi'}: open-tab: unknown classKey "${classKey}"`);
           }
 
-          const tabDef = state.computeTabDef(classKey, opts);
+          const tabDef = computeTabDef(opts as any);
           useSite.api.openTab(tabDef);
           break;
         }
@@ -239,7 +195,6 @@ export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
-  computeTabDef(classKey: ComponentClassKey | 'Tty', opts: Record<string, any>): TabDef;
   /** @param pathname e.g. `/internal/set-tabset/empty` */
   onInternalApi(pathname: `/internal/${string}`): void;
   onChangeIntersect(intersects: boolean): void;

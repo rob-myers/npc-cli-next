@@ -382,9 +382,13 @@ export default function World(props) {
 
 /**
  * @typedef {import("../tabs/tab-factory").BaseTabProps & {
- *   mapKey: keyof import('../../public/geomorphs.json')['map'];
+ *   mapKey: Key.Map;
  *   worldKey: string;   
  * }} Props
+ */
+
+/**
+ * @typedef {keyof import('../../public/geomorphs.json')['map']} MapKey
  */
 
 /**

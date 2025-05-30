@@ -1,8 +1,9 @@
 import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
-import { deepClone, tryLocalStorageGetParsed, warn } from "../service/generic";
+import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
 import type { ComponentClassKey, CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
 import { helper } from "../service/helper";
+import type { ProfileKey } from "../sh/src";
 
 export function appendTabToLayout(layout: TabsetLayout, tabDef: TabDef) {
   const tabId = getTabIdentifier(tabDef);
@@ -67,6 +68,57 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
   }
 
   return layout;
+}
+
+export function computeTabDef(
+  // classKey: ComponentClassKey | 'Tty', opts: Record<string, any>
+  opts: (
+    | { classKey: 'Debug' | 'HelloWorld' | 'Manage'; suffix: string; }
+    | { classKey: 'Tty'; suffix: string; profileKey: ProfileKey; env?: Record<string, any> }
+    | { classKey: 'World'; suffix: string; mapKey?: Key.Map }
+  )
+) {
+  let tabDef: TabDef;
+
+  switch (opts.classKey) {
+    case 'Debug':
+    case 'Manage':
+    case 'HelloWorld': {
+      const filepath = `${toComponentClassPrefix[opts.classKey]}-${opts.suffix ?? '0'}`;
+      tabDef = {
+        type: 'component',
+        class: opts.classKey,
+        filepath,
+        props: {},
+      };
+      break;
+    }
+    case 'World': {
+      const worldKey = `${toComponentClassPrefix[opts.classKey]}-${opts.suffix ?? '0'}`;
+      tabDef = {
+        type: 'component',
+        class: opts.classKey,
+        filepath: worldKey,
+        props: {
+          worldKey,
+          mapKey: opts.mapKey ?? "demo-map-1"
+        },
+      };
+      break;
+    }
+    case 'Tty':
+      tabDef = {
+        type: 'terminal',
+        filepath: `tty-${opts.suffix}`,
+        profileKey: helper.isProfileKey(opts.profileKey) ? opts.profileKey : 'profileAwaitWorldSh',
+        env: opts.env ?? {},
+      };
+      break;
+    default:
+      throw testNever(opts);
+  }
+
+  return tabDef;
 }
 
 /**
