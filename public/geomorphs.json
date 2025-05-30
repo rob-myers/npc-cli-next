@@ -43923,11 +43923,11 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": -1667102225
+    "imagesHash": -1272946737
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-1594920697, 1318014018]},
+    "svgHashes": {"human-0": [8455489, -822419074]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
@@ -44851,384 +44851,384 @@
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-front": {
-          "key": "police-0_head-front",
+        "robot-0_head-front": {
+          "key": "robot-0_head-front",
           "sheetId": 0,
           "x": 0.8125,
           "y": 0.609375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-back": {
-          "key": "police-0_head-back",
+        "robot-0_head-back": {
+          "key": "robot-0_head-back",
           "sheetId": 0,
           "x": 0.875,
           "y": 0.609375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-left": {
-          "key": "police-0_head-left",
+        "robot-0_head-left": {
+          "key": "robot-0_head-left",
           "sheetId": 0,
           "x": 0.8125,
           "y": 0.671875,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-right": {
-          "key": "police-0_head-right",
+        "robot-0_head-right": {
+          "key": "robot-0_head-right",
           "sheetId": 0,
           "x": 0.875,
           "y": 0.671875,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-top": {
-          "key": "police-0_head-top",
+        "robot-0_head-top": {
+          "key": "robot-0_head-top",
           "sheetId": 0,
           "x": 0.8125,
           "y": 0.734375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-bottom": {
-          "key": "police-0_head-bottom",
+        "robot-0_head-bottom": {
+          "key": "robot-0_head-bottom",
           "sheetId": 0,
           "x": 0.875,
           "y": 0.734375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-overlay-front": {
-          "key": "police-0_head-overlay-front",
+        "robot-0_head-overlay-front": {
+          "key": "robot-0_head-overlay-front",
           "sheetId": 0,
           "x": 0.8125,
           "y": 0.8125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-overlay-back": {
-          "key": "police-0_head-overlay-back",
+        "robot-0_head-overlay-back": {
+          "key": "robot-0_head-overlay-back",
           "sheetId": 0,
           "x": 0.875,
           "y": 0.8125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-overlay-left": {
-          "key": "police-0_head-overlay-left",
+        "robot-0_head-overlay-left": {
+          "key": "robot-0_head-overlay-left",
           "sheetId": 0,
           "x": 0.8125,
           "y": 0.875,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-overlay-right": {
-          "key": "police-0_head-overlay-right",
+        "robot-0_head-overlay-right": {
+          "key": "robot-0_head-overlay-right",
           "sheetId": 0,
           "x": 0.875,
           "y": 0.875,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-overlay-top": {
-          "key": "police-0_head-overlay-top",
+        "robot-0_head-overlay-top": {
+          "key": "robot-0_head-overlay-top",
           "sheetId": 0,
           "x": 0.8125,
           "y": 0.9375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_head-overlay-bottom": {
-          "key": "police-0_head-overlay-bottom",
+        "robot-0_head-overlay-bottom": {
+          "key": "robot-0_head-overlay-bottom",
           "sheetId": 0,
           "x": 0.875,
           "y": 0.9375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_body-top": {
-          "key": "police-0_body-top",
+        "robot-0_body-top": {
+          "key": "robot-0_body-top",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.484375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_body-bottom": {
-          "key": "police-0_body-bottom",
+        "robot-0_body-bottom": {
+          "key": "robot-0_body-bottom",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.484375,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_body-left": {
-          "key": "police-0_body-left",
+        "robot-0_body-left": {
+          "key": "robot-0_body-left",
           "sheetId": 0,
           "x": 0,
           "y": 0.546875,
           "width": 0.0625,
           "height": 0.125
         },
-        "police-0_body-front": {
-          "key": "police-0_body-front",
+        "robot-0_body-front": {
+          "key": "robot-0_body-front",
           "sheetId": 0,
           "x": 0.0625,
           "y": 0.546875,
           "width": 0.0625,
           "height": 0.125
         },
-        "police-0_body-right": {
-          "key": "police-0_body-right",
+        "robot-0_body-right": {
+          "key": "robot-0_body-right",
           "sheetId": 0,
           "x": 0.125,
           "y": 0.546875,
           "width": 0.0625,
           "height": 0.125
         },
-        "police-0_body-back": {
-          "key": "police-0_body-back",
+        "robot-0_body-back": {
+          "key": "robot-0_body-back",
           "sheetId": 0,
           "x": 0.1875,
           "y": 0.546875,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_head-front": {
-          "key": "astronaut-0_head-front",
+        "robot-1_head-front": {
+          "key": "robot-1_head-front",
           "sheetId": 1,
           "x": 0.265625,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-back": {
-          "key": "astronaut-0_head-back",
+        "robot-1_head-back": {
+          "key": "robot-1_head-back",
           "sheetId": 1,
           "x": 0.328125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-left": {
-          "key": "astronaut-0_head-left",
+        "robot-1_head-left": {
+          "key": "robot-1_head-left",
           "sheetId": 1,
           "x": 0.265625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-right": {
-          "key": "astronaut-0_head-right",
+        "robot-1_head-right": {
+          "key": "robot-1_head-right",
           "sheetId": 1,
           "x": 0.328125,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-top": {
-          "key": "astronaut-0_head-top",
+        "robot-1_head-top": {
+          "key": "robot-1_head-top",
           "sheetId": 1,
           "x": 0.265625,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-bottom": {
-          "key": "astronaut-0_head-bottom",
+        "robot-1_head-bottom": {
+          "key": "robot-1_head-bottom",
           "sheetId": 1,
           "x": 0.328125,
           "y": 0.125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_body-top": {
-          "key": "astronaut-0_body-top",
+        "robot-1_body-top": {
+          "key": "robot-1_body-top",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_body-bottom": {
-          "key": "astronaut-0_body-bottom",
+        "robot-1_body-bottom": {
+          "key": "robot-1_body-bottom",
           "sheetId": 1,
           "x": 0.125,
           "y": 0,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_body-left": {
-          "key": "astronaut-0_body-left",
+        "robot-1_body-left": {
+          "key": "robot-1_body-left",
           "sheetId": 1,
           "x": 0.00048828,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_body-front": {
-          "key": "astronaut-0_body-front",
+        "robot-1_body-front": {
+          "key": "robot-1_body-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_body-right": {
-          "key": "astronaut-0_body-right",
+        "robot-1_body-right": {
+          "key": "robot-1_body-right",
           "sheetId": 1,
           "x": 0.12548828,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_body-back": {
-          "key": "astronaut-0_body-back",
+        "robot-1_body-back": {
+          "key": "robot-1_body-back",
           "sheetId": 1,
           "x": 0.1875,
           "y": 0.0625,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_head-overlay-front": {
-          "key": "astronaut-0_head-overlay-front",
+        "robot-1_head-overlay-front": {
+          "key": "robot-1_head-overlay-front",
           "sheetId": 1,
           "x": 0.265625,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-overlay-back": {
-          "key": "astronaut-0_head-overlay-back",
+        "robot-1_head-overlay-back": {
+          "key": "robot-1_head-overlay-back",
           "sheetId": 1,
           "x": 0.328125,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-overlay-left": {
-          "key": "astronaut-0_head-overlay-left",
+        "robot-1_head-overlay-left": {
+          "key": "robot-1_head-overlay-left",
           "sheetId": 1,
           "x": 0.265625,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-overlay-right": {
-          "key": "astronaut-0_head-overlay-right",
+        "robot-1_head-overlay-right": {
+          "key": "robot-1_head-overlay-right",
           "sheetId": 1,
           "x": 0.328125,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-overlay-top": {
-          "key": "astronaut-0_head-overlay-top",
+        "robot-1_head-overlay-top": {
+          "key": "robot-1_head-overlay-top",
           "sheetId": 1,
           "x": 0.265625,
           "y": 0.328125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_head-overlay-bottom": {
-          "key": "astronaut-0_head-overlay-bottom",
+        "robot-1_head-overlay-bottom": {
+          "key": "robot-1_head-overlay-bottom",
           "sheetId": 1,
           "x": 0.328125,
           "y": 0.328125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_body-overlay-top": {
-          "key": "astronaut-0_body-overlay-top",
+        "robot-1_body-overlay-top": {
+          "key": "robot-1_body-overlay-top",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_body-overlay-bottom": {
-          "key": "astronaut-0_body-overlay-bottom",
+        "robot-1_body-overlay-bottom": {
+          "key": "robot-1_body-overlay-bottom",
           "sheetId": 1,
           "x": 0.125,
           "y": 0.203125,
           "width": 0.0625,
           "height": 0.0625
         },
-        "astronaut-0_body-overlay-left": {
-          "key": "astronaut-0_body-overlay-left",
+        "robot-1_body-overlay-left": {
+          "key": "robot-1_body-overlay-left",
           "sheetId": 1,
           "x": 0,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_body-overlay-front": {
-          "key": "astronaut-0_body-overlay-front",
+        "robot-1_body-overlay-front": {
+          "key": "robot-1_body-overlay-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_body-overlay-right": {
-          "key": "astronaut-0_body-overlay-right",
+        "robot-1_body-overlay-right": {
+          "key": "robot-1_body-overlay-right",
           "sheetId": 1,
           "x": 0.125,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "astronaut-0_body-overlay-back": {
-          "key": "astronaut-0_body-overlay-back",
+        "robot-1_body-overlay-back": {
+          "key": "robot-1_body-overlay-back",
           "sheetId": 1,
           "x": 0.1875,
           "y": 0.265625,
           "width": 0.0625,
           "height": 0.125
         },
-        "police-0_body-overlay-top": {
-          "key": "police-0_body-overlay-top",
+        "robot-0_body-overlay-top": {
+          "key": "robot-0_body-overlay-top",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.40625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_body-overlay-bottom": {
-          "key": "police-0_body-overlay-bottom",
+        "robot-0_body-overlay-bottom": {
+          "key": "robot-0_body-overlay-bottom",
           "sheetId": 1,
           "x": 0.125,
           "y": 0.40625,
           "width": 0.0625,
           "height": 0.0625
         },
-        "police-0_body-overlay-left": {
-          "key": "police-0_body-overlay-left",
+        "robot-0_body-overlay-left": {
+          "key": "robot-0_body-overlay-left",
           "sheetId": 1,
           "x": 0,
           "y": 0.46875,
           "width": 0.0625,
           "height": 0.125
         },
-        "police-0_body-overlay-front": {
-          "key": "police-0_body-overlay-front",
+        "robot-0_body-overlay-front": {
+          "key": "robot-0_body-overlay-front",
           "sheetId": 1,
           "x": 0.0625,
           "y": 0.46875,
           "width": 0.0625,
           "height": 0.125
         },
-        "police-0_body-overlay-right": {
-          "key": "police-0_body-overlay-right",
+        "robot-0_body-overlay-right": {
+          "key": "robot-0_body-overlay-right",
           "sheetId": 1,
           "x": 0.125,
           "y": 0.46875,
           "width": 0.0625,
           "height": 0.125
         },
-        "police-0_body-overlay-back": {
-          "key": "police-0_body-overlay-back",
+        "robot-0_body-overlay-back": {
+          "key": "robot-0_body-overlay-back",
           "sheetId": 1,
           "x": 0.1875,
           "y": 0.46875,

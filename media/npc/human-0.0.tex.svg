@@ -1135,7 +1135,7 @@
       </image>
     </g>
     <g transform="matrix(1, 0, 0, 1, 1152, 1248)">
-      <title>police-0_head</title>
+      <title>robot-0_head</title>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" x="512">
         <title>front</title>
       </rect>
@@ -1174,7 +1174,7 @@
       </image>
     </g>
     <g transform="matrix(1, 0, 0, 1, 1152, 1664)">
-      <title>police-0_head-overlay</title>
+      <title>robot-0_head-overlay</title>
       <rect width="128" height="128" style="fill: none; stroke-width: 2px;" x="512">
         <title>front</title>
       </rect>
@@ -1228,7 +1228,7 @@
       </image>
     </g>
     <g transform="matrix(1, 0, 0, 1, 0, 576)">
-      <title>police-0_body</title>
+      <title>robot-0_body</title>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="128" y="416">
         <title>top</title>
       </rect>
@@ -1253,12 +1253,9 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAU0lEQVQYGWP89+/ffwYgePbsGYhiePToEZiWk5MD00wgEpckSA6sAMRA1wkSk5KSYmCC6QYJYANgE2C60RWANMOtQJeE8QelAnQfscBci0wjKwIAdZ0gG/zoVigAAAAASUVORK5CYII=" width="128" height="192" x="384" y="544" style="image-rendering: pixelated;">
         <title>_back</title>
       </image>
-      <g>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAKElEQVQIHWN88uTJfwY8gAUkJyUlhVXJs2fPGBj//fuH1wQmrFqRBAGwrwqt7pMv1AAAAABJRU5ErkJggg==" width="128" height="64" x="128" y="480" style="image-rendering: pixelated;" transform="matrix(1, 0, 0, 2, 0, -544)">
         <title>_top</title>
-        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAKElEQVQIHWN88uTJfwY8gAUkJyUlhVXJs2fPGBj//fuH1wQmrFqRBAGwrwqt7pMv1AAAAABJRU5ErkJggg==" width="128" height="64" x="128" y="480" style="image-rendering: pixelated;" transform="matrix(1, 0, 0, 2, 0, -544)">
-          <title>_top</title>
-        </image>
-      </g>
+      </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAAJ0lEQVQIHWM8duzYfwY8gAlZTk5OjgGEkQFcAbIEMpvxyZMneK0AAHzwCGu5Mz7sAAAAAElFTkSuQmCC" width="8" height="4" x="256" y="416" transform="matrix(16, 0, 0, 32, -3840, -12896)" style="image-rendering: pixelated;">
         <title>_bottom</title>
       </image>

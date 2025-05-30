@@ -93,7 +93,7 @@
   <g style="">
     <title>uv-map</title>
     <g transform="matrix(1, 0, 0, 1, 32, 0)">
-      <title>astronaut-0_head</title>
+      <title>robot-1_head</title>
       <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(0, 0, 0);" x="512">
         <title>front</title>
       </rect>
@@ -150,7 +150,7 @@
       </image>
     </g>
     <g>
-      <title>astronaut-0_body</title>
+      <title>robot-1_body</title>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAkklEQVQYGWM8eeHvfwYkwC+BxAEyWX7cRpEHCjGiqGC88QJigrjwTxQJARZOMJ8JRRQLhwUk9vLwf4aPquxo0v8Y1LR/MsBNeFvcxVBy9ApYECQBA2ATQBzLHfkMm2CiSDTcBCQxFCbLxxcQ/qUNbCgSDAz/GV5KsDOAreBQZWRADyCYasJWwELyx22IHpBpyAAAM4Ek620BXYUAAAAASUVORK5CYII=" width="8" height="12" x="128" y="128" transform="matrix(16, 0, 0, 21.333334, -1920, -2602.666748)" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-2&quot;);">
         <title>_front</title>
       </image>
@@ -183,7 +183,7 @@
       </rect>
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 0)">
-      <title>astronaut-0_head-overlay</title>
+      <title>robot-1_head-overlay</title>
       <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
         <title>front</title>
       </rect>
@@ -228,7 +228,7 @@
       </image>
     </g>
     <g>
-      <title>astronaut-0_body-overlay</title>
+      <title>robot-1_body-overlay</title>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="128" y="416">
         <title>top</title>
       </rect>
@@ -258,7 +258,7 @@
       </image>
     </g>
     <g style="filter: none;" transform="matrix(1, 0, 0, 1, 0, 832)">
-      <title>police-0_body-overlay</title>
+      <title>robot-0_body-overlay</title>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 4px;" x="128">
         <title>top</title>
       </rect>
