@@ -12,7 +12,7 @@ import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { geom } from "../service/geom";
+import { geom, tmpVec1 } from "../service/geom";
 
 /**
  * @param {Props} props
@@ -50,12 +50,17 @@ export default function Npcs(props) {
     findPath(src, dst) {// 🔔 agent only uses path as a guide
       const query = w.crowd.navMeshQuery;
       const { path, success } = query.computePath(src, dst, {
-        filter: w.crowd.getFilter(0),
+        filter: w.crowd.getFilter(helper.queryFilterType.respectUnwalkable),
+        halfExtents: { x: 0.1, y: 0.1, z: 0.1 },
       });
-      if (success === false) {
-        warn(`${'findPath'} failed: ${JSON.stringify({ src, dst })}`);
+      if (path.length === 0) {
+        return path;
       }
-      return success === false || path.length === 0 ? null : path;
+      if (success === true && tmpVec1.copy(dst).distanceTo(path[path.length - 1]) < 0.1) {
+        return path;
+      }
+      warn(`${'findPath'} failed: ${JSON.stringify({ src, dst })}`);
+      return null;
     },
     forceUpdate() {
       const now = Date.now();
