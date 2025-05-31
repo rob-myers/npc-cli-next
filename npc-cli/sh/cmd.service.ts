@@ -805,6 +805,25 @@ class cmdServiceClass {
     
     dataChunk,
 
+    async eagerReadLoop<T>(loopBody: (datum: T) => Promise<void>, onInterrupt?: (datum: T) => any) {
+      let proms = [] as Promise<void>[];
+      let datum = await read(this.meta);
+      while (datum !== EOF) {
+        const resolved = await Promise.race((proms = [loopBody(datum), read(this.meta)]));
+        if (resolved === undefined) {
+          // Finished loopBody
+          datum = await proms[1];
+        } else if (resolved === EOF) {
+          await proms[0];
+          datum = resolved;
+        } else {
+          // Read before loopBody finished
+          await onInterrupt?.(datum);
+          datum = resolved;
+        }
+      }
+    },
+
     eof: EOF,
 
     error(message: string) {
@@ -889,24 +908,7 @@ class cmdServiceClass {
       return read(this.meta, chunks);
     },
 
-    async eagerReadLoop<T>(loopBody: (datum: T) => Promise<void>, onInterrupt?: (datum: T) => any) {
-      let proms = [] as Promise<void>[];
-      let datum = await read(this.meta);
-      while (datum !== EOF) {
-        const resolved = await Promise.race((proms = [loopBody(datum), read(this.meta)]));
-        if (resolved === undefined) {
-          // Finished loopBody
-          datum = await proms[1];
-        } else if (resolved === EOF) {
-          await proms[0];
-          datum = resolved;
-        } else {
-          // Read before loopBody finished
-          await onInterrupt?.(datum);
-          datum = resolved;
-        }
-      }
-    },
+    safeJsStringify,
 
     async sleep(seconds: number) {
       await sleep(this.meta, seconds);
