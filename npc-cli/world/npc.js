@@ -1098,6 +1098,8 @@ export class NpcApi {
     if (distance < npcTargetArriveDistance) {// Reached target
       this.stopMoving({ type: 'stop-reason', key: 'arrived' });
       return;
+    } else if (distance < 5 * npcTargetArriveDistance) {
+      this.s.lookSecs = 0.5; // avoid fast final turn
     }
 
     this.onTickDetectStuck(deltaMs, agent);
