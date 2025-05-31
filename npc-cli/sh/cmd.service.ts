@@ -20,7 +20,12 @@ const commandKeys = {
   assign: true,
   /** Change current key prefix */
   cd: true,
-  /** Write tty message with markdown links and associated actions */
+  /**
+   * Write tty message with markdown links and associated actions.
+   * ```sh
+   * choice '[ hi ]()'
+   * ```
+   */
   choice: true,
   /** List function definitions */
   declare: true,
@@ -137,15 +142,18 @@ class cmdServiceClass {
         break;
       }
       case "choice": {
-        if (isTtyAt(meta, 0)) {
+        if (isTtyAt(meta, 1) === false) {
+          throw Error('stdout must be a tty');
+        }
+        if (isTtyAt(meta, 0) === true) {
           // `choice {textWithLinks}+` where text may contain newlines
           const text = args.join(" ");
-          yield await this.choice(meta, { text });
+          yield* this.choice(meta, { text });
         } else {
           // `choice` expects to read `ChoiceReadValue`s
           let datum: ChoiceReadValue;
           while ((datum = await read(meta)) !== EOF)
-            yield await this.choice(meta, datum);
+            yield* this.choice(meta, datum);
         }
         break;
       }
@@ -638,27 +646,26 @@ class cmdServiceClass {
     }
   }
 
-  private async choice(meta: Sh.BaseMeta, { text }: ChoiceReadValue) {
+  private async *choice(meta: Sh.BaseMeta, { text }: ChoiceReadValue) {
     const lines = text.replace(/\r/g, "").split(/\n/);
     const defaultValue = undefined;
     const parsedLines = lines.map((text) => parseTtyMarkdownLinks(text, defaultValue, meta.sessionKey));
     for (const { ttyText } of parsedLines) {
-      await useSession.api.writeMsgCleanly(meta.sessionKey, ttyText);
+      // await useSession.api.writeMsgCleanly(meta.sessionKey, ttyText);
+      yield ttyText;
     }
 
     try {
-      if (parsedLines.some((x) => x.linkCtxtsFactory)) {
+      if (parsedLines.some((x) => x.linkCtxtsFactory !== undefined) === true) {
         // some link must be clicked to proceed
-        return await new Promise<any>((resolve, reject) => {
+        yield await new Promise<any>((resolve, reject) => {
           getProcess(meta).cleanups.push(reject);
-          parsedLines.forEach(
-            ({ ttyTextKey, linkCtxtsFactory }) =>
-              linkCtxtsFactory &&
-              useSession.api.addTtyLineCtxts(
-                meta.sessionKey,
-                ttyTextKey,
-                linkCtxtsFactory(resolve)
-              )
+          parsedLines.forEach(({ ttyTextKey, linkCtxtsFactory }) =>
+            linkCtxtsFactory !== undefined && useSession.api.addTtyLineCtxts(
+              meta.sessionKey,
+              ttyTextKey,
+              linkCtxtsFactory(resolve),
+            )
           );
         })
       }

@@ -246,6 +246,9 @@
 - change robot-0 body, body-overlay
 - change robot-1
 
+- 🚧 sh: should yield to stdout or stderr rather than `writeMsgCleanly`
+  - ✅ `choice` yields
+
 - rehype: example of dynamic ansi highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
   - would like to highlight shell functions

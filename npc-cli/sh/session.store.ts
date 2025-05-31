@@ -530,6 +530,7 @@ const useStore = create<State>()(
         api.getSession(sessionKey).ttyIo.write({ key: level, msg });
       },
 
+      // 🚧 write to stdout or stderr instead?
       async writeMsgCleanly(sessionKey, msg, opts = {}) {
         const { xterm } = api.getSession(sessionKey).ttyShell;
 
