@@ -64,9 +64,9 @@ export default function Npcs(props) {
     },
     getClosestNavigable(p, maxDelta = 0.5) {
       const { success, point: closest } = w.crowd.navMeshQuery.findClosestPoint(p, {
-        // 🔔 maxDelta "means" ~ (2 * maxDelta) * (2 * smallHalfExtent) * (2 * maxDelta) search space
+        // 🔔 ~ (2 * maxDelta) * (2 * smallHalfExtent) * (2 * maxDelta) search space
         halfExtents: { x: maxDelta, y: smallHalfExtent, z: maxDelta },
-        // filter: w.crowd.getFilter(w.lib.queryFilterType.excludeDoors),
+        filter: w.crowd.getFilter(w.lib.queryFilterType.respectUnwalkable),
       });
 
       if (success === true && p.distanceTo(closest) <= maxDelta) {
@@ -424,7 +424,7 @@ export default function Npcs(props) {
   });
   
 
-  React.useEffect(() => {// hmr
+  React.useEffect(() => {// hot reload each npc
     if (process.env.NODE_ENV === 'development') {
       state.hotReloadNpcs();
     }
@@ -437,8 +437,8 @@ export default function Npcs(props) {
       // update stale ref
       npc.gltfAux = state.gltfAux[npc.def.classKey];
 
+      // reinitialize if changed meshes
       if (npc.m.animations !== state.gltf[npc.def.classKey].animations) {
-        // reinitialize if changed meshes
         npc.api.initialize(state.gltf[npc.def.classKey]);
         npc.mixer = emptyAnimationMixer; // overwritten on remount
         npc.epochMs = Date.now(); // invalidate cache
