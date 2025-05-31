@@ -21,9 +21,9 @@ export default async function BlogPage(props: {
         a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
           return (
             <a
-              {...props} // suffix #new-tab or &new-tab induces new tab
-              {.../(#|&)new-tab$/.test(props.href ??= '') && {
-                href: props.href.slice(0, -'#new-tab'.length),
+              {...props} // new-tab:href induces new tab
+              {...props.href?.startsWith('new-tab:') && {
+                href: props.href.slice('new-tab:'.length),
                 target: "_blank",
               }}
             >
