@@ -71,20 +71,30 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
 }
 
 export function computeTabDef(
-  // classKey: ComponentClassKey | 'Tty', opts: Record<string, any>
-  opts: (
-    | { classKey: 'Debug' | 'HelloWorld' | 'Manage'; suffix: string; }
-    | { classKey: 'Tty'; suffix: string; profileKey: ProfileKey; env?: Record<string, any> }
-    | { classKey: 'World'; suffix: string; mapKey?: Key.Map }
+  opts: { suffix: string; } & (
+    | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }
+    | { classKey: 'Tty'; profileKey: ProfileKey; env?: Record<string, any> }
+    | { classKey: 'World'; mapKey?: Key.Map }
   )
-) {
+): TabDef {
+
+  if (opts.classKey === 'Tty') {// 'Tty' is not a Key.ComponentClass
+    return {
+      type: 'terminal',
+      filepath: `tty-${opts.suffix}`,
+      profileKey: helper.isProfileKey(opts.profileKey) ? opts.profileKey : 'profileAwaitWorldSh',
+      env: opts.env ?? {},
+    };
+  }
+
   let tabDef: TabDef;
+  const { tabPrefix } = helper.toComponentMeta[opts.classKey];
 
   switch (opts.classKey) {
     case 'Debug':
-    case 'Manage':
-    case 'HelloWorld': {
-      const filepath = `${toComponentClassPrefix[opts.classKey]}-${opts.suffix ?? '0'}`;
+    case 'HelloWorld':
+    case 'Manage': {
+      const filepath = `${tabPrefix}-${opts.suffix ?? '0'}`;
       tabDef = {
         type: 'component',
         class: opts.classKey,
@@ -94,7 +104,7 @@ export function computeTabDef(
       break;
     }
     case 'World': {
-      const worldKey = `${toComponentClassPrefix[opts.classKey]}-${opts.suffix ?? '0'}`;
+      const worldKey = `${tabPrefix}-${opts.suffix ?? '0'}`;
       tabDef = {
         type: 'component',
         class: opts.classKey,
@@ -106,14 +116,6 @@ export function computeTabDef(
       };
       break;
     }
-    case 'Tty':
-      tabDef = {
-        type: 'terminal',
-        filepath: `tty-${opts.suffix}`,
-        profileKey: helper.isProfileKey(opts.profileKey) ? opts.profileKey : 'profileAwaitWorldSh',
-        env: opts.env ?? {},
-      };
-      break;
     default:
       throw testNever(opts);
   }
@@ -182,26 +184,8 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   };
 }
 
-const fromComponentClassKey: Record<ComponentClassKey, true> = {
-  Debug: true,
-  HelloWorld: true,
-  Manage: true,
-  World: true,
-};
-
-export const toComponentClassPrefix: Record<ComponentClassKey, string> = {
-  Debug: 'debug',
-  HelloWorld: 'hello-world',
-  Manage: 'manage',
-  World: 'world',
-};
-
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
-}
-
-export function isComponentClassKey(input: string): input is ComponentClassKey {
-  return input in fromComponentClassKey;
 }
 
 function isManageTabDef(def: TabDef) {

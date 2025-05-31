@@ -8,6 +8,10 @@ namespace Key {
     | 'Walk'
   );
 
+  type ComponentClass = import('../tabs/tab-factory').ComponentClassKey;
+  
+  type TabClass = ComponentClass | 'Tty';
+
   type DecorImg = import('../service/const.js').DecorImgKey;
 
   type Geomorph =(

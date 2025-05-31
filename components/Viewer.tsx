@@ -14,7 +14,7 @@ import useSite from "./site.store";
 import { parseJsArg, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { helper } from "@/npc-cli/service/helper";
-import { computeTabDef, isComponentClassKey } from "@/npc-cli/tabs/tab-util";
+import { computeTabDef } from "@/npc-cli/tabs/tab-util";
 
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
@@ -74,8 +74,8 @@ export default function Viewer() {
         }
         case 'open-tab': {// 🔔 open tab via (classKey, opts)
           const classKey = parts[1];
-          if (!(isComponentClassKey(classKey) || classKey === 'Tty')) {
-            throw Error(`${'onInternalApi'}: open-tab: unknown classKey "${classKey}"`);
+          if (!(helper.isTabClassKey(classKey))) {
+            throw Error(`${'onInternalApi'}: open-tab: unknown tab class key "${classKey}"`);
           }
 
           const tabDef = computeTabDef(opts as any);

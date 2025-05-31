@@ -7,6 +7,14 @@ import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from 
  */
 export const helper = {
 
+  /** @type {Record<Key.ComponentClass, true>} */
+  fromComponentClass: {
+    Debug: true,
+    HelloWorld: true,
+    Manage: true,
+    World: true,
+  },
+
   /** Aligned to media/symbol/{key}.svg */
   fromSymbolKey,
 
@@ -77,6 +85,14 @@ export const helper = {
     default: 0,
     respectUnwalkable: 1,
   }),
+
+  /** @type {Record<Key.ComponentClass, { key: Key.ComponentClass; tabPrefix: string; }>} */
+  toComponentMeta: {
+    Debug: { key: 'Debug', tabPrefix: 'debug' },
+    HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
+    Manage: { key: 'Manage', tabPrefix: 'manage' },
+    World: { key: 'World', tabPrefix: 'world' },
+  },
 
   /** @type {Record<Key.GeomorphNumber, Key.Geomorph>} */
   toGmKey: {
@@ -271,6 +287,22 @@ export const helper = {
    */
   isAnimKey(input) {
     return input in helper.fromAnimKey;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.ComponentClass}
+   */
+  isComponentClassKey(input) {
+    return input in helper.fromComponentClass;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.TabClass}
+   */
+  isTabClassKey(input) {
+    return input === 'Tty' || (input in helper.fromComponentClass);
   },
 
   /**

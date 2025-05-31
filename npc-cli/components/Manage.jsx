@@ -1,6 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
+import { helper } from "../service/helper";
 import { extractTabNodes } from "../tabs/tab-util";
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
@@ -14,6 +15,18 @@ export default function Manage(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     showDemoLinks: false,
 
+    onClickCreateTabs({ target: el }) {
+      const tabClass = el.closest('li')?.dataset.tabClass;
+      if (typeof tabClass !== 'string') {
+        return;
+      }
+      
+      if (el.classList.contains(cssName.createTab)) {
+        // 🚧
+        console.log('create tab', tabClass);
+        // useSite.api.closeTab(tabId);
+      }
+    },
     onClickManageTabs({ target: el }) {
       const tabId = el.closest('li')?.dataset.tabId;
       if (typeof tabId !== 'string') {
@@ -40,7 +53,7 @@ export default function Manage(props) {
   return (
     <div css={manageCss}>
       <div 
-        className="tab-defs"
+        className="current-tabs"
         onClick={state.onClickManageTabs}
       >
         <h2>
@@ -49,7 +62,10 @@ export default function Manage(props) {
 
         <ul>
           {tabDefs.map(def =>
-            <li key={def.filepath} data-tab-id={def.filepath}>
+            <li
+              key={def.filepath}
+              data-tab-id={def.filepath}
+            >
               <span className="tab-def">
                 <span>{def.filepath}</span>
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
@@ -63,10 +79,40 @@ export default function Manage(props) {
         </ul>
       </div>
       
-      <div>
-        <h2>Open Tabs</h2>
+      <div
+        className="create-tabs"
+        onClick={state.onClickCreateTabs}
+      >
+        <h2>Create Tabs</h2>
         
-        {/* 🚧 list of permitted defs */}
+        {/* 🚧 */}
+
+        <ul>
+          <li data-tab-class={helper.toComponentMeta.HelloWorld.key}>
+            <span className="tab-class">
+              Hello world
+            </span>
+            <span className={cssName.createTab}>
+              +
+            </span>
+          </li>
+          <li data-tab-class={helper.toComponentMeta.World.key}>
+            <span className="tab-class">
+              World
+            </span>
+            <span className={cssName.createTab}>
+              +
+            </span>
+          </li>
+          <li data-tab-class="Tty">
+            <span className="tab-class">
+              TTY
+            </span>
+            <span className={cssName.createTab}>
+              +
+            </span>
+          </li>
+        </ul>
       </div>
 
       <div
@@ -99,6 +145,7 @@ export default function Manage(props) {
 
 const cssName = {
   closeTab: 'close-tab',
+  createTab: 'create-tab',
 };
 
 const manageCss = css`
@@ -126,7 +173,6 @@ const manageCss = css`
   }
 
   ul {
-    /* background-color: #333; */
     color: #ccc;
   }
   li {
@@ -139,7 +185,7 @@ const manageCss = css`
 
   }
 
-  .tab-defs li {
+  .current-tabs li {
     justify-content: space-between;
 
     .tab-def {
@@ -166,7 +212,30 @@ const manageCss = css`
     }
   }
 
-  
+  .create-tabs {
+    li {
+      justify-content: space-between;
+    }
+    /* .tab-class {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    } */
+
+    .${cssName.createTab} {
+      padding: 0 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: medium;
+      color: #7f7;
+      user-select: none;
+
+      &:hover {
+        background-color: #555;
+      }
+    }
+  }
+
   .demo-links {
     display: flex;
     flex-direction: column;
@@ -200,6 +269,7 @@ const manageCss = css`
 /**
  * @typedef State
  * @property {boolean} showDemoLinks
+ * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCreateTabs
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickManageTabs
  * @property {() => void} toggleDemoLinks
  */
