@@ -233,6 +233,12 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
     },
 
+    getTabClassCount(tabClass) {
+      return extractTabNodes(get().tabset.synced).filter(({ config }) => 
+        config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
+      ).length
+    },
+
     initiateBrowser() {
       const cleanUps = [] as (() => void)[];
 
@@ -344,6 +350,7 @@ export type State = {
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     /** Restore layout from localStorage or use fallback */
     restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
+    getTabClassCount(tabClass: Key.TabClass): number;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
