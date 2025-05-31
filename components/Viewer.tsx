@@ -173,7 +173,7 @@ export default function Viewer() {
       <div
         css={tabsContainerCss}
         className={cx({ collapsed, neverEnabled })}
-        // {...neverEnabled && { onPointerDown: () => state.tabs.toggleEnabled(true) }}
+        {...neverEnabled && { onPointerUp: () => state.tabs.toggleEnabled(true) }}
       >
         <Tabs
           ref={state.ref('tabs')}
