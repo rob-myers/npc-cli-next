@@ -73,12 +73,13 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
 export function computeTabDef(
   opts: { suffix: string; } & (
     | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }
-    | { classKey: 'Tty'; profileKey: ProfileKey; env?: Record<string, any> }
+    | { classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
     | { classKey: 'World'; mapKey?: Key.Map }
   )
 ): TabDef {
 
   if (opts.classKey === 'Tty') {// 'Tty' is not a Key.ComponentClass
+    opts.profileKey ??= 'profileAwaitWorldSh';
     return {
       type: 'terminal',
       filepath: `tty-${opts.suffix}`,
