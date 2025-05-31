@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
 import { helper } from "../service/helper";
-import { extractTabNodes } from "../tabs/tab-util";
+import { computeTabDef, extractTabNodes } from "../tabs/tab-util";
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
 import useUpdate from "../hooks/use-update";
@@ -17,14 +17,20 @@ export default function Manage(props) {
 
     onClickCreateTabs({ target: el }) {
       const tabClass = el.closest('li')?.dataset.tabClass;
-      if (typeof tabClass !== 'string') {
+      if (!(typeof tabClass === 'string' && helper.isTabClassKey(tabClass))) {
         return;
       }
+
+      const nextSuffix = useSite.api.getTabClassCount(tabClass);
       
       if (el.classList.contains(cssName.createTab)) {
-        // 🚧
-        console.log('create tab', tabClass);
-        // useSite.api.closeTab(tabId);
+        // console.log('create tab', tabClass);
+        const tabDef = computeTabDef({
+          classKey: tabClass,
+          suffix: `${nextSuffix + 1}`,
+          // 🚧
+        });
+        useSite.api.openTab(tabDef);
       }
     },
     onClickManageTabs({ target: el }) {
@@ -88,14 +94,6 @@ export default function Manage(props) {
         {/* 🚧 */}
 
         <ul>
-          <li data-tab-class={helper.toComponentMeta.HelloWorld.key}>
-            <span className="tab-class">
-              Hello world
-            </span>
-            <span className={cssName.createTab}>
-              +
-            </span>
-          </li>
           <li data-tab-class={helper.toComponentMeta.World.key}>
             <span className="tab-class">
               World
@@ -107,6 +105,14 @@ export default function Manage(props) {
           <li data-tab-class="Tty">
             <span className="tab-class">
               TTY
+            </span>
+            <span className={cssName.createTab}>
+              +
+            </span>
+          </li>
+          <li data-tab-class={helper.toComponentMeta.HelloWorld.key}>
+            <span className="tab-class">
+              Hello world
             </span>
             <span className={cssName.createTab}>
               +

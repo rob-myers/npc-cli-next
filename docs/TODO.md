@@ -232,10 +232,11 @@
 
 - 🚧 manage tabs
   - ✅ can close tab
-  - 🚧 can open new tab
-    - provide UI for useSite.api.computeTabDef
+  - ✅ can open new tab
+  - 🚧 can specify props when open new tab
   - tab grey if disabled (e.g. never mounted)
-
+  - can change world mapKey
+  - can change tty worldKey
 
 - ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
   - e.g. via larger `npc.s.lookSecs` when nearly arrived
