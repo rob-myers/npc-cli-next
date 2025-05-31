@@ -233,6 +233,7 @@ const buttonsCss = css`
 
   background-color: #000;
   touch-action: none;
+  border-top: 1px solid #333;
 
   > .paused-text {    
     display: flex;

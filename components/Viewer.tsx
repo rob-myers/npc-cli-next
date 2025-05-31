@@ -5,7 +5,7 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 import { useBeforeunload } from "react-beforeunload";
 
-import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
+import DesktopEmptyWorld from '../public/images/desktop-empty-world__27-05-2025.webp';
 
 import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
@@ -173,7 +173,7 @@ export default function Viewer() {
       <div
         css={tabsContainerCss}
         className={cx({ collapsed, neverEnabled })}
-        {...neverEnabled && { onPointerDown: () => state.tabs.toggleEnabled(true) }}
+        // {...neverEnabled && { onPointerDown: () => state.tabs.toggleEnabled(true) }}
       >
         <Tabs
           ref={state.ref('tabs')}
@@ -263,10 +263,10 @@ const tabsContainerCss = css`
     animation: fadeIn 2s forwards;
     
     cursor: pointer;
-    background-image: url(${WorldTwoNpcWebp.src});
+    background-image: url(${DesktopEmptyWorld.src});
     background-size: 100%;
     background-repeat: no-repeat;
-    background-position: 50% 50%;
-    filter: brightness(4);
+    background-position: 0% 100%;
+    filter: brightness(2);
   }
 `;
