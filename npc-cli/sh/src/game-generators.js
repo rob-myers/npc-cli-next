@@ -2,6 +2,10 @@
  * @param {import('./').RunArg} ctxt
  */
 export async function* awaitWorld({ api, home: { WORLD_KEY } }) {
+  if (typeof WORLD_KEY !== 'string') {
+    throw Error(`WORLD_KEY must be a string (${api.safeJsStringify(WORLD_KEY)})`);
+  }
+
   api.info(`awaiting ${api.ansi.White}${WORLD_KEY}`);
 
   while (api.getCached(WORLD_KEY)?.isReady(api.meta.sessionKey) !== true) {
