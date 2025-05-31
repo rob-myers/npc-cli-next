@@ -1285,7 +1285,7 @@ export class NpcApi {
       radius: helper.defaults.radius,
       collisionQueryRange: staticCollisionQueryRange,
       separationWeight: staticSeparationWeight,
-      // queryFilterType: this.w.lib.queryFilterType.excludeDoors,
+      // queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
       // updateFlags: 1,
     });
     
