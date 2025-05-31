@@ -125,6 +125,7 @@ const manageCss = css`
 
     .tab-def {
       display: flex;
+      flex-wrap: wrap;
       gap: 4px;
     }
 
