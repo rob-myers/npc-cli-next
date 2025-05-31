@@ -237,6 +237,7 @@
   - tab grey if disabled (e.g. never mounted)
   - can change world mapKey
   - can change tty worldKey
+  - if change tty worldKey via tty, will Manage update?
 
 - ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
   - e.g. via larger `npc.s.lookSecs` when nearly arrived
