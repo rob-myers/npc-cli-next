@@ -1,8 +1,10 @@
 import React from "react";
 import { css } from "@emotion/react";
+import cx from "classnames";
+import { extractTabNodes } from "../tabs/tab-util";
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import { extractTabNodes } from "../tabs/tab-util";
+import useUpdate from "../hooks/use-update";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -10,6 +12,8 @@ export default function Manage(props) {
   const layout = useSite(({ tabset: { synced } }) => synced);
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    showDemoLinks: false,
+
     onClickManageTabs({ target: el }) {
       const tabId = el.closest('li')?.dataset.tabId;
       if (typeof tabId !== 'string') {
@@ -20,6 +24,10 @@ export default function Manage(props) {
         useSite.api.closeTab(tabId);
       }
     },
+    toggleDemoLinks() {
+      state.showDemoLinks = !state.showDemoLinks;
+      update();
+    },
   }));
 
   const tabDefs = React.useMemo(() => {
@@ -27,14 +35,19 @@ export default function Manage(props) {
     return defs;
   }, [layout]);
 
+  const update = useUpdate();
+
   return (
     <div css={manageCss}>
-      <div onClick={state.onClickManageTabs}>
+      <div 
+        className="tab-defs"
+        onClick={state.onClickManageTabs}
+      >
         <h2>
           Manage Tabs
         </h2>
 
-        <ul className="tab-defs">
+        <ul>
           {tabDefs.map(def =>
             <li key={def.filepath} data-tab-id={def.filepath}>
               <span className="tab-def">
@@ -56,10 +69,15 @@ export default function Manage(props) {
         {/* 🚧 list of permitted defs */}
       </div>
 
-      <div>
-        <h2>Demo links</h2>
+      <div
+        onClick={state.toggleDemoLinks}
+        className={cx("demo-links", { hideLinks: !state.showDemoLinks })}
+      >
+        <h2>
+          Demo links
+        </h2>
 
-        <ul className="demo-links">
+        <ul>
           <li><a href={`#/internal/set-tabs/empty-layout`}>use preset empty-tabs</a></li>
           <li><a href={`#/internal/set-tabs/layout-preset-0`}>set preset 'layout-preset-0'</a></li>
           <li><a href={`#/internal/reset-tabs`}>reset current tabset</a></li>
@@ -90,6 +108,7 @@ const manageCss = css`
 
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   gap: 16px;
 
   color: white;
@@ -120,7 +139,7 @@ const manageCss = css`
 
   }
 
-  ul.tab-defs li {
+  .tab-defs li {
     justify-content: space-between;
 
     .tab-def {
@@ -147,12 +166,25 @@ const manageCss = css`
     }
   }
 
-
+  
   .demo-links {
     display: flex;
     flex-direction: column;
+
+    h2 {
+      cursor: pointer;
+    }
     a {
       font-size: small;
+    }
+
+    &.hideLinks {
+      h2 {
+        color: #aaa;
+      }
+      ul {
+        display: none;
+      }
     }
   }
 
@@ -167,5 +199,7 @@ const manageCss = css`
 
 /**
  * @typedef State
+ * @property {boolean} showDemoLinks
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickManageTabs
+ * @property {() => void} toggleDemoLinks
  */

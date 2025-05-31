@@ -240,9 +240,9 @@
 - ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
   - e.g. via larger `npc.s.lookSecs` when nearly arrived
 
+- ✅ soldier-0 needs more hair
 - change robot-0 body, body-overlay
 - change robot-1
-- soldier-0 needs more hair
 
 - rehype: example of dynamic ansi highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
