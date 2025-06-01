@@ -4,7 +4,7 @@ import cx from "classnames";
 import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
 import { computeTabDef, extractTabNodes } from "../tabs/tab-util";
-import { mapKeys } from './';
+// import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
 import useUpdate from "../hooks/use-update";
@@ -24,40 +24,59 @@ export default function Manage(props) {
 
     onClickCreateTabs({ target: el }) {
       const li = el.closest('li');
-      const tabClass = li?.dataset.tabClass;
-      if (!(li !== null && typeof tabClass === 'string' && helper.isTabClassKey(tabClass))) {
+      const tabClassKey = li?.dataset.tabClass;
+      if (!(li !== null && typeof tabClassKey === 'string' && helper.isTabClassKey(tabClassKey))) {
         return;
       }
 
       if (el.classList.contains(cssName.createTab)) {
         // console.log('create tab', tabClass);
 
-        const suffix = `${useSite.api.getTabClassCount(tabClass) + 1}`;
+        // 🚧 clean
+        const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
 
         /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
-        switch (tabClass) {
+        switch (tabClassKey) {
           case 'World': {
-            const [selectMapKey] = [...li.querySelectorAll('select')].filter(
+            const [mapSelect] = [...li.querySelectorAll('select')].filter(
               x => x.dataset.mapKey
             );
             tabDef = computeTabDef({
-              classKey: tabClass,
+              classKey: tabClassKey,
               suffix,
-              mapKey: /** @type {Key.Map} */ (selectMapKey.value),
+              mapKey: /** @type {Key.Map} */ (mapSelect.value),
             });
             break;
           }
-          case 'Tty':
+          case 'Tty': {
+            const [profileSelect] = [...li.querySelectorAll('select')].filter(
+              x => x.dataset.profileKey
+            );
+            const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
+              x => x.dataset.worldKey
+            );
+            tabDef = computeTabDef({
+              classKey: tabClassKey,
+              suffix,
+              ...worldKeyInput.value && {
+                profileKey: /** @type {Key.Profile} */ (profileSelect.value),
+                env: { WORLD_KEY: worldKeyInput.value },
+              } || {
+                profileKey: 'profileEmptySh',
+              },
+            });
+            break;
+          }
           case 'Debug':
           case 'HelloWorld':
           case 'Manage': // 🚧
             tabDef = computeTabDef({
-              classKey: tabClass,
+              classKey: tabClassKey,
               suffix,
             });
             break;
           default:
-            throw testNever(tabClass);
+            throw testNever(tabClassKey);
         }
 
         useSite.api.openTab(tabDef);
@@ -119,31 +138,40 @@ export default function Manage(props) {
         <h2>Create Tabs</h2>
         
         <ul>
-          <li data-tab-class={helper.toComponentMeta.World.key}>
+          <li data-tab-class={helper.toTabClassMeta.World.key}>
             <span className="tab-class">
               World
-              {/* 🚧 */}
-              <select data-map-key={true} defaultValue={mapKeys[0]}>
-                {mapKeys.map(mapKey =>
-                  <option key={mapKey} value={mapKey}>{mapKey}</option>
+            </span>
+            <select data-map-key={true} defaultValue={helper.mapKeys[0]}>
+              {helper.mapKeys.map(mapKey =>
+                <option key={mapKey} value={mapKey}>{mapKey}</option>
+              )}
+            </select>
+            <span className={cssName.createTab}>
+              +
+            </span>
+          </li>
+
+          <li data-tab-class={helper.toTabClassMeta.Tty.key}>
+            <span className="tab-class">
+              Tty
+            </span>
+            <div className="options">
+              <select data-profile-key={true} defaultValue={helper.profileKeys[0]}>
+                {helper.profileKeys.map(profileKey =>
+                  <option key={profileKey} value={profileKey}>{profileKey}</option>
                 )}
               </select>
-            </span>
+              <input data-world-key type="text" placeholder="world-key" />
+            </div>
             <span className={cssName.createTab}>
               +
             </span>
           </li>
-          <li data-tab-class="Tty">
+
+          <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
             <span className="tab-class">
-              TTY
-            </span>
-            <span className={cssName.createTab}>
-              +
-            </span>
-          </li>
-          <li data-tab-class={helper.toComponentMeta.HelloWorld.key}>
-            <span className="tab-class">
-              Hello world
+              HelloWorld
             </span>
             <span className={cssName.createTab}>
               +
@@ -224,6 +252,9 @@ const manageCss = css`
 
   }
 
+  .current-tabs {
+    width: 200px;
+  }
   .current-tabs li {
     justify-content: space-between;
 
@@ -252,19 +283,30 @@ const manageCss = css`
   }
 
   .create-tabs {
+    width: 240px;
+
     li {
       justify-content: space-between;
     }
 
     .tab-class {
+      flex: 1;
+      padding: 0 4px;
+    }
+    .options {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 8px;
+    }
 
-      select {
-        background-color: inherit;
-        color: inherit;
-      }
+    select, input {
+      background-color: inherit;
+      color: inherit;
+      border: 1px solid #555;
+      max-width: 100px;
+    }
+    input::placeholder {
+      color: #555;
     }
 
     .${cssName.createTab} {

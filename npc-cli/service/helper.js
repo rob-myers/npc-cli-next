@@ -1,4 +1,5 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
+import { keys } from "./generic";
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -21,18 +22,20 @@ export const helper = {
   /** Aligned to media/decor/{key}.svg */
   fromDecorImgKey,
 
-  /** @type {Record<Key.Profile, true>} */
-  fromProfileKey: {
+  ...(/** @param {Record<Key.Profile, true>} fromProfileKey */
+    (fromProfileKey) => ({ fromProfileKey, profileKeys: keys(fromProfileKey) })
+  )({
     profile1Sh: true,
     profileAwaitWorldSh: true,
     profileEmptySh: true,
-  },
+  }),
 
-  /** @type {Record<Key.Map, true>} */
-  fromMapKey: {
+  ...(/** @param {Record<Key.Map, true>} fromMapKey */
+    (fromMapKey) => ({ fromMapKey, mapKeys: keys(fromMapKey) })
+  )({
     "demo-map-1": true,
     "small-map-1": true,
-  },
+  }),
 
   /** @type {Record<Key.NpcClass, true>} */
   fromNpcClassKey: {
@@ -93,11 +96,12 @@ export const helper = {
     respectUnwalkable: 1,
   }),
 
-  /** @type {Record<Key.ComponentClass, { key: Key.ComponentClass; tabPrefix: string; }>} */
-  toComponentMeta: {
+  /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: string; }>} */
+  toTabClassMeta: {
     Debug: { key: 'Debug', tabPrefix: 'debug' },
     HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
     Manage: { key: 'Manage', tabPrefix: 'manage' },
+    Tty: { key: 'Tty', tabPrefix: 'tty' },
     World: { key: 'World', tabPrefix: 'world' },
   },
 

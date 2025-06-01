@@ -235,16 +235,18 @@
   - ✅ can open new tab
   - ✅ create tab needn't select it
   - ✅ close tab needn't select it
-  - 🚧 can specify props when open new tab
+  - ✅ can specify props when open new tab
     - ✅ get all mapKeys somehow
     - ✅ directly import deserialized geomorphs
-    - ✅ can specify mapKey
-    - 🚧 can specify profileKey
-    - 🚧 can specify worldKey
+    - ✅ world: can specify mapKey
+    - ✅ tty: can specify
+      - ✅ profileKey
+      - ✅ worldKey
+  - 🚧 fix select on remove i.e. should not switch away from manage
   - tab grey if disabled (e.g. never mounted)
   - can change world mapKey
   - can change tty worldKey
-  - if change tty worldKey via tty, will Manage update?
+  - tty worldKey reflects home.WORLD_KEY
 
 - ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
   - e.g. via larger `npc.s.lookSecs` when nearly arrived

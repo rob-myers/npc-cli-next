@@ -8,8 +8,9 @@ import { Model, type IJsonRowNode } from "flexlayout-react";
 import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta } from "./const";
 
 import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopment, error, deepClone, warn, tryLocalStorageRemove } from "@/npc-cli/service/generic";
-import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
+import { helper } from "@/npc-cli/service/helper";
+import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
 import { type AllTabsets, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab } from "@/npc-cli/tabs/tab-util";
 
@@ -233,10 +234,14 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
     },
 
-    getTabClassCount(tabClass) {
-      return extractTabNodes(get().tabset.synced).filter(({ config }) => 
+    getTabClassNextSuffix(tabClass) {// 🚧 clean e.g. output whole id
+      const tabNodesInClass = extractTabNodes(get().tabset.synced).filter(({ config }) => 
         config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
-      ).length
+      );
+      const tabIds = new Set(tabNodesInClass.map(x => x.id as string));
+      const { tabPrefix } = helper.toTabClassMeta[tabClass];
+      const firstGap = [...Array(tabNodesInClass.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
+      return firstGap;
     },
 
     initiateBrowser() {
@@ -350,7 +355,7 @@ export type State = {
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     /** Restore layout from localStorage or use fallback */
     restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
-    getTabClassCount(tabClass: Key.TabClass): number;
+    getTabClassNextSuffix(tabClass: Key.TabClass): number;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;

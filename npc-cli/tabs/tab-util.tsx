@@ -104,7 +104,7 @@ export function computeTabDef(
   }
 
   let tabDef: TabDef;
-  const { tabPrefix } = helper.toComponentMeta[opts.classKey];
+  const { tabPrefix } = helper.toTabClassMeta[opts.classKey];
 
   switch (opts.classKey) {
     case 'Debug':
