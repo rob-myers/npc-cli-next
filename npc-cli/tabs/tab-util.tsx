@@ -1,32 +1,40 @@
 import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
 import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
-import type { ComponentClassKey, CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
+import type { CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
 import { helper } from "../service/helper";
 import type { ProfileKey } from "../sh/src";
 
-export function appendTabToLayout(layout: TabsetLayout, tabDef: TabDef) {
+/**
+ * If exists do nothing, otherwise append to active tabset.
+ */
+export function addTabToLayout({ layout, selectTab, tabDef }: {
+  layout: TabsetLayout;
+  selectTab?: boolean;
+  tabDef: TabDef;
+}) {
   const tabId = getTabIdentifier(tabDef);
   if (layout.children.length === 0) {
     layout.children.push({ type: 'tabset', children: [], active: true });
   }
 
   const tabsetNodes = extractTabsetNodes(layout);
-  
   const tabsetNode = tabsetNodes.find(x => x.children.some(y => y.id === tabId));
-  const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
-  tabsetNodes.forEach(x => x.maximized = false);
-  
-  if (tabsetNode === undefined) {// add and select node
-    const numTabs = activeTabset.children.push(createTabNodeFromDef(tabDef));
-    activeTabset.active = true;
-    activeTabset.selected = numTabs - 1;
-  } else {// select node
-    activeTabset.active = false;
-    tabsetNode.active = true;
-    tabsetNode.selected = tabsetNode.children.findIndex(x => x.id === tabId);
+
+  if (tabsetNode !== undefined) {
+    return layout; // already exists
   }
 
+  const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
+  activeTabset.active = true;
+  
+  const numTabs = activeTabset.children.push(createTabNodeFromDef(tabDef));
+
+  if (selectTab === true) {
+    tabsetNodes.forEach(x => x.maximized = false); // minimize
+    activeTabset.selected = numTabs - 1; // select
+  }
+  
   return layout;
 }
 
@@ -187,6 +195,13 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   };
 }
 
+function getManageTabCount(tabsets: IJsonTabSetNode[]) {
+  return tabsets.reduce((sum, tabset) =>
+    sum + tabset.children.filter(x => isManageTabDef(x.config)).length,
+    0,
+  );
+}
+
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
 }
@@ -195,34 +210,34 @@ function isManageTabDef(def: TabDef) {
   return def.type === 'component' && def.class === 'Manage';
 }
 
-export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
-  
+export function removeTabFromLayout({ layout, tabId }: {
+  layout: IJsonRowNode;
+  tabId: string;
+}) {
   const tabsets = extractTabsetNodes(layout);
-
-  const manageTabCount = tabsets.reduce((sum, tabset) =>
-    sum + tabset.children.filter(x => isManageTabDef(x.config)).length,
-    0,
-  );
-  if (manageTabCount === 0) {
+  const numManages = getManageTabCount(tabsets);
+  if (numManages === 0) {
     warn(`${'removeTabFromLayout'}: layout lacks a "manage tab"`);
   }
 
   for (const tabset of tabsets) {
-    const index = tabset.children.findIndex(x => x.id === tabId);
-    
+    const { children } = tabset;
+    const index = children.findIndex(x => x.id === tabId);
+
     if (index === -1) {
       continue;
     }
-    if (isManageTabDef(tabset.children[index].config) && manageTabCount === 1) {
+    if (numManages === 1 && isManageTabDef(children[index].config)) {
       throw Error(`${'removeTabFromLayout'}: cannot remove last "manage tab"`);
     }
 
-    tabset.children.splice(index, 1);
-    
-    const { length } = tabset.children;
-    if (length === 0) tabset.selected = undefined;
-    else if (length === index) tabset.selected = index - 1;
-    else tabset.selected = index; // preserve
+    children.splice(index, 1); // remove the tab
+
+    if (typeof tabset.selected === 'number') {
+      if (children.length === 0) tabset.selected = undefined;
+      else if (children.length === index) tabset.selected = index - 1;
+      else tabset.selected = index; // preserve
+    }
     return true;
   }
   return false;

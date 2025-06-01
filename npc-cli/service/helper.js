@@ -25,6 +25,7 @@ export const helper = {
   fromProfileKey: {
     profile1Sh: true,
     profileAwaitWorldSh: true,
+    profileEmptySh: true,
   },
 
   /** @type {Record<Key.NpcClass, true>} */

@@ -21,19 +21,17 @@ export default function Manage(props) {
         return;
       }
 
-      const nextSuffix = useSite.api.getTabClassCount(tabClass);
-      
       if (el.classList.contains(cssName.createTab)) {
         // console.log('create tab', tabClass);
         const tabDef = computeTabDef({
           classKey: tabClass,
-          suffix: `${nextSuffix + 1}`,
+          suffix: `${useSite.api.getTabClassCount(tabClass) + 1}`,
           // 🚧
         });
         useSite.api.openTab(tabDef);
       }
     },
-    onClickManageTabs({ target: el }) {
+    onClickCurrentTabs({ target: el }) {
       const tabId = el.closest('li')?.dataset.tabId;
       if (typeof tabId !== 'string') {
         return;
@@ -49,10 +47,9 @@ export default function Manage(props) {
     },
   }));
 
-  const tabDefs = React.useMemo(() => {
-    const defs = extractTabNodes(layout).map(x => x.config);
-    return defs;
-  }, [layout]);
+  const tabDefs = React.useMemo(() => 
+    extractTabNodes(layout).map(x => x.config)
+  , [layout]);
 
   const update = useUpdate();
 
@@ -60,10 +57,10 @@ export default function Manage(props) {
     <div css={manageCss}>
       <div 
         className="current-tabs"
-        onClick={state.onClickManageTabs}
+        onClick={state.onClickCurrentTabs}
       >
         <h2>
-          Manage Tabs
+          Current Tabs
         </h2>
 
         <ul>
@@ -276,6 +273,6 @@ const manageCss = css`
  * @typedef State
  * @property {boolean} showDemoLinks
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCreateTabs
- * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickManageTabs
+ * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCurrentTabs
  * @property {() => void} toggleDemoLinks
  */

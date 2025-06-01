@@ -11,7 +11,7 @@ import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopm
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab } from "@/npc-cli/tabs/tab-util";
+import { type AllTabsets, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -53,7 +53,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const lookup = get().tabset;
       const tabset = lookup.synced;
 
-      if (removeTabFromLayout(tabset, tabId) === true) {
+      if (removeTabFromLayout({ layout: tabset, tabId }) === true) {
         set(({ tabsetUpdates }) => ({
           tabset: { ...lookup,
             synced: { ...tabset },
@@ -73,7 +73,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     openTab(tabDef) {
       const lookup = useSite.getState().tabset;
-      const next = {...appendTabToLayout(lookup.synced, tabDef)};
+      const next = {...addTabToLayout({ layout: lookup.synced, tabDef })};
 
       useSite.setState(({ tabsetUpdates }) => ({
         tabset: { ...lookup,

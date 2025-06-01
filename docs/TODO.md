@@ -233,6 +233,8 @@
 - 🚧 manage tabs
   - ✅ can close tab
   - ✅ can open new tab
+  - ✅ create tab needn't select it
+  - ✅ close tab needn't select it
   - 🚧 can specify props when open new tab
   - tab grey if disabled (e.g. never mounted)
   - can change world mapKey
