@@ -1,9 +1,11 @@
 import profile1Sh from "./profile-1.sh";
 import profileAwaitWorldSh from "./profile-awaitWorld.sh";
+import profileEmptySh from "./profile-empty.sh";
 
 export const profile = {
   profile1Sh,
   profileAwaitWorldSh,
+  profileEmptySh,
 };
 
 /**

@@ -79,11 +79,13 @@ export function computeTabDef(
 ): TabDef {
 
   if (opts.classKey === 'Tty') {// 'Tty' is not a Key.ComponentClass
-    opts.profileKey ??= 'profileAwaitWorldSh';
+    if (opts.profileKey === undefined || !helper.isProfileKey(opts.profileKey)) {
+      opts.profileKey = 'profileEmptySh';
+    }
     return {
       type: 'terminal',
       filepath: `tty-${opts.suffix}`,
-      profileKey: helper.isProfileKey(opts.profileKey) ? opts.profileKey : 'profileAwaitWorldSh',
+      profileKey: opts.profileKey,
       env: opts.env ?? {},
     };
   }
