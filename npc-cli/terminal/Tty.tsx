@@ -94,9 +94,9 @@ export default function Tty(props: Props) {
             const fileContents = props.shFiles[filename];
             const [line, column] = [e.Pos.Line(), e.Pos.Col()];
             const errorMsg = `${e.Error()}:\n${fileContents.split('\n')[line - 1]}` ;
-            state.writeError(session.key, `/etc/${filename}: ${e.$type}`, errorMsg);
+            state.writeErrorToTty(session.key, `/etc/${filename}: ${e.$type}`, errorMsg);
           } else {
-            state.writeError(session.key, `/etc/${filename}: failed to run`, e)
+            state.writeErrorToTty(session.key, `/etc/${filename}: failed to run`, e)
           }
         })
       ));
@@ -104,12 +104,10 @@ export default function Tty(props: Props) {
       // store original functions too
       session.jsFunc = props.jsFunctions;
     },
-    writeError(sessionKey: string, message: string, origError: any) {
-      useSession.api.writeMsgCleanly(sessionKey, `${message} (see console)`, { level: 'error' }).catch(
-        () => { /** session may no longer exist */ }
-      );
+    writeErrorToTty(sessionKey: string, message: string, origError: any) {
+      useSession.api.writeMsg(sessionKey, `${message} (see console)`, 'error');
       error(message);
-      console.error(origError);
+      error(origError);
     },
   }));
 

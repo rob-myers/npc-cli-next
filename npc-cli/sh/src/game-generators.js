@@ -6,7 +6,7 @@ export async function* awaitWorld({ api, home: { WORLD_KEY } }) {
     throw Error(`WORLD_KEY must be a string (${api.safeJsStringify(WORLD_KEY)})`);
   }
 
-  api.info(`awaiting ${api.ansi.White}${WORLD_KEY}`);
+  yield `${api.ansi.Cyan}awaiting ${api.ansi.White}${WORLD_KEY}`;
 
   while (api.getCached(WORLD_KEY)?.isReady(api.meta.sessionKey) !== true) {
     await api.sleep(0.05);
@@ -182,7 +182,7 @@ export async function* w(ctxt) {
         const v = func(w, ctxt);
         yield v instanceof Promise ? Promise.race([v, getHandleProm()]) : v;
       } catch (e) {
-        api.info(`${e}`);
+        yield `${api.ansi.Cyan}${e}${api.ansi.Reset}`;
       }
     }
   }

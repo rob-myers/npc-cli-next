@@ -246,8 +246,9 @@
 - change robot-0 body, body-overlay
 - change robot-1
 
-- 🚧 sh: should yield to stdout or stderr rather than `writeMsgCleanly`
+- ✅ sh: should yield to stdout or stderr rather than `writeMsgCleanly`
   - ✅ `choice` yields
+  - ✅ eliminate other usages except for `ps` replace line when scrolled back
 
 - rehype: example of dynamic ansi highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
@@ -297,6 +298,7 @@
   - could use to change input settings e.g. drag select
 - testOffMeshDisjoint: diagonal doors initially transform lineSegs
 
+- sh: can exit tty
 - avoid "speed up before collision" near door
   - seems related to enter offMeshConnection
 - somehow additionally indicate npc is selected by ContextMenu when docked

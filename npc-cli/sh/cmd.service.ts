@@ -651,7 +651,6 @@ class cmdServiceClass {
     const defaultValue = undefined;
     const parsedLines = lines.map((text) => parseTtyMarkdownLinks(text, defaultValue, meta.sessionKey));
     for (const { ttyText } of parsedLines) {
-      // await useSession.api.writeMsgCleanly(meta.sessionKey, ttyText);
       yield ttyText;
     }
 
@@ -833,10 +832,6 @@ class cmdServiceClass {
 
     eof: EOF,
 
-    error(message: string) {
-      useSession.api.writeMsgCleanly(this.meta.sessionKey, message, { level: "error" });
-    },
-
     generateSelector,
 
     getCached,
@@ -858,10 +853,6 @@ class cmdServiceClass {
     /** Returns a string e.g. `60f5bfdb9b9` */
     getUid() {
       return uid();
-    },
-
-    info(message: string) {
-      useSession.api.writeMsgCleanly(this.meta.sessionKey, message, { level: "info" });
     },
 
     isDataChunk,
@@ -930,13 +921,9 @@ class cmdServiceClass {
       });
     },
 
-    verbose(e: any) {
-      if (this.session.verbose) {
-        useSession.api.writeMsgCleanly(this.meta.sessionKey, `${e?.message ?? e}`, {
-          level: "info",
-        });
-        console.warn(e);
-      }
+    writeError(message: string) {
+      const device = useSession.api.resolve(1, this.meta);
+      device.writeData(`${ansi.Red}${message}${ansi.Reset}`); // do not wait for promise
     },
   };
 

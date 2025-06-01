@@ -10,6 +10,7 @@ import {
   KeyedLookup,
   jsStringify,
   warn,
+  pause,
 } from "../service/generic";
 import {
   computeNormalizedParts,
@@ -88,10 +89,7 @@ export type State = {
       sessionKey: string,
       msg: string,
       opts?: {
-        cursor?: number;
         level?: "info" | "error";
-        prompt?: boolean;
-        ttyLinkCtxts?: TtyLinkCtxt[];
         scrollToBottom?: boolean;
       }
     ) => Promise<void>;
@@ -530,28 +528,18 @@ const useStore = create<State>()(
         api.getSession(sessionKey).ttyIo.write({ key: level, msg });
       },
 
-      // 🚧 write to stdout or stderr instead?
       async writeMsgCleanly(sessionKey, msg, opts = {}) {
         const { xterm } = api.getSession(sessionKey).ttyShell;
-
         xterm.prepareForCleanMsg();
         await new Promise<void>((resolve) =>
           xterm.queueCommands([
-            {
-              key: "line",
-              line: opts.level ? formatMessage(msg, opts.level) : `${msg}${ansi.Reset}`,
-            },
+            { key: "line", line: opts.level ? formatMessage(msg, opts.level) : `${msg}${ansi.Reset}` },
             { key: "resolve", resolve },
           ])
         );
-
-        opts.ttyLinkCtxts && api.addTtyLineCtxts(sessionKey, stripAnsi(msg), opts.ttyLinkCtxts);
-        (opts.prompt ?? true) &&
-          setTimeout(() => {
-            xterm.showPendingInputImmediately();
-            opts.cursor !== undefined && xterm.setCursor(opts.cursor);
-            opts.scrollToBottom && xterm.xterm.scrollToBottom();
-          });
+        await pause();
+        xterm.showPendingInputImmediately();
+        opts.scrollToBottom === true && xterm.xterm.scrollToBottom();
       },
     },
   }),
