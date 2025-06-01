@@ -1,5 +1,5 @@
 import { queryClient } from "./query-client";
-import { info, isDevelopment, parseJsonArg, warn } from "./generic";
+import { info, isDevelopment, parseJsonArg, pause, warn } from "./generic";
 
 export const DEV_ENV_PORT = 3000;
 
@@ -59,8 +59,10 @@ function getDevCacheBustQueryParam() {
 
 export const WORLD_QUERY_FIRST_KEY = 'world';
 
+let devEventsFailures = 0;
+
 /**
- * Dev only event handling: trigger World refresh onchange file
+ * Dev only event handling: trigger World refresh onchange file.
  * We use server-sent events (SSE).
  */
 export function connectDevEventsWebsocket() {
@@ -68,11 +70,18 @@ export function connectDevEventsWebsocket() {
     window.__NPC_CLI_DEV_EVENTS__ ??= new EventSource(`/api/connect-dev-events`)
   );
 
-  eventSource.onerror = (e) => {
+  eventSource.onerror = async (e) => {
     console.error('connectDevEventsWebsocket', e);
     eventSource.close();
+    
+    if (++devEventsFailures > 5) {// stop trying
+      devEventsFailures = 0;
+      return;
+    }
+
     if (clientId !== -1) {// happens on sleep/resume device
       window.__NPC_CLI_DEV_EVENTS__ = undefined;
+      await pause(devEventsFailures * 1000);
       connectDevEventsWebsocket();
     }
   };
