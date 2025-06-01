@@ -41,9 +41,11 @@ export default function Manage(props) {
         useSite.api.closeTab(tabId);
       }
     },
-    toggleDemoLinks() {
-      state.showDemoLinks = !state.showDemoLinks;
-      update();
+    toggleDemoLinks({ target: el }) {
+      if (el.matches('h2') === true) {
+        state.showDemoLinks = !state.showDemoLinks;
+        update();
+      }
     },
   }));
 
@@ -133,9 +135,11 @@ export default function Manage(props) {
           <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
           <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
           <li><a href={`#/internal/open-tab/HelloWorld?suffix=1`}>open tab hello-world-1</a></li>
-          <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`}>open Tty tab</a></li>
+          <li><a href={`#/internal/open-tab/Tty?suffix=4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR"}`}>open Tty tab</a></li>
+          {/* 🔔 do not support custom profile: must use profileKey so can be synced against file */}
+          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`}>open Tty tab</a></li> */}
+          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!"}`}>open Tty tab with PROFILE with spaces via `%20`</a></li> */}
           <li><a href={`#/internal/open-tab/World?suffix=2&mapKey=small-map-1`}>open World tab</a></li>
-          <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!"}`}>open Tty tab with PROFILE with spaces via `%20`</a></li>
           <li><a href={`#/internal/close-tab/hello-world-1`}>close tab hello-world-1</a></li>
           <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}`}>change "test-world-1" tab props: mapKey=small-map-1 </a></li>
           <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li>
@@ -274,5 +278,5 @@ const manageCss = css`
  * @property {boolean} showDemoLinks
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCreateTabs
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCurrentTabs
- * @property {() => void} toggleDemoLinks
+ * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} toggleDemoLinks
  */

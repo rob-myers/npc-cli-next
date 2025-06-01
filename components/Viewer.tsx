@@ -72,13 +72,16 @@ export default function Viewer() {
           useSite.api.closeTab(tabId);
           break;
         }
-        case 'open-tab': {// 🔔 open tab via (classKey, opts)
+        case 'open-tab': {// 🔔 open tab via classKey, opts
           const classKey = parts[1];
           if (!(helper.isTabClassKey(classKey))) {
             throw Error(`${'onInternalApi'}: open-tab: unknown tab class key "${classKey}"`);
           }
-
-          const tabDef = computeTabDef(opts as any);
+          const tabDef = computeTabDef({
+            ...opts,
+            classKey,
+            suffix: opts.suffix,
+          });
           useSite.api.openTab(tabDef);
           break;
         }
