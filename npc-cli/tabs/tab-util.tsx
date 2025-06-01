@@ -78,6 +78,11 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
   return layout;
 }
 
+/**
+ * @param opts More relaxed than respective components props, e.g.
+ * - for `World` have fallback for mapKey
+ * - for `Tty` have fallback for worldKey
+ */
 export function computeTabDef(
   opts: { suffix: string; } & (
     | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }

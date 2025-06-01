@@ -28,6 +28,12 @@ export const helper = {
     profileEmptySh: true,
   },
 
+  /** @type {Record<Key.Map, true>} */
+  fromMapKey: {
+    "demo-map-1": true,
+    "small-map-1": true,
+  },
+
   /** @type {Record<Key.NpcClass, true>} */
   fromNpcClassKey: {
     "human-0": true,
@@ -304,6 +310,14 @@ export const helper = {
    */
   isTabClassKey(input) {
     return input === 'Tty' || (input in helper.fromComponentClass);
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.Map}
+   */
+  isMapKey(input) {
+    return input in helper.fromMapKey;
   },
 
   /**

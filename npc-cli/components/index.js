@@ -13,5 +13,5 @@ export const geomorphsJson =  /** @type {*} */ (
 export const geomorphs = geomorph.deserializeGeomorphs(geomorphsJson)
 
 export const mapKeys = /** @type {Key.Map[]} */ (
-  Object.keys(geomorphsJson)
+  Object.keys(geomorphsJson.map)
 );

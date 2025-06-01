@@ -238,6 +238,9 @@
   - 🚧 can specify props when open new tab
     - ✅ get all mapKeys somehow
     - ✅ directly import deserialized geomorphs
+    - ✅ can specify mapKey
+    - 🚧 can specify profileKey
+    - 🚧 can specify worldKey
   - tab grey if disabled (e.g. never mounted)
   - can change world mapKey
   - can change tty worldKey
@@ -336,6 +339,7 @@
   - `<Decor>` was not but fixed by editing its query
 
 - 🚧 Boxy SVG: sporadic slow save (or at least, triggering of our file mon)
+  - https://boxy-svg.com/bugs/370/intermittent-slow-saving
 
 - node-canvas: is it still nondeterministic onchange decor pngs?
 

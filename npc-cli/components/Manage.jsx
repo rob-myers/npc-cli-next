@@ -1,19 +1,19 @@
 import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
+import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
 import { computeTabDef, extractTabNodes } from "../tabs/tab-util";
+import { mapKeys } from './';
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
 import useUpdate from "../hooks/use-update";
 
-import { geomorphs, mapKeys } from './';
 
 /** @param {Props} props */
 export default function Manage(props) {
 
-  // 🚧
-  console.log({geomorphs, mapKeys});
+  // console.log({geomorphs, mapKeys});
 
   const tabDefs = useSite(({ tabset }) =>
     extractTabNodes(tabset.synced).map(x => x.config)
@@ -23,19 +23,50 @@ export default function Manage(props) {
     showDemoLinks: false,
 
     onClickCreateTabs({ target: el }) {
-      const tabClass = el.closest('li')?.dataset.tabClass;
-      if (!(typeof tabClass === 'string' && helper.isTabClassKey(tabClass))) {
+      const li = el.closest('li');
+      const tabClass = li?.dataset.tabClass;
+      if (!(li !== null && typeof tabClass === 'string' && helper.isTabClassKey(tabClass))) {
         return;
       }
 
       if (el.classList.contains(cssName.createTab)) {
         // console.log('create tab', tabClass);
-        const tabDef = computeTabDef({
-          classKey: tabClass,
-          suffix: `${useSite.api.getTabClassCount(tabClass) + 1}`,
-          // 🚧
-        });
+
+        const suffix = `${useSite.api.getTabClassCount(tabClass) + 1}`;
+
+        /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
+        switch (tabClass) {
+          case 'World': {
+            const [selectMapKey] = [...li.querySelectorAll('select')].filter(
+              x => x.dataset.mapKey
+            );
+            tabDef = computeTabDef({
+              classKey: tabClass,
+              suffix,
+              mapKey: /** @type {Key.Map} */ (selectMapKey.value),
+            });
+            break;
+          }
+          case 'Tty':
+          case 'Debug':
+          case 'HelloWorld':
+          case 'Manage': // 🚧
+            tabDef = computeTabDef({
+              classKey: tabClass,
+              suffix,
+            });
+            break;
+          default:
+            throw testNever(tabClass);
+        }
+
         useSite.api.openTab(tabDef);
+      }
+    },
+    onClickDemoLinks({ target: el }) {
+      if (el.matches('h2') === true) {
+        state.showDemoLinks = !state.showDemoLinks;
+        update();
       }
     },
     onClickCurrentTabs({ target: el }) {
@@ -46,12 +77,6 @@ export default function Manage(props) {
 
       if (el.classList.contains(cssName.closeTab)) {
         useSite.api.closeTab(tabId);
-      }
-    },
-    onClickDemoLinks({ target: el }) {
-      if (el.matches('h2') === true) {
-        state.showDemoLinks = !state.showDemoLinks;
-        update();
       }
     },
   }));
@@ -93,15 +118,16 @@ export default function Manage(props) {
       >
         <h2>Create Tabs</h2>
         
-
         <ul>
           <li data-tab-class={helper.toComponentMeta.World.key}>
             <span className="tab-class">
               World
               {/* 🚧 */}
-              {/* <select>
-                <option></option>
-              </select> */}
+              <select data-map-key={true} defaultValue={mapKeys[0]}>
+                {mapKeys.map(mapKey =>
+                  <option key={mapKey} value={mapKey}>{mapKey}</option>
+                )}
+              </select>
             </span>
             <span className={cssName.createTab}>
               +
@@ -229,11 +255,17 @@ const manageCss = css`
     li {
       justify-content: space-between;
     }
-    /* .tab-class {
+
+    .tab-class {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
-    } */
+      gap: 8px;
+
+      select {
+        background-color: inherit;
+        color: inherit;
+      }
+    }
 
     .${cssName.createTab} {
       padding: 0 4px;
