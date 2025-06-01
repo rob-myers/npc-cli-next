@@ -3,9 +3,8 @@ import { css } from "@emotion/react";
 import cx from "classnames";
 import { createPortal } from "react-dom";
 
-import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
+import { tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { zIndexTabs, zIndexWorld } from "../service/const";
-import { isSmallViewport, isTouchDevice } from "../service/dom";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -27,7 +26,7 @@ export default function WorldMenu(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
 
-    brightness: 13, // [1..20] inducing percentage `100 + 10 * (b - 10)`
+    brightness: 15, // [1..20] inducing percentage `100 + 10 * (b - 10)`
     disconnected: true,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
@@ -293,7 +292,7 @@ export default function WorldMenu(props) {
   </>;
 }
 
-const defaultLoggerHeightPx = isSmallViewport() ? 40 : 100;
+const defaultLoggerHeightPx = 40;
 const defaultLoggerWidthPx = 800;
 /** Must be a factor of default height */
 const loggerHeightDelta = 20;
