@@ -310,11 +310,20 @@ const manageCss = css`
     }
 
     .${cssName.createTab} {
-      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+
+      margin: 0 2px 0 8px;
       cursor: pointer;
       font-family: monospace;
-      font-size: medium;
-      color: #7f7;
+      font-size: large;
+      /* background-color: #9bd19b; */
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      color: #9bd19b;
       user-select: none;
 
       &:hover {
