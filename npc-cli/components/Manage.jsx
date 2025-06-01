@@ -235,8 +235,7 @@ const manageCss = css`
   }
 
   > div {
-    margin-bottom: 12px;
-    width: 300px;
+    width: 240px;
   }
 
   ul {
@@ -252,9 +251,6 @@ const manageCss = css`
 
   }
 
-  .current-tabs {
-    width: 200px;
-  }
   .current-tabs li {
     justify-content: space-between;
 
@@ -283,8 +279,6 @@ const manageCss = css`
   }
 
   .create-tabs {
-    width: 240px;
-
     li {
       justify-content: space-between;
     }
@@ -304,6 +298,7 @@ const manageCss = css`
       color: inherit;
       border: 1px solid #555;
       max-width: 100px;
+      padding: 4px;
     }
     input::placeholder {
       color: #555;
@@ -320,9 +315,6 @@ const manageCss = css`
       cursor: pointer;
       font-family: monospace;
       font-size: large;
-      /* background-color: #9bd19b; */
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
       color: #9bd19b;
       user-select: none;
 
