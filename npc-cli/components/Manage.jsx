@@ -7,10 +7,17 @@ import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
 import useUpdate from "../hooks/use-update";
 
+import { geomorphs, mapKeys } from './';
+
 /** @param {Props} props */
 export default function Manage(props) {
 
-  const layout = useSite(({ tabset: { synced } }) => synced);
+  // 🚧
+  console.log({geomorphs, mapKeys});
+
+  const tabDefs = useSite(({ tabset }) =>
+    extractTabNodes(tabset.synced).map(x => x.config)
+  );
 
   const state = useStateRef(/** @returns {State} */ () => ({
     showDemoLinks: false,
@@ -41,17 +48,13 @@ export default function Manage(props) {
         useSite.api.closeTab(tabId);
       }
     },
-    toggleDemoLinks({ target: el }) {
+    onClickDemoLinks({ target: el }) {
       if (el.matches('h2') === true) {
         state.showDemoLinks = !state.showDemoLinks;
         update();
       }
     },
   }));
-
-  const tabDefs = React.useMemo(() => 
-    extractTabNodes(layout).map(x => x.config)
-  , [layout]);
 
   const update = useUpdate();
 
@@ -90,12 +93,15 @@ export default function Manage(props) {
       >
         <h2>Create Tabs</h2>
         
-        {/* 🚧 */}
 
         <ul>
           <li data-tab-class={helper.toComponentMeta.World.key}>
             <span className="tab-class">
               World
+              {/* 🚧 */}
+              {/* <select>
+                <option></option>
+              </select> */}
             </span>
             <span className={cssName.createTab}>
               +
@@ -121,7 +127,7 @@ export default function Manage(props) {
       </div>
 
       <div
-        onClick={state.toggleDemoLinks}
+        onClick={state.onClickDemoLinks}
         className={cx("demo-links", { hideLinks: !state.showDemoLinks })}
       >
         <h2>
@@ -278,5 +284,5 @@ const manageCss = css`
  * @property {boolean} showDemoLinks
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCreateTabs
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCurrentTabs
- * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} toggleDemoLinks
+ * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickDemoLinks
  */

@@ -236,6 +236,8 @@
   - ✅ create tab needn't select it
   - ✅ close tab needn't select it
   - 🚧 can specify props when open new tab
+    - ✅ get all mapKeys somehow
+    - ✅ directly import deserialized geomorphs
   - tab grey if disabled (e.g. never mounted)
   - can change world mapKey
   - can change tty worldKey
@@ -332,6 +334,8 @@
 - 🚧 BUG: on add decor image i.e. decor spritesheet out-of-sync
   - w.geomorphs.sheet.decor is synced
   - `<Decor>` was not but fixed by editing its query
+
+- 🚧 Boxy SVG: sporadic slow save (or at least, triggering of our file mon)
 
 - node-canvas: is it still nondeterministic onchange decor pngs?
 
