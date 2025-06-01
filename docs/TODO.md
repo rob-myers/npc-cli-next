@@ -242,11 +242,11 @@
     - ✅ tty: can specify
       - ✅ profileKey
       - ✅ worldKey
-  - 🚧 fix select on remove i.e. should not switch away from manage
-  - tab grey if disabled (e.g. never mounted)
+  - ✅ fix select on remove i.e. should not switch away from manage
+  - 🚧 tab grey if disabled (e.g. never mounted)
+  - tty worldKey reflects home.WORLD_KEY
   - can change world mapKey
   - can change tty worldKey
-  - tty worldKey reflects home.WORLD_KEY
 
 - ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
   - e.g. via larger `npc.s.lookSecs` when nearly arrived

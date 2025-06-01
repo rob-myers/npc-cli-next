@@ -215,6 +215,9 @@ function isManageTabDef(def: TabDef) {
   return def.type === 'component' && def.class === 'Manage';
 }
 
+/**
+ * Mutates `layout` and return `true` iff actually removed the tab.
+ */
 export function removeTabFromLayout({ layout, tabId }: {
   layout: IJsonRowNode;
   tabId: string;
@@ -238,11 +241,19 @@ export function removeTabFromLayout({ layout, tabId }: {
 
     children.splice(index, 1); // remove the tab
 
-    if (typeof tabset.selected === 'number') {
-      if (children.length === 0) tabset.selected = undefined;
-      else if (children.length === index) tabset.selected = index - 1;
-      else tabset.selected = index; // preserve
+    if (typeof tabset.selected !== 'number' || children.length === 0) {
+      tabset.selected = undefined;
+      return true;
     }
+
+    if (index > tabset.selected) {
+      // NOOP
+    } else if (index === tabset.selected) {
+      tabset.selected = Math.min(tabset.selected, children.length - 1);
+    } else {
+      tabset.selected = Math.max(tabset.selected - 1, 0);
+    }
+
     return true;
   }
   return false;
