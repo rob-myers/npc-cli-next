@@ -135,8 +135,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     },
     toggleTabsDisabled(nextDisabled) {
       for (const tabState of Object.values(state.tabsState)) {
-        if (nextDisabled === false && tabState.visible === false) {
-          continue; // do not set background tabs enabled
+        if (nextDisabled === false && tabState.visible === false && tabState.type !== 'terminal') {
+          continue; // do not set background non-tty tabs enabled
         }
         if (tabState.disabled !== nextDisabled) {
           tabState.disabled = nextDisabled;
