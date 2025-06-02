@@ -247,7 +247,9 @@
     - ℹ️ TTY tabs not disabled in background, others are
     - ✅ should not set background tab enabled when Tabs enabled
     - ✅ site.store has tabset.tabs derived from tabset.synced
-    - 🚧 expose Viewer tabs disabled
+    - ✅ ensure keys are removed from Tabs.tabsState
+    - ✅ expose Viewer tabs disabled
+    - 🚧 UI
   - can change world mapKey
   - can change tty worldKey
   - tty worldKey reflects home.WORLD_KEY

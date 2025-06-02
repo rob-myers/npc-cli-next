@@ -286,7 +286,6 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
     started,
     synced,
     tabs: extractTabNodes(synced),
-    tabMeta: {},
     version: 0,
   };
 
@@ -309,15 +308,8 @@ export interface TabsetLayouts {
   started: TabsetLayout;
   synced: TabsetLayout;
   saved: TabsetLayout;
-  
   /** The tabs of `synced` */
   tabs: IJsonTabNode[];
-
-  // 🚧
-  tabMeta: { [tabId: string]: {
-    disabled: boolean; // changed dynamically unlike `tabNode.config.props.disabled`
-  }};
-
   /**
    * Used to trigger tabset model recompute.
    * This does not involve a remount.

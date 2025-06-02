@@ -21,7 +21,7 @@ import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
 
 import ViewerControls from "./ViewerControls";
-import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
+import { Tabs, type State as TabsState, type TabState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
@@ -128,6 +128,9 @@ export default function Viewer() {
         useSite.api.syncCurrentTabset(state.tabs.model);
       }
     },
+    onToggleTab(tabState) {
+      useSite.api.setTabMeta(tabState);
+    },
     update,
   }));
 
@@ -184,6 +187,7 @@ export default function Viewer() {
           initEnabled={false}
           onHardReset={useSite.api.revertCurrentTabset}
           onModelChange={state.onModelChange}
+          onToggleTab={state.onToggleTab}
           onToggled={update}
           persistLayout
           updates={site.tabsetVersion}
@@ -198,11 +202,12 @@ export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
+  onChangeIntersect(intersects: boolean): void;
   /** @param pathname e.g. `/internal/set-tabset/empty` */
   onInternalApi(pathname: `/internal/${string}`): void;
-  onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
   onModelChange(updateLayout: boolean): void;
+  onToggleTab(tabState: TabState): void;
   update(): void;
 }
 

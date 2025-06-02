@@ -33,8 +33,13 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         if (state.model.getMaximizedTabset() !== undefined) {
           // We're minimising: enable just covered tabs
           Object.values(state.tabsState).forEach(tabState => {
-            if (tabState.justCovered === true && state.enabled === true) {
+            if (
+              tabState.justCovered === true
+              && state.enabled === true
+              && tabState.disabled === true
+            ) {
               tabState.disabled = false;
+              props.onToggleTab?.(tabState);
             }
             tabState.everUncovered = true;
             tabState.justCovered = false;
@@ -46,10 +51,18 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
             .map((x) => x.getId());
           state.model.visitNodes((node) => {
             const id = node.getId();
-            const meta = state.tabsState[id];
-            if (node.getType() === "tab" && !maxIds.includes(id) && meta?.type === "component") {
-              meta.disabled === false && (meta.justCovered = true);
-              meta.disabled = true;
+            const tabState = state.tabsState[id];
+            if (
+              node.getType() !== "tab"
+              || maxIds.includes(id)
+              || tabState?.type === "terminal"
+            ) {
+              return;
+            }
+            if (tabState.disabled === false) {
+              tabState.justCovered = true;
+              tabState.disabled = true;
+              props.onToggleTab?.(tabState);
             }
           });
         }
@@ -121,12 +134,14 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       props.onToggled?.(nextEnabled);
     },
     toggleTabsDisabled(nextDisabled) {
-      const { tabsState } = state;
-      for (const { key, visible } of Object.values(tabsState)) {
-        if (nextDisabled === false && visible === false) {
+      for (const tabState of Object.values(state.tabsState)) {
+        if (nextDisabled === false && tabState.visible === false) {
           continue; // do not set background tabs enabled
         }
-        tabsState[key].disabled = nextDisabled 
+        if (tabState.disabled !== nextDisabled) {
+          tabState.disabled = nextDisabled;
+          props.onToggleTab?.(tabState);
+        }
       }
     },
     updateHash(nextHash) {
@@ -147,17 +162,20 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     const output = Model.fromJson(
       layoutToModelJson(props.tabset, props.rootOrientationVertical)
     );
+    const seenTabIds = new Set<string>();
 
     // Enable and disable tabs relative to visibility
     output.visitNodes((node) => {
       if (node.getType() !== "tab") {
         return;
       }
+      seenTabIds.add(node.getId());
 
       node.setEventListener("visibility", async ({ visible }) => {
         // console.log('visibility', key, visible);
         
         const [key, tabDef] = [node.getId(), (node as TabNode).getConfig() as TabDef];
+        const prevDisabled = key in state.tabsState ? state.tabsState[key].disabled : undefined;
         const tabState = state.tabsState[key] ??= {
           key,
           type: tabDef.type,
@@ -177,14 +195,25 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         
         if (!visible && tabDef.type === "component") {
           // 🔔 invisible tabs of type "component" get disabled in background
-          // 🔔 tabs of type "terminal" stay enabled in background
+          // 🔔 tabs of type "terminal" stay enabled in background (unless Tabs disabled)
           tabState.disabled = true;
           setTimeout(update);
         }
 
         tabState.visible = Boolean(visible);
+
+        if (prevDisabled === undefined || prevDisabled !== tabState.disabled) {
+          props.onToggleTab?.(tabState); // new or changed
+        }
       });
     });
+
+    // Restrict tabsState to extant tabs
+    for (const tabId of Object.keys(state.tabsState)) {
+      if (!seenTabIds.has(tabId)) {
+        delete state.tabsState[tabId];
+      }
+    }
 
     return output;
   }, [tabsDefChanged, state.resets, props.updates]);
@@ -219,6 +248,11 @@ export interface Props extends TabsBaseProps {
   /** A model update does not involve remounting */
   updates: number;
   rootOrientationVertical?: boolean;
+  /**
+   * Invoked onchange `tabState.disabled`, which can happen for many
+   * reasons e.g. select other tab, maximize tab, disable Tabs.
+   */
+  onToggleTab?(tabState: TabState): void;
   onHardReset?(): void;
   /** Invoked onchange state.enabled */
   onToggled?(next: boolean): void;

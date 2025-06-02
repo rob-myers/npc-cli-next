@@ -22,12 +22,12 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   pageMetadata: {} as PageMetadata,
   navOpen: false,
   tabset: computeStoredTabsetLookup(),
-  tabsetUpdates: 0,
+  tabsMeta: {},
   viewOpen: false,
 
   api: {
 
-    //#region tabset
+    //#region tabs related
 
     changeTabProps(tabId, partialProps) {
       const { synced: layout, tabs } = get().tabset;
@@ -333,6 +333,12 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         return next;
       }
     },
+
+    setTabMeta(meta) {// currently only tracks `disabled`
+      set(({ tabsMeta }) => ({ tabsMeta: { ...tabsMeta,
+        [meta.key]: meta,
+      }}))
+    },
   },
 }));
 
@@ -349,6 +355,7 @@ export type State = {
   draggingView: boolean;
 
   tabset: TabsetLayouts;
+  tabsMeta: { [tabId: string]: SiteTabMeta };
   navOpen: boolean;
   viewOpen: boolean;
 
@@ -378,6 +385,8 @@ export type State = {
     toggleView(next?: boolean): boolean;
     /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
     setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
+    /** Track non-layout properties e.g. disabled */
+    setTabMeta(tabMeta: SiteTabMeta): void;
     storeCurrentLayout(model: Model): void;
     syncCurrentTabset(model: Model): void;
     testMutateLayout(): void; // 🚧 temp
@@ -423,6 +432,12 @@ interface GiscusDiscussionMeta {
   totalReplyCount: number;
   /** e.g. `"https://github.com/rob-myers/the-last-redoubt/discussions/5"` */
   url: string;
+}
+
+interface SiteTabMeta {
+  key: string;
+  disabled: boolean;
+  // ...
 }
 
 const useSite = Object.assign(useStore, { api: useStore.getState().api });
