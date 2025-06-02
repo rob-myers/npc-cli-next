@@ -246,9 +246,11 @@
   - 🚧 tab grey if disabled (e.g. never mounted)
     - ℹ️ TTY tabs not disabled in background, others are
     - ✅ should not set background tab enabled when Tabs enabled
-  - tty worldKey reflects home.WORLD_KEY
+    - ✅ site.store has tabset.tabs derived from tabset.synced
+    - 🚧 expose Viewer tabs disabled
   - can change world mapKey
   - can change tty worldKey
+  - tty worldKey reflects home.WORLD_KEY
 
 - ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
   - e.g. via larger `npc.s.lookSecs` when nearly arrived

@@ -1,4 +1,4 @@
-import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
+import { type IJsonRowNode, IJsonModel, IJsonTabNode, IJsonTabSetNode } from "flexlayout-react";
 import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
 import type { CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
@@ -28,7 +28,9 @@ export function addTabToLayout({ layout, selectTab, tabDef }: {
   const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
   activeTabset.active = true;
   
-  const numTabs = activeTabset.children.push(createTabNodeFromDef(tabDef));
+  const numTabs = activeTabset.children.push(
+    createTabNodeFromDef(tabDef)
+  );
 
   if (selectTab === true) {
     tabsetNodes.forEach(x => x.maximized = false); // minimize
@@ -267,20 +269,26 @@ export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
   return createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey]);
 }
 
-export function computeStoredTabsetLookup(): AllTabsets {
+export function computeStoredTabsetLookup(): TabsetLayouts {
   
-  function restoreLayout(key: keyof AllTabsets) {
+  function restoreLayout(key: keyof TabsetLayouts) {
     return ensureManageTab(
       tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
       ?? deepClone(emptyTabsetLayout)
     );
   }
   
-  const output = {
-    started: restoreLayout('synced'),
-    synced: restoreLayout('synced'),
+  const synced = restoreLayout('synced');
+  const started = deepClone(synced);
+
+  const output: TabsetLayouts = {
     saved: restoreLayout('saved'),
+    started,
+    synced,
+    tabs: extractTabNodes(synced),
+    tabMeta: {},
   };
+
   console.log(`${'restoreTabsetLookup'}`, output);
   return output;
 }
@@ -291,15 +299,23 @@ const emptyTabsetLayout: TabsetLayout = {
 };
 
 /**
- * Tabset layout by `key`.
+ * Tabset layouts and current tabs meta
  * - `started` is most recent layout started in `<Tabs>`
  * - `synced` is the actual layout, in sync with flexlayout-react
  * - `saved` is the layout we restore to on hard reset
  */
-export interface AllTabsets {
+export interface TabsetLayouts {
   started: TabsetLayout;
   synced: TabsetLayout;
   saved: TabsetLayout;
+  
+  /** The tabs of `synced` */
+  tabs: IJsonTabNode[];
+
+  // 🚧
+  tabMeta: { [tabId: string]: {
+    disabled: boolean; // changed dynamically unlike `tabNode.config.props.disabled`
+  }};  
 }
 
 /**

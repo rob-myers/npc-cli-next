@@ -1,9 +1,10 @@
 import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
+import { shallow } from "zustand/shallow";
 import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
-import { computeTabDef, extractTabNodes } from "../tabs/tab-util";
+import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
@@ -13,8 +14,9 @@ import useUpdate from "../hooks/use-update";
 /** @param {Props} props */
 export default function Manage(props) {
 
-  const tabDefs = useSite(({ tabset }) =>
-    extractTabNodes(tabset.synced).map(x => x.config)
+  const tabDefs = useSite(({ tabset: { tabs } }) =>
+    tabs.map(x => x.config),
+    shallow,
   );
 
   const state = useStateRef(/** @returns {State} */ () => ({
