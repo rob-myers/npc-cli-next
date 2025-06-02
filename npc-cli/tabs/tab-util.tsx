@@ -309,7 +309,7 @@ export interface TabsetLayouts {
   synced: TabsetLayout;
   saved: TabsetLayout;
   /** The tabs of `synced` */
-  tabs: IJsonTabNode[];
+  tabs: CustomIJsonTabNode[];
   /**
    * Used to trigger tabset model recompute.
    * This does not involve a remount.

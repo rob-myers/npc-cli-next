@@ -336,7 +336,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     setTabMeta(meta) {// currently only tracks `disabled`
       set(({ tabsMeta }) => ({ tabsMeta: { ...tabsMeta,
-        [meta.key]: meta,
+        [meta.key]: { key: meta.key, disabled: meta.disabled },
       }}))
     },
   },

@@ -19,6 +19,11 @@ export default function Manage(props) {
     shallow,
   );
 
+  const tabsDisabled = useSite(({ tabsMeta }) =>
+    tabsMeta,
+    shallow,
+  );
+
   const state = useStateRef(/** @returns {State} */ () => ({
     showDemoLinks: false,
 
@@ -111,12 +116,16 @@ export default function Manage(props) {
         <h2>Current Tabs</h2>
 
         <ul>
-          {tabDefs.map(def =>
-            <li
+          {tabDefs.map(def => {
+            const disabledMeta = tabsDisabled[def.filepath];
+            return <li
               key={def.filepath}
               data-tab-id={def.filepath}
             >
-              <span className="tab-def">
+              <span className={cx("tab-def", {
+                disabled: disabledMeta?.disabled === true,
+                unmounted: disabledMeta === undefined,
+              })}>
                 <span>{def.filepath}</span>
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
                 {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
@@ -125,7 +134,7 @@ export default function Manage(props) {
                 x
               </span>
             </li>
-          )}
+          })}
         </ul>
       </div>
       
@@ -239,17 +248,13 @@ const manageCss = css`
     min-width: 200px;
   }
 
-  ul {
+  ul li {
     color: #ccc;
-  }
-  li {
     display: flex;
     gap: 4px;
     
     padding: 4px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    font-size: small;
-
   }
 
   .current-tabs li {
@@ -259,10 +264,21 @@ const manageCss = css`
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
+
+      &.disabled {
+        filter: brightness(60%);
+      }
+      &.unmounted {
+        filter: brightness(60%);
+        text-decoration: line-through;
+      }
     }
 
     .world-key, .map-key {
       color: #aa8;
+      font-size: small;
+      display: flex;
+      align-items: end;
     }
 
     .${cssName.closeTab} {

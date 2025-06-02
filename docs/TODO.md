@@ -249,7 +249,8 @@
     - ✅ site.store has tabset.tabs derived from tabset.synced
     - ✅ ensure keys are removed from Tabs.tabsState
     - ✅ expose Viewer tabs disabled
-    - 🚧 UI
+    - ✅ style when disabled
+    - ✅ style when unmounted
   - can change world mapKey
   - can change tty worldKey
   - tty worldKey reflects home.WORLD_KEY
