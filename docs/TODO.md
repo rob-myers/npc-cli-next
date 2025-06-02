@@ -244,6 +244,8 @@
       - ✅ worldKey
   - ✅ fix select on remove i.e. should not switch away from manage
   - 🚧 tab grey if disabled (e.g. never mounted)
+    - ℹ️ TTY tabs not disabled in background, others are
+    - ✅ should not set background tab enabled when Tabs enabled
   - tty worldKey reflects home.WORLD_KEY
   - can change world mapKey
   - can change tty worldKey

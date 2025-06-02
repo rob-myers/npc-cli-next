@@ -99,10 +99,11 @@ type ComponentClassKeyToProps = {
 
 export interface BaseTabProps {
   /**
-   * Is this Tab disabled?
-   * Either
-   * - every tab is disabled
-   * - every tab is enabled (except background component tabs)
+   * A Tab is disabled if either:
+   * - Tabs disabled (all tabs disabled) 
+   * - Tab is hidden (behind another tab).
+   * 
+   * In the future we may permit disabling a visible Tab whilst Tabs enabled.
    */
   disabled?: boolean;
   /**

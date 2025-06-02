@@ -30,16 +30,17 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     },
     onAction(act) {
       if (act.type === Actions.MAXIMIZE_TOGGLE) {
-        if (state.model.getMaximizedTabset()) {
-          // On minimise, enable justCovered tabs
-          Object.values(state.tabsState).forEach((x) => {
-            x.justCovered && state.enabled && (x.disabled = false);
-            x.everUncovered = true;
-            x.justCovered = false;
+        if (state.model.getMaximizedTabset() !== undefined) {
+          // We're minimising: enable just covered tabs
+          Object.values(state.tabsState).forEach(tabState => {
+            if (tabState.justCovered === true && state.enabled === true) {
+              tabState.disabled = false;
+            }
+            tabState.everUncovered = true;
+            tabState.justCovered = false;
           });
-          update();
         } else {
-          // On maximise, disable hidden non-terminal tabs
+          // We're maximising: 🔔 disable hidden non-terminal tabs
           const maxIds = (state.model.getNodeById(act.data.node) as TabSetNode)
             .getChildren()
             .map((x) => x.getId());
@@ -47,12 +48,12 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
             const id = node.getId();
             const meta = state.tabsState[id];
             if (node.getType() === "tab" && !maxIds.includes(id) && meta?.type === "component") {
-              !meta.disabled && (meta.justCovered = true);
+              meta.disabled === false && (meta.justCovered = true);
               meta.disabled = true;
             }
-            update();
           });
         }
+        update();
       }
       if (act.type === Actions.ADJUST_BORDER_SPLIT) {
         state.focusRoot();
@@ -93,19 +94,17 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       state.resets++; // Remount
       update();
     },
-    toggleEnabled(next) {
+    toggleEnabled(nextEnabled = !state.enabled) {
       const prev = state.enabled;
-      // toggle if `next` undefined, else set
-      next ??= !prev;
 
-      if (prev === next) {
+      if (prev === nextEnabled) {
         return;
       }
 
-      state.everEnabled ||= next;
-      state.enabled = next;
+      state.everEnabled ||= nextEnabled;
+      state.enabled = nextEnabled;
 
-      if (next) {
+      if (nextEnabled === true) {
         const prevFocused = state.prevFocused;
         state.prevFocused = null;
         // setTimeout prevents enter propagating to Terminal
@@ -116,15 +115,18 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       }
 
       // Toggle all tabs
-      state.toggleTabsDisabled(next);
+      state.toggleTabsDisabled(!nextEnabled);
       update();
 
-      props.onToggled?.(next);
+      props.onToggled?.(nextEnabled);
     },
-    toggleTabsDisabled(next) {
+    toggleTabsDisabled(nextDisabled) {
       const { tabsState } = state;
-      for (const key of Object.keys(tabsState)) {
-        tabsState[key].disabled = !next 
+      for (const { key, visible } of Object.values(tabsState)) {
+        if (nextDisabled === false && visible === false) {
+          continue; // do not set background tabs enabled
+        }
+        tabsState[key].disabled = nextDisabled 
       }
     },
     updateHash(nextHash) {
@@ -153,29 +155,34 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       }
 
       node.setEventListener("visibility", async ({ visible }) => {
-        const [key, tabDef] = [node.getId(), (node as TabNode).getConfig() as TabDef];
         // console.log('visibility', key, visible);
-        state.tabsState[key] ??= {
+        
+        const [key, tabDef] = [node.getId(), (node as TabNode).getConfig() as TabDef];
+        const tabState = state.tabsState[key] ??= {
           key,
           type: tabDef.type,
           disabled: !state.enabled,
           everUncovered: false,
           justCovered: false,
+          visible: false,
         };
-
+        
         if (visible) {
-          state.tabsState[key].disabled = !state.enabled;
+          // 🔔 visible tab enabled iff Tabs is
+          tabState.disabled = !state.enabled;
           const maxNode = state.model.getMaximizedTabset()?.getSelectedNode();
-          state.tabsState[key].everUncovered ||= maxNode ? node === maxNode : true;
+          tabState.everUncovered ||= maxNode ? node === maxNode : true;
           setTimeout(update); // 🔔 Cannot update a component (`Tabs`) while rendering a different component (`Layout`)
         }
         
         if (!visible && tabDef.type === "component") {
-          // - invisible tabs of type "component" get disabled in background
-          // - tabs of type "terminal" stay enabled in background
-          state.tabsState[key].disabled = true;
+          // 🔔 invisible tabs of type "component" get disabled in background
+          // 🔔 tabs of type "terminal" stay enabled in background
+          tabState.disabled = true;
           setTimeout(update);
         }
+
+        tabState.visible = Boolean(visible);
       });
     });
 
@@ -235,7 +242,8 @@ export interface State {
   onKeyDown(e: React.KeyboardEvent): void;
   onModelChange(): void;
   reset(remember?: boolean): void;
-  toggleEnabled(next?: boolean): void;
+  /** Toggle if argument undefined, else set */
+  toggleEnabled(nextEnabled?: boolean): void;
   toggleTabsDisabled(next: boolean): void;
   /** Returns true iff hash changed */
   updateHash(nextHash: string): boolean;
@@ -253,6 +261,7 @@ export interface TabState {
   everUncovered: boolean;
   /** `true` iff was just covered by a maximised tab */
   justCovered: boolean;
+  visible: boolean;
 }
 
 const tabsCss = css`
