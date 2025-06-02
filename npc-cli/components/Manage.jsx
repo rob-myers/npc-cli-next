@@ -231,11 +231,12 @@ const manageCss = css`
   }
 
   > div {
-    @media (min-width: 800px) {
+    /* @media (min-width: 800px) {
       max-width: 440px;
-    }
+    } */
 
-    width: 100%;
+    width: calc(50% - 8px);
+    min-width: 200px;
   }
 
   ul {
@@ -282,6 +283,7 @@ const manageCss = css`
     display: flex;
     flex-direction: column;
     gap: 12px;
+    /* flex: 1; */
 
     li {
       justify-content: space-between;
