@@ -231,7 +231,10 @@ const manageCss = css`
   }
 
   > div {
-    max-width: 240px;
+    @media (min-width: 800px) {
+      max-width: 440px;
+    }
+
     width: 100%;
   }
 
