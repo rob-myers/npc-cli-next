@@ -306,20 +306,23 @@ const manageCss = css`
     }
 
     .tab-class {
-      flex: 1;
-      padding: 0 4px;
+      /* flex: 1; */
+      padding: 0 12px 0 4px;
+      min-width: 80px;
     }
     .options {
       display: flex;
-      flex-direction: column;
+      /* flex-direction: column; */
+      flex-wrap: wrap;
       gap: 8px;
     }
 
     select, input {
+      /* width: 100px; */
+      width: 100%;
       background-color: inherit;
       color: inherit;
       border: 1px solid #555;
-      max-width: 100px;
       padding: 4px;
     }
     input::placeholder {
