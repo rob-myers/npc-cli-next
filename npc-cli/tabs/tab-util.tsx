@@ -6,7 +6,7 @@ import { helper } from "../service/helper";
 import type { ProfileKey } from "../sh/src";
 
 /**
- * If exists do nothing, otherwise append to active tabset.
+ * If exists do nothing, else mutate by appending to active tabset.
  */
 export function addTabToLayout({ layout, selectTab, tabDef }: {
   layout: TabsetLayout;
@@ -287,6 +287,7 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
     synced,
     tabs: extractTabNodes(synced),
     tabMeta: {},
+    version: 0,
   };
 
   console.log(`${'restoreTabsetLookup'}`, output);
@@ -315,7 +316,13 @@ export interface TabsetLayouts {
   // 🚧
   tabMeta: { [tabId: string]: {
     disabled: boolean; // changed dynamically unlike `tabNode.config.props.disabled`
-  }};  
+  }};
+
+  /**
+   * Used to trigger tabset model recompute.
+   * This does not involve a remount.
+   */
+  version: number;
 }
 
 /**

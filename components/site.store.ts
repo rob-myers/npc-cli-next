@@ -56,16 +56,14 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const lookup = get().tabset;
       const { synced: layout } = lookup;
 
-      if (removeTabFromLayout({ layout: layout, tabId }) === true) {
+      if (removeTabFromLayout({ layout, tabId }) === true) {
         const synced = deepClone(layout);
-        set(({ tabsetUpdates }) => ({
-          tabset: { ...lookup,
-            started: layout,
-            synced,
-            tabs: extractTabNodes(synced),
-          },
-          tabsetUpdates: tabsetUpdates + 1,
-        }))
+        set(({ tabset }) => ({ tabset: { ...tabset,
+          started: layout,
+          synced,
+          tabs: extractTabNodes(synced),
+          version: tabset.version + 1,
+        }}))
         return true;
       } else {
         return false;
@@ -86,14 +84,12 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const layout = {...addTabToLayout({ layout: lookup.synced, tabDef })};
       const synced = deepClone(layout);
 
-      useSite.setState(({ tabsetUpdates }) => ({
-        tabset: { ...lookup,
-          started: layout,
-          synced,
-          tabs: extractTabNodes(synced),
-        },
-        tabsetUpdates: tabsetUpdates + 1,
-      }));
+      useSite.setState(({ tabset }) => ({ tabset: { ...tabset,
+        started: layout,
+        synced,
+        tabs: extractTabNodes(synced),
+        version: tabset.version + 1,
+      }}));
     },
 
     rememberCurrentTabs() {
@@ -134,21 +130,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     revertCurrentTabset() {
-      const lookup = get().tabset;
-      const layout = deepClone(lookup.saved);
+      const layout = deepClone(get().tabset.saved);
+      const synced = deepClone(layout);
 
-      set(({ tabsetUpdates }) => {
-        const synced = deepClone(layout);
-        return {
-          tabset: { ...lookup,
-            started: layout,
-            synced,
-            tabs: extractTabNodes(synced),
-          },
-          // force <Tabs> to compute new model, else revert only works 1st time
-          tabsetUpdates: tabsetUpdates + 1,
-        };
-      }, undefined, 'revert-current-tabset');
+      set(({ tabset }) => ({ tabset: { ...tabset,
+        started: layout,
+        synced,
+        tabs: extractTabNodes(synced),
+        // force <Tabs> to compute new model, else revert only works 1st time
+        version: tabset.version + 1,
+      }}), undefined, 'revert-current-tabset');
       
       // overwrite localStorage too
       tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(layout));
@@ -162,18 +153,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       if (isTouchDevice()) {// better UX on mobile
         layout = flattenLayout(deepClone(layout));
       }
+      const synced = deepClone(layout);
 
-      set(({ tabset: lookup, tabsetUpdates }) => {
-        const synced = deepClone(layout);
-        return {
-          tabset: { ...lookup,
-            started: deepClone(layout),
-            synced,
-            tabs: extractTabNodes(synced),
-          },
-          ...opts?.overwrite === true && { tabsetUpdates: tabsetUpdates + 1, }
-        };
-      }, undefined, 'set-tabset');
+      set(({ tabset }) => ({ tabset: { ...tabset,
+        started: deepClone(layout),
+        synced,
+        tabs: extractTabNodes(synced),
+        ...opts?.overwrite === true && {
+          version: tabset.version + 1,
+        }
+      }}), undefined, 'set-tabset');
     },
 
     storeCurrentLayout(model) {
@@ -360,12 +349,6 @@ export type State = {
   draggingView: boolean;
 
   tabset: TabsetLayouts;
-  /**
-   * 🚧 move to tabset.version
-   * Used to trigger tabset model recompute.
-   * This does not involve a remount.
-   */
-  tabsetUpdates: number;
   navOpen: boolean;
   viewOpen: boolean;
 
