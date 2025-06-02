@@ -13,8 +13,6 @@ import useUpdate from "../hooks/use-update";
 /** @param {Props} props */
 export default function Manage(props) {
 
-  // console.log({geomorphs, mapKeys});
-
   const tabDefs = useSite(({ tabset }) =>
     extractTabNodes(tabset.synced).map(x => x.config)
   );
@@ -108,9 +106,7 @@ export default function Manage(props) {
         className="current-tabs"
         onClick={state.onClickCurrentTabs}
       >
-        <h2>
-          Current Tabs
-        </h2>
+        <h2>Current Tabs</h2>
 
         <ul>
           {tabDefs.map(def =>
@@ -178,15 +174,12 @@ export default function Manage(props) {
             </span>
           </li>
         </ul>
-      </div>
 
       <div
         onClick={state.onClickDemoLinks}
         className={cx("demo-links", { hideLinks: !state.showDemoLinks })}
       >
-        <h2>
-          Demo links
-        </h2>
+        <h2>Demo links</h2>
 
         <ul>
           <li><a href={`#/internal/set-tabs/empty-layout`}>use preset empty-tabs</a></li>
@@ -206,6 +199,7 @@ export default function Manage(props) {
         </ul>
       </div>
 
+      </div>
     </div>
   );
 }
@@ -235,7 +229,8 @@ const manageCss = css`
   }
 
   > div {
-    width: 240px;
+    max-width: 240px;
+    width: 100%;
   }
 
   ul {
@@ -279,6 +274,10 @@ const manageCss = css`
   }
 
   .create-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
     li {
       justify-content: space-between;
     }
@@ -331,10 +330,13 @@ const manageCss = css`
     h2 {
       cursor: pointer;
     }
+    ul {
+      height: 100px;
+      overflow: auto;
+    }
     a {
       font-size: small;
     }
-
     &.hideLinks {
       h2 {
         color: #aaa;
