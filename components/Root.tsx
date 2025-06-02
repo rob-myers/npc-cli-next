@@ -51,7 +51,7 @@ export default function Root({ children }: React.PropsWithChildren) {
       </div>
       <ReactQueryDevtools
         initialIsOpen={false}
-        buttonPosition="bottom-left"
+        buttonPosition="bottom-right"
       />
     </QueryClientProvider>
   );
