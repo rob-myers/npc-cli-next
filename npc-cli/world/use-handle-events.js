@@ -624,7 +624,7 @@ export default function useHandleEvents(w) {
       };
       /** @type {Geom.VectJson} */
       let newDst;
-      
+
       // if newSrc --> corner intersects exit segment, use it (avoid turn)
       const exIota = geom.getLineSegsIntersection(exSrc, exDst, newSrc, nextCorner);
       
