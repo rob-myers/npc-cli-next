@@ -27,7 +27,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
   api: {
 
-    //#region tabs related
+    //#region tabset (layout)
 
     changeTabProps(tabId, partialProps) {
       const { synced: layout, tabs } = get().tabset;
@@ -227,6 +227,23 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     //#endregion
+    
+    //#region tab meta
+    
+    clearTabMeta() {
+      set(() => ({ tabsMeta: {}}));
+    },
+
+    setTabMeta(meta) {// currently only tracks `disabled`
+      set(({ tabsMeta }) => ({ tabsMeta: { ...tabsMeta,
+        [meta.key]: {
+          key: meta.key,
+          disabled: meta.disabled,
+        },
+      }}));
+    },
+
+    //#endregion
 
     getPageMetadataFromScript() {// 🔔 read metadata from <script id="page-metadata-json">
       try {
@@ -334,11 +351,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
     },
 
-    setTabMeta(meta) {// currently only tracks `disabled`
-      set(({ tabsMeta }) => ({ tabsMeta: { ...tabsMeta,
-        [meta.key]: { key: meta.key, disabled: meta.disabled },
-      }}))
-    },
   },
 }));
 
@@ -366,6 +378,7 @@ export type State = {
      * - If tab type is terminal we merge into env.
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
+    clearTabMeta(): void;
     /** Restore layout from localStorage or use fallback */
     restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
     getTabClassNextSuffix(tabClass: Key.TabClass): number;

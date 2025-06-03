@@ -128,6 +128,9 @@ export default function Viewer() {
         useSite.api.syncCurrentTabset(state.tabs.model);
       }
     },
+    onTabsReset() {
+      useSite.api.clearTabMeta();
+    },
     onToggleTab(tabState) {
       useSite.api.setTabMeta(tabState);
     },
@@ -189,6 +192,7 @@ export default function Viewer() {
           onModelChange={state.onModelChange}
           onToggleTab={state.onToggleTab}
           onToggled={update}
+          onReset={state.onTabsReset}
           persistLayout
           updates={site.tabsetVersion}
           rootOrientationVertical
@@ -207,6 +211,7 @@ export interface State {
   onInternalApi(pathname: `/internal/${string}`): void;
   onKeyDown(e: React.KeyboardEvent): void;
   onModelChange(updateLayout: boolean): void;
+  onTabsReset(): void;
   onToggleTab(tabState: TabState): void;
   update(): void;
 }

@@ -96,16 +96,19 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     onModelChange: debounce((() => {
       props.onModelChange?.(false);
     }), 30),
-    reset(remember = true) {
+    reset(rememberLayout = true) {
       state.tabsState = {};
       if (!state.enabled) {
         state.everEnabled = false;
       }
-      if (remember) {// Save and sync current
+      if (rememberLayout === true) {// Save and sync current
         props.onModelChange?.(true);
       }
-      state.resets++; // Remount
+      // Remount
+      state.resets++;
       update();
+
+      props.onReset?.();
     },
     toggleEnabled(nextEnabled = !state.enabled) {
       const prev = state.enabled;
@@ -248,15 +251,16 @@ export interface Props extends TabsBaseProps {
   /** A model update does not involve remounting */
   updates: number;
   rootOrientationVertical?: boolean;
+  onHardReset?(): void;
+  onModelChange?(syncCurrent: boolean): void;
   /**
    * Invoked onchange `tabState.disabled`, which can happen for many
    * reasons e.g. select other tab, maximize tab, disable Tabs.
    */
   onToggleTab?(tabState: TabState): void;
-  onHardReset?(): void;
   /** Invoked onchange state.enabled */
   onToggled?(next: boolean): void;
-  onModelChange?(syncCurrent: boolean): void;
+  onReset?(): void;
 }
 
 export interface State {
@@ -275,7 +279,7 @@ export interface State {
   onAction(act: Action): Action | undefined;
   onKeyDown(e: React.KeyboardEvent): void;
   onModelChange(): void;
-  reset(remember?: boolean): void;
+  reset(rememberLayout?: boolean): void;
   /** Toggle if argument undefined, else set */
   toggleEnabled(nextEnabled?: boolean): void;
   toggleTabsDisabled(next: boolean): void;
