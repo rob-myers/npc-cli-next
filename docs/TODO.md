@@ -259,8 +259,9 @@
   - e.g. via larger `npc.s.lookSecs` when nearly arrived
 
 - ✅ soldier-0 needs more hair
-- change robot-0 body, body-overlay
-- change robot-1
+- ✅ change robot-0
+  - mixture of two skins
+- 🚧 change robot-1
 
 - ✅ sh: should yield to stdout or stderr rather than `writeMsgCleanly`
   - ✅ `choice` yields

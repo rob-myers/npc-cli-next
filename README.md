@@ -320,7 +320,8 @@ We'll try to re-map publicly available Minecraft Skins.
 - https://namemc.com/minecraft-skins/tag/breaking-bad
   - ❌ https://namemc.com/skin/354790babeda2bc0
 - https://namemc.com/minecraft-skins/tag/robot
-  - 🚧 https://namemc.com/skin/4718725ab9582b06
+  - ✅ https://namemc.com/skin/4718725ab9582b06 (blend)
+  - ✅ https://namemc.com/skin/93f8e14071653c97 (blend)
 
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/business
