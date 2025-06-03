@@ -1330,11 +1330,11 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": 1907114995
+    "imagesHash": 2105508275
   },
   "skin": {
     "numSheets": {"human-0": 2},
-    "svgHashes": {"human-0": [-459839096, 1583127927]},
+    "svgHashes": {"human-0": [678185489, 1057301318]},
     "sheetTexId": {"human-0": [0, 1]},
     "uvMap": {
       "human-0": {
