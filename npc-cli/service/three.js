@@ -204,7 +204,7 @@ export const navMeta = {
     // vertexColors: true,
   }),
   nodeMaterial: new THREE.MeshBasicMaterial({ color: navNodeColor }),
-  nodeGeometry: new THREE.SphereGeometry(0.01),
+  nodeGeometry: new THREE.SphereGeometry(0.02),
 };
 
 /**

@@ -55,14 +55,18 @@ export default function Debug(props) {
         const linesGeometry = new LineGeometry();
     
         linesGeometry.setPositions(path.flatMap(({ x, y, z }) => [x, y + navMeta.groundOffset, z]));
-        showNavNodes && group.add(...path.map(() => new THREE.Mesh(navMeta.nodeGeometry, navMeta.nodeMaterial)));
+        if (showNavNodes) {
+          group.add(...path.map(() => new THREE.Mesh(navMeta.nodeGeometry, navMeta.nodeMaterial)));
+        }
         group.add(new Line2(linesGeometry, navMeta.lineMaterial));
     
-        showNavNodes && group.children.slice(0, -1).forEach((x, i) => {
-          x.visible = true;
-          x.position.copy(path[i]);
-          x.position.y += navMeta.groundOffset;
-        });
+        if (showNavNodes) {
+          group.children.slice(0, -1).forEach((x, i) => {
+            x.visible = true;
+            x.position.copy(path[i]);
+            x.position.y += navMeta.groundOffset;
+          });
+        }
       }
 
       group.visible = true;
