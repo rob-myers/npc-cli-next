@@ -107,6 +107,13 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="brightness-filter-2" bx:preset="brightness 1 0.82" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.82"/>
+        <feFuncG type="linear" slope="0.82"/>
+        <feFuncB type="linear" slope="0.82"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -297,7 +304,7 @@
       </rect>
       <g style="filter: url(&quot;#inner-shadow-filter-5&quot;);">
         <title>_top</title>
-        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAANUlEQVQIHWNkAIInT578B9HoQEZGhhEs+e/fv//YMEgjI0gCWScTExMjiA8TR+EgKwSxQYoB/1wvKRKSam4AAAAASUVORK5CYII=" width="8" height="4" x="128" transform="matrix(16, 0, 0, 32, -1920, 0)" style="image-rendering: pixelated;">
+        <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAECAYAAACzzX7wAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAABAAAAABQdJZTAAAANUlEQVQIHWNkAIInT578B9HoQEZGhhEs+e/fv//YMEgjI0gCWScTExMjiA8TR+EgKwSxQYoB/1wvKRKSam4AAAAASUVORK5CYII=" width="8" height="4" x="128" transform="matrix(16, 0, 0, 32, -1920, 0)" style="image-rendering: pixelated; filter: url(&quot;#brightness-filter-2&quot;);">
           <title>_top</title>
         </image>
         <ellipse style="fill-opacity: 0.3; stroke-width: 1;" cx="192" cy="64" rx="48" ry="48"/>
