@@ -186,6 +186,8 @@ export default function Manage(props) {
           </li>
         </ul>
 
+      </div>
+
       <div
         onClick={state.onClickDemoLinks}
         className={cx("demo-links", { hideLinks: !state.showDemoLinks })}
@@ -208,8 +210,6 @@ export default function Manage(props) {
           <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}`}>change "test-world-1" tab props: mapKey=small-map-1 </a></li>
           <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li>
         </ul>
-      </div>
-
       </div>
     </div>
   );
@@ -240,12 +240,8 @@ const manageCss = css`
     margin-bottom: 8px;
   }
 
-  > div {
-    /* width: calc(50% - 8px); */
-    min-width: 200px;
-  }
-
-  ul {
+  /* 🚧 not demo-links */
+  > div:nth-child(1) ul, > div:nth-child(2) ul {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -259,10 +255,6 @@ const manageCss = css`
     padding: 4px;
     border: 1px solid rgba(255, 255, 255, 0.15);
   }
-
-  /* .current-tabs {
-    flex: 1;
-  } */
 
   .current-tabs li {
     justify-content: space-between;
@@ -306,21 +298,21 @@ const manageCss = css`
     display: flex;
     flex-direction: column;
     gap: 12px;
-    /* flex: 1; */
+
+    background-color: inherit;
+    filter: sepia() hue-rotate(45deg);
+
 
     li {
-      justify-content: space-between;
+      display: flex;
+      align-items: center;
     }
 
     .tab-class {
-      /* flex: 1; */
       padding: 0 12px 0 4px;
-      min-width: 80px;
     }
     .options {
       display: flex;
-      /* flex-direction: column; */
-      flex-wrap: wrap;
       gap: 8px;
       max-width: 200px;
     }
@@ -362,10 +354,6 @@ const manageCss = css`
 
     h2 {
       cursor: pointer;
-    }
-    ul {
-      height: 100px;
-      overflow: auto;
     }
     a {
       font-size: small;
