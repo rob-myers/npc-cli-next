@@ -243,7 +243,7 @@
       - ✅ profileKey
       - ✅ worldKey
   - ✅ fix select on remove i.e. should not switch away from manage
-  - 🚧 tab grey if disabled (e.g. never mounted)
+  - ✅ tab grey if disabled (e.g. never mounted)
     - ℹ️ TTY tabs not disabled in background, others are
     - ✅ should not set background tab enabled when Tabs enabled
     - ✅ site.store has tabset.tabs derived from tabset.synced

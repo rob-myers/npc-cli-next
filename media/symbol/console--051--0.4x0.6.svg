@@ -52,8 +52,8 @@
   <image width="137" height="155" y="-2.5" x="6.5" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIkAAACbCAQAAAD8M3DSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAD/h4/MvwAAAAd0SU1FB+gEDhAuJ5G3/YsAAAH7SURBVHja7d3LUpxAAEDR9JT//8tkaYYbEA2keJyzbZzCW/3AccGYfi0Zy0OXNo318dfSwF2DfP2bvbZ9zJM8Msn6PHlkknWShCTxse2y6x8/Y/OVZklIEpKEJLFxez2j7RvmX3524byYxoVnyb8EWfnU6cJJjiPJzJgkCUlCkrjwIfynnqnji/Hlaz/u/JXiz7wEmbOXhCSxcXs95vH5nMySkCRmC+fz+HnSUnl3i1my73PELZLsazHJdJl/VOx9n6uH8FmijP96NxZOSBKShCQhSUgSkoQkIUlIEpKEJCFJSBKShCQhSUgSkoQkIUlIEpKEJCFJSBKShCQhSUgSkoQkIUlIEpKEJCFJSBKShCQhSUgSkoQkIUlIEpKEJCFJSBKShCQhSUgSkoQkIUlIEpKEJCFJSBKShCQhSUgSkoQkIUlIEpKEJCFJSBKShCQhSUgSkoQkIUlIEpKEJCFJSBKShCQhSUgSkoQksfKaj7O9NGjpfvZ+/cfiLDlbkGV736mFE7dIsu88me0l11kux7nFLNmXJLHxhZdneevWp+OWuFkSksRrcsjMLL50+n3AXvJokoQkIcnMNCSJyyY55gycxuYH+jP6XpT3Q3vtaeyys+Q4koQkIUlIEhtPnCf9uWyWhCQhSTwyyfo3iY9Msm5MPx28qK+/a/4NYDgmTE0Zw54AAAAldEVYdGRhdGU6Y3JlYXRlADIwMjQtMDQtMTRUMTY6NDY6MzkrMDA6MDBx+ACKAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI0LTA0LTE0VDE2OjQ2OjM5KzAwOjAwAKW4NgAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNC0wNC0xNFQxNjo0NjozOSswMDowMFewmekAAAAASUVORK5CYII=" style="">
     <title>console--051--0.4x0.6</title>
   </image>
-  <use width="1" height="1" style="transform-origin: 0.5px 0.5px;" href="#symbol-0" transform="matrix(136.971466, 0, 0, 113.554642, 75.689392, 74.625031)">
-    <title>decor cuboid h=0.2 y=-0.2 color=#666 outline=0.5</title>
+  <use width="1" height="1" style="transform-origin: 0.5px 0.5px;" href="#symbol-0" transform="matrix(136.97146606445312, 0, 0, 113.55464172363281, 75.68939208984375, 74.62503051757812)">
+    <title>decor cuboid h=0.2 y=-0.2 outline=0.5</title>
   </use>
   <rect width="137.000015" height="149.999994" style="fill: rgb(0, 0, 255); fill-opacity: 0.5; pointer-events: none;" x="6.5">
     <title>obstacle chair</title>
