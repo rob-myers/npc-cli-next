@@ -25,7 +25,7 @@ export default function Manage(props) {
   );
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    showDemoLinks: false,
+    showDemoLinks: true,
 
     onClickCreateTabs({ target: el }) {
       const li = el.closest('li');
@@ -103,7 +103,7 @@ export default function Manage(props) {
         useSite.api.closeTab(tabId);
       }
     },
-  }));
+  }), { reset: { showDemoLinks: true } });
 
   const update = useUpdate();
 
@@ -113,7 +113,7 @@ export default function Manage(props) {
         className="current-tabs"
         onClick={state.onClickCurrentTabs}
       >
-        <h2>Current Tabs</h2>
+        {/* <h2>Tabs</h2> */}
 
         <ul>
           {tabDefs.map(def => {
@@ -142,10 +142,13 @@ export default function Manage(props) {
         className="create-tabs"
         onClick={state.onClickCreateTabs}
       >
-        <h2>Create Tabs</h2>
+        {/* <h2>Create</h2> */}
         
         <ul>
           <li data-tab-class={helper.toTabClassMeta.World.key}>
+            <span className={cssName.createTab}>
+              +
+            </span>
             <span className="tab-class">
               World
             </span>
@@ -154,12 +157,12 @@ export default function Manage(props) {
                 <option key={mapKey} value={mapKey}>{mapKey}</option>
               )}
             </select>
-            <span className={cssName.createTab}>
-              +
-            </span>
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.Tty.key}>
+            <span className={cssName.createTab}>
+              +
+            </span>
             <span className="tab-class">
               Tty
             </span>
@@ -171,17 +174,14 @@ export default function Manage(props) {
               </select>
               <input data-world-key type="text" placeholder="world-key" />
             </div>
-            <span className={cssName.createTab}>
-              +
-            </span>
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
-            <span className="tab-class">
-              HelloWorld
-            </span>
             <span className={cssName.createTab}>
               +
+            </span>
+            <span className="tab-class">
+              HelloWorld
             </span>
           </li>
         </ul>
@@ -226,7 +226,8 @@ const manageCss = css`
   overflow: auto;
 
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
+  flex-direction: column;
   align-content: flex-start;
   gap: 16px;
 
@@ -240,12 +241,14 @@ const manageCss = css`
   }
 
   > div {
-    /* @media (min-width: 800px) {
-      max-width: 440px;
-    } */
-
-    width: calc(50% - 8px);
+    /* width: calc(50% - 8px); */
     min-width: 200px;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   ul li {
@@ -256,6 +259,10 @@ const manageCss = css`
     padding: 4px;
     border: 1px solid rgba(255, 255, 255, 0.15);
   }
+
+  /* .current-tabs {
+    flex: 1;
+  } */
 
   .current-tabs li {
     justify-content: space-between;
@@ -315,10 +322,10 @@ const manageCss = css`
       /* flex-direction: column; */
       flex-wrap: wrap;
       gap: 8px;
+      max-width: 200px;
     }
 
     select, input {
-      /* width: 100px; */
       width: 100%;
       background-color: inherit;
       color: inherit;
@@ -336,7 +343,7 @@ const manageCss = css`
       width: 20px;
       height: 20px;
 
-      margin: 0 2px 0 8px;
+      margin: 0 8px 0 2px;
       cursor: pointer;
       font-family: monospace;
       font-size: large;
