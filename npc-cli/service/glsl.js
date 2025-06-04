@@ -61,7 +61,7 @@ const humanZeroShader = {
 
       mvPosition = modelViewMatrix * vec4(transformed, 1.0);
   
-      // compute dot product for flat shading
+      // 🌞 compute dot product for flat shading
       vec3 transformedNormal = normalize(normalMatrix * vec3(objectNormal));
       vec3 lightDir = -normalize(mvPosition.xyz);
       vDotProduct = dot(transformedNormal, lightDir);
@@ -147,8 +147,10 @@ const humanZeroShader = {
 
     } else {// body=1, breath=2, selector=3
 
-      if (!invert) {// 🔔 flat shading via vDotProduct
-        tint *= vec4(vec3((0.05 + 0.8 * vDotProduct) * vHeightShade), 1.0);
+      if (!invert) {
+        // 🌞 flat shading via vDotProduct
+        float ambientLight = 0.2;
+        tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
       } else {// invert, making selector more visible
         tint = vec4(vec3(vType == 3 ? 4.0 : 0.8), tint.a);
       }
