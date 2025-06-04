@@ -264,6 +264,7 @@ const manageCss = css`
 
       > svg {
         font-size: small;
+        width: 12px;
       }
 
       border: 1px solid #888;
