@@ -121,24 +121,23 @@ export async function* initCamAndLights({ api, args, w }) {
   const [npcKey] = args;
 
   // turn off "tween while paused" so can pause profile
-  w.view.canTweenPaused = false;
+  // w.view.canTweenPaused = false;
   w.floor.showTorch = false;
   w.floor.showLights = true;
   w.update();
   
-  await w.view.tween({
-    azimuthal: 0,
-    polar: w.smallViewport ? Math.PI / 8 : Math.PI/5,
-  }).catch(() => {});
+  // await w.view.tween({
+  //   polar: w.smallViewport ? Math.PI / 8 : Math.PI/5,
+  // }).catch(() => {});
 
   // if (w.smallViewport) {
   //   w.view.ctrlOpts.minAzimuthAngle = 0;
   //   w.view.ctrlOpts.maxAzimuthAngle = 0;
   //   w.view.ctrlOpts.maxDistance = 25;
   // }
-  w.view.ctrlOpts.maxPolarAngle = Math.PI/5;
+  // w.view.ctrlOpts.maxPolarAngle = Math.PI/5;
   
-  w.view.canTweenPaused = true;
+  // w.view.canTweenPaused = true;
 
   if (npcKey in w.n) {
     w.view.lockDistance(); // prevent zoom-in while look
