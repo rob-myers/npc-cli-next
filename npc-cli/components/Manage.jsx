@@ -19,14 +19,12 @@ export default function Manage(props) {
     shallow,
   );
 
-  const tabsDisabled = useSite(({ tabsMeta }) =>
+  const tabsMeta = useSite(({ tabsMeta }) =>
     tabsMeta,
     shallow,
   );
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    showDemoLinks: true,
-
     onClickCreateTabs({ target: el }) {
       const li = el.closest('li');
       const tabClassKey = li?.dataset.tabClass;
@@ -87,12 +85,6 @@ export default function Manage(props) {
         useSite.api.openTab(tabDef);
       }
     },
-    onClickDemoLinks({ target: el }) {
-      if (el.matches('h2') === true) {
-        state.showDemoLinks = !state.showDemoLinks;
-        update();
-      }
-    },
     onClickCurrentTabs({ target: el }) {
       const tabId = el.closest('li')?.dataset.tabId;
       if (typeof tabId !== 'string') {
@@ -103,28 +95,30 @@ export default function Manage(props) {
         useSite.api.closeTab(tabId);
       }
     },
-  }), { reset: { showDemoLinks: true } });
+  }));
 
   const update = useUpdate();
 
   return (
     <div css={manageCss}>
       <div 
-        className="current-tabs"
+        className="current-tabs-container"
         onClick={state.onClickCurrentTabs}
       >
-        {/* <h2>Tabs</h2> */}
+        <h2>Current Tabs</h2>
 
-        <ul>
+        <ul className="current-tabs">
           {tabDefs.map(def => {
-            const disabledMeta = tabsDisabled[def.filepath];
+
+            const tabMeta = tabsMeta[def.filepath];
+
             return <li
               key={def.filepath}
               data-tab-id={def.filepath}
             >
-              <span className={cx("tab-def", {
-                disabled: disabledMeta?.disabled === true,
-                unmounted: disabledMeta === undefined,
+              <span className={cx("current-tab", {
+                disabled: tabMeta?.disabled === true,
+                unmounted: tabMeta === undefined,
               })}>
                 <span>{def.filepath}</span>
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
@@ -139,12 +133,12 @@ export default function Manage(props) {
       </div>
       
       <div
-        className="create-tabs"
+        className="create-tabs-container"
         onClick={state.onClickCreateTabs}
       >
-        {/* <h2>Create</h2> */}
+        <h2>Create Tabs</h2>
         
-        <ul>
+        <ul className="create-tabs">
           <li data-tab-class={helper.toTabClassMeta.World.key}>
             <span className={cssName.createTab}>
               +
@@ -188,11 +182,8 @@ export default function Manage(props) {
 
       </div>
 
-      <div
-        onClick={state.onClickDemoLinks}
-        className={cx("demo-links", { hideLinks: !state.showDemoLinks })}
-      >
-        <h2>Demo links</h2>
+      <div className="actions">
+        <h2>Actions 🚧</h2>
 
         <ul>
           <li><a href={`#/internal/set-tabs/empty-layout`}>use preset empty-tabs</a></li>
@@ -226,7 +217,6 @@ const manageCss = css`
   overflow: auto;
 
   display: flex;
-  /* flex-wrap: wrap; */
   flex-direction: column;
   align-content: flex-start;
   gap: 16px;
@@ -236,30 +226,39 @@ const manageCss = css`
   padding: 16px;
 
   h2 {
-    font-size: medium;
+    font-size: small;
     margin-bottom: 8px;
   }
 
-  /* 🚧 not demo-links */
-  > div:nth-child(1) ul, > div:nth-child(2) ul {
+  .current-tabs-container, .create-tabs-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 8px;
   }
 
-  ul li {
-    color: #ccc;
+  .current-tabs, .create-tabs {
     display: flex;
-    gap: 4px;
-    
-    padding: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    flex-wrap: wrap;
+    gap: 8px;
+
+    li {
+      color: #ccc;
+      display: flex;
+      gap: 4px;
+      
+      padding: 4px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+  }
+  
+  .actions {
+
   }
 
   .current-tabs li {
     justify-content: space-between;
 
-    .tab-def {
+    .current-tab {
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
@@ -279,35 +278,12 @@ const manageCss = css`
       display: flex;
       align-items: end;
     }
-
-    .${cssName.closeTab} {
-      padding: 0 4px;
-      cursor: pointer;
-      font-family: monospace;
-      font-size: medium;
-      color: #f77;
-      user-select: none;
-
-      &:hover {
-        background-color: #555;
-      }
-    }
   }
 
-  .create-tabs {
+  .create-tabs-container li {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    background-color: inherit;
-    filter: sepia() hue-rotate(45deg);
-
-
-    li {
-      display: flex;
-      align-items: center;
-    }
-
+    align-items: center;
+    
     .tab-class {
       padding: 0 12px 0 4px;
     }
@@ -327,49 +303,43 @@ const manageCss = css`
     input::placeholder {
       color: #555;
     }
+  }
 
-    .${cssName.createTab} {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
+  .${cssName.closeTab}, .${cssName.createTab} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
 
-      margin: 0 8px 0 2px;
-      cursor: pointer;
-      font-family: monospace;
-      font-size: large;
-      color: #9bd19b;
-      user-select: none;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: large;
+    user-select: none;
 
-      &:hover {
-        background-color: #555;
-      }
+    &:hover {
+      background-color: #555;
     }
   }
 
-  .demo-links {
+  .${cssName.closeTab} {
+    color: #f77;
+  }
+  .${cssName.createTab} {
+    color: #9bd19b;
+  }
+
+  .actions {
     display: flex;
     flex-direction: column;
 
-    h2 {
-      cursor: pointer;
+    li {
+      padding: 4px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
     a {
       font-size: small;
+      color: #a7a7fb;
     }
-    &.hideLinks {
-      h2 {
-        color: #aaa;
-      }
-      ul {
-        display: none;
-      }
-    }
-  }
-
-  a {
-    color: #a7a7fb;
   }
 `;
 
@@ -379,8 +349,6 @@ const manageCss = css`
 
 /**
  * @typedef State
- * @property {boolean} showDemoLinks
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCreateTabs
  * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCurrentTabs
- * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickDemoLinks
  */
