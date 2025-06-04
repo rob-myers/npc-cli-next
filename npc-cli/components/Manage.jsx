@@ -27,62 +27,65 @@ export default function Manage(props) {
     onClickCreateTabs({ target: el }) {
       const li = el.closest('li');
       const tabClassKey = li?.dataset.tabClass;
-      if (!(li !== null && typeof tabClassKey === 'string' && helper.isTabClassKey(tabClassKey))) {
+      if (!(
+        li !== null
+        && typeof tabClassKey === 'string'
+        && helper.isTabClassKey(tabClassKey)
+      )) {
+        return;
+      }
+      if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
         return;
       }
 
-      if (el.classList.contains(cssName.createTab)) {
-        // console.log('create tab', tabClass);
+      // 🚧 clean
+      const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
 
-        // 🚧 clean
-        const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
-
-        /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
-        switch (tabClassKey) {
-          case 'World': {
-            const [mapSelect] = [...li.querySelectorAll('select')].filter(
-              x => x.dataset.mapKey
-            );
-            tabDef = computeTabDef({
-              classKey: tabClassKey,
-              suffix,
-              mapKey: /** @type {Key.Map} */ (mapSelect.value),
-            });
-            break;
-          }
-          case 'Tty': {
-            const [profileSelect] = [...li.querySelectorAll('select')].filter(
-              x => x.dataset.profileKey
-            );
-            const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
-              x => x.dataset.worldKey
-            );
-            tabDef = computeTabDef({
-              classKey: tabClassKey,
-              suffix,
-              ...worldKeyInput.value && {
-                profileKey: /** @type {Key.Profile} */ (profileSelect.value),
-                env: { WORLD_KEY: worldKeyInput.value },
-              } || {
-                profileKey: 'profile-empty-sh',
-              },
-            });
-            break;
-          }
-          case 'Debug':
-          case 'HelloWorld':
-          case 'Manage': // 🚧
-            tabDef = computeTabDef({
-              classKey: tabClassKey,
-              suffix,
-            });
-            break;
-          default:
-            throw testNever(tabClassKey);
+      /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
+      switch (tabClassKey) {
+        case 'World': {
+          const [mapSelect] = [...li.querySelectorAll('select')].filter(
+            x => x.dataset.mapKey
+          );
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            suffix,
+            mapKey: /** @type {Key.Map} */ (mapSelect.value),
+          });
+          break;
         }
-
-        useSite.api.openTab(tabDef);
+        case 'Tty': {
+          const [profileSelect] = [...li.querySelectorAll('select')].filter(
+            x => x.dataset.profileKey
+          );
+          const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
+            x => x.dataset.worldKey
+          );
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            suffix,
+            ...worldKeyInput.value && {
+              profileKey: /** @type {Key.Profile} */ (profileSelect.value),
+              env: { WORLD_KEY: worldKeyInput.value },
+            } || {
+              profileKey: 'profile-empty-sh',
+            },
+          });
+          break;
+        }
+        case 'Debug':
+        case 'HelloWorld':
+        case 'Manage': // 🚧
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            suffix,
+          });
+          break;
+        default:
+          throw testNever(tabClassKey);
       }
+
+      useSite.api.openTab(tabDef);
     },
     onClickCurrentTabs({ target: el }) {
       const tabId = el.closest('li')?.dataset.tabId;
@@ -98,6 +101,7 @@ export default function Manage(props) {
 
   return (
     <div css={manageCss}>
+
       <div 
         className="current-tabs-container"
         onClick={state.onClickCurrentTabs}
@@ -232,13 +236,12 @@ const manageCss = css`
 
   h2 {
     font-size: small;
-    margin-bottom: 8px;
   }
 
   .current-tabs-container, .create-tabs-container {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
   }
 
   .current-tabs, .create-tabs {
@@ -302,12 +305,17 @@ const manageCss = css`
     }
   }
 
+  .${cssName.closeTab}, .${cssName.createTab} {
+    cursor: pointer;
+    font-family: monospace;
+    font-size: large;
+    user-select: none;
+  }
+
   .${cssName.closeTab} {
     padding: 4px 8px;
     color: #f66;
-    /* background-color: #666; */
     border-left: 1px solid #666;
-    /* width: 20px; */
     justify-content: center;
   }
 
@@ -315,6 +323,7 @@ const manageCss = css`
     display: flex;
     align-items: center;
     padding: 0 8px;
+    cursor: pointer;
     
     .tab-class {
       padding: 0 12px 0 4px;
@@ -335,23 +344,7 @@ const manageCss = css`
     input::placeholder {
       color: #555;
     }
-  }
-
-  .${cssName.closeTab}, .${cssName.createTab} {
-    display: flex;
-    align-items: center;
-    min-width: 18px;
-
-    cursor: pointer;
-    font-family: monospace;
-    font-size: large;
-    user-select: none;
-    
-    /* &:hover {
-      background-color: #866;
-    } */
-  }
-  
+  }  
 
   .${cssName.createTab} {
     color: #9bd19b;
