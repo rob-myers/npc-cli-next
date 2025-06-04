@@ -8,7 +8,7 @@ import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import { faCheck, faHourglass1, faPlugCircleExclamation, FontAwesomeIcon } from "@/components/Icon";
+import { faCheck, faHourglass2, faPlug, FontAwesomeIcon } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -115,19 +115,22 @@ export default function Manage(props) {
               key={def.filepath}
               data-tab-id={def.filepath}
             >
-              <span className={cx("current-tab", { disabled, unmounted })}>
-                <span>{def.filepath}</span>
+              <span className="tab-def">
+                <span className="tab-status-and-id">
+                  <span className="tab-status">
+                    {(
+                      disabled === true && <FontAwesomeIcon title="disabled" icon={faHourglass2} size="1x" />
+                      || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlug} size="1x" />
+                      || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
+                    )}
+                  </span>
+                  {def.filepath}
+                </span>
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
                 {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
-
-                {(
-                  disabled === true && <FontAwesomeIcon color="#aa7" title="disabled" icon={faHourglass1} size="1x" />
-                  || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlugCircleExclamation} size="1x" />
-                  || <FontAwesomeIcon title="enabled" color="#0f0" icon={faCheck} size="1x" />
-                )}
               </span>
               <span className={cssName.closeTab}>
-                x
+                ⨉
               </span>
             </li>
           })}
@@ -246,29 +249,49 @@ const manageCss = css`
     li {
       color: #ccc;
       display: flex;
-      /* gap: 4px; */
-      
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
   }
 
   .current-tabs li {
     justify-content: space-between;
+    /* padding: 8px; */
+    gap: 8px;
+    background-color: #222;
 
-    .current-tab {
+    .tab-status-and-id {
+      display: flex;
+      align-items: center;
+      padding: 4px 8px;
+    }
+
+    .tab-status {
+      padding: 0 4px;
+      margin-right: 8px;
+      background-color: #bbb;
+      color: #000;
+      border-radius: 50%;
+      /* border-radius: 4px; */
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 20px;
+      height: 20px;
+
+      > svg {
+        font-size: 0.8rem;
+      }
+    }
+
+    .tab-def {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 8px;
 
-
-      > svg {
-        font-size: small;
-        width: 12px;
-      }
-
-      border: 1px solid #888;
-      padding: 0px 12px;
+      /* border: 1px solid #333; */
+      /* padding: 0px 12px; */
     }
 
     .world-key, .map-key {
@@ -277,6 +300,15 @@ const manageCss = css`
       display: flex;
       align-items: end;
     }
+  }
+
+  .${cssName.closeTab} {
+    padding: 4px 8px;
+    color: #f66;
+    /* background-color: #666; */
+    border-left: 1px solid #666;
+    /* width: 20px; */
+    justify-content: center;
   }
 
   .create-tabs li {
@@ -308,24 +340,19 @@ const manageCss = css`
   .${cssName.closeTab}, .${cssName.createTab} {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 20px;
+    min-width: 18px;
 
     cursor: pointer;
     font-family: monospace;
     font-size: large;
     user-select: none;
     
-    &:hover {
-      background-color: #555;
-    }
+    /* &:hover {
+      background-color: #866;
+    } */
   }
   
-  .${cssName.closeTab} {
-    border: 1px solid #888;
-    background-color: #333;
-    color: #f77;
-  }
+
   .${cssName.createTab} {
     color: #9bd19b;
   }

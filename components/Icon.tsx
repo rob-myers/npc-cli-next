@@ -64,7 +64,7 @@ export {
   faHomeUser,
   faRobot,
   faCodeBranch,
-  faPlugCircleExclamation,
+  faPlug,
   faCheck,
-  faHourglass1,
+  faHourglass2,
 } from "@fortawesome/free-solid-svg-icons";
