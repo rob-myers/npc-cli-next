@@ -1,12 +1,11 @@
 import * as htmlparser2 from "htmlparser2";
 import * as THREE from "three";
 
-import { sguToWorldScale, precision, wallOutset, obstacleOutset, hullDoorDepth, doorDepth, decorIconRadius, sguSymbolScaleDown, doorSwitchHeight, doorSwitchDecorImgKey, specialWallMetaKeys, wallHeight, offMeshConnectionHalfDepth, switchDecorQuadScaleUp } from "./const";
+import { sguToWorldScale, precision, wallOutset, obstacleOutset, hullDoorDepth, doorDepth, decorIconRadius, sguSymbolScaleDown, doorSwitchHeight, doorSwitchDecorImgKey, specialWallMetaKeys, wallHeight, switchDecorQuadScaleUp, connectorEntranceHalfDepth } from "./const";
 import { Mat, Poly, Rect, Vect } from "../geom";
 import {
   info,
   error,
-  parseJsArg,
   warn,
   debug,
   safeJsonParse,
@@ -1569,7 +1568,7 @@ export class Connector {
    * @returns {[Geom.Vect, Geom.Vect, Geom.Vect, Geom.Vect]} `[srcSeg0, srcSeg1, dstSeg0, dstSeg0]`
    */
   computeEntrances() {
-    const entranceHalfDepth = this.meta.hull === true ? offMeshConnectionHalfDepth.hull : offMeshConnectionHalfDepth.nonHull;
+    const entranceHalfDepth = this.meta.hull ? connectorEntranceHalfDepth.hull : connectorEntranceHalfDepth.nonHull;
     const normal = this.normal;
     const delta = tmpVect1.copy(this.seg[1]).sub(this.seg[0]);
     const length = delta.length;

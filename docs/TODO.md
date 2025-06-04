@@ -251,9 +251,14 @@
     - ✅ expose Viewer tabs disabled
     - ✅ style when disabled
     - ✅ style when unmounted
-  - can change world mapKey
+  - 🚧 can change world mapKey
   - can change tty worldKey
   - tty worldKey reflects home.WORLD_KEY
+
+- ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
+  - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
+    wrap around "nav-deformed" corner
+  - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
 
 - ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
   - e.g. via larger `npc.s.lookSecs` when nearly arrived
@@ -355,6 +360,8 @@
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
+
+- BUG: hmr offMeshConnectionHalfDepth does not update navmesh
 
 - 🚧 improve assets script
   - ✅ more measurements in assets script

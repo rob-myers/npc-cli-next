@@ -388,15 +388,24 @@ export const pickedTypesInSomeRoom = {
     'lock-light': false,
 };
 
+/**
+ * Smaller than @see {offMeshConnectionHalfDepth}
+ */
+export const connectorEntranceHalfDepth = {
+  hull: 0.25 + wallOutset,
+  nonHull: 0.125 + wallOutset,
+};
+
+/**
+ * - 🔔 larger nonHull improves `overrideOffMeshConnectionAngle`
+ *  when wrap around "nav-deformed" corner i.e. improves `nextCorner`.
+ * - could also try increasing `DT_CROWDAGENT_MAX_CORNERS`
+ */
 export const offMeshConnectionHalfDepth = {
   hull: wallOutset + 0.25,
   // nonHull: wallOutset + 0.125,
-  /**
-   * - 🔔 larger value improves `overrideOffMeshConnectionAngle` when
-   * wrap around "deformed" corner i.e. improves `nextCorner`
-   * - could also try increasing `DT_CROWDAGENT_MAX_CORNERS`
-   */
   nonHull: wallOutset + 0.2,
+  // nonHull: wallOutset + 0.4,
 };
 
 export const instancedMeshName = /** @type {const} */ ({
