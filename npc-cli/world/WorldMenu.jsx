@@ -26,7 +26,7 @@ export default function WorldMenu(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
 
-    brightness: 15, // [1..20] inducing percentage `100 + 10 * (b - 10)`
+    brightness: 12, // [1..20] inducing percentage `100 + 10 * (b - 10)`
     disconnected: true,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
