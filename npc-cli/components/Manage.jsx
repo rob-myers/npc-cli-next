@@ -65,7 +65,7 @@ export default function Manage(props) {
                 profileKey: /** @type {Key.Profile} */ (profileSelect.value),
                 env: { WORLD_KEY: worldKeyInput.value },
               } || {
-                profileKey: 'profileEmptySh',
+                profileKey: 'profile-empty-sh',
               },
             });
             break;

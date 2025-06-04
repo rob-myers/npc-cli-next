@@ -95,7 +95,7 @@ export function computeTabDef(
 
   if (opts.classKey === 'Tty') {// 'Tty' is not a Key.ComponentClass
     if (opts.profileKey === undefined || !helper.isProfileKey(opts.profileKey)) {
-      opts.profileKey = 'profileEmptySh';
+      opts.profileKey = 'profile-empty-sh';
     }
     return {
       type: 'terminal',
