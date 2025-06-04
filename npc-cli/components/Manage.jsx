@@ -8,7 +8,7 @@ import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import { faCirclePauseThin, faPlugCircleExclamation, FontAwesomeIcon } from "@/components/Icon";
+import { faCheck, faHourglass1, faPlugCircleExclamation, FontAwesomeIcon } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -121,8 +121,9 @@ export default function Manage(props) {
                 {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
 
                 {(
-                  disabled === true && <FontAwesomeIcon title="paused" icon={faCirclePauseThin} size="1x" />
+                  disabled === true && <FontAwesomeIcon color="#aa7" title="disabled" icon={faHourglass1} size="1x" />
                   || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlugCircleExclamation} size="1x" />
+                  || <FontAwesomeIcon title="enabled" color="#0f0" icon={faCheck} size="1x" />
                 )}
               </span>
               <span className={cssName.closeTab}>
@@ -234,7 +235,7 @@ const manageCss = css`
   .current-tabs-container, .create-tabs-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
   }
 
   .current-tabs, .create-tabs {
@@ -245,9 +246,8 @@ const manageCss = css`
     li {
       color: #ccc;
       display: flex;
-      gap: 4px;
+      /* gap: 4px; */
       
-      padding: 4px 8px;
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
   }
@@ -263,9 +263,11 @@ const manageCss = css`
 
 
       > svg {
-        /* color: #777; */
         font-size: small;
       }
+
+      border: 1px solid #888;
+      padding: 0px 12px;
     }
 
     .world-key, .map-key {
@@ -279,6 +281,7 @@ const manageCss = css`
   .create-tabs li {
     display: flex;
     align-items: center;
+    padding: 0 8px;
     
     .tab-class {
       padding: 0 12px 0 4px;
@@ -311,13 +314,15 @@ const manageCss = css`
     font-family: monospace;
     font-size: large;
     user-select: none;
-
+    
     &:hover {
       background-color: #555;
     }
   }
-
+  
   .${cssName.closeTab} {
+    border: 1px solid #888;
+    background-color: #333;
     color: #f77;
   }
   .${cssName.createTab} {
