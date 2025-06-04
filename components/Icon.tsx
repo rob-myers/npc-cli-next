@@ -63,5 +63,6 @@ export {
   faGrip,
   faHomeUser,
   faRobot,
-  faCodeBranch
+  faCodeBranch,
+  faPlugCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";

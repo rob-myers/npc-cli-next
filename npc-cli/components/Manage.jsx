@@ -8,8 +8,7 @@ import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import useUpdate from "../hooks/use-update";
-
+import { faCirclePauseThin, faPlugCircleExclamation, FontAwesomeIcon } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -97,8 +96,6 @@ export default function Manage(props) {
     },
   }));
 
-  const update = useUpdate();
-
   return (
     <div css={manageCss}>
       <div 
@@ -111,18 +108,22 @@ export default function Manage(props) {
           {tabDefs.map(def => {
 
             const tabMeta = tabsMeta[def.filepath];
+            const disabled = tabMeta?.disabled === true;
+            const unmounted = tabMeta === undefined;
 
             return <li
               key={def.filepath}
               data-tab-id={def.filepath}
             >
-              <span className={cx("current-tab", {
-                disabled: tabMeta?.disabled === true,
-                unmounted: tabMeta === undefined,
-              })}>
+              <span className={cx("current-tab", { disabled, unmounted })}>
                 <span>{def.filepath}</span>
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
                 {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
+
+                {(
+                  disabled === true && <FontAwesomeIcon title="paused" icon={faCirclePauseThin} size="1x" />
+                  || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlugCircleExclamation} size="1x" />
+                )}
               </span>
               <span className={cssName.closeTab}>
                 x
@@ -250,10 +251,6 @@ const manageCss = css`
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
   }
-  
-  .actions {
-
-  }
 
   .current-tabs li {
     justify-content: space-between;
@@ -261,14 +258,13 @@ const manageCss = css`
     .current-tab {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
+      align-items: center;
+      gap: 8px;
 
-      &.disabled {
-        filter: brightness(60%);
-      }
-      &.unmounted {
-        filter: brightness(60%);
-        text-decoration: line-through;
+
+      > svg {
+        /* color: #777; */
+        font-size: small;
       }
     }
 
@@ -280,7 +276,7 @@ const manageCss = css`
     }
   }
 
-  .create-tabs-container li {
+  .create-tabs li {
     display: flex;
     align-items: center;
     

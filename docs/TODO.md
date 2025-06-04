@@ -254,8 +254,8 @@
   - 🚧 can change world mapKey
   - 🚧 ongoing restyle
     - ✅ clean
-    - paused represented via icon
-    - unmounted represented via icon
+    - ✅ paused represented via icon
+    - ✅ unmounted represented via icon
   - can change tty worldKey
   - tty worldKey reflects home.WORLD_KEY
 
