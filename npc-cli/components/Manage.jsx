@@ -1,6 +1,5 @@
 import React from "react";
 import { css } from "@emotion/react";
-import cx from "classnames";
 import { shallow } from "zustand/shallow";
 import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
@@ -8,7 +7,7 @@ import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import { faCheck, faHourglass2, faPlug, FontAwesomeIcon } from "@/components/Icon";
+import { faCheck, faHourglass3, faPlug, FontAwesomeIcon } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -123,7 +122,7 @@ export default function Manage(props) {
                 <span className="tab-status-and-id">
                   <span className="tab-status">
                     {(
-                      disabled === true && <FontAwesomeIcon title="disabled" icon={faHourglass2} size="1x" />
+                      disabled === true && <FontAwesomeIcon title="disabled" icon={faHourglass3} size="1x" />
                       || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlug} size="1x" />
                       || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
                     )}
@@ -155,11 +154,13 @@ export default function Manage(props) {
             <span className="tab-class">
               World
             </span>
-            <select data-map-key={true} defaultValue={helper.mapKeys[0]}>
-              {helper.mapKeys.map(mapKey =>
-                <option key={mapKey} value={mapKey}>{mapKey}</option>
-              )}
-            </select>
+            <div className="options">
+              <select data-map-key={true} defaultValue={helper.mapKeys[0]}>
+                {helper.mapKeys.map(mapKey =>
+                  <option key={mapKey} value={mapKey}>{mapKey}</option>
+                )}
+              </select>
+            </div>
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.Tty.key}>
@@ -279,11 +280,11 @@ const manageCss = css`
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
 
       > svg {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
       }
     }
 
@@ -326,7 +327,7 @@ const manageCss = css`
     cursor: pointer;
     
     .tab-class {
-      padding: 0 12px 0 4px;
+      padding: 0 4px;
     }
     .options {
       display: flex;
@@ -338,7 +339,7 @@ const manageCss = css`
       width: 100%;
       background-color: inherit;
       color: inherit;
-      border: 1px solid #555;
+      /* border: 1px solid #555; */
       padding: 4px;
     }
     input::placeholder {
@@ -353,6 +354,7 @@ const manageCss = css`
   .actions {
     display: flex;
     flex-direction: column;
+    gap: 8px;
 
     li {
       padding: 4px 8px;
