@@ -23,6 +23,24 @@ export default function Manage(props) {
   );
 
   const state = useStateRef(/** @returns {State} */ () => ({
+
+    closeTab(e) {
+      const tabId = e.currentTarget.dataset.tabId;
+      if (tabId === undefined) {
+        return;
+      }
+      useSite.api.closeTab(tabId);
+    },
+    selectTab(e) {
+      const tabId = e.currentTarget.dataset.tabId;
+      if (tabId === undefined) {
+        return;
+      }
+      // 🚧
+      console.log('select', tabId);
+    },
+
+    // 🚧 move to callback of lis, using closest('li') 
     onClickCreateTabs({ target: el }) {
       const li = el.closest('li');
       const tabClassKey = li?.dataset.tabClass;
@@ -87,42 +105,26 @@ export default function Manage(props) {
       }
 
     },
-    onClickCurrentTabs({ target: el }) {
-      const tabId = el.closest('li')?.dataset.tabId;
-      if (typeof tabId !== 'string') {
-        return;
-      }
 
-      if (el.classList.contains("tab-id")) {
-        // 🚧
-        console.log('select', tabId);
-      }
-
-      if (el.classList.contains(cssName.closeTab)) {
-        useSite.api.closeTab(tabId);
-      }
-    },
   }));
 
   return (
     <div css={manageCss}>
 
-      <div 
-        className="current-tabs-container"
-        onClick={state.onClickCurrentTabs}
-      >
+      <div className="current-tabs-container">
         <h2>Current Tabs</h2>
 
         <ul className="current-tabs">
           {tabDefs.map(def => {
 
-            const tabMeta = tabsMeta[def.filepath];
+            const tabId = def.filepath;
+            const tabMeta = tabsMeta[tabId];
             const disabled = tabMeta?.disabled === true;
             const unmounted = tabMeta === undefined;
 
             return <li
-              key={def.filepath}
-              data-tab-id={def.filepath}
+              key={tabId}
+              // data-tab-id={tabId}
             >
               <span className="tab-def">
                 <span className="tab-status-and-id">
@@ -133,14 +135,22 @@ export default function Manage(props) {
                       || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
                     )}
                   </span>
-                  <span className="tab-id">
+                  <span
+                    className="tab-id"
+                    data-tab-id={tabId}
+                    onClick={state.selectTab}
+                  >
                     {def.filepath}
                   </span>
                 </span>
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
                 {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
               </span>
-              <span className={cssName.closeTab}>
+              <span
+                className={cssName.closeTab}
+                data-tab-id={tabId}
+                onClick={state.closeTab}
+              >
                 ⨉
               </span>
             </li>
@@ -155,7 +165,10 @@ export default function Manage(props) {
         <h2>Create Tabs</h2>
         
         <ul className="create-tabs">
-          <li data-tab-class={helper.toTabClassMeta.World.key}>
+
+          <li
+            data-tab-class={helper.toTabClassMeta.World.key}
+          >
             <span className="tab-def">
               <button className="tab-class">
                 World
@@ -388,6 +401,7 @@ const manageCss = css`
 
 /**
  * @typedef State
- * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCreateTabs
- * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }) => void} onClickCurrentTabs
+ * @property {(e: React.MouseEvent<HTMLElement> & { currentTarget: HTMLElement }) => void} closeTab
+ * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLDivElement }) => void} onClickCreateTabs
+ * @property {(e: React.MouseEvent<HTMLElement> & { currentTarget: HTMLElement }) => void} selectTab
  */
