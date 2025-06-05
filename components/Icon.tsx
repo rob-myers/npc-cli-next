@@ -63,5 +63,8 @@ export {
   faGrip,
   faHomeUser,
   faRobot,
-  faCodeBranch
+  faCodeBranch,
+  faPause,
+  faPlug,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";

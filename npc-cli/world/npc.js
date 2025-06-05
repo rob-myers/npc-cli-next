@@ -5,143 +5,206 @@ import { lerp } from "maath/misc";
 import braces from "braces";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, npcTargetArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
 import { error, info, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 
-export class Npc {
+/**
+ * @param {NPC.NPCDef} def 
+ * @param {import('./World').State} w 
+ * @returns {NPC.NPC}
+ */
+export function createNpc(def, w) {
+  const baseNpc = createBaseNpc(def, w);
+  const api = new NpcApi(baseNpc, w);
+  return Object.assign(baseNpc, { api });
+}
 
-  /** @type {string} User specified e.g. `rob` */
-  key;
-  /** @type {NPC.NPCDef} Initial definition */
-  def;
-  /** @type {number} When we (re)spawned */
-  epochMs;
-  /** @type {number} Physics body identifier i.e. `hashText(key)` */
-  bodyUid;
+const lookSecsNoTarget = 0.75;
+
+const staticMaxAcceleration = 4;
+const movingMaxAcceleration = 6;
+
+/**
+ * 🔔 sudden change can cause jerk onexit doorway
+ * 🔔 relevant to reachability of arrival distance
+ * 🚧 support separation weight tweening
+ */
+const staticSeparationWeight = 0.25;
+const movingSeparationWeight = 0.5;
+const staticCollisionQueryRange = 2;
+const movingCollisionQueryRange = 2;
+
+const preOffMeshCloseDist = helper.defaults.radius;
+
+/**
+ * @param {NPC.NPCDef} def 
+ * @param {import('./World').State} w 
+ */
+export function createBaseNpc(def, w) {
+
+  const bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics);
+
+  return {
+    /** @type {string} User specified e.g. `rob` */
+    key: def.key,
+    /** @type {NPC.NPCDef} Initial definition */
+    def,
+    /** @type {number} When we (re)spawned */
+    epochMs: Date.now(),
+    /** @type {number} Physics body identifier i.e. `hashText(key)` */
+    bodyUid,
+    
+    /** @type {NPC.Model} Model */
+    m: {
+      animations: [],
+      bones: [],
+      group: /** @type {*} */ (null),
+      material: /** @type {*} */ ({}),
+      mesh: /** @type {*} */ ({}),
+      scale: 1,
+      toAct: /** @type {*} */ ({}),
+    },
+    
+    mixer: emptyAnimationMixer,
+    /** Shortcut to `this.m.group.position` */
+    position: tmpVectThree1,
+    /** Shortcut to `this.m.group.rotation` */
+    rotation: tmpEulerThree,
+    /** Difference between last position */
+    delta: new THREE.Vector3(),
   
-  /** @type {NPC.Model} Model */
-  m = {
-    animations: [],
-    bones: [],
-    group: /** @type {*} */ (null),
-    material: /** @type {*} */ ({}),
-    mesh: /** @type {*} */ ({}),
-    scale: 1,
-    toAct: /** @type {*} */ ({}),
-  };
-  
-  mixer = emptyAnimationMixer;
-  /** Shortcut to `this.m.group.position` */
-  position = tmpVectThree1;
-  /** Shortcut to `this.m.group.rotation` */
-  rotation = tmpEulerThree;
-  /** Difference between last position */
-  delta = new THREE.Vector3();
-
-  /**
-   * Amounts to "uv re-mapping".
-   * 
-   * - Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
-   *   where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
-   * - We overwrite this object.
-   */
-  skin = /** @type {NPC.SkinReMap} */ ({});
-
-  /**
-   * Tint skin parts.
-   * - We overwrite this object.
-   */
-  tint = /** @type {NPC.SkinTint} */ ({
-    selector: [1, 1, 1, 0],
-  });
-
-  /** Shortcut to `this.w.npc.gltfAux[this.def.classKet]` */
-  gltfAux = /** @type {NPC.GltfAux} */ ({});
-
-  /** State */
-  s = {
-    act: /** @type {Key.Anim} */ ('Idle'),
-    agentState: /** @type {null | number} */ (null),
-    permitTurn: true,
-    doMeta: /** @type {null | Meta} */ (null),
-    fadeSecs: 0.3,
-    label: /** @type {null | string} */ (null),
-    labelY: 0,
-    /** Desired look angle (rotation.y) */
-    lookAngleDst: /** @type {null | number} */ (null),
-    lookSecs: lookSecsNoTarget,
-    /** An offMeshConnection traversal */
-    offMesh: /** @type {null | NPC.OffMeshState} */ (null),
-    opacity: 1,
-    /** Desired opacity */
-    opacityDst: /** @type {null | number} */ (null),
-    run: false,
-    selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
     /**
-     * World timer elapsedTime (seconds) when slowness detected.
-     * 🤔 Pausing currently resets World timer.
+     * Amounts to "uv re-mapping".
+     * 
+     * - Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
+     *   where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
+     * - We overwrite this object.
      */
-    slowBegin: /** @type {null | number} */ (null),
-    spawns: 0,
-    target: /** @type {null | THREE.Vector3} */ (null),
+    skin: /** @type {NPC.SkinReMap} */ ({}),
+  
     /**
-     * Used to change offMeshConnection exit speed via `agentAnim.tScale`.
-     * - Starts at time `0 ≤ start ≤ agentAnim.tmax`.
-     * - Approaches `dst` as we exit offMeshConnection.
+     * Tint skin parts.
+     * - We overwrite this object.
      */
-    tScale: /** @type {null | { start: number; dst: number; }} */ (null),
-  };
+    tint: /** @type {NPC.SkinTint} */ ({
+      selector: [1, 1, 1, 0],
+    }),
   
-  /** @type {null | NPC.CrowdAgent} */
-  agent = null;
-  /** @type {null | dtCrowdAgentAnimation} */
-  agentAnim = null;
+    /** Shortcut to `this.w.npc.gltfAux[this.def.classKey]` */
+    gltfAux: /** @type {NPC.GltfAux} */ ({}),
   
-  /**
-   * Last starting position.
-   */
-  lastStart = new THREE.Vector3();
-  /**
-   * - Current target (if moving)
-   * - Last set one (if not)
-   */
-  lastTarget = new THREE.Vector3();
+    /** State */
+    s: {
+      act: /** @type {Key.Anim} */ ('Idle'), // 🚧 rename as `anim`
+      agentState: /** @type {null | number} */ (null),
+      arriveAnim: /** @type {NPC.MoveOpts['arriveAnim']} */ (undefined),
+      doMeta: /** @type {null | Meta} */ (null),
+      fadeSecs: 0.3,
+      label: /** @type {null | string} */ (null),
+      labelY: 0,
+      /** Desired look angle (rotation.y) */
+      lookAngleDst: /** @type {null | number} */ (null),
+      lookSecs: lookSecsNoTarget,
+      /** An offMeshConnection traversal */
+      offMesh: /** @type {null | NPC.OffMeshState} */ (null),
+      opacity: 1,
+      /** Desired opacity */
+      opacityDst: /** @type {null | number} */ (null),
+      run: false,
+      selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
+      /**
+       * World timer elapsedTime (seconds) when slowness detected.
+       * 🤔 Pausing currently resets World timer.
+       */
+      slowBegin: /** @type {null | number} */ (null),
+      spawns: 0,
+      target: /** @type {null | THREE.Vector3} */ (null),
+      /**
+       * Used to change offMeshConnection exit speed via `agentAnim.tScale`.
+       * - Starts at time `0 ≤ start ≤ agentAnim.tmax`.
+       * - Approaches `dst` as we exit offMeshConnection.
+       */
+      tScale: /** @type {null | { start: number; dst: number; }} */ (null),
+    },
+    
+    /** @type {null | NPC.CrowdAgent} */
+    agent: null,
+    /** @type {null | dtCrowdAgentAnimation} */
+    agentAnim: null,
+    
+    /**
+     * Last starting position.
+     */
+    lastStart: new THREE.Vector3(),
+    /**
+     * - Current target (if moving)
+     * - Last set one (if not)
+     */
+    lastTarget: new THREE.Vector3(),
+  
+    /** ContextMenu has different position when `this.s.act` is `Lie` */
+    offsetMenu: new THREE.Vector3(),
+    offsetSpeech: new THREE.Vector3(),
+  
+    resolve: {
+      fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+      move: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+      spawn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+      turn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+    },
+  
+    reject: {
+      fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
+      move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
+      // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
+      turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
+    },
 
-  /** ContextMenu has different position when `this.s.act` is `Lie` */
-  offsetMenu = new THREE.Vector3();
-  offsetSpeech = new THREE.Vector3();
-
-  resolve = {
-    fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-    move: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-    spawn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-    turn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+    w,
   };
+}
 
-  reject = {
-    fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
-    move: /** @type {undefined | ((error: any) => void)} */ (undefined),
-    // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
-    turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
-  };
+/**
+ * @typedef {ReturnType<typeof createBaseNpc>} BaseNPC
+ */
+
+export class NpcApi {
+
+  /** @type {NPC.NPC} */ base;
+  
+  //#region shortcuts for unchanging references
+  /** @type {string} */ key;
+  /** @type {NPC.NPCDef} */ def;
+  /** @type {THREE.Vector3} */ delta;
+  /** @type {BaseNPC['m']} */ m;
+  /** @type {BaseNPC['reject']} */ reject;
+  /** @type {BaseNPC['resolve']} */ resolve;
+  /** @type {BaseNPC['s']} */ s;
+  //#endregion
 
   /** @type {import('./World').State} World API */
   w;
 
   /**
-   * @param {NPC.NPCDef} def
+   * @param {BaseNPC} base
    * @param {import('./World').State} w
    */
-  constructor(def, w) {
-    this.key = def.key;
-    this.epochMs = Date.now();
-    this.def = def;
+  constructor(base, w) {
+    // we attach `this` as `base.api` later
+    this.base = /** @type {NPC.NPC} */ (base);
+    this.def = base.def;
+    this.delta = base.delta;
+    this.key = base.key;
+    this.m = base.m;
+    this.reject = base.reject;
+    this.resolve = base.resolve;
+    this.s = base.s;
+
     this.w = w;
-    this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics)
   }
 
   /**
@@ -156,7 +219,7 @@ export class Npc {
     const { sheetId: initSheetId, uvMap, sheetTexIds } = sheetAux[classKey];
     const { triToKey } = skinAux[classKey];
 
-    this.expandSkinMap('skin');
+    this.expandSkin();
 
     /** Index in DataTextureArray of this model's `initSheetId` sheet */
     const initSheetTexId = sheetTexIds[initSheetId];
@@ -175,7 +238,7 @@ export class Npc {
 
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
-      const target = this.skin[skinPartKey];
+      const target = this.base.skin[skinPartKey];
       
       // alpha encodes if skin part rendered during objectPick
       data[offset + 3] = skinPartKey in hideInObjectPick ? 0 : 1;
@@ -229,15 +292,15 @@ export class Npc {
     const classKey = this.def.classKey;
     const { triToKey } = this.w.npc.gltfAux[classKey];
 
-    this.expandSkinMap('tint');
+    this.expandTint();
 
     // THREE.FloatType handle negative uv offsets in applySkin
     const data = new Float32Array(4 * texNpcAux.opts.width * 1);
     const defaultPixel = [1, 1, 1, 1];
     for (const [triangleId, { skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
-      if (skinPartKey in this.tint) {
-        data.set(/** @type {number[]} */ (this.tint[skinPartKey]), offset);
+      if (skinPartKey in this.base.tint) {
+        data.set(/** @type {number[]} */ (this.base.tint[skinPartKey]), offset);
       } else {
         data.set(defaultPixel, offset);
       }
@@ -246,11 +309,14 @@ export class Npc {
     texNpcAux.updateIndex(this.def.uid, data, 1);
   }
 
-  cancel() {
+  /**
+   * @param {'removed' | 'respawned'} reason 
+   */
+  cancel(reason) {
     info(`${'cancel'}: cancelling ${this.key}`);
 
     this.reject.fade?.(`${'cancel'}: cancelled fade`);
-    this.reject.move?.(`${'cancel'}: cancelled move`);
+    this.reject.move?.({ type: 'stop-reason', key: reason });
     this.reject.turn?.(`${'cancel'}: cancelled turn`);
 
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
@@ -291,7 +357,7 @@ export class Npc {
     point.meta = p.meta;
 
     const w = this.w;
-    const srcNav = w.npc.isPointInNavmesh(this.position);
+    const srcNav = w.npc.isPointInNavmesh(this.base.position);
     
     // point.meta.do
     if (point.meta.do === true) {
@@ -308,7 +374,7 @@ export class Npc {
     if (point.meta.nav === true && this.s.doMeta !== null) {
       if (srcNav === true) {
         this.s.doMeta = null;
-        await this.moveTo(point);
+        await this.move({ to: point });
       // } else if (w.npc.canSee(this.getPosition(), point, this.getInteractRadius())) {
       // } else if (true) {
       } else if (
@@ -331,14 +397,81 @@ export class Npc {
   }
 
   ensureAnimationMixer() {
-    if (this.mixer !== emptyAnimationMixer) {
+    if (this.base.mixer !== emptyAnimationMixer) {
       return;
     }
-    this.mixer = new THREE.AnimationMixer(this.m.group);
+    this.base.mixer = new THREE.AnimationMixer(this.m.group);
     this.m.toAct = this.m.animations.reduce((agg, a) => helper.isAnimKey(a.name)
-      ? (agg[a.name] = this.mixer.clipAction(a), agg)
+      ? (agg[a.name] = this.base.mixer.clipAction(a), agg)
       : (warn(`ignored unexpected animation: ${a.name}`), agg)
     , /** @type {typeof this['m']['toAct']} */ ({}));
+  }
+
+//   /**
+//    * Brace expansion of keys of `this.skin` e.g.
+//    * > `'head-{front,back}'` -> `['head-front', 'head-back']`
+//    * - Any keys with braces will be expanded and removed.
+//    * - Later keys override earlier ones.
+//    * - We ignore unresolved expansions (they needn't be errors).
+//    */
+  expandSkin() {
+    const lookup = this.base.skin;
+    const pending = /** @type {typeof lookup} */ ({});
+    const { sheetAux } = this.w.npc;
+
+    for (const k of keys(lookup)) {
+      const remap = lookup[k];
+      if (remap === undefined) {
+        continue;
+      } else if (k.includes('{') === false) {
+        pending[k] = remap;
+      } else {
+        let some = false;
+        braces(k, { expand: true }).forEach(expanded => {
+          if (helper.isSkinPart(expanded) === false) {
+            return warn(`${'expandSkin'}: ${this.key}: invalid skinPart "${expanded}"`);
+          }
+          const uvKey = `${remap.prefix}_${remap.otherPart ?? expanded}`;
+          if (!(uvKey in sheetAux[remap.classKey ?? this.def.classKey].uvMap)) {
+            return; // 🔔 `remap.prefix` may not be defined for all {head,body}{,-overlay}
+          }
+          pending[expanded] = remap;
+          some = true;
+        });
+        if (some === false) {
+          warn(`${'expandSkin'}: ${this.key}: ${k}: unused prefix "${remap.prefix}"`);
+        }
+      }
+    }
+
+    this.base.skin = pending;
+  }
+
+  /**
+   * Brace expansion of keys of `this.tint`, e.g.
+   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
+   * - Any keys with braces will be expanded and removed.
+   * - Later keys override earlier ones.
+   */
+  expandTint() {
+    const lookup = this.base.tint;
+    const pending = /** @type {typeof lookup} */ ({});
+
+    for (const k of keys(lookup)) {
+      const v = lookup[k];
+      if (k.includes('{') === false) {
+        pending[k] = v;
+      } else {
+        braces(k, { expand: true }).forEach(expanded => {
+          if (helper.isSkinPart(expanded) === false) {
+            return warn(`${'expandTint'}: ${this.key}: invalid skinPart "${expanded}"`);
+          }
+          pending[expanded] = v;
+        });
+      }
+    }
+
+    this.base.tint = pending;
   }
 
   /**
@@ -367,29 +500,30 @@ export class Npc {
   /**
    * Fade out, spawn, then fade in.
    * - `spawn` sets `npc.doMeta` when `meta.do === true`
-   * @param {MaybeMeta<Geom.VectJson>} point 
+   * @param {MaybeMeta<Geom.VectJson>} at 
    * @param {object} opts
    * @param {Meta} [opts.meta]
    * @param {number} [opts.angle] clockwise from north from above
    * @param {Key.NpcClass} [opts.classKey]
    * @param {boolean} [opts.requireNav]
    */
-  async fadeSpawn(point, opts = {}) {
+  async fadeSpawn(at, opts = {}) {
     try {
-      Object.assign(point.meta ??= {}, opts.meta);
+      Object.assign(at.meta ??= {}, opts.meta);
       await this.fade(0, 300);
 
       const currPoint = this.getPoint();
-      const dx = point.x - currPoint.x;
-      const dy = point.y - currPoint.y;
+      const dx = at.x - currPoint.x;
+      const dy = at.y - currPoint.y;
 
       await this.w.npc.spawn({
         angle: opts.angle ?? (
           dx === 0 && dy === 0 ? undefined : geom.clockwiseFromNorth(dy, dx)
         ),
+        at,
         classKey: opts.classKey,
         npcKey: this.key,
-      }, point);
+      });
     } finally {
       await this.fade(1, 300);
     }
@@ -405,24 +539,7 @@ export class Npc {
    *   180° offset to get "direction npc is facing"
    */
   getAngle() {
-    return geom.radRange(Math.PI - this.rotation.y);
-  }
-
-  /**
-   * @param {Meta} meta 
-   * @returns {Key.Anim}
-   */
-  getAnimKeyFromMeta(meta) {
-    switch (true) {
-      case meta.sit:
-        return 'Sit';
-      case meta.stand:
-        return 'Idle';
-      case meta.lie:
-        return 'Lie';
-      default:
-        return 'Idle';
-    }
+    return geom.radRange(Math.PI - this.base.rotation.y);
   }
 
   /**
@@ -430,8 +547,8 @@ export class Npc {
    */
   getCornerAfterOffMesh() {
     return {
-      x: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 0),
-      y: /** @type {NPC.CrowdAgent} */ (this.agent).raw.get_cornerVerts(6 + 2),
+      x: /** @type {NPC.CrowdAgent} */ (this.base.agent).raw.get_cornerVerts(6 + 0),
+      y: /** @type {NPC.CrowdAgent} */ (this.base.agent).raw.get_cornerVerts(6 + 2),
     };
   }
 
@@ -462,7 +579,7 @@ export class Npc {
    * @returns {Geom.VectJson}
    */
   getFurtherAlongOffMesh(offMesh, extraDistance) {
-    const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (this.agentAnim);
+    const anim = /** @type {dtCrowdAgentAnimation} */ (this.base.agentAnim);
     const dstT = anim.t + (extraDistance / offMesh.tToDist);
     if (dstT < anim.tmid) {// look at 'init' seg
       return {
@@ -495,8 +612,14 @@ export class Npc {
     ;
   }
 
+  getMaxSpeed() {
+    // return 0.5;
+    // return this.def.runSpeed;
+    return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
+  }
+
   getNextCorner() {
-    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     const offset = agent.state() === 2 ? 6 : 0;
     return {// agent.corners() empty while offMeshConnection
       x: agent.raw.get_cornerVerts(offset + 0),
@@ -505,9 +628,19 @@ export class Npc {
     };
   }
 
+  /**
+   * Given another npc in the same doorway, get how far ahead it is.
+   * @param {NPC.NPC} other an npc in same doorway
+   */
+  getOtherDoorwayLead(other) {
+    const offMesh = /** @type {NPC.OffMeshState} */ (other.s.offMesh);
+    const direction = tmpVect1.copy(offMesh.dst).sub(offMesh.src).normalize();
+    return ((other.position.x - this.base.position.x) * direction.x) + ((other.position.z - this.base.position.z) * direction.y);
+  }
+
   /** @returns {Geom.VectJson} */
   getPoint() {
-    const { x, z: y } = this.position;
+    const { x, z: y } = this.base.position;
     return { x, y };
   }
 
@@ -522,22 +655,6 @@ export class Npc {
     } else {
       return helper.defaults.radius;
     }
-  }
-
-  getMaxSpeed() {
-    // return 0.5;
-    // return this.def.runSpeed;
-    return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
-  }
-
-  /**
-   * Given another npc in the same doorway, get how far ahead it is.
-   * @param {NPC.NPC} other an npc in same doorway
-   */
-  getOtherDoorwayLead(other) {
-    const offMesh = /** @type {NPC.OffMeshState} */ (other.s.offMesh);
-    const direction = tmpVect1.copy(offMesh.dst).sub(offMesh.src).normalize();
-    return ((other.position.x - this.position.x) * direction.x) + ((other.position.z - this.position.z) * direction.y);
   }
 
   /**
@@ -559,10 +676,10 @@ export class Npc {
    */
   handleOffMeshConnection(agent, offMesh) {
     if (offMesh.seg === 0) {
-      this.handlePreOffMeshCollision(agent);
+      this.handlePreOffMeshCollision(agent, offMesh);
     }
 
-    const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
+    const anim = /** @type {dtCrowdAgentAnimation} */ (this.base.agentAnim);
 
     if (offMesh.seg === 0 && anim.t > anim.tmid) {
       offMesh.seg = 1;
@@ -570,7 +687,7 @@ export class Npc {
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
 
-      if (this.isTargetClose(this.position) === true) {
+      if (this.isTargetClose(this.base.position) === true) {
         // 🔔 fix sharp final turn just after offMeshConnection
         this.s.lookSecs = 0.8;
       }
@@ -584,8 +701,8 @@ export class Npc {
     // look further along the path
     // 🔔 with 0.2 saw jerk when two agents through doorway
     const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
-    const dirX = lookAt.x - this.position.x;
-    const dirY = lookAt.y - this.position.z;
+    const dirX = lookAt.x - this.base.position.x;
+    const dirY = lookAt.y - this.base.position.z;
     const radians = geom.clockwiseFromNorth(dirY, dirX);
     this.s.lookAngleDst = this.getEulerAngle(radians);
 
@@ -599,21 +716,38 @@ export class Npc {
   /**
    * Detect collisions whilst on initial segment of offMeshConnection
    * @param {NPC.CrowdAgent} agent
+   * @param {NPC.OffMeshState} offMesh
    */
-  handlePreOffMeshCollision(agent) {
+  handlePreOffMeshCollision(agent, offMesh) {
     const nneis  = agent.raw.nneis;
     /** @type {dtCrowdNeighbour} */ let nei;
+    // 🔔 if too small, can be jerky on collide after offMeshConnection begins
     const closeDist = preOffMeshCloseDist * (this.s.run === true ? 2 : 1);
-    const closerDist = preOffMeshCloserDist * (this.s.run === true ? 2 : 1);
+    const point = this.getPoint();
 
     for (let i = 0; i < nneis; i++) {
       nei = agent.raw.get_neis(i);
       if (nei.dist < closeDist) {// maybe cancel traversal
         const other = this.w.a[nei.idx];
-        if (other.s.target === null && !(nei.dist < closerDist)) {
+        
+        if ((
+          other.s.target === null &&
+          geom.lineSegIntersectsCircle(
+            point,
+            offMesh.src,
+            other.api.getPoint(),
+            0.3,
+          ) === false
+        ) || (
+          other.s.offMesh !== null
+          && this.getOtherDoorwayLead(other) >= 0.25
+        )) {
+          // 🔔 other idle and "not in the way", or
+          // 🔔 other traversing with enough lead
           continue;
         }
-        this.stopMoving();
+
+        this.stopMoving({ type: 'stop-reason', key: 'collided' });
         break;
       }
     }
@@ -640,7 +774,7 @@ export class Npc {
     // cloned mesh (overridden on mount)
     m.mesh = /** @type {THREE.SkinnedMesh} */ (objectLookup.nodes[meta.meshName]);
     // overridden on mount
-    m.material = /** @type {Npc['m']['material']} */ (m.mesh.material);
+    m.material = /** @type {THREE.ShaderMaterial} */ (m.mesh.material);
 
     m.mesh.updateMatrixWorld();
     m.mesh.computeBoundingBox();
@@ -651,7 +785,7 @@ export class Npc {
     this.applySkin();
     this.applyTint();
 
-    this.gltfAux = this.w.npc.gltfAux[this.def.classKey];
+    this.base.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
   /**
@@ -660,8 +794,8 @@ export class Npc {
   isTargetClose(input) {
     input = toXZ(input);
     return (
-      Math.abs(this.lastTarget.x - input.x) < 0.5
-      && Math.abs(this.lastTarget.z - input.y) < 0.5
+      Math.abs(this.base.lastTarget.x - input.x) < 0.5
+      && Math.abs(this.base.lastTarget.z - input.y) < 0.5
     );
   }
 
@@ -678,8 +812,10 @@ export class Npc {
     if (!Number.isFinite(input)) {
       throw new Error(`${'look'}: 1st arg must be radians or point`);
     }
+    if (helper.canAnimKeyLook(this.s.act) === false) {
+      throw new Error(`${'look'}: cannot whilst "${this.s.act}"`);
+    }
 
-    this.s.permitTurn = true;
     this.s.lookAngleDst = this.getEulerAngle(input);
     this.s.lookSecs = ms / 1000;
 
@@ -695,44 +831,48 @@ export class Npc {
   }
 
   /**
-   * @param {MaybeMeta<Geom.VectJson | THREE.Vector3Like>} dst
-   * @param {object} [opts]
-   * @param {boolean} [opts.debugPath]
+   * @param {NPC.MoveOpts} opts
    */
-  async moveTo(dst, opts = {}) {
-    if (this.agent === null) {
+  async move(opts) {
+    
+    if (this.base.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
+    } else if (Vect.isVectJson(opts.to) === false) {
+      throw new Error(`${this.key}: opts.to must be a point`);
     }
+
+    this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
-    const closest = this.w.npc.getClosestNavigable(toV3(dst), 0.5);
+    const closest = this.w.npc.getClosestNavigable(toV3(opts.to), 0.5);
     if (closest === null) {
-      throw new Error(`${this.key}: not navigable: ${JSON.stringify(dst)}`);
+      throw new Error(`${this.key}: not navigable: ${JSON.stringify(opts.to)}`);
     }
 
-    this.s.permitTurn = true;
+    this.s.arriveAnim = opts.arriveAnim;
     this.s.lookSecs = 0.2;
 
-    this.agent.updateParameters({
+    this.base.agent.updateParameters({
       maxAcceleration: movingMaxAcceleration,
       maxSpeed: this.getMaxSpeed(),
       // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
       radius: helper.defaults.radius,
+      slowDownRadius: helper.defaults.radius,
       collisionQueryRange: movingCollisionQueryRange,
       separationWeight: movingSeparationWeight ,
-      queryFilterType: this.w.lib.queryFilterType.excludeDoors,
+      queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
     });
 
-    this.lastStart.copy(this.position);
-    this.s.target = this.lastTarget.copy(closest);
+    this.base.lastStart.copy(this.base.position);
+    this.s.target = this.base.lastTarget.copy(closest);
 
     if (this.tryStopOffMesh() === true) {
-      this.agent.teleport(this.position);
+      this.base.agent.teleport(this.base.position);
       if (this.s.agentState === 2) {// in case of immediate new offMeshConnection
         this.s.agentState = -1;
       }
     }
-    this.agent.requestMoveTarget(closest);
+    this.base.agent.requestMoveTarget(closest);
 
     const nextAct = this.s.run ? 'Run' : 'Walk';
     if (this.s.act !== nextAct) {
@@ -748,39 +888,11 @@ export class Npc {
     try {
       await this.waitUntilStopped();
     } catch (e) {
-      this.stopMoving();
-    }
-  }
-
-  /**
-   * Brace expansion of keys of `this.skin` or `this.tint`, e.g.
-   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
-   * 
-   * - Any keys with braces will be expanded and removed.
-   * - Later keys override earlier ones.
-   * @template {'skin' | 'tint'} T
-   * @param {T} type
-   */
-  expandSkinMap(type) {
-    const lookup = this[type];
-    const pending = /** @type {typeof lookup} */ ({});
-
-    for (const k of keys(lookup)) {
-      const v = lookup[k];
-      if (k.includes('{') === false) {
-        pending[k] = v;
-      } else {
-        braces(k, { expand: true }).forEach(expanded => {
-          if (helper.isSkinPart(expanded) === true) {
-            pending[expanded] = v;
-          } else {
-            warn(`${'expandSkinMap'}: ${type}: ${this.key}: ignored invalid skinPart "${expanded}"`);
-          }
-        });
+      if (/** @type {NPC.StopReason} */ (e)?.key !== 'move-again') {
+        this.stopMoving();
       }
+      throw e;
     }
-
-    this[type] = pending;
   }
 
   /**
@@ -830,8 +942,8 @@ export class Npc {
       );
 
       if (offMesh === null) {
-        agent.teleport(this.position);
-        return error(`${this.key}: bailed out of unknown offMeshConnection: ${JSON.stringify(this.position)}`);
+        agent.teleport(this.base.position);
+        return error(`${this.key}: bailed out of unknown offMeshConnection: ${JSON.stringify(this.base.position)}`);
       }
       // set this.s.offMesh
       this.w.events.next({ key: 'enter-off-mesh', npcKey: this.key, offMesh });
@@ -879,13 +991,13 @@ export class Npc {
       /**
        * Walk, [Turn], Do
        */
-      await this.moveTo(doPoint);
+      await this.move({ to: doPoint });
       if (typeof dstRadians === 'number') {
         await this.look(dstRadians, 500 * geom.compareAngles(this.getAngle(), dstRadians));
       }
       // this.startAnimation('Idle');
       this.startAnimation(meta);
-      this.doMeta = meta.do === true ? meta : null;
+      this.s.doMeta = meta.do === true ? meta : null;
     } else {
       // sets `this.s.doMeta` because `meta.do === true`
       await this.fadeSpawn(doPoint, {
@@ -904,15 +1016,15 @@ export class Npc {
     if (group !== null) {
       this.m.group = group;
       // Setup shortcut
-      this.position = group.position;
-      this.rotation = group.rotation;
+      this.base.position = group.position;
+      this.base.rotation = group.rotation;
       // Resume `w.npc.spawn`
       this.resolve.spawn?.();
       // Ensure non-empty animation mixer
       this.ensureAnimationMixer();
     } else {
       this.m.group = emptyGroup;
-      this.position = tmpVectThree1;
+      this.base.position = tmpVectThree1;
     }
   }
 
@@ -922,32 +1034,32 @@ export class Npc {
    * Format `[..., bodyUid_i, x_i, y_i, z_i, ...]` for physics.worker
    */
   onTick(deltaMs, positions) {
-    this.mixer.update(deltaMs);
+    this.base.mixer.update(deltaMs);
 
-    if (this.s.lookAngleDst !== null && this.s.permitTurn === true) {
-      if (dampAngle(this.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, Infinity, undefined, 0.01) === false) {
+    if (this.s.lookAngleDst !== null) {
+      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, 20, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
       }
     }
 
     if (this.s.opacityDst !== null) {
-      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs, deltaMs, undefined, undefined, 0.1) === false) {
+      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs, deltaMs, undefined, undefined, 0.02) === false) {
         this.s.opacityDst = null;
         this.resolve.fade?.();
       }
       this.setUniform('opacity', this.s.opacity);
     }
 
-    if (this.agent === null) {
+    if (this.base.agent === null) {
       return;
     }
 
-    this.onTickAgent(deltaMs, this.agent);
+    this.onTickAgent(deltaMs, this.base.agent);
 
-    if (this.agent.raw.dvel !== 0 || this.s.offMesh !== null) {
-      const { x, y, z } = this.position;
-      positions.push(this.bodyUid, x, y, z);
+    if (this.base.agent.raw.dvel !== 0 || this.s.offMesh !== null) {
+      const { x, y, z } = this.base.position;
+      positions.push(this.base.bodyUid, x, y, z);
     }
   }
 
@@ -959,8 +1071,8 @@ export class Npc {
     const pos = agent.position();
     const state = agent.state();
 
-    this.delta.copy(pos).sub(this.position);
-    this.position.copy(pos);
+    this.base.delta.copy(pos).sub(this.base.position);
+    this.base.position.copy(pos);
 
     if (state !== this.s.agentState) {
       this.onChangeAgentState(agent, state);
@@ -972,8 +1084,10 @@ export class Npc {
       return; // Avoid stopMoving whilst offMesh
     }
 
+    // this.speed = tmpVectThree1.copy(agent.velocity()).length();
+
     if (this.s.target === null) {
-      this.onTickTurnNoTarget(agent);
+      this.w.npc.onTickIdleTurn?.(this.base, agent);
       return;
     }
 
@@ -981,9 +1095,11 @@ export class Npc {
 
     const distance = this.s.target.distanceTo(pos);
 
-    if (distance < 0.15) {// Reached target
-      this.stopMoving();
+    if (distance < npcTargetArriveDistance) {// Reached target
+      this.stopMoving({ type: 'stop-reason', key: 'arrived' });
       return;
+    } else if (distance < 5 * npcTargetArriveDistance) {
+      this.s.lookSecs = 0.5; // avoid fast final turn
     }
 
     this.onTickDetectStuck(deltaMs, agent);
@@ -993,21 +1109,25 @@ export class Npc {
    * @param {number} deltaMs 
    * @param {NPC.CrowdAgent} agent 
    */
-  onTickDetectStuck(deltaMs, agent) {// 🔔 customise smallDist and time
+  onTickDetectStuck(deltaMs, agent) {// 🚧 hard-coding: small distance, long enough time
     const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
-      this.s.slowBegin = null; // reset
-      return;
+      return this.s.slowBegin = null; // reset tracking
     }
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
     if (elapsedTime - this.s.slowBegin < 0.3) {
-      return;
+      return; // too short
     }
 
-    this.w.npc.onStuckCustom?.(this, agent);
+    if (this.w.npc.onStuckNpc === null) {
+      // 🔔 fixes "cannot arrive close enough" due to nearby npc
+      this.stopMoving({ type: 'stop-reason', key: 'stuck' });
+    } else {
+      this.w.npc.onStuckNpc?.(this.base, agent);
+    }
   }
 
   /** @param {NPC.CrowdAgent} agent */
@@ -1018,35 +1138,8 @@ export class Npc {
     );
   }
 
-  /** @param {NPC.CrowdAgent} agent */
-  onTickTurnNoTarget(agent) {
-    if (agent.raw.nneis === 0) {
-      return;
-    }
-    if (agent.raw.desiredSpeed < 0.5) {
-      return;
-    }
-
-    const nei = agent.raw.get_neis(0); // 0th closest
-    const other = this.w.a[nei.idx];
-
-    if (other.s.target === null) {
-      return;
-    }
-
-    // 🚧 rethink e.g. this.rotation.__damp
-    if (nei.dist > (other.s.run === true ? 0.8 : 0.6)) {
-      this.s.lookAngleDst = null;
-    } else {// turn towards "closest neighbour" if they have a target
-      this.s.lookAngleDst = this.getEulerAngle(
-        geom.clockwiseFromNorth((other.position.z - this.position.z), (other.position.x - this.position.x))
-      );
-    }
-    
-  }
-
   resetSkin() {
-    this.skin = {};
+    this.base.skin = {};
     this.applySkin();
   }
 
@@ -1054,8 +1147,8 @@ export class Npc {
     /** @type {Partial<Record<Key.SkinPart, true>>} */
     const remember = { 'breath': true, 'label': true, 'selector': true, }
     
-    for (const skinPartKey of keys(this.tint)) {
-      !(skinPartKey in remember) && delete this.tint[skinPartKey];
+    for (const skinPartKey of keys(this.base.tint)) {
+      !(skinPartKey in remember) && delete this.base.tint[skinPartKey];
     }
 
     this.applyTint();
@@ -1102,7 +1195,7 @@ export class Npc {
     if (this.s.offMesh === null) {
       return warn(`${'setOffMeshExitSpeed'}: ${this.key}: s.offMesh is null`);
     }
-    if (this.agentAnim === null) {
+    if (this.base.agentAnim === null) {
       return warn(`${'setOffMeshExitSpeed'}: ${this.key}: no agent`);
     }
     if (exitSpeed < 0.05) {
@@ -1111,11 +1204,11 @@ export class Npc {
 
     const maxSpeed = this.getMaxSpeed();
     this.s.tScale = {
-      start: this.agentAnim.t,
+      start: this.base.agentAnim.t,
       dst: exitSpeed / maxSpeed,
     };
 
-    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.updateParameters({ maxSpeed: exitSpeed });
 
     if (exitSpeed >= maxSpeed) {
@@ -1141,7 +1234,7 @@ export class Npc {
    * @param {boolean} shouldShow
    */
   showLabel(shouldShow) {
-    (this.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
+    (this.base.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
     this.applyTint();
   }
 
@@ -1150,7 +1243,7 @@ export class Npc {
    * @param {boolean} shouldShow
    */
   showSelector(shouldShow) {
-    this.tint.selector = [...this.s.selectorTint, shouldShow ? 1 : 0];
+    this.base.tint.selector = [...this.s.selectorTint, shouldShow ? 1 : 0];
     this.applyTint();
   }
 
@@ -1160,63 +1253,76 @@ export class Npc {
    */
   startAnimation(input) {
     if (typeof input !== 'string') {
-      input = this.getAnimKeyFromMeta(input);
+      input = helper.getAnimKeyFromMeta(input);
     }
     const curr = this.m.toAct[this.s.act];
     const next = this.m.toAct[input];
     curr.fadeOut(glbFadeOut[this.s.act][input]);
     next.reset().fadeIn(glbFadeIn[this.s.act][input]).play();
-    this.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
+    this.base.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
     this.s.act = input;
 
     this.updateLabelOffsets();
   }
 
-  stopMoving() {
-    if (this.agent === null || this.s.target === null) {
+  /** @param {NPC.StopReason} reason */
+  stopMoving(reason = { type: 'stop-reason', key: 'stopped' }) {
+    const agent = this.base.agent;
+
+    if (agent === null || this.s.target === null) {
       return;
     }
 
     this.s.lookSecs = lookSecsNoTarget;
     this.s.lookAngleDst = null;
-    this.s.permitTurn = true;
     this.s.slowBegin = null;
     this.s.target = null;
 
-    this.agent.updateParameters({
+    agent.updateParameters({
       maxSpeed: this.getMaxSpeed() * 0.75,
       maxAcceleration: staticMaxAcceleration,
       updateFlags: defaultAgentUpdateFlags,
       radius: helper.defaults.radius,
       collisionQueryRange: staticCollisionQueryRange,
       separationWeight: staticSeparationWeight,
-      // queryFilterType: this.w.lib.queryFilterType.excludeDoors,
+      // queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
       // updateFlags: 1,
     });
     
-    this.startAnimation('Idle');
+    if (reason.key === 'arrived') {
+      if (this.s.arriveAnim !== 'none') {
+        this.startAnimation(this.s.arriveAnim ?? 'Idle');
+      }
+    } else {
+      this.startAnimation('Idle');
+    }
 
-    const pos = this.agent.position(); // reset small motions:
-    const position = this.lastStart.distanceTo(pos) <= 0.05 ? this.lastStart : pos;
+    const pos = agent.position(); // reset small motions:
+    const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
       this.tryStopOffMesh();
-      this.agent.teleport(position);
-      this.agent.requestMoveTarget(position);
+      agent.teleport(position);
+      agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
-      this.agent.requestMoveTarget(toV3(this.s.offMesh.dst));
+      agent.requestMoveTarget(toV3(this.s.offMesh.dst));
     }
 
-    this.resolve.move?.();
-    this.w.events.next({ key: 'stopped-moving', npcKey: this.key });
+    if (reason.key === 'arrived') {
+      this.resolve.move?.();
+    } else {
+      this.reject.move?.(reason);
+    }
+
+    this.w.events.next({ key: 'stopped-moving', npcKey: this.key, reason });
   }
 
   tryStopOffMesh() {
     // offMeshConnection can happen when `this.s.offMesh` null,
     // e.g. when npc without access is close to door
-    if (this.agentAnim === null || this.agentAnim?.active === false) {
+    if (this.base.agentAnim === null || this.base.agentAnim?.active === false) {
       return false;
-    } else if (this.agentAnim.t <= this.agentAnim.tmid) {
+    } else if (this.base.agentAnim.t <= this.base.agentAnim.tmid) {
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
     } else {
@@ -1226,21 +1332,21 @@ export class Npc {
 
   updateLabelOffsets() {
     const { act } = this.s;
-    const { animHeights, labelHeight } = this.gltfAux;
+    const { animHeights, labelHeight } = this.base.gltfAux;
     const offsetY = animHeights[act] + 3 * labelHeight;
     
     // speech bubble (if exists)
-    this.offsetSpeech.y = offsetY;
+    this.base.offsetSpeech.y = offsetY;
 
     // shader label position
-    this.s.labelY = this.position.y + offsetY;
+    this.s.labelY = this.base.position.y + offsetY;
     this.setUniform('labelY', this.s.labelY);
 
     if (act === 'Lie') {// fix contextmenu position
       const clockwiseFromEast = this.getAngle() - Math.PI/2;
-      this.offsetMenu.set(0.5 * Math.cos(clockwiseFromEast), 0, 0.5 * Math.sin(clockwiseFromEast));      
+      this.base.offsetMenu.set(0.5 * Math.cos(clockwiseFromEast), 0, 0.5 * Math.sin(clockwiseFromEast));      
     } else {
-      this.offsetMenu.set(0, 0, 0);
+      this.base.offsetMenu.set(0, 0, 0);
     }
   }
 
@@ -1250,26 +1356,15 @@ export class Npc {
       this.reject.move = reject; // see w.npc.remove
     });
   }
+
 }
-
-const staticMaxAcceleration = 4;
-const movingMaxAcceleration = 6;
-// const staticSeparationWeight = 1;
-const staticSeparationWeight = 0.25;
-// 🔔 sudden change can cause jerk onexit doorway
-const movingSeparationWeight = 0.5;
-const staticCollisionQueryRange = 2;
-const movingCollisionQueryRange = 2;
-
-const preOffMeshCloseDist = helper.defaults.radius;
-// 🔔 stationary npc more permissive during preOffMeshConnection
-const preOffMeshCloserDist = helper.defaults.radius / 2;
-
-const lookSecsNoTarget = 0.75;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
   radius: helper.defaults.radius, // 🔔 too large causes jerky collisions
+  slowDownRadius: helper.defaults.radius * 2,
+  // slowDownRadius: npcTargetArriveDistance,
+  // slowDownRadius: helper.defaults.radius,
   height: 1.5,
   maxAcceleration: staticMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,

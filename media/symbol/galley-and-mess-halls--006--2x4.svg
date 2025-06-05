@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:grid x="0" y="0" width="300" height="300"/>
+    <symbol id="symbol-0" viewBox="0 0 1 1">
+      <title>decor-unit-quad</title>
+      <rect x="-0.000001" y="-0.000003" width="1" height="1" style="fill-opacity: 0.5; fill: rgb(255, 255, 0);">
+        <title>fill</title>
+      </rect>
+      <rect width="1" height="1" style="fill: url('#pattern-1');">
+        <title>pattern</title>
+      </rect>
+    </symbol>
+    <pattern x="0" y="0" width="0.5" height="0.5" patternUnits="userSpaceOnUse" viewBox="0 0 300 300" id="pattern-1">
+      <title>decor-quad-pattern</title>
+      <g transform="matrix(1.056613922119, 0, 0, 1.056620836258, 8.044093132019, -25.138132095337)">
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0);" y="14.196193" x="-7.586937"/>
+        <path d="M 134.37503 0 L 181.695688 23.660329 L 134.37503 47.320661 L 134.37503 0 Z" style="stroke: rgb(0, 0, 0);"/>
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0);" y="298.120113" x="-7.586937"/>
+        <path d="M 134.37503 283.923959 L 181.695688 307.584288 L 134.37503 331.244617 L 134.37503 283.923959 Z" style="stroke: rgb(0, 0, 0);"/>
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: 73.3469px -6.3e-05px;" y="-9.464131" x="2.366032" transform="matrix(0, -1, -1, 0, -80.933799975588, 236.603372341917)"/>
+        <path d="M -31.247306 165.62343 L 16.073355 141.9631 L -31.247306 118.302771 L -31.247306 165.62343 Z" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: -7.58879px 141.961px;" transform="matrix(0, -1, 1, 0, -0.000009560453, 0.000005180922)"/>
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: 73.3474px 0.000253px;" y="-9.464131" x="2.366032" transform="matrix(0, -1, -1, 0, 202.989607986441, 236.602919754019)"/>
+        <path d="M 252.676102 165.622793 L 299.99676 141.962464 L 252.676102 118.302135 L 252.676102 165.622793 Z" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: 276.337px 141.96px;" transform="matrix(0, -1, 1, 0, -0.000008448851, 0.000005559184)"/>
+      </g>
+      <defs>
+        <bx:grid x="0" y="0" width="300" height="300"/>
+      </defs>
+    </pattern>
+  </defs>
+  <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABMQAAAKDAgMAAACI0z6HAAAACVBMVEUAAAD///8AAABzxoNxAAAAAXRSTlMAQObYZgAACrlJREFUeNrs3UFO4zAUgOGoS47CfeyFbzA+BZfwno1H+J1ysBib2I8Cr4Kmaf5/UREIbvLJDRFt02V5EPp+T8uyCFlalpOQpScelMael0chxH6zFw78iP12iCE2hdjmIYbYFGKbhxhiU4htHmKITSG2ecvb7Y8kNXfHIYbYFGKbh9jhxGJxTrI7H2JTUuQvYtYdQMxSFCmI2cQyYqbi31wkufMhNudzcZ+FGGKIIXZDYtJL/7Xktby+yyCt7nhgMS+9vPLJa8MoPdc6rFgH62RB3sUkNTBFdlixILl/LeXNJ7XjmH/7ochq9eRqBxaLKwKRdtvF2u0MfGCxYc5Irj6rv5W+/jiUYU662nHF/DBqzNWniTXQ+t2eP7xYmZdCXovVpZhc733psGJZiSUl5hBTYi0l5pVYOLhYUGJRiQliZx9jFUdGseK8fGCM2ErMzWIFsVVRLZZBzJX5UOcRQwwxxBBDDDHEEEMMMcQQQ+xrMUEMsd8VcxExo1jIiFnEaogdUKyWhrsYIL1+yVKQVu4m41BxHKqKjUM1sa+Gsm9Vvo5YVhaS1A6I3oFy5rVPcRyqio1DNbEvh7JvVbqKWNHblvW2JSUmejeLFsufiemhrFu1qVjU2yZq27zezaDFohYTJXZ+KPtWIbYPMR6VHPn3dT5WEWR9PlaVfGnnY32VnzwfC7sXi7OYU2IRsYagxMIs5hEbxDJizDGOYzcoxt9Ki5gosTKLCWKTmC+zWMiTmC+INbGYXOhizTB2sbYKYl0s5FefJtYMJTWxvgpiXUxE0ihW76+J9VUQa2K+jd7FgkjpYn0VxJqYi5JHMSeSulhbBTHrc0mIIYYYYoghhhhiiDnEEEMMMcQQQwwxxBBDDLF9iHnEzGK8Z+T23jPiaogtt3ltqNe4NtSHxazEmiHXH7NcR7HGdRS/I5aVWBrF+tJxxco8o0IeZ9Q8q7ge7DijlJh6HPZfOKjYOGUkTYZe3GQYDi8W00pDZsNY5nnIlcCjutq8SEf0kustV5tfF6R1/vMLZFWbb8cVc0rDy3tZqfYpdlwxP/p0ID5n5LZDDLEpxDYPsdsQ23sFMWsJMcTmELOGmDXErO1dbNl3D4ghptpU7FEu6vmwYie5MMSsPd2v2J9PxR4Qm8W8IGYVS4iZxAJiPy2W3AUFxBBDDLH3ELOGmDXErCFmDTFriFlDzBpi1hCzhpg1xKwhZg0xa4hZQ8waYtb2L/ay7Lvrij0idoHY87Lvriv2gJhR7CTy+uW+u67Ysv/D2LXFTrufYlcS278TYoidDbHNQwyxqc3FLukOTlsRQ+yTELOG2JbZX89/QkyLuZ8Wu4f/7dveyXUXT2cg9v0Q2zzEEJtCbPMQQ2wKsc1DDLEpxDYPMcSmENs8xBD7x94d3LgNAwEUBXJMKe5neFAHy364HfDAqTIYSKa1DChxEChz+R/IJsrxIXZsitQMIRYeYogNIRYeYogNIRYeYogNIRYeYogNIRYeYv8q9oWYd8cdYl6xgphLbEMMMcScIRYeYogNIRYeYogNIRYeYogNIRYeYog9nV6F2N/9Rgyxh3shhtjPEAsPMb+YyPTz2IYYYoj9934pYr5eiCH2cPoWS6oFMY+YqraTWEXsQqzblLdYtgvEJmJNLFVJqodYMqGK2ESs9tfipnX/0w6F2JWYtvdPE7O/S1oQm4ul/v+k/dqvckNsLrY1EUurie1XmyI2F8t1F9uaiR1XiF2Iaelb001sv8oFsYmYQR1p2bQcV7kiNhPbmhzlkvT7uNoQm4tVkbdS0nSIpYbYTCwXkbeSqSHmFHtfITYVU+mdxRSxmViTnp7EMmITsXQSy4gh9oRYPYkVyYh5xLYiWRC7EdsQ84qVkxivSrcY7/yIIRbTXIxvSX6xyjdx16cLVnvcn2BZUXSLKavWvu+VosK9JNfahXD3zbOimPv93sQd3sU1WHMS+8m+i7V1/r5vRStiU7EsR8dbWm7shlq++1b7Fs/Gjru1e+JisatzWSyXvo+YvdYXYqn9EGM//62YqBypIObbcdcQc+/qlC/EfDuHkyLm252eOMnlOAGRG2ffXKdsklbEVsVE1eJ85bpYNpSK2LqYGApneNfEOCeO2DnEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsSHEwkMMsaHHxTgB4RXjlI1XjLNviCEW1yiWihwxk8tzZsRiJteCWJ9iZjGTa/kkV9vBmMl1K9afObODMZNr6UTqIWUxk2tBLFfZkSxmci2IaTk97oKZXCti8kbiqYBLYqmJfP6pMZPrXmyrpwcdJWZyrYvZ7zxBd0Usly7GTK41sc9DAZnJ5RNrwkwul5g0YV4SYohF1sX0JMb0nxWxdhJjwhRivCq98c7vCrHwEONb0rONaxepijCTy7va88Vqj29FMek3K4rrz7XOxcSYyeW4MyKyaWEml+fum4lx921FrHyGShVmci2I5XbcoTQxZnKt7VTp23kKM7luxbqPiIkxk8v77HRmcl2L6WcjZ9nFmMm1IiZZtckuxkyuGzFOciH2aC/EEHu6F2KI/Qyx8F56FWKIIXYbYuEh5u03Yoh585OV6ecxQQwxxO5DLDzEEBtCLDzEEBtCLLw/7NxBauNAEEDR4KWP4vu0F7rB+BRziRzBMO5TDlqMiKonkFJwSone3wnswn4gkFC3iBELESuPGLEQsfKIfVLsSiwt1oglxOaIESOWi1h5xIiFiJVHjFiIWHnEiIWIlUeMWIhYecSIhYiVR4xYiFh5xIiFiJVHjFiIWHnEiIWeLvaLmBV3xNJZB5uKWHnEiIWIlUeMWIhYecSIhYiVR4xYiFh5xIiFiJVHjFiIWHnEiIWIlUeMWIhYecSIhYiVR4xYiFh5xIiFiJVHjFiIWHnEiA3ZAZHPW5rT2fuWiFh5xIht6dITEXt5OXVixJ7bmRixdcTKS4o1YvMlViJixIjFiJVHjFiIWHnEiIWIlUeMWIhYecSIhYiVR4xYiFh5WTFvac6KWXFH7CvFpmeLXfou26/Yqe8zYj9H7Nz3GTFiQ8SyHUjste2viRixGLFsxLIRy0YsG7FsxLIRy3Y0sb7u3tp1vGmZxm0Ht77q0d4ZlWz/Ytfxb06j2G0U61Hsv6OIEWvXe3vbfDitf/E0i7VV8+GjrXq0d0bluhEjRowYMWLEiBEjRuzni4Wnln1pGf325mxu+dahxR6LxdL936fGp8GdGLHNYrdRrA9iV2LEnJXPF7uPYq+jWAti7ZBi+90zQowYMWLEiBEjRowYMWLEiBEjRowYMWLEiBEjRowYMWLEiBEjRowYMWLEvqfYpW/qz2HFTn1jv4kR+5jYmRgxYsS+vdim0RMxYsSIESP2t707tmEYBKIwbFF6lOwTF4zgKRglZfSmjCjtKhed4XL+/w34BB3SQwyxm4l5dRcxIWYT2xAzilXEjGI7YohdLCbEEEMMMcQQQ2y82Bsxw5eJR3ax/QqxF2Jf1q3W7GLVW6xIapnFNnnWz9qfZmaxpzzrVkUtt1h1vmK97GKHYwYYd0cMsQFiwfeSEEPsj8V+rAXfFkQMsUOITQ+xQGIFsVFi0Xd42xI1xBA7hdj0VsUMMcROITY9xPKIFcUMMWuLZx/38y4m8lc36wAAAABJRU5ErkJggg==" width="1220" height="643" x="-10" style="pointer-events: none;" y="-10">
+    <title>galley-and-mess-halls--006--2x4</title>
+  </image>
+  <rect y="-10" width="1220" height="20" style="fill: rgb(255, 0, 0); fill-opacity: 0.5; stroke-width: 1;" x="-10">
+    <title>wall</title>
+  </rect>
+  <rect y="-10" width="20" height="620" style="fill: rgb(255, 0, 0); fill-opacity: 0.5; stroke-width: 1;" x="-10">
+    <title>wall</title>
+  </rect>
+  <rect y="590" width="310" height="20" style="fill: rgb(255, 0, 0); fill-opacity: 0.5; stroke-width: 1;" x="-10">
+    <title>wall</title>
+  </rect>
+  <rect y="590" width="320" height="20" style="fill: rgb(255, 0, 0); fill-opacity: 0.5; stroke-width: 1;" x="890">
+    <title>wall</title>
+  </rect>
+  <rect y="-10" width="20" height="170" style="fill: rgb(255, 0, 0); fill-opacity: 0.5; stroke-width: 1;" x="270">
+    <title>wall</title>
+  </rect>
+  <rect y="140" width="300" height="20" style="fill: rgb(255, 0, 0); fill-opacity: 0.5; stroke-width: 1;" x="-10">
+    <title>wall</title>
+  </rect>
+  <rect x="40" y="135" width="220" height="30" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255); fill-opacity: 0.9; stroke-width: 4;">
+    <title>door</title>
+  </rect>
+  <rect x="40" y="585" width="220" height="30" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255); fill-opacity: 0.9; stroke-width: 4;">
+    <title>door s</title>
+  </rect>
+  <path d="M 1201 611.025 L 916 611.025 L 916 630.025 L 300 630.025 L 300 504.025 L 890.7 504.041 L 890.7 476.025 L 1064.5 476.025 L 1064.5 121.697 L 307.731 121.697 L 307.731 -6 L 1203 -5.975 L 1203 611.025 L 1201 611.025 Z" style="fill: rgb(0, 0, 255); fill-opacity: 0.5; stroke-width: 1;">
+    <title>obstacle y=0.8 wip 🚧</title>
+  </path>
+  <rect y="-10" width="20" height="620" style="fill: rgb(255, 0, 0); fill-opacity: 0.5; stroke-width: 1;" x="1190">
+    <title>wall</title>
+  </rect>
+</svg>

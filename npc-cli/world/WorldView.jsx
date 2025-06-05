@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 
-import { debug, keys } from "../service/generic.js";
+import { debug, entries, keys } from "../service/generic.js";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isSmallViewport, isTouchDevice } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
@@ -24,7 +24,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 15, 0],
+    camInitPos: [0, 25, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -33,12 +33,17 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
       maxPolarAngle: Math.PI * 1/3,
-      minDistance: 6,
-      maxDistance: 25,
+      minDistance: 1.5, // target could be ground or npc head
+      maxDistance: 35,
       panSpeed: 2,
+      rotateSpeed: 0.5,
       zoomSpeed: 0.5,
     },
-    cssFilter: {},
+    cssFilter: [
+      { key: 'brightness', value: '100%'},
+      { key: 'sepia', value: '0' },
+      { key: 'invert', value: '0' },
+    ],
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
@@ -50,6 +55,7 @@ export default function WorldView(props) {
       pixelRatio: window.devicePixelRatio,
     },
     justLongDown: false,
+    keyDowns: {},
     lastDown: undefined,
     lastScreenPoint: new Vect(),
     normal: {
@@ -65,7 +71,7 @@ export default function WorldView(props) {
 
     canTweenPaused: true,
     didTweenPaused: false,
-    lockedDistance: { min: 0, max: 0, current: 0 },
+    lockedDistance: null,
 
     canvasRef(canvasEl) {
       if (canvasEl !== null) {
@@ -122,7 +128,7 @@ export default function WorldView(props) {
       state.controls.zoomToConstant = dst;
       /**
        * - following amounts to "look tween without resolve/reject"
-       * - 🔔 stop look via @see {state.stopFollowing}
+       * - stop look via @see {state.stopFollowing}
        */
       state.dst.look = dst;
       state.dst.lookOpts = opts;
@@ -185,23 +191,17 @@ export default function WorldView(props) {
       state.ctrlOpts.minDistance = state.ctrlOpts.maxDistance = distance;
       update();
     },
-    async lookAt(point, opts = { smoothTime: 0.4 }) {// look with "locked zoom"
+    async lookAt(point, opts = { smoothTime: 0.4 }) {
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
-      try {
-        const dst = toV3(point);
-        // state.controls.zoomToConstant = dst;
-        await state.tween({ look: dst, lookOpts: opts });
-      } finally {
-        if (state.dst.look === undefined) {
-          state.controls.zoomToConstant = null;
-        }
-      }
+      const dst = toV3(point);
+      await state.tween({ look: dst, lookOpts: opts });
     },
     onChangeControls(_e) {
-      // avoid event because too frequent
-      w.e.onChangeControls(state.controls);
+      // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
+      // zoomState !== state.zoomState && w.events.next({ key: 'changed-zoom', level: zoomState });
+      // state.zoomState = zoomState;
     },
     onControlsEnd() {
       w.events.next({ key: 'controls-end' });
@@ -217,6 +217,9 @@ export default function WorldView(props) {
       w.threeReady = true;
       w.r3f = /** @type {typeof w['r3f']} */ (rootState);
       w.update(); // e.g. show stats
+    },
+    onKeyDown(e) {
+      Object.values(state.keyDowns).forEach(handler => handler(e.nativeEvent));
     },
     onPausedTick() {
       w.timer.update();
@@ -379,6 +382,24 @@ export default function WorldView(props) {
       state.handleClickInDebugMode(e); // step world in debug mode
     },
     onTick(deltaMs) {
+      if (state.dst.azimuthal !== undefined) {// azimuthal angle
+        if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
+          delete state.dst.azimuthal;
+          state.resolve.azimuthal?.();
+        }
+      }
+
+      if (state.dst.polar !== undefined) {// polar angle
+        if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
+          delete state.dst.polar;
+          state.resolve.polar?.();
+        }
+      }
+
+      if (w.disabled === true && state.canTweenPaused === false) {
+        return;
+      }
+
       const { camera } = w.r3f;
 
       if (state.dst.fov !== undefined) {// change fov
@@ -391,9 +412,8 @@ export default function WorldView(props) {
       }
 
       if (state.dst.look !== undefined && state.down === null) {// look or follow
-        const { look: target, lookOpts } = state.dst;
-        // if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, lookOpts?.y ?? 1.5, 0.01) === false) {
-        if (dampXZ(state.controls.target, target, lookOpts?.smoothTime, deltaMs, lookOpts?.maxSpeed, undefined, 0.01) === false) {
+        const { look: target, lookOpts = {} } = state.dst;
+        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaMs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
           state.resolve.look?.();
         }
         //@ts-ignore see patch i.e. fix azimuth angle
@@ -407,20 +427,6 @@ export default function WorldView(props) {
         if (damp3(camera.position, targetCamPos, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
           delete state.dst.distance;
           state.resolve.distance?.();
-        }
-      }
-
-      if (state.dst.azimuthal !== undefined) {// azimuthal angle
-        if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
-          delete state.dst.azimuthal;
-          state.resolve.azimuthal?.();
-        }
-      }
-
-      if (state.dst.polar !== undefined) {// polar angle
-        if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
-          delete state.dst.polar;
-          state.resolve.polar?.();
         }
       }
 
@@ -488,8 +494,10 @@ export default function WorldView(props) {
       });
     },
     setCssFilter(partial) {
-      Object.assign(state.cssFilter, partial);
-      const nextFilter = Object.entries(state.cssFilter).map(([k, v]) => `${k}(${v})`).join(' ');
+      for (const [k, v] of entries(partial)) {
+        state.cssFilter.some(x => x.key === k && (x.value = v, true));
+      }
+      const nextFilter = state.cssFilter.map(({ key, value }) => `${key}(${value})`).join(' ');
       state.canvas.style.filter = nextFilter; // e.g. brightness(50%)
     },
     stopFollowing() {
@@ -523,7 +531,7 @@ export default function WorldView(props) {
       async function createPromise(key) {
         return (new Promise((resolve, reject) =>
           [state.resolve[key] = resolve, state.reject[key] = reject]
-        )).catch().finally(() => {
+        )).finally(() => {
           delete state.dst[key];
           delete state.resolve[key];
           delete state.reject[key];
@@ -608,6 +616,7 @@ export default function WorldView(props) {
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
       onContextMenu={e => isTouchDevice() && e.preventDefault()}
+      onKeyDown={state.onKeyDown}
       tabIndex={0}
       {...{ [popUpRootDataAttribute]: true }}
     >
@@ -674,7 +683,7 @@ export default function WorldView(props) {
  * }} controls
  * We provide access to `sphericalDelta` via patch.
  * @property {import('@react-three/drei').MapControlsProps} ctrlOpts
- * @property {Partial<Record<'brightness' | 'sepia', string>>} cssFilter
+ * @property {{ key: 'brightness' | 'sepia' | 'invert'; value: string }[]} cssFilter
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
  * 
@@ -694,6 +703,7 @@ export default function WorldView(props) {
  * @property {NPC.DownData} [lastDown]
  * Defined iff last pointer was down over the World.
  * @property {boolean} justLongDown
+ * @property {Record<string, (e: KeyboardEvent) => void>} keyDowns
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
  * @property {THREE.Scene} pickingScene Empty scene for picking.
@@ -720,6 +730,7 @@ export default function WorldView(props) {
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
  * @property {() => void} onControlsEnd
  * @property {() => void} onControlsStart
+ * @property {React.KeyboardEventHandler} onKeyDown
  * @property {() => void} onPausedTick
  * @property {(e: React.PointerEvent<HTMLElement>) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerLeave
@@ -730,7 +741,7 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
- * @property {(partial: State['cssFilter']) => void} setCssFilter
+ * @property {(partial: Partial<Record<'brightness'| 'sepia' | 'invert', string>>) => void} setCssFilter
  * @property {() => boolean} stopFollowing
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
@@ -741,13 +752,15 @@ export default function WorldView(props) {
 
 const rootCss = css`
   user-select: none;
+  background-color: rgba(0, 0, 0, 1);
+
   canvas[data-engine] {
     width: 100%;
     height: 100%;
-    background-color: rgba(20, 20, 20, 1);
-    transition: filter 1s;
+    /* 🔔 invert would lag behind npc shader invert */
+    /* transition: filter 300ms; */
   }
-  
+
   /* center canvas during resize */
   > div:first-of-type {
     display: flex;
@@ -763,7 +776,8 @@ const statsCss = css`
   right: 0px;
 
   &.disabled {
-    filter: grayscale(1) brightness(0.75);
+    pointer-events: none;
+    filter: grayscale(1) brightness(0.5);
   }
 `;
 
@@ -790,6 +804,7 @@ const statsCss = css`
 
 /**
  * @typedef LookAtOpts
+ * @property {number} [height]
  * @property {number} [maxSpeed]
  * @property {number} [smoothTime]
 */

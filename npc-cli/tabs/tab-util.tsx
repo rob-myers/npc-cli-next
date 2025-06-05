@@ -1,56 +1,137 @@
-import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
-import { deepClone, tryLocalStorageGetParsed, warn } from "../service/generic";
+import { type IJsonRowNode, IJsonModel, IJsonTabNode, IJsonTabSetNode } from "flexlayout-react";
+import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice } from "../service/dom";
-import type { ComponentClassKey, CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
+import type { CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
 import { helper } from "../service/helper";
+import type { ProfileKey } from "../sh/src";
 
-export function appendTabToLayout(layout: TabsetLayout, tabDef: TabDef) {
+/**
+ * If exists do nothing, else mutate by appending to active tabset.
+ */
+export function addTabToLayout({ layout, selectTab, tabDef }: {
+  layout: TabsetLayout;
+  selectTab?: boolean;
+  tabDef: TabDef;
+}) {
   const tabId = getTabIdentifier(tabDef);
   if (layout.children.length === 0) {
     layout.children.push({ type: 'tabset', children: [], active: true });
   }
 
   const tabsetNodes = extractTabsetNodes(layout);
-  
   const tabsetNode = tabsetNodes.find(x => x.children.some(y => y.id === tabId));
-  const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
-  tabsetNodes.forEach(x => x.maximized = false);
-  
-  if (tabsetNode === undefined) {// add and select node
-    const numTabs = activeTabset.children.push(createTabNodeFromDef(tabDef));
-    activeTabset.active = true;
-    activeTabset.selected = numTabs - 1;
-  } else {// select node
-    activeTabset.active = false;
-    tabsetNode.active = true;
-    tabsetNode.selected = tabsetNode.children.findIndex(x => x.id === tabId);
+
+  if (tabsetNode !== undefined) {
+    return layout; // already exists
   }
 
+  const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
+  activeTabset.active = true;
+  
+  const numTabs = activeTabset.children.push(
+    createTabNodeFromDef(tabDef)
+  );
+
+  if (selectTab === true) {
+    tabsetNodes.forEach(x => x.maximized = false); // minimize
+    activeTabset.selected = numTabs - 1; // select
+  }
+  
   return layout;
 }
 
-export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
-  return {
-    global: {
-      tabEnableRename: false,
-      rootOrientationVertical,
-      // tabEnableClose: false,
-      tabEnableClose: true,
-      tabSetMinHeight: 100,
-      tabSetMinWidth: 200,
-      tabSetEnableDivide: !isTouchDevice(),
-      enableEdgeDock: !isTouchDevice(),
-      splitterExtra: 12,
-      splitterSize: 2,
-    },
-    layout,
+export function computeStoredTabsetLookup(): TabsetLayouts {
+  
+  function restoreLayout(key: keyof TabsetLayouts) {
+    return ensureManageTab(
+      tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
+      ?? deepClone(emptyTabsetLayout)
+    );
+  }
+  
+  const synced = restoreLayout('synced');
+  const started = deepClone(synced);
+
+  const output: TabsetLayouts = {
+    saved: restoreLayout('saved'),
+    started,
+    synced,
+    tabs: extractTabNodes(synced),
+    version: 0,
   };
+
+  console.log(`${'restoreTabsetLookup'}`, output);
+  return output;
 }
 
+/**
+ * @param opts More relaxed than respective components props, e.g.
+ * - for `World` have fallback for mapKey
+ * - for `Tty` have fallback for worldKey
+ */
+export function computeTabDef(
+  opts: { suffix: string; } & (
+    | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }
+    | { classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
+    | { classKey: 'World'; mapKey?: Key.Map }
+  )
+): TabDef {
+
+  if (opts.classKey === 'Tty') {// 'Tty' is not a Key.ComponentClass
+    if (opts.profileKey === undefined || !helper.isProfileKey(opts.profileKey)) {
+      opts.profileKey = 'profile-empty-sh';
+    }
+    return {
+      type: 'terminal',
+      filepath: `tty-${opts.suffix}`,
+      profileKey: opts.profileKey,
+      env: opts.env ?? {},
+    };
+  }
+
+  let tabDef: TabDef;
+  const { tabPrefix } = helper.toTabClassMeta[opts.classKey];
+
+  switch (opts.classKey) {
+    case 'Debug':
+    case 'HelloWorld':
+    case 'Manage': {
+      const filepath = `${tabPrefix}-${opts.suffix ?? '0'}`;
+      tabDef = {
+        type: 'component',
+        class: opts.classKey,
+        filepath,
+        props: {},
+      };
+      break;
+    }
+    case 'World': {
+      const worldKey = `${tabPrefix}-${opts.suffix ?? '0'}`;
+      tabDef = {
+        type: 'component',
+        class: opts.classKey,
+        filepath: worldKey,
+        props: {
+          worldKey,
+          mapKey: opts.mapKey ?? "demo-map-1"
+        },
+      };
+      break;
+    }
+    default:
+      throw testNever(opts);
+  }
+
+  return tabDef;
+}
+
+/**
+ * 🔔 All layouts should be created this way.
+ */
 export function createLayoutFromBasicLayout(
   basicLayout: BasicTabsLayout,
 ): IJsonRowNode {
-  return {
+  return ensureManageTab({
     type: "row",
     // One row for each list in `tabs`.
     children: basicLayout.map((defs) => ({
@@ -62,7 +143,7 @@ export function createLayoutFromBasicLayout(
         children: defs.map(createTabNodeFromDef),
       }],
     })),
-  };
+  });
 }
 
 function createTabNodeFromDef(def: TabDef) {
@@ -74,6 +155,29 @@ function createTabNodeFromDef(def: TabDef) {
     name: getTabIdentifier(def),
     config: deepClone(def),
   };
+}
+
+/**
+ * Ensure at least one manage tab in layout.
+ */
+export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
+  const tabsets = extractTabsetNodes(layout);
+
+  if (tabsets.length === 0) {
+    return createLayoutFromBasicLayout([[
+      { type: 'component', class: 'Manage', filepath: 'manage', props: {} },
+    ]]);
+  }
+
+  const tabset = tabsets.find(x => x.children.find(y => isManageTabDef(y.config)));
+
+  if (tabset === undefined) {// add manage tab to final tabset
+    tabsets.at(-1)!.children.push(createTabNodeFromDef({
+      type: 'component', class: 'Manage', filepath: 'manage', props: {}
+    }));
+  }
+
+  return layout;
 }
 
 export function extractTabNodes(layout: IJsonRowNode): (CustomIJsonTabNode)[] {
@@ -105,32 +209,77 @@ export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   };
 }
 
-const fromComponentClassKey: Record<ComponentClassKey, true> = {
-  HelloWorld: true,
-  World: true,
-};
+function getManageTabCount(tabsets: IJsonTabSetNode[]) {
+  return tabsets.reduce((sum, tabset) =>
+    sum + tabset.children.filter(x => isManageTabDef(x.config)).length,
+    0,
+  );
+}
 
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
 }
 
-export function isComponentClassKey(input: string): input is ComponentClassKey {
-  return input in fromComponentClassKey;
+export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
+  return {
+    global: {
+      tabEnableRename: false,
+      rootOrientationVertical,
+      tabEnableClose: false, // use "manage" tab to close tabs
+      tabSetMinHeight: 100,
+      tabSetMinWidth: 200,
+      tabSetEnableDivide: !isTouchDevice(),
+      enableEdgeDock: !isTouchDevice(),
+      splitterExtra: 12,
+      splitterSize: 2,
+    },
+    layout,
+  };
 }
 
-export function removeTabFromLayout(layout: IJsonRowNode, tabId: string) {
-  for (const tabset of extractTabsetNodes(layout)) {
-    const index = tabset.children.findIndex(x => x.id === tabId);
+function isManageTabDef(def: TabDef) {
+  return def.type === 'component' && def.class === 'Manage';
+}
+
+/**
+ * Mutates `layout` and return `true` iff actually removed the tab.
+ */
+export function removeTabFromLayout({ layout, tabId }: {
+  layout: IJsonRowNode;
+  tabId: string;
+}) {
+  const tabsets = extractTabsetNodes(layout);
+  const numManages = getManageTabCount(tabsets);
+  if (numManages === 0) {
+    warn(`${'removeTabFromLayout'}: layout lacks a "manage tab"`);
+  }
+
+  for (const tabset of tabsets) {
+    const { children } = tabset;
+    const index = children.findIndex(x => x.id === tabId);
+
     if (index === -1) {
       continue;
     }
+    if (numManages === 1 && isManageTabDef(children[index].config)) {
+      throw Error(`${'removeTabFromLayout'}: cannot remove last "manage tab"`);
+    }
 
-    tabset.children.splice(index, 1);
-    
-    const { length } = tabset.children;
-    if (length === 0) tabset.selected = undefined;
-    else if (length === index) tabset.selected = index - 1;
-    else tabset.selected = index; // preserve
+    children.splice(index, 1); // remove the tab
+
+    if (typeof tabset.selected !== 'number' || children.length === 0) {
+      tabset.selected = undefined;
+      return true;
+    }
+
+    if (index > tabset.selected) {
+      // NOOP
+    } else if (index === tabset.selected) {
+      tabset.selected = Math.min(tabset.selected, children.length - 1);
+    } else {
+      tabset.selected = Math.max(tabset.selected - 1, 0);
+    }
+
     return true;
   }
   return false;
@@ -144,37 +293,28 @@ export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
   return createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey]);
 }
 
-export function computeStoredTabsetLookup(): AllTabsets {
-  
-  function restoreLayout(key: keyof AllTabsets) {
-    return tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
-      ?? deepClone(emptyTabsetLayout);
-  }
-  
-  const output = {
-    started: restoreLayout('synced'),
-    synced: restoreLayout('synced'),
-    saved: restoreLayout('saved'),
-  };
-  console.log(`${'restoreTabsetLookup'}`, output);
-  return output;
-}
-
 const emptyTabsetLayout: TabsetLayout = {
   type: 'row',
   children: [],
 };
 
 /**
- * Tabset layout by `key`.
+ * Tabset layouts and current tabs meta
  * - `started` is most recent layout started in `<Tabs>`
  * - `synced` is the actual layout, in sync with flexlayout-react
  * - `saved` is the layout we restore to on hard reset
  */
-export interface AllTabsets {
+export interface TabsetLayouts {
   started: TabsetLayout;
   synced: TabsetLayout;
   saved: TabsetLayout;
+  /** The tabs of `synced` */
+  tabs: CustomIJsonTabNode[];
+  /**
+   * Used to trigger tabset model recompute.
+   * This does not involve a remount.
+   */
+  version: number;
 }
 
 /**

@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { Mat, Vect } from "../geom";
 import { instancedMeshName, wallHeight } from "../service/const";
 import { getQuadGeometryXY } from "../service/three";
-import { InstancedWallsShader } from "../service/glsl";
+import { InstancedWallsMaterial } from "../service/glsl";
 import { geomorph } from "../service/geomorph";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -124,14 +124,14 @@ export default function Walls(props) {
       renderOrder={transparent ? 2 : undefined}
     >
       {/* <meshBasicMaterial side={THREE.DoubleSide} color="#866" wireframe /> */}
-      <instancedWallsShader
-        key={InstancedWallsShader.key}
+      <instancedWallsMaterial
+        key={InstancedWallsMaterial.key}
+        alphaTest={0}
         diffuse={[0, 0, 0]}
-        // diffuse={transparent ? [.4, .4, .5] : [0, 0, 0]}
-        // ℹ️ for transparency
         depthWrite={!transparent}
         transparent={transparent}
         opacity={state.opacity}
+        opacityCloseDivisor={18}
       />
     </instancedMesh>
   );

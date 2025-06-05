@@ -3,14 +3,12 @@ import { css } from "@emotion/react";
 import cx from "classnames";
 import { createPortal } from "react-dom";
 
-import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
-import { zIndexWorld } from "../service/const";
-import { isSmallViewport, isTouchDevice } from "../service/dom";
+import { tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
+import { zIndexTabs, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { pausedControlsCss } from "./overlay-menu-css";
 import { Draggable } from "../components/Draggable";
 import { PopUp, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 import { globalLoggerLinksRegex, Logger } from "../terminal/Logger";
@@ -28,18 +26,19 @@ export default function WorldMenu(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
 
-    brightness: 13, // [1..20] inducing percentage `100 + 10 * (b - 10)`
+    brightness: 12, // [1..20] inducing percentage `100 + 10 * (b - 10)`
     disconnected: true,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
+    invertColor: false,
     logger: /** @type {*} */ (null),
-    loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? defaultLoggerHeightPx / loggerHeightDelta,
-    loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? defaultLoggerWidthPx / defaultLoggerWidthDelta,
+    loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? (defaultLoggerHeightPx) / loggerHeightDelta,
+    loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? (defaultLoggerWidthPx) / defaultLoggerWidthDelta,
     loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    xRayOpacity: isTouchDevice() ? 13 : 8, // [1..20]
+    xRayOpacity: 13, // [1..20]
 
     applyControlsInitValues() {
       /** @param {any} value */
@@ -47,6 +46,7 @@ export default function WorldMenu(props) {
       state.onChangeBrightness(toEvent(state.brightness))
       state.onChangeXRay(toEvent(state.xRayOpacity));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
+      state.onChangeInvertColor(toEvent(state.invertColor));
       state.onResizeLoggerHeight(toEvent(state.loggerHeight));
       state.onResizeLoggerWidth(toEvent(state.loggerWidth));
     },
@@ -73,11 +73,22 @@ export default function WorldMenu(props) {
     onChangeCanTweenPaused(e) {
       w.view.canTweenPaused = e.currentTarget.checked;
       w.update();
+      if (w.disabled === true && w.view.canTweenPaused === true)  {
+        w.view.onPausedTick();
+      }
+    },
+    onChangeInvertColor(e) {
+      state.invertColor = e.currentTarget.checked;
+      w.view.setCssFilter({ invert: state.invertColor ? '1' : '0' });
+      w.updateTexAux({
+        0: state.invertColor ? [1, 1, 1, 1] : [0, 0, 0, 0], // invert ~ 0th key
+      });
+      w.update();
     },
     onChangeXRay(e) {
       state.xRayOpacity = Number(e.currentTarget.value);
       w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity(state.xRayOpacity / 20)
+      w.ceil.setOpacity((state.xRayOpacity / 20))
       w.update();
     },
     onClickLoggerLink(e) {
@@ -138,7 +149,7 @@ export default function WorldMenu(props) {
 
   React.useLayoutEffect(() => {
     const obs = new ResizeObserver(([_entry]) => {
-      state.loggerWidthDelta = Math.floor(w.view.rootEl.clientWidth / 10);
+      state.loggerWidthDelta = Math.min(Math.floor(w.view.rootEl.clientWidth / 10), 1.8 * defaultLoggerWidthDelta);
       state.logger?.container && state.onResizeLoggerWidth();
     });
     obs.observe(w.view.rootEl);
@@ -151,14 +162,16 @@ export default function WorldMenu(props) {
 
   return <>
 
-    {w.disabled && <div css={pausedControlsCss}>
-      <button
-        onClick={state.toggleXRay}
-        className={state.xRayOpacity < 20 ? 'text-green' : undefined}
-      >
-        x-ray
-      </button>
-    </div>}
+    {w.disabled === true && (
+      <div css={pausedControlsCss}>
+        <button
+          onClick={state.toggleXRay}
+          className={state.xRayOpacity < 20 ? 'text-green' : undefined}
+        >
+          x-ray
+        </button>
+    </div>
+    )}
 
     {w.view.rootEl !== null && createPortal(
       <Draggable
@@ -232,12 +245,21 @@ export default function WorldMenu(props) {
                 onChange={state.onChangeLoggerLog}
               />
             </label>
-            <label>
-              paused-tweens
+            <label title="tween camera while paused?">
+              tween
               <input
                 type="checkbox"
                 onChange={state.onChangeCanTweenPaused}
                 checked={w.view.canTweenPaused}
+                disabled={w.disabled === false}
+              />
+            </label>
+            <label>
+              invert
+              <input
+                type="checkbox"
+                onChange={state.onChangeInvertColor}
+                checked={state.invertColor}
               />
             </label>
           </div>
@@ -270,11 +292,11 @@ export default function WorldMenu(props) {
   </>;
 }
 
-const defaultLoggerHeightPx = isSmallViewport() ? 40 : 100;
+const defaultLoggerHeightPx = 40;
 const defaultLoggerWidthPx = 800;
 /** Must be a factor of default height */
 const loggerHeightDelta = 20;
-const defaultLoggerWidthDelta = 80;
+const defaultLoggerWidthDelta = 40;
 
 const loggerAndPopUpCss = css`
   position: absolute;
@@ -377,6 +399,10 @@ const popUpCss = css`
       align-items: center;
       gap: 8px;
       font-family: 'Courier New', Courier, monospace;
+
+      &:has(> input:disabled) {
+        color: #aaa;
+      }
     }
 
     /** https://www.smashingmagazine.com/2021/12/create-custom-range-input-consistent-browsers/ */
@@ -445,6 +471,43 @@ const cssTtyDisconnectedMessage = css`
   }
 `;
 
+const pausedControlsCss = css`
+  position: absolute;
+  right: 0;
+  top: 64px;
+  z-index: ${zIndexTabs.pausedControls};
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  button {
+    color: #aaa;
+    padding: 12px;
+    background-color: #000;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-width: 1px 0 1px 1px;
+    border-color: #555;
+    font-size: 0.8rem;
+    user-select: none;
+
+    width: 80px;
+    opacity: 0.75;
+
+    &.text-white {
+      color: #fff;
+    }
+    &.text-green {
+      color: #0f0;
+    }
+  }
+
+  transition: filter 1s;
+  &:hover {
+    filter: brightness(2) ;
+  }
+`;
+
 /**
  * @typedef State
  * @property {number} brightness
@@ -452,6 +515,7 @@ const cssTtyDisconnectedMessage = css`
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {boolean} disconnected
  * @property {{ [durKey: string]: number }} durationKeys
+ * @property {boolean} invertColor
  * @property {import('../terminal/Logger').State} logger
  * @property {number} loggerHeight
  * @property {number} loggerWidth
@@ -461,11 +525,12 @@ const cssTtyDisconnectedMessage = css`
  * @property {number} xRayOpacity In [1..20]
  *
  * @property {() => void} applyControlsInitValues
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRay
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect

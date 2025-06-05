@@ -78,7 +78,7 @@ export const precision = 4;
 
 export const wallOutset = 12 * sguToWorldScale;
 
-export const obstacleOutset = 10 * sguToWorldScale;
+export const obstacleOutset = 8 * sguToWorldScale;
 
 /**
  * Walls with any of these tags will not be merged with adjacent walls
@@ -117,9 +117,9 @@ export const defaultClassKey = 'human-0';
 export const glbFadeOut = {
     Idle: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0.2, Lie: 0 },
     Lie: { Idle: 0, Run: 0, Walk: 0, Sit: 0, Lie: 0 },
-    Run: { Idle: 0.2, Run: 0, Walk: 0.2, Sit: 0.2, Lie: 0 },
+    Run: { Idle: 0.1, Run: 0, Walk: 0.2, Sit: 0.2, Lie: 0 },
     Sit: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0, Lie: 0 },
-    Walk: { Idle: 0.07, Run: 0.2, Walk: 0, Sit: 0.25, Lie: 0 },
+    Walk: { Idle: 0.1, Run: 0.2, Walk: 0, Sit: 0.25, Lie: 0.2 },
 };
 
 /**
@@ -127,11 +127,11 @@ export const glbFadeOut = {
  * @type {Record<Key.Anim, Record<Key.Anim, number>>}
  */
  export const glbFadeIn = {
-    Idle: { Idle: 0, Run: 0.2, Walk: 0.1, Sit: 0.1, Lie: 0 },
+    Idle: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0.1, Lie: 0 },
     Lie: { Idle: 0, Run: 0, Walk: 0, Sit: 0, Lie: 0 },
-    Run: { Idle: 0.2, Run: 0, Walk: 0.1, Sit: 0.2, Lie: 0 },
+    Run: { Idle: 0.15, Run: 0, Walk: 0.1, Sit: 0.2, Lie: 0 },
     Sit: { Idle: 0.1, Run: 0.1, Walk: 0.1, Sit: 0, Lie: 0 },
-    Walk: { Idle: 0.1, Run: 0.1, Walk: 0, Sit: 0.2, Lie: 0 },
+    Walk: { Idle: 0.15, Run: 0.1, Walk: 0, Sit: 0.2, Lie: 0.2 },
 };
 
 export const defaultNpcInteractRadius = geomorphGridMeters;
@@ -188,7 +188,7 @@ export const doorSwitchDecorImgKey = /** @type {const} */ ('icon--square');
  */
 
 /** Aligned to media/decor/{key}.svg */
-export const fromDecorImgKey = {// 🔔 must extend when adding new decor
+export const fromDecorImgKey = /** @type {const} */ ({// 🔔 must extend when adding new decor
   'door--standard': true,
   'door--hull': true,
   'icon--info': true,
@@ -201,14 +201,15 @@ export const fromDecorImgKey = {// 🔔 must extend when adding new decor
   'icon--robot': true,
   'icon--square': true,
   'icon--warn': true,
-};
+  'screen--1x1': true,
+});
 
 /**
  * @typedef {keyof fromSymbolKey} SymbolKey
  */
 
 /** Aligned to media/symbol/{key}.svg */
-export const fromSymbolKey = {// 🔔 must extend when adding new symbols
+export const fromSymbolKey = /** @type {const} */ ({// 🔔 must extend when adding new symbols
 
   "101--hull": true,
   "102--hull": true,
@@ -236,6 +237,7 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
   "console--051--0.4x0.6": true,
   "couch-and-chairs--006--0.4x2": true,
   "couch-and-chairs--007--0.6x1.4": true,
+  "counter--006--0.4x2": true,
   "counter--007--0.4x1": true,
   "counter--009--0.4x0.4": true,
   "counter--010--0.4x0.4": true,
@@ -253,6 +255,7 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
   "fresher--025--3x2": true,
   "fresher--036--4x2": true,
   "fuel--010--4x2": true,
+  "galley-and-mess-halls--006--2x4": true,
   "iris-valves--005--1x1": true,
   "iris-valves--006--1x1": true,
   "lab--012--4x3": true,
@@ -325,7 +328,7 @@ export const fromSymbolKey = {// 🔔 must extend when adding new symbols
   "extra--018--table-0.25x0.25": true,
   "extra--019--table-0.5x2": true,
   "extra--020--table-2x0.66": true,
-};
+});
 
 /**
  * The `*.glb` files must be exported from Blender using respective `media/npc/*.blend`
@@ -343,6 +346,7 @@ export const npcClassToMeta = {
     modelLabelHeight: 0.25,
     modelUrl: '/3d/human-0.glb',
     npcClassKey: 'human-0',
+    modelHeight: 2.2, // 🚧 measure in Blender
     modelRadius: 0.5,
     runSpeed: 4,
     scale: 0.7,
@@ -384,9 +388,24 @@ export const pickedTypesInSomeRoom = {
     'lock-light': false,
 };
 
+/**
+ * Smaller than @see {offMeshConnectionHalfDepth}
+ */
+export const connectorEntranceHalfDepth = {
+  hull: 0.25 + wallOutset,
+  nonHull: 0.125 + wallOutset,
+};
+
+/**
+ * - 🔔 larger nonHull improves `overrideOffMeshConnectionAngle`
+ *  when wrap around "nav-deformed" corner i.e. improves `nextCorner`.
+ * - could also try increasing `DT_CROWDAGENT_MAX_CORNERS`
+ */
 export const offMeshConnectionHalfDepth = {
   hull: wallOutset + 0.25,
-  nonHull: wallOutset + 0.125,
+  // nonHull: wallOutset + 0.125,
+  nonHull: wallOutset + 0.2,
+  // nonHull: wallOutset + 0.4,
 };
 
 export const instancedMeshName = /** @type {const} */ ({
@@ -433,3 +452,7 @@ export const skinsLabelsTextureHeight = 200 / 4;
  * @see {skinsLabelsTextureWidth}
  */
 export const npcLabelMaxChars = 12;
+
+export const npcTargetArriveDistance = 0.05;
+
+export const texAuxDepth = 256;

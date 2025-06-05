@@ -139,6 +139,9 @@ export function ContextMenu() {
         state.refreshOptsPopUp();
       }
     },
+    onWheel(e) {// pass scroll through to canvas (zoom)
+      w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
+    },
     persist() {
       tryLocalStorageSet(`context-menu:pinned@${w.key}`, JSON.stringify(state.pinned));
     },
@@ -237,6 +240,7 @@ export function ContextMenu() {
           className="inner-root"
           onPointerUp={state.onPointerUp}
           onPointerDown={state.onPointerDown}
+          onWheel={state.onWheel}
         >
           <ContextMenuLinks state={state} />
 
@@ -264,7 +268,7 @@ function ContextMenuLinks({ state }) {
         css={optsPopUpCss}
         label="opts"
         onChange={state.onToggleOptsPopup.bind(state)}
-        width={200}
+        width={100}
       >
         <button
           key="toggle-scaled"
@@ -459,6 +463,7 @@ const optsPopUpCss = css`
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
  * @property {(willOpen: boolean) => void} onToggleOptsPopup
+ * @property {(e: React.WheelEvent) => void} onWheel
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext

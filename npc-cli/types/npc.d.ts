@@ -1,6 +1,7 @@
 declare namespace NPC {
 
-  type NPC = import('../world/npc').Npc;
+  type NPC = BaseNPC & { api: import('../world/npc').NpcApi };
+  type BaseNPC = import('../world/npc').BaseNPC;
 
   interface NPCDef {
     /** User specified e.g. `rob` */
@@ -40,8 +41,10 @@ declare namespace NPC {
     meshName: string;
     /** Height above npc's head, pre-scale */
     modelAnimHeight: Record<Key.Anim, number>;
-    /** Pre-scale */
+    /** Pre-scale height of label */
     modelLabelHeight: number;
+    /** Pre-scale height excluding label */
+    modelHeight: number;
     /** Pre-scale */
     modelRadius: number;
     /** Format `/3d/{npcClassKey}.glb` */
@@ -80,7 +83,14 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
-    skin?: NPC.SkinReMap;
+    at: MaybeMeta<(Geom.VectJson | import('three').Vector3Like)>;
+    /** Position to look towards (overrides `angle`) */
+    look?: Geom.VectJson | import('three').Vector3Like;
+    /**
+     * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
+     * - object permits brace-expansion of keys.
+     */
+    skin?: string | Record<string, SkinReMapValue>;
   }
 
   type Event = (
@@ -93,7 +103,7 @@ declare namespace NPC {
     | { key: "npc-internal"; npcKey: string; event: "cancelled" | "paused" | "resumed" }
     | { key: "spawned"; npcKey: string; gmRoomId: Geomorph.GmRoomId }
     | { key: "started-moving"; npcKey: string; showNavPath: boolean }
-    | { key: "stopped-moving"; npcKey: string }
+    | { key: "stopped-moving"; npcKey: string; reason: NPC.StopReason }
     | { key: "removed-npc"; npcKey: string }
     | { key: "enter-doorway"; npcKey: string } & Geomorph.GmDoorId
     | { key: "exit-doorway"; npcKey: string } & Geomorph.GmDoorId
@@ -109,8 +119,7 @@ declare namespace NPC {
     }
     | { key: "opened-door"; gmId: number; doorId: number; meta?: Meta }
     | { key: "closed-door"; gmId: number; doorId: number; meta?: Meta }
-    | { key: "locked-door"; gmId: number; doorId: number; meta?: Meta }
-    | { key: "unlocked-door"; gmId: number; doorId: number; meta?: Meta }
+    | { key: "locked-door" | "unlocked-door"; gmId: number; doorId: number; meta: Meta }
     | { key: "enter-collider"; npcKey: string; } & BaseColliderEvent
     | { key: "exit-collider"; npcKey: string; } & BaseColliderEvent
     | {
@@ -276,7 +285,7 @@ declare namespace NPC {
   type Obstacle = {
     id: number;
     o: import("@recast-navigation/core").Obstacle;
-    mesh: THREE.Mesh;
+    mesh: import('three').Mesh;
   };
 
   type ObstacleRef = import("@recast-navigation/core").ObstacleRef;
@@ -319,7 +328,7 @@ declare namespace NPC {
   }
 
   interface ContextMenuContextDef {
-    position: THREE.Vector3;
+    position: import('three').Vector3;
     meta: Meta;
   }
 
@@ -365,7 +374,7 @@ declare namespace NPC {
    * We also permit brace expansion in keys, e.g.
    * > `"head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },`
    */
-  type SkinReMap = Partial<Record<Key.SkinPart, SkinReMapValue>>;
+  type SkinReMap = { [skinPartKey in Key.SkinPart]?: SkinReMapValue };
 
   type SkinReMapValue = {
     /**
@@ -402,5 +411,34 @@ declare namespace NPC {
     triToKey: NPC.TriToUvKeys;
     animHeights: Record<Key.Anim, number>;
     labelHeight: number;
+  }
+
+  interface MoveOpts {
+    to: MaybeMeta<Geom.VectJson | THREE.Vector3Like>;
+    /**
+     * Animation to play once we arrive.
+     * - default is `Idle`.
+     * - use 'none' for continuous movement
+     */
+    arriveAnim?: 'none' | Key.Anim;
+    /**
+     * Show possible path of agent path (only a guide).
+     */
+    debugPath?: boolean;
+  }
+
+  interface StopReason {
+    type: 'stop-reason';
+    key: (
+      | 'arrived'
+      | 'blocked-doorway'
+      | 'collided'
+      | 'locked-door'
+      | 'move-again'
+      | 'removed'
+      | 'respawned'
+      | 'stopped'
+      | 'stuck'
+    );
   }
 }

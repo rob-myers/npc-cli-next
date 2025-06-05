@@ -2,4 +2,30 @@ export const metadata = {
   key: 'strategy-1',
 };
 
+import Code from '../components/Code';
+
 ## Strategy 1
+
+🚧
+
+<Code>
+```sh title="my title" caption="my caption" showLineNumbers
+# choose 4 nav points
+click 4 meta.nav &>> points
+# spawn npc with full access
+spawn npcKey:rob at:$( click 1 ) grant:.
+# take a tour
+tour npcKey:rob to:"$( points )" 
+```
+</Code>
+
+<Code>
+```js {3} showLineNumbers
+export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
+  for (const to of opts.to) {
+    yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
+    await ct.api.sleep(opts.pauseMs ?? 0.8);
+  }
+}
+```
+</Code>

@@ -33,7 +33,7 @@ export function Tab({ def, api, state: tabState }: TabProps) {
 
   if (def.type === "component") {
     return state.component !== null &&
-      React.createElement(state.component as React.FunctionComponent<BaseTabProps>, {
+      React.createElement(state.component as unknown as React.FunctionComponent<BaseTabProps>, {
         disabled: tabState.disabled,
         setTabsEnabled: state.setTabsEnabled,
         ...def.props,

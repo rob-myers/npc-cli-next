@@ -1,4 +1,5 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
+import { keys } from "./generic";
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -7,17 +8,34 @@ import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from 
  */
 export const helper = {
 
+  /** @type {Record<Key.ComponentClass, true>} */
+  fromComponentClass: {
+    Debug: true,
+    HelloWorld: true,
+    Manage: true,
+    World: true,
+  },
+
   /** Aligned to media/symbol/{key}.svg */
   fromSymbolKey,
 
   /** Aligned to media/decor/{key}.svg */
   fromDecorImgKey,
 
-  /** @type {Record<Key.Profile, true>} */
-  fromProfileKey: {
-    profile1Sh: true,
-    profileAwaitWorldSh: true,
-  },
+  ...(/** @param {Record<Key.Profile, true>} fromProfileKey */
+    (fromProfileKey) => ({ fromProfileKey, profileKeys: keys(fromProfileKey) })
+  )({
+    "profile-1-sh": true,
+    "profile-awaitWorld-sh": true,
+    "profile-empty-sh": true,
+  }),
+
+  ...(/** @param {Record<Key.Map, true>} fromMapKey */
+    (fromMapKey) => ({ fromMapKey, mapKeys: keys(fromMapKey) })
+  )({
+    "demo-map-1": true,
+    "small-map-1": true,
+  }),
 
   /** @type {Record<Key.NpcClass, true>} */
   fromNpcClassKey: {
@@ -39,18 +57,24 @@ export const helper = {
           // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
           props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
         },
+        {
+          type: "component",
+          class: "Debug",
+          filepath: "debug",
+          props: {},
+        },
       ],
       [
         {
           type: "terminal",
           filepath: "tty-1",
-          profileKey: 'profile1Sh',
+          profileKey: 'profile-1-sh',
           env: { WORLD_KEY: "test-world-1" },
         },
         {
           type: "terminal",
           filepath: "tty-2",
-          profileKey: 'profileAwaitWorldSh',
+          profileKey: 'profile-awaitWorld-sh',
           env: { WORLD_KEY: "test-world-1" },
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
@@ -69,9 +93,17 @@ export const helper = {
   /** Recast-Detour */
   queryFilterType: /** @type {const} */ ({
     default: 0,
-    /** Constructed lazily */
-    excludeDoors: 1,
+    respectUnwalkable: 1,
   }),
+
+  /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: string; }>} */
+  toTabClassMeta: {
+    Debug: { key: 'Debug', tabPrefix: 'debug' },
+    HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
+    Manage: { key: 'Manage', tabPrefix: 'manage' },
+    Tty: { key: 'Tty', tabPrefix: 'tty' },
+    World: { key: 'World', tabPrefix: 'world' },
+  },
 
   /** @type {Record<Key.GeomorphNumber, Key.Geomorph>} */
   toGmKey: {
@@ -103,19 +135,29 @@ export const helper = {
     "g-303--passenger-deck": "303--hull",
   },
   
-  defaults: {// 🚧
+  /** 🚧 should be by classKey */
+  defaults: {
+    height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
     radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.75,
     runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale,
     walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale,
   },
 
-  // 🚧 fix types
-  // /** @type {Record<Key.Anim, true>} */
+  /** @type {Record<Key.Anim, true>} */
   fromAnimKey: {
     Idle: true,
     Lie: true,
     Run: true,
     Sit: true,
+    Walk: true,
+  },
+
+  /** @type {Record<Key.Anim, boolean>} */
+  toAnimKeyLookable: {
+    Idle: true,
+    Lie: false,
+    Run: true,
+    Sit: false,
     Walk: true,
   },
 
@@ -154,6 +196,13 @@ export const helper = {
   }),
 
   /**
+   * @param {Key.Anim} animKey 
+   */
+  canAnimKeyLook(animKey) {
+    return helper.toAnimKeyLookable[animKey];
+  },
+
+  /**
    * Try construct degenerate "id" from partial.
    * @param {Partial<Geomorph.GmDoorId>} meta 
    * @returns {null | Geomorph.GmDoorId}
@@ -173,6 +222,23 @@ export const helper = {
       };
     } else {
       return null;
+    }
+  },
+
+  /**
+   * @param {Meta} meta 
+   * @returns {Key.Anim}
+   */
+  getAnimKeyFromMeta(meta) {
+    switch (true) {
+      case meta.sit:
+        return 'Sit';
+      case meta.stand:
+        return 'Idle';
+      case meta.lie:
+        return 'Lie';
+      default:
+        return 'Idle';
     }
   },
 
@@ -232,6 +298,30 @@ export const helper = {
    */
   isAnimKey(input) {
     return input in helper.fromAnimKey;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.ComponentClass}
+   */
+  isComponentClassKey(input) {
+    return input in helper.fromComponentClass;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.TabClass}
+   */
+  isTabClassKey(input) {
+    return input === 'Tty' || (input in helper.fromComponentClass);
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.Map}
+   */
+  isMapKey(input) {
+    return input in helper.fromMapKey;
   },
 
   /**

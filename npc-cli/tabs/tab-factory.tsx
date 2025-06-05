@@ -54,23 +54,20 @@ export interface TabsBaseProps {
 }
 
 const classToComponent = {
-  HelloWorld: {
-    loadable: loadable(() => import("../components/HelloWorld")),
-    get:
-      (module: typeof import("../components/HelloWorld")) =>
-      (props: React.ComponentProps<(typeof module)["default"]>) =>
-        React.createElement(module.default, { disabled: true, ...props }),
-  },
-  World: {
-    loadable: loadable(() => import("../world/World"), {
-      // fallback: <CentredSpinner style={{ position: 'absolute', top: 0 }} />,
-    }),
-    get:
-      (module: typeof import("../world/World")) =>
-      (props: React.ComponentProps<(typeof module)["default"]>) =>
-        React.createElement(module.default, { disabled: true, ...props }),
-  },
+  Debug: loadableComponentFactory(() => import("../components/Debug")),
+  HelloWorld: loadableComponentFactory(() => import("../components/HelloWorld")),
+  Manage: loadableComponentFactory(() => import("../components/Manage")),
+  World: loadableComponentFactory(() => import("../world/World")),
 };
+
+function loadableComponentFactory<T extends () => Promise<any>>(input: T) {
+  return {
+    loadable: loadable(input),
+    get:(module: Awaited<ReturnType<T>>) =>
+      (props: React.ComponentProps<(typeof module)["default"]>) =>
+        React.createElement(module.default, { disabled: true, ...props }),
+  };
+}
 
 export async function getComponent(componentClassKey: ComponentClassKey, errorIdentifier?: string) {
   return (
@@ -102,10 +99,11 @@ type ComponentClassKeyToProps = {
 
 export interface BaseTabProps {
   /**
-   * Is this Tab disabled?
-   * Either
-   * - every tab is disabled
-   * - every tab is enabled (except background component tabs)
+   * A Tab is disabled if either:
+   * - Tabs disabled (all tabs disabled) 
+   * - Tab is hidden (behind another tab).
+   * 
+   * In the future we may permit disabling a visible Tab whilst Tabs enabled.
    */
   disabled?: boolean;
   /**

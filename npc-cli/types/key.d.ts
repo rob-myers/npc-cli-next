@@ -1,6 +1,16 @@
 namespace Key {
 
-  type Anim = keyof import('../service/helper').Helper['fromAnimKey'];
+  type Anim = (
+    | 'Idle'
+    | 'Lie'
+    | 'Run'
+    | 'Sit'
+    | 'Walk'
+  );
+
+  type ComponentClass = import('../tabs/tab-factory').ComponentClassKey;
+  
+  type TabClass = ComponentClass | 'Tty';
 
   type DecorImg = import('../service/const.js').DecorImgKey;
 
@@ -26,6 +36,8 @@ namespace Key {
     | 'empty-layout'
     | 'layout-preset-0'
   );
+
+  type Map = import('../world/World.jsx').MapKey;
 
   /**
    * Corresponds to Blender model and its exported GLB/GLTF.

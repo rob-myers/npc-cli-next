@@ -7,12 +7,13 @@ export function getCanvas(key) {
 
 /**
  * @param {string} key
- * @param {CanvasRenderingContext2DSettings} [opts]
+ * @param {CanvasRenderingContext2DSettings & { width?: number; height?: number; }} [opts]
  */
 export function getContext2d(key, opts) {
-  return /** @type {CanvasRenderingContext2D} */ ((
-    canvasLookup[key] ??= document.createElement('canvas')
-  ).getContext('2d', opts));
+  const canvas = canvasLookup[key] ??= document.createElement('canvas');
+  if (opts?.width) canvas.width = opts.width;
+  if (opts?.height) canvas.height = opts.height;
+  return /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d', opts));
 }
 
 /** Cache to avoid re-creation on HMR */
@@ -135,6 +136,30 @@ export function drawPolygons(ct, polys, [fillStyle, strokeStyle, lineWidth] = []
 }
 
 /**
+ * 🚧 customizable via args
+ * @param {CanvasRenderingContext2D} ct 
+ */
+export function drawRadialFillCustom(ct) {
+    // draw radial gradient in tempCanvas
+    const c = ct.canvas;
+
+    // const rgRadius = c.width / 2;
+    const rgRadius = (c.width / 2) + (c.width * 1/40);
+    const rg = ct.createRadialGradient(c.width / 2, c.height / 2, 0, c.width / 2, c.height / 2, rgRadius);
+    rg.addColorStop(0.2, 'rgba(255, 255, 255, 1)');
+    // rg.addColorStop(0.4, 'rgba(255, 255, 255, 0.8)');
+    // rg.addColorStop(0.9, 'rgba(255, 255, 255, 0.25)');
+    rg.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+    // rg.addColorStop(1, 'rgba(0, 0, 0, 1.0)');
+    
+    const radius = c.width / 2;
+    ct.fillStyle = rg;
+    ct.beginPath();
+    ct.arc(c.width / 2, c.height / 2, radius, 0, 2 * Math.PI);
+    ct.fill();
+}
+
+/**
  * Draw a simple polygon sans holes.
  * @param {CanvasContext2DType} ct
  * @param {Geom.VectJson[]} outline
@@ -253,7 +278,12 @@ export function strokeLine(ct, from, to) {
 }
 
 /**
- * @typedef {CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | import('@napi-rs/canvas').SKRSContext2D} CanvasContext2DType
+ * @typedef {(
+ *  | CanvasRenderingContext2D
+ *  | OffscreenCanvasRenderingContext2D
+ *  | import('@napi-rs/canvas').SKRSContext2D
+ *  | import('canvas').CanvasRenderingContext2D
+ * )} CanvasContext2DType
  */
 
 export function isSmallViewport() {

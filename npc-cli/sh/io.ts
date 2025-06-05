@@ -83,6 +83,8 @@ class shellWireClass<T> {
  * Redirect a node and its descendants e.g.
  * - `echo foo; echo bar >/dev/null; echo baz`.
  * - `echo foo; { echo bar; } >/dev/null; echo baz`.
+ * 
+ * We clone to avoid mutating ancestors.
  */
 export function redirectNode(node: Sh.ParsedSh, fdUpdates: Record<number, string>) {
   const newMeta = deepClone(node.meta);
@@ -145,7 +147,7 @@ export function isDataChunk(data: any): data is DataChunk {
   if (data === undefined || data === null) {
     return false;
   }
-  return data[dataChunkKey];
+  return !!data[dataChunkKey];
 }
 export function dataChunk(items: any[]): DataChunk {
   return { __chunk__: true, items };
@@ -347,7 +349,7 @@ export class FifoDevice implements Device {
 
 //#region var device
 
-export type VarDeviceMode = "array" | "last";
+export type VarDeviceMode = "array" | "fresh-array" | "last";
 
 export class VarDevice implements Device {
   public key: string;
@@ -359,10 +361,14 @@ export class VarDevice implements Device {
   }
 
   public async writeData(data: any) {
-    if (this.mode === "array") {
+    if (this.mode === "array" || this.mode === "fresh-array") {
       if (!this.buffer) {
-        this.buffer = useSessionStore.api.getVarDeep(this.meta, this.varPath);
-        if (!Array.isArray(this.buffer)) {
+        if (this.mode === "array") {
+          this.buffer = useSessionStore.api.getVarDeep(this.meta, this.varPath);
+          if (!Array.isArray(this.buffer)) {
+            useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
+          }
+        } else {// "fresh-array"
           useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
         }
       }

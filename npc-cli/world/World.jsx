@@ -1,21 +1,22 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Subject, firstValueFrom } from "rxjs";
-import { filter } from "rxjs/operators";
+import { Subject } from "rxjs";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
+import { deltaAngle } from "maath/misc";
 
 import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
-import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth } from "../service/const";
-import { debug, isDevelopment, keys, warn, removeFirst, toPrecision, pause, mapValues, range, entries, hashText } from "../service/generic";
+import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
+import { debug, isDevelopment, removeFirst, pause, mapValues, range, entries, hashText } from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
+import { geom } from "../service/geom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
 import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
 import { geomorph } from "../service/geomorph";
 import createGmsData from "../service/create-gms-data";
-import { imageLoader, toV3, toXZ } from "../service/three";
+import { imageLoader } from "../service/three";
 import { helper } from "../service/helper";
 import { TexArray } from "../service/tex-array";
 import { WorldContext } from "./world-context";
@@ -65,21 +66,21 @@ export default function World(props) {
     smallViewport: isSmallViewport(),
 
     // 🔔 hmr issue when initial width = height = 0
-    texFloor: new TexArray({ ctKey: 'floor-tex-array', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
-    texCeil: new TexArray({ ctKey: 'ceil-tex-array', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
-    texDecor: new TexArray({ ctKey: 'decor-tex-array', numTextures: 1, width: 0, height: 0 }),
-    texObs: new TexArray({ ctKey: 'obstacle-tex-array', numTextures: 1, width: 0, height: 0 }),
-    texSkin: new TexArray({ ctKey: 'skins-tex-array', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
-    texNpcAux: new TexArray({ ctKey: 'skins-aux-array', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
-    texNpcLabel: new TexArray({ ctKey: 'skins-label-array', numTextures: maxNumberOfNpcs, width: skinsLabelsTextureWidth, height: skinsLabelsTextureHeight }),
+    texAux: new TexArray({ ctKey: 'aux', type: THREE.FloatType, numTextures: texAuxDepth, width: 1, height: 1 }),
+    texFloor: new TexArray({ ctKey: 'floor-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
+    texFloorLight: new TexArray({ ctKey: 'floor-light-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
+    texCeil: new TexArray({ ctKey: 'ceil-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
+    texDecor: new TexArray({ ctKey: 'decor-tex', numTextures: 1, width: 0, height: 0 }),
+    texObs: new TexArray({ ctKey: 'obstacle-tex', numTextures: 1, width: 0, height: 0 }),
+    texNpcAux: new TexArray({ ctKey: 'skins-aux', type: THREE.FloatType, numTextures: maxNumberOfNpcs, width: skinsUvsTextureWidth, height: 2 }),
+    texSkin: new TexArray({ ctKey: 'skins-tex', numTextures: 1, width: skinsTextureDimension, height: skinsTextureDimension }),
+    texNpcLabel: new TexArray({ ctKey: 'skins-label', numTextures: maxNumberOfNpcs, width: skinsLabelsTextureWidth, height: skinsLabelsTextureHeight }),
     texVs: { floor: 0, ceiling: 0 }, // versions
 
     crowd: /** @type {*} */ (null),
 
     view: /** @type {*} */ (null),
-    floor: /** @type {State['floor']} */ ({
-      litCircle: new THREE.Vector4(),
-    }),
+    floor: /** @type {*} */ ({}),
     ceil: /** @type {*} */ ({}),
     decor: /** @type {*} */ (null),
     obs: /** @type {*} */ (null),
@@ -108,7 +109,6 @@ export default function World(props) {
       }
       return ready;
     },
-
     onTick() {
       state.reqAnimId = requestAnimationFrame(state.onTick);
       state.timer.update();
@@ -136,6 +136,13 @@ export default function World(props) {
     async update(mutator) {
       await mutator?.(state);
       update();
+    },
+    updateTexAux(partial) {
+      const buffer = new Float32Array(4);
+      for (const indexStr in partial) {
+        buffer.set(partial[indexStr])
+        state.texAux.updateIndex(Number(indexStr), new Float32Array(buffer));
+      }
     },
   }), { reset: { lib: true, texFloor: false, texCeil: false } });
 
@@ -170,12 +177,19 @@ export default function World(props) {
       };
 
       const dataChanged = !prevGeomorphs || state.hash.full !== next.hash.full;
-      if (dataChanged) {
+      if (dataChanged === true) {
         next.geomorphs = geomorph.deserializeGeomorphs(geomorphsJson);
       }
       
-      const mapChanged = dataChanged || state.mapKey !== props.mapKey;
-      if (mapChanged) {
+      // const mapChanged = dataChanged || state.mapKey !== props.mapKey;
+      const mapChanged = (
+        state.mapKey !== props.mapKey ||
+        next.hash.map !== state.hash.map ||
+        next.hash.mapNav !== state.hash.mapNav ||
+        next.hash.mapDecor !== state.hash.mapDecor // 🔔 needed for meta.roomId in computeGmData
+      );
+
+      if (mapChanged === true) {
         next.mapKey = props.mapKey;
         const mapDef = next.geomorphs.map[next.mapKey];
         next.gms = mapDef.gms.map(({ gmKey, transform }, gmId) => 
@@ -185,18 +199,21 @@ export default function World(props) {
       
       // 🔔 if this function changes we'll run the whole query
       const queryFnHash = hashText(queryCache.find({ queryKey: [WORLD_QUERY_FIRST_KEY], exact: false })?.options.queryFn?.toString() ?? '');
-      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr(
-        { createGmsData, GmGraphClass, queryFnHash },
-      );
-
-      if (mapChanged || gmsDataChanged) {
+      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr({
+        createGmsData,
+        GmGraphClass,
+        queryFnHash,
+      });
+      
+      if (mapChanged === true || gmsDataChanged === true) {
         next.gmsData = createGmsData();
-
+        
         // ensure GmData per gmKey in map
         state.menu.measure('gmsData');
+        const breathingSpaceMs = 0;
         for (const gmKey of new Set(next.gms.map(({ key }) => key))) {
           if (next.gmsData[gmKey].unseen) {
-            await pause(); // breathing space
+            await pause(breathingSpaceMs);
             await next.gmsData.computeGmData(next.geomorphs.layout[gmKey]);
           }
         };
@@ -204,15 +221,16 @@ export default function World(props) {
         state.menu.measure('gmsData');
       }
 
-      if (mapChanged) {
+      if (mapChanged === true) {
         const dimension = floorTextureDimension;
         state.texFloor.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
+        state.texFloorLight.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texCeil.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texVs.floor++; // e.g. fix edit const.js
         state.texVs.ceiling++;
       }
       
-      if (mapChanged || gmsDataChanged || gmGraphChanged) {
+      if (mapChanged === true || gmsDataChanged === true || gmGraphChanged === true) {
         await pause();
         state.menu.measure('gmGraph');
         next.gmGraph = GmGraphClass.fromGms(next.gms, { permitErrors: true });
@@ -230,8 +248,8 @@ export default function World(props) {
         state.gmGraph.dispose();
         state.gmRoomGraph.dispose();
       }
-      if (dataChanged || gmsDataChanged) {
-        // only when GmData lookup has been rebuilt
+      // 🔔 only when GmData lookup has been rebuilt
+      if (mapChanged === true || gmsDataChanged === true) {
         state.gmsData?.dispose();
       }
       Object.assign(state, next);
@@ -304,11 +322,7 @@ export default function World(props) {
     // refetchOnWindowFocus: false,
     enabled: state.threeReady, // 🔔 fixes horrible reset issue on mobile
     gcTime: 0, // concurrent queries with different mapKey can break HMR
-    /**
-     * 🔔 Very useful for debugging
-     * 🔔 Breaks on restart dev env
-     */
-    throwOnError: true,
+    throwOnError: true, // Very useful for debugging
     networkMode: isDevelopment() ? 'always' : 'online',
   });
 
@@ -340,7 +354,7 @@ export default function World(props) {
         {state.geomorphs && (
           <group>
             <React.Suspense>
-              {state.crowd && <>
+              {state.crowd !== null && <>
                 <Decor />
                 <Npcs />
                 <Debug
@@ -368,9 +382,13 @@ export default function World(props) {
 
 /**
  * @typedef {import("../tabs/tab-factory").BaseTabProps & {
- *   mapKey: keyof import('../../public/geomorphs.json')['map'];
+ *   mapKey: Key.Map;
  *   worldKey: string;   
  * }} Props
+ */
+
+/**
+ * @typedef {keyof import('../../public/geomorphs.json')['map']} MapKey
  */
 
 /**
@@ -428,9 +446,11 @@ export default function World(props) {
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm
  *
+ * @property {TexArray} texAux
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
  * @property {TexArray} texFloor
+ * @property {TexArray} texFloorLight
  * @property {TexArray} texObs
  * @property {TexArray} texSkin skin texels, one pre skin
  * @property {TexArray} texNpcAux uv re-mapping and skin tinting, one per npc
@@ -449,31 +469,22 @@ export default function World(props) {
  * @property {() => void} stopTick
  * @property {(next: State['hmr']) => Record<keyof State['hmr'], boolean>} trackHmr
  * Has function `createGmsData` changed?
- * @property {(mutator?: (w: State) => void) => void} update
+ * @property {(mutator?: (w: State) => void | Promise<void>) => void} update
+ * @property {(partial: Record<number, [number, number, number, number]>) => void} updateTexAux
  */
 
 /**
  * @typedef StateUtil Utility functions and classes
- * @property {typeof filter} filter
- * @property {typeof firstValueFrom} firstValueFrom
- * @property {typeof import('../geom').Vect['isVectJson']} isVectJson
+ * @property {typeof deltaAngle} deltaAngle
+ * @property {typeof geom} geom
+ * @property {typeof Vect['isVectJson']} isVectJson
  * @property {typeof removeFirst} removeFirst
- * @property {typeof Subject} Subject
- * @property {typeof toXZ} toXZ
- * @property {typeof toV3} toV3
- * @property {typeof toPrecision} precision
- * @property {typeof import('../geom').Vect['from']} vectFrom
  */
 
 const lib = {
-  filter,
-  firstValueFrom,
+  deltaAngle,
+  geom,
   isVectJson: Vect.isVectJson,
-  precision: toPrecision,
   removeFirst,
-  vectFrom: Vect.from,
-  Subject,
-  toXZ,
-  toV3,
   ...helper,
 };

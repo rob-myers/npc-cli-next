@@ -30,7 +30,7 @@ export default function Debug(props) {
         const layout = w.geomorphs.layout[gmKey];
         // Fix normals for recast/detour -- triangulation ordering?
         w.gmsData[gmKey].navPoly = decompToXZGeometry(layout.navDecomp, { reverse: true });
-        update();
+        // update();
       }
     },
     onPhysicsDebugData(e) {
@@ -55,14 +55,18 @@ export default function Debug(props) {
         const linesGeometry = new LineGeometry();
     
         linesGeometry.setPositions(path.flatMap(({ x, y, z }) => [x, y + navMeta.groundOffset, z]));
-        showNavNodes && group.add(...path.map(() => new THREE.Mesh(navMeta.nodeGeometry, navMeta.nodeMaterial)));
+        if (showNavNodes) {
+          group.add(...path.map(() => new THREE.Mesh(navMeta.nodeGeometry, navMeta.nodeMaterial)));
+        }
         group.add(new Line2(linesGeometry, navMeta.lineMaterial));
     
-        showNavNodes && group.children.slice(0, -1).forEach((x, i) => {
-          x.visible = true;
-          x.position.copy(path[i]);
-          x.position.y += navMeta.groundOffset;
-        });
+        if (showNavNodes) {
+          group.children.slice(0, -1).forEach((x, i) => {
+            x.visible = true;
+            x.position.copy(path[i]);
+            x.position.y += navMeta.groundOffset;
+          });
+        }
       }
 
       group.visible = true;
@@ -132,17 +136,17 @@ export default function Debug(props) {
 
   w.debug = state;
 
-  React.useMemo(() => {
+  React.useMemo(() => {// navMesh
     state.navMesh = new NavMeshHelper(w.nav.navMesh, {
       navMeshMaterial: navPolyMaterial,
     });
 
     /** Use offMeshLookup to exclude non-existent ones through isolated hull doors  */
     const offMeshParams = Object.values(w.nav.offMeshLookup).map(x => ({
-        startPosition: x.src,
-        endPosition: x.dst,
-        radius: 0.04,
-        bidirectional: true,
+      startPosition: x.src,
+      endPosition: x.dst,
+      radius: 0.04,
+      bidirectional: true,
     }));
     // const offMeshParams = computeOffMeshConnectionsParams(w.gms);
 
@@ -165,6 +169,10 @@ export default function Debug(props) {
     }
   }, [props.showStaticColliders, w.physics.rebuilds]);
 
+  React.useEffect(() => {// original navMesh
+    w.gms.forEach(gm => state.ensureNavPoly(gm.key));
+    w.update();
+  }, [props.showOrigNavPoly]);
 
   const update = useUpdate();
 
@@ -218,20 +226,22 @@ export default function Debug(props) {
       renderOrder={0}
     />}
 
-    {props.showOrigNavPoly === true && w.gms.map((gm, gmId) => (
-      <group
-        key={`${gm.key} ${gmId} ${gm.transform}`}
-        onUpdate={(group) => group.applyMatrix4(gm.mat4)}
-        ref={(group) => void (group && state.ensureNavPoly(gm.key))}
-      >
-        <mesh
-          name="orig-nav-poly"
-          args={[w.gmsData[gm.key].navPoly, origNavPolyMaterial]}
-          position={[0, 0.0001, 0]}
-          visible={props.showOrigNavPoly}
-        />
-      </group>
-    ))}
+    {props.showOrigNavPoly === true && (
+      w.gms.map((gm, gmId) => (
+        <group
+          key={`${gm.key} ${gmId} ${gm.transform}`}
+          matrix={gm.mat4}
+          matrixAutoUpdate={false}
+        >
+          <mesh
+            name="orig-nav-poly"
+            args={[w.gmsData[gm.key].navPoly, origNavPolyMaterial]}
+            position={[0, 0.0001, 0]}
+            visible={props.showOrigNavPoly}
+          />
+        </group>
+      ))
+    )}
     
     {state.staticColliders.length > 0 && <group
       name="static-colliders"

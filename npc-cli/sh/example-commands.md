@@ -150,9 +150,9 @@ r=$( expr '{x:1.666,y:0,z:6.581,meta:{picked:"floor",gmId:0,floor:true,instanceI
 s=$( expr '{x:3.36,y:0,z:7.882,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.36,y:7.882}}' )
 
 # one
-w n.rob.moveTo ${p} & w n.will.moveTo ${q} &
+w n.rob.move "{ to: ${p} }" & w n.will.move "{ to: ${q} }" &
 # two
-w n.rob.moveTo ${r} & w n.will.moveTo ${s} &
+w n.rob.move "{ to: ${r} }" & w n.will.move "{ to: ${s} }" &
 
 # sometimes 2nd agent gets blocked, but usually not because
 # pushed out of the way before starts offMeshConnection
@@ -244,7 +244,7 @@ call '() => "foo\nbar\nbaz"'
 ```
 
 ```sh
-$ run '({ api, home }) {  await new Promise(resolve => { api.addCleanup(home.resolve = resolve); }); yield "done"; }' &
+$ run '({ api, home }) {  await new Promise(resolve => { api.addCleanUp(home.resolve = resolve); }); yield "done"; }' &
 $ ps
 pid   ppid  pgid
 0     0     0    ▶️  ps

@@ -49,8 +49,6 @@ export class ttyXtermClass {
   private linesPerUpdate = 500;
   private refreshMs = 0;
 
-  /** Useful for mobile keyboard inputs (UNUSED) */
-  forceLowerCase = false;
   /**
    * History will be disabled during initial profile,
    * which is actually pasted into the terminal.
@@ -326,14 +324,14 @@ export class ttyXtermClass {
       return;
     }
 
-    if (data.length === 1 || !data.includes("\r")) {
+    if (data.length === 1 || data.includes("\r") === false) {
       this.handleXtermKeypresses(data);
     } else if (data === '\u001b\r') {
       // "Alt + Enter" -> newline (see Ctrl + J)
       this.handleXtermKeypresses('\n')
     } else {// Handle multi-line paste
-      // ℹ️ xterm.js normalizes pasted newlines as '\r'
-      const text = data.replace(/\r/g, "\r\n");
+      // since convertEol: true we don't need \r
+      const text = data.replace(/\r/g, "\n");
       const { input, cursor } = this;
       this.clearInput();
       this.setInput(`${input.slice(0, cursor)}${text}${input.slice(cursor)}`)
@@ -355,11 +353,6 @@ export class ttyXtermClass {
     //   // because cannot handle them properly (ambiguous)
     //   return;
     // }
-
-    if (this.forceLowerCase && data.length > 1 && !data.includes(" ")) {
-      // Force lowercase applies to "words swiped into mobile keyboard"
-      data = data.toLowerCase();
-    }
 
     if (ord == 0x1b) {
       // ansi escape sequences
@@ -402,6 +395,9 @@ export class ttyXtermClass {
           if (cursor != null) {
             this.setCursor(cursor);
           }
+          break;
+        case "3": // Alt + 3
+          this.handleCursorInsert('#'); // British
           break;
         case "\x7F": // Ctrl + Backspace
           this.deletePreviousWord();
@@ -471,11 +467,7 @@ export class ttyXtermClass {
           break;
         }
       }
-    } else {
-      // Visible characters
-      if (this.forceLowerCase && data.length === 1 && !this.input.includes("/")) {
-        data = data.toLowerCase();
-      }
+    } else {// Visible characters
       this.handleCursorInsert(data);
     }
   }
@@ -610,27 +602,31 @@ export class ttyXtermClass {
         ]);
         break;
       default: {
-        if (isDataChunk(msg)) {
+        const other = msg as any;
+
+        if (isDataChunk(other) === true) {
           /**
            * We'll only process the last `2 * scrollback` items.
            * This makes sense if screen rows no larger than scrollback.
            * The buffer length consists of the screen rows (on resize)
            * plus the scrollback.
            */
-          const { items } = msg as DataChunk;
+          const { items } = other as DataChunk;
           // Pretend we outputted them all
           items.slice(-2 * scrollback).forEach((x) => this.onMessage(x));
+        } else if (other instanceof HTMLElement) {
+          this.queueCommands([{
+            key: "line",
+            line: `<${other.tagName.toLowerCase()}>`,
+          }]);
         } else {
-          const stringified = jsStringify(msg);
-          this.queueCommands([
-            {
-              key: "line",
-              line: `${ansi.BrightYellow}${stringified.slice(-this.maxStringifyLength)}${
-                ansi.Reset
-              }`,
-            },
-          ]);
-          this.session.rememberLastValue(msg);
+          const stringified = jsStringify(other);
+          // const stringified = jsStringify(other).replaceAll('\n', '\n\r');
+          this.queueCommands([{
+            key: "line",
+            line: `${ansi.BrightYellow}${stringified.slice(-this.maxStringifyLength)}${ansi.Reset}`,
+          }]);
+          this.session.rememberLastValue(other);
         }
       }
     }
@@ -937,9 +933,6 @@ export class ttyXtermClass {
       const prevInput = this.input;
       const prevCursor = this.cursor;
       this.clearInput();
-      if (this.forceLowerCase && !input.includes(" ")) {
-        input = input.toLowerCase();
-      }
       this.setInput(prevInput.slice(0, prevCursor) + input + prevInput.slice(prevCursor));
     } else {
       this.warnIfNotReady();

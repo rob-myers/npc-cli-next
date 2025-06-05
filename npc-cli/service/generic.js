@@ -334,6 +334,19 @@ export function jsStringify(input, pretty = false) {
 }
 
 /**
+ * Outputs JS expressions, with toString fallback.
+ * @param {*} input 
+ * @returns {string}
+ */
+export function safeJsStringify(input) {
+  try {
+    return jsStringify(input);
+  } catch {
+    return `${input}`;
+  }
+}
+
+/**
  * @template SrcValue
  * @template DstValue
  * @template {string | number} Key
@@ -346,6 +359,33 @@ export function mapValues(input, transform) {
   const output = /** @type {Record<Key, DstValue>} */ ({});
   keys(input).forEach((key) => (output[key] = transform(input[key], key)));
   return output;
+}
+
+/**
+ * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
+ * - 'foo:42 bar' -> { "foo": 42, 1: "bar" }
+ * - 🔔 assume keys do not contain double-quote character
+ * 
+ * @template {Record<string, any>} [T=Record<string, any>]
+ * @param {string[]} args
+ * @param {{ [key: string]: 'array' }} [opts]
+ * @returns {T}
+ */
+export function parseArgsAsJs(args, opts = {}) {
+  return /** @type {T} */ (args.reduce((agg, arg, index) => {
+    const colonIndex = arg.indexOf(':');
+    if (colonIndex === -1) {
+      agg[index] = arg;
+    } else {
+      const key = arg.slice(0, colonIndex);
+      agg[key] = parseJsArg(arg.slice(colonIndex + 1));
+      if (opts[key] === 'array' && Array.isArray(agg[key]) === false) {
+        // try split by spaces instead
+        agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
+      }
+    }
+    return agg;
+  }, /** @type {Record<string, any>} */ ({})));
 }
 
 /**

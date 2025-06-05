@@ -120,22 +120,25 @@ export default function WorldWorkers() {
         return agg;
       }, /** @type {NPC.DoorToOffMeshLookup} */ ({}));
 
-
-      if (w.crowd) {
+      if (w.crowd !== null) {
         disposeCrowd(w.crowd, w.nav.navMesh);
       }
+
       w.crowd = new Crowd(w.nav.navMesh, {
         maxAgents: 200,
         // 🔔 maxAgentRadius influences m_agentPlacementHalfExtents
         // 🔔 maxAgentRadius influences proximity grid
         // https://github.com/recastnavigation/recastnavigation/blob/77f7e54bc8cf5a816f9f087a3e0ac391d2043be3/DetourCrowd/Source/DetourCrowd.cpp#L394
         maxAgentRadius: helper.defaults.radius,
-        // maxAgentRadius: helper.defaults.radius * 0.5,
       });
 
+      // The "respectUnwalkable" query filter respects unwalkable polygons marked via unWalkable bit.
+      const filter = w.crowd.getFilter(helper.queryFilterType.respectUnwalkable);
+      filter.excludeFlags = helper.navPolyFlag.unWalkable;
+
+      // 🚧 try modify dtObstacleAvoidanceParams
       // const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = w.crowd.raw.getObstacleAvoidanceParams(0);
       // info('dtObstacleAvoidanceParams', { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi });
-      // 🚧 try modify dtObstacleAvoidanceParams
       // const oap = new RecastWasm.dtObstacleAvoidanceParams();
       
       w.npc?.restore();
@@ -143,55 +146,63 @@ export default function WorldWorkers() {
   }));
 
   React.useEffect(() => {// restart workers
-    if (w.threeReady && w.hash.full) {
-      w.nav.worker = new Worker(new URL("./nav.worker", import.meta.url));
-      w.nav.worker.addEventListener("message", state.handleNavWorkerMessage);
-
-      w.physics.worker = new Worker(new URL("./physics.worker", import.meta.url));
-      w.physics.worker.addEventListener("message", state.handlePhysicsWorkerMessage);
-
-      return () => {
-        w.nav.worker.terminate();
-        w.physics.worker.terminate();
-      };
+    if (!(w.threeReady && w.hash.full)) {
+      return;
     }
-  }, [w.threeReady, w.hash.full]);
+
+    w.nav.worker = new Worker(new URL("./nav.worker", import.meta.url));
+    w.nav.worker.addEventListener("message", state.handleNavWorkerMessage);
+
+    w.physics.worker = new Worker(new URL("./physics.worker", import.meta.url));
+    w.physics.worker.addEventListener("message", state.handlePhysicsWorkerMessage);
+
+    return () => {
+      w.nav.worker.terminate();
+      w.physics.worker.terminate();
+    };
+  }, [w.threeReady, Boolean(w.hash.full)]);
 
   React.useEffect(() => {// request nav-mesh, fresh physics world
-    if (w.threeReady && w.hash.full) {
-
-      const prev = state.seenHash;
-      const next = w.hash;
-      const changedGmIds = w.gms.map(({ key }, gmId) =>
-        next[key].nav !== prev[key]?.nav // geomorph changed
-        || next.mapGmHashes[gmId] !== prev.mapGmHashes[gmId] // geomorph instance changed
-      );
-      
-      w.nav.offMeshDefs = computeOffMeshConnectionsParams(w);
-      w.events.next({ key: 'pre-request-nav', changedGmIds });
-      w.menu.measure('request-nav');
-      w.nav.worker.postMessage({
-        type: "request-nav",
-        mapKey: w.mapKey,
-        offMeshDefs: w.nav.offMeshDefs,
-        baseUrl: location.href,
-      });
-
-      w.events.next({ key: 'pre-setup-physics' });
-      w.menu.measure('setup-physics');
-      w.physics.worker.postMessage({
-        type: "setup-physics",
-        mapKey: w.mapKey, // On HMR must provide existing npcs:
-        npcs: Object.values(w.npc?.npc ?? {}).map((npc) => ({
-          npcKey: npc.key,
-          position: npc.position,
-        })),
-        baseUrl: location.href,
-      });
-
-      state.seenHash = next;
+    if (!(w.threeReady && w.hash.full)) {
+      return;
     }
-  }, [w.threeReady, w.mapKey, w.hash.full]); // 🚧 avoid rebuild when only image changes
+
+    const prev = state.seenHash;
+    const next = w.hash;
+    const changedGmIds = w.gms.map(({ key }, gmId) =>
+      next[key].nav !== prev[key]?.nav // geomorph changed
+      || next.mapGmHashes[gmId] !== prev.mapGmHashes[gmId] // geomorph instance changed
+    );
+    
+    w.nav.offMeshDefs = computeOffMeshConnectionsParams(w);
+    w.events.next({ key: 'pre-request-nav', changedGmIds });
+    w.menu.measure('request-nav');
+    w.nav.worker.postMessage({
+      type: "request-nav",
+      mapKey: w.mapKey,
+      offMeshDefs: w.nav.offMeshDefs,
+      baseUrl: location.href,
+    });
+
+    w.events.next({ key: 'pre-setup-physics' });
+    w.menu.measure('setup-physics');
+    w.physics.worker.postMessage({
+      type: "setup-physics",
+      mapKey: w.mapKey, // On HMR must provide existing npcs:
+      npcs: Object.values(w.npc?.npc ?? {}).map((npc) => ({
+        npcKey: npc.key,
+        position: npc.position,
+      })),
+      baseUrl: location.href,
+    });
+
+    state.seenHash = next;
+  }, [
+    w.threeReady,
+    w.mapKey, // current map
+    w.hash.map, // current map layout (gmKey and transforms)
+    w.hash.mapNav, // current map navMeshes 
+  ]);
 
   return null;
 }

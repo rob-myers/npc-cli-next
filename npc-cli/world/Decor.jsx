@@ -105,6 +105,11 @@ export default function Decor(props) {
       state.cuboidGeom.setAttribute('instanceIds',
         new THREE.InstancedBufferAttribute(new Uint32Array(instanceIds), 1),
       );
+      const outlineShades = state.cuboids.map(({ meta }) => typeof meta.outline === 'number' ? meta.outline : 0.25);
+      state.cuboidGeom.deleteAttribute('outlineShade');
+      state.cuboidGeom.setAttribute('outlineShade',
+        new THREE.InstancedBufferAttribute(new Float32Array(outlineShades), 1),
+      );
     },
     addLabelUvs() {
       const uvOffsets = /** @type {number[]} */ ([]);
@@ -200,7 +205,7 @@ export default function Decor(props) {
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
-        0, transform[3], 0, wallHeight + 0.5,
+        0, transform[3], 0, 1, // 🚧 remove hard-coding
         0, 0, 1, transform[5],
         0, 0, 0, 1
       );
@@ -457,7 +462,11 @@ export default function Decor(props) {
   
   // instantiate geomorph decor
   const query = useQuery({
-    queryKey: ['decor', w.key, w.mapKey, w.hash.full],
+    queryKey: [
+      'decor',
+      w.key,
+      w.hash.mapDecor,
+    ],
 
     async queryFn() {
       if (module.hot?.active === false) {
@@ -480,7 +489,7 @@ export default function Decor(props) {
 
       w.menu.measure('decor.addGm');
 
-      if (mapChanged || justHmr) {
+      if (mapChanged === true || justHmr === true) {
         // Re-instantiate all cleanly
         state.removeAllInstantiated();
         for (const [gmId, gm] of w.gms.entries()) {
@@ -579,8 +588,8 @@ export default function Decor(props) {
       visible={ready}
     >
       {/* <meshBasicMaterial color="red" /> */}
-      {ready && <instancedMultiTextureMaterial
-        key={glsl.InstancedMultiTextureMaterial.key}
+      {ready && <instancedAtlasMaterial
+        key={glsl.InstancedAtlasMaterial.key}
         alphaTest={0.5}
         diffuse={[0.5, 0.5, 0.5]}
         atlas={w.texDecor.tex}

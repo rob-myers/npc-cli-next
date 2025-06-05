@@ -1,0 +1,25 @@
+diff --git a/node_modules/next/dist/client/components/react-dev-overlay/utils/use-websocket.js b/node_modules/next/dist/client/components/react-dev-overlay/utils/use-websocket.js
+index 2584bff..71090d5 100644
+--- a/node_modules/next/dist/client/components/react-dev-overlay/utils/use-websocket.js
++++ b/node_modules/next/dist/client/components/react-dev-overlay/utils/use-websocket.js
+@@ -39,6 +39,11 @@ function useWebsocket(assetPrefix) {
+         }
+         const url = (0, _getsocketurl.getSocketUrl)(assetPrefix);
+         webSocketRef.current = new window.WebSocket("" + url + "/_next/webpack-hmr");
++        function onClose(_e) {
++            webSocketRef.current = new window.WebSocket("" + url + "/_next/webpack-hmr");
++            webSocketRef.current.onclose = onClose;
++        }
++        onClose();
+     }, [
+         assetPrefix
+     ]);
+@@ -52,7 +57,7 @@ function useSendMessage(webSocketRef) {
+         }
+         return socket.send(data);
+     }, [
+-        webSocketRef
++        webSocketRef.current
+     ]);
+     return sendMessage;
+ }

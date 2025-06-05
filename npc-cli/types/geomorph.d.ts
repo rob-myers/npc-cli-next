@@ -29,23 +29,21 @@ declare namespace Geomorph {
   type GeomorphsHash = PerGeomorphHash & {
     /** `${maps} ${layouts} ${sheets}` */
     full: `${number} ${number} ${number}`;
+    
+    /** Hash of current map i.e. a list of gmKeys and transforms. */
+    map: number;
+    /** 🔔 `mapGmHashes[gmId]` is hash of `map.gms[gmId] = { gmKey, transform }` */
+    mapGmHashes: number[];
+    /** Hash of current map nav meshes (one per geomorph key) */
+    mapNav: number;
+    /** Hash of current map decor */
+    mapDecor: number;
 
     /** Hash of all maps */
     maps: number;
-    /** Hash of all layouts */
-    layouts: number;
     /** Depends on rect lookup, images, and skins */
     sheets: number;
-    /** `${layouts} ${maps}` */
-    decor: `${number} ${number}`;
-    /** Hash of current map */
-    map: number;
 
-    /**
-     * 🔔 `mapGmHashes[gmId]` is hash of `map.gms[gmId]`
-     * i.e. hashes { gmKey, transform } 
-     */
-    mapGmHashes: number[];
   }
 
   type PerGeomorphHash = Record<Key.Geomorph, {

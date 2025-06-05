@@ -6,7 +6,7 @@ import { wallHeight, gmFloorExtraScale, worldToSguScale, sguToWorldScale, instan
 import { pause } from "../service/generic";
 import { drawPolygons } from "../service/dom";
 import { getQuadGeometryXZ } from "../service/three";
-import { InstancedMultiTextureMaterial } from "../service/glsl";
+import { InstancedAtlasMaterial } from "../service/glsl";
 import { geomorph } from "../service/geomorph";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -20,7 +20,7 @@ export default function Ceiling(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-ceiling-xz`),
-    opacity: 0.5,
+    opacity: 1,
 
     async draw() {
       w.menu.measure('ceil.draw');
@@ -49,14 +49,19 @@ export default function Ceiling(props) {
       const black = 'black';
       const grey90 = 'rgb(90, 90, 90)';
       const wallsColor = '#333';
+      const wallsHighlight = '#999';
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      drawPolygons(ct, tops.nonHull, ['#001', '#666', thickLineWidth]);
-      // drawPolygons(ct, tops.nonHull, ['#666', '#001', thickLineWidth]);
-      drawPolygons(ct, tops.window, [black, wallsColor, thinLineWidth]);
+      // drawPolygons(ct, tops.nonHull, ['#001', wallsHighlight, thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, [wallsHighlight, '#001', thickLineWidth]);
+      drawPolygons(ct, tops.window, [black, wallsHighlight, thickLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
+      // drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
+      // drawPolygons(ct, tops.hull, [black, wallsHighlight, thickLineWidth]); // hull walls and doors
+      drawPolygons(ct, tops.hull, [wallsHighlight, wallsHighlight, thickLineWidth]); // hull walls and doors
+
       // decals
       polyDecals.filter(x => x.meta.ceil === true).forEach(x => {
         const strokeWidth = typeof x.meta.strokeWidth === 'number'
@@ -66,7 +71,7 @@ export default function Ceiling(props) {
         // drawPolygons(ct, x, ['red', 'white', 0.08]);
       });
 
-      drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
+      ct.strokeStyle = wallsColor;
       
       // Stroke a square at each corner to avoid z-fighting
       const hullRect = layout.hullPoly[0].rect;
@@ -90,7 +95,7 @@ export default function Ceiling(props) {
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
     },
-  }), { reset: { opacity: true } });
+  }), { reset: { opacity: false } });
 
   w.ceil = state;
   const { tex } = w.texCeil;
@@ -98,7 +103,7 @@ export default function Ceiling(props) {
   React.useEffect(() => {
     state.positionInstances();
     state.draw().then(() => w.update());
-  }, [w.mapKey, w.hash.full, w.texVs.ceiling]);
+  }, [w.texVs.ceiling]);
 
   return (
     <instancedMesh
@@ -109,14 +114,15 @@ export default function Ceiling(props) {
       renderOrder={3}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
-      <instancedMultiTextureMaterial
-        key={InstancedMultiTextureMaterial.key}
+      <instancedAtlasMaterial
+        key={InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
         atlas={tex}
-        alphaTest={0.3} opacity={state.opacity} depthWrite={false}
+        alphaTest={0.1} opacity={state.opacity} depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
         objectPickRed={3}
+        opacityCloseDivisor={18}
       />
     </instancedMesh>
   );

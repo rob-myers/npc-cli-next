@@ -5,31 +5,29 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 import { useBeforeunload } from "react-beforeunload";
 
-import WorldTwoNpcWebp from '../public/images/localhost_3000_blog_index.png.webp';
+import DesktopEmptyWorld from '../public/images/desktop-empty-world__27-05-2025.webp';
 
-import { view } from "./const";
+import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 
-import { parseJsArg, testNever, tryLocalStorageGet } from "@/npc-cli/service/generic";
+import { parseJsArg, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { helper } from "@/npc-cli/service/helper";
-import { createLayoutFromBasicLayout, isComponentClassKey } from "@/npc-cli/tabs/tab-util";
-import type { ComponentClassKey, TabDef } from "@/npc-cli/tabs/tab-factory";
+import { computeTabDef } from "@/npc-cli/tabs/tab-util";
 
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
 
-import ViewerControls, { viewBarSizeCssVar, viewIconSizeCssVar } from "./ViewerControls";
-import { Tabs, State as TabsState } from "@/npc-cli/tabs/Tabs";
-
+import ViewerControls from "./ViewerControls";
+import { Tabs, type State as TabsState, type TabState } from "@/npc-cli/tabs/Tabs";
 
 export default function Viewer() {
 
-  const site = useSite(({ viewOpen, tabset: lookup, tabsetUpdates }) => ({
-    tabset: lookup.started,
-    tabsetUpdates,
+  const site = useSite(({ tabset, viewOpen }) => ({
+    tabset: tabset.started,
+    tabsetVersion: tabset.version,
     viewOpen,
   }), shallow);
 
@@ -39,44 +37,6 @@ export default function Viewer() {
     rootEl: null as any,
     tabs: {} as TabsState,
 
-    computeTabDef(classKey, opts) {
-      let tabDef: TabDef;
-
-      switch (classKey) {
-        case 'HelloWorld':
-          tabDef = {
-            type: 'component',
-            class: classKey,
-            filepath: `hello-world-${opts.suffix ?? '0'}`,
-            props: {},
-          };
-          break;
-        case 'World':
-          const worldKey = `world-${opts.suffix ?? '0'}`;
-          tabDef = {
-            type: 'component',
-            class: classKey,
-            filepath: worldKey,
-            props: {
-              worldKey,
-              mapKey: opts.mapKey ?? "demo-map-1"
-            },
-          };
-          break;
-        case 'Tty':
-          tabDef = {
-            type: 'terminal',
-            filepath: `tty-${opts.suffix}`,
-            profileKey: helper.isProfileKey(opts.profileKey) ? opts.profileKey : 'profileAwaitWorldSh',
-            env: opts.env ?? {},
-          };
-          break;
-        default:
-          throw testNever(classKey);
-      }
-
-      return tabDef;
-    },
     onChangeIntersect: debounce((intersects: boolean) => {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
@@ -85,7 +45,7 @@ export default function Viewer() {
       const parsedUrl = new URL(internalApiPath, location.origin);
 
       /**
-       * e.g. `/internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
+       * e.g. `#internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
        * `{ baz: 'qux', env: {WORLD_KEY:'hello'} }`
        */
       const opts = Array.from(parsedUrl.searchParams).reduce(
@@ -94,7 +54,7 @@ export default function Viewer() {
       );
 
       /**
-       * e.g. `/internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
+       * e.g. `#internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
        * `['foo', 'bar']`
        */
       const parts = parsedUrl.pathname.split('/').slice(2);
@@ -112,13 +72,16 @@ export default function Viewer() {
           useSite.api.closeTab(tabId);
           break;
         }
-        case 'open-tab': {// 🔔 open tab via (classKey, opts)
+        case 'open-tab': {// 🔔 open tab via classKey, opts
           const classKey = parts[1];
-          if (!(isComponentClassKey(classKey) || classKey === 'Tty')) {
-            throw Error(`${'onInternalApi'}: open-tab: unknown classKey "${classKey}"`);
+          if (!(helper.isTabClassKey(classKey))) {
+            throw Error(`${'onInternalApi'}: open-tab: unknown tab class key "${classKey}"`);
           }
-
-          const tabDef = state.computeTabDef(classKey, opts);
+          const tabDef = computeTabDef({
+            ...opts,
+            classKey,
+            suffix: opts.suffix,
+          });
           useSite.api.openTab(tabDef);
           break;
         }
@@ -165,6 +128,12 @@ export default function Viewer() {
         useSite.api.syncCurrentTabset(state.tabs.model);
       }
     },
+    onTabsReset() {
+      useSite.api.clearTabMeta();
+    },
+    onToggleTab(tabState) {
+      useSite.api.setTabMeta(tabState);
+    },
     update,
   }));
 
@@ -180,7 +149,7 @@ export default function Viewer() {
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
 
     // ensure layout if localStorage empty
-    useSite.api.restoreLayoutFallback("layout-preset-0", { preserveRestore: false });
+    useSite.api.restoreLayoutWithFallback("layout-preset-0", { preserveRestore: false });
 
     // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {
@@ -213,7 +182,7 @@ export default function Viewer() {
       <div
         css={tabsContainerCss}
         className={cx({ collapsed, neverEnabled })}
-        {...neverEnabled && { onPointerDown: () => state.tabs.toggleEnabled(true) }}
+        {...neverEnabled && { onPointerUp: () => state.tabs.toggleEnabled(true) }}
       >
         <Tabs
           ref={state.ref('tabs')}
@@ -221,9 +190,11 @@ export default function Viewer() {
           initEnabled={false}
           onHardReset={useSite.api.revertCurrentTabset}
           onModelChange={state.onModelChange}
+          onToggleTab={state.onToggleTab}
           onToggled={update}
+          onReset={state.onTabsReset}
           persistLayout
-          updates={site.tabsetUpdates}
+          updates={site.tabsetVersion}
           rootOrientationVertical
           tabset={site.tabset}
         />
@@ -231,21 +202,19 @@ export default function Viewer() {
     </aside>
   );
 }
-
 export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
-  computeTabDef(classKey: ComponentClassKey | 'Tty', opts: Record<string, any>): TabDef;
+  onChangeIntersect(intersects: boolean): void;
   /** @param pathname e.g. `/internal/set-tabset/empty` */
   onInternalApi(pathname: `/internal/${string}`): void;
-  onChangeIntersect(intersects: boolean): void;
   onKeyDown(e: React.KeyboardEvent): void;
   onModelChange(updateLayout: boolean): void;
+  onTabsReset(): void;
+  onToggleTab(tabState: TabState): void;
   update(): void;
 }
-
-export const viewerBaseCssVar = '--viewer-base';
 
 const viewerCss = css`
   ${css`
@@ -307,10 +276,10 @@ const tabsContainerCss = css`
     animation: fadeIn 2s forwards;
     
     cursor: pointer;
-    background-image: url(${WorldTwoNpcWebp.src});
+    background-image: url(${DesktopEmptyWorld.src});
     background-size: 100%;
     background-repeat: no-repeat;
-    background-position: 50% 50%;
-    filter: brightness(4);
+    background-position: 0% 100%;
+    filter: brightness(2);
   }
 `;

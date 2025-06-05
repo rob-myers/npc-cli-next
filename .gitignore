@@ -49,4 +49,4 @@ media/Symbols
 media/SymbolsHighRes
 media/Small Craft
 
-media/extracted
+media/extracted/**/*.png

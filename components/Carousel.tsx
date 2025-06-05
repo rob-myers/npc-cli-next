@@ -12,7 +12,7 @@ import useUpdate from '@/npc-cli/hooks/use-update';
 
 export default function Carousel(props: Props) {
 
-  // 🚧 for better hmr move "innards" into own component
+  // 🚧 for better hmr move inwards into own component
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
   }, []);
@@ -153,8 +153,10 @@ const carouselCss = css`
   
   user-select: none;
   margin: 48px 0;
-  padding: 80px 48px 16px 48px;
+  /* padding: 80px 48px 16px 48px; */
+  padding: 24px;
   @media (max-width: ${mobileBreakpoint}) {
+    padding: 24px 0;
     margin: 32px 0;
     --slider-border-radius: 8px;
   }
@@ -198,7 +200,7 @@ const carouselCss = css`
     display: flex;
     justify-content: space-between;
     width: calc(100% - 2 * var(--slider-next-button-width));
-    margin: 32px 0;
+    /* margin: 32px 0; */
     pointer-events: none;
   }
   .embla__button {
@@ -235,7 +237,7 @@ const carouselCss = css`
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: calc(3 * var(--slider-next-button-width));
+    /* height: calc(3 * var(--slider-next-button-width)); */
     /* max-height: calc(3 * var(--slider-next-button-width)); */
     overflow: hidden;
 
@@ -246,7 +248,7 @@ const carouselCss = css`
 
     padding: 0 calc(2 * var(--slider-next-button-width) + 8px);
     color: #99a;
-    background-color: #00000099;
+    background-color: #00000077;
     border-radius: 0 0 var(--slider-border-radius) var(--slider-border-radius);
     text-align: center;
     
@@ -286,13 +288,14 @@ const carouselCss = css`
     align-items: center;
     justify-content: center;
     
-    background-color: #eee;
+    /* background-color: #eee; */
     border-radius: 50%;
     border: 1px solid #999;
+    background-color: black;
     
     &.embla__dot--selected {
       background-color: white;
-      border: 2px solid #444;
+      border: 2px solid #77f;
     }
   }
 `;

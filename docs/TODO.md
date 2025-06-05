@@ -4,22 +4,39 @@
 
 ### Site
 
-- 🚧 refine chosen carousel embla-carousel
-  - ✅ carousel has labels
-  - 🚧 redo images in first carousel
-    - https://squoosh.app/editor
-    - three images
-    - specific size
-      - try 1500 * 1554 (after resize)
-  - clean carousel css e.g. more css variables
-  - auto png to webp in public/images
+- 🚧 redo images in first carousel
+  - ℹ️ https://squoosh.app/editor | size?
+    - webp quality 70
+  - ✅ can spawn with various skins easily
+  - ✅ can spawn facing angle easily
+    - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
+  - ✅ extend 301 with more decor
+    - ✅ add some crates
+    - ✅ add a cuboid with a decor quad e.g. computer screen
+      - ℹ️ `decor quad tilt` tilts around center
+    - ✅ try use nodeCanvas for decor svg detail
+  - 🚧 three images
+    - 1st ✅ 2nd 3rd
 
-- more content
+- ❌ refine chosen carousel embla-carousel
+  - ✅ carousel has labels
+  - ❌ clean carousel css e.g. more css variables
+  - ❌ auto png to webp in public/images
+
+- lead into "basic behaviour list"
+  - need `<Code>`
+    - can copy line-by-line
+    - can copy all
+    - can send directly into tty?
+  - clarify initial PROFILE
+  - step through spawning and removing an npc
+  - step through making an npc walk back-and-forth
+  - next time we'll implement "selection"
+
 - mention Starship Geomorphs early
 - mention recent improvements in AI
   - NPC CLI could use them as tools
 
-- start adding cypress
 - basic help page
 - basic about page
 - write 1st dev blog
@@ -29,25 +46,254 @@
   - summary of pre-existing academic work
 - Tabs: debug is global among Tab instances
   - defunct if we remove debug i.e. always paused when paused
+- start adding cypress
 
 ### World
 
-- 🚧 improve floor lighting
-  - ✅ show hard-coded "light circle" in floor shader
-  - ✅ light circle has basic gradient
-  - ✅ light circle moves with camera
-    - ✅ fix shader code i.e. edge geomorphs are not full-height
-  - ✅ light circle scales up and down
-  - ✅ light circle opacity can change
-  - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
-  - move Floor to separate shader
-  - provide inverse matrices as uniform (more efficient)
-  - remove post-processing
-  - fix issue with npc target height 1.5 but floor light target should be 0
-  - try radial gradient texture
-  - npcs are lighter within light circle
-  - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
-  - ❌ could try "light image" again where distinct light's rect's don't overlap
+- ✅ look/follow npc at their height i.e. controls.target.y > 0
+  - ℹ️ controls.minDistance measured from controls.target
+
+- ✅ top-skin-only -> plain-0
+- ✅ skin shortcuts
+  - ℹ️ e.g. `spawn '{ npcKey: "rob", skin: "soldier-0" }' $( click 1 )`
+    - `"soldier-0"`
+    - `"soldier-0/scientist-0/plain-0/police-0"` ->
+      - head `soldier-0`
+      - body `scientist-0`
+      - head-overlay `plain-0`
+      - body-overlay `police-0`
+    - `"soldier-0/-/-/-"` only changes head
+- ✅ what about skin prefix `scientist-0` lacking `body`?
+  - ℹ️ or `scientist-1` only having `body`
+  - ✅ in expandSkin could check against
+    - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
+  - ❌ could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
+- ✅ can `spawn foo@soldier-0 $( click 1)`
+
+- 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
+  - ✅ invert npc (when WorldMenu invert on)
+  - torch radius/opacity
+  - breathTriIds (one per classKey)
+  - ...
+
+- ✅ plain-0-body <-> base-0-body
+
+- ✅ improve base skin yet again: base-body too basic
+
+- ✅ consider having WASD for e.g.
+  - `w view.tween '{ azimuthal: Math.PI/2 }`
+
+- ✅ blender: head-overlay-bottom uvs flipped vertically
+  - fix beard on base skin
+
+- ✅ bug: tty: `echo --` is empty
+  - probably related to `getopts`
+
+- ✅ sh: generic args approach for `spawn`
+  - e.g. `spawn npcKey:foo skin:scientist-0 at:"$( click 1 )" look:"$( click 1 )"`
+  - ℹ️ more generally, avoid "args order dependency" in game shell functions
+
+- ✅ can spawn-and-look
+  - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
+
+- ✅ bug: sh: cannot type hash: #
+
+- ✅ sh: `move` command?
+  - ✅ npc.move has single arg
+  - ✅ cleanUp will move.reject
+  - ✅ Ctrl-C working for single move
+    - `move npcKey:rob arriveAnim:none to:$( click 1 )`
+  - ✅ Ctrl-C working for while
+    - `move` needs non-zero exit code on Ctrl-C
+  - ✅ onSleep will pin to current position (default behaviour after)
+  - ✅ onResume will replan
+  - ✅ cleanUp also stops whilst paused
+
+- ✅ split game-generators.js into 2 files
+  - game-generators.js
+  - game-generators-wip.js
+
+- ✅ could pause/resume move via maxSpeed
+  - `w n.rob.agent.raw.params.set_maxSpeed 0`
+  - `w n.rob.agent.raw.params.set_maxSpeed 1.5`
+  - ℹ️ while World paused also need to `w crowd.update`
+  - ℹ️ not actually using this as yet
+
+- ✅ sh: support initially-overwriting-append e.g. `click 2 &>> foo`
+
+- ✅ sh: `echo foo >&2` goes to stderr
+  - ℹ️ e.g. `{ echo foo >&2 ; echo bar; } >baz`
+  - ℹ️ permits debug messaging
+
+- ✅ can invoke `move` generator from another generator e.g. `moveCycle`
+  - ✅ pass generators into session.lib
+  - ✅ create `moveCycle` and invoke `move`
+  - ✅ implement `moveCycle`
+  - ✅ `move` should work onchange `npc.js`
+    - breaks if pause Tabs then change `npc.js`
+
+- ✅ refine `moveCycle` aka `tour`
+  - ❌ keeps trying by default?
+  - ✅ avoid send args to `move`
+  - ✅ `moveCycle` -> `tour`
+  - ✅ simplify: no loop, but can:
+  - ✅ clean i.e. add to basic behaviour list
+
+- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
+
+- ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
+
+- ✅ only mutate `npc` i.e. do not re-instantiate on hmr
+  - ℹ️ idea: npc.api is a class instance which we replace on hmr
+  - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
+  - ✅ new hmr strategy
+    - ✅ detect change of function `createBaseNpc`
+    - ✅ detect change of class `NpcApi`
+    - ✅ simplify strategy: even if function didn't change, its make contain stale refs
+    - ✅ baseNpc: copy in new, delete old, also for `s`
+    - ✅ NpcApi: replace it
+  - ✅ try replace `Npc`
+  - ✅ tidy
+
+- ✅ improve ctrl-c error log for `move`
+  - works when Tabs not paused
+  - issue happens whilst paused i.e. error is `true`
+
+- ✅ locked doors should not open on accessible npc enter collider
+
+- ✅ BUG: sh: can redirect error messages to /dev/null 
+  - `call '() => { throw "oh no!"; }' 2>/dev/null`
+
+- ✅ do not rely on stuck detection to fix "cannot get close enough to arrive"
+  - ℹ️ can repro when another npc nearby-ish (`separationWeight`)
+  - ✅ add slow down radius param to recastnavigation repo
+  - ✅ expose slow down radius in recast-navigation-js repo
+    - expose wasm interface
+  - ✅ can see in npc-cli-next while connected by tsconfig paths
+  - ✅ can change in npc-cli-next and see difference
+    - 0.05 fixes issue
+  - ✅ try slower transition Walk -> Idle
+  - ✅ publish and bump
+  - ℹ️ related to separation weight of idle vs moving
+  - ✅ onSlowNpcCustom has a default
+
+- ❌ moveCycle: what if npc keeps getting blocked from leaving room
+  - ❌ e.g. npc near door has higher weight (more accommodating)
+  - ❌ e.g. blocking npc tweens separationWeight
+  - ℹ️ won't solve yet
+
+- ❌ better approach to js to shell function naming?
+  - ℹ️ want to permit mutually inconsistent files (only source one)
+  - ℹ️ want to optionally exclude certain files
+  - ℹ️ want to avoid special names to avoid collisions
+  - ✅ extendable approach
+  - ❌ can specify functions to auto-source
+    - maybe auto track after `source /etc/foo`
+    - better names i.e. not game-generators-wip
+    - maybe can specify initially sourced via prop
+  - ❌ session.jsFuncs should only contain respective functions too
+    - provide keyed lookup `jsFunctions`
+    - but how to fix types? need to separate to avoid collisions
+  - ℹ️ seems too complicated
+
+- ✅ avoid Tabs reload on edit service/const
+  - ✅ fix Viewer, ViewerControls
+
+- ✅ replace soldier-0 head, head-overlay
+  - https://namemc.com/skin/5556dc93d001adea
+
+- ✅ replace police-0 -> robot-0
+  - ✅ replace head, head-overlay
+  - ✅ replace body
+  - ✅ replace body-overlay
+    - put in second sheet (overwrite bare-0)
+  - ✅ rename police-0 -> robot-0
+
+  - ✅ rename astronaut-0 -> robot-1
+  - ✅ soldier-0 should be lighter
+
+- ✅ on collide look towards neighbour should be optional callback
+  - ✅ optional callback `w.npc.onTickIdleTurn`
+  - ✅ provide example
+    - `setupOnTickIdleTurn`
+
+- ❌ can only close tab after hover for a while
+  - to avoid accidental closure
+  - ℹ️ Tabs will have "manage" tab instead
+
+- ✅ Tabs has manage tab
+  - ✅ cannot close tabs directly 
+  - ✅ manage tab component exists
+  - ✅ ensure manage tab in all layouts
+  - ✅ move links into manage tab
+    - use `#/internal` link
+    - remove `/internal/...` -> `#/internal/...` transformer in markdown
+  - ✅ manage tab has ui
+
+- 🚧 manage tabs
+  - ✅ can close tab
+  - ✅ can open new tab
+  - ✅ create tab needn't select it
+  - ✅ close tab needn't select it
+  - ✅ can specify props when open new tab
+    - ✅ get all mapKeys somehow
+    - ✅ directly import deserialized geomorphs
+    - ✅ world: can specify mapKey
+    - ✅ tty: can specify
+      - ✅ profileKey
+      - ✅ worldKey
+  - ✅ fix select on remove i.e. should not switch away from manage
+  - ✅ tab grey if disabled (e.g. never mounted)
+    - ℹ️ TTY tabs not disabled in background, others are
+    - ✅ should not set background tab enabled when Tabs enabled
+    - ✅ site.store has tabset.tabs derived from tabset.synced
+    - ✅ ensure keys are removed from Tabs.tabsState
+    - ✅ expose Viewer tabs disabled
+    - ✅ style when disabled
+    - ✅ style when unmounted
+  - 🚧 select tab on click
+  - 🚧 ongoing restyle
+    - ✅ clean
+    - ✅ paused represented via icon
+    - ✅ unmounted represented via icon
+  - can change world mapKey
+  - can change tty worldKey
+  - tty worldKey reflects home.WORLD_KEY
+
+- ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
+  - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
+    wrap around "nav-deformed" corner
+  - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
+
+- ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
+  - e.g. via larger `npc.s.lookSecs` when nearly arrived
+
+- ✅ soldier-0 needs more hair
+- ✅ change robot-0
+  - mixture of two skins
+- ✅ change robot-1
+
+- ✅ sh: should yield to stdout or stderr rather than `writeMsgCleanly`
+  - ✅ `choice` yields
+  - ✅ eliminate other usages except for `ps` replace line when scrolled back
+
+- remove torch
+
+- rehype: example of dynamic ansi highlighting 
+  - https://rehype-pretty.pages.dev/#ansi-highlighting
+  - would like to highlight shell functions
+
+- wasd camera controls does not work with follow
+  - ℹ️ need to start porting to our own camera controller
+  - related to w.view.controls.update(true);
+- bug: sh: support $@ deeply inside double quotes (?)
+- sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
+
+- can show navMesh via cli
+
+- Ctrl-C "failure" unclear while paused
+- tty: run `spawn bar $( click 1 )` then pause... cannot click
+  - provide UI `cont` interactive process
 
 - fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
@@ -60,6 +306,11 @@
   - probably don't want this in general
   - it avoids jerk onexit doorway "in parallel"
 
+- try "turn around before moving" via small acceleration initially
+  - could also "pause before moving"
+
+- ✅ support decor cuboid meta `max-height` e.g. cuboid under obstacle
+
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlay cuboids should be double-sided
     - then can remove `Side={THREE.DoubleSide}`
@@ -70,14 +321,13 @@
   - small-eyes -> robot-face-0
   - confused -> robot-face-1
 
-- try "turn around before moving" via small acceleration initially
-  - could also "pause before moving"
-- profile-1 camera target y should always be 1.5?
+- ❌ profile-1 camera target y should always be 1.5?
 - consider "hot keys" e.g. 1, 2, 3, also tapable
   - could use to change camera settings
   - could use to change input settings e.g. drag select
 - testOffMeshDisjoint: diagonal doors initially transform lineSegs
 
+- sh: can exit tty
 - avoid "speed up before collision" near door
   - seems related to enter offMeshConnection
 - somehow additionally indicate npc is selected by ContextMenu when docked
@@ -87,7 +337,14 @@
 - onTickDetectStuck more general approach
   - saw fire when npc no longer stuck causing bad stop
   - maybe check if closest neighbour is in front too
+- torch: provide inverse matrices as uniform (more efficient)
+- npc is lit by static lighting 
+  - provide inverse-matrix-per-gmId as uniform
+  - provide gmId as uniform
+- ✅ floor torch: more efficient approach
+  - use single varying vec2 vFoo i.e. uvs into radial light fill texture
 
+- sh: strategy for stale `ps` after Tabs pause
 - bug: sh
   - multi-line edit using Option+Enter not working (need repro)
   - paste multiline command and start Option-Deleting midway  (need repro)
@@ -95,8 +352,23 @@
 
 ### Dev Env
 
+- ✅ avoid re-request navmesh onchange skin
+- ✅ avoid re-request navmesh onchange lights
+  - maybe because assets.json is changing due to hash change?
+
+- 🚧 BUG: on add decor image i.e. decor spritesheet out-of-sync
+  - w.geomorphs.sheet.decor is synced
+  - `<Decor>` was not but fixed by editing its query
+
+- 🚧 Boxy SVG: sporadic slow save (or at least, triggering of our file mon)
+  - https://boxy-svg.com/bugs/370/intermittent-slow-saving
+
+- node-canvas: is it still nondeterministic onchange decor pngs?
+
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
+
+- BUG: hmr offMeshConnectionHalfDepth does not update navmesh
 
 - 🚧 improve assets script
   - ✅ more measurements in assets script
@@ -108,9 +380,6 @@
   - https://github.com/Automattic/node-canvas/issues/2507
   - could "do it ourselves" i.e. write node.js script,
     starting by extending parseUvRects to transform-origin at any level
-
-- can we avoid re-request navmesh onchange skin?
-  - maybe because assets.json is changing due to hash change?
 
 - blog/index -> /blog/home
   - observed caching of local build sending /blog/index -> /blog/ and received 404
@@ -1026,3 +1295,63 @@
   - ℹ️ we need PROFILE to update onchange profile-1.sh
   - ℹ️ currently can only force via `useSite.api.setTabset(..., { overwrite: true })`
   - ✅ tty expects profileKey
+
+
+## Branch `light-and-blog`
+
+### World
+
+- ✅ improve floor lighting
+  - ✅ show hard-coded "light circle" in floor shader
+  - ✅ light circle has basic gradient
+  - ✅ light circle moves with camera
+    - ✅ fix shader code i.e. edge geomorphs are not full-height
+  - ✅ light circle scales up and down
+  - ✅ light circle opacity can change
+
+- ✅ geomorph lighting
+  - ✅ debug tag shows radial gradient
+    - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
+  - ✅ texture atlas for light maps
+  - ✅ move Floor to separate shader
+  - ✅ test light map
+    - ✅ apply test light map to Floor shader (simple mul)
+    - ✅ `w.floor.lit.target` for moving target light
+    - ✅ `w.floor.lit.static` for static lights
+    - ✅ floor shader has uniforms for target/static
+    - ✅ draw a bunch of radial gradients into map
+      - `w update 'w => w.floor.lit.static = true'`
+  - ✅ controls target light -> torch with general target
+    - e.g. npc.position
+  - ✅ geomorph layout symbol induces light map
+    - ✅ svg lights `<circle>` induce static lights
+      - 🔔 `<ellipse>` are not supported
+    - ✅ torch uses texture rather than abstract function
+    - ✅ fix static lights i.e. lightAtlas
+    - ✅ torch + static light combination
+    - ✅ add lights to every geomorph
+      - 301 ✅ 302 ✅ 303 ✅ 101 ✅ 102 ✅ 103 ✅ 
+    - ✅ improve lightsAtlas composite approach
+    - ✅ lights should not overlap geomorph edges
+    - ❌ light supports `intensity`
+    - ❌ selector "too light" when surrounded by torch?
+      - we won't use torch by default
+
+- ✅ extend 303
+  - ✅ add galley-and-mess-halls--006--2x4
+  - ❌ fix obstacle outline bug
+    - not a bug: background symbol `<img>` was wrong size when dragged into BoxySVG,
+      so had to manually resize
+
+- ✅ try fix jerk on collide just before offMeshConnection
+  - ✅ use `const preOffMeshCloseDist = helper.defaults.radius * 1`
+  - ✅ but permit smaller radius if npc -> offMesh.src does not intersect
+
+- ✅ improve floor lighting
+  - ✅ remove post-processing
+  - ✅ fix issue with npc target height 1.5 but floor light target should be 0
+    - lookAt target always satisfies y = 0
+  - ✅ try radial gradient texture
+  - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
+  - ❌ could try "light image" again where distinct light's rect's don't overlap
+  - ❌ npcs are lighter within light circle

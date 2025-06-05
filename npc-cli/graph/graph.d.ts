@@ -147,6 +147,7 @@ declare namespace Graph {
     adjGmRoomKey: Geomorph.GmRoomKey;
     adjHullId: number;
     adjDoorId: number;
+    adjGdKey: Geomorph.GmDoorKey;
   }
 
   interface BaseNavGmTransition {

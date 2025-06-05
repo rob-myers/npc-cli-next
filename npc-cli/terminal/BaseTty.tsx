@@ -43,8 +43,8 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
       // mobile: can select single word via long press
       rightClickSelectsWord: true,
       theme: xtermJsTheme,
-      convertEol: false,
-      scrollback: scrollback,
+      convertEol: true, // fix mobile paste
+      scrollback,
       rows: 50,
     });
   
@@ -115,7 +115,6 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
     <div
       ref={state.ref('container')}
       css={xtermContainerCss}
-      className="scrollable"
       onKeyDown={stopKeysPropagating}
     />
   );

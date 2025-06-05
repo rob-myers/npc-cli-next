@@ -49,6 +49,7 @@ import {
  * yarn get-pngs-fast symbol 'Symbols/Offices' symbol-offices
  * yarn get-pngs-fast symbol 'Symbols/Shop & Repair Area' symbol-shop-repair-area
  * yarn get-pngs-fast symbol Symbols/Fresher symbol-fresher
+ * yarn get-pngs-fast symbol 'Symbols/Galley & Mess' symbol-galley-and-mess
  * ```
  */
 const [,, inputType, srcFolder, dstFolder] = process.argv;
@@ -149,5 +150,6 @@ function computeFileMetas(srcFilenames) {
       });
       break;
   }
-  return fileMetas;
+  // 🔔 force ordering
+  return fileMetas.sort((a, b) => a.srcName < b.srcName ? -1 : 1);
 }

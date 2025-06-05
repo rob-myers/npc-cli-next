@@ -5,7 +5,7 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 
 import useSite from "./site.store";
-import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
+import { afterBreakpoint, breakpoint, nav, view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar, zIndexSite } from "./const";
 import { getNavWidth, isSmallView } from "./layout";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import { tryLocalStorageSet } from "@/npc-cli/service/generic";
@@ -14,7 +14,7 @@ import { localStorageKey } from "@/npc-cli/service/const";
 import useLongPress from "@/npc-cli/hooks/use-long-press";
 import useUpdate from "@/npc-cli/hooks/use-update";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
-import { type State, viewerBaseCssVar } from "./Viewer";
+import { type State } from "./Viewer";
 import {
   FontAwesomeIcon,
   faRefreshThin,
@@ -24,7 +24,6 @@ import {
   faGrip,
   faCirclePlay,
 } from "./Icon";
-
 
 export default function ViewerControls({ api }: Props) {
   const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
@@ -185,6 +184,7 @@ export default function ViewerControls({ api }: Props) {
           className="top-level"
           title="reset tabs"
           onClick={state.onPreReset}
+          disabled={api.tabs.everEnabled === false}
         >
           <FontAwesomeIcon icon={faRefreshThin} size="1x" />
         </button>
@@ -198,15 +198,15 @@ export default function ViewerControls({ api }: Props) {
 
       <button
         className="top-level"
-        title="max/min tabs"
+        title="maximise tabs"
         onClick={state.onMaximize}
-      >
+        >
         <FontAwesomeIcon icon={faExpandThin} size="1x" />
       </button>
 
-
       <button
         className="top-level"
+        title={site.viewOpen ? "hide tabs" : "show tabs"}
         onClick={() => state.toggleCollapsed()}
       >
         <FontAwesomeIcon
@@ -224,9 +224,6 @@ interface Props {
   api: State;
 }
 
-export const viewBarSizeCssVar = '--view-bar-size';
-export const viewIconSizeCssVar = '--view-icon-size';
-
 const buttonsCss = css`
   z-index: ${zIndexSite.aboveViewerFocusOutline};
 
@@ -236,6 +233,7 @@ const buttonsCss = css`
 
   background-color: #000;
   touch-action: none;
+  border-top: 1px solid #333;
 
   > .paused-text {    
     display: flex;
@@ -355,6 +353,7 @@ const buttonsCss = css`
     font-size: small;
     color: rgba(255, 150, 150, 1);
     background-color: rgba(0, 0, 0, 1);
+    user-select: none;
 
     transition: opacity 300ms;
     opacity: 0;

@@ -10,6 +10,7 @@ import {
   KeyedLookup,
   jsStringify,
   warn,
+  pause,
 } from "../service/generic";
 import {
   computeNormalizedParts,
@@ -88,10 +89,7 @@ export type State = {
       sessionKey: string,
       msg: string,
       opts?: {
-        cursor?: number;
         level?: "info" | "error";
-        prompt?: boolean;
-        ttyLinkCtxts?: TtyLinkCtxt[];
         scrollToBottom?: boolean;
       }
     ) => Promise<void>;
@@ -120,6 +118,8 @@ export interface Session {
     /** `processApi[key]` is `processApi.getCached(var[CACHE_SHORTCUTS[key]])` */
     CACHE_SHORTCUTS?: { [key: string]: string };
   };
+  jsFunc: import('../terminal/TtyWithFunctions').TtyJsFunctions;
+
   nextPid: number;
   /** Last exit code: */
   lastExit: {
@@ -163,8 +163,10 @@ export interface ProcessMeta {
   /**
    * Executed on suspend, without clearing `true` returners.
    * The latter should be idempotent, e.g. unsubscribe, pause.
+   * 
+   * `global` is true iff the suspension was triggered by disabling the `<Tty>`.
    */
-  onSuspends: (() => void | boolean)[];
+  onSuspends: ((global: boolean) => void | boolean)[];
   /**
    * Executed on resume, without clearing `true` returners.
    * The latter should be idempotent, e.g. reject, resolve.
@@ -267,6 +269,7 @@ const useStore = create<State>()(
                 ...persisted.var,
                 ...deepClone(env),
               },
+              jsFunc: {} as any,
               nextPid: 0,
               process: {},
               lastExit: { fg: 0, bg: 0 },
@@ -527,25 +530,16 @@ const useStore = create<State>()(
 
       async writeMsgCleanly(sessionKey, msg, opts = {}) {
         const { xterm } = api.getSession(sessionKey).ttyShell;
-
         xterm.prepareForCleanMsg();
         await new Promise<void>((resolve) =>
           xterm.queueCommands([
-            {
-              key: "line",
-              line: opts.level ? formatMessage(msg, opts.level) : `${msg}${ansi.Reset}`,
-            },
+            { key: "line", line: opts.level ? formatMessage(msg, opts.level) : `${msg}${ansi.Reset}` },
             { key: "resolve", resolve },
           ])
         );
-
-        opts.ttyLinkCtxts && api.addTtyLineCtxts(sessionKey, stripAnsi(msg), opts.ttyLinkCtxts);
-        (opts.prompt ?? true) &&
-          setTimeout(() => {
-            xterm.showPendingInputImmediately();
-            opts.cursor !== undefined && xterm.setCursor(opts.cursor);
-            opts.scrollToBottom && xterm.xterm.scrollToBottom();
-          });
+        await pause();
+        xterm.showPendingInputImmediately();
+        opts.scrollToBottom === true && xterm.xterm.scrollToBottom();
       },
     },
   }),

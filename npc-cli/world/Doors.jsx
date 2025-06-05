@@ -25,7 +25,7 @@ export default function Doors(props) {
     lockSigGeom: getBoxGeometry(`${w.key}-lock-lights`),
     lockSigInst: /** @type {*} */ (null),
     movingDoors: new Map(),
-    opacity: 0.6,
+    opacity: 0.7,
     ready: false,
 
     addCuboidAttributes() {
@@ -161,8 +161,8 @@ export default function Doors(props) {
       );
     },
     getLockSigMat(door) {
-      const sx = 0.4;
-      const sz = door.hull === true ? hullDoorDepth/4 : doorDepth + 0.025 * 2;
+      const sx = 0.3;
+      const sz = door.hull === true ? hullDoorDepth / 2 : doorDepth * 1.5;
       const center = tmpVec1.copy(door.src).add(door.dst).scale(0.5);
       if (door.hull === true) {
         center.addScaled(door.normal, -hullDoorDepth/2);
@@ -279,15 +279,13 @@ export default function Doors(props) {
       state.lockSigInst.setColorAt(door.instanceId, getColor(door.locked ? doorLockedColor : doorUnlockedColor));
       /** @type {THREE.InstancedBufferAttribute} */ (state.lockSigInst.instanceColor).needsUpdate = true;
 
-      w.events.next(door.locked ? {
-        key: 'locked-door', gmId: door.gmId, doorId: door.doorId,
-      } : {
-        key: 'unlocked-door', gmId: door.gmId, doorId: door.doorId,
+      w.events.next({
+        key: door.locked ? 'locked-door' : 'unlocked-door', gmId: door.gmId, doorId: door.doorId, meta: door.door.meta,
       });
 
       return true;
     },
-  }));
+  }), { reset: { opacity: true } });
 
   w.door = state;
 
@@ -312,14 +310,14 @@ export default function Doors(props) {
       renderOrder={1}
       visible={state.ready}
     >
-      {state.ready && <instancedMultiTextureMaterial
-        key={glsl.InstancedMultiTextureMaterial.key}
+      {state.ready && <instancedAtlasMaterial
+        key={glsl.InstancedAtlasMaterial.key}
         side={THREE.DoubleSide}
         transparent
         atlas={w.texDecor.tex}
-        diffuse={[.5, .5, .5]}
+        diffuse={[.3, .3, .3]}
         objectPickRed={4}
-        alphaTest={0} opacity={state.opacity} depthWrite={true}
+        alphaTest={0.1} opacity={state.opacity} depthWrite={true}
       />}
     </instancedMesh>
 
@@ -336,6 +334,7 @@ export default function Doors(props) {
         diffuse={[1, 1, 1]}
         objectPickRed={9}
         side={THREE.DoubleSide} // fix flipped gm
+        // transparent opacity={0.6}
       />}
     </instancedMesh>
   </>;

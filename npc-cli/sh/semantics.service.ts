@@ -1,5 +1,6 @@
 import { uid } from "uid";
 
+import { ansi } from "./const";
 import type * as Sh from "./parse";
 import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags } from "../service/generic";
 import { parseJsArg } from "../service/generic";
@@ -56,21 +57,28 @@ class semanticsServiceClass {
 
   private handleShError(node: Sh.ParsedSh, e: any, prefix?: string) {
     if (e instanceof ProcessError) {
-      // We rethrow (unless returning from a shell function)
-      handleProcessError(node, e);
-    } else if (e instanceof ShError) {
-      // We do not rethrow
-      const message = [prefix, e.message].filter(Boolean).join(": ");
-      useSession.api.writeMsg(node.meta.sessionKey, message, "error");
+      // Rethrow unless returning from a shell function
+      return handleProcessError(node, e);
+    }
+    
+    // We do not rethrow
+    const message = [prefix, e.message].filter(Boolean).join(": ");
+    
+    if (e instanceof ShError) {
       ttyError(`ShError: ${node.meta.sessionKey}: ${message} (${e.exitCode})`);
       node.exitCode = e.exitCode;
     } else {
-      // We do not rethrow
-      const message = [prefix, e?.message].filter(Boolean).join(": ");
-      useSession.api.writeMsg(node.meta.sessionKey, message, "error");
       ttyError(`Internal ShError: ${node.meta.sessionKey}: ${message}`);
       ttyError(e);
       node.exitCode = 2;
+    }
+
+    // write to stderr
+    const device = useSession.api.resolve(2, node.meta);
+    if (device !== undefined) {
+      device.writeData(`${ansi.Red}${message}${ansi.Reset}`); // 🔔 non-blocking promise
+    } else {
+      ttyError(`ShError: ${node.meta.sessionKey}: stderr does not exist`);
     }
   }
 
@@ -281,8 +289,8 @@ class semanticsServiceClass {
   /**
    * We support process tagging like:
    * - `ptags='foo bar=baz' sleep 10 &`
-   * - `{ ptags=no-pause; sleep 10; } &`
-   * - `ptags=no-pause; foo | bar &` (via inheritance)
+   * - `{ ptags=always; sleep 10; } &`
+   * - `ptags=always; foo | bar &` (via inheritance)
    */
   private async supportPTags(node: Sh.CallExpr) {
     const assign = node.Assigns.find(x => x.Name?.Value === 'ptags');
@@ -636,7 +644,7 @@ class semanticsServiceClass {
    * 7. $? Exit code of last completed process
    */
   private async *ParamExp(node: Sh.ParamExp): AsyncGenerator<Expanded, void, unknown> {
-    const { meta, Param, Slice, Repl, Length, Excl, Exp,  } = node;
+    const { meta, Param, Slice, Repl, Length, Excl, Exp } = node;
     if (Repl !== null) {
       // ${_/foo/bar/baz}
       const origParam = reconstructReplParamExp(Repl);
@@ -661,27 +669,49 @@ class semanticsServiceClass {
       yield expand(`${meta.pid}`);
     } else if (Param.Value === "?") {
       yield expand(`${useSession.api.getLastExitCode(meta)}`);
+    } else if (Param.Value === "#") {
+      yield expand(`${useSession.api.getProcess(meta).positionals.slice(1).length}`);
     } else {
       yield expand(this.expandParameter(meta, Param.Value));
     }
   }
 
   private async Redirect(node: Sh.Redirect) {
-    if (node.Op === ">" || node.Op === ">>") {
+    const srcValue = node.N === null ? null : node.N.Value;
+    const srcFd = srcValue === null ? 1 : safeJsonParse(srcValue);
+    if (!(typeof srcFd === 'number' && Number.isInteger(srcFd) === true && srcFd >= 0)) {
+      throw new ShError(`${node.Op}: bad file descriptor: "${srcValue}"`, 127);
+    }
+    
+    if (node.Op === ">&") {
+      const { value: dstValue } = await this.lastExpanded(sem.Expand(node.Word));
+      const dstFd = safeJsonParse(dstValue);
+      if (!(typeof dstFd === 'number' && Number.isInteger(dstFd) === true && dstFd >= 0)) {
+        throw new ShError(`${node.Op}: bad file descriptor: "${dstValue}"`, 127);
+      }
+
+      return redirectNode(node.parent!, { [srcFd]: node.meta.fd[dstFd] })
+    }
+
+    if (node.Op === ">" || node.Op === ">>" || node.Op === '&>>') {
       const { value } = await this.lastExpanded(sem.Expand(node.Word));
       if (value === "/dev/null") {
-        return redirectNode(node.parent!, { 1: "/dev/null" });
+        return redirectNode(node.parent!, { [srcFd]: "/dev/null" });
       } else if (value === "/dev/voice") {
-        return redirectNode(node.parent!, { 1: "/dev/voice" });
+        return redirectNode(node.parent!, { [srcFd]: "/dev/voice" });
       } else {
         const varDevice = useSession.api.createVarDevice(
           node.meta,
           value,
-          node.Op === ">" ? "last" : "array"
+          node.Op === ">"
+            ? "last"
+            : node.Op === ">>" ? "array" : "fresh-array"
+          ,
         );
-        return redirectNode(node.parent!, { 1: varDevice.key });
+        return redirectNode(node.parent!, { [srcFd]: varDevice.key });
       }
     }
+
     throw new ShError(`${node.Op}: unsupported redirect`, 127);
   }
 

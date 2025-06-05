@@ -46,6 +46,10 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 ## Gotchas
 
+1. Our SVG symbols currently do not support parent transforms
+  - e.g. on "symbols" folder
+  - e.g. on "lights" folder
+
 1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle both `transform` and `transform-box`.
    > https://github.com/Automattic/node-canvas/issues/2507
 
@@ -58,7 +62,9 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
   In BoxySVG we can `Object > transform > Reduce Transform`.
 
-2. Similar for transform on `<image>` e.g. scale.
+1. Similar for transform on `<image>` e.g. scale.
+
+1. Avoid deep properties `state.foo.bar` inside `useStateRef` e.g. because they won't be reloaded if `foo` stays same name but `bar` changes to `baz`.
 
 ## Development only routes
 
@@ -73,15 +79,12 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 ## Example NPC-CLI shell commands
 
 ```sh
-c=0
-while true; do
-  spawn "rob_${c}" $( click 1 )
-  w e.grantAccess . "rob_${c}"
-  c+=1
+c=-1; while c+=1; do
+  spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
 done
 
-# commands work while paused via prefix `ptags=no-pause;`
-ptags=no-pause events
+# commands work while paused via prefix `ptags=always;`
+ptags=always events
 
 # reset or save control state i.e. current view
 w view.controls.reset
@@ -106,6 +109,49 @@ w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'
 click | map xz | w n.rob.getLookAngle -
 
 w view.controls | assign '{minDistance:1}'
+
+w n.rob.position | w floor.setTorchTarget -
+
+foo() { jsarg "${@}"; }
+foo bar:[1,4,9] baz:baz qux:42
+foo() { echo $( jsarg "${@}" ); }
+foo bar:[1,4,9] baz:baz qux:42
+
+while { false; test ${?}; }; do echo foo; done
+while { true; ! test ${?}; }; do echo foo; done
+
+# more stuff
+
+ptags=always; click 5 meta.nav | while take 1; do 
+  points/at'(-1)' >&2 
+done &>> points
+
+c=0; while c+=1; do
+  test $( expr "$c >= 5" ) && c=0
+  move npcKey:rob arriveAnim:none to:"$( points/$c )"
+done
+
+
+# playing with loops
+spawn npcKey:rob at:$( click 1 )
+spawn npcKey:kate at:$( click 1 ) skin:medic-0
+w e.grantAccess . rob kate
+
+tour npcKey:rob to:"$( click 2 )" &
+tour npcKey:kate to:"$( click 2 )" &
+
+spawn npcKey:kate at:$( click 1 ) skin:soldier-0///medic-0
+spawn npcKey:kate at:$( click 1 ) skin:soldier-0///suit-0
+spawn npcKey:kate at:$( click 1 ) skin:suit-0///soldier-0
+
+click 5 &>> points
+# skips to next point if stopped
+while true; do
+  tour npcKey:kate to:"$( points )"
+done &
+
+call Math.random
+expr 'Math.random() * 2 * Math.PI
 ```
 
 ## Working with a branch of `recast-navigation-js`
@@ -119,8 +165,9 @@ brew install cmake
 # at repo root
 git checkout feat/expose-all-mesh-anim
 # yarn build does not work, but we can:
-# might have to manually delete packages/recast-navigation-wasm/{build,dist}
 yarn build:packages2
+
+# might have to manually delete packages/recast-navigation-wasm/{build,dist}
 ```
 
 ## Bits and bobs
@@ -252,17 +299,32 @@ Then we know:
 We'll try to re-map publicly available Minecraft Skins.
 
 - https://namemc.com/minecraft-skins/tag/soldier
-  - 🚧 https://namemc.com/skin/45461862ef51524e
+  - ✅ https://namemc.com/skin/45461862ef51524e (body)
+  - ❌ https://namemc.com/skin/e5aebae082bea6ec
+  - ✅ https://namemc.com/skin/5556dc93d001adea (head)
+  - ✅ https://namemc.com/skin/f63b01435f055033 (head)
 - https://namemc.com/minecraft-skins/tag/scientist
-  - 🚧 https://namemc.com/skin/7161dce64d6b12be
+  - ✅ https://namemc.com/skin/7161dce64d6b12be
+  - ❌ https://namemc.com/skin/72474583457b91c0
   - https://namemc.com/skin/3a335a2ec786efdb
-- https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/medic
-  - 🚧 https://namemc.com/skin/194c3366860674c0
+  - ✅ https://namemc.com/skin/194c3366860674c0
 - https://namemc.com/minecraft-skins/tag/suit
-  - 🚧 https://namemc.com/skin/7271372bc0b9bc89
+  - ✅ https://namemc.com/skin/7271372bc0b9bc89
 - https://namemc.com/minecraft-skins/tag/police
-  - 🚧 https://namemc.com/skin/c06caf409cd8427e
+  - ❌ https://namemc.com/skin/c06caf409cd8427e (does not fit theme)
+- https://namemc.com/minecraft-skins/tag/astronaut
+  - ❌ https://namemc.com/skin/0668665d67015d4c
+- https://namemc.com/minecraft-skins/tag/beard
+  - ✅ https://namemc.com/skin/12708b02a8e4cc10 (head)
+- https://namemc.com/minecraft-skins/tag/breaking-bad
+  - ❌ https://namemc.com/skin/354790babeda2bc0
+- https://namemc.com/minecraft-skins/tag/robot
+  - ✅ https://namemc.com/skin/4718725ab9582b06 (blend)
+  - ✅ https://namemc.com/skin/93f8e14071653c97 (blend)
+  - 🚧 https://namemc.com/skin/e91cc700154075b2
+
+- https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/business
   - https://namemc.com/skin/9ec38f8ce7f8498d
 - https://namemc.com/minecraft-skins/tag/engineer

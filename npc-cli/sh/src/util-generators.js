@@ -130,7 +130,7 @@ export async function* map(ctxt) {
         }
       } catch (e) {
         if (opts.forever === true) {
-          api.error(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
+          api.writeError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
           continue;
         }
         throw e;
@@ -144,7 +144,7 @@ export async function* map(ctxt) {
         yield await func(datum);
       } catch (e) {
         if (opts.forever === true) {
-          api.error(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
+          api.writeError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
           continue;
         }
         throw e;
@@ -174,7 +174,7 @@ export async function* mapBasic(ctxt) {
       yield await func(datum);
     } catch (e) {
       if (opts.forever === true) {
-        api.error(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
+        api.writeError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
       } else {
         throw e;
       }

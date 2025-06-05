@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { NavMesh, RecastBuildContext, TileCache, TileCacheMeshProcess, freeCompactHeightfield, freeHeightfield, TileCacheData, freeHeightfieldLayerSet, VerticesArray, TrianglesArray, ChunkIdsArray, TriangleAreasArray, createRcConfig, calcGridSize, DetourTileCacheParams, Raw, vec3, NavMeshParams, RecastChunkyTriMesh, cloneRcConfig, allocHeightfield, createHeightfield, markWalkableTriangles, rasterizeTriangles, filterLowHangingWalkableObstacles, filterLedgeSpans, filterWalkableLowHeightSpans, allocCompactHeightfield, buildCompactHeightfield, erodeWalkableArea, allocHeightfieldLayerSet, buildHeightfieldLayers, getHeightfieldLayerHeights, getHeightfieldLayerAreas, getHeightfieldLayerCons, buildTileCacheLayer,  markConvexPolyArea, Crowd } from "@recast-navigation/core";
 import { getPositionsAndIndices } from "@recast-navigation/three";
 import { createDefaultTileCacheMeshProcess, dtIlog2, dtNextPow2, getBoundingBox, tileCacheGeneratorConfigDefaults } from "@recast-navigation/generators";
-import { wallOutset } from "./const";
+import { offMeshConnectionHalfDepth } from "./const";
 import { range, toPrecision } from "./generic";
 import { geom } from "./geom";
 import { decompToXZGeometry, toV3 } from "./three";
@@ -76,7 +76,7 @@ export function computeOffMeshConnectionsParams(w) {
       const narrowEntrance = meta.hull !== true && doorRoomMetas[gmId][doorId].some(x =>
         x.small === true || x['narrow-entrances'] === true
       );
-      const halfLength = wallOutset + (meta.hull === true ? 0.25 : 0.125);
+      const halfLength = meta.hull === true ? offMeshConnectionHalfDepth.hull : offMeshConnectionHalfDepth.nonHull;
       const offsets = meta.hull === true ? [-0.3, 0.01, 0.3] : narrowEntrance === false ? [-0.25, 0.01, 0.25] : [0.01];
       // const offsets = [0.01];
 
@@ -133,8 +133,8 @@ export function getTileCacheMeshProcess(offMeshDefs) {
 export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
   return {
     /** `cs * tileSize` should be 1.5 i.e. Geomorph grid size (meters) */
-    cs: 0.1,
-    tileSize: 15,
+    cs: 0.1, tileSize: 15,
+    // cs: 0.075, tileSize: 20,
     ch: 0.001,
     borderSize: 0,
     expectedLayersPerTile: 1,

@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsonCompact } from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, parseArgsAsJs } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
@@ -20,7 +20,12 @@ const commandKeys = {
   assign: true,
   /** Change current key prefix */
   cd: true,
-  /** Write tty message with markdown links and associated actions */
+  /**
+   * Write tty message with markdown links and associated actions.
+   * ```sh
+   * choice '[ hi ]()'
+   * ```
+   */
   choice: true,
   /** List function definitions */
   declare: true,
@@ -30,6 +35,8 @@ const commandKeys = {
   false: true,
   /** Get each arg from __TODO__ */
   get: true,
+  /** Convert (possibly named) args to a single JavaScript object */
+  jsarg: true,
   /** List commands */
   help: true,
   /** List previous commands */
@@ -135,15 +142,18 @@ class cmdServiceClass {
         break;
       }
       case "choice": {
-        if (isTtyAt(meta, 0)) {
+        if (isTtyAt(meta, 1) === false) {
+          throw Error('stdout must be a tty');
+        }
+        if (isTtyAt(meta, 0) === true) {
           // `choice {textWithLinks}+` where text may contain newlines
           const text = args.join(" ");
-          yield await this.choice(meta, { text });
+          yield* this.choice(meta, { text });
         } else {
           // `choice` expects to read `ChoiceReadValue`s
           let datum: ChoiceReadValue;
           while ((datum = await read(meta)) !== EOF)
-            yield await this.choice(meta, datum);
+            yield* this.choice(meta, datum);
         }
         break;
       }
@@ -215,12 +225,12 @@ class cmdServiceClass {
             "n", // cast as numbers
           ],
         });
-        if (opts.a) {
+        if (opts.a === true) {
           yield opts.n ? operands.map(Number) : operands;
-        } else if (opts.n) {
+        } else if (opts.n === true) {
           for (const operand of operands) yield Number(operand);
         } else {
-          yield operands.join(" ");
+          yield args.join(" ");
         }
         break;
       }
@@ -253,6 +263,10 @@ class cmdServiceClass {
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
         const history = ttyShell.getHistory();
         for (const line of history) yield line;
+        break;
+      }
+      case "jsarg": {
+        yield parseArgsAsJs(args);
         break;
       }
       case "kill": {
@@ -467,15 +481,26 @@ class cmdServiceClass {
         );
       }
       case "rm": {
+        const { opts, operands } = getOpts(args, {
+          boolean: ["f"],
+        });
+
         const root = this.provideProcessCtxt(meta);
         const pwd = useSession.api.getVar<string>(meta, "PWD");
-        for (const path of args) {
+        const force = opts.f === true;
+
+        for (const path of operands) {
           const parts = computeNormalizedParts(path, pwd);
           if (parts[0] === "home" && parts.length > 1) {
             const last = parts.pop() as string;
-            delete resolveNormalized(parts, root)[last];
-          } else {
-            throw new ShError(`cannot delete ${path}`, 1);
+            const parent = resolveNormalized(parts, root);
+            if (last in parent) {
+              delete resolveNormalized(parts, root)[last]
+            } else if (!force) {
+              throw new ShError(`${path}: not found`, 1);
+            }
+          } else if (!force) {
+            throw new ShError(`${path}: only /home/* writable`, 1);
           }
         }
         break;
@@ -498,7 +523,7 @@ class cmdServiceClass {
           } else {
             ttyError(e); // Provide JS stack
             node.exitCode = 1;
-            throw new ShError(`${(e as Error)?.message ?? e}`, 1);
+            throw new ShError(`${(e as Error)?.message ?? safeJsStringify(e)}`, 1);
           }
         }
         break;
@@ -621,27 +646,25 @@ class cmdServiceClass {
     }
   }
 
-  private async choice(meta: Sh.BaseMeta, { text }: ChoiceReadValue) {
+  private async *choice(meta: Sh.BaseMeta, { text }: ChoiceReadValue) {
     const lines = text.replace(/\r/g, "").split(/\n/);
     const defaultValue = undefined;
     const parsedLines = lines.map((text) => parseTtyMarkdownLinks(text, defaultValue, meta.sessionKey));
     for (const { ttyText } of parsedLines) {
-      await useSession.api.writeMsgCleanly(meta.sessionKey, ttyText);
+      yield ttyText;
     }
 
     try {
-      if (parsedLines.some((x) => x.linkCtxtsFactory)) {
+      if (parsedLines.some((x) => x.linkCtxtsFactory !== undefined) === true) {
         // some link must be clicked to proceed
-        return await new Promise<any>((resolve, reject) => {
+        yield await new Promise<any>((resolve, reject) => {
           getProcess(meta).cleanups.push(reject);
-          parsedLines.forEach(
-            ({ ttyTextKey, linkCtxtsFactory }) =>
-              linkCtxtsFactory &&
-              useSession.api.addTtyLineCtxts(
-                meta.sessionKey,
-                ttyTextKey,
-                linkCtxtsFactory(resolve)
-              )
+          parsedLines.forEach(({ ttyTextKey, linkCtxtsFactory }) =>
+            linkCtxtsFactory !== undefined && useSession.api.addTtyLineCtxts(
+              meta.sessionKey,
+              ttyTextKey,
+              linkCtxtsFactory(resolve),
+            )
           );
         })
       }
@@ -709,7 +732,7 @@ class cmdServiceClass {
       // onSuspend onResume are "first-in first-invoked"
       for (const p of processes) {
         if (opts.STOP) {
-          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend());
+          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
           p.status = ProcessStatus.Suspended;
         } else if (opts.CONT) {
           p.onResumes = p.onResumes.filter((onResume) => onResume());
@@ -743,6 +766,12 @@ class cmdServiceClass {
     }
   }
 
+  /**
+   * 🔔 Core per-process API.
+   *
+   * Currently, methods only have access to `this.meta` and `this.session`.
+   * Sometimes this means working directly with the process object.
+   */
   private readonly processApi = {
     // Overwritten via Function.prototype.bind.
     meta: {} as Sh.BaseMeta,
@@ -751,7 +780,7 @@ class cmdServiceClass {
     ansi,
 
     /** Returns provided cleanup */
-    addCleanup(cleanup: () => void) {
+    addCleanUp(cleanup: () => void) {
       getProcess(this.meta).cleanups.push(cleanup);
       return cleanup;
     },
@@ -766,19 +795,42 @@ class cmdServiceClass {
      * Executed on suspend, without clearing `true` returners.
      * The latter should be idempotent, e.g. unsubscribe, pause.
      */
-    addSuspend(cleanup: () => void) {
+    addSuspend(cleanup: (global?: boolean) => void) {
       getProcess(this.meta).onSuspends.push(cleanup);
     },
 
     addStdinToArgs,
 
+    awaitResume(cleanUpError = Error('cancelled')) {
+      return new Promise<void>((resolve, reject) => {
+        const { cleanups, onResumes } = getProcess(this.meta);
+        cleanups.push(() => reject(cleanUpError));
+        onResumes.push(resolve);
+      });
+    },
+    
     dataChunk,
 
-    eof: EOF,
-
-    error(message: string) {
-      useSession.api.writeMsgCleanly(this.meta.sessionKey, message, { level: "error" });
+    async eagerReadLoop<T>(loopBody: (datum: T) => Promise<void>, onInterrupt?: (datum: T) => any) {
+      let proms = [] as Promise<void>[];
+      let datum = await read(this.meta);
+      while (datum !== EOF) {
+        const resolved = await Promise.race((proms = [loopBody(datum), read(this.meta)]));
+        if (resolved === undefined) {
+          // Finished loopBody
+          datum = await proms[1];
+        } else if (resolved === EOF) {
+          await proms[0];
+          datum = resolved;
+        } else {
+          // Read before loopBody finished
+          await onInterrupt?.(datum);
+          datum = resolved;
+        }
+      }
     },
+
+    eof: EOF,
 
     generateSelector,
 
@@ -803,10 +855,6 @@ class cmdServiceClass {
       return uid();
     },
 
-    info(message: string) {
-      useSession.api.writeMsgCleanly(this.meta.sessionKey, message, { level: "info" });
-    },
-
     isDataChunk,
 
     /** Is the process running? */
@@ -828,6 +876,8 @@ class cmdServiceClass {
     },
 
     observableToAsyncIterable,
+
+    parseArgsAsJs,
 
     /** js parse with string fallback */
     parseJsArg,
@@ -856,36 +906,24 @@ class cmdServiceClass {
       return read(this.meta, chunks);
     },
 
-    async eagerReadLoop<T>(loopBody: (datum: T) => Promise<void>, onInterrupt?: (datum: T) => any) {
-      let proms = [] as Promise<void>[];
-      let datum = await read(this.meta);
-      while (datum !== EOF) {
-        const resolved = await Promise.race((proms = [loopBody(datum), read(this.meta)]));
-        if (resolved === undefined) {
-          // Finished loopBody
-          datum = await proms[1];
-        } else if (resolved === EOF) {
-          await proms[0];
-          datum = resolved;
-        } else {
-          // Read before loopBody finished
-          await onInterrupt?.(datum);
-          datum = resolved;
-        }
-      }
-    },
+    safeJsStringify,
 
     async sleep(seconds: number) {
       await sleep(this.meta, seconds);
     },
 
-    verbose(e: any) {
-      if (this.session.verbose) {
-        useSession.api.writeMsgCleanly(this.meta.sessionKey, `${e?.message ?? e}`, {
-          level: "info",
-        });
-        console.warn(e);
-      }
+    throwOnPause(pauseError: any, global?: boolean) {
+      return new Promise((_, reject) => {
+        const { onSuspends } = getProcess(this.meta);
+        onSuspends.push((isGlobal) => (
+          global === undefined || global === isGlobal
+        ) && reject(pauseError))
+      });
+    },
+
+    writeError(message: string) {
+      const device = useSession.api.resolve(1, this.meta);
+      device.writeData(`${ansi.Red}${message}${ansi.Reset}`); // do not wait for promise
     },
   };
 
@@ -898,6 +936,7 @@ class cmdServiceClass {
       {
         home: session.var,
         etc: session.etc,
+        lib: session.jsFunc,
         // cache: queryCache,
         // dev: useSession.getState().device,
       },
@@ -907,6 +946,7 @@ class cmdServiceClass {
             return new Proxy(this.processApi, {
               get(target, key: keyof cmdServiceClass["processApi"]) {
                 if (typeof target[key] === "function") {
+                  // 🤔 could provide context cmdService.processApi
                   return (target[key] as Function).bind({ meta, session });
                 }
                 if (key === "meta") {

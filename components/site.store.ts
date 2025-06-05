@@ -7,11 +7,12 @@ import { Model, type IJsonRowNode } from "flexlayout-react";
 // 🔔 avoid unnecessary HMR: do not reference view-related consts
 import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta } from "./const";
 
-import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopment, error, deepClone, warn, tryLocalStorageRemove } from "@/npc-cli/service/generic";
-import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
+import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopment, error, deepClone, warn } from "@/npc-cli/service/generic";
 import { isTouchDevice } from "@/npc-cli/service/dom";
+import { helper } from "@/npc-cli/service/helper";
+import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type AllTabsets, appendTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset } from "@/npc-cli/tabs/tab-util";
+import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -21,16 +22,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
   pageMetadata: {} as PageMetadata,
   navOpen: false,
   tabset: computeStoredTabsetLookup(),
-  tabsetUpdates: 0,
+  tabsMeta: {},
   viewOpen: false,
 
   api: {
 
-    //#region tabset
+    //#region tabset (layout)
 
     changeTabProps(tabId, partialProps) {
-      const layout = get().tabset.synced;
-      const found = extractTabNodes(layout).find(x => x.id === tabId);
+      const { synced: layout, tabs } = get().tabset;
+      const found = tabs.find(x => x.id === tabId);
       if (found === undefined) {
         throw Error(`${'changeTabProps'} cannot find tabId "${tabId}"`);
       }
@@ -43,24 +44,26 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         throw Error(`${'changeTabProps'} unexpected tab config "${JSON.stringify(found.config)}"`);
       }
 
+      const synced = deepClone(layout);
       set(({ tabset: lookup }) => ({ tabset: {...lookup,
         started: layout,
-        synced: deepClone(layout),
+        synced,
+        tabs: extractTabNodes(synced),
       } }));
     },
 
     closeTab(tabId) {
       const lookup = get().tabset;
-      const tabset = lookup.synced;
+      const { synced: layout } = lookup;
 
-      if (removeTabFromLayout(tabset, tabId) === true) {
-        set(({ tabsetUpdates }) => ({
-          tabset: { ...lookup,
-            synced: { ...tabset },
-            started: deepClone(tabset),
-          },
-          tabsetUpdates: tabsetUpdates + 1,
-        }))
+      if (removeTabFromLayout({ layout, tabId }) === true) {
+        const synced = deepClone(layout);
+        set(({ tabset }) => ({ tabset: { ...tabset,
+          started: layout,
+          synced,
+          tabs: extractTabNodes(synced),
+          version: tabset.version + 1,
+        }}))
         return true;
       } else {
         return false;
@@ -73,15 +76,20 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     openTab(tabDef) {
       const lookup = useSite.getState().tabset;
-      const next = {...appendTabToLayout(lookup.synced, tabDef)};
+      const found = lookup.tabs.find(x => x.id === tabDef.filepath);
+      if (found !== undefined) {
+        return; // already exists
+      }
 
-      useSite.setState(({ tabsetUpdates }) => ({
-        tabset: { ...lookup,
-          started: next,
-          synced: deepClone(next),
-        },
-        tabsetUpdates: tabsetUpdates + 1,
-      }));
+      const layout = {...addTabToLayout({ layout: lookup.synced, tabDef })};
+      const synced = deepClone(layout);
+
+      useSite.setState(({ tabset }) => ({ tabset: { ...tabset,
+        started: layout,
+        synced,
+        tabs: extractTabNodes(synced),
+        version: tabset.version + 1,
+      }}));
     },
 
     rememberCurrentTabs() {
@@ -92,7 +100,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
     },
 
-    restoreLayoutFallback(fallbackLayout, opts = {}) {
+    restoreLayoutWithFallback(fallbackLayout, opts = {}) {
       if (typeof fallbackLayout === 'string') {
         fallbackLayout = resolveLayoutPreset(fallbackLayout);
       }
@@ -102,37 +110,39 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
 
       // restore from localStorage if possible
-      const next = useSite.api.tryRestoreLayout(fallbackLayout);
-      // hard-reset returns to `saved` or parameter `layout`
+      const layout = useSite.api.tryRestoreLayout(fallbackLayout);
+      // hard-reset returns to `saved` or `fallbackLayout`
       const restorable = opts.preserveRestore === true
-        && get().tabset.saved || deepClone(fallbackLayout)
+        && get().tabset.saved
+        || deepClone(fallbackLayout)
       ;
+      const synced = deepClone(layout);
 
       tryLocalStorageSet(`tabset@${'saved'}`, JSON.stringify(restorable));
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-        started: deepClone(next),
-        synced: next,
         saved: restorable,
-      }}));
+        started: layout,
+        synced,
+        tabs: extractTabNodes(synced),
+      }}), undefined, 'restore-layout-with-fallback');
 
-      return next;
+      return layout;
     },
 
     revertCurrentTabset() {
-      const lookup = get().tabset;
-      const next = lookup.saved;
+      const layout = deepClone(get().tabset.saved);
+      const synced = deepClone(layout);
 
-      set(({ tabsetUpdates }) => ({
-        tabset: { ...lookup,
-          started: deepClone(next),
-          synced: deepClone(next),
-        },
+      set(({ tabset }) => ({ tabset: { ...tabset,
+        started: layout,
+        synced,
+        tabs: extractTabNodes(synced),
         // force <Tabs> to compute new model, else revert only works 1st time
-        tabsetUpdates: tabsetUpdates + 1,
-      }));
+        version: tabset.version + 1,
+      }}), undefined, 'revert-current-tabset');
       
       // overwrite localStorage too
-      tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(next));
+      tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(layout));
     },
 
     setTabset(layout, opts) {
@@ -143,23 +153,25 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       if (isTouchDevice()) {// better UX on mobile
         layout = flattenLayout(deepClone(layout));
       }
+      const synced = deepClone(layout);
 
-      set(({ tabset: lookup, tabsetUpdates }) => ({
-        tabset: { ...lookup,
-          started: deepClone(layout),
-          synced: deepClone(layout),
-        },
-        ...opts?.overwrite === true && { tabsetUpdates: tabsetUpdates + 1, }
-      }));
+      set(({ tabset }) => ({ tabset: { ...tabset,
+        started: deepClone(layout),
+        synced,
+        tabs: extractTabNodes(synced),
+        ...opts?.overwrite === true && {
+          version: tabset.version + 1,
+        }
+      }}), undefined, 'set-tabset');
     },
 
     storeCurrentLayout(model) {
-      const serializable = model.toJson();
+      const synced = model.toJson().layout;
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
-        // tabset.synced doesn't drive <Tabs> but keeps track of its current state
-        synced: serializable.layout,
+        synced, // 🔔 doesn't drive <Tabs>; tracks current state
+        tabs: extractTabNodes(synced),
       }}));
-      tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(serializable.layout));
+      tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(synced));
     },
 
     syncCurrentTabset(model) {
@@ -190,24 +202,45 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }}));
     },
 
-    tryRestoreLayout(layout) {
+    tryRestoreLayout(fallbackLayout) {
       const jsonModelString = tryLocalStorageGet(`tabset@${'synced'}`);
       if (jsonModelString === null) {
-        return layout;
+        return fallbackLayout;
       }
       try {
         let restored = JSON.parse(jsonModelString) as IJsonRowNode;
-        // create Model and serialize to validate
-        // 🔔 assume rootOrientationVertical true
+        /**
+         * - we create Model and serialize it to validate
+         * - we assume rootOrientationVertical true
+         */
         restored = Model.fromJson(layoutToModelJson(restored, true)).toJson().layout;
+        restored = ensureManageTab(restored);
+        
         // props could change over time
         restored = useSite.api.migrateRestoredLayout(restored);
 
         return restored;
       } catch (e) {
         warn("tryRestoreLayout", e);
-        return layout;
+        return fallbackLayout;
       }
+    },
+
+    //#endregion
+    
+    //#region tab meta
+    
+    clearTabMeta() {
+      set(() => ({ tabsMeta: {}}));
+    },
+
+    setTabMeta(meta) {// currently only tracks `disabled`
+      set(({ tabsMeta }) => ({ tabsMeta: { ...tabsMeta,
+        [meta.key]: {
+          key: meta.key,
+          disabled: meta.disabled,
+        },
+      }}));
     },
 
     //#endregion
@@ -227,6 +260,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         console.error(e);
         return { key: 'fallback-page-metadata' } as PageMetadata;
       }
+    },
+
+    getTabClassNextSuffix(tabClass) {// 🚧 clean e.g. output whole id
+      const tabNodesInClass = get().tabset.tabs.filter(({ config }) => 
+        config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
+      );
+      const tabIds = new Set(tabNodesInClass.map(x => x.id as string));
+      const { tabPrefix } = helper.toTabClassMeta[tabClass];
+      const firstGap = [...Array(tabNodesInClass.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
+      return firstGap;
     },
 
     initiateBrowser() {
@@ -256,7 +299,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
       ) ?? {};
       if (topLevel.viewOpen) {
-        set(() => ({ viewOpen: topLevel.viewOpen }));
+        set(() => ({ viewOpen: topLevel.viewOpen }), undefined, 'restore-view-open');
       }
       if (topLevel.navOpen) {
         set(() => ({ navOpen: topLevel.navOpen }));
@@ -307,6 +350,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         return next;
       }
     },
+
   },
 }));
 
@@ -322,12 +366,8 @@ export type State = {
   
   draggingView: boolean;
 
-  tabset: AllTabsets;
-  /**
-   * Used to trigger tabset model recompute.
-   * This does not involve a remount.
-   */
-  tabsetUpdates: number;
+  tabset: TabsetLayouts;
+  tabsMeta: { [tabId: string]: SiteTabMeta };
   navOpen: boolean;
   viewOpen: boolean;
 
@@ -338,8 +378,10 @@ export type State = {
      * - If tab type is terminal we merge into env.
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
+    clearTabMeta(): void;
     /** Restore layout from localStorage or use fallback */
-    restoreLayoutFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
+    restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
+    getTabClassNextSuffix(tabClass: Key.TabClass): number;
     getPageMetadataFromScript(): PageMetadata;
     initiateBrowser(): () => void;
     isViewClosed(): boolean;
@@ -356,6 +398,8 @@ export type State = {
     toggleView(next?: boolean): boolean;
     /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
     setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
+    /** Track non-layout properties e.g. disabled */
+    setTabMeta(tabMeta: SiteTabMeta): void;
     storeCurrentLayout(model: Model): void;
     syncCurrentTabset(model: Model): void;
     testMutateLayout(): void; // 🚧 temp
@@ -401,6 +445,12 @@ interface GiscusDiscussionMeta {
   totalReplyCount: number;
   /** e.g. `"https://github.com/rob-myers/the-last-redoubt/discussions/5"` */
   url: string;
+}
+
+interface SiteTabMeta {
+  key: string;
+  disabled: boolean;
+  // ...
 }
 
 const useSite = Object.assign(useStore, { api: useStore.getState().api });
