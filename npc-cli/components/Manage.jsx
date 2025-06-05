@@ -7,7 +7,7 @@ import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import { faCheck, faHourglass3, faPlug, FontAwesomeIcon } from "@/components/Icon";
+import { faCheck, faPlug, faPause, FontAwesomeIcon } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -122,7 +122,7 @@ export default function Manage(props) {
                 <span className="tab-status-and-id">
                   <span className="tab-status">
                     {(
-                      disabled === true && <FontAwesomeIcon title="disabled" icon={faHourglass3} size="1x" />
+                      disabled === true && <FontAwesomeIcon title="disabled" icon={faPause} size="1x" />
                       || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlug} size="1x" />
                       || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
                     )}

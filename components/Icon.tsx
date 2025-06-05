@@ -64,7 +64,7 @@ export {
   faHomeUser,
   faRobot,
   faCodeBranch,
+  faPause,
   faPlug,
   faCheck,
-  faHourglass3,
 } from "@fortawesome/free-solid-svg-icons";
