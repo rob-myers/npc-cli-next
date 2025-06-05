@@ -484,7 +484,6 @@ export const InstancedFlatMaterial = shaderMaterial(
 const instancedFloorShader = {
   Vert: /* glsl */`
 
-    uniform bool showTorch;
     uniform vec3 torchData;
     uniform vec3 torchTarget;
 
@@ -513,20 +512,6 @@ const instancedFloorShader = {
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
       
-      if (showTorch == true) {
-        // instanceMatrix takes unit quad to e.g. "geomorph floor quad"
-        // 🚧 provide inverse matrices in uniform
-        mat4 invertInstanceMatrix = inverse(instanceMatrix);
-
-        // (radius, intensity, opacity)
-        vTorchData = vec3(torchData.x * invertInstanceMatrix[0].x, torchData.y, torchData.z);
-        // torch uvs relative to "atlas"
-        vec4 transformedCenter = invertInstanceMatrix * vec4(vec3(torchTarget), 1.0);
-        vec2 torchUvOrigin = vec2(transformedCenter.x * uvDimensions.x, transformedCenter.z * uvDimensions.y);
-        // torch uvs relative to torchTexture
-        vTorchUv = ((vUv - torchUvOrigin) / vTorchData.x) + vec2(0.5);
-      }
-
       vec4 modelViewPosition = vec4(position, 1.0);
       modelViewPosition = instanceMatrix * modelViewPosition;
       modelViewPosition = modelViewMatrix * modelViewPosition;
@@ -545,7 +530,6 @@ const instancedFloorShader = {
 
     uniform sampler2DArray lightAtlas;
     uniform bool showLights;
-    uniform bool showTorch;
     uniform vec3 torchTarget;
     uniform sampler2D torchTexture;
 
@@ -591,23 +575,7 @@ const instancedFloorShader = {
       
       float lighter = 1.0;
 
-      if (showTorch == true && showLights == true) {
-
-        vec4 torchTexel = texture(torchTexture, vTorchUv);
-        vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= (clamp(6.0 * torchTexel.w, 1.0, 3.0) + clamp(4.0 * lightTexel.w, 1.0, 3.0) - 1.0);
-        lighter = clamp(lighter, 1.0, 3.0);
-
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
-
-      } else if (showTorch == true) {// uvs within "torch" are lighter
-
-        vec4 torchTexel = texture(torchTexture, vTorchUv);
-        lighter *= clamp(8.0 * torchTexel.w, 1.0, 3.0);
-
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
-
-      } else if (showLights == true) {
+      if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
         lighter *= clamp(4.0 * lightTexel.w, 1.0, 3.0);
 
@@ -626,7 +594,6 @@ const instancedFloorShader = {
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
   lightAtlas: emptyDataArrayTexture,
-  showTorch: false,
   showLights: false,
   torchData: new THREE.Vector3(),
   torchTarget: new THREE.Vector3(),

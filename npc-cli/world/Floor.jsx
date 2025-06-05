@@ -22,7 +22,6 @@ export default function Floor(props) {
     largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(220, 220, 220, 0.05)'),
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: true,
-    showTorch: false,
     smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.05)'),
     torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
     torchTarget: new THREE.Vector3(),
@@ -194,7 +193,6 @@ export default function Floor(props) {
 
         lightAtlas={w.texFloorLight.tex}
         showLights={w.crowd !== null && state.showLights === true}
-        showTorch={state.showTorch}
         torchData={state.torchData}
         torchTarget={state.torchTarget}
         torchTexture={state.radialTex}
@@ -215,7 +213,6 @@ export default function Floor(props) {
  * @property {CanvasPattern} largeGrid
  * @property {THREE.BufferGeometry} quad
  * @property {boolean} showLights Show static lights?
- * @property {boolean} showTorch
  * @property {THREE.Vector3} torchTarget Torch
  * @property {THREE.Vector3} torchData (radius, intensity, opacity)
  * @property {THREE.CanvasTexture} radialTex

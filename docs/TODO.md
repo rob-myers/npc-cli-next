@@ -256,6 +256,7 @@
     - ✅ clean
     - ✅ paused represented via icon
     - ✅ unmounted represented via icon
+    - 🚧 use many onClick rather than "one for many"
   - can change world mapKey
   - can change tty worldKey
   - tty worldKey reflects home.WORLD_KEY
@@ -277,7 +278,7 @@
   - ✅ `choice` yields
   - ✅ eliminate other usages except for `ps` replace line when scrolled back
 
-- remove torch
+- ✅ remove torch
 
 - rehype: example of dynamic ansi highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting

@@ -122,7 +122,6 @@ export async function* initCamAndLights({ api, args, w }) {
 
   // turn off "tween while paused" so can pause profile
   // w.view.canTweenPaused = false;
-  w.floor.showTorch = false;
   w.floor.showLights = true;
   w.update();
   
