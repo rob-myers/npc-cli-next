@@ -231,12 +231,12 @@ const manageCss = css`
   align-content: flex-start;
   gap: 16px;
 
-  color: white;
   background-color: #111;
   padding: 16px;
-
+  
   h2 {
     font-size: small;
+    color: #ccc;
   }
 
   .current-tabs-container, .create-tabs-container {
@@ -251,7 +251,6 @@ const manageCss = css`
     gap: 8px;
 
     li {
-      color: #ccc;
       display: flex;
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
@@ -260,11 +259,12 @@ const manageCss = css`
   .current-tabs li {
     justify-content: space-between;
     gap: 8px;
+    color: #aac;
 
     .tab-status-and-id {
       display: flex;
       align-items: center;
-      padding: 4px 8px;
+      padding: 6px 8px;
     }
 
     .tab-status {
@@ -321,9 +321,10 @@ const manageCss = css`
     align-items: center;
     padding: 0 8px;
     cursor: pointer;
+    color: #aaa;
     
     .tab-class {
-      padding: 6px;
+      padding: 8px 6px;
     }
     .options {
       display: flex;
