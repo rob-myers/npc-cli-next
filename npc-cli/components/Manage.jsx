@@ -26,15 +26,17 @@ export default function Manage(props) {
     onClickCreateTabs({ target: el }) {
       const li = el.closest('li');
       const tabClassKey = li?.dataset.tabClass;
+
       if (!(
         li !== null
-        && typeof tabClassKey === 'string'
+        && tabClassKey !== undefined
         && helper.isTabClassKey(tabClassKey)
-      )) {
+      )) {// must be descendent of <li data-tab-class>
         return;
       }
+
       if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
-        return;
+        return; // ignore <input> and <select>
       }
 
       // 🚧 clean
@@ -92,6 +94,11 @@ export default function Manage(props) {
         return;
       }
 
+      if (el.classList.contains("tab-id")) {
+        // 🚧
+        console.log('select', tabId);
+      }
+
       if (el.classList.contains(cssName.closeTab)) {
         useSite.api.closeTab(tabId);
       }
@@ -127,7 +134,9 @@ export default function Manage(props) {
                       || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
                     )}
                   </span>
-                  {def.filepath}
+                  <span className="tab-id">
+                    {def.filepath}
+                  </span>
                 </span>
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
                 {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
@@ -265,11 +274,13 @@ const manageCss = css`
       display: flex;
       align-items: center;
       padding: 6px 8px;
+      cursor: pointer;
     }
 
     .tab-status {
       padding: 0 4px;
       margin-right: 8px;
+      cursor: auto;
       background-color: #000;
       color: #999;
       border-radius: 50%;
