@@ -7,7 +7,7 @@ import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import { faCheck, faPlug, faPause, FontAwesomeIcon } from "@/components/Icon";
+import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -35,58 +35,57 @@ export default function Manage(props) {
         return;
       }
 
-      if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
-        return; // ignore <input> and <select>
+      if (el.closest(`.${cssName.openTab}`) !== null) {
+        // 🚧 clean
+        const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
+  
+        /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
+        switch (tabClassKey) {
+          case 'World': {
+            const [mapSelect] = [...li.querySelectorAll('select')].filter(
+              x => x.dataset.mapKey
+            );
+            tabDef = computeTabDef({
+              classKey: tabClassKey,
+              suffix,
+              mapKey: /** @type {Key.Map} */ (mapSelect.value),
+            });
+            break;
+          }
+          case 'Tty': {
+            const [profileSelect] = [...li.querySelectorAll('select')].filter(
+              x => x.dataset.profileKey
+            );
+            const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
+              x => x.dataset.worldKey
+            );
+            tabDef = computeTabDef({
+              classKey: tabClassKey,
+              suffix,
+              ...worldKeyInput.value && {
+                profileKey: /** @type {Key.Profile} */ (profileSelect.value),
+                env: { WORLD_KEY: worldKeyInput.value },
+              } || {
+                profileKey: 'profile-empty-sh',
+              },
+            });
+            break;
+          }
+          case 'Debug':
+          case 'HelloWorld':
+          case 'Manage': // 🚧
+            tabDef = computeTabDef({
+              classKey: tabClassKey,
+              suffix,
+            });
+            break;
+          default:
+            throw testNever(tabClassKey);
+        }
+  
+        useSite.api.openTab(tabDef);
       }
 
-      // 🚧 clean
-      const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
-
-      /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
-      switch (tabClassKey) {
-        case 'World': {
-          const [mapSelect] = [...li.querySelectorAll('select')].filter(
-            x => x.dataset.mapKey
-          );
-          tabDef = computeTabDef({
-            classKey: tabClassKey,
-            suffix,
-            mapKey: /** @type {Key.Map} */ (mapSelect.value),
-          });
-          break;
-        }
-        case 'Tty': {
-          const [profileSelect] = [...li.querySelectorAll('select')].filter(
-            x => x.dataset.profileKey
-          );
-          const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
-            x => x.dataset.worldKey
-          );
-          tabDef = computeTabDef({
-            classKey: tabClassKey,
-            suffix,
-            ...worldKeyInput.value && {
-              profileKey: /** @type {Key.Profile} */ (profileSelect.value),
-              env: { WORLD_KEY: worldKeyInput.value },
-            } || {
-              profileKey: 'profile-empty-sh',
-            },
-          });
-          break;
-        }
-        case 'Debug':
-        case 'HelloWorld':
-        case 'Manage': // 🚧
-          tabDef = computeTabDef({
-            classKey: tabClassKey,
-            suffix,
-          });
-          break;
-        default:
-          throw testNever(tabClassKey);
-      }
-
-      useSite.api.openTab(tabDef);
     },
     onClickCurrentTabs({ target: el }) {
       const tabId = el.closest('li')?.dataset.tabId;
@@ -157,45 +156,45 @@ export default function Manage(props) {
         
         <ul className="create-tabs">
           <li data-tab-class={helper.toTabClassMeta.World.key}>
-            <span className={cssName.createTab}>
-              +
+            <span className="tab-def">
+              <button className="tab-class">
+                World
+              </button>
+              <span className="options">
+                <select data-map-key={true} defaultValue={helper.mapKeys[0]}>
+                  {helper.mapKeys.map(mapKey =>
+                    <option key={mapKey} value={mapKey}>{mapKey}</option>
+                  )}
+                </select>
+              </span>
             </span>
-            <span className="tab-class">
-              World
-            </span>
-            <div className="options">
-              <select data-map-key={true} defaultValue={helper.mapKeys[0]}>
-                {helper.mapKeys.map(mapKey =>
-                  <option key={mapKey} value={mapKey}>{mapKey}</option>
-                )}
-              </select>
-            </div>
+            <FontAwesomeIcon className={cssName.openTab} color="#5a5" icon={faPlus} size="1x" />
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.Tty.key}>
-            <span className={cssName.createTab}>
-              +
+            <span className="tab-def">
+              <button className="tab-class">
+                Tty
+              </button>
+              <span className="options">
+                <select data-profile-key={true} defaultValue={helper.profileKeys[0]}>
+                  {helper.profileKeys.map(profileKey =>
+                    <option key={profileKey} value={profileKey}>{profileKey}</option>
+                  )}
+                </select>
+                <input data-world-key type="text" placeholder="world-key" />
+              </span>
             </span>
-            <span className="tab-class">
-              Tty
-            </span>
-            <div className="options">
-              <select data-profile-key={true} defaultValue={helper.profileKeys[0]}>
-                {helper.profileKeys.map(profileKey =>
-                  <option key={profileKey} value={profileKey}>{profileKey}</option>
-                )}
-              </select>
-              <input data-world-key type="text" placeholder="world-key" />
-            </div>
+            <FontAwesomeIcon className={cssName.openTab} color="#5a5" icon={faPlus} size="1x" />
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
-            <span className={cssName.createTab}>
-              +
+            <span className="tab-def">
+              <button className="tab-class">
+                HelloWorld
+              </button>
             </span>
-            <span className="tab-class">
-              HelloWorld
-            </span>
+            <FontAwesomeIcon className={cssName.openTab} color="#5a5" icon={faPlus} size="1x" />
           </li>
         </ul>
 
@@ -225,10 +224,10 @@ export default function Manage(props) {
   );
 }
 
-const cssName = {
+const cssName = /** @type {const} */ ({
   closeTab: 'close-tab',
-  createTab: 'create-tab',
-};
+  openTab: 'open-tab',
+});
 
 const manageCss = css`
   height: 100%;
@@ -313,14 +312,12 @@ const manageCss = css`
     }
   }
 
-  .${cssName.closeTab}, .${cssName.createTab} {
+  .${cssName.closeTab} {
     cursor: pointer;
     font-family: monospace;
     font-size: large;
     user-select: none;
-  }
 
-  .${cssName.closeTab} {
     padding: 4px 8px;
     color: #f66;
     border-left: 1px solid rgba(255, 255, 255, 0.15);
@@ -330,19 +327,27 @@ const manageCss = css`
   .create-tabs li {
     display: flex;
     align-items: center;
-    padding: 0 8px;
-    cursor: pointer;
+    gap: 8px;
     color: #aaa;
     
-    .tab-class {
-      padding: 8px 6px;
+    .tab-def {
+      display: flex;
+      padding-left: 12px;
+      gap: 4px;
     }
+
+    .tab-class {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 1rem;
+    }
+
     .options {
       display: flex;
       gap: 8px;
       max-width: 200px;
     }
-
     select, input {
       width: 100%;
       background-color: inherit;
@@ -353,11 +358,13 @@ const manageCss = css`
     input::placeholder {
       color: #555;
     }
-  }  
 
-  .${cssName.createTab} {
-    color: #9bd19b;
-  }
+    .${cssName.openTab} {
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 8px;
+      cursor: pointer;
+    }
+  }  
 
   .actions {
     display: flex;

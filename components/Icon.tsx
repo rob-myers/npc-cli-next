@@ -55,16 +55,17 @@ export const faCirclePauseThin = {
 export { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export {
-  faCirclePlay,
+  faCheck,
   faChevronRight,
   faCircleInfo,
+  faCirclePlay,
   faCircleQuestion,
   faCode,
+  faCodeBranch,
   faGrip,
   faHomeUser,
-  faRobot,
-  faCodeBranch,
   faPause,
   faPlug,
-  faCheck,
+  faPlus,
+  faRobot,
 } from "@fortawesome/free-solid-svg-icons";
