@@ -59,7 +59,8 @@ export default function Ceiling(props) {
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
       // drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
-      drawPolygons(ct, tops.hull, [black, wallsHighlight, thickLineWidth]); // hull walls and doors
+      // drawPolygons(ct, tops.hull, [black, wallsHighlight, thickLineWidth]); // hull walls and doors
+      drawPolygons(ct, tops.hull, [wallsHighlight, wallsHighlight, thickLineWidth]); // hull walls and doors
 
       // decals
       polyDecals.filter(x => x.meta.ceil === true).forEach(x => {
