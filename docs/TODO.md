@@ -277,6 +277,8 @@
   - ✅ `choice` yields
   - ✅ eliminate other usages except for `ps` replace line when scrolled back
 
+- remove torch
+
 - rehype: example of dynamic ansi highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
   - would like to highlight shell functions
