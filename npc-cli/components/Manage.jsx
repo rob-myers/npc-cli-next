@@ -273,7 +273,7 @@ const manageCss = css`
     .tab-status-and-id {
       display: flex;
       align-items: center;
-      padding: 6px 8px;
+      padding: 6px 0 6px 8px;
       cursor: pointer;
     }
 
@@ -347,8 +347,8 @@ const manageCss = css`
       width: 100%;
       background-color: inherit;
       color: inherit;
-      /* border: 1px solid #555; */
-      padding: 4px;
+      font-size: small;
+      padding: 0 2px;
     }
     input::placeholder {
       color: #555;
