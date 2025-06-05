@@ -11,7 +11,6 @@ import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus } from "@/components/
 
 /** @param {Props} props */
 export default function Manage(props) {
-
   const tabDefs = useSite(({ tabset: { tabs } }) =>
     tabs.map(x => x.config),
     shallow,
@@ -23,89 +22,67 @@ export default function Manage(props) {
   );
 
   const state = useStateRef(/** @returns {State} */ () => ({
-
     closeTab(e) {
-      const tabId = e.currentTarget.dataset.tabId;
-      if (tabId === undefined) {
-        return;
-      }
+      const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
       useSite.api.closeTab(tabId);
     },
-    selectTab(e) {
-      const tabId = e.currentTarget.dataset.tabId;
-      if (tabId === undefined) {
-        return;
+    createTab(e) {
+      const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
+      const tabClassKey = /** @type {Key.TabClass} */ (li.dataset.tabClass);
+      // 🚧 clean
+      const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
+        
+      /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
+      switch (tabClassKey) {
+        case 'World': {
+          const [mapSelect] = [...li.querySelectorAll('select')].filter(
+            x => x.dataset.mapKey
+          );
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            suffix,
+            mapKey: /** @type {Key.Map} */ (mapSelect.value),
+          });
+          break;
+        }
+        case 'Tty': {
+          const [profileSelect] = [...li.querySelectorAll('select')].filter(
+            x => x.dataset.profileKey
+          );
+          const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
+            x => x.dataset.worldKey
+          );
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            suffix,
+            ...worldKeyInput.value && {
+              profileKey: /** @type {Key.Profile} */ (profileSelect.value),
+              env: { WORLD_KEY: worldKeyInput.value },
+            } || {
+              profileKey: 'profile-empty-sh',
+            },
+          });
+          break;
+        }
+        case 'Debug':
+        case 'HelloWorld':
+        case 'Manage': // 🚧
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            suffix,
+          });
+          break;
+        default:
+          throw testNever(tabClassKey);
       }
+
+      useSite.api.openTab(tabDef);
+    },
+    selectTab(e) {
+      const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
       // 🚧
       console.log('select', tabId);
     },
-
-    // 🚧 move to callback of lis, using closest('li') 
-    onClickCreateTabs({ target: el }) {
-      const li = el.closest('li');
-      const tabClassKey = li?.dataset.tabClass;
-
-      if (!(
-        li !== null
-        && tabClassKey !== undefined
-        && helper.isTabClassKey(tabClassKey)
-      )) {// must be descendent of <li data-tab-class>
-        return;
-      }
-
-      if (el.closest(`.${cssName.openTab}`) !== null) {
-        // 🚧 clean
-        const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
-  
-        /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
-        switch (tabClassKey) {
-          case 'World': {
-            const [mapSelect] = [...li.querySelectorAll('select')].filter(
-              x => x.dataset.mapKey
-            );
-            tabDef = computeTabDef({
-              classKey: tabClassKey,
-              suffix,
-              mapKey: /** @type {Key.Map} */ (mapSelect.value),
-            });
-            break;
-          }
-          case 'Tty': {
-            const [profileSelect] = [...li.querySelectorAll('select')].filter(
-              x => x.dataset.profileKey
-            );
-            const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
-              x => x.dataset.worldKey
-            );
-            tabDef = computeTabDef({
-              classKey: tabClassKey,
-              suffix,
-              ...worldKeyInput.value && {
-                profileKey: /** @type {Key.Profile} */ (profileSelect.value),
-                env: { WORLD_KEY: worldKeyInput.value },
-              } || {
-                profileKey: 'profile-empty-sh',
-              },
-            });
-            break;
-          }
-          case 'Debug':
-          case 'HelloWorld':
-          case 'Manage': // 🚧
-            tabDef = computeTabDef({
-              classKey: tabClassKey,
-              suffix,
-            });
-            break;
-          default:
-            throw testNever(tabClassKey);
-        }
-  
-        useSite.api.openTab(tabDef);
-      }
-
-    },
-
   }));
 
   return (
@@ -116,16 +93,12 @@ export default function Manage(props) {
 
         <ul className="current-tabs">
           {tabDefs.map(def => {
-
             const tabId = def.filepath;
             const tabMeta = tabsMeta[tabId];
             const disabled = tabMeta?.disabled === true;
             const unmounted = tabMeta === undefined;
 
-            return <li
-              key={tabId}
-              // data-tab-id={tabId}
-            >
+            return <li key={tabId}>
               <span className="tab-def">
                 <span className="tab-status-and-id">
                   <span className="tab-status">
@@ -158,17 +131,12 @@ export default function Manage(props) {
         </ul>
       </div>
       
-      <div
-        className="create-tabs-container"
-        onClick={state.onClickCreateTabs}
-      >
+      <div className="create-tabs-container">
         <h2>Create Tabs</h2>
         
         <ul className="create-tabs">
 
-          <li
-            data-tab-class={helper.toTabClassMeta.World.key}
-          >
+          <li data-tab-class={helper.toTabClassMeta.World.key}>
             <span className="tab-def">
               <button className="tab-class">
                 World
@@ -181,7 +149,13 @@ export default function Manage(props) {
                 </select>
               </span>
             </span>
-            <FontAwesomeIcon className={cssName.openTab} color="#5a5" icon={faPlus} size="1x" />
+            <FontAwesomeIcon
+              className={cssName.openTab}
+              onClick={state.createTab}
+              color="#5a5"
+              icon={faPlus}
+              size="1x"
+            />
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.Tty.key}>
@@ -198,7 +172,13 @@ export default function Manage(props) {
                 <input data-world-key type="text" placeholder="world-key" />
               </span>
             </span>
-            <FontAwesomeIcon className={cssName.openTab} color="#5a5" icon={faPlus} size="1x" />
+            <FontAwesomeIcon
+              className={cssName.openTab}
+              onClick={state.createTab}
+              color="#5a5"
+              icon={faPlus}
+              size="1x"
+            />
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
@@ -207,7 +187,13 @@ export default function Manage(props) {
                 HelloWorld
               </button>
             </span>
-            <FontAwesomeIcon className={cssName.openTab} color="#5a5" icon={faPlus} size="1x" />
+            <FontAwesomeIcon
+              className={cssName.openTab}
+              onClick={state.createTab}
+              color="#5a5"
+              icon={faPlus}
+              size="1x"
+            />
           </li>
         </ul>
 
@@ -401,7 +387,13 @@ const manageCss = css`
 
 /**
  * @typedef State
- * @property {(e: React.MouseEvent<HTMLElement> & { currentTarget: HTMLElement }) => void} closeTab
- * @property {(e: React.MouseEvent<HTMLDivElement> & { target: HTMLDivElement }) => void} onClickCreateTabs
- * @property {(e: React.MouseEvent<HTMLElement> & { currentTarget: HTMLElement }) => void} selectTab
+ * @property {OnClickHandler} closeTab
+ * @property {OnClickHandler} createTab
+ * @property {OnClickHandler} selectTab
+ */
+
+/**
+ * @typedef {(e: React.MouseEvent<HTMLElement | SVGElement> & {
+ *   currentTarget: HTMLElement | SVGElement
+ * }) => void} OnClickHandler
  */
