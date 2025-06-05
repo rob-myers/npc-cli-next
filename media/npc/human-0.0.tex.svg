@@ -292,11 +292,11 @@
     <filter id="saturate-filter-1" bx:preset="saturate 1 1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feColorMatrix type="saturate" values="1"/>
     </filter>
-    <filter id="brightness-filter-4" bx:preset="brightness 1 1.67" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+    <filter id="brightness-filter-4" bx:preset="brightness 1 1.2" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
       <feComponentTransfer>
-        <feFuncR type="linear" slope="1.67"/>
-        <feFuncG type="linear" slope="1.67"/>
-        <feFuncB type="linear" slope="1.67"/>
+        <feFuncR type="linear" slope="1.2"/>
+        <feFuncG type="linear" slope="1.2"/>
+        <feFuncB type="linear" slope="1.2"/>
       </feComponentTransfer>
     </filter>
     <filter id="brightness-filter-5" bx:preset="brightness 1 1.51" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
