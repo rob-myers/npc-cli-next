@@ -40,44 +40,28 @@ export function addTabToLayout({ layout, selectTab, tabDef }: {
   return layout;
 }
 
-export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
-  return {
-    global: {
-      tabEnableRename: false,
-      rootOrientationVertical,
-      tabEnableClose: false, // use "manage" tab to close tabs
-      tabSetMinHeight: 100,
-      tabSetMinWidth: 200,
-      tabSetEnableDivide: !isTouchDevice(),
-      enableEdgeDock: !isTouchDevice(),
-      splitterExtra: 12,
-      splitterSize: 2,
-    },
-    layout,
+export function computeStoredTabsetLookup(): TabsetLayouts {
+  
+  function restoreLayout(key: keyof TabsetLayouts) {
+    return ensureManageTab(
+      tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
+      ?? deepClone(emptyTabsetLayout)
+    );
+  }
+  
+  const synced = restoreLayout('synced');
+  const started = deepClone(synced);
+
+  const output: TabsetLayouts = {
+    saved: restoreLayout('saved'),
+    started,
+    synced,
+    tabs: extractTabNodes(synced),
+    version: 0,
   };
-}
 
-/**
- * Ensure at least one manage tab in layout.
- */
-export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
-  const tabsets = extractTabsetNodes(layout);
-
-  if (tabsets.length === 0) {
-    return createLayoutFromBasicLayout([[
-      { type: 'component', class: 'Manage', filepath: 'manage', props: {} },
-    ]]);
-  }
-
-  const tabset = tabsets.find(x => x.children.find(y => isManageTabDef(y.config)));
-
-  if (tabset === undefined) {// add manage tab to final tabset
-    tabsets.at(-1)!.children.push(createTabNodeFromDef({
-      type: 'component', class: 'Manage', filepath: 'manage', props: {}
-    }));
-  }
-
-  return layout;
+  console.log(`${'restoreTabsetLookup'}`, output);
+  return output;
 }
 
 /**
@@ -173,6 +157,29 @@ function createTabNodeFromDef(def: TabDef) {
   };
 }
 
+/**
+ * Ensure at least one manage tab in layout.
+ */
+export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
+  const tabsets = extractTabsetNodes(layout);
+
+  if (tabsets.length === 0) {
+    return createLayoutFromBasicLayout([[
+      { type: 'component', class: 'Manage', filepath: 'manage', props: {} },
+    ]]);
+  }
+
+  const tabset = tabsets.find(x => x.children.find(y => isManageTabDef(y.config)));
+
+  if (tabset === undefined) {// add manage tab to final tabset
+    tabsets.at(-1)!.children.push(createTabNodeFromDef({
+      type: 'component', class: 'Manage', filepath: 'manage', props: {}
+    }));
+  }
+
+  return layout;
+}
+
 export function extractTabNodes(layout: IJsonRowNode): (CustomIJsonTabNode)[] {
   return layout.children.flatMap(child => {
     if (child.type === 'row') {
@@ -211,6 +218,23 @@ function getManageTabCount(tabsets: IJsonTabSetNode[]) {
 
 function getTabIdentifier(meta: TabDef) {
   return meta.filepath;
+}
+
+export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?: boolean): IJsonModel {
+  return {
+    global: {
+      tabEnableRename: false,
+      rootOrientationVertical,
+      tabEnableClose: false, // use "manage" tab to close tabs
+      tabSetMinHeight: 100,
+      tabSetMinWidth: 200,
+      tabSetEnableDivide: !isTouchDevice(),
+      enableEdgeDock: !isTouchDevice(),
+      splitterExtra: 12,
+      splitterSize: 2,
+    },
+    layout,
+  };
 }
 
 function isManageTabDef(def: TabDef) {
@@ -267,30 +291,6 @@ export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
     layoutPresetKey = 'layout-preset-0';
   }
   return createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey]);
-}
-
-export function computeStoredTabsetLookup(): TabsetLayouts {
-  
-  function restoreLayout(key: keyof TabsetLayouts) {
-    return ensureManageTab(
-      tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
-      ?? deepClone(emptyTabsetLayout)
-    );
-  }
-  
-  const synced = restoreLayout('synced');
-  const started = deepClone(synced);
-
-  const output: TabsetLayouts = {
-    saved: restoreLayout('saved'),
-    started,
-    synced,
-    tabs: extractTabNodes(synced),
-    version: 0,
-  };
-
-  console.log(`${'restoreTabsetLookup'}`, output);
-  return output;
 }
 
 const emptyTabsetLayout: TabsetLayout = {
