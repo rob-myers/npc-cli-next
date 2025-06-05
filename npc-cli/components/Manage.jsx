@@ -259,9 +259,7 @@ const manageCss = css`
 
   .current-tabs li {
     justify-content: space-between;
-    /* padding: 8px; */
     gap: 8px;
-    background-color: #222;
 
     .tab-status-and-id {
       display: flex;
@@ -272,10 +270,11 @@ const manageCss = css`
     .tab-status {
       padding: 0 4px;
       margin-right: 8px;
-      background-color: #bbb;
-      color: #000;
+      background-color: #000;
+      color: #999;
       border-radius: 50%;
-      /* border-radius: 4px; */
+      outline: 1px solid rgba(255, 255, 255, 0.25);
+
 
       display: flex;
       justify-content: center;
@@ -293,9 +292,6 @@ const manageCss = css`
       flex-wrap: wrap;
       align-items: center;
       gap: 8px;
-
-      /* border: 1px solid #333; */
-      /* padding: 0px 12px; */
     }
 
     .world-key, .map-key {
@@ -316,7 +312,7 @@ const manageCss = css`
   .${cssName.closeTab} {
     padding: 4px 8px;
     color: #f66;
-    border-left: 1px solid #666;
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
     justify-content: center;
   }
 
@@ -327,7 +323,7 @@ const manageCss = css`
     cursor: pointer;
     
     .tab-class {
-      padding: 0 4px;
+      padding: 6px;
     }
     .options {
       display: flex;
