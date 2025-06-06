@@ -399,6 +399,8 @@ const manageCss = css`
 
   button {
     display: flex;
+    align-items: center;
+    height: 100%;
   }
   
   .${cssName.openTab} {
