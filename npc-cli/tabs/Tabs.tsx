@@ -344,6 +344,9 @@ const tabsCss = css`
   }
   .flexlayout__tab_toolbar_button {
     cursor: pointer;
+    &:focus {
+      outline: 2px solid #99f;
+    }
   }
   .flexlayout__tab_toolbar_button-max svg {
     border: 1px solid white;
