@@ -76,6 +76,12 @@ export default function Manage(props) {
       console.log('select', tabId);
       useSite.api.selectTab(tabId);
     },
+    setMapKey(e) {
+      const mapKey = /** @type {Key.Map} */ (e.currentTarget.value);
+      const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
+      const tabId = /** @type {Key.TabClass} */ (li.dataset.tabId);
+      useSite.api.changeTabProps(tabId, { mapKey });
+    },
   }));
 
   return (
@@ -91,7 +97,7 @@ export default function Manage(props) {
             const disabled = tabMeta?.disabled === true;
             const unmounted = tabMeta === undefined;
 
-            return <li key={tabId}>
+            return <li key={tabId} data-tab-id={tabId}>
               <span className="tab-def">
                 <span className="tab-status-and-id">
                   <span className="tab-status">
@@ -109,8 +115,19 @@ export default function Manage(props) {
                     {def.filepath}
                   </span>
                 </span>
-                {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
-                {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
+                <span className="options">
+                  {def.type === 'terminal' && (
+                    <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>
+                  )}
+                  {def.type === 'component' && def.class === 'World' && (
+                    <select
+                      defaultValue={def.props.mapKey}
+                      onChange={state.setMapKey}
+                    >
+                      {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
+                    </select>
+                  )}
+                </span>
               </span>
               <FontAwesomeIcon
                 className={cssName.closeTab}
@@ -278,7 +295,7 @@ const manageCss = css`
       margin-right: 8px;
       cursor: auto;
       background-color: #000;
-      color: #999;
+      color: #bbb;
       border-radius: 50%;
       outline: 1px solid rgba(255, 255, 255, 0.25);
 
@@ -337,23 +354,22 @@ const manageCss = css`
       font-size: 1rem;
       user-select: none;
     }
-
-    .options {
-      display: flex;
-      gap: 8px;
-      max-width: 200px;
-    }
-    select, input {
-      width: 100%;
-      background-color: inherit;
-      color: inherit;
-      font-size: small;
-      padding: 0 2px;
-    }
-    input::placeholder {
-      color: #555;
-    }
-
+  }
+  
+  .options {
+    display: flex;
+    gap: 8px;
+    max-width: 200px;
+  }
+  select, input {
+    width: 100%;
+    background-color: inherit;
+    color: inherit;
+    font-size: small;
+    padding: 0 2px;
+  }
+  input::placeholder {
+    color: #555;
   }
   
   .${cssName.openTab} {
@@ -388,10 +404,17 @@ const manageCss = css`
  * @property {OnClickHandler} closeTab
  * @property {OnClickHandler} createTab
  * @property {OnClickHandler} selectTab
+ * @property {OnChangeHandler} setMapKey
  */
 
 /**
  * @typedef {(e: React.MouseEvent<HTMLElement | SVGElement> & {
  *   currentTarget: HTMLElement | SVGElement
  * }) => void} OnClickHandler
+ */
+
+/**
+ * @typedef {(e: React.ChangeEvent<HTMLSelectElement> & {
+ *   currentTarget: HTMLSelectElement
+ * }) => void} OnChangeHandler
  */
