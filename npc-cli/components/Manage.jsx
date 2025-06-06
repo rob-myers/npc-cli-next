@@ -80,8 +80,8 @@ export default function Manage(props) {
     },
     selectTab(e) {
       const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
-      // 🚧
       console.log('select', tabId);
+      useSite.api.selectTab(tabId);
     },
   }));
 

@@ -251,12 +251,12 @@
     - ✅ expose Viewer tabs disabled
     - ✅ style when disabled
     - ✅ style when unmounted
-  - 🚧 select tab on click
-  - 🚧 ongoing restyle
+  - ✅ select tab on click
+  - ✅ ongoing restyle
     - ✅ clean
     - ✅ paused represented via icon
     - ✅ unmounted represented via icon
-    - 🚧 use many onClick rather than "one for many"
+    - ✅ use many onClick rather than "one for many"
   - can change world mapKey
   - can change tty worldKey
   - tty worldKey reflects home.WORLD_KEY

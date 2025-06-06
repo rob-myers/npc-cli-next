@@ -12,7 +12,7 @@ import { isTouchDevice } from "@/npc-cli/service/dom";
 import { helper } from "@/npc-cli/service/helper";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab } from "@/npc-cli/tabs/tab-util";
+import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab, selectTabInLayout } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -53,21 +53,15 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     closeTab(tabId) {
-      const lookup = get().tabset;
-      const { synced: layout } = lookup;
-
-      if (removeTabFromLayout({ layout, tabId }) === true) {
-        const synced = deepClone(layout);
-        set(({ tabset }) => ({ tabset: { ...tabset,
-          started: layout,
-          synced,
-          tabs: extractTabNodes(synced),
-          version: tabset.version + 1,
-        }}))
-        return true;
-      } else {
-        return false;
-      }
+      const { synced: layout } = get().tabset;
+      removeTabFromLayout({ layout, tabId });
+      const synced = deepClone(layout);
+      set(({ tabset }) => ({ tabset: { ...tabset,
+        started: layout,
+        synced,
+        tabs: extractTabNodes(synced),
+        version: tabset.version + 1,
+      }}));
     },
 
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
@@ -143,6 +137,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       
       // overwrite localStorage too
       tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(layout));
+    },
+
+    selectTab(tabId) {
+      const { synced: layout } = get().tabset;
+      selectTabInLayout({ layout, tabId });
+      set(({ tabset }) => ({ tabset: { ...tabset,
+        started: layout,
+        synced: deepClone(layout),
+        version: tabset.version + 1,
+      }}))
     },
 
     setTabset(layout, opts) {
@@ -379,23 +383,16 @@ export type State = {
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     clearTabMeta(): void;
-    /** Restore layout from localStorage or use fallback */
-    restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
+    closeTab(tabId: string): void;
     getTabClassNextSuffix(tabClass: Key.TabClass): number;
-    getPageMetadataFromScript(): PageMetadata;
-    initiateBrowser(): () => void;
-    isViewClosed(): boolean;
     /** ensure every `tab.config` has type @see {TabDef} */
     migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
-    onGiscusMessage(message: MessageEvent): boolean;
-    onTerminate(): void;
     openTab(tabDef: TabDef): void;
     rememberCurrentTabs(): void;
-    closeTab(tabId: string): boolean;
+    /** Restore layout from localStorage or use fallback */
+    restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
     revertCurrentTabset(): void;
-    toggleNav(next?: boolean): void;
-    /** Returns next value of `viewOpen` */
-    toggleView(next?: boolean): boolean;
+    selectTab(tabId: string): void;
     /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
     setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
     /** Track non-layout properties e.g. disabled */
@@ -404,6 +401,15 @@ export type State = {
     syncCurrentTabset(model: Model): void;
     testMutateLayout(): void; // 🚧 temp
     tryRestoreLayout(layout: TabsetLayout): TabsetLayout;
+    
+    getPageMetadataFromScript(): PageMetadata;
+    initiateBrowser(): () => void;
+    isViewClosed(): boolean;
+    onGiscusMessage(message: MessageEvent): boolean;
+    onTerminate(): void;
+    toggleNav(next?: boolean): void;
+    /** Returns next value of `viewOpen` */
+    toggleView(next?: boolean): boolean;
   };
 };
 

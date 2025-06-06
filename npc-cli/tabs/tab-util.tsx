@@ -293,6 +293,20 @@ export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
   return createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey]);
 }
 
+export function selectTabInLayout({ layout, tabId }: {
+  layout: IJsonRowNode;
+  tabId: string;
+}) {
+  for (const tabset of extractTabsetNodes(layout)) {
+    const index = tabset.children.findIndex(x => x.id === tabId);
+    if (index >= 0) {
+      tabset.selected = index;
+      return true;
+    }
+  }
+  return false;
+}
+
 const emptyTabsetLayout: TabsetLayout = {
   type: 'row',
   children: [],
