@@ -260,13 +260,16 @@
   - ❌ "create tab" labelled with next id
     - might be confusing
   - ✅ enforce tab id format i.e. `${Key.TabClassPrefix}-${number}`
-  - 🚧 can change world mapKey
+  - ✅ can change world mapKey
     - ✅ works when World tab in foreground
-    - 🚧 fix background
+    - ✅ fix background tab
+      - ℹ️ `door[useEffect]` not invoked while bg because `useEffect`
+      - nav.worker should be re-triggered in background
   - can change tty worldKey (numeric)
   - long press open tab should select it
   - tty worldKey reflects home.WORLD_KEY
     - maybe click to update
+  - profile.1 uses WORLD_KEY world-0 etc.
 
 - ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
   - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
