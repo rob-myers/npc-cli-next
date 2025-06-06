@@ -257,6 +257,7 @@
     - ✅ paused represented via icon
     - ✅ unmounted represented via icon
     - ✅ use many onClick rather than "one for many"
+  - 🚧 create tab labelled with next id
   - can change world mapKey
   - can change tty worldKey
   - tty worldKey reflects home.WORLD_KEY
