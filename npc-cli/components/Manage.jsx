@@ -293,7 +293,7 @@ const manageCss = css`
 
   .current-tabs li {
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
     gap: 8px;
     color: #aac;
 
@@ -305,7 +305,7 @@ const manageCss = css`
     }
 
     .tab-status {
-      padding: 0 4px;
+      /* padding: 0 4px; */
       margin-right: 8px;
       cursor: auto;
       background-color: #000;
@@ -351,7 +351,7 @@ const manageCss = css`
 
   .create-tabs li {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 8px;
     color: #aaa;
     
@@ -376,19 +376,21 @@ const manageCss = css`
     display: flex;
     gap: 8px;
     max-width: 200px;
+    align-items: stretch;
 
     .world-id {
       display: flex;
       align-items: center;
     }
+    
   }
   select, input {
-    width: 100%;
     background-color: inherit;
+    width: 100%;
+    height: 100%;
     color: inherit;
     font-size: small;
     padding: 0 2px;
-    border-left: var(--separating-border);
   }
   input::placeholder {
     color: #c99;
