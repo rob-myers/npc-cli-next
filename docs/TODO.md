@@ -265,7 +265,8 @@
     - ✅ fix background tab
       - ℹ️ `door[useEffect]` not invoked while bg because `useEffect`
       - nav.worker should be re-triggered in background
-  - 🚧 create tty worldKey is numeric
+  - ✅ create tty worldKey is numeric
+    - if invalid, env.WORLD_KEY won't be defined
   - can change tty worldKey (numeric)
   - long press open tab should select it
   - tty worldKey reflects home.WORLD_KEY

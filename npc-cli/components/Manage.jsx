@@ -43,14 +43,14 @@ export default function Manage(props) {
             x => x.dataset.profileKey
           );
           const [worldKeyInput] = [...li.querySelectorAll('input')].filter(
-            x => x.dataset.worldKey
+            x => x.dataset.worldKeySuffix
           );
           tabDef = computeTabDef({
             classKey: tabClassKey,
             id: nextTabId,
-            ...worldKeyInput.value && {
+            ...Number.isInteger(Number(worldKeyInput.value)) && {
               profileKey: /** @type {Key.Profile} */ (profileSelect.value),
-              env: { WORLD_KEY: worldKeyInput.value },
+              env: { WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value}` },
             } || {
               profileKey: 'profile-empty-sh',
             },
@@ -184,14 +184,15 @@ export default function Manage(props) {
                     <option key={profileKey} value={profileKey}>{profileKey}</option>
                   )}
                 </select>
-                <span className="world-id">
+                <span className="world-key">
                   world-
                   <input
-                    data-world-id
+                    data-world-key-suffix
                     type="number"
                     placeholder="{n}"
                     step={1}
                     min={0}
+                    defaultValue={0}
                   />
                 </span>
               </span>
@@ -376,7 +377,7 @@ const manageCss = css`
     max-width: 200px;
     align-items: stretch;
 
-    .world-id {
+    .world-key {
       display: flex;
       align-items: center;
     }
@@ -389,8 +390,10 @@ const manageCss = css`
     color: inherit;
     font-size: small;
     padding: 0 2px;
+    /* background-color: inherit; */
+    filter: sepia();
   }
-  input::placeholder {
+  select::placeholder, input::placeholder {
     color: #c99;
   }
 
@@ -403,6 +406,7 @@ const manageCss = css`
     padding: 8px;
     cursor: pointer;
     user-select: none;
+    padding: 10px;
   }
 
   .actions {

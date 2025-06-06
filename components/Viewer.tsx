@@ -11,7 +11,7 @@ import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from ".
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
 
-import { parseJsArg, tryLocalStorageGet } from "@/npc-cli/service/generic";
+import { parseJsArg, pause, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { helper } from "@/npc-cli/service/helper";
 import { computeTabDef } from "@/npc-cli/tabs/tab-util";
@@ -131,7 +131,9 @@ export default function Viewer() {
     onTabsReset() {
       useSite.api.clearTabMeta();
     },
-    onToggleTab(tabState) {
+    async onToggleTab(tabState) {
+      // 🚧 site.store.ts:254 Cannot update a component (`Viewer`) while rendering a different component (`Layout`).
+      await pause();
       useSite.api.setTabMeta(tabState);
     },
     update,
