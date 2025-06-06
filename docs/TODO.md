@@ -262,6 +262,7 @@
   - ✅ enforce tab id format i.e. `${Key.TabClassPrefix}-${number}`
   - 🚧 can change world mapKey
   - can change tty worldKey (numeric)
+  - long press open tab should select it
   - tty worldKey reflects home.WORLD_KEY
     - maybe click to update
 

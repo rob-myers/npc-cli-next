@@ -389,6 +389,7 @@ export type State = {
     getNextTabId(tabClass: Key.TabClass): `${Key.TabClassPrefix}-${number}`;
     /** ensure every `tab.config` has type @see {TabDef} */
     migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
+    /** Create a tab, or select `tabDef.filepath` */
     openTab(tabDef: TabDef): void;
     rememberCurrentTabs(): void;
     /** Restore layout from localStorage or use fallback */

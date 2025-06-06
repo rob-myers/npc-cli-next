@@ -6,7 +6,8 @@ import { helper } from "../service/helper";
 import type { ProfileKey } from "../sh/src";
 
 /**
- * If exists do nothing, else mutate by appending to active tabset.
+ * - If tabDef doesn't exist, append to 1st non-active tabset (or only active one).
+ * - Otherwise noop.
  */
 export function addTabToLayout({ layout, selectTab, tabDef }: {
   layout: TabsetLayout;
@@ -25,16 +26,13 @@ export function addTabToLayout({ layout, selectTab, tabDef }: {
     return layout; // already exists
   }
 
-  const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
-  activeTabset.active = true;
-  
-  const numTabs = activeTabset.children.push(
-    createTabNodeFromDef(tabDef)
-  );
+  // 1st inactive tabset, or only one
+  const targetTabset = tabsetNodes.find(x => x.active !== true) ?? tabsetNodes[0];
+  const numTabs = targetTabset.children.push(createTabNodeFromDef(tabDef));
 
   if (selectTab === true) {
     tabsetNodes.forEach(x => x.maximized = false); // minimize
-    activeTabset.selected = numTabs - 1; // select
+    targetTabset.selected = numTabs - 1; // select
   }
   
   return layout;
