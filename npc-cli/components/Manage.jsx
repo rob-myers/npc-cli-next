@@ -129,14 +129,17 @@ export default function Manage(props) {
                   )}
                 </span>
               </span>
-              <FontAwesomeIcon
-                className={cssName.closeTab}
-                data-tab-id={tabId}
+              <button
                 onClick={state.closeTab}
-                color="#f66"
-                icon={faClose}
-                size="1x"
-              />
+                data-tab-id={tabId}
+              >
+                <FontAwesomeIcon
+                  className={cssName.closeTab}
+                  color="#f66"
+                  icon={faClose}
+                  size="1x"
+                />
+              </button>
             </li>
           })}
         </ul>
@@ -153,7 +156,7 @@ export default function Manage(props) {
                 World
               </span>
               <span className="options">
-                <select data-map-key={true} defaultValue={helper.mapKeys[0]}>
+                <select data-map-key defaultValue={helper.mapKeys[0]}>
                   {helper.mapKeys.map(mapKey =>
                     <option key={mapKey} value={mapKey}>{mapKey}</option>
                   )}
@@ -176,12 +179,21 @@ export default function Manage(props) {
                 Tty
               </span>
               <span className="options">
-                <select data-profile-key={true} defaultValue={helper.profileKeys[0]}>
+                <select data-profile-key defaultValue={helper.profileKeys[0]}>
                   {helper.profileKeys.map(profileKey =>
                     <option key={profileKey} value={profileKey}>{profileKey}</option>
                   )}
                 </select>
-                <input data-world-key type="text" placeholder="world-key" />
+                <span className="world-id">
+                  world-
+                  <input
+                    data-world-id
+                    type="number"
+                    placeholder="{n}"
+                    step={1}
+                    min={0}
+                  />
+                </span>
               </span>
             </span>
             <button onClick={state.createTab}>
@@ -243,6 +255,8 @@ const cssName = /** @type {const} */ ({
 });
 
 const manageCss = css`
+  --separating-border: 1px solid rgba(100, 100, 100, 1);
+
   height: 100%;
   width: 100%;
   overflow: auto;
@@ -273,7 +287,7 @@ const manageCss = css`
 
     li {
       display: flex;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: var(--separating-border);
     }
   }
 
@@ -332,7 +346,7 @@ const manageCss = css`
     font-size: large;
     user-select: none;
     padding: 8px;
-    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: var(--separating-border);
   }
 
   .create-tabs li {
@@ -351,8 +365,10 @@ const manageCss = css`
       display: flex;
       gap: 6px;
       align-items: center;
-      font-size: 1rem;
       user-select: none;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: large;
+      font-weight: 500;
     }
   }
   
@@ -360,6 +376,11 @@ const manageCss = css`
     display: flex;
     gap: 8px;
     max-width: 200px;
+
+    .world-id {
+      display: flex;
+      align-items: center;
+    }
   }
   select, input {
     width: 100%;
@@ -367,13 +388,18 @@ const manageCss = css`
     color: inherit;
     font-size: small;
     padding: 0 2px;
+    border-left: var(--separating-border);
   }
   input::placeholder {
-    color: #555;
+    color: #c99;
+  }
+
+  button {
+    display: flex;
   }
   
   .${cssName.openTab} {
-    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: var(--separating-border);
     padding: 8px;
     cursor: pointer;
     user-select: none;
@@ -386,7 +412,7 @@ const manageCss = css`
 
     li {
       padding: 4px 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: var(--separating-border);
     }
     a {
       font-size: small;
