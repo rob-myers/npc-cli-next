@@ -300,19 +300,17 @@ const manageCss = css`
     .tab-status-and-id {
       display: flex;
       align-items: center;
-      padding: 6px 0 6px 8px;
       cursor: pointer;
+      padding-left: 8px;
     }
-
+    
     .tab-status {
-      /* padding: 0 4px; */
       margin-right: 8px;
       cursor: auto;
       background-color: #000;
       color: #bbb;
       border-radius: 50%;
       outline: 1px solid rgba(255, 255, 255, 0.25);
-
 
       display: flex;
       justify-content: center;
@@ -327,8 +325,8 @@ const manageCss = css`
 
     .tab-def {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
+      /* flex-wrap: wrap; */
+      align-items: stretch;
       gap: 8px;
     }
 
@@ -336,7 +334,7 @@ const manageCss = css`
       color: #aa8;
       font-size: small;
       display: flex;
-      align-items: end;
+      align-items: center;
     }
   }
 
@@ -345,7 +343,7 @@ const manageCss = css`
     font-family: monospace;
     font-size: large;
     user-select: none;
-    padding: 8px;
+    padding: 10px;
     border-left: var(--separating-border);
   }
 
