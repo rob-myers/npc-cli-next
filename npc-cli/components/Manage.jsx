@@ -23,8 +23,7 @@ export default function Manage(props) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabClassKey = /** @type {Key.TabClass} */ (li.dataset.tabClass);
       
-      // 🚧 get next tab id instead
-      const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
+      const nextTabId = useSite.api.getNextTabId(tabClassKey);
         
       /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
       switch (tabClassKey) {
@@ -34,7 +33,7 @@ export default function Manage(props) {
           );
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            suffix,
+            id: nextTabId,
             mapKey: /** @type {Key.Map} */ (mapSelect.value),
           });
           break;
@@ -48,7 +47,7 @@ export default function Manage(props) {
           );
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            suffix,
+            id: nextTabId,
             ...worldKeyInput.value && {
               profileKey: /** @type {Key.Profile} */ (profileSelect.value),
               env: { WORLD_KEY: worldKeyInput.value },
@@ -63,7 +62,7 @@ export default function Manage(props) {
         case 'Manage': // 🚧
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            suffix,
+            id: nextTabId,
           });
           break;
         default:
@@ -202,12 +201,12 @@ export default function Manage(props) {
           <li><a href={`#/internal/reset-tabs`}>reset current tabset</a></li>
           <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
           <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
-          <li><a href={`#/internal/open-tab/HelloWorld?suffix=1`}>open tab hello-world-1</a></li>
-          <li><a href={`#/internal/open-tab/Tty?suffix=4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR"}`}>open Tty tab</a></li>
+          <li><a href={`#/internal/open-tab/HelloWorld?id=hello-world-1`}>open tab hello-world-1</a></li>
+          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR"}`}>open Tty tab</a></li>
           {/* 🔔 do not support custom profile: must use profileKey so can be synced against file */}
           {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`}>open Tty tab</a></li> */}
           {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!"}`}>open Tty tab with PROFILE with spaces via `%20`</a></li> */}
-          <li><a href={`#/internal/open-tab/World?suffix=2&mapKey=small-map-1`}>open World tab</a></li>
+          <li><a href={`#/internal/open-tab/World?id=world-2&mapKey=small-map-1`}>open World tab</a></li>
           <li><a href={`#/internal/close-tab/hello-world-1`}>close tab hello-world-1</a></li>
           <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}`}>change "test-world-1" tab props: mapKey=small-map-1 </a></li>
           <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li>

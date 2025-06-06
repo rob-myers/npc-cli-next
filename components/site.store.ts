@@ -64,14 +64,14 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }}));
     },
 
-    getTabClassNextSuffix(tabClass) {// 🚧 remove
-      const tabNodesInClass = get().tabset.tabs.filter(({ config }) => 
+    getNextTabId(tabClass) {
+      const tabClassNodes = get().tabset.tabs.filter(({ config }) => 
         config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
       );
-      const tabIds = new Set(tabNodesInClass.map(x => x.id as string));
       const { tabPrefix } = helper.toTabClassMeta[tabClass];
-      const firstGap = [...Array(tabNodesInClass.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
-      return firstGap;
+      const tabIds = new Set(tabClassNodes.map(x => x.id as string));
+      const firstGap = [...Array(tabClassNodes.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
+      return `${tabPrefix}-${firstGap}`;
     },
 
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
@@ -384,7 +384,7 @@ export type State = {
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     clearTabMeta(): void;
     closeTab(tabId: string): void;
-    getTabClassNextSuffix(tabClass: Key.TabClass): number;
+    getNextTabId(tabClass: Key.TabClass): `${Key.TabClassPrefix}-${number}`;
     /** ensure every `tab.config` has type @see {TabDef} */
     migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
     openTab(tabDef: TabDef): void;

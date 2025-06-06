@@ -9,8 +9,9 @@ namespace Key {
   );
 
   type ComponentClass = import('../tabs/tab-factory').ComponentClassKey;
-  
+
   type TabClass = ComponentClass | 'Tty';
+  type TabClassPrefix = CamelToKebab<TabClass>;
 
   type DecorImg = import('../service/const.js').DecorImgKey;
 

@@ -96,7 +96,7 @@ export const helper = {
     respectUnwalkable: 1,
   }),
 
-  /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: string; }>} */
+  /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: Key.TabClassPrefix; }>} */
   toTabClassMeta: {
     Debug: { key: 'Debug', tabPrefix: 'debug' },
     HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },

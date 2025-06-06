@@ -259,6 +259,7 @@
     - ✅ use many onClick rather than "one for many"
   - ❌ "create tab" labelled with next id
     - might be confusing
+  - ✅ enforce tab id format i.e. `${Key.TabClassPrefix}-${number}`
   - can change world mapKey
   - can change tty worldKey (numeric)
   - tty worldKey reflects home.WORLD_KEY

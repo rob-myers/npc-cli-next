@@ -70,7 +70,7 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
  * - for `Tty` have fallback for worldKey
  */
 export function computeTabDef(
-  opts: { suffix: string; } & (
+  opts: { id: string; } & (
     | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }
     | { classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
     | { classKey: 'World'; mapKey?: Key.Map }
@@ -83,30 +83,27 @@ export function computeTabDef(
     }
     return {
       type: 'terminal',
-      filepath: `tty-${opts.suffix}`,
+      filepath: opts.id,
       profileKey: opts.profileKey,
       env: opts.env ?? {},
     };
   }
 
   let tabDef: TabDef;
-  const { tabPrefix } = helper.toTabClassMeta[opts.classKey];
 
   switch (opts.classKey) {
     case 'Debug':
     case 'HelloWorld':
-    case 'Manage': {
-      const filepath = `${tabPrefix}-${opts.suffix ?? '0'}`;
+    case 'Manage':
       tabDef = {
         type: 'component',
         class: opts.classKey,
-        filepath,
+        filepath: opts.id,
         props: {},
       };
       break;
-    }
     case 'World': {
-      const worldKey = `${tabPrefix}-${opts.suffix ?? '0'}`;
+      const worldKey = opts.id;
       tabDef = {
         type: 'component',
         class: opts.classKey,

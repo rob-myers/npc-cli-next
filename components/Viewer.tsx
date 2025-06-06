@@ -80,7 +80,7 @@ export default function Viewer() {
           const tabDef = computeTabDef({
             ...opts,
             classKey,
-            suffix: opts.suffix,
+            id: opts.id,
           });
           useSite.api.openTab(tabDef);
           break;
