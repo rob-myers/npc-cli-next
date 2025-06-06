@@ -81,8 +81,10 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     openTab(tabDef) {
       const lookup = useSite.getState().tabset;
       const found = lookup.tabs.find(x => x.id === tabDef.filepath);
-      if (found !== undefined) {
-        return; // already exists
+
+      if (found !== undefined) {// exists, so select it
+        useSite.api.selectTab(tabDef.filepath);
+        return; 
       }
 
       const layout = {...addTabToLayout({ layout: lookup.synced, tabDef })};
