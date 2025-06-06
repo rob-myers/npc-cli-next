@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import cx from "classnames";
 import { createPortal } from "react-dom";
 
-import { tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
+import { debug, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { zIndexTabs, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
@@ -56,9 +56,11 @@ export default function WorldMenu(props) {
       } else if (msg in state.durationKeys) {
         const durationMs = (performance.now() - state.durationKeys[msg]).toFixed(1);
         state.logger?.xterm.writeln(`${msg} ${ansi.BrightYellow}${durationMs}${ansi.Reset}`);
+        debug(`measure: ${msg} (${durationMs}ms)`);
         delete state.durationKeys[msg];
       } else {
         state.durationKeys[msg] = performance.now();
+        debug(`measure: ${msg} (${'started'})`);
       }
     },
     onChangeBrightness(e) {
