@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
 import { shallow } from "zustand/shallow";
-import { testNever } from "../service/generic";
+import { mapValues, testNever } from "../service/generic";
 import { helper } from "../service/helper";
 import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
@@ -11,15 +11,8 @@ import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus } from "@/components/
 
 /** @param {Props} props */
 export default function Manage(props) {
-  const tabDefs = useSite(({ tabset: { tabs } }) =>
-    tabs.map(x => x.config),
-    shallow,
-  );
-
-  const tabsMeta = useSite(({ tabsMeta }) =>
-    tabsMeta,
-    shallow,
-  );
+  const tabDefs = useSite(({ tabset: { tabs } }) => tabs.map(x => x.config), shallow);
+  const tabsMeta = useSite(({ tabsMeta }) => tabsMeta, shallow);
 
   const state = useStateRef(/** @returns {State} */ () => ({
     closeTab(e) {
@@ -29,7 +22,8 @@ export default function Manage(props) {
     createTab(e) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabClassKey = /** @type {Key.TabClass} */ (li.dataset.tabClass);
-      // 🚧 clean
+      
+      // 🚧 get next tab id instead
       const suffix = `${useSite.api.getTabClassNextSuffix(tabClassKey)}`;
         
       /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;

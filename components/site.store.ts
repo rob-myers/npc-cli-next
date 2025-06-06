@@ -64,6 +64,16 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }}));
     },
 
+    getTabClassNextSuffix(tabClass) {// 🚧 remove
+      const tabNodesInClass = get().tabset.tabs.filter(({ config }) => 
+        config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
+      );
+      const tabIds = new Set(tabNodesInClass.map(x => x.id as string));
+      const { tabPrefix } = helper.toTabClassMeta[tabClass];
+      const firstGap = [...Array(tabNodesInClass.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
+      return firstGap;
+    },
+
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
       return layout;
     },
@@ -264,16 +274,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         console.error(e);
         return { key: 'fallback-page-metadata' } as PageMetadata;
       }
-    },
-
-    getTabClassNextSuffix(tabClass) {// 🚧 clean e.g. output whole id
-      const tabNodesInClass = get().tabset.tabs.filter(({ config }) => 
-        config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
-      );
-      const tabIds = new Set(tabNodesInClass.map(x => x.id as string));
-      const { tabPrefix } = helper.toTabClassMeta[tabClass];
-      const firstGap = [...Array(tabNodesInClass.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
-      return firstGap;
     },
 
     initiateBrowser() {

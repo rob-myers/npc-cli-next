@@ -257,10 +257,12 @@
     - ✅ paused represented via icon
     - ✅ unmounted represented via icon
     - ✅ use many onClick rather than "one for many"
-  - 🚧 create tab labelled with next id
+  - ❌ "create tab" labelled with next id
+    - might be confusing
   - can change world mapKey
-  - can change tty worldKey
+  - can change tty worldKey (numeric)
   - tty worldKey reflects home.WORLD_KEY
+    - maybe click to update
 
 - ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
   - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
