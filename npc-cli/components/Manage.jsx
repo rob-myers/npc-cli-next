@@ -107,13 +107,13 @@ export default function Manage(props) {
                       || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
                     )}
                   </span>
-                  <span
+                  <button
                     className="tab-id"
                     data-tab-id={tabId}
                     onClick={state.selectTab}
                   >
                     {def.filepath}
-                  </span>
+                  </button>
                 </span>
                 <span className="options">
                   {def.type === 'terminal' && (
