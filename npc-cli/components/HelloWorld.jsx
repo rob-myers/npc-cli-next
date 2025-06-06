@@ -11,9 +11,12 @@ export default function HelloWorld(props) {
 }
 
 const helloWorldCss = css`
-  color: white;
   padding: 24px;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 `;
 
 /**
