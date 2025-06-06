@@ -1,13 +1,13 @@
 import React from "react";
 import { css } from "@emotion/react";
 import { shallow } from "zustand/shallow";
-import { mapValues, testNever } from "../service/generic";
+import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
 import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
-import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus } from "@/components/Icon";
+import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -112,13 +112,14 @@ export default function Manage(props) {
                 {def.type === 'terminal' && <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>}
                 {def.type === 'component' && def.class === 'World' && <span className="map-key">{`(${def.props.mapKey})`}</span>}
               </span>
-              <span
+              <FontAwesomeIcon
                 className={cssName.closeTab}
                 data-tab-id={tabId}
                 onClick={state.closeTab}
-              >
-                ⨉
-              </span>
+                color="#f66"
+                icon={faClose}
+                size="1x"
+              />
             </li>
           })}
         </ul>
@@ -131,9 +132,9 @@ export default function Manage(props) {
 
           <li data-tab-class={helper.toTabClassMeta.World.key}>
             <span className="tab-def">
-              <button className="tab-class">
+              <span className="tab-class">
                 World
-              </button>
+              </span>
               <span className="options">
                 <select data-map-key={true} defaultValue={helper.mapKeys[0]}>
                   {helper.mapKeys.map(mapKey =>
@@ -142,20 +143,21 @@ export default function Manage(props) {
                 </select>
               </span>
             </span>
-            <FontAwesomeIcon
-              className={cssName.openTab}
-              onClick={state.createTab}
-              color="#5a5"
-              icon={faPlus}
-              size="1x"
-            />
+            <button onClick={state.createTab}>
+              <FontAwesomeIcon
+                className={cssName.openTab}
+                color="#5a5"
+                icon={faPlus}
+                size="1x"
+              />
+            </button>
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.Tty.key}>
             <span className="tab-def">
-              <button className="tab-class">
+              <span className="tab-class">
                 Tty
-              </button>
+              </span>
               <span className="options">
                 <select data-profile-key={true} defaultValue={helper.profileKeys[0]}>
                   {helper.profileKeys.map(profileKey =>
@@ -165,28 +167,30 @@ export default function Manage(props) {
                 <input data-world-key type="text" placeholder="world-key" />
               </span>
             </span>
-            <FontAwesomeIcon
-              className={cssName.openTab}
-              onClick={state.createTab}
-              color="#5a5"
-              icon={faPlus}
-              size="1x"
-            />
+            <button onClick={state.createTab}>
+              <FontAwesomeIcon
+                className={cssName.openTab}
+                color="#5a5"
+                icon={faPlus}
+                size="1x"
+              />
+            </button>
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
             <span className="tab-def">
-              <button className="tab-class">
+              <span className="tab-class">
                 HelloWorld
-              </button>
+              </span>
             </span>
-            <FontAwesomeIcon
-              className={cssName.openTab}
-              onClick={state.createTab}
-              color="#5a5"
-              icon={faPlus}
-              size="1x"
-            />
+            <button onClick={state.createTab}>
+              <FontAwesomeIcon
+                className={cssName.openTab}
+                color="#5a5"
+                icon={faPlus}
+                size="1x"
+              />
+            </button>
           </li>
         </ul>
 
@@ -258,6 +262,7 @@ const manageCss = css`
 
   .current-tabs li {
     justify-content: space-between;
+    align-items: center;
     gap: 8px;
     color: #aac;
 
@@ -309,11 +314,8 @@ const manageCss = css`
     font-family: monospace;
     font-size: large;
     user-select: none;
-
-    padding: 4px 8px;
-    color: #f66;
+    padding: 8px;
     border-left: 1px solid rgba(255, 255, 255, 0.15);
-    justify-content: center;
   }
 
   .create-tabs li {
@@ -333,6 +335,7 @@ const manageCss = css`
       gap: 6px;
       align-items: center;
       font-size: 1rem;
+      user-select: none;
     }
 
     .options {
@@ -351,12 +354,14 @@ const manageCss = css`
       color: #555;
     }
 
-    .${cssName.openTab} {
-      border-left: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 8px;
-      cursor: pointer;
-    }
-  }  
+  }
+  
+  .${cssName.openTab} {
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
 
   .actions {
     display: flex;

@@ -60,6 +60,7 @@ export {
   faCircleInfo,
   faCirclePlay,
   faCircleQuestion,
+  faClose,
   faCode,
   faCodeBranch,
   faGrip,
