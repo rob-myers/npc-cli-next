@@ -267,10 +267,10 @@
       - nav.worker should be re-triggered in background
   - ✅ create tty worldKey is numeric
     - if invalid, env.WORLD_KEY won't be defined
-  - can change tty worldKey (numeric)
+  - ❌ can change tty worldKey (numeric)
+    - must use tty
+  - 🚧 tty worldKey reflects home.WORLD_KEY: click to update
   - long press open tab should select it
-  - tty worldKey reflects home.WORLD_KEY
-    - maybe click to update
   - profile.1 uses WORLD_KEY world-0 etc.
 
 - ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints

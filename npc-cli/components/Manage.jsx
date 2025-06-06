@@ -82,6 +82,9 @@ export default function Manage(props) {
       const tabId = /** @type {Key.TabClass} */ (li.dataset.tabId);
       useSite.api.changeTabProps(tabId, { mapKey });
     },
+    syncWorldKey(e) {
+      // 🚧 set tabMeta[tabId].worldKey using session home.WORLD_KEY
+    },
   }));
 
   return (
@@ -117,7 +120,13 @@ export default function Manage(props) {
                 </span>
                 <span className="options">
                   {def.type === 'terminal' && (
-                    <span className="world-key">{`(${def.env?.WORLD_KEY})`}</span>
+                    <span
+                      className="world-key"
+                      data-tab-id={tabId}
+                      onClick={state.syncWorldKey}
+                    >
+                      {def.env?.WORLD_KEY}
+                    </span>
                   )}
                   {def.type === 'component' && def.class === 'World' && (
                     <select
@@ -330,13 +339,6 @@ const manageCss = css`
       align-items: stretch;
       gap: 8px;
     }
-
-    .world-key, .map-key {
-      color: #aa8;
-      font-size: small;
-      display: flex;
-      align-items: center;
-    }
   }
 
   .${cssName.closeTab} {
@@ -376,10 +378,16 @@ const manageCss = css`
     gap: 8px;
     max-width: 200px;
     align-items: stretch;
+    filter: sepia();
 
     .world-key {
       display: flex;
       align-items: center;
+      font-size: small;
+
+      input {
+        width: 32px;
+      }
     }
     
   }
@@ -391,7 +399,6 @@ const manageCss = css`
     font-size: small;
     padding: 0 2px;
     /* background-color: inherit; */
-    filter: sepia();
   }
   select::placeholder, input::placeholder {
     color: #c99;
@@ -437,6 +444,7 @@ const manageCss = css`
  * @property {OnClickHandler} createTab
  * @property {OnClickHandler} selectTab
  * @property {OnChangeHandler} setMapKey
+ * @property {OnClickHandler} syncWorldKey
  */
 
 /**
