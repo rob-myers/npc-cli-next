@@ -134,7 +134,10 @@ export default function Viewer() {
     async onToggleTab(tabState) {
       // 🚧 site.store.ts:254 Cannot update a component (`Viewer`) while rendering a different component (`Layout`).
       await pause();
-      useSite.api.setTabMeta(tabState);
+      useSite.api.updateTabMeta({
+        key: tabState.key,
+        disabled: tabState.disabled,
+      });
     },
     update,
   }));

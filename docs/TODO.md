@@ -270,8 +270,7 @@
   - ❌ can change tty worldKey (numeric)
     - must use tty
   - 🚧 tty worldKey reflects home.WORLD_KEY: click to update
-  - long press open tab should select it
-  - profile.1 uses WORLD_KEY world-0 etc.
+  - "open tab" long-press should select it
 
 - ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
   - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when

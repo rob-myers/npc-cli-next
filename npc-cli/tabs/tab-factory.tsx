@@ -30,14 +30,14 @@ export type TabDef = { weight?: number } & (
   | ({
       type: "component";
       /** Determines tab */
-      filepath: string;
+      filepath: Key.TabId;
       /** Determines component */
       class: ComponentClassKey;
     } & TabMetaProps)
   | {
       type: "terminal";
       /** Session identifier (determines tab) */
-      filepath: string;
+      filepath: Key.TabId;
       profileKey: ProfileKey;
       env?: Record<string, any>;
     }

@@ -12,6 +12,7 @@ namespace Key {
 
   type TabClass = ComponentClass | 'Tty';
   type TabClassPrefix = CamelToKebab<TabClass>;
+  type TabId = `${Key.TabClassPrefix}-${number}`;
 
   type DecorImg = import('../service/const.js').DecorImgKey;
 

@@ -68,7 +68,7 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
  * - for `Tty` have fallback for worldKey
  */
 export function computeTabDef(
-  opts: { id: string; } & (
+  opts: { id: Key.TabId; } & (
     | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }
     | { classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
     | { classKey: 'World'; mapKey?: Key.Map }
@@ -160,7 +160,7 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
 
   if (tabsets.length === 0) {
     return createLayoutFromBasicLayout([[
-      { type: 'component', class: 'Manage', filepath: 'manage', props: {} },
+      { type: 'component', class: 'Manage', filepath: 'manage-0', props: {} },
     ]]);
   }
 
@@ -168,7 +168,7 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
 
   if (tabset === undefined) {// add manage tab to final tabset
     tabsets.at(-1)!.children.push(createTabNodeFromDef({
-      type: 'component', class: 'Manage', filepath: 'manage', props: {}
+      type: 'component', class: 'Manage', filepath: 'manage-0', props: {}
     }));
   }
 

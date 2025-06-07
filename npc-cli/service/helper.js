@@ -53,14 +53,14 @@ export const helper = {
         {
           type: "component",
           class: "World",
-          filepath: "test-world-1",
+          filepath: "world-0",
           // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+          props: { worldKey: "world-0", mapKey: "demo-map-1" },
         },
         {
           type: "component",
           class: "Debug",
-          filepath: "debug",
+          filepath: "debug-0",
           props: {},
         },
       ],
@@ -69,13 +69,13 @@ export const helper = {
           type: "terminal",
           filepath: "tty-1",
           profileKey: 'profile-1-sh',
-          env: { WORLD_KEY: "test-world-1" },
+          env: { WORLD_KEY: "world-0" },
         },
         {
           type: "terminal",
           filepath: "tty-2",
           profileKey: 'profile-awaitWorld-sh',
-          env: { WORLD_KEY: "test-world-1" },
+          env: { WORLD_KEY: "world-0" },
         },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]

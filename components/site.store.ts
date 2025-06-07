@@ -158,7 +158,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         started: layout,
         synced: deepClone(layout),
         version: tabset.version + 1,
-      }}))
+      }}), undefined, 'select-tab');
     },
 
     setTabset(layout, opts) {
@@ -204,7 +204,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         {
           type: "component",
           class: "World",
-          filepath: "test-world-1",
+          filepath: "world-1",
           // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
           props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
         },
@@ -250,13 +250,13 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       set(() => ({ tabsMeta: {}}));
     },
 
-    setTabMeta(meta) {// currently only tracks `disabled`
+    updateTabMeta(meta) {
+      if (meta.disabled === undefined && get().tabsMeta[meta.key] === undefined) {
+        return; // 1st update must specify `disabled`
+      }
       set(({ tabsMeta }) => ({ tabsMeta: { ...tabsMeta,
-        [meta.key]: {
-          key: meta.key,
-          disabled: meta.disabled,
-        },
-      }}));
+        [meta.key]: { ...tabsMeta[meta.key], ...meta },
+      }}), undefined, 'update-tab-meta');
     },
 
     //#endregion
@@ -386,7 +386,7 @@ export type State = {
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     clearTabMeta(): void;
     closeTab(tabId: string): void;
-    getNextTabId(tabClass: Key.TabClass): `${Key.TabClassPrefix}-${number}`;
+    getNextTabId(tabClass: Key.TabClass): Key.TabId;
     /** ensure every `tab.config` has type @see {TabDef} */
     migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
     /** Create a tab, or select `tabDef.filepath` */
@@ -399,7 +399,7 @@ export type State = {
     /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
     setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
     /** Track non-layout properties e.g. disabled */
-    setTabMeta(tabMeta: SiteTabMeta): void;
+    updateTabMeta(tabMeta: Partial<SiteTabMeta> & { key: Key.TabId }): void;
     storeCurrentLayout(model: Model): void;
     syncCurrentTabset(model: Model): void;
     testMutateLayout(): void; // 🚧 temp
@@ -457,8 +457,10 @@ interface GiscusDiscussionMeta {
 }
 
 interface SiteTabMeta {
-  key: string;
+  key: Key.TabId;
   disabled: boolean;
+  /** TTY tab: last recorded value of home.WORLD_KEY  */
+  ttyWorldKey?: string;
   // ...
 }
 

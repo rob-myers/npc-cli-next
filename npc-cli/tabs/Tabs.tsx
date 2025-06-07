@@ -177,7 +177,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       node.setEventListener("visibility", async ({ visible }) => {
         // console.log('visibility', key, visible);
         
-        const [key, tabDef] = [node.getId(), (node as TabNode).getConfig() as TabDef];
+        const [key, tabDef] = [node.getId() as Key.TabId, (node as TabNode).getConfig() as TabDef];
         const prevDisabled = key in state.tabsState ? state.tabsState[key].disabled : undefined;
         const tabState = state.tabsState[key] ??= {
           key,
@@ -289,7 +289,7 @@ export interface State {
 
 export interface TabState {
   /** Tab identifier */
-  key: string;
+  key: Key.TabId;
   type: TabDef["type"];
   disabled: boolean;
   /**

@@ -79,11 +79,17 @@ export default function Manage(props) {
     setMapKey(e) {
       const mapKey = /** @type {Key.Map} */ (e.currentTarget.value);
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
-      const tabId = /** @type {Key.TabClass} */ (li.dataset.tabId);
+      const tabId = /** @type {string} */ (li.dataset.tabId);
       useSite.api.changeTabProps(tabId, { mapKey });
     },
     syncWorldKey(e) {
-      // 🚧 set tabMeta[tabId].worldKey using session home.WORLD_KEY
+      const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
+      const tabId = /** @type {Key.TabId} */ (li.dataset.tabId);
+      // 🚧 get session home.WORLD_KEY
+      useSite.api.updateTabMeta({
+        key: tabId,
+        ttyWorldKey: '__TODO__',
+      });
     },
   }));
 
@@ -121,11 +127,10 @@ export default function Manage(props) {
                 <span className="options">
                   {def.type === 'terminal' && (
                     <span
-                      className="world-key"
-                      data-tab-id={tabId}
+                      className="sync-world-key"
                       onClick={state.syncWorldKey}
                     >
-                      {def.env?.WORLD_KEY}
+                      {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
                     </span>
                   )}
                   {def.type === 'component' && def.class === 'World' && (
@@ -380,6 +385,17 @@ const manageCss = css`
     align-items: stretch;
     filter: sepia();
 
+    .sync-world-key {
+      display: flex;
+      align-items: center;
+      font-size: small;
+      cursor: pointer;
+
+      /* &:hover, &:active {
+        font-style: italic;
+      } */
+    }
+    
     .world-key {
       display: flex;
       align-items: center;
