@@ -299,14 +299,18 @@
 
 - ✅ remove torch
 
-- rehype: example of dynamic ansi highlighting 
+- ✅ `<Code>` supports copy all
+- 🚧 `<Code>` supports copy line
+
+- ❌ rehype: example of dynamic ansi-output highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
   - would like to highlight shell functions
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller
   - related to w.view.controls.update(true);
-- bug: sh: support $@ deeply inside double quotes (?)
+- ❌ bug: sh: support $@ deeply inside double quotes
+  - not a bug: e.g. `foo() { echo "foo bar $( bar ${@} )"; }` behaves like bash
 - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
 
 - can show navMesh via cli

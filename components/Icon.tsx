@@ -63,6 +63,7 @@ export {
   faClose,
   faCode,
   faCodeBranch,
+  faCopy,
   faGrip,
   faHomeUser,
   faPause,

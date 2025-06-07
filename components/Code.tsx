@@ -2,7 +2,9 @@
 
 import React from 'react';
 import { css } from '@emotion/react';
+
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
+import { FontAwesomeIcon, faCopy } from './Icon';
 
 /**
  * Usage: directly provide mdx code block as child,
@@ -17,16 +19,25 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
   
   const state = useStateRef(() => ({
     container: null as null | HTMLDivElement,
+    lines: [] as string[],
+    async copyAll() {
+      await navigator.clipboard.writeText(state.lines.join('\n'));
+    },
   }));
 
   React.useEffect(() => {
     const spans = Array.from(state.container!.querySelectorAll('code > span')) as HTMLSpanElement[];
-    const lines = spans.map(el => el.innerText);
-    console.log({lines});
+    state.lines = spans.map(el => el.innerText);
   }, []);
 
   return (
     <div ref={state.ref('container')} css={codeContainerCss}>
+      <div
+        className='copy-all'
+        onClick={state.copyAll}
+      >
+      <FontAwesomeIcon icon={faCopy} />
+      </div>
       {children}
     </div>
   );
@@ -37,6 +48,23 @@ interface Props {
 }
 
 const codeContainerCss = css`
+  position: relative;
+  
+  > .copy-all {
+    position: absolute;
+    top: calc( 32px );
+    right: 0;
+    height: 32px;
+    padding: 0 16px;
+    cursor: pointer;
+    color: #ccc;
+    font-size: large;
+    
+    &:hover, &:active {
+      color: #fff;
+    }
+  }
+
   figure > div[data-rehype-pretty-code-title] {
     text-align: center;
   }

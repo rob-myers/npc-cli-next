@@ -10,6 +10,7 @@ export const metadata = {
 
 import Carousel from '../components/Carousel';
 import Image from 'next/image';
+import Code from '../components/Code';
 
 {/* 🚧 */}
 import FirstWithTtyWebp from '../public/images/first-example-with-tty.png.webp';
@@ -97,8 +98,19 @@ Solving the underlying problem would also require an "automated director".
 As an intermediate step we permit a human Game Master to control these systems.
 Then the underlying problem becomes (2) above: can a single human act indistinguishably from many?
 
-## Our approach
+## Strategy
 
 {/* 🚧 pillars */}
 {/* 🚧 use FE dev env */}
 {/* 🚧 use site: first demo */}
+
+<Code>
+```sh title="test title" caption="test caption" showLineNumbers
+# choose 4 nav points
+click 4 meta.nav &>> points
+# spawn npc with full access
+spawn npcKey:rob at:$( click 1 ) grant:.
+# take a tour
+tour npcKey:rob to:"$( points )" 
+```
+</Code>
