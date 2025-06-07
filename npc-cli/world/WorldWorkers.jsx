@@ -19,7 +19,6 @@ export default function WorldWorkers() {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     seenHash: /** @type {*} */ ({}),
-    version: 0,
 
     // 🔔 compute each offMeshLookup[i].{srcGrKey,dstGrKey,dstRoomMeta}
     // 🔔 compute "aligned" i.e. whether normal points towards src
@@ -178,13 +177,12 @@ export default function WorldWorkers() {
       return; // not ready
     }
     if (w.hash === state.seenHash) {
-      return; // only changed disabled
+      return; // no change
     }
-    if (w.disabled === true && state.version !== 0) {
-      return; // disabled previously mounted World should wait
+    if (w.view.canvas.checkVisibility() === false) {
+      return; // skip until visible
     }
 
-    state.version++;
     const prev = state.seenHash;
     const next = w.hash;
     const changedGmIds = w.gms.map(({ key }, gmId) =>
@@ -220,7 +218,7 @@ export default function WorldWorkers() {
     w.mapKey, // current map
     w.hash.map, // current map layout (gmKey and transforms)
     w.hash.mapNav, // current map navMeshes 
-    w.disabled,
+    w.view.canvas.checkVisibility(),
   ]);
 
   return null;
@@ -229,7 +227,6 @@ export default function WorldWorkers() {
 /**
  * @typedef State
  * @property {Geomorph.GeomorphsHash} seenHash
- * @property {number} version
  * @property {(e: MessageEvent<WW.MsgFromNavWorker>) => Promise<void>} handleNavWorkerMessage
  * @property {(npcKey: string, otherKey: WW.PhysicsBodyKey, isEnter?: boolean) => void} handlePhysicsCollision
  * @property {(e: MessageEvent<WW.MsgFromPhysicsWorker>) => Promise<void>} handlePhysicsWorkerMessage
