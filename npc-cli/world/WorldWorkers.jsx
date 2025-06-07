@@ -165,7 +165,10 @@ export default function WorldWorkers() {
 
   React.useEffect(() => {// request nav-mesh, fresh physics world
     if (!(w.threeReady && w.hash.full)) {
-      return;
+      return; // not ready
+    }
+    if (w.hash === state.seenHash) {
+      return; // only changed disabled
     }
     if (w.disabled === true && state.version !== 0) {
       return; // disabled previously mounted World should wait
