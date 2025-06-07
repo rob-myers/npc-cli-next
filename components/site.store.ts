@@ -8,11 +8,11 @@ import { Model, type IJsonRowNode } from "flexlayout-react";
 import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta } from "./const";
 
 import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopment, error, deepClone, warn } from "@/npc-cli/service/generic";
-import { isTouchDevice } from "@/npc-cli/service/dom";
+import { isTouchDevice, isIOS } from "@/npc-cli/service/dom";
 import { helper } from "@/npc-cli/service/helper";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
 import type { TabDef, TabsetLayout } from "@/npc-cli/tabs/tab-factory";
-import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab, selectTabInLayout } from "@/npc-cli/tabs/tab-util";
+import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab, selectTabInLayout, fixIOSCrash } from "@/npc-cli/tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -75,7 +75,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
-      return layout;
+      return fixIOSCrash(layout);
     },
 
     openTab(tabDef) {
@@ -281,6 +281,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     initiateBrowser() {
       const cleanUps = [] as (() => void)[];
 
+      if (isIOS()) {// 🔔 iOS 18.5 iPhone Mini fails on large maps
+        set({ tabset: computeStoredTabsetLookup() }, undefined, 'recompute-layout-ios');
+        helper.mapKeys = helper.mapKeys.filter(helper.isSmallMap);
+      }
+
       if (isDevelopment()) {
         connectDevEventsWebsocket();
         /**
@@ -308,7 +313,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         set(() => ({ viewOpen: topLevel.viewOpen }), undefined, 'restore-view-open');
       }
       if (topLevel.navOpen) {
-        set(() => ({ navOpen: topLevel.navOpen }));
+        set(() => ({ navOpen: topLevel.navOpen }), undefined, 'restore-nav-open');
       }
 
       return () => cleanUps.forEach(cleanup => cleanup());

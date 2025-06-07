@@ -1,6 +1,5 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
 import { keys } from "./generic";
-import { isIOS } from "./dom";
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -34,8 +33,7 @@ export const helper = {
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
     (fromMapKey) => ({
       fromMapKey,
-      // 🔔 iOS 18.5 iPhone Mini fails on large maps
-      mapKeys: isIOS() ? keys(fromMapKey).filter(x => x.includes('small')) : keys(fromMapKey),
+      mapKeys: keys(fromMapKey),
     })
   )({
     "demo-map-1": true,
@@ -48,7 +46,7 @@ export const helper = {
   },
 
   /**
-   * These are "basic layouts".
+   * 🔔 These "basic layouts" are populated when initiateBrowser
    * @type {Record<Key.LayoutPreset, import("../tabs/tab-util").BasicTabsLayout>}
    */
   layoutPreset: {
@@ -61,8 +59,7 @@ export const helper = {
           filepath: "world-0",
           props: {
             worldKey: "test-world-1",
-            // 🔔 iOS 18.5 iPhone Mini can only handle small maps
-            mapKey: isIOS() ? "small-map-1" : "demo-map-1",
+            mapKey: "demo-map-1",
           },
         },
         {
@@ -88,7 +85,7 @@ export const helper = {
         // },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]
-    ]
+    ],
   },
 
   /** Global over all `queryFilter`s */
@@ -355,6 +352,13 @@ export const helper = {
    */
   isSkinPart(input) {
     return input in helper.fromSkinPart;
+  },
+
+  /**
+   * @param {Key.Map} mapKey 
+   */
+  isSmallMap(mapKey) {
+    return mapKey.includes('small');
   },
 
   /**

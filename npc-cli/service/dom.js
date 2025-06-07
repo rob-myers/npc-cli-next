@@ -219,7 +219,7 @@ export function invertCanvas(canvas, copyCtxt, maskCtxt) {
 
 /** https://stackoverflow.com/a/57924983/2917822 */
 export function isIOS() {
-  return (
+  return typeof window !== 'undefined' && (
     /iPad|iPhone|iPod/.test(navigator.userAgent)
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
   );

@@ -1,7 +1,7 @@
 import { type IJsonRowNode, IJsonModel, IJsonTabNode, IJsonTabSetNode } from "flexlayout-react";
 import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
-import { isTouchDevice } from "../service/dom";
-import type { CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
+import { isTouchDevice, isIOS } from "../service/dom";
+import type { CustomIJsonTabNode, ManageTabDef, TabDef, TabsetLayout, WorldTabDef } from "./tab-factory";
 import { helper } from "../service/helper";
 import type { ProfileKey } from "../sh/src";
 
@@ -41,10 +41,11 @@ export function addTabToLayout({ layout, selectTab, tabDef }: {
 export function computeStoredTabsetLookup(): TabsetLayouts {
   
   function restoreLayout(key: keyof TabsetLayouts) {
-    return ensureManageTab(
+    const layout = (
       tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
       ?? deepClone(emptyTabsetLayout)
     );
+    return fixIOSCrash(ensureManageTab(layout));
   }
   
   const synced = restoreLayout('synced');
@@ -58,7 +59,7 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
     version: 0,
   };
 
-  console.log(`${'restoreTabsetLookup'}`, output);
+  console.log(`${'computeStoredTabsetLookup'}`, output);
   return output;
 }
 
@@ -195,6 +196,21 @@ function extractTabsetNodes(layout: IJsonRowNode): IJsonTabSetNode[] {
   });
 }
 
+/** 🔔 iOS 18.5 iPhone Mini fails on large maps */
+export function fixIOSCrash(layout: IJsonRowNode): IJsonRowNode {
+  
+  if (isIOS()) {
+    const tabNodes = extractTabNodes(layout);
+    for (const { config: tabDef } of tabNodes) {
+      if (isWorldTabDef(tabDef) && !helper.isSmallMap(tabDef.props.mapKey)) {
+        tabDef.props.mapKey = 'small-map-1'; // 🔔 ensure "small" map
+      }
+    }
+  }
+
+  return layout;
+}
+
 export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
   return {
     type: 'row',
@@ -232,8 +248,12 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
   };
 }
 
-function isManageTabDef(def: TabDef) {
+function isManageTabDef(def: TabDef): def is ManageTabDef {
   return def.type === 'component' && def.class === 'Manage';
+}
+
+function isWorldTabDef(def: TabDef): def is WorldTabDef {
+  return def.type === 'component' && def.class === 'World';
 }
 
 /**

@@ -43,6 +43,9 @@ export type TabDef = { weight?: number } & (
     }
 );
 
+export type ManageTabDef = Extract<TabDef, TabMetaPropsGeneric<"Manage">>;
+export type WorldTabDef = Extract<TabDef, TabMetaPropsGeneric<"World">>;
+
 export interface TabsBaseProps {
   /** Required e.g. as identifier */
   id: string;
