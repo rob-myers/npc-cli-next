@@ -576,17 +576,15 @@ export default function useHandleEvents(w) {
         return; // e.g. npc without access near door
       }
 
-      if (e.offMesh.dstRoomMeta.small === true) { 
-        return npc.api.stopMoving(); // avoid jerk on try pass close neighbour
-      }
-
-      // resume speed
-      const maxSpeed = npc.api.getMaxSpeed();
-      if (npc.agent.maxSpeed !== maxSpeed) {
-        npc.agent.raw.params.set_maxSpeed(maxSpeed);
-      }
-      if (npc.s.run === true && npc.s.act !== 'Run') {
-        npc.api.startAnimation('Run');
+      if (e.offMesh.dstRoomMeta.small !== true) { 
+        // resume speed
+        const maxSpeed = npc.api.getMaxSpeed();
+        if (npc.agent.maxSpeed !== maxSpeed) {
+          npc.agent.raw.params.set_maxSpeed(maxSpeed);
+        }
+        if (npc.s.run === true && npc.s.act !== 'Run') {
+          npc.api.startAnimation('Run');
+        }
       }
 
       w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.dstGrKey) });
