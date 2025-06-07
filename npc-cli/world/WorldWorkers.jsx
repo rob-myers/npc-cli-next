@@ -163,6 +163,16 @@ export default function WorldWorkers() {
     };
   }, [w.threeReady, Boolean(w.hash.full)]);
 
+  React.useEffect(() => {
+    if (isDevelopment()) {
+      // request nav/physics on HMR
+      state.seenHash = /** @type {*} */ ({});
+      // HMR this file onchange worker files
+      import('./physics.worker');
+      import('./nav.worker');
+    }
+  }, []);
+
   React.useEffect(() => {// request nav-mesh, fresh physics world
     if (!(w.threeReady && w.hash.full)) {
       return; // not ready
@@ -214,12 +224,6 @@ export default function WorldWorkers() {
   ]);
 
   return null;
-}
-
-// 🚧
-if (isDevelopment()) {// propagate HMR to this file onchange worker files
-  import('./physics.worker');
-  import('./nav.worker');
 }
 
 /**
