@@ -364,6 +364,20 @@
         <feFuncB type="linear" slope="0.84"/>
       </feComponentTransfer>
     </filter>
+    <filter id="brightness-filter-8" bx:preset="brightness 1 0.4" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.4"/>
+        <feFuncG type="linear" slope="0.4"/>
+        <feFuncB type="linear" slope="0.4"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="filter-5" bx:preset="brightness 1 0.4" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.4"/>
+        <feFuncG type="linear" slope="0.4"/>
+        <feFuncB type="linear" slope="0.4"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -634,6 +648,12 @@
       </image>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAU0lEQVQYGWMs9Hf4z4AHsIDk3rz9gFWJiLAAAwsrCzNY8t8/VIOYmBgZQHJMWLUiCeJVwMzExMDEwcaKpB6VCbIC7EiQMMhObACsQFFWApscWAwAEQ0IsEpcjb4AAAAASUVORK5CYII=" width="128" height="128" x="640" y="256" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-0&quot;);">
         <title>_bottom</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAA6ADAAQAAAABAAAAAgAAAABqvnfpAAAAHElEQVQIHWP4v3vd//+3dv1nAAJGEPH/zAYwBwCseAp16tIQuwAAAABJRU5ErkJggg==" width="48" height="32" x="592" y="224" style="image-rendering: pixelated; filter: url(&quot;#brightness-filter-8&quot;);">
+        <title>_left-ear</title>
+      </image>
+      <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAACCAYAAACddGYaAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAA6ADAAQAAAABAAAAAgAAAABqvnfpAAAAHElEQVQIHWP4v3vd//+3dv1nAAJGEPH/zAYwBwCseAp16tIQuwAAAABJRU5ErkJggg==" width="48" height="32" x="-688" y="224" style="image-rendering: pixelated; filter: url(&quot;#filter-5&quot;);" transform="matrix(-1, 0, 0, 1, 0, 0)">
+        <title>_right-ear</title>
       </image>
     </g>
     <g transform="matrix(1, 0, 0, 1, -800, 992)" style="filter: url(&quot;#brightness-filter-4&quot;);">
