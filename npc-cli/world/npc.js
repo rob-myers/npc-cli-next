@@ -686,10 +686,10 @@ export class NpcApi {
       this.w.events.next({ key: 'enter-off-mesh-main', npcKey: this.key });
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
-      // if (this.isTargetClose(this.base.position) === true) {
-      //   // 🔔 fix sharp final turn just after offMeshConnection
-      //   this.s.lookSecs = 0.8;
-      // }
+      if (this.isTargetClose(this.base.position) === true) {
+        // 🔔 fix sharp final turn just after offMeshConnection
+        this.s.lookSecs = 0.8;
+      }
     }
 
     if (this.s.tScale !== null) {// approach tScale.dst as t -> tmax
@@ -699,7 +699,7 @@ export class NpcApi {
 
     // look further aslong the path
     // 🔔 with 0.2 saw jerk when two agents through doorway
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.8);
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.base.position.x;
     const dirY = lookAt.y - this.base.position.z;
     const radians = geom.clockwiseFromNorth(dirY, dirX);
