@@ -272,6 +272,14 @@
   - 🚧 tty worldKey reflects home.WORLD_KEY: click to update
   - "open tab" long-press should select it
 
+- 🚧 iOS 18.5 not working, probably when recast (WASM) is loaded
+  - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
+  - https://bugs.webkit.org/show_bug.cgi?id=291677
+  - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
+  - ℹ️ `small-map-1` works, so could restrict in case of iOS
+  - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
+  - 🚧 check ipad
+
 - ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
   - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
     wrap around "nav-deformed" corner

@@ -217,6 +217,14 @@ export function invertCanvas(canvas, copyCtxt, maskCtxt) {
 	dstCtxt.globalCompositeOperation = 'source-over';
 }
 
+/** https://stackoverflow.com/a/57924983/2917822 */
+export function isIOS() {
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+}
+
 /**
  * Is Ctrl/Shift/Cmd down?
  * @param {MouseEvent} e 

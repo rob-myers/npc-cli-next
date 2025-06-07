@@ -1,5 +1,6 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
 import { keys } from "./generic";
+import { isIOS } from "./dom";
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -31,7 +32,11 @@ export const helper = {
   }),
 
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
-    (fromMapKey) => ({ fromMapKey, mapKeys: keys(fromMapKey) })
+    (fromMapKey) => ({
+      fromMapKey,
+      // 🔔 iOS 18.5 iPhone Mini fails on large maps
+      mapKeys: isIOS() ? keys(fromMapKey).filter(x => x.includes('small')) : keys(fromMapKey),
+    })
   )({
     "demo-map-1": true,
     "small-map-1": true,
@@ -54,8 +59,11 @@ export const helper = {
           type: "component",
           class: "World",
           filepath: "world-0",
-          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-          props: { worldKey: "world-0", mapKey: "demo-map-1" },
+          props: {
+            worldKey: "test-world-1",
+            // 🔔 iOS 18.5 iPhone Mini can only handle small maps
+            mapKey: isIOS() ? "small-map-1" : "demo-map-1",
+          },
         },
         {
           type: "component",
@@ -65,18 +73,19 @@ export const helper = {
         },
       ],
       [
+        { type: "component", class: "Manage", filepath: "manage-1", props: {} },
         {
           type: "terminal",
           filepath: "tty-1",
           profileKey: 'profile-1-sh',
           env: { WORLD_KEY: "world-0" },
         },
-        {
-          type: "terminal",
-          filepath: "tty-2",
-          profileKey: 'profile-awaitWorld-sh',
-          env: { WORLD_KEY: "world-0" },
-        },
+        // {
+        //   type: "terminal",
+        //   filepath: "tty-2",
+        //   profileKey: 'profile-awaitWorld-sh',
+        //   env: { WORLD_KEY: "world-0" },
+        // },
         { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
       ]
     ]
@@ -310,10 +319,10 @@ export const helper = {
 
   /**
    * @param {string} input 
-   * @returns {input is Key.TabClass}
+   * @returns {input is Key.LayoutPreset}
    */
-  isTabClassKey(input) {
-    return input === 'Tty' || (input in helper.fromComponentClass);
+  isLayoutPresetKey(input) {
+    return input in helper.layoutPreset;
   },
 
   /**
@@ -334,14 +343,6 @@ export const helper = {
 
   /**
    * @param {string} input 
-   * @returns {input is Key.LayoutPreset}
-   */
-  isLayoutPresetKey(input) {
-    return input in helper.layoutPreset;
-  },
-
-  /**
-   * @param {string} input 
    * @returns {input is Key.Profile}
    */
   isProfileKey(input) {
@@ -354,6 +355,14 @@ export const helper = {
    */
   isSkinPart(input) {
     return input in helper.fromSkinPart;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.TabClass}
+   */
+  isTabClassKey(input) {
+    return input === 'Tty' || (input in helper.fromComponentClass);
   },
 
 };
