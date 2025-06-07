@@ -121,7 +121,7 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
 });
 
 interface Props {
-  sessionKey: string;
+  sessionKey: `tty-${number}`;
   env: Partial<Session["var"]>;
   onUnmount?(): void;
 }

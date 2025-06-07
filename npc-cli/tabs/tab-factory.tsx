@@ -37,13 +37,14 @@ export type TabDef = { weight?: number } & (
   | {
       type: "terminal";
       /** Session identifier (determines tab) */
-      filepath: Key.TabId;
+      filepath: Extract<Key.TabId, `tty-${number}`>;
       profileKey: ProfileKey;
       env?: Record<string, any>;
     }
 );
 
 export type ManageTabDef = Extract<TabDef, TabMetaPropsGeneric<"Manage">>;
+export type TtyTabDef = Extract<TabDef, { type: "terminal" }>;
 export type WorldTabDef = Extract<TabDef, TabMetaPropsGeneric<"World">>;
 
 export interface TabsBaseProps {
