@@ -3,7 +3,7 @@ import { deepClone, removeFirst, last } from "../service/generic";
 import type * as Sh from "./parse";
 import { traverseParsed } from "./parse";
 import { killError, ttyError } from "./util";
-import useSessionStore, { ProcessMeta, ProcessStatus } from "./session.store";
+import useSession, { type ProcessMeta, ProcessStatus } from "./session.store";
 
 export const scrollback = 200;
 
@@ -364,12 +364,12 @@ export class VarDevice implements Device {
     if (this.mode === "array" || this.mode === "fresh-array") {
       if (!this.buffer) {
         if (this.mode === "array") {
-          this.buffer = useSessionStore.api.getVarDeep(this.meta, this.varPath);
+          this.buffer = useSession.api.getVarDeep(this.meta, this.varPath);
           if (!Array.isArray(this.buffer)) {
-            useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
+            useSession.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
           }
         } else {// "fresh-array"
-          useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
+          useSession.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
         }
       }
       if (data === undefined) {
@@ -383,9 +383,9 @@ export class VarDevice implements Device {
       if (data === undefined) {
         return;
       } else if (isDataChunk(data)) {
-        useSessionStore.api.setVarDeep(this.meta, this.varPath, last(data.items));
+        useSession.api.setVarDeep(this.meta, this.varPath, last(data.items));
       } else {
-        useSessionStore.api.setVarDeep(this.meta, this.varPath, data);
+        useSession.api.setVarDeep(this.meta, this.varPath, data);
       }
     }
   }

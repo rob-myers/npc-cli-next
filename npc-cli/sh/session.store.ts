@@ -18,19 +18,18 @@ import {
   killProcess,
   resolveNormalized,
   ShError,
-  stripAnsi,
   ttyError,
 } from "./util";
 import type { BaseMeta, FileWithMeta, NamedFunction } from "./parse";
 import type { MessageFromShell, MessageFromXterm } from "./io";
 import {
-  Device,
-  makeShellIo,
-  ShellIo,
+  type Device,
+  type ShellIo,
+  type VarDeviceMode,
   FifoDevice,
-  VarDevice,
-  VarDeviceMode,
+  makeShellIo,
   NullDevice,
+  VarDevice,
   VoiceDevice,
 } from "./io";
 import { srcService } from "./parse";
@@ -547,6 +546,6 @@ const useStore = create<State>()(
 );
 
 const api = useStore.getState().api;
-const useSessionStore = Object.assign(useStore, { api });
+const useSession = Object.assign(useStore, { api });
 
-export default useSessionStore;
+export default useSession;
