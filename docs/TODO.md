@@ -302,6 +302,9 @@
 - ✅ `<Code>` supports copy all
 - 🚧 `<Code>` supports copy line
 
+- cannot enter small room if other npc is nearby offMesh.dst
+  - ℹ️ this would avoid jerkiness due to lack of leeway for other
+
 - ❌ rehype: example of dynamic ansi-output highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
   - would like to highlight shell functions
