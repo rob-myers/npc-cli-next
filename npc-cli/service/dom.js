@@ -251,7 +251,6 @@ export function getModifierKeys(e) {
   return keysDown.length === 0 ? undefined : keysDown;
 }
 
-
 /**
  * Is Right Mouse Button (RMB) down?
  * @param {MouseEvent} e 
