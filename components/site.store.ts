@@ -84,7 +84,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       if (found !== undefined) {// exists, so select it
         useSite.api.selectTab(tabDef.filepath);
-        return; 
+        return false;
       }
 
       const layout = {...addTabToLayout({ layout: lookup.synced, tabDef })};
@@ -96,6 +96,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         tabs: extractTabNodes(synced),
         version: tabset.version + 1,
       }}));
+      return true;
     },
 
     rememberCurrentTabs() {
@@ -394,8 +395,8 @@ export type State = {
     getNextSuffix(tabClass: Key.TabClass): number;
     /** ensure every `tab.config` has type @see {TabDef} */
     migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
-    /** Create a tab, or select `tabDef.filepath` */
-    openTab(tabDef: TabDef): void;
+    /** Create a tab (returns `true`), or select it (`false`) */
+    openTab(tabDef: TabDef): boolean;
     rememberCurrentTabs(): void;
     /** Restore layout from localStorage or use fallback */
     restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;

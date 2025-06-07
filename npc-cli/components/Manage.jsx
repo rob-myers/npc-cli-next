@@ -16,6 +16,7 @@ export default function Manage(props) {
   const tabsMeta = useSite(({ tabsMeta }) => tabsMeta, shallow);
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    createTabEpoch: 0,
     closeTab(e) {
       const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
       useSite.api.closeTab(tabId);
@@ -23,9 +24,9 @@ export default function Manage(props) {
     createTab(e) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabClassKey = /** @type {Key.TabClass} */ (li.dataset.tabClass);
-      
+
       const nextTabId = useSite.api.getNextSuffix(tabClassKey);
-        
+
       /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
       switch (tabClassKey) {
         case 'World': {
@@ -80,7 +81,12 @@ export default function Manage(props) {
           throw testNever(tabClassKey);
       }
 
-      useSite.api.openTab(tabDef);
+      const created = useSite.api.openTab(tabDef);
+      
+      if (created && Date.now() - state.createTabEpoch >= 600) {
+        // select on long-press
+        useSite.api.selectTab(tabDef.filepath);
+      }
     },
     selectTab(e) {
       const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
@@ -188,14 +194,7 @@ export default function Manage(props) {
                 </select>
               </span>
             </span>
-            <button onClick={state.createTab}>
-              <FontAwesomeIcon
-                className={cssName.openTab}
-                color="#5a5"
-                icon={faPlus}
-                size="1x"
-              />
-            </button>
+            <CreateButton state={state} />
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.Tty.key}>
@@ -222,14 +221,7 @@ export default function Manage(props) {
                 </span>
               </span>
             </span>
-            <button onClick={state.createTab}>
-              <FontAwesomeIcon
-                className={cssName.openTab}
-                color="#5a5"
-                icon={faPlus}
-                size="1x"
-              />
-            </button>
+            <CreateButton state={state} />
           </li>
 
           <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
@@ -238,14 +230,7 @@ export default function Manage(props) {
                 HelloWorld
               </span>
             </span>
-            <button onClick={state.createTab}>
-              <FontAwesomeIcon
-                className={cssName.openTab}
-                color="#5a5"
-                icon={faPlus}
-                size="1x"
-              />
-            </button>
+            <CreateButton state={state} />
           </li>
         </ul>
 
@@ -467,6 +452,7 @@ const manageCss = css`
 
 /**
  * @typedef State
+ * @property {number} createTabEpoch
  * @property {OnClickHandler} closeTab
  * @property {OnClickHandler} createTab
  * @property {OnClickHandler} selectTab
@@ -485,3 +471,20 @@ const manageCss = css`
  *   currentTarget: HTMLSelectElement
  * }) => void} OnChangeHandler
  */
+
+/** @param {{ state: State }} props */
+function CreateButton({ state }) {
+  return (
+    <button
+      onClick={state.createTab}
+      onPointerDown={() => state.createTabEpoch = Date.now()}
+    >
+      <FontAwesomeIcon
+        className={cssName.openTab}
+        color="#5a5"
+        icon={faPlus}
+        size="1x"
+      />
+    </button>
+  );
+}

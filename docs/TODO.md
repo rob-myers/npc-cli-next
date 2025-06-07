@@ -230,7 +230,7 @@
     - remove `/internal/...` -> `#/internal/...` transformer in markdown
   - ✅ manage tab has ui
 
-- 🚧 manage tabs
+- ✅ manage tabs
   - ✅ can close tab
   - ✅ can open new tab
   - ✅ create tab needn't select it
@@ -270,7 +270,7 @@
   - ❌ can change tty worldKey (numeric)
     - must use tty
   - ✅ tty worldKey reflects home.WORLD_KEY onclick
-  - 🚧 "open tab" long-press should select it
+  - ✅ "open tab" long-press should select it
 
 - 🚧 iOS 18.5 not working, probably when recast (WASM) is loaded
   - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
