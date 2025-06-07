@@ -64,14 +64,14 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }}));
     },
 
-    getNextTabId(tabClass) {
+    getNextSuffix(tabClass) {
       const tabClassNodes = get().tabset.tabs.filter(({ config }) => 
         config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
       );
       const { tabPrefix } = helper.toTabClassMeta[tabClass];
       const tabIds = new Set(tabClassNodes.map(x => x.id as string));
       const firstGap = [...Array(tabClassNodes.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
-      return `${tabPrefix}-${firstGap}`;
+      return firstGap;
     },
 
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
@@ -205,8 +205,8 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
           type: "component",
           class: "World",
           filepath: "world-1",
-          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
+          // props: { worldKey: "world-1", mapKey: "small-map-1" },
+          props: { worldKey: "world-1", mapKey: "demo-map-1" },
         },
       ],
       [
@@ -391,7 +391,7 @@ export type State = {
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
     clearTabMeta(): void;
     closeTab(tabId: string): void;
-    getNextTabId(tabClass: Key.TabClass): Key.TabId;
+    getNextSuffix(tabClass: Key.TabClass): number;
     /** ensure every `tab.config` has type @see {TabDef} */
     migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
     /** Create a tab, or select `tabDef.filepath` */

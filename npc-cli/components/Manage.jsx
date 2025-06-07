@@ -23,7 +23,7 @@ export default function Manage(props) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabClassKey = /** @type {Key.TabClass} */ (li.dataset.tabClass);
       
-      const nextTabId = useSite.api.getNextTabId(tabClassKey);
+      const nextTabId = useSite.api.getNextSuffix(tabClassKey);
         
       /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
       switch (tabClassKey) {
@@ -33,7 +33,7 @@ export default function Manage(props) {
           );
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            id: nextTabId,
+            id: `world-${nextTabId}`,
             mapKey: /** @type {Key.Map} */ (mapSelect.value),
           });
           break;
@@ -47,7 +47,7 @@ export default function Manage(props) {
           );
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            id: nextTabId,
+            id: `tty-${nextTabId}`,
             ...Number.isInteger(Number(worldKeyInput.value)) && {
               profileKey: /** @type {Key.Profile} */ (profileSelect.value),
               env: { WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value}` },
@@ -58,11 +58,21 @@ export default function Manage(props) {
           break;
         }
         case 'Debug':
-        case 'HelloWorld':
-        case 'Manage': // 🚧
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            id: nextTabId,
+            id: `debug-${nextTabId}`,
+          });
+          break;
+        case 'HelloWorld':
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            id: `hello-world-${nextTabId}`,
+          });
+          break;
+        case 'Manage':
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            id: `manage-${nextTabId}`,
           });
           break;
         default:

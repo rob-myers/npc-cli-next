@@ -69,10 +69,12 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
  * - for `Tty` have fallback for worldKey
  */
 export function computeTabDef(
-  opts: { id: Key.TabId; } & (
-    | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }
-    | { classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
-    | { classKey: 'World'; mapKey?: Key.Map }
+  opts: (
+    | { id: `debug-${number}`; classKey: 'Debug';  }
+    | { id: `hello-world-${number}`; classKey: 'HelloWorld';  }
+    | { id: `manage-${number}`; classKey: 'Manage';  }
+    | { id: `tty-${number}`; classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
+    | { id: `world-${number}`; classKey: 'World'; mapKey?: Key.Map }
   )
 ): TabDef {
 

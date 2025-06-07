@@ -58,7 +58,7 @@ export const helper = {
           class: "World",
           filepath: "world-0",
           props: {
-            worldKey: "test-world-1",
+            worldKey: "world-0",
             mapKey: "demo-map-1",
           },
         },

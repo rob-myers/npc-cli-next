@@ -382,7 +382,7 @@ export default function World(props) {
 /**
  * @typedef {import("../tabs/tab-factory").BaseTabProps & {
  *   mapKey: Key.Map;
- *   worldKey: string;   
+ *   worldKey: `world-${number}`;   
  * }} Props
  */
 
@@ -392,7 +392,7 @@ export default function World(props) {
 
 /**
  * @typedef State
- * @property {string} key This is `props.worldKey` and never changes
+ * @property {`world-${number}`} key This is `props.worldKey` and never changes
  * @property {boolean} disabled
  * @property {string} mapKey
  * @property {Geomorph.GeomorphsHash} hash
