@@ -70,7 +70,7 @@ export const helper = {
         },
       ],
       [
-        { type: "component", class: "Manage", filepath: "manage-1", props: {} },
+        { type: "component", class: "Manage", filepath: "manage-0", props: {} },
         {
           type: "terminal",
           filepath: "tty-1",

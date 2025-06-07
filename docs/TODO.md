@@ -269,8 +269,8 @@
     - if invalid, env.WORLD_KEY won't be defined
   - ❌ can change tty worldKey (numeric)
     - must use tty
-  - 🚧 tty worldKey reflects home.WORLD_KEY: click to update
-  - "open tab" long-press should select it
+  - ✅ tty worldKey reflects home.WORLD_KEY onclick
+  - 🚧 "open tab" long-press should select it
 
 - 🚧 iOS 18.5 not working, probably when recast (WASM) is loaded
   - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29

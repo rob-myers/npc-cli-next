@@ -186,14 +186,14 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         synced, // 🔔 doesn't drive <Tabs>; tracks current state
         tabs: extractTabNodes(synced),
-      }}));
+      }}), undefined, 'store-current-layout');
       tryLocalStorageSet(`tabset@${'synced'}`, JSON.stringify(synced));
     },
 
     syncCurrentTabset(model) {
       set(({ tabset: lookup }) => ({ tabset: { ...lookup,
         started: model.toJson().layout,
-      }}));
+      }}), undefined, 'sync-current-tabset');
     },
     
     testMutateLayout() {// 🔔 debug only

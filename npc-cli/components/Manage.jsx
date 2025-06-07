@@ -7,6 +7,7 @@ import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useSite from "@/components/site.store";
+import useSession from "../sh/session.store";
 import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/components/Icon";
 
 /** @param {Props} props */
@@ -95,10 +96,10 @@ export default function Manage(props) {
     syncWorldKey(e) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabId = /** @type {Key.TabId} */ (li.dataset.tabId);
-      // 🚧 get session home.WORLD_KEY
-      useSite.api.updateTabMeta({
+      const worldKey = useSession.api.getSession(tabId)?.var.WORLD_KEY;
+      typeof worldKey === 'string' && useSite.api.updateTabMeta({
         key: tabId,
-        ttyWorldKey: '__TODO__',
+        ttyWorldKey: worldKey,
       });
     },
   }));
