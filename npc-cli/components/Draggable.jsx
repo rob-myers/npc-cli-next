@@ -197,6 +197,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
 
 const cornerCss = css`
   position: absolute;
+  z-index: 3;
   right: 0;
   bottom: 0;
   border-left: 20px solid transparent;
