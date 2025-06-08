@@ -18,23 +18,29 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
       onClick={e => 
         open({
           bubble: e.currentTarget.nextSibling as HTMLElement,
+          padding: props.padding,
           rect: e.currentTarget.getBoundingClientRect(),
-          width: props.width,
           timeoutId: timeoutId.current,
-          minWidth: props.minWidth,
+          width: props.width,
         })
       }
       onMouseEnter={e => {
         const bubble = e.currentTarget.nextSibling as HTMLElement;
         const rect = e.currentTarget.getBoundingClientRect();
-        timeoutId.current = window.setTimeout(() => open({ bubble, rect, width: props.width, minWidth: props.minWidth, timeoutId: timeoutId.current }), hoverShowMs);
+        timeoutId.current = window.setTimeout(() => open({
+          bubble,
+          padding: props.padding,
+          rect,
+          timeoutId: timeoutId.current,
+          width: props.width,
+        }), hoverShowMs);
       }}
       onMouseLeave={e => {
         window.clearTimeout(timeoutId.current); // clear hover timeout
         timeoutId.current = close(e, 'icon');
       }}
     >
-      ⋯
+      {props.trigger ?? '⋯'}
     </span>
     <span
       css={speechBubbleCss}
@@ -53,11 +59,12 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
 interface Props {
   bubbleClassName?: string; 
   hideArrow?: boolean;
-  minWidth?: number;
+  padding?: string | number;
+  trigger?: React.ReactNode;
   width?: number;
 }
 
-function open({ bubble, rect, width, minWidth, timeoutId }: OpenOpts) {
+function open({ bubble, padding, rect, timeoutId, width }: OpenOpts) {
   window.clearTimeout(timeoutId); // clear close timeout
 
   bubble.classList.add('open');
@@ -72,17 +79,21 @@ function open({ bubble, rect, width, minWidth, timeoutId }: OpenOpts) {
   const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
   width = maxWidthAvailable < (width ?? defaultInfoWidthPx) ? maxWidthAvailable : width;
   if (width !== undefined) {
-    width = Math.max(width, minWidth ?? minInfoWidth);
+    width = Math.max(width, minInfoWidth);
     bubble.style.setProperty('--info-width', `${width}px`);
   }
+  bubble.style.setProperty(
+    '--info-padding',
+    typeof padding === 'string' ? padding : `${padding ?? defaultInfoPaddingPx}px`,
+  );
 }
 
 interface OpenOpts {
   bubble: HTMLElement;
+  padding?: string | number;
   rect: DOMRect;
-  minWidth?: number;
-  width?: number;
   timeoutId: number;
+  width?: number;
 }
 
 function close(e: React.MouseEvent, source: 'icon' | 'bubble') {
@@ -94,6 +105,7 @@ function close(e: React.MouseEvent, source: 'icon' | 'bubble') {
 }
 
 const defaultInfoWidthPx = 300;
+const defaultInfoPaddingPx = 16;
 const rootWidthPx = 16;
 const arrowDeltaX = 4;
 
@@ -114,6 +126,8 @@ const iconTriggerCss = css`
 
 const speechBubbleCss = css`
   --info-width: ${defaultInfoWidthPx}px;
+  --info-padding: ${defaultInfoPaddingPx}px;
+
   position: relative;
   top: ${-rootWidthPx}px;
   /** Prevents bubble span from wrapping to next line? */
@@ -141,7 +155,7 @@ const speechBubbleCss = css`
     white-space: normal;
     width: var(--info-width);
     margin-left: calc(-0.5 * var(--info-width));
-    padding: 16px;
+    padding: var(--info-padding);
     line-height: 1.6;
 
     background-color: black;
@@ -206,4 +220,4 @@ const speechBubbleCss = css`
 `;
 
 const hoverShowMs = 500;
-const minInfoWidth = 200;
+const minInfoWidth = 100;
