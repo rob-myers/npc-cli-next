@@ -172,6 +172,8 @@ export default function WorldWorkers() {
     }
   }, []);
 
+  const visible = Boolean(w.view?.canvas?.checkVisibility());
+
   React.useEffect(() => {// request nav-mesh, fresh physics world
     if (!(w.threeReady && w.hash.full)) {
       return; // not ready
@@ -179,7 +181,7 @@ export default function WorldWorkers() {
     if (w.hash === state.seenHash) {
       return; // no change
     }
-    if (w.view.canvas.checkVisibility() === false) {
+    if (visible === false) {
       return; // skip until visible
     }
 
@@ -218,7 +220,7 @@ export default function WorldWorkers() {
     w.mapKey, // current map
     w.hash.map, // current map layout (gmKey and transforms)
     w.hash.mapNav, // current map navMeshes 
-    w.view.canvas.checkVisibility(),
+    visible,
   ]);
 
   return null;
