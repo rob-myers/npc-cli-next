@@ -112,6 +112,9 @@
     wrap around "nav-deformed" corner
   - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
 
+- 🚧 Draggable: towards resizable via corner
+  - then can remove controls from PopUp
+
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller
   - related to w.view.controls.update(true);
