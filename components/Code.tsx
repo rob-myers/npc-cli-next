@@ -127,13 +127,13 @@ const codeContainerCss = css`
       height: 40px;
       justify-content: center;
       align-items: center;
-      border: 1px solid #666;
+      border-width: 0;
       border-radius: 0;
-      background-color: black;
+      background-color: unset;
       color: wheat;
     }
     .copy-all-bubble {
-      transform: translate(-32px, -4px);
+      transform: translate(-24px, -4px);
       .info {
         padding: 4px 8px;
       }
