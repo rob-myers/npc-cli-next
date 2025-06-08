@@ -14,7 +14,7 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
   return <>
     <span
       css={iconTriggerCss}
-      className="side-note"
+      className={cx("side-note", props.className)}
       onClick={e => 
         open({
           bubble: e.currentTarget.nextSibling as HTMLElement,
@@ -58,6 +58,7 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
 
 interface Props {
   bubbleClassName?: string; 
+  className?: string; 
   hideArrow?: boolean;
   padding?: string | number;
   trigger?: React.ReactNode;
