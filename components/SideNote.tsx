@@ -18,10 +18,9 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
       onClick={e => 
         open({
           bubble: e.currentTarget.nextSibling as HTMLElement,
-          padding: props.padding,
+          props,
           rect: e.currentTarget.getBoundingClientRect(),
           timeoutId: timeoutId.current,
-          width: props.width,
         })
       }
       onMouseEnter={e => {
@@ -29,10 +28,9 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
         const rect = e.currentTarget.getBoundingClientRect();
         timeoutId.current = window.setTimeout(() => open({
           bubble,
-          padding: props.padding,
+          props,
           rect,
           timeoutId: timeoutId.current,
-          width: props.width,
         }), hoverShowMs);
       }}
       onMouseLeave={e => {
@@ -48,7 +46,7 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
       onMouseEnter={_ => window.clearTimeout(timeoutId.current)}
       onMouseLeave={e => (timeoutId.current = close(e, 'bubble', props.onClose))} // Triggered on mobile click outside
     >
-      {props.hideArrow !== true && <span className="arrow"/>}
+      <span className="arrow"/>
       <span className="info">
         {props.children}
       </span>
@@ -59,14 +57,18 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
 interface Props {
   bubbleClassName?: string; 
   className?: string; 
-  hideArrow?: boolean;
   onClose?(): void;
   padding?: string | number;
   trigger?: React.ReactNode;
   width?: number;
 }
 
-function open({ bubble, padding, rect, timeoutId, width }: OpenOpts) {
+function open({
+  bubble,
+  props: { padding, width },
+  rect,
+  timeoutId,
+}: OpenOpts) {
   window.clearTimeout(timeoutId); // clear close timeout
 
   bubble.classList.add('open');
@@ -92,10 +94,9 @@ function open({ bubble, padding, rect, timeoutId, width }: OpenOpts) {
 
 interface OpenOpts {
   bubble: HTMLElement;
-  padding?: string | number;
   rect: DOMRect;
   timeoutId: number;
-  width?: number;
+  props: Props;
 }
 
 function close(e: React.MouseEvent, source: 'icon' | 'bubble', onClose?: () => void) {
@@ -183,7 +184,7 @@ const speechBubbleCss = css`
   &.left {
     left: ${-1.5 * rootWidthPx}px;
     .info {
-      top: -16px;
+      top: -4px;
       left: calc(-1 * (0.5 * var(--info-width) + ${arrowDeltaX}px ));
     }
     .arrow {
@@ -197,7 +198,7 @@ const speechBubbleCss = css`
   &.right {
     left: ${-rootWidthPx}px;
     .info {
-      top: -16px;
+      top: -4px;
       left: calc(${rootWidthPx}px + 0.5 * var(--info-width) + ${arrowDeltaX}px);
     }
     .arrow {
