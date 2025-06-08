@@ -266,7 +266,7 @@ const cssName = /** @type {const} */ ({
 });
 
 const manageCss = css`
-  --separating-border: 1px solid rgba(100, 100, 100, 1);
+  --separating-border: 1px solid rgba(80, 80, 80, 1);
 
   height: 100%;
   width: 100%;
@@ -369,7 +369,7 @@ const manageCss = css`
       align-items: center;
       user-select: none;
       font-family: 'Courier New', Courier, monospace;
-      font-size: large;
+      font-size: medium;
       font-weight: 500;
     }
   }
@@ -401,7 +401,6 @@ const manageCss = css`
         width: 32px;
       }
     }
-    
   }
   select, input {
     background-color: inherit;
