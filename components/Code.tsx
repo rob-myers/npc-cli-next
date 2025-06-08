@@ -66,6 +66,7 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
         onClick={state.copyAll}
       >
       <SideNote
+        bubbleClassName="copy-all-bubble"
         className="copy-all-side-note"
         onClose={state.resetCopyText}
         padding='4px 8px'
@@ -90,10 +91,9 @@ const codeContainerCss = css`
   
   > .copy-all {
     position: absolute;
-    top: calc( 32px );
+    top: calc( 32px - 4px );
     right: 0;
     height: 32px;
-    padding: 0 16px;
     cursor: pointer;
     color: #ccc;
     font-size: large;
@@ -104,11 +104,16 @@ const codeContainerCss = css`
 
     .copy-all-side-note {
       display: inline-flex;
-      width: 24px;
-      height: 24px;
+      width: 40px;
+      height: 32px;
       justify-content: center;
       align-items: center;
+      border-color: #999;
+      border-width: 2px;
       border-radius: 0;
+    }
+    .copy-all-bubble {
+      transform: translateX(-16px);
     }
   }
 
