@@ -37,7 +37,7 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
       }}
       onMouseLeave={e => {
         window.clearTimeout(timeoutId.current); // clear hover timeout
-        timeoutId.current = close(e, 'icon');
+        timeoutId.current = close(e, 'icon', props.onClose);
       }}
     >
       {props.trigger ?? '⋯'}
@@ -46,7 +46,7 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
       css={speechBubbleCss}
       className={cx("side-note-bubble", props.bubbleClassName)}
       onMouseEnter={_ => window.clearTimeout(timeoutId.current)}
-      onMouseLeave={e => (timeoutId.current = close(e, 'bubble'))} // Triggered on mobile click outside
+      onMouseLeave={e => (timeoutId.current = close(e, 'bubble', props.onClose))} // Triggered on mobile click outside
     >
       {props.hideArrow !== true && <span className="arrow"/>}
       <span className="info">
@@ -60,6 +60,7 @@ interface Props {
   bubbleClassName?: string; 
   className?: string; 
   hideArrow?: boolean;
+  onClose?(): void;
   padding?: string | number;
   trigger?: React.ReactNode;
   width?: number;
@@ -97,11 +98,12 @@ interface OpenOpts {
   width?: number;
 }
 
-function close(e: React.MouseEvent, source: 'icon' | 'bubble') {
+function close(e: React.MouseEvent, source: 'icon' | 'bubble', onClose?: () => void) {
   const bubble = (source === 'icon' ? e.currentTarget.nextSibling : e.currentTarget) as HTMLElement;
   return window.setTimeout(() => {
     bubble.classList.remove('open', 'left', 'right', 'down');
     bubble.style.removeProperty('--info-width');
+    onClose?.();
   }, 100);
 }
 
