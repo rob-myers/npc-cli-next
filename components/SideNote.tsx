@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import React from 'react';
 import cx from 'classnames';
 import { css } from '@emotion/react';
@@ -9,42 +10,66 @@ import { sideNoteRootDataAttribute } from './const';
  *   root element, in which case direction is `left`
  */
 export default function SideNote(props: React.PropsWithChildren<Props>) {
+  const trigger = React.useRef<HTMLElement>(null);
+  const bubble = React.useRef<HTMLElement>(null);
   const timeoutId = React.useRef(0);
+
+  React.useEffect(() => {// can force open/closed
+    if (props.open === true) {
+      open({
+        bubble: bubble.current as HTMLElement,
+        props,
+        rect: (trigger.current as HTMLElement).getBoundingClientRect(),
+        timeoutId: timeoutId.current,
+      });
+    } else if (props.open === false) {
+      close({ el: bubble.current as HTMLElement, onClose: props.onClose });
+    } else {
+      // covers true -> undefined
+      close({ el: bubble.current as HTMLElement, onClose: props.onClose });
+    }
+  }, [props.open]);
 
   return <>
     <span
       css={iconTriggerCss}
+      ref={trigger}
       className={cx("side-note", props.className)}
-      onClick={e => 
+      onClick={e => {
+        if (props.open === false) return;
         open({
-          bubble: e.currentTarget.nextSibling as HTMLElement,
+          bubble: bubble.current as HTMLElement,
           props,
-          rect: e.currentTarget.getBoundingClientRect(),
+          rect: (trigger.current as HTMLElement).getBoundingClientRect(),
           timeoutId: timeoutId.current,
-        })
-      }
+        });
+      }}
       onMouseEnter={e => {
-        const bubble = e.currentTarget.nextSibling as HTMLElement;
-        const rect = e.currentTarget.getBoundingClientRect();
+        if (props.open === false) return;
         timeoutId.current = window.setTimeout(() => open({
-          bubble,
+          bubble: bubble.current as HTMLElement,
           props,
-          rect,
+          rect: (trigger.current as HTMLElement).getBoundingClientRect(),
           timeoutId: timeoutId.current,
         }), hoverShowMs);
       }}
       onMouseLeave={e => {
+        if (props.open === true) return;
         window.clearTimeout(timeoutId.current); // clear hover timeout
-        timeoutId.current = close(e, 'icon', props.onClose);
+        timeoutId.current = close({ el: bubble.current as HTMLElement, onClose: props.onClose });
       }}
     >
-      {props.trigger ?? '⋯'}
+      {props.icon ?? '⋯'}
     </span>
     <span
       css={speechBubbleCss}
+      ref={bubble}
       className={cx("side-note-bubble", props.bubbleClassName)}
       onMouseEnter={_ => window.clearTimeout(timeoutId.current)}
-      onMouseLeave={e => (timeoutId.current = close(e, 'bubble', props.onClose))} // Triggered on mobile click outside
+      onMouseLeave={e => {
+        if (props.open === true) return;
+        timeoutId.current = close({ el: bubble.current as HTMLElement, onClose: props.onClose });
+      }} // Triggered on mobile click outside
     >
       <span className="arrow"/>
       <span className="info">
@@ -58,14 +83,14 @@ interface Props {
   bubbleClassName?: string; 
   className?: string; 
   onClose?(): void;
-  padding?: string | number;
-  trigger?: React.ReactNode;
+  open?: boolean; 
+  icon?: React.ReactNode;
   width?: number;
 }
 
 function open({
   bubble,
-  props: { padding, width },
+  props: { width },
   rect,
   timeoutId,
 }: OpenOpts) {
@@ -86,10 +111,6 @@ function open({
     width = Math.max(width, minInfoWidth);
     bubble.style.setProperty('--info-width', `${width}px`);
   }
-  bubble.style.setProperty(
-    '--info-padding',
-    typeof padding === 'string' ? padding : `${padding ?? defaultInfoPaddingPx}px`,
-  );
 }
 
 interface OpenOpts {
@@ -99,11 +120,10 @@ interface OpenOpts {
   props: Props;
 }
 
-function close(e: React.MouseEvent, source: 'icon' | 'bubble', onClose?: () => void) {
-  const bubble = (source === 'icon' ? e.currentTarget.nextSibling : e.currentTarget) as HTMLElement;
+function close({ el, onClose }: { el: HTMLElement; onClose?(): void; }) {
   return window.setTimeout(() => {
-    bubble.classList.remove('open', 'left', 'right', 'down');
-    bubble.style.removeProperty('--info-width');
+    el.classList.remove('open', 'left', 'right', 'down');
+    el.style.removeProperty('--info-width');
     onClose?.();
   }, 100);
 }
