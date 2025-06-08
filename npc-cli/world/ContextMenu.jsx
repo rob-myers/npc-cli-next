@@ -349,7 +349,8 @@ export const contextMenuCss = css`
 
   > div {
     transform-origin: 0 0;
-    pointer-events: all;
+    /* transformed Draggable receives instead */
+    pointer-events: none;
   }
 
   .inner-root {

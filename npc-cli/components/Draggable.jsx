@@ -6,7 +6,6 @@ import { getTouch, getTouchIdentifier } from "../service/dom";
 import useStateRef from "../hooks/use-state-ref";
 
 /**
- * Based on https://github.com/pmndrs/drei/blob/master/src/web/Html.tsx
  * @type {React.ForwardRefExoticComponent<React.PropsWithChildren<BaseProps> & React.RefAttributes<State>>}
  */
 export const Draggable = React.forwardRef(function Draggable(props, ref) {
@@ -31,8 +30,10 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       e.stopPropagation();
       // e.preventDefault();
       state.dragging = true;
-      state.rel.x = e.clientX - state.el.offsetLeft;
-      state.rel.y = e.clientY - state.el.offsetTop;
+      const { x, y } = state.el.getBoundingClientRect();
+      const container = props.container.getBoundingClientRect();
+      state.rel.x = e.clientX - (x - container.x);
+      state.rel.y = e.clientY - (y - container.y);
     },
     onMouseUp(e) {
       // e.stopPropagation();
@@ -61,8 +62,10 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       }
 
       state.dragging = true;
-      state.rel.x = touchObj.clientX - state.el.offsetLeft;
-      state.rel.y = touchObj.clientY - state.el.offsetTop;
+      const { x, y } = state.el.getBoundingClientRect();
+      const container = props.container.getBoundingClientRect();
+      state.rel.x = touchObj.clientX - (x - container.x);
+      state.rel.y = touchObj.clientY - (y - container.y);
     },
     onTouchEnd(e) {
       state.dragging = false;
@@ -83,12 +86,12 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
         tryLocalStorageSet(props.localStorageKey, JSON.stringify(state.pos))
     }, 300),
     updatePos(x = state.pos.x, y = state.pos.y) {
+      if (props.disabled === true) return;
       // ensure within bounds
       const container = props.container ?? document.body;
       state.pos.x = Math.max(0, Math.min(container.clientWidth - state.el.offsetWidth, x));
       state.pos.y = Math.max(0, Math.min(container.clientHeight - state.el.offsetHeight, y));
-      state.el.style.left = `${state.pos.x}px`;
-      state.el.style.top = `${state.pos.y}px`;
+      state.el.style.transform = `translate(${state.pos.x}px, ${state.pos.y}px)`;
       state.persist();
     },
   }), { deps: [props.container, props.disabled, props.dragClassName, props.localStorageKey] });
@@ -135,11 +138,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       onTouchEnd={state.onTouchEnd}
       onTouchMove={state.onTouchMove}
 
-      style={{
-        position: props.disabled ? 'unset' : 'absolute',
-        left: state.pos.x,
-        top: state.pos.y,
-      }}
+      {...!props.disabled && { style: { transform: `translate(${state.pos.x}px, ${state.pos.y}px)` }}}
     >
       {props.children}
     </div>
@@ -149,8 +148,9 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
 /**
  * @typedef BaseProps
  * @property {string} [className]
- * @property {HTMLElement} [container]
- * So can keep draggable within container
+ * @property {HTMLElement} container
+ * - So can keep draggable within container.
+ * - Now required so we can compute analogy of `offset{Left,Top}`
  * @property {boolean} [disabled]
  * @property {string} [dragClassName]
  * If defined, can only drag element matching it
