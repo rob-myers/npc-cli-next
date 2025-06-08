@@ -726,29 +726,30 @@ export class NpcApi {
 
     for (let i = 0; i < nneis; i++) {
       nei = agent.raw.get_neis(i);
-      if (nei.dist < closeDist) {// maybe cancel traversal
-        const other = this.w.a[nei.idx];
-        
-        if ((
-          other.s.target === null &&
-          geom.lineSegIntersectsCircle(
-            point,
-            offMesh.src,
-            other.api.getPoint(),
-            0.3,
-          ) === false
-        ) || (
-          other.s.offMesh !== null
-          && this.getOtherDoorwayLead(other) >= 0.25
-        )) {
-          // 🔔 other idle and "not in the way", or
-          // 🔔 other traversing with enough lead
-          continue;
-        }
-
-        this.stopMoving({ type: 'stop-reason', key: 'collided' });
-        break;
+      if (nei.dist > closeDist) {
+        continue;
       }
+
+      // maybe cancel traversal
+      const other = this.w.a[nei.idx];
+      if ((
+        other.s.target === null &&
+        geom.lineSegIntersectsCircle(
+          point,
+          offMesh.src,
+          other.api.getPoint(),
+          0.3,
+        ) === false
+      ) || (
+        other.s.offMesh !== null
+        && this.getOtherDoorwayLead(other) >= 0.25
+      )) {
+        // 🔔 other idle and "not in the way", or
+        // 🔔 other traversing with enough lead
+        continue;
+      }
+
+      return this.stopMoving({ type: 'stop-reason', key: 'collided', otherNpcKey: other.key });
     }
   }
 

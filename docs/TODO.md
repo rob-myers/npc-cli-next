@@ -302,8 +302,11 @@
 - ✅ `<Code>` supports copy all
 - 🚧 `<Code>` supports copy line
 
-- cannot enter small room if other npc is nearby offMesh.dst
+- 🚧 cannot enter small room if other npc is nearby offMesh.dst
   - ℹ️ this would avoid jerkiness due to lack of leeway for other
+- ✅ stopped-moving reason has otherNpcKey
+  - ✅ blocked-doorway
+  - ✅ collided
 
 - ❌ rehype: example of dynamic ansi-output highlighting 
   - https://rehype-pretty.pages.dev/#ansi-highlighting
@@ -315,6 +318,8 @@
 - ❌ bug: sh: support $@ deeply inside double quotes
   - not a bug: e.g. `foo() { echo "foo bar $( bar ${@} )"; }` behaves like bash
 - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
+
+- doors can be further secured by "full match" e.g. `.*` vs `.`
 
 - can show navMesh via cli
 

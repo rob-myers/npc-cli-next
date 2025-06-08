@@ -458,6 +458,12 @@ export default function useHandleEvents(w) {
         1.5, // 🚧 hard-coded
       );
     },
+    onBlockedDoorway(npc, otherNpcKey) {
+      npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey });
+      // teleport to prevent ongoing offMesh traversal
+      const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
+      agent.teleport(npc.position); 
+    },
     onEnterDoorCollider(e) {// e.type === 'nearby'
       (state.npcToDoors[e.npcKey] ??= { nearby: new Set(), inside: null }).nearby.add(e.gdKey);
       (state.doorToNearbyNpcs[e.gdKey] ??= new Set()).add(e.npcKey);
@@ -538,15 +544,22 @@ export default function useHandleEvents(w) {
           continue;
         }
 
-        // **STOP**
-        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway' });
-        agent.teleport(npc.position); 
-        return;
+        return state.onBlockedDoorway(npc, tr.npcKey); // STOP
       }
       
-      if (
-        offMesh.orig.dstRoomMeta.small === true // small room
-      ) {
+      if (offMesh.orig.dstRoomMeta.small === true) {// small room
+        const { gmId, roomId } = w.lib.getGmRoomId(offMesh.orig.dstGrKey);
+
+        for (const otherNpcKey of state.roomToNpcs[gmId][roomId] ?? []) {
+          const { position } = w.n[otherNpcKey];
+          if (
+            Math.abs(position.x - offMesh.dst.x) < 0.25
+            && Math.abs(position.z - offMesh.dst.y) < 0.25
+          ) {
+            return state.onBlockedDoorway(npc, otherNpcKey); // STOP
+          }
+        }
+
         npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
         // avoid speed up after slow down in doorway
         agent.raw.params.set_slowDownRadius(2 * w.lib.defaults.radius);
@@ -836,6 +849,7 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
  * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
+ * @property {(npc: NPC.NPC, otherNpcKey: string) => void} onBlockedDoorway
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh-main' }>, npc: NPC.NPC) => void} onEnterOffMeshConnectionMain

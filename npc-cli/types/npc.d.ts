@@ -427,18 +427,16 @@ declare namespace NPC {
     debugPath?: boolean;
   }
 
-  interface StopReason {
-    type: 'stop-reason';
-    key: (
-      | 'arrived'
-      | 'blocked-doorway'
-      | 'collided'
-      | 'locked-door'
-      | 'move-again'
-      | 'removed'
-      | 'respawned'
-      | 'stopped'
-      | 'stuck'
-    );
-  }
+  type StopReason = { type: 'stop-reason'; } & (
+    | { key: 'arrived'; }
+    | { key: 'blocked-doorway'; otherNpcKey: string; }
+    | { key: 'collided'; otherNpcKey: string; }
+    | { key: 'locked-door'; }
+    | { key: 'move-again'; }
+    | { key: 'removed'; }
+    | { key: 'respawned'; }
+    | { key: 'stopped'; }
+    | { key: 'stuck'; }
+  );
+  
 }
