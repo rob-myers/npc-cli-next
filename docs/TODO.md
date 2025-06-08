@@ -300,9 +300,10 @@
 - ✅ remove torch
 
 - ✅ `<Code>` supports copy all
+- ✅ `<Code>` copy all has visual feedback
 - 🚧 `<Code>` supports copy line
 
-- 🚧 cannot enter small room if other npc is nearby offMesh.dst
+- ✅ cannot enter small room if other npc is nearby offMesh.dst
   - ℹ️ this would avoid jerkiness due to lack of leeway for other
 - ✅ stopped-moving reason has otherNpcKey
   - ✅ blocked-doorway

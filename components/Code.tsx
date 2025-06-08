@@ -3,8 +3,11 @@
 import React from 'react';
 import { css } from '@emotion/react';
 
+import { sideNoteRootDataAttribute } from './const';
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
+import useUpdate from '@/npc-cli/hooks/use-update';
 import { FontAwesomeIcon, faCopy } from './Icon';
+import SideNote from './SideNote';
 
 /**
  * Usage: directly provide mdx code block as child,
@@ -19,11 +22,26 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
   
   const state = useStateRef(() => ({
     container: null as null | HTMLDivElement,
+    copyAllText: copyText.initialAll,
     lines: [] as string[],
+
     async copyAll() {
-      await navigator.clipboard.writeText(state.lines.join('\n'));
+      try {
+        await navigator.clipboard.writeText(state.lines.join('\n'));
+        state.copyAllText = copyText.success;
+      } catch (e) {
+        console.error(e);
+        state.copyAllText = copyText.failure;
+      }
+      update();
+    },
+    resetCopyText() {
+      state.copyAllText = copyText.initialAll;
+      update();
     },
   }));
+
+  const update = useUpdate();
 
   React.useEffect(() => {
     const spans = Array.from(state.container!.querySelectorAll('code > span')) as HTMLSpanElement[];
@@ -31,12 +49,24 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
   }, []);
 
   return (
-    <div ref={state.ref('container')} css={codeContainerCss}>
+    <div
+      ref={state.ref('container')}
+      css={codeContainerCss}
+      {...{ [sideNoteRootDataAttribute]: true }}
+    >
       <div
         className='copy-all'
         onClick={state.copyAll}
       >
-      <FontAwesomeIcon icon={faCopy} />
+      <SideNote
+        className="copy-all-side-note"
+        onClose={state.resetCopyText}
+        padding='4px 8px'
+        trigger={<FontAwesomeIcon icon={faCopy} />}
+        width={100}
+      >
+        {state.copyAllText}
+      </SideNote>
       </div>
       {children}
     </div>
@@ -62,6 +92,15 @@ const codeContainerCss = css`
     
     &:hover, &:active {
       color: #fff;
+    }
+
+    .copy-all-side-note {
+      display: inline-flex;
+      width: 24px;
+      height: 24px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 0;
     }
   }
 
@@ -94,3 +133,9 @@ const codeContainerCss = css`
     text-align: center;
   }
 `;
+
+const copyText = {
+  initialAll: 'Copy all',
+  success: 'Copied!',
+  failure: 'Copy failed.',
+};
