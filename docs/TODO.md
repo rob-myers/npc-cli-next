@@ -23,12 +23,13 @@
   - ❌ clean carousel css e.g. more css variables
   - ❌ auto png to webp in public/images
 
-- lead into "basic behaviour list"
-  - need `<Code>`
-    - can copy line-by-line
-    - can copy all
-    - can send directly into tty?
-  - clarify initial PROFILE
+- 🚧 lead into "basic behaviour list"
+  - ✅ need `<Code>`
+    - ✅ can copy line-by-line
+    - ✅ can copy all
+    - ❌ can send directly into tty?
+  - 🚧 which PROFILE do we want to use?
+    - probably just `awaitWorld`
   - step through spawning and removing an npc
   - step through making an npc walk back-and-forth
   - next time we'll implement "selection"
