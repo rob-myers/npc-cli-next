@@ -1,6 +1,6 @@
 # TODO
 
-## Branch `light-and-blog`
+## Branch `get-blog-ready`
 
 ### Site
 
@@ -51,185 +51,11 @@
 
 ### World
 
-- ✅ look/follow npc at their height i.e. controls.target.y > 0
-  - ℹ️ controls.minDistance measured from controls.target
-
-- ✅ top-skin-only -> plain-0
-- ✅ skin shortcuts
-  - ℹ️ e.g. `spawn '{ npcKey: "rob", skin: "soldier-0" }' $( click 1 )`
-    - `"soldier-0"`
-    - `"soldier-0/scientist-0/plain-0/police-0"` ->
-      - head `soldier-0`
-      - body `scientist-0`
-      - head-overlay `plain-0`
-      - body-overlay `police-0`
-    - `"soldier-0/-/-/-"` only changes head
-- ✅ what about skin prefix `scientist-0` lacking `body`?
-  - ℹ️ or `scientist-1` only having `body`
-  - ✅ in expandSkin could check against
-    - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
-  - ❌ could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
-- ✅ can `spawn foo@soldier-0 $( click 1)`
-
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
   - ✅ invert npc (when WorldMenu invert on)
   - torch radius/opacity
   - breathTriIds (one per classKey)
   - ...
-
-- ✅ plain-0-body <-> base-0-body
-
-- ✅ improve base skin yet again: base-body too basic
-
-- ✅ consider having WASD for e.g.
-  - `w view.tween '{ azimuthal: Math.PI/2 }`
-
-- ✅ blender: head-overlay-bottom uvs flipped vertically
-  - fix beard on base skin
-
-- ✅ bug: tty: `echo --` is empty
-  - probably related to `getopts`
-
-- ✅ sh: generic args approach for `spawn`
-  - e.g. `spawn npcKey:foo skin:scientist-0 at:"$( click 1 )" look:"$( click 1 )"`
-  - ℹ️ more generally, avoid "args order dependency" in game shell functions
-
-- ✅ can spawn-and-look
-  - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
-
-- ✅ bug: sh: cannot type hash: #
-
-- ✅ sh: `move` command?
-  - ✅ npc.move has single arg
-  - ✅ cleanUp will move.reject
-  - ✅ Ctrl-C working for single move
-    - `move npcKey:rob arriveAnim:none to:$( click 1 )`
-  - ✅ Ctrl-C working for while
-    - `move` needs non-zero exit code on Ctrl-C
-  - ✅ onSleep will pin to current position (default behaviour after)
-  - ✅ onResume will replan
-  - ✅ cleanUp also stops whilst paused
-
-- ✅ split game-generators.js into 2 files
-  - game-generators.js
-  - game-generators-wip.js
-
-- ✅ could pause/resume move via maxSpeed
-  - `w n.rob.agent.raw.params.set_maxSpeed 0`
-  - `w n.rob.agent.raw.params.set_maxSpeed 1.5`
-  - ℹ️ while World paused also need to `w crowd.update`
-  - ℹ️ not actually using this as yet
-
-- ✅ sh: support initially-overwriting-append e.g. `click 2 &>> foo`
-
-- ✅ sh: `echo foo >&2` goes to stderr
-  - ℹ️ e.g. `{ echo foo >&2 ; echo bar; } >baz`
-  - ℹ️ permits debug messaging
-
-- ✅ can invoke `move` generator from another generator e.g. `moveCycle`
-  - ✅ pass generators into session.lib
-  - ✅ create `moveCycle` and invoke `move`
-  - ✅ implement `moveCycle`
-  - ✅ `move` should work onchange `npc.js`
-    - breaks if pause Tabs then change `npc.js`
-
-- ✅ refine `moveCycle` aka `tour`
-  - ❌ keeps trying by default?
-  - ✅ avoid send args to `move`
-  - ✅ `moveCycle` -> `tour`
-  - ✅ simplify: no loop, but can:
-  - ✅ clean i.e. add to basic behaviour list
-
-- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
-
-- ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
-
-- ✅ only mutate `npc` i.e. do not re-instantiate on hmr
-  - ℹ️ idea: npc.api is a class instance which we replace on hmr
-  - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
-  - ✅ new hmr strategy
-    - ✅ detect change of function `createBaseNpc`
-    - ✅ detect change of class `NpcApi`
-    - ✅ simplify strategy: even if function didn't change, its make contain stale refs
-    - ✅ baseNpc: copy in new, delete old, also for `s`
-    - ✅ NpcApi: replace it
-  - ✅ try replace `Npc`
-  - ✅ tidy
-
-- ✅ improve ctrl-c error log for `move`
-  - works when Tabs not paused
-  - issue happens whilst paused i.e. error is `true`
-
-- ✅ locked doors should not open on accessible npc enter collider
-
-- ✅ BUG: sh: can redirect error messages to /dev/null 
-  - `call '() => { throw "oh no!"; }' 2>/dev/null`
-
-- ✅ do not rely on stuck detection to fix "cannot get close enough to arrive"
-  - ℹ️ can repro when another npc nearby-ish (`separationWeight`)
-  - ✅ add slow down radius param to recastnavigation repo
-  - ✅ expose slow down radius in recast-navigation-js repo
-    - expose wasm interface
-  - ✅ can see in npc-cli-next while connected by tsconfig paths
-  - ✅ can change in npc-cli-next and see difference
-    - 0.05 fixes issue
-  - ✅ try slower transition Walk -> Idle
-  - ✅ publish and bump
-  - ℹ️ related to separation weight of idle vs moving
-  - ✅ onSlowNpcCustom has a default
-
-- ❌ moveCycle: what if npc keeps getting blocked from leaving room
-  - ❌ e.g. npc near door has higher weight (more accommodating)
-  - ❌ e.g. blocking npc tweens separationWeight
-  - ℹ️ won't solve yet
-
-- ❌ better approach to js to shell function naming?
-  - ℹ️ want to permit mutually inconsistent files (only source one)
-  - ℹ️ want to optionally exclude certain files
-  - ℹ️ want to avoid special names to avoid collisions
-  - ✅ extendable approach
-  - ❌ can specify functions to auto-source
-    - maybe auto track after `source /etc/foo`
-    - better names i.e. not game-generators-wip
-    - maybe can specify initially sourced via prop
-  - ❌ session.jsFuncs should only contain respective functions too
-    - provide keyed lookup `jsFunctions`
-    - but how to fix types? need to separate to avoid collisions
-  - ℹ️ seems too complicated
-
-- ✅ avoid Tabs reload on edit service/const
-  - ✅ fix Viewer, ViewerControls
-
-- ✅ replace soldier-0 head, head-overlay
-  - https://namemc.com/skin/5556dc93d001adea
-
-- ✅ replace police-0 -> robot-0
-  - ✅ replace head, head-overlay
-  - ✅ replace body
-  - ✅ replace body-overlay
-    - put in second sheet (overwrite bare-0)
-  - ✅ rename police-0 -> robot-0
-
-  - ✅ rename astronaut-0 -> robot-1
-  - ✅ soldier-0 should be lighter
-
-- ✅ on collide look towards neighbour should be optional callback
-  - ✅ optional callback `w.npc.onTickIdleTurn`
-  - ✅ provide example
-    - `setupOnTickIdleTurn`
-
-- ❌ can only close tab after hover for a while
-  - to avoid accidental closure
-  - ℹ️ Tabs will have "manage" tab instead
-
-- ✅ Tabs has manage tab
-  - ✅ cannot close tabs directly 
-  - ✅ manage tab component exists
-  - ✅ ensure manage tab in all layouts
-  - ✅ move links into manage tab
-    - use `#/internal` link
-    - remove `/internal/...` -> `#/internal/...` transformer in markdown
-  - ✅ manage tab has ui
 
 - ✅ manage tabs
   - ✅ can close tab
@@ -285,36 +111,6 @@
   - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
     wrap around "nav-deformed" corner
   - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
-
-- ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
-  - e.g. via larger `npc.s.lookSecs` when nearly arrived
-
-- ✅ soldier-0 needs more hair
-- ✅ change robot-0
-  - mixture of two skins
-- ✅ change robot-1
-
-- ✅ sh: should yield to stdout or stderr rather than `writeMsgCleanly`
-  - ✅ `choice` yields
-  - ✅ eliminate other usages except for `ps` replace line when scrolled back
-
-- ✅ remove torch
-
-- ✅ `<Code>` improvements
-  - ✅ supports copy all
-  - ✅ copy all has visual feedback
-  - ✅ supports copy line
-  - ✅ copy line has visual feedback
-
-- ✅ cannot enter small room if other npc is nearby offMesh.dst
-  - ℹ️ this would avoid jerkiness due to lack of leeway for other
-- ✅ stopped-moving reason has otherNpcKey
-  - ✅ blocked-doorway
-  - ✅ collided
-
-- ❌ rehype: example of dynamic ansi-output highlighting 
-  - https://rehype-pretty.pages.dev/#ansi-highlighting
-  - would like to highlight shell functions
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller
@@ -387,10 +183,6 @@
   - ctrl + w while multiple input: goes back a line (need repro)
 
 ### Dev Env
-
-- ✅ avoid re-request navmesh onchange skin
-- ✅ avoid re-request navmesh onchange lights
-  - maybe because assets.json is changing due to hash change?
 
 - 🚧 BUG: on add decor image i.e. decor spritesheet out-of-sync
   - w.geomorphs.sheet.decor is synced
@@ -1391,3 +1183,214 @@
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
   - ❌ npcs are lighter within light circle
+
+
+- ✅ look/follow npc at their height i.e. controls.target.y > 0
+  - ℹ️ controls.minDistance measured from controls.target
+
+- ✅ top-skin-only -> plain-0
+- ✅ skin shortcuts
+  - ℹ️ e.g. `spawn '{ npcKey: "rob", skin: "soldier-0" }' $( click 1 )`
+    - `"soldier-0"`
+    - `"soldier-0/scientist-0/plain-0/police-0"` ->
+      - head `soldier-0`
+      - body `scientist-0`
+      - head-overlay `plain-0`
+      - body-overlay `police-0`
+    - `"soldier-0/-/-/-"` only changes head
+- ✅ what about skin prefix `scientist-0` lacking `body`?
+  - ℹ️ or `scientist-1` only having `body`
+  - ✅ in expandSkin could check against
+    - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
+  - ❌ could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
+- ✅ can `spawn foo@soldier-0 $( click 1)`
+
+- ✅ plain-0-body <-> base-0-body
+
+- ✅ improve base skin yet again: base-body too basic
+
+- ✅ consider having WASD for e.g.
+  - `w view.tween '{ azimuthal: Math.PI/2 }`
+
+- ✅ blender: head-overlay-bottom uvs flipped vertically
+  - fix beard on base skin
+
+- ✅ bug: tty: `echo --` is empty
+  - probably related to `getopts`
+
+- ✅ sh: generic args approach for `spawn`
+  - e.g. `spawn npcKey:foo skin:scientist-0 at:"$( click 1 )" look:"$( click 1 )"`
+  - ℹ️ more generally, avoid "args order dependency" in game shell functions
+
+- ✅ can spawn-and-look
+  - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
+
+- ✅ bug: sh: cannot type hash: #
+
+- ✅ sh: `move` command?
+  - ✅ npc.move has single arg
+  - ✅ cleanUp will move.reject
+  - ✅ Ctrl-C working for single move
+    - `move npcKey:rob arriveAnim:none to:$( click 1 )`
+  - ✅ Ctrl-C working for while
+    - `move` needs non-zero exit code on Ctrl-C
+  - ✅ onSleep will pin to current position (default behaviour after)
+  - ✅ onResume will replan
+  - ✅ cleanUp also stops whilst paused
+
+- ✅ split game-generators.js into 2 files
+  - game-generators.js
+  - game-generators-wip.js
+
+- ✅ could pause/resume move via maxSpeed
+  - `w n.rob.agent.raw.params.set_maxSpeed 0`
+  - `w n.rob.agent.raw.params.set_maxSpeed 1.5`
+  - ℹ️ while World paused also need to `w crowd.update`
+  - ℹ️ not actually using this as yet
+
+- ✅ sh: support initially-overwriting-append e.g. `click 2 &>> foo`
+
+- ✅ sh: `echo foo >&2` goes to stderr
+  - ℹ️ e.g. `{ echo foo >&2 ; echo bar; } >baz`
+  - ℹ️ permits debug messaging
+
+- ✅ can invoke `move` generator from another generator e.g. `moveCycle`
+  - ✅ pass generators into session.lib
+  - ✅ create `moveCycle` and invoke `move`
+  - ✅ implement `moveCycle`
+  - ✅ `move` should work onchange `npc.js`
+    - breaks if pause Tabs then change `npc.js`
+
+- ✅ refine `moveCycle` aka `tour`
+  - ❌ keeps trying by default?
+  - ✅ avoid send args to `move`
+  - ✅ `moveCycle` -> `tour`
+  - ✅ simplify: no loop, but can:
+  - ✅ clean i.e. add to basic behaviour list
+
+- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
+
+- ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
+
+- ✅ only mutate `npc` i.e. do not re-instantiate on hmr
+  - ℹ️ idea: npc.api is a class instance which we replace on hmr
+  - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
+  - ✅ new hmr strategy
+    - ✅ detect change of function `createBaseNpc`
+    - ✅ detect change of class `NpcApi`
+    - ✅ simplify strategy: even if function didn't change, its make contain stale refs
+    - ✅ baseNpc: copy in new, delete old, also for `s`
+    - ✅ NpcApi: replace it
+  - ✅ try replace `Npc`
+  - ✅ tidy
+
+- ✅ improve ctrl-c error log for `move`
+  - works when Tabs not paused
+  - issue happens whilst paused i.e. error is `true`
+
+- ✅ locked doors should not open on accessible npc enter collider
+
+- ✅ BUG: sh: can redirect error messages to /dev/null 
+  - `call '() => { throw "oh no!"; }' 2>/dev/null`
+
+- ✅ do not rely on stuck detection to fix "cannot get close enough to arrive"
+  - ℹ️ can repro when another npc nearby-ish (`separationWeight`)
+  - ✅ add slow down radius param to recastnavigation repo
+  - ✅ expose slow down radius in recast-navigation-js repo
+    - expose wasm interface
+  - ✅ can see in npc-cli-next while connected by tsconfig paths
+  - ✅ can change in npc-cli-next and see difference
+    - 0.05 fixes issue
+  - ✅ try slower transition Walk -> Idle
+  - ✅ publish and bump
+  - ℹ️ related to separation weight of idle vs moving
+  - ✅ onSlowNpcCustom has a default
+
+- ❌ moveCycle: what if npc keeps getting blocked from leaving room
+  - ❌ e.g. npc near door has higher weight (more accommodating)
+  - ❌ e.g. blocking npc tweens separationWeight
+  - ℹ️ won't solve yet
+
+- ❌ better approach to js to shell function naming?
+  - ℹ️ want to permit mutually inconsistent files (only source one)
+  - ℹ️ want to optionally exclude certain files
+  - ℹ️ want to avoid special names to avoid collisions
+  - ✅ extendable approach
+  - ❌ can specify functions to auto-source
+    - maybe auto track after `source /etc/foo`
+    - better names i.e. not game-generators-wip
+    - maybe can specify initially sourced via prop
+  - ❌ session.jsFuncs should only contain respective functions too
+    - provide keyed lookup `jsFunctions`
+    - but how to fix types? need to separate to avoid collisions
+  - ℹ️ seems too complicated
+
+- ✅ avoid Tabs reload on edit service/const
+  - ✅ fix Viewer, ViewerControls
+
+- ✅ replace soldier-0 head, head-overlay
+  - https://namemc.com/skin/5556dc93d001adea
+
+- ✅ replace police-0 -> robot-0
+  - ✅ replace head, head-overlay
+  - ✅ replace body
+  - ✅ replace body-overlay
+    - put in second sheet (overwrite bare-0)
+  - ✅ rename police-0 -> robot-0
+
+  - ✅ rename astronaut-0 -> robot-1
+  - ✅ soldier-0 should be lighter
+
+- ✅ on collide look towards neighbour should be optional callback
+  - ✅ optional callback `w.npc.onTickIdleTurn`
+  - ✅ provide example
+    - `setupOnTickIdleTurn`
+
+- ❌ can only close tab after hover for a while
+  - to avoid accidental closure
+  - ℹ️ Tabs will have "manage" tab instead
+
+- ✅ Tabs has manage tab
+  - ✅ cannot close tabs directly 
+  - ✅ manage tab component exists
+  - ✅ ensure manage tab in all layouts
+  - ✅ move links into manage tab
+    - use `#/internal` link
+    - remove `/internal/...` -> `#/internal/...` transformer in markdown
+  - ✅ manage tab has ui
+
+- ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
+  - e.g. via larger `npc.s.lookSecs` when nearly arrived
+
+- ✅ soldier-0 needs more hair
+- ✅ change robot-0
+  - mixture of two skins
+- ✅ change robot-1
+
+- ✅ sh: should yield to stdout or stderr rather than `writeMsgCleanly`
+  - ✅ `choice` yields
+  - ✅ eliminate other usages except for `ps` replace line when scrolled back
+
+- ✅ remove torch
+
+- ✅ `<Code>` improvements
+  - ✅ supports copy all
+  - ✅ copy all has visual feedback
+  - ✅ supports copy line
+  - ✅ copy line has visual feedback
+
+- ✅ cannot enter small room if other npc is nearby offMesh.dst
+  - ℹ️ this would avoid jerkiness due to lack of leeway for other
+- ✅ stopped-moving reason has otherNpcKey
+  - ✅ blocked-doorway
+  - ✅ collided
+
+- ❌ rehype: example of dynamic ansi-output highlighting 
+  - https://rehype-pretty.pages.dev/#ansi-highlighting
+  - would like to highlight shell functions
+
+### Dev Env
+
+- ✅ avoid re-request navmesh onchange skin
+- ✅ avoid re-request navmesh onchange lights
+  - maybe because assets.json is changing due to hash change?
