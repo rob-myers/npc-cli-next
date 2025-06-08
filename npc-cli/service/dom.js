@@ -194,6 +194,10 @@ export function fillRing(ct, ring, fill = true) {
   }
 }
 
+export function documentHasSelection() {
+  return window.getSelection()?.isCollapsed === false;
+}
+
 /**
  * Invert `canvas`, overwriting it, while also preserving alpha=0.
  * @param {HTMLCanvasElement} canvas 

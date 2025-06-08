@@ -9,6 +9,7 @@ import useStateRef from '@/npc-cli/hooks/use-state-ref';
 import useUpdate from '@/npc-cli/hooks/use-update';
 import { FontAwesomeIcon, faCopy } from './Icon';
 import SideNote from './SideNote';
+import { documentHasSelection } from '@/npc-cli/service/dom';
 
 /**
  * Usage: directly provide mdx code block as child,
@@ -22,7 +23,7 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
     lines: [] as string[],
     openCopyText: undefined as undefined | boolean,
 
-    async copyAll() {
+    async copyLines() {
       try {
         await navigator.clipboard.writeText(state.lines.join('\n'));
         state.copyIndicatorText = copyIndication.success;
@@ -32,19 +33,31 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
       }
       update();
     },
+    async copySingleLine(line: string) {
+      try {
+        await navigator.clipboard.writeText(line);
+        await state.indicateLineCopied();
+      } catch (e) {
+        console.error(e);
+        state.copyIndicatorText = copyIndication.failure;
+        update(); 
+      }
+    },
+    async indicateLineCopied() {
+      state.openCopyText = true;
+      state.copyIndicatorText = copyIndication.postCopyLine;
+      update();
+      await pause(2000);
+      state.openCopyText = undefined;
+      update();
+    },
     async onClick(e: React.PointerEvent<HTMLDivElement> & { target: HTMLElement }) {
-      const { target: el } = e;
-      if (el.matches('[data-line]')) {
-        // copy single line
-        const index = Array.from(el.parentElement?.children ?? []).indexOf(el);
-        await navigator.clipboard.writeText(state.lines[index]);
-        // visual representation
-        state.openCopyText = true;
-        state.copyIndicatorText = copyIndication.postCopyLine;
-        update();
-        await pause(2000);
-        state.openCopyText = undefined;
-        update();
+      const lineEl = e.target.closest('[data-line]');
+
+      if (lineEl !== null && !documentHasSelection()) {// copy current line
+        const index = Array.from(lineEl.parentElement?.children ?? []).indexOf(lineEl);
+        const line = state.lines[index];
+        await state.copySingleLine(line);
       }
     },
     resetCopyText() {
@@ -69,7 +82,7 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
     >
       <div
         className='copy-all'
-        onClick={state.copyAll}
+        onClick={state.copyLines}
       >
       <SideNote
         bubbleClassName="copy-all-bubble"
@@ -110,16 +123,17 @@ const codeContainerCss = css`
 
     .copy-all-side-note {
       display: inline-flex;
-      width: 40px;
-      height: 32px;
+      width: 50px;
+      height: 40px;
       justify-content: center;
       align-items: center;
-      border-color: #999;
-      border-width: 2px;
+      border: 1px solid #666;
       border-radius: 0;
+      background-color: black;
+      color: wheat;
     }
     .copy-all-bubble {
-      transform: translate(-16px, -4px);
+      transform: translate(-32px, -4px);
       .info {
         padding: 4px 8px;
       }
@@ -142,6 +156,10 @@ const codeContainerCss = css`
     margin-right: 2rem;
     text-align: right;
     color: gray;
+
+    @media (max-width: 500px) {
+      font-size: medium;
+    }
 
   }
   code[data-line-numbers] > span[data-line] {
