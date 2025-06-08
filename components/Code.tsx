@@ -35,6 +35,12 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
       }
       update();
     },
+    async onClick({ target: el }: React.PointerEvent<HTMLDivElement> & { target: HTMLElement }) {
+      if (el.matches('[data-line]')) {
+        const index = Array.from(el.parentElement?.children ?? []).indexOf(el);
+        await navigator.clipboard.writeText(state.lines[index]);
+      }
+    },
     resetCopyText() {
       state.copyAllText = copyText.initialAll;
       update();
@@ -52,6 +58,7 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
     <div
       ref={state.ref('container')}
       css={codeContainerCss}
+      onClick={state.onClick}
       {...{ [sideNoteRootDataAttribute]: true }}
     >
       <div
@@ -68,6 +75,7 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
         {state.copyAllText}
       </SideNote>
       </div>
+
       {children}
     </div>
   );
@@ -121,7 +129,14 @@ const codeContainerCss = css`
     text-align: right;
     color: gray;
 
-    /* cursor: pointer; */
+  }
+  code[data-line-numbers] > span[data-line] {
+    &::before {
+      cursor: pointer;
+    }
+    &:hover::before, &:focus::before {
+      color: white;
+    }
   }
 
   // selected line
