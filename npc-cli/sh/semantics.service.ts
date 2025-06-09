@@ -139,9 +139,9 @@ class semanticsServiceClass {
       useSession.api.setVar(meta, Name.Value, '');
       return;
     }
-    if (Name.Value === 'ptags') {
-      return; // used to tag process instead
-    }
+    // if (Name.Value === 'ptags') {
+    //   return; // used to tag process instead
+    // }
 
     const { value, values } = await this.lastExpanded(sem.Expand(Value));
     const firstValue = values[0]; // know values.length > 0 because not Naked
@@ -152,8 +152,8 @@ class semanticsServiceClass {
 
     if (Append === true) {
       // Append `true` corresponds to `foo+=bar`, e.g.
-      // - ℹ️ x+=1 where x is `1` is `2`
-      // - ℹ️ x+='{baz:"qux"}' where x is `{foo:"bar"}` is `{foo:"bar",baz:"qux"}`
+      // - if x is `1` then after x+=1 it is `2`
+      // - if x is `{foo:"bar"}` then after x+='{baz:"qux"}' it is `{foo:"bar",baz:"qux"}`
       const leftArg = useSession.api.getVar(meta, Name.Value) ?? 0;
       if (typeof firstValue !== 'string') {
         // e.g. forward non-string value from command substitution `foo=$( bar )`

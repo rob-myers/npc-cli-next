@@ -180,7 +180,7 @@ export interface ProcessMeta {
   localVar: Record<string, any>;
   /** Inherited local variables. */
   inheritVar: Record<string, any>;
-  /** Can specify via e.g. `ptags="no-auto x=foo y=bar" echo baz` */
+  /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
   ptags?: Record<string, any>;
 }
 
