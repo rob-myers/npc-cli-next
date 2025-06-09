@@ -154,7 +154,7 @@ export async function* initCamAndLights({ api, args, w }) {
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
  */
-export async function* move({ api, args, w }, opts = api.parseArgsAsJs(args)) {
+export async function* move({ api, args, w }, opts = api.jsArg(args)) {
   const npc = w.n[opts.npcKey];
   if (!npc) {
     throw Error(`npcKey invalid: ${opts.npcKey}`)
@@ -303,7 +303,7 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {NPC.RunArg} ctxt
  * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
  */
-export async function* spawn({ api, args, w }, opts = api.parseArgsAsJs(args)) {
+export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
   await w.npc.spawn(opts);
   if (typeof opts.grant === 'string') {
     w.e.grantAccess(opts.grant, opts.npcKey);
@@ -319,9 +319,9 @@ export async function* spawn({ api, args, w }, opts = api.parseArgsAsJs(args)) {
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
-export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
+export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
   for (const to of opts.to) {
-    yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
+    yield* ct.lib.gameWip.move(ct, { npcKey: opts.npcKey, to });
     await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }

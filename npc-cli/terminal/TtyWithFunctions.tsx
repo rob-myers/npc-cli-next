@@ -33,9 +33,9 @@ interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunctions'> {
 // 🚧 must separate if do not auto-source functions
 // we also provide functions directly
 const jsFunctions = {
-  ...gameWip,
-  ...game,
-  ...util,
+  gameWip,
+  game,
+  util,
 };
 
 export type TtyJsFunctions = typeof jsFunctions;

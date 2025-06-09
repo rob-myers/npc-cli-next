@@ -362,6 +362,7 @@ export function mapValues(input, transform) {
 }
 
 /**
+ * Parse args as a single JavaScript object.
  * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
  * - 'foo:42 bar' -> { "foo": 42, 1: "bar" }
  * - 🔔 assume keys do not contain double-quote character
@@ -371,7 +372,7 @@ export function mapValues(input, transform) {
  * @param {{ [key: string]: 'array' }} [opts]
  * @returns {T}
  */
-export function parseArgsAsJs(args, opts = {}) {
+export function jsArg(args, opts = {}) {
   return /** @type {T} */ (args.reduce((agg, arg, index) => {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {

@@ -122,7 +122,8 @@
   - ✅ sh/src/index.js -> sh/src/profiles.js
   - ✅ shorter names for src/sh/*.{js,sh}
     - js generators -> sh with extension `jsh` (avoid collision)
-  - 🚧 separate jsFunctions by key
+  - ✅ separate jsFunctions by filename key (e.g. `game`, `gameWip`)
+  - 🚧 mechanism for communication between `source` and hmr-sourcing
 
 - ✅ BUG: Tabs: fix maximize
 

@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, parseArgsAsJs } from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
@@ -266,7 +266,7 @@ class cmdServiceClass {
         break;
       }
       case "jsarg": {
-        yield parseArgsAsJs(args);
+        yield jsArg(args);
         break;
       }
       case "kill": {
@@ -877,7 +877,7 @@ class cmdServiceClass {
 
     observableToAsyncIterable,
 
-    parseArgsAsJs,
+    jsArg,
 
     /** js parse with string fallback */
     parseJsArg,
