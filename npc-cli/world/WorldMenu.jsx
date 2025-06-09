@@ -109,7 +109,7 @@ export default function WorldMenu(props) {
     },
     onResizeLoggerHeight(e) {
       state.loggerHeight = Number(e.currentTarget.value); // e.g. 2, ..., 10
-      state.logger.container.style.height = `${state.loggerHeight * loggerHeightDelta}px`;
+      // state.logger.container.style.height = `${state.loggerHeight * loggerHeightDelta}px`;
       tryLocalStorageSet(`logger:height@${w.key}`, `${state.loggerHeight}`);
       state.draggable.updatePos();
     },
@@ -117,7 +117,7 @@ export default function WorldMenu(props) {
       if (e !== undefined) {
         state.loggerWidth = Number(e.currentTarget.value);
       }
-      state.logger.container.style.width = `${state.loggerWidth * state.loggerWidthDelta}px`;
+      // state.logger.container.style.width = `${state.loggerWidth * state.loggerWidthDelta}px`;
       tryLocalStorageSet(`logger:width@${w.key}`, `${state.loggerWidth}`);
       state.draggable.updatePos();
     },
@@ -184,6 +184,8 @@ export default function WorldMenu(props) {
         dragClassName={state.dragClassName}
         initPos={{ x: 0, y: 0 }}
         localStorageKey={`logger:drag-pos@${w.key}`}
+        defaultWidth={400}
+        defaultHeight={100}
       >
         <PopUp
           label="⋯"
@@ -308,10 +310,8 @@ const loggerAndPopUpCss = css`
   z-index: ${zIndexWorld.logger};
   
   > div:nth-of-type(2) {
-    /* height: ${defaultLoggerHeightPx}px; */
-    /* width: ${defaultLoggerWidthPx}px; */
-    width: 0px;
-    max-width: 100%;
+    /* width: 0px;
+    max-width: 100%; */
     padding: 8px 0 0 12px;
   }
   

@@ -42,7 +42,6 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       e.stopPropagation();
 
       if (e.target.matches('[data-draggable-corner]')) {
-        console.log('🚧 mousedown corner');
         state.resizing = true;
       } else {
         state.dragging = true;
@@ -67,7 +66,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
           state.down.translateX + (e.clientX - state.down.clientX),
           state.down.translateY + (e.clientY - state.down.clientY),
         );
-      } else {// 🚧 resizing
+      } else {
         state.updateSize(
           e.clientX - state.down.clientX,
           e.clientY - state.down.clientY,
@@ -76,7 +75,9 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
     },
     onTouchStart(e) {
       e.stopPropagation();
-      if (!state.canDrag(e)) {
+
+      const resizing = e.target.matches('[data-draggable-corner]');
+      if (!state.canDrag(e) && !resizing) {
         return;
       }
 
@@ -86,8 +87,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
         return null; // not the right touch
       }
 
-      if (e.target.matches('[data-draggable-corner]')) {
-        console.log('🚧 touchstart corner');
+      if (resizing) {
         state.resizing = true;
       } else {
         state.dragging = true;
@@ -114,7 +114,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
           state.down.translateX + (touchObj.clientX - state.down.clientX),
           state.down.translateY + (touchObj.clientY - state.down.clientY),
         );
-      } else {// 🚧 resizing
+      } else {
         state.updateSize(
           touchObj.clientX - state.down.clientX,
           touchObj.clientY - state.down.clientY,
@@ -134,7 +134,6 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       state.down.translateY = y - container.y;
       state.down.width = width;
       state.down.height = height;
-      console.log(state.down);
     },
     updatePos(x = state.pos.x, y = state.pos.y) {
       if (props.disabled === true) return; // ensure within bounds:
@@ -144,9 +143,8 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       state.persist();
     },
     updateSize(x, y) {
-      console.log({ x, y })
-      state.el.style.width = `${state.down.width + x}px`;
-
+      state.el.style.width = `${Math.max(80, state.down.width + x)}px`;
+      state.el.style.height = `${Math.max(80, state.down.height + y)}px`;
     },
   }), { deps: [props.container, props.disabled, props.dragClassName, props.localStorageKey] });
 
@@ -195,6 +193,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       style={{
         transform: props.disabled ? undefined : `translate(${state.pos.x}px, ${state.pos.y}px)`,
         width: props.defaultWidth,
+        height: props.defaultHeight,
       }}
     >
       {props.children}

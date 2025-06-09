@@ -99,8 +99,8 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
     xterm.open(state.container);
     state.fitAddon.fit();
     
-    state.container.style.width = `${props.initDim[0]}px`;
-    state.container.style.height = `${props.initDim[1]}px`;
+    // state.container.style.width = `${props.initDim[0]}px`;
+    // state.container.style.height = `${props.initDim[1]}px`;
 
     return () => {
       state.contents = state.serializeAddon.serialize();
@@ -184,6 +184,7 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
 const loggerCss = css`
   overflow: auto;
   width: 100%;
+  height: 100%;
   pointer-events: all;
   
   background: rgba(0, 0, 0, 0.6);
