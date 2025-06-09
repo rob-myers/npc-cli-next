@@ -212,10 +212,10 @@ export default function Manage(props) {
                   world-
                   <input
                     data-world-key-suffix
-                    type="number"
-                    placeholder="{n}"
-                    step={1}
-                    min={0}
+                    type="text"
+                    placeholder="0"
+                    pattern="[0-9]{1}"
+                    size={2}
                     defaultValue={0}
                   />
                 </span>
@@ -379,40 +379,44 @@ const manageCss = css`
     gap: 8px;
     max-width: 200px;
     align-items: stretch;
-    filter: sepia();
 
+    /* background-color: #222; */
+    
     .sync-world-key {
       display: flex;
       align-items: center;
       font-size: small;
       cursor: pointer;
-
+      
       /* &:hover, &:active {
         font-style: italic;
-      } */
-    }
-    
+        } */
+      }
+      
     .world-key {
       display: flex;
       align-items: center;
       font-size: small;
-
+      
       input {
-        width: 32px;
+        width: 20px;
       }
     }
   }
   select, input {
-    background-color: inherit;
     width: 100%;
     height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: inherit;
+    filter: sepia();
     color: inherit;
     font-size: small;
     padding: 0 2px;
-    /* background-color: inherit; */
+    text-align: center;
   }
   select::placeholder, input::placeholder {
-    color: #c99;
+    color: #555;
   }
 
   button {
