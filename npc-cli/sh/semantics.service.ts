@@ -578,11 +578,20 @@ class semanticsServiceClass {
             // In case `foo=$( bar )` we forward non-string values
             yield expand(values);
           } else {
-            yield expand(values
-              .map((x: any) => (typeof x === "string" ? x : jsStringify(x)))
-              .join("\n")
-              .replace(/\n*$/, "") // remove trailing newlines
-            );
+            if (values.length > 1) {
+              // expand jsStringified array when more than one value
+              yield expand(jsStringify(values));
+            } else if (typeof values[0] === 'string') {
+              // remove trailing newlines
+              yield expand(values[0].replace(/\n*$/, ""));
+            } else {
+              yield expand(jsStringify(values[0]));
+            }
+            // yield expand(values
+            //   .map((x: any) => (typeof x === "string" ? x : jsStringify(x)))
+            //   .join("\n")
+            //   .replace(/\n*$/, "") 
+            // );
           }
         } finally {
           useSession.api.removeDevice(device.key);

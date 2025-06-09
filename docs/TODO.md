@@ -127,12 +127,13 @@
 
 - ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
   - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes
-  - 🔔 instead, MUST input `tour npcKey:rob to:"$( click 2 )"`
   - these non-quoted versions work:
     - `tour npcKey:rob to:$( click 2 | sponge )`
     - `points=$( click 2 ); tour npcKey:rob to:$( points )`
 
-- maybe needs another attempt i.e. `tour npcKey:rob to:$( click 2 )` should work
+- ✅ can `tour npcKey:rob to:$( click 2 )`
+  - ✅ command substitution outputs (jsStringified) js array if multiple values
+  - 🔔 `fnFoo $( click 2 )` won't have $1 and $2 but only $1 i.e. `[...]`
 
 - if pause while interactive process still running, show CONT UI
 
