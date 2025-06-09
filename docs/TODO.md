@@ -122,6 +122,8 @@
   - sh/src/index.js -> sh/src/profiles.js
   - separate jsFunctions by key
 
+- ✅ BUG: Tabs: fix maximize
+
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller
   - related to w.view.controls.update(true);

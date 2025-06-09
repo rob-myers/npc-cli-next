@@ -48,18 +48,18 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
           // We're maximising: 🔔 disable hidden non-terminal tabs
           const maxIds = (state.model.getNodeById(act.data.node) as TabSetNode)
             .getChildren()
-            .map((x) => x.getId());
+            .map((x) => x.getId())
+          ;
+
           state.model.visitNodes((node) => {
             const id = node.getId();
             const tabState = state.tabsState[id];
             if (
-              node.getType() !== "tab"
-              || maxIds.includes(id)
-              || tabState?.type === "terminal"
+              tabState !== undefined
+              && !maxIds.includes(id)
+              && tabState.type === "component"
+              && tabState.disabled === false
             ) {
-              return;
-            }
-            if (tabState.disabled === false) {
               tabState.justCovered = true;
               tabState.disabled = true;
               props.onToggleTab?.(tabState);
