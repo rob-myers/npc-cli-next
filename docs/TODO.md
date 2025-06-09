@@ -120,7 +120,9 @@
   - ℹ️ instead, profiles will start with e.g. `source /etc/game-generators.sh`
   - ✅ RunArg -> NPC.RunArg
   - ✅ sh/src/index.js -> sh/src/profiles.js
-  - separate jsFunctions by key
+  - ✅ shorter names for src/sh/*.{js,sh}
+    - js generators -> sh with extension `jsh` (avoid collision)
+  - 🚧 separate jsFunctions by key
 
 - ✅ BUG: Tabs: fix maximize
 

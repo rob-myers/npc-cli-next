@@ -2,12 +2,12 @@ import React from "react";
 
 import { profile } from '../sh/src/profiles';
 
-import utilFunctionsSh from "../sh/src/util-functions.sh";
-import gameFunctionsSh from "../sh/src/game-functions.sh";
+import utilSh from "../sh/src/util.sh";
+import gameSh from "../sh/src/game.sh";
 
-import * as utilGeneratorsJs from '../sh/src/util-generators';
-import * as gameGeneratorsJs from '../sh/src/game-generators';
-import * as gameGeneratorsWipJs from '../sh/src/game-generators-wip';
+import * as util from '../sh/src/util';
+import * as game from '../sh/src/game';
+import * as gameWip from '../sh/src/game-wip';
 
 import Tty, { type Props as TtyProps } from "./Tty";
 
@@ -33,9 +33,9 @@ interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunctions'> {
 // 🚧 must separate if do not auto-source functions
 // we also provide functions directly
 const jsFunctions = {
-  ...gameGeneratorsWipJs,
-  ...gameGeneratorsJs,
-  ...utilGeneratorsJs,
+  ...gameWip,
+  ...game,
+  ...util,
 };
 
 export type TtyJsFunctions = typeof jsFunctions;
@@ -47,8 +47,8 @@ const shellFunctionFiles = {
   ...Object.entries({
     
     // these files contain shell functions
-    utilFunctionsSh,
-    gameFunctionsSh,
+    utilSh,
+    gameSh,
 
   }).reduce((agg, [key, rawModule]) => ({ ...agg,
     [`${key.slice(0, -'Sh'.length)}.sh`]: rawModule,
@@ -57,12 +57,12 @@ const shellFunctionFiles = {
   ...Object.entries({
     
     // these files contain JS (async) generators and functions
-    utilGeneratorsJs,
-    gameGeneratorsJs,
-    gameGeneratorsWipJs,
+    util,
+    game,
+    gameWip,
 
   }).reduce((agg, [key, module]) => ({ ...agg,
-    [`${key.slice(0, -'Js'.length)}.sh`]: Object.entries(module).map(
+    [`${key}.jsh`]: Object.entries(module).map(
       ([key, fn]) => jsFunctionToShellFunction(key, fn)
     ).join('\n\n'),
   }), {} as Record<string, string>),
@@ -71,7 +71,7 @@ const shellFunctionFiles = {
 
 /**
  * 🔔 SWC is minifying the inner JavaScript functions in production,
- * and we don't seem to be able to exclude e.g. game-generators.js
+ * and we don't seem to be able to exclude e.g. game.jsh
  */
 function jsFunctionToShellFunction(
   functionName: string,
