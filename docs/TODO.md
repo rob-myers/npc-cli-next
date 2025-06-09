@@ -137,6 +137,17 @@
 
 - if pause while interactive process still running, show CONT UI
 
+- 🚧 issue with basic while loop containing `tour` i.e. move can continually throw
+  - provide basic solutions
+  - 🚧 for stop-reason "stuck" can change agent separation weight (currently hard-coded idle/move)
+  - ✅ for stop-reason "locked-door" can provide access e.g. `w e.grantAccess g0d1 rob`
+```sh
+points=$( click 2 )
+while true; do
+  tour npcKey:rob to:$( points )
+done
+```
+
 - for debugging, it would be better if we directly yielded e.g. `jsFunc.gameWip.tour`
   - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
   - ℹ️ do this instead: `run ({ ... }) { yield* jsFunc.foo(...);  }`
