@@ -1,6 +1,6 @@
 import React from "react";
 
-import { profile, type ProfileKey, type RunArg } from '../sh/src';
+import { profile, type ProfileKey } from '../sh/src';
 
 import utilFunctionsSh from "../sh/src/util-functions.sh";
 import gameFunctionsSh from "../sh/src/game-functions.sh";
@@ -30,7 +30,7 @@ interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunctions'> {
   profileKey: ProfileKey;
 }
 
-// 🚧 by key?
+// 🚧 must separate if do not auto-source functions
 // we also provide functions directly
 const jsFunctions = {
   ...gameGeneratorsWipJs,
@@ -76,8 +76,8 @@ const shellFunctionFiles = {
 function jsFunctionToShellFunction(
   functionName: string,
   fn: (
-    | ((arg: RunArg) => any)
-    | ((input: any, arg: RunArg) => any)
+    | ((arg: NPC.RunArg) => any)
+    | ((input: any, arg: NPC.RunArg) => any)
   ),
 ) {
   return `${functionName}() ${
@@ -86,24 +86,24 @@ function jsFunctionToShellFunction(
       // : fn.constructor.name === 'Function' && fn.toString().startsWith('(')
       : fn.constructor.name === 'Function' && !fn.toString().startsWith('function')
         // const foo = (..args) => bar
-        ? wrapWithCall(fn as ((arg: RunArg) => any))
+        ? wrapWithCall(fn as ((arg: NPC.RunArg) => any))
         // assume 'AsyncFunction' or 'Function'
-        : wrapWithMap(fn as ((input: any, arg: RunArg) => any))
+        : wrapWithMap(fn as ((input: any, arg: NPC.RunArg) => any))
   }`;
 }
 
-function wrapWithRun(fn: (arg: RunArg) => any) {
+function wrapWithRun(fn: (arg: NPC.RunArg) => any) {
   // 🔔 support single-quotes via (a) escaping, (b) bash-syntax $'...'
   const fnText = `${fn}`.replace(/'/g, "\\'");
   return `{\n  run $'${fnText.slice(fnText.indexOf('('))}\n' "$@"\n}`;
 }
 
-function wrapWithCall(fn: (arg: RunArg) => any) {
+function wrapWithCall(fn: (arg: NPC.RunArg) => any) {
   const fnText = `${fn}`.replace(/'/g, "\\'");
   return `{\n  call $'${fnText}' "$@"\n}`;
 }
 
-function wrapWithMap(fn: (input: any, arg: RunArg) => any) {
+function wrapWithMap(fn: (input: any, arg: NPC.RunArg) => any) {
   const fnText = `${fn}`.replace(/'/g, "\\'");
   return `{\n  map $'${fnText}' "$@"\n}`;
 }

@@ -934,9 +934,9 @@ class cmdServiceClass {
     const cacheShortcuts = session.var.CACHE_SHORTCUTS ?? {};
     return new Proxy(
       {
-        home: session.var,
+        home: session.var, // see RunArg['home']
         etc: session.etc,
-        lib: session.jsFunc,
+        lib: session.jsFunc, // see RunArg['lib']
         // cache: queryCache,
         // dev: useSession.getState().device,
       },
@@ -1108,6 +1108,9 @@ export async function sleep(meta: Sh.BaseMeta, seconds: number) {
 interface ChoiceReadValue {
   text: string;
 }
+
+export type ProcessContext = ReturnType<CmdService['provideProcessCtxt']>;
+export type ProcessApi = CmdService['processApi'];
 
 export const cmdService = new cmdServiceClass();
 

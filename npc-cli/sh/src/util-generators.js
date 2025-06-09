@@ -5,7 +5,7 @@
  * call "({ home }) => home.foo"
  * call '({ args }) => `Hello, ${args[0]}`' Rob
  * ```
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* call(ctxt) {
   const func = Function(`return ${ctxt.args[0]}`)();
@@ -20,7 +20,7 @@ export async function* call(ctxt) {
  * expr window.navigator.vendor
  * expr '((x) => [x, x, x])("a lady")'
  * ```
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  */
 export function* expr({ api, args }) {
   const input = args.join(" ");
@@ -33,7 +33,7 @@ export function* expr({ api, args }) {
  * seq 10 | filter 'x => !(x % 2)'
  * expr window | keysAll | split | filter /^n/
  * ```
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* filter(ctxt) {
   let { api, args, datum } = ctxt;
@@ -53,7 +53,7 @@ export async function* filter(ctxt) {
  * { range 10; range 20; } | flatMap 'x => x'
  * ```
  * - ℹ️ supports chunks
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* flatMap(ctxt) {
   let { api, args, datum } = ctxt;
@@ -74,7 +74,7 @@ export async function* flatMap(ctxt) {
  * ```
  * - ℹ️ `map console.log` would log 2nd arg too
  * - ℹ️ logs chunks larger than 1000, so e.g. `seq 1000000 | log` works
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  * @returns 
  */
 export async function* log({ api, args, datum }) {
@@ -97,7 +97,7 @@ export async function* log({ api, args, datum }) {
  * expr window | map navigator.connection | log
  * ```
  * - ℹ️ To use `await`, the provided function must begin with `async`.
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* map(ctxt) {
   let { api, args, datum } = ctxt;
@@ -161,7 +161,7 @@ export async function* map(ctxt) {
  * ```
  * - ℹ️ We do not support chunks.
  * - ℹ️ To use `await`, the one-arg-function must begin with `async`.
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* mapBasic(ctxt) {
   let { api, args, datum } = ctxt;
@@ -183,7 +183,7 @@ export async function* mapBasic(ctxt) {
 }
 
 /**
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  */
 export async function* poll({ api, args }) {
   yield* api.poll(args);
@@ -191,7 +191,7 @@ export async function* poll({ api, args }) {
 
 /**
  * Reduce all items from stdin
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  */
 export async function* reduce({ api, args, datum }) {
   const inputs = []; // eslint-disable-next-line no-new-func
@@ -211,7 +211,7 @@ export async function* reduce({ api, args, datum }) {
  * Split strings by optional separator (default `''`), e.g.
  * - `split ,` splits by comma
  * - `split '/\n/'` splits by newlines
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  */
 export async function* split({ api, args, datum }) {
   let arg = api.parseJsArg( args[0] || "");
@@ -230,7 +230,7 @@ export async function* split({ api, args, datum }) {
 
 /**
  * Collect stdin into a single array
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  */
 export async function* sponge({ api, datum }) {
   const outputs = [];
@@ -247,7 +247,7 @@ export async function* sponge({ api, datum }) {
 /**
  * Usage
  * - `poll 1 | while x=$( take 1 ); do echo ${x} ${x}; done`
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  */
 export async function* take({ api, args, datum }) {
   try {
@@ -264,11 +264,3 @@ export async function* take({ api, args, datum }) {
     throw e ?? api.getKillError();
   }
 }
-
-/**
- * @typedef RunArg
- * @property {import('../cmd.service').CmdService['processApi']} api
- * @property {string[]} args
- * @property {{ [key: string]: any }} home
- * @property {*} [datum] A shortcut for declaring a variable
- */

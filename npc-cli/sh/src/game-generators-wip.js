@@ -1,5 +1,5 @@
 /**
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export const changeAngleOnKeyDown = ({ w }) => {
   w.view.keyDowns.changeAngle = async (e) => {
@@ -33,7 +33,7 @@ export const changeAngleOnKeyDown = ({ w }) => {
  * ```sh
  * events | handleContextMenu
  * ```
- * @param {import('./').RunArg<NPC.Event>} ctxt
+ * @param {NPC.RunArg<NPC.Event>} ctxt
  */
 export async function* handleContextMenu({ api, w, datum: e }) {
   while ((e = await api.read()) !== api.eof) {
@@ -91,7 +91,7 @@ export async function* handleContextMenu({ api, w, datum: e }) {
 
 /**
  * e.g. events | handleLoggerLinks
- * @param {import('./').RunArg<NPC.Event>} ctxt
+ * @param {NPC.RunArg<NPC.Event>} ctxt
  */
 export async function* handleLoggerLinks({ api, datum: e, w }) {
   while ((e = await api.read()) !== api.eof) {
@@ -114,7 +114,7 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
  * ```sh
  * initCamAndLights rob # initially look at rob
  * ```
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* initCamAndLights({ api, args, w }) {
 
@@ -151,7 +151,7 @@ export async function* initCamAndLights({ api, args, w }) {
  * ```sh
  * move npcKey:rob to:$( click 1 ) arriveAnim:none
  * ```
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
  */
 export async function* move({ api, args, w }, opts = api.parseArgsAsJs(args)) {
@@ -187,7 +187,7 @@ export async function* move({ api, args, w }, opts = api.parseArgsAsJs(args)) {
  * ```sh
  * selectPolysDemo
  * ```
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* selectPolysDemo({ w }) {
   const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
@@ -204,7 +204,7 @@ export async function* selectPolysDemo({ w }) {
 
 /**
 * 🔔 "export const" uses `call` rather than `map`
-* @param {import('./').RunArg} ctxt
+* @param {NPC.RunArg} ctxt
 */
 export const setupContextMenu = ({ w }) => {
 
@@ -250,7 +250,7 @@ w.cm.toggleDocked(true);
 }
 
 // /**
-//  * @param {import('./').RunArg} ctxt
+//  * @param {NPC.RunArg} ctxt
 //  */
 // export const setupOnStuckNpc = ({ w, args }) => {
 //   w.npc.onStuckCustom = (npc, agent) => {
@@ -260,7 +260,7 @@ w.cm.toggleDocked(true);
 // }
 
 /**
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export const setupOnTickIdleTurn = ({ w, args }) => {
   w.npc.onTickIdleTurn = (npc, agent) => {
@@ -300,7 +300,7 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
  * spawn npcKey:rob at:$( click 1 ) grant:.
  * ```
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
  */
 export async function* spawn({ api, args, w }, opts = api.parseArgsAsJs(args)) {
@@ -316,7 +316,7 @@ export async function* spawn({ api, args, w }, opts = api.parseArgsAsJs(args)) {
  * tour npcKey:rob to:"$( click 5 | sponge )"
  * tour npcKey:rob to:"$( points )"
  * ```
- * @param {import('./').RunArg} ct
+ * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {

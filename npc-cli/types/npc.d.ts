@@ -438,5 +438,23 @@ declare namespace NPC {
     | { key: 'stopped'; }
     | { key: 'stuck'; }
   );
+
+  //#region sh js
   
+  type WorldState = import('../world/World').State;
+  type ProcessApi = import('../sh/cmd.service').ProcessApi;
+  type ProcessContext = import('../sh/cmd.service').ProcessContext;
+
+  interface RunArg<Datum = any> {
+    api: ProcessApi & { getCached(key: '__WORLD_KEY_VALUE__'): WorldState; };
+    args: string[];
+    w: WorldState;
+
+    home: ProcessContext['home'];
+    lib: ProcessContext['lib'];
+
+    datum: Datum;
+  }
+
+  //#endregion
 }

@@ -27,7 +27,7 @@
   - ✅ need `<Code>`
     - ✅ can copy line-by-line
     - ✅ can copy all
-    - ❌ can send directly into tty?
+  - 🚧 mobile tty has textarea disabled option
   - 🚧 which PROFILE do we want to use?
     - probably just `awaitWorld`
   - step through spawning and removing an npc
@@ -114,6 +114,13 @@
 
 - 🚧 Draggable: towards resizable via corner
   - then can remove controls from PopUp
+
+- 🚧 selectively `source /etc/foo` with HMR tracking
+  - ℹ️ currently every js-induced-file is auto-sourced and tracked
+  - ℹ️ instead, profiles will start with e.g. `source /etc/game-generators.sh`
+  - ✅ RunArg -> NPC.RunArg
+  - sh/src/index.js -> sh/src/profiles.js
+  - separate jsFunctions by key
 
 - wasd camera controls does not work with follow
   - ℹ️ need to start porting to our own camera controller

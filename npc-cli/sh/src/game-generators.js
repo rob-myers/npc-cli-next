@@ -1,5 +1,5 @@
 /**
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* awaitWorld({ api, home: { WORLD_KEY } }) {
   if (typeof WORLD_KEY !== 'string') {
@@ -23,7 +23,7 @@ export async function* awaitWorld({ api, home: { WORLD_KEY } }) {
  * click 5 meta.nav
  * click meta.nav
  * ```
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* click({ api, args, w }) {
   const { opts, operands } = api.getOpts(args, {
@@ -113,7 +113,7 @@ export async function* click({ api, args, w }) {
  * events | filter /pointerup/
  * events /pointerup/
  * ```
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* events({ api, args, w }) {
   const filter = args[0] ? api.generateSelector(
@@ -149,7 +149,7 @@ export async function* events({ api, args, w }) {
  * ℹ️ can always `ctrl-c`, even without cleaning up ongoing computations
  * ℹ️ --stdin option assumes stdin arg is represented via `_` (hyphen breaks getopts)
  * 
- * @param {import('./').RunArg} ctxt
+ * @param {NPC.RunArg} ctxt
  */
 export async function* w(ctxt) {
   const { api, args, w } = ctxt;
