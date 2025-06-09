@@ -1,13 +1,16 @@
 import React from "react";
 import debounce from "debounce";
 import { css } from "@emotion/react";
+import cx from "classnames";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { getTouch, getTouchIdentifier } from "../service/dom";
 import useStateRef from "../hooks/use-state-ref";
 
 /**
- * @type {React.ForwardRefExoticComponent<React.PropsWithChildren<BaseProps> & React.RefAttributes<State>>}
+ * @type {React.ForwardRefExoticComponent<
+ *   React.PropsWithChildren<BaseProps> & React.RefAttributes<State>
+ * >}
  */
 export const Draggable = React.forwardRef(function Draggable(props, ref) {
 
@@ -15,7 +18,14 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
     dragging: false,
     el: /** @type {*} */ (null),
     pos: tryLocalStorageGetParsed(props.localStorageKey ?? '') ?? {...props.initPos ?? { x: 0, y: 0 }},
-    rel: { x: 0, y: 0 },
+    down: {
+      clientX: 0,
+      clientY: 0,
+      translateX: 0,
+      translateY: 0,
+      width: 0,
+      height: 0,
+    },
     resizing: false,
     touchId: /** @type {undefined | number} */ (undefined),
 
@@ -53,9 +63,15 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
 
       // Subtract rel to keep the cursor "in same position"
       if (state.dragging === true) {
-        state.updatePos(e.clientX - state.rel.x, e.clientY - state.rel.y);
-      } else {
-        // 🚧 resizing
+        state.updatePos(
+          state.down.translateX + (e.clientX - state.down.clientX),
+          state.down.translateY + (e.clientY - state.down.clientY),
+        );
+      } else {// 🚧 resizing
+        state.updateSize(
+          e.clientX - state.down.clientX,
+          e.clientY - state.down.clientY,
+        );
       }
     },
     onTouchStart(e) {
@@ -94,9 +110,15 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       
       // Subtract rel to keep the cursor "in same position"
       if (state.dragging === true) {
-        state.updatePos(touchObj.clientX - state.rel.x, touchObj.clientY - state.rel.y);
-      } else {
-        // 🚧 resizing
+        state.updatePos(
+          state.down.translateX + (touchObj.clientX - state.down.clientX),
+          state.down.translateY + (touchObj.clientY - state.down.clientY),
+        );
+      } else {// 🚧 resizing
+        state.updateSize(
+          touchObj.clientX - state.down.clientX,
+          touchObj.clientY - state.down.clientY,
+        );
       }
     },
     persist: debounce(() => {
@@ -104,19 +126,27 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
         tryLocalStorageSet(props.localStorageKey, JSON.stringify(state.pos))
     }, 300),
     setRel(clientX, clientY) {
-      const { x, y } = state.el.getBoundingClientRect();
+      const { x, y, width, height } = state.el.getBoundingClientRect();
       const container = props.container.getBoundingClientRect();
-      state.rel.x = clientX - (x - container.x);
-      state.rel.y = clientY - (y - container.y);
+      state.down.clientX = clientX;
+      state.down.clientY = clientY;
+      state.down.translateX = x - container.x;
+      state.down.translateY = y - container.y;
+      state.down.width = width;
+      state.down.height = height;
+      console.log(state.down);
     },
     updatePos(x = state.pos.x, y = state.pos.y) {
-      if (props.disabled === true) return;
-      // ensure within bounds
-      const container = props.container ?? document.body;
-      state.pos.x = Math.max(0, Math.min(container.clientWidth - state.el.offsetWidth, x));
-      state.pos.y = Math.max(0, Math.min(container.clientHeight - state.el.offsetHeight, y));
+      if (props.disabled === true) return; // ensure within bounds:
+      state.pos.x = Math.max(0, Math.min(props.container.clientWidth - state.el.offsetWidth, x));
+      state.pos.y = Math.max(0, Math.min(props.container.clientHeight - state.el.offsetHeight, y));
       state.el.style.transform = `translate(${state.pos.x}px, ${state.pos.y}px)`;
       state.persist();
+    },
+    updateSize(x, y) {
+      console.log({ x, y })
+      state.el.style.width = `${state.down.width + x}px`;
+
     },
   }), { deps: [props.container, props.disabled, props.dragClassName, props.localStorageKey] });
 
@@ -154,7 +184,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
   return (
     <div
       ref={state.ref('el')}
-      className={props.className}
+      className={cx('draggable', props.className)}
       
       onMouseDown={state.onMouseDown}
       onMouseUp={state.onMouseUp}
@@ -162,7 +192,10 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       onTouchEnd={state.onTouchEnd}
       onTouchMove={state.onTouchMove}
 
-      {...!props.disabled && { style: { transform: `translate(${state.pos.x}px, ${state.pos.y}px)` }}}
+      style={{
+        transform: props.disabled ? undefined : `translate(${state.pos.x}px, ${state.pos.y}px)`,
+        width: props.defaultWidth,
+      }}
     >
       {props.children}
 
@@ -187,6 +220,8 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
  * Initial position, usually overridden via localStorage
  * @property {string} [localStorageKey]
  * Where to store the position in local storage
+ * @property {number} [defaultWidth]
+ * @property {number} [defaultHeight]
  */
 
 /**
@@ -194,7 +229,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
  *   dragging: boolean;
  *   el: HTMLDivElement;
  *   pos: Geom.VectJson;
- *   rel: { x: number; y: number };
+ *   down: { clientX: number; clientY: number; translateX: number; translateY: number; width: number; height: number; };
  *   resizing: boolean;
  *   touchId: undefined | number;
  *   canDrag(e: React.MouseEvent | React.TouchEvent): boolean;
@@ -207,6 +242,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
  *   persist(): void;
  *   setRel(clientX: number, clientY: number): void;
  *   updatePos(x?: number, y?: number): void;
+ *   updateSize(x: number, y: number): void;
  * }} State
  */
 

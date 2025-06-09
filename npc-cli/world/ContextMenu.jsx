@@ -232,6 +232,7 @@ export function ContextMenu() {
       <Draggable
         ref={state.ref('draggable')}
         container={w.view.rootEl}
+        defaultWidth={contextMenuWidthPx}
         disabled={state.docked === false}
         initPos={{ x: 0, y: 2000 }}
         localStorageKey={`contextmenu:dragPos@${w.key}`}
@@ -354,7 +355,7 @@ export const contextMenuCss = css`
   }
 
   .inner-root {
-    width: ${contextMenuWidthPx}px;
+    width: 100%;
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 0 8px 8px 8px;
     border: 1px solid #333;
