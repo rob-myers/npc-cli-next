@@ -33,6 +33,7 @@ export default function WorldMenu(props) {
     durationKeys: {},
     invertColor: false,
     logger: /** @type {*} */ (null),
+    // 🚧 set before unload
     loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? (defaultLoggerHeightPx) / loggerHeightDelta,
     loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? (defaultLoggerWidthPx) / defaultLoggerWidthDelta,
     loggerWidthDelta: defaultLoggerWidthDelta,
@@ -47,8 +48,6 @@ export default function WorldMenu(props) {
       state.onChangeXRay(toEvent(state.xRayOpacity));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
       state.onChangeInvertColor(toEvent(state.invertColor));
-      state.onResizeLoggerHeight(toEvent(state.loggerHeight));
-      state.onResizeLoggerWidth(toEvent(state.loggerWidth));
     },
     measure(msg) {
       if (state.showDebug === false) {
@@ -107,20 +106,6 @@ export default function WorldMenu(props) {
     onOverlayPointerUp() {
       props.setTabsEnabled(true);
     },
-    onResizeLoggerHeight(e) {
-      state.loggerHeight = Number(e.currentTarget.value); // e.g. 2, ..., 10
-      // state.logger.container.style.height = `${state.loggerHeight * loggerHeightDelta}px`;
-      tryLocalStorageSet(`logger:height@${w.key}`, `${state.loggerHeight}`);
-      state.draggable.updatePos();
-    },
-    onResizeLoggerWidth(e) {
-      if (e !== undefined) {
-        state.loggerWidth = Number(e.currentTarget.value);
-      }
-      // state.logger.container.style.width = `${state.loggerWidth * state.loggerWidthDelta}px`;
-      tryLocalStorageSet(`logger:width@${w.key}`, `${state.loggerWidth}`);
-      state.draggable.updatePos();
-    },
     say(npcKey, ...parts) {
       const line = parts.join(' ');
       state.logger.xterm.writeln(
@@ -149,15 +134,6 @@ export default function WorldMenu(props) {
 
   w.menu = state;
 
-  React.useLayoutEffect(() => {
-    const obs = new ResizeObserver(([_entry]) => {
-      state.loggerWidthDelta = Math.min(Math.floor(w.view.rootEl.clientWidth / 10), 1.8 * defaultLoggerWidthDelta);
-      state.logger?.container && state.onResizeLoggerWidth();
-    });
-    obs.observe(w.view.rootEl);
-    return () => obs.disconnect();
-  }, []);
-  
   React.useEffect(() => {
     w.crowd && state.applyControlsInitValues();
   }, [w.crowd]);
@@ -192,30 +168,6 @@ export default function WorldMenu(props) {
           css={popUpCss}
           width={350}
         >
-          <div className="ranges">
-            <label>
-              <input
-                type="range"
-                className="change-logger-width"
-                min={4}
-                max={10}
-                defaultValue={state.loggerWidth}
-                onChange={state.onResizeLoggerWidth}
-              />
-              <div>w</div>
-            </label>
-            <label>
-              <input
-                type="range"
-                className="change-logger-height"
-                min={2}
-                max={10}
-                defaultValue={state.loggerHeight}
-                onChange={state.onResizeLoggerHeight}
-              />
-              <div>h</div>
-            </label>
-          </div>
           <div className="ranges">
             <label>
               <input
@@ -346,9 +298,6 @@ const popUpCss = css`
     .${popUpButtonClassName} {
       padding: 0 8px 8px 8px;
     }
-    /* .${popUpBubbleClassName} {
-      transform: scale(.9);
-    } */
   }
 
   @media(max-width: 700px) {
@@ -537,8 +486,6 @@ const pausedControlsCss = css`
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
  * @property {() => void} onOverlayPointerUp
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerHeight
- * @property {(e?: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerWidth
  * @property {(npcKey: string, line: string) => void} say
  * @property {(shouldPrevent: boolean) => void} setPreventDraggable
  * @property {() => void} toggleXRay
