@@ -12,4 +12,3 @@ export const profile = {
 /**
  * @typedef {keyof typeof profile} ProfileKey
  */
-

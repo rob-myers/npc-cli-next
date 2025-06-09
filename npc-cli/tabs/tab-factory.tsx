@@ -2,7 +2,6 @@ import React from "react";
 import loadable from "@loadable/component";
 import type { IJsonRowNode, IJsonTabNode, TabNode } from "flexlayout-react";
 
-import type { ProfileKey } from "../sh/src";
 import type ActualTerminal from "../terminal/TtyWithFunctions";
 import type { State as TabsApi } from "./Tabs";
 import { TabMemo } from "./Tab";
@@ -38,7 +37,7 @@ export type TabDef = { weight?: number } & (
       type: "terminal";
       /** Session identifier (determines tab) */
       filepath: Extract<Key.TabId, `tty-${number}`>;
-      profileKey: ProfileKey;
+      profileKey: Key.Profile;
       env?: Record<string, any>;
     }
 );

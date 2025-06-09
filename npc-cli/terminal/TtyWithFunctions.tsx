@@ -1,6 +1,6 @@
 import React from "react";
 
-import { profile, type ProfileKey } from '../sh/src';
+import { profile } from '../sh/src/profiles';
 
 import utilFunctionsSh from "../sh/src/util-functions.sh";
 import gameFunctionsSh from "../sh/src/game-functions.sh";
@@ -27,7 +27,7 @@ export default function TtyWithFunctions(props: Props) {
 }
 
 interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunctions'> {
-  profileKey: ProfileKey;
+  profileKey: Key.Profile;
 }
 
 // 🚧 must separate if do not auto-source functions

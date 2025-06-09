@@ -119,7 +119,7 @@
   - ℹ️ currently every js-induced-file is auto-sourced and tracked
   - ℹ️ instead, profiles will start with e.g. `source /etc/game-generators.sh`
   - ✅ RunArg -> NPC.RunArg
-  - sh/src/index.js -> sh/src/profiles.js
+  - ✅ sh/src/index.js -> sh/src/profiles.js
   - separate jsFunctions by key
 
 - ✅ BUG: Tabs: fix maximize

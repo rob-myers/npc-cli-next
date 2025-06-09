@@ -3,7 +3,6 @@ import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service
 import { isTouchDevice, isIOS } from "../service/dom";
 import type { CustomIJsonTabNode, ManageTabDef, TabDef, TabsetLayout, WorldTabDef } from "./tab-factory";
 import { helper } from "../service/helper";
-import type { ProfileKey } from "../sh/src";
 
 /**
  * - If tabDef doesn't exist, append to 1st non-active tabset (or only active one).
@@ -73,7 +72,7 @@ export function computeTabDef(
     | { id: `debug-${number}`; classKey: 'Debug';  }
     | { id: `hello-world-${number}`; classKey: 'HelloWorld';  }
     | { id: `manage-${number}`; classKey: 'Manage';  }
-    | { id: `tty-${number}`; classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
+    | { id: `tty-${number}`; classKey: 'Tty'; profileKey?: Key.Profile; env?: Record<string, any> }
     | { id: `world-${number}`; classKey: 'World'; mapKey?: Key.Map }
   )
 ): TabDef {
