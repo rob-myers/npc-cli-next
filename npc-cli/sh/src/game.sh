@@ -13,8 +13,8 @@ gm() {
 }
 
 # spawn() {
-#   # jsarg "$@" | w npc.spawn - >/dev/null
-#   # echo "$( jsarg $@ )" # 👈 does not work?
-#   local jsArg=$( jsarg "$@" )
+#   # jsArg "$@" | w npc.spawn - >/dev/null
+#   # echo "$( jsArg $@ )" # 👈 does not work?
+#   local jsArg=$( jsArg "$@" )
 #   w npc.spawn "$jsArg" >/dev/null
 # }

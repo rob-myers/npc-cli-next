@@ -125,6 +125,22 @@
   - ✅ separate jsFunctions by filename key (e.g. `game`, `gameWip`)
   - 🚧 mechanism for communication between `source` and hmr-sourcing
 
+- ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
+  - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes
+  - 🔔 instead, MUST input `tour npcKey:rob to:"$( click 2 )"`
+  - these non-quoted versions work:
+    - `tour npcKey:rob to:$( click 2 | sponge )`
+    - `points=$( click 2 ); tour npcKey:rob to:$( points )`
+
+- maybe needs another attempt i.e. `tour npcKey:rob to:$( click 2 )` should work
+
+- if pause while interactive process still running, show CONT UI
+
+- for debugging, it would be better if we directly yielded e.g. `jsFunc.gameWip.tour`
+  - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
+  - ℹ️ do this instead: `run ({ ... }) { yield* jsFunc.foo(...);  }`
+  - ℹ️ currently, could write `debugger;`
+
 - ✅ BUG: Tabs: fix maximize
 
 - wasd camera controls does not work with follow

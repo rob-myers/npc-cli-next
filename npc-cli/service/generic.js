@@ -390,9 +390,9 @@ export function jsArg(args, opts = {}) {
 }
 
 /**
- * Parse input with string fallback
- * - preserves `undefined`
- * - preserves empty-string
+ * Parse input with string fallback (by default)
+ * - preserves `undefined` (by default)
+ * - preserves empty-string (by default)
  * @param {string} [input]
  */
 export function parseJsArg(input) {

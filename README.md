@@ -112,9 +112,9 @@ w view.controls | assign '{minDistance:1}'
 
 w n.rob.position | w floor.setTorchTarget -
 
-foo() { jsarg "${@}"; }
+foo() { jsArg "${@}"; }
 foo bar:[1,4,9] baz:baz qux:42
-foo() { echo $( jsarg "${@}" ); }
+foo() { echo $( jsArg "${@}" ); }
 foo bar:[1,4,9] baz:baz qux:42
 
 while { false; test ${?}; }; do echo foo; done

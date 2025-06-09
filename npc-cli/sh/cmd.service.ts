@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg } from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, safeJsonParse } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
@@ -36,7 +36,7 @@ const commandKeys = {
   /** Get each arg from __TODO__ */
   get: true,
   /** Convert (possibly named) args to a single JavaScript object */
-  jsarg: true,
+  jsArg: true,
   /** List commands */
   help: true,
   /** List previous commands */
@@ -265,8 +265,15 @@ class cmdServiceClass {
         for (const line of history) yield line;
         break;
       }
-      case "jsarg": {
-        yield jsArg(args);
+      case "jsArg": {
+        const { opts, operands } = getOpts(args, {
+          string: ["opts", /** e.g. { to: "array" } */ ],
+        });
+        if (opts.opts !== '') {
+          yield jsArg(operands, parseJsArg(opts.opts));
+        } else {
+          yield jsArg(operands);
+        }
         break;
       }
       case "kill": {
