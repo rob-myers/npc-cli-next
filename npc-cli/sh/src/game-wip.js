@@ -320,8 +320,10 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
+  const { move } = ct.lib.gameWip;
   for (const to of opts.to) {
-    yield* ct.lib.gameWip.move(ct, { npcKey: opts.npcKey, to });
+    // debugger;
+    yield* move(ct, { npcKey: opts.npcKey, to });
     await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
