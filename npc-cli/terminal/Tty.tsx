@@ -183,7 +183,7 @@ export default function Tty(props: Props) {
       xterm.textarea?.addEventListener("focus", state.onFocus);
       
       const cleanupExternalMsgs = session.ttyShell.io.handleWriters(msg =>
-        msg.key === 'external' && state.handleExternalMsg(msg),
+        msg?.key === 'external' && state.handleExternalMsg(msg),
       );
 
       return () => {
