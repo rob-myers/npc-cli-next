@@ -87,6 +87,10 @@ function jsFunctionToShellFunction(
     | ((input: any, arg: NPC.RunArg) => any)
   ),
 ) {
+  const generatorConstructorNames = [
+    'AsyncGeneratorFunction',
+    'GeneratorFunction',
+  ];
   return `${functionName}() ${
     generatorConstructorNames.includes(fn.constructor.name)
       ? wrapWithRun(fn as AsyncGeneratorFunction)
@@ -114,8 +118,3 @@ function wrapWithMap(fn: (input: any, arg: NPC.RunArg) => any) {
   const fnText = `${fn}`.replace(/'/g, "\\'");
   return `{\n  map $'${fnText}' "$@"\n}`;
 }
-
-const generatorConstructorNames = [
-  'AsyncGeneratorFunction',
-  'GeneratorFunction',
-];
