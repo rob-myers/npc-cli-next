@@ -138,7 +138,7 @@ const menuCss = css`
   background-color: rgba(0, 0, 0, 0.7);
   font-size: 8px;
   border: 1px solid #555;
-  border-width: 1px 1px 1px 1px;
+  border-width: 0 0 2px 2px;
   color: white;
 
   transition: transform 500ms;
@@ -170,6 +170,7 @@ const menuCss = css`
       background: rgba(0, 0, 0, 0.5);
       color: #ddd;
       border: 2px solid #444;
+      border-width: 0 0 2px 2px;
     }
   }
 
