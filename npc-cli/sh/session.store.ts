@@ -311,11 +311,11 @@ const useStore = create<State>()(
 
       getProcesses(sessionKey, pgid) {
         const session = get().session[sessionKey];
-        if (session) {
+        if (session !== undefined) {
           const processes = Object.values(session.process);
           return pgid === undefined ? processes : processes.filter((x) => x.pgid === pgid);
         } else {
-          console.warn(`getProcesses: session ${sessionKey} does not exist`);
+          warn(`getProcesses: session ${sessionKey} does not exist`);
           return [];
         }
       },

@@ -238,7 +238,11 @@ export class ttyShellClass implements Device {
       throw e;
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
-      !opts.leading && meta.pid && useSession.api.removeProcess(meta.pid, this.sessionKey);
+      if (opts.leading === true) {
+        this.io.write({ key: 'external', msg: { key: 'interactive-finished', exitCode: term.exitCode ?? 0 } })
+      } else if (meta.pid !== 0) {
+        useSession.api.removeProcess(meta.pid, this.sessionKey);
+      }
     }
   }
 

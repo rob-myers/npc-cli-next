@@ -33,6 +33,7 @@ export default function Tty(props: Props) {
      */
     booted: false,
     bounds,
+    continueInteractive: undefined as undefined | (() => void),
     fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
@@ -52,6 +53,12 @@ export default function Tty(props: Props) {
           }
           break;
         }
+        case 'interactive-finished':
+          if (state.continueInteractive !== undefined) {
+            state.continueInteractive = undefined;
+            update();
+          }
+          break;
         default:
           warn(`${'handleExternalMsg'}: unexpected message: ${jsStringify(msg)}`);
           break;
@@ -65,13 +72,30 @@ export default function Tty(props: Props) {
       }
     },
     pauseRunningProcesses() {
-      Object.values(state.base.session.process ?? {})
-        .filter((p) => p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true)
-        .forEach((p) => {
-          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
-          p.status = ProcessStatus.Suspended;
-          state.pausedPids[p.key] = true;
-        });
+      const { session } = state.base;
+      const interactivePaused = session.process[0]?.status === ProcessStatus.Running;
+      
+      const processes = Object.values(session.process ?? {}).filter(
+        p => p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true
+      );
+
+      for (const p of processes) {
+        p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
+        p.status = ProcessStatus.Suspended;
+        state.pausedPids[p.key] = true;
+      }
+
+      if (interactivePaused) {
+        state.continueInteractive = () => {
+          state.continueInteractive = undefined;
+          useSession.api.getProcesses(props.sessionKey, 0).forEach(p => {
+            p.status = ProcessStatus.Running;
+            p.onResumes = p.onResumes.filter(onResume => onResume());
+          });
+          update();
+        };
+        update();
+      }
     },
     reboot() {
       state.booted = false;
@@ -93,15 +117,22 @@ export default function Tty(props: Props) {
       }
     },
     resumeRunningProcesses() {
-      Object.values(state.base?.session?.process ?? {})
-        .filter((p) => state.pausedPids[p.key])
-        .forEach((p) => {
-          if (p.status === ProcessStatus.Suspended) {
-            p.onResumes = p.onResumes.filter((onResume) => onResume());
-            p.status = ProcessStatus.Running;
-          }
-          delete state.pausedPids[p.key];
-        });
+      const processes = Object.values(state.base?.session?.process ?? {}).filter(
+        p => state.pausedPids[p.key] === true
+      );
+
+      for (const p of processes) {
+        if (p.status === ProcessStatus.Suspended) {
+          p.status = ProcessStatus.Running;
+          p.onResumes = p.onResumes.filter(onResume => onResume());
+        }
+        delete state.pausedPids[p.key];
+      }
+
+      if (state.continueInteractive) {
+        state.continueInteractive = undefined;
+        update();
+      }
     },
     async storeAndSourceFuncs() {
       const session = state.base.session;
@@ -139,9 +170,7 @@ export default function Tty(props: Props) {
   React.useEffect(() => {// Pause/resume
     if (props.disabled && state.base.session) {
       state.pauseRunningProcesses();
-      return () => {
-        state.resumeRunningProcesses();
-      };
+      return () => state.resumeRunningProcesses();
     }
   }, [props.disabled, state.base.session])
 
@@ -209,6 +238,7 @@ export default function Tty(props: Props) {
       {state.base.session && (
         <TtyMenu
           session={state.base.session}
+          continueInteractive={state.continueInteractive}
           disabled={props.disabled}
           setTabsEnabled={props.setTabsEnabled}
         />

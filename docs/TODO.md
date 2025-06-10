@@ -142,9 +142,10 @@
   - ✅ command substitution outputs (jsStringified) js array if multiple values
   - 🔔 `fnFoo $( click 2 )` won't have $1 and $2 but only $1 i.e. `[...]`
 
-- manage: clean and clarify actions
+- 🚧 manage: clean and clarify actions
 
-- if pause while interactive process still running, show CONT UI
+- ✅ if pause while interactive process still running, show CONT UI
+  - ✅ also hide on Ctrl-C
 
 - 🚧 issue with basic while loop containing `tour` i.e. move can continually throw
   - provide basic solutions

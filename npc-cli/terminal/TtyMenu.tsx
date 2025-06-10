@@ -81,6 +81,14 @@ export default function TtyMenu(props: Props) {
         <div className="toggle" onClick={state.toggleTouchMenu}>
           {state.touchMenuOpen ? ">" : "<"}
         </div>
+        {props.continueInteractive !== undefined && (
+          <div
+            className="continue-interactive"
+            onClick={props.continueInteractive}
+          >
+            CONT
+          </div>
+        )}
       </div>
       
       <div className="touch-menu">
@@ -118,6 +126,7 @@ export default function TtyMenu(props: Props) {
 
 interface Props {
   session: Session;
+  continueInteractive?(): void;
   disabled?: boolean;
   setTabsEnabled(next: boolean): void;
 }
@@ -171,6 +180,23 @@ const menuCss = css`
       color: #ddd;
       border: 2px solid #444;
       border-width: 0 0 2px 2px;
+    }
+    
+    .continue-interactive {
+      width: 32px;
+      display: flex;
+      align-items: center;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      
+      cursor: pointer;
+      padding: 8px 0;
+      border: 2px solid #444;
+      border-width: 0 0 2px 2px;
+      color: rgba(0, 255, 0, 0.5);
+      font-weight: 600;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
     }
   }
 
