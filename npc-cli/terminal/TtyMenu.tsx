@@ -193,7 +193,7 @@ const menuCss = css`
       padding: 8px 0;
       border: 2px solid #444;
       border-width: 0 0 2px 2px;
-      color: rgba(0, 255, 0, 0.5);
+      color: rgba(0, 255, 0, 0.8);
       font-weight: 600;
       font-size: 0.6rem;
       letter-spacing: 2px;
