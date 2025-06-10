@@ -15,9 +15,6 @@ import useStateRef from "../hooks/use-state-ref";
 export const Draggable = React.forwardRef(function Draggable(props, ref) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    dragging: false,
-    el: /** @type {*} */ (null),
-    pos: tryLocalStorageGetParsed(props.localStorageKey ?? '') ?? {...props.initPos ?? { x: 0, y: 0 }},
     down: {
       clientX: 0,
       clientY: 0,
@@ -26,6 +23,9 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       width: 0,
       height: 0,
     },
+    dragging: false,
+    el: /** @type {*} */ (null),
+    pos: tryLocalStorageGetParsed(props.localStorageKey ?? '') ?? {...props.initPos ?? { x: 0, y: 0 }},
     resizing: false,
     touchId: /** @type {undefined | number} */ (undefined),
 
@@ -36,13 +36,12 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       );
     },
     onMouseDown(e) {
-      if (!state.canDrag(e)) {
-        return;
-      }
       e.stopPropagation();
 
       if (e.target.matches('[data-draggable-corner]')) {
         state.resizing = true;
+      } else if (!state.canDrag(e)) {
+        return;
       } else {
         state.dragging = true;
       }
@@ -76,19 +75,16 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
     onTouchStart(e) {
       e.stopPropagation();
 
-      const resizing = e.target.matches('[data-draggable-corner]');
-      if (!state.canDrag(e) && !resizing) {
-        return;
-      }
-
       state.touchId = getTouchIdentifier(e);
-      const touchObj = typeof state.touchId  === 'number' ? getTouch(e, state.touchId) : null;
-      if (!touchObj) {
-        return null; // not the right touch
+      const touchObj = typeof state.touchId  === 'number' && getTouch(e, state.touchId) || null;
+      if (touchObj === null) {
+        return; // not the right touch
       }
 
-      if (resizing) {
+      if (e.target.matches('[data-draggable-corner]')) {
         state.resizing = true;
+      } else if (!state.canDrag(e)) {
+        return;
       } else {
         state.dragging = true;
       }
@@ -235,7 +231,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
  *   onMouseDown(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }): void;
  *   onMouseUp(e: React.MouseEvent | MouseEvent): void;
  *   onMouseMove(e: React.MouseEvent | MouseEvent): void;
- *   onTouchStart(e: React.TouchEvent<HTMLDivElement> & { target: HTMLElement }): null | undefined;
+ *   onTouchStart(e: React.TouchEvent<HTMLDivElement> & { target: HTMLElement }): void;
  *   onTouchEnd(e: React.TouchEvent): void;
  *   onTouchMove(e: React.TouchEvent): void;
  *   persist(): void;
