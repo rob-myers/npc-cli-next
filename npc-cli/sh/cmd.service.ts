@@ -269,11 +269,7 @@ class cmdServiceClass {
         const { opts, operands } = getOpts(args, {
           string: ["opts", /** e.g. { to: "array" } */ ],
         });
-        if (opts.opts !== '') {
-          yield jsArg(operands, parseJsArg(opts.opts));
-        } else {
-          yield jsArg(operands);
-        }
+        yield jsArg(operands, opts.opts === '' ? undefined : parseJsArg(opts.opts));
         break;
       }
       case "kill": {
@@ -605,21 +601,24 @@ class cmdServiceClass {
         if (args[0] === undefined) {
           return;
         }
-        const script = this.get(node, [args[0]])[0];
+        
+        const [script] = this.get(node, args.slice(0, 1));
         if (script === undefined) {
-          useSession.api.writeMsg(meta.sessionKey, `source: "${args[0]}" not found`, "error");
-        } else if (typeof script !== "string") {
-          useSession.api.writeMsg(meta.sessionKey, `source: "${args[0]}" does not resolve as a string`, "error");
-        } else {
-          // We cache scripts
-          const parsed = parseService.parse(script, true);
-          // We mutate `meta` because it may occur many times deeply in tree
-          // Also, pid will be overwritten in `ttyShell.spawn`
-          Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
-          const { ttyShell } = useSession.api.getSession(meta.sessionKey);
-          // We spawn a new process (unlike bash `source`), but we don't localize PWD
-          await ttyShell.spawn(parsed, { leading: meta.pid === 0, posPositionals: args.slice(1) });
+          throw Error(`source: "${args[0]}" not found`);
         }
+        if (typeof script !== "string") {
+          throw Error(`source: "${args[0]}" is not a string`);
+        }
+
+        const parsed = parseService.parse(script, true); // we cache scripts
+
+        // Mutate `parsed.meta` because it may occur many times deeply in tree
+        // Note pid will be overwritten in `ttyShell.spawn`
+        Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
+
+        // We spawn a new process (unlike bash `source`), but we don't localize PWD
+        const { ttyShell } = useSession.api.getSession(meta.sessionKey);
+        await ttyShell.spawn(parsed, { leading: meta.pid === 0, posPositionals: args.slice(1) });
         break;
       }
       case "test": {
