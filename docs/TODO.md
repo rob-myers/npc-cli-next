@@ -113,7 +113,10 @@
   - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
 
 - 🚧 Draggable: towards resizable via corner
-  - then can remove controls from PopUp
+  - ✅ remove controls from PopUp
+  - ✅ can resize
+  - ✅ ContextMenu and Logger work
+  - 🚧 ContextMenu: only forward scroll even not scrollable
 
 - 🚧 selectively `source /etc/foo` with HMR tracking
   - ℹ️ currently every js-induced-file is auto-sourced and tracked
