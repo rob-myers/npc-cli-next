@@ -1,3 +1,7 @@
+source /etc/util.sh
+source /etc/util.jsh
+source /etc/game.jsh
+
 awaitWorld
 
 spawn npcKey:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'

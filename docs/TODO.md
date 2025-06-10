@@ -118,7 +118,7 @@
   - ✅ ContextMenu and Logger work
   - 🚧 ContextMenu: only forward scroll even not scrollable
 
-- 🚧 selectively `source /etc/foo` with HMR tracking
+- ✅ selectively `source /etc/foo` with HMR tracking
   - ℹ️ currently every js-induced-file is auto-sourced and tracked
   - ℹ️ instead, profiles will start with e.g. `source /etc/game-generators.sh`
   - ✅ RunArg -> NPC.RunArg
@@ -128,8 +128,8 @@
   - ✅ separate jsFunctions by filename key (e.g. `game`, `gameWip`)
   - ✅ mechanism for communication between `source` and hmr-sourcing
     - ✅ send test message from `source`
-  - 🚧 "external" message triggers auto-HMR
-    - 🚧 mutate lookup in `<Tty>` and adjust useEffect
+  - ✅ "external" message triggers auto-HMR
+    - ✅ mutate lookup in `<Tty>` and adjust useEffect
 
 - ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
   - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes

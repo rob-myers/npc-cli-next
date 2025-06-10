@@ -13,7 +13,7 @@ import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
 import useSession, { ProcessStatus } from '../sh/session.store';
 import TtyMenu from './TtyMenu';
-import { BaseTty, State as BaseTtyState } from './BaseTty';
+import { BaseTty, type State as BaseTtyState } from './BaseTty';
 
 /**
  * A `BaseTty` which can be:
@@ -38,16 +38,22 @@ export default function Tty(props: Props) {
     isTouchDevice: isTouchDevice(),
     pausedPids: {} as Record<number, true>,
     /** Should file be auto-re-sourced on hot-module-reload? */
-    reSourced: {} as Record<string, boolean>,
-    shFiles: {} as Props['shFiles'],
+    reSource: {} as Record<string, true>,
 
-    handleExternalMessages({ msg }: ExternalMessage) {
+    handleExternalMsg({ msg }: ExternalMessage) {
       switch (msg.key) {
-        case 'auto-re-source-file':
-          console.log('🚧 <Tty>', msg);
+        case 'auto-re-source-file': {
+          const basename = msg.absPath.slice('/etc/'.length);
+          if (basename in props.shFiles) {
+            delete state.reSource[basename];
+            state.reSource[basename] = true;
+          } else {
+            warn(`${'handleExternalMsg'}: basename not found: ${basename}`);
+          }
           break;
+        }
         default:
-          warn(`${'handleExternalMessages'}: unexpected message: ${jsStringify(msg)}`);
+          warn(`${'handleExternalMsg'}: unexpected message: ${jsStringify(msg)}`);
           break;
       }
     },
@@ -99,11 +105,14 @@ export default function Tty(props: Props) {
     },
     async storeAndSourceFuncs() {
       const session = state.base.session;
-      Object.assign(session.etc, state.shFiles);
 
-      // 🚧 only `source` files which have already been `source`d in this session
-      await Promise.all(keys(props.shFiles).map(filename =>
-        session.ttyShell.sourceEtcFile(filename).catch(e => {
+      Object.assign(session.etc, props.shFiles);
+
+      // 🚧 only auto-re-source files that already have been sourced
+      await Promise.all(keys(state.reSource).map(async filename => {
+        try {
+          await session.ttyShell.sourceEtcFile(filename);  
+        } catch (e: any) {
           if (typeof e?.$type === 'string') {// mvdan.cc/sh/v3/syntax.ParseError
             const fileContents = props.shFiles[filename];
             const [line, column] = [e.Pos.Line(), e.Pos.Col()];
@@ -112,8 +121,8 @@ export default function Tty(props: Props) {
           } else {
             state.writeErrorToTty(session.key, `/etc/${filename}: failed to run`, e)
           }
-        })
-      ));
+        }
+      }));
 
       // store original functions too
       session.jsFunc = props.jsFunc;
@@ -123,9 +132,9 @@ export default function Tty(props: Props) {
       error(message);
       error(origError);
     },
-  }));
-
-  state.shFiles = props.shFiles;
+  }), {
+    deps: [props.shFiles],
+  });
 
   React.useEffect(() => {// Pause/resume
     if (props.disabled && state.base.session) {
@@ -145,7 +154,7 @@ export default function Tty(props: Props) {
       xterm.textarea?.addEventListener("focus", state.onFocus);
       
       const cleanupExternalMsgs = session.ttyShell.io.handleWriters(msg =>
-        msg.key === 'external' && state.handleExternalMessages(msg),
+        msg.key === 'external' && state.handleExternalMsg(msg),
       );
 
       return () => {
