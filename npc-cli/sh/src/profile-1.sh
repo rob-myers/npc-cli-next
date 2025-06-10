@@ -1,6 +1,7 @@
 source /etc/util.jsh
 source /etc/util.sh
 source /etc/game.jsh
+source /etc/gameWip.jsh
 
 awaitWorld
 
