@@ -5,6 +5,7 @@ import cx from "classnames";
 import { stringify as javascriptStringify } from 'javascript-stringify';
 import debounce from "debounce";
 
+import { zIndexWorld } from "../service/const";
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { WorldContext } from "./world-context";
 import useUpdate from "../hooks/use-update";
@@ -12,7 +13,6 @@ import useStateRef from "../hooks/use-state-ref";
 import { PopUp, popUpContentClassName } from "../components/PopUp";
 import { Html3d, objectScale } from "../components/Html3d";
 import { Draggable } from "../components/Draggable";
-import { zIndexWorld } from "../service/const";
 
 export function ContextMenu() {
 
@@ -24,6 +24,7 @@ export function ContextMenu() {
     downAt: null,
     draggable: /** @type {*} */ (null),
     html3d: /** @type {*} */ (null),
+    innerRoot: /** @type {*} */ (null),
     offset: undefined,
     optsPopUp: /** @type {*} */ (null),
     position: new THREE.Vector3(),
@@ -139,8 +140,11 @@ export function ContextMenu() {
         state.refreshOptsPopUp();
       }
     },
-    onWheel(e) {// pass scroll through to canvas (zoom)
-      w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
+    onWheel(e) {
+      if (state.innerRoot.clientHeight === state.innerRoot.scrollHeight) {
+        // if no vertical scroll, pass scroll through to canvas (i.e. zoom)
+        w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
+      }
     },
     persist() {
       tryLocalStorageSet(`context-menu:pinned@${w.key}`, JSON.stringify(state.pinned));
@@ -238,6 +242,7 @@ export function ContextMenu() {
         localStorageKey={`contextmenu:dragPos@${w.key}`}
       >
         <div
+          ref={state.ref('innerRoot')}
           className="inner-root"
           onPointerUp={state.onPointerUp}
           onPointerDown={state.onPointerDown}
@@ -445,6 +450,7 @@ const optsPopUpCss = css`
  * @property {boolean} docked
  * @property {import('../components/Draggable').State} draggable
  * @property {import("../components/Html3d").State} html3d
+ * @property {HTMLElement} innerRoot
  * @property {null | Geom.VectJson} downAt
  * @property {{ k: string; v: string; length: number }[]} kvs
  * @property {NPC.ContextMenuLink[]} links

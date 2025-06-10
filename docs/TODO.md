@@ -105,18 +105,19 @@
   - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
   - ℹ️ `small-map-1` works, so could restrict in case of iOS
   - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
-  - 🚧 check ipad
+  - 🚧 check iPad
 
 - ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
   - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
     wrap around "nav-deformed" corner
   - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
 
-- 🚧 Draggable: towards resizable via corner
+- ✅ Draggable: towards resizable via corner
   - ✅ remove controls from PopUp
   - ✅ can resize
   - ✅ ContextMenu and Logger work
-  - 🚧 ContextMenu: only forward scroll even not scrollable
+  - ✅ ContextMenu: only forward scroll even not scrollable
+    - test `innerRoot.scrollHeight` vs `innerRoot.clientHeight` (we don't show horizontal scroll)
 
 - ✅ selectively `source /etc/foo` with HMR tracking
   - ℹ️ currently every js-induced-file is auto-sourced and tracked
@@ -140,6 +141,8 @@
 - ✅ can `tour npcKey:rob to:$( click 2 )`
   - ✅ command substitution outputs (jsStringified) js array if multiple values
   - 🔔 `fnFoo $( click 2 )` won't have $1 and $2 but only $1 i.e. `[...]`
+
+- manage: clean and clarify actions
 
 - if pause while interactive process still running, show CONT UI
 
