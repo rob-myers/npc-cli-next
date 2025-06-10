@@ -228,9 +228,11 @@ interface SendHistoryLine {
   nextIndex: number;
 }
 
-interface ExternalMessage {
+export interface ExternalMessage {
   key: "external";
-  contents: any; // 🚧
+  msg: (
+    | { key: 'auto-re-source-file'; absPath: `/etc/${string}`; }
+  );
 }
 
 /** `Proxy`s sent as messages should implement `msg[proxyKey] = true` */

@@ -117,7 +117,7 @@ export interface Session {
     /** `processApi[key]` is `processApi.getCached(var[CACHE_SHORTCUTS[key]])` */
     CACHE_SHORTCUTS?: { [key: string]: string };
   };
-  jsFunc: import('../terminal/TtyWithFunctions').TtyJsFunctions;
+  jsFunc: import('../terminal/TtyWithFunctions').TtyJsModules;
 
   nextPid: number;
   /** Last exit code: */

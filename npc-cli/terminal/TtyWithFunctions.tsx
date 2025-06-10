@@ -19,54 +19,62 @@ export default function TtyWithFunctions(props: Props) {
   return (
     <Tty
       {...props}
-      jsFunctions={jsFunctions}
+      jsFunc={keyedJsModules}
       shFiles={shellFunctionFiles}
       profile={profile[props.profileKey]}
     />
   );
 }
 
-interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunctions'> {
+interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunc'> {
   profileKey: Key.Profile;
 }
 
-// we also provide functions directly
-const jsFunctions = {
-  gameWip,
-  game,
-  util,
+/** Each value is a string i.e. shell code. */
+const keyedShFiles = {
+  utilSh,
+  gameSh,
 };
 
-export type TtyJsFunctions = typeof jsFunctions;
+/**
+ * These files contain JS (async) generators and functions.
+ * - They will be converted into shell functions.
+ * - We also store them directly in session.
+ */
+const keyedJsModules = {
+  util,
+  game,
+  gameWip,
+};
 
-const generatorConstructorNames = ['AsyncGeneratorFunction', 'GeneratorFunction'];
+export type TtyJsModules = typeof keyedJsModules;
+
+/**
+ * Keys of basenames of files in /etc.
+ */
+export type EtcBasename = FileKeyToEtcBasename<(
+  | keyof typeof keyedShFiles
+  | keyof typeof keyedJsModules
+)>
+type FileKeyToEtcBasename<S extends string> = S extends `${infer T}Sh`
+  ? `${T}.sh`
+  : `${S}.jsh`;
 
 const shellFunctionFiles = {
 
-  ...Object.entries({
-    
-    // these files contain shell functions
-    utilSh,
-    gameSh,
-
-  }).reduce((agg, [key, rawModule]) => ({ ...agg,
+  ...Object.entries(keyedShFiles).reduce((agg, [key, rawModule]) => ({ ...agg,
     [`${key.slice(0, -'Sh'.length)}.sh`]: rawModule,
-  }), {} as Record<string, string>),
+  }), {} as Record<EtcBasename, string>),
 
-  ...Object.entries({
-    
-    // these files contain JS (async) generators and functions
-    util,
-    game,
-    gameWip,
-
-  }).reduce((agg, [key, module]) => ({ ...agg,
+  ...Object.entries(keyedJsModules).reduce((agg, [key, module]) => ({ ...agg,
     [`${key}.jsh`]: Object.entries(module).map(
       ([key, fn]) => jsFunctionToShellFunction(key, fn)
     ).join('\n\n'),
-  }), {} as Record<string, string>),
+  }), {} as Record<EtcBasename, string>),
 
 };
+
+export type TtyEtcFiles = typeof shellFunctionFiles;
 
 /**
  * 🔔 SWC is minifying the inner JavaScript functions in production,
@@ -106,3 +114,8 @@ function wrapWithMap(fn: (input: any, arg: NPC.RunArg) => any) {
   const fnText = `${fn}`.replace(/'/g, "\\'");
   return `{\n  map $'${fnText}' "$@"\n}`;
 }
+
+const generatorConstructorNames = [
+  'AsyncGeneratorFunction',
+  'GeneratorFunction',
+];

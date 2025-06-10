@@ -3,10 +3,11 @@ import { css } from '@emotion/react';
 import useMeasure from 'react-use-measure';
 import debounce from 'debounce';
 
-import { error, keys } from '../service/generic';
+import { error, jsStringify, keys, warn } from '../service/generic';
 import { isTouchDevice } from '../service/dom';
 import type { Session } from "../sh/session.store";
 import type { BaseTabProps } from '../tabs/tab-factory';
+import type { ExternalMessage } from '../sh/io';
 
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
@@ -36,8 +37,20 @@ export default function Tty(props: Props) {
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
     pausedPids: {} as Record<number, true>,
+    /** Should file be auto-re-sourced on hot-module-reload? */
+    reSourced: {} as Record<string, boolean>,
     shFiles: {} as Props['shFiles'],
 
+    handleExternalMessages({ msg }: ExternalMessage) {
+      switch (msg.key) {
+        case 'auto-re-source-file':
+          console.log('🚧 <Tty>', msg);
+          break;
+        default:
+          warn(`${'handleExternalMessages'}: unexpected message: ${jsStringify(msg)}`);
+          break;
+      }
+    },
     onFocus() {
       if (state.inputOnFocus !== undefined) {
         state.base.xterm.setInput(state.inputOnFocus.input);
@@ -103,7 +116,7 @@ export default function Tty(props: Props) {
       ));
 
       // store original functions too
-      session.jsFunc = props.jsFunctions;
+      session.jsFunc = props.jsFunc;
     },
     writeErrorToTty(sessionKey: string, message: string, origError: any) {
       useSession.api.writeMsg(sessionKey, `${message} (see console)`, 'error');
@@ -131,16 +144,14 @@ export default function Tty(props: Props) {
       const onKeyDispose = xterm.onKey((e) => props.onKey?.(e.domEvent));
       xterm.textarea?.addEventListener("focus", state.onFocus);
       
-      const cleanup = session.ttyShell.io.handleWriters((msg) => {
-        if (msg.key === 'external') {
-          console.log('🚧 Tty external', msg);
-        }
-      });
+      const cleanupExternalMsgs = session.ttyShell.io.handleWriters(msg =>
+        msg.key === 'external' && state.handleExternalMessages(msg),
+      );
 
       return () => {
         onKeyDispose.dispose();
         xterm.textarea?.removeEventListener("focus", state.onFocus);
-        cleanup();
+        cleanupExternalMsgs();
       };
     }
   }, [state.base.session, props.onKey]);
@@ -201,8 +212,15 @@ export interface Props extends BaseTabProps {
   sessionKey: `tty-${number}`;
   /** Can initialize variables */
   env: Partial<Session["var"]>;
-  jsFunctions: import('./TtyWithFunctions').TtyJsFunctions;
-  /** Synced with e.g. game-generators.sh */
+  /**
+   * All js functions which induce shell functions.
+   * They are partitioned by "fileKey".
+   */
+  jsFunc: import('./TtyWithFunctions').TtyJsModules;
+  /**
+   * All shell files (*.sh and *.jsh).
+   * They are spread into `/etc`.
+   */
   shFiles: Record<string, string>;
   /** Synced with e.g. profile-1.sh */
   profile: string;

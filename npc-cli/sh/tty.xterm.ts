@@ -598,7 +598,7 @@ export class ttyXtermClass {
         }]);
         break;
       case "external":
-        console.log('🚧 tty.xterm external', msg);
+        // 🔔 handled elsewhere e.g. by <Tty>
         break;
       default: {
         const other = msg as any;

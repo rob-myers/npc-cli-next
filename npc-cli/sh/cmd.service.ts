@@ -618,16 +618,19 @@ class cmdServiceClass {
         // Note pid will be overwritten in `ttyShell.spawn`
         Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
 
-        // We spawn a new process (unlike bash `source`), but we don't localize PWD
+        // We spawn a new process (unlike bash `source`); we don't localize PWD
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
         await ttyShell.spawn(parsed, { leading: meta.pid === 0, posPositionals: args.slice(1) });
 
+        // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
         const absPath = cmdService.absPath(node.meta, filepath);
         if (absPath.startsWith('/etc/')) {
-          // 🚧 start tracking file via HMR
           useSession.api.getSession(meta.sessionKey).ttyShell.io.write({
             key: 'external',
-            contents: { foo: 'bar' },
+            msg: {
+              key: 'auto-re-source-file',
+              absPath: `/etc/${absPath.slice('/etc/'.length)}`,
+            },
           });
         }
 
