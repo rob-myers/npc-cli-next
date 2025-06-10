@@ -36,8 +36,8 @@ export const helper = {
       mapKeys: keys(fromMapKey),
     })
   )({
+    "small-map-1": true, // default
     "demo-map-1": true,
-    "small-map-1": true,
   }),
 
   /** @type {Record<Key.NpcClass, true>} */
