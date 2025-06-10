@@ -36,7 +36,7 @@ export interface BaseNode {
   meta: BaseMeta;
   /** Reference to parent node  */
   parent: null | ParsedSh;
-  /** Used for arithmetic/boolean expansion */
+  /** Used for expansion */
   string?: string;
   /** Used to calculate actual exit codes */
   exitCode?: number;

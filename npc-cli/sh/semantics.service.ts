@@ -472,8 +472,12 @@ class semanticsServiceClass {
    */
   private async *Expand(node: Sh.Word) {
     if (node.Parts.length > 1) {
-      for (const wordPart of node.Parts) {
-        wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
+      for (const [index, wordPart] of node.Parts.entries()) {
+        if (wordPart.type === 'Lit' && wordPart.Value === '...' && node.Parts[index + 1]?.type === 'CmdSubst') {
+          wordPart.string = ''; // ignore spread
+        } else {
+          wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
+        }
       }
       /** Is last value a parameter/command-expansion AND has trailing whitespace? */
       let lastTrailing = false;
@@ -537,14 +541,15 @@ class semanticsServiceClass {
     switch (node.type) {
       case "DblQuoted": {
         const output = [] as string[];
-        for (const part of node.Parts) {
+        for (const [index, part] of node.Parts.entries()) {
           const result = await this.lastExpanded(sem.ExpandPart(part));
           if (part.type === "ParamExp" && part.Param.Value === "@") {
-            output.push(
-              ...(node.Parts.length === 1
-                ? result.values // "$@" empty if `result.values` is
-                : [`${output.pop() || ""}${result.values[0] || ""}`, ...result.values.slice(1)])
+            output.push(...(node.Parts.length === 1
+              ? result.values // "$@" empty if `result.values` is
+              : [`${output.pop() || ""}${result.values[0] || ""}`, ...result.values.slice(1)])
             );
+          } else if (part.type === "Lit" && part.Value === '...' && node.Parts[index + 1]?.type === "CmdSubst") {
+            // ignore spread
           } else {
             output.push(`${output.pop() || ""}${result.value || ""}`);
           }
@@ -574,14 +579,9 @@ class semanticsServiceClass {
 
         try {
           const values = device.readAll();
-          const wordParts = node.parent?.type === 'Word' ? node.parent.Parts : [];
-
-          let spread = false;
+          const wordParts = node.parent?.type === 'Word' || node.parent?.type === 'DblQuoted'  ? node.parent.Parts : [];
           const prevWord = wordParts[wordParts.indexOf(node) - 1];
-          if (prevWord?.type === 'Lit' && prevWord.Value === '...') {
-            spread = true;
-            prevWord.string = ''; // override output
-          }
+          const spread = prevWord?.type === 'Lit' && prevWord.Value === '...';
 
           if (wordParts.length === 1 && node.parent!.parent?.type === 'Assign') {
             yield expand(values); // When `foo=$( bar )` forward non-string values
