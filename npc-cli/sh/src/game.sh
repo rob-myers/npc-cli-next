@@ -1,6 +1,6 @@
-# overriding click that won't terminate anytime soon
+# never-ending overriding click
 click! () {
-  click $( expr Number.MAX_SAFE_INTEGER )
+  click --block
 }
 
 # Usage: gm [gmId] [selector]

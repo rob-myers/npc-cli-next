@@ -129,6 +129,7 @@
   - ✅ mechanism for communication between `source` and hmr-sourcing
     - ✅ send test message from `source`
   - 🚧 "external" message triggers auto-HMR
+    - 🚧 mutate lookup in `<Tty>` and adjust useEffect
 
 - ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
   - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes
