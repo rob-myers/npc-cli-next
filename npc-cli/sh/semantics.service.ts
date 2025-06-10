@@ -574,24 +574,31 @@ class semanticsServiceClass {
 
         try {
           const values = device.readAll();
-          if (node.parent?.type === 'Word' && node.parent.Parts.length === 1 && node.parent.parent?.type === 'Assign') {
-            // In case `foo=$( bar )` we forward non-string values
-            yield expand(values);
+          const wordParts = node.parent?.type === 'Word' ? node.parent.Parts : [];
+
+          let spread = false;
+          const prevWord = wordParts[wordParts.indexOf(node) - 1];
+          if (prevWord?.type === 'Lit' && prevWord.Value === '...') {
+            spread = true;
+            prevWord.string = ''; // override output
+          }
+
+          if (wordParts.length === 1 && node.parent!.parent?.type === 'Assign') {
+            yield expand(values); // When `foo=$( bar )` forward non-string values
+          } else if (spread === true) {
+            yield expand(values
+              .map(x => typeof x === "string" ? x : jsStringify(x))
+              .join("\n")
+              .replace(/\n*$/, "") // remove trailing newlines
+            );
           } else {
-            if (values.length > 1) {
-              // expand jsStringified array when more than one value
+             if (values.length > 1) {// expand jsStringified array when multiple values
               yield expand(jsStringify(values));
             } else if (typeof values[0] === 'string') {
-              // remove trailing newlines
               yield expand(values[0].replace(/\n*$/, ""));
             } else {
               yield expand(jsStringify(values[0]));
             }
-            // yield expand(values
-            //   .map((x: any) => (typeof x === "string" ? x : jsStringify(x)))
-            //   .join("\n")
-            //   .replace(/\n*$/, "") 
-            // );
           }
         } finally {
           useSession.api.removeDevice(device.key);
