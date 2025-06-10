@@ -29,7 +29,10 @@ class shellIoClass<R, W> {
     public writable: shellWireClass<W>
   ) {}
 
-  /** Register a callback to handle writes to this file */
+  /**
+   * Register a callback to handle writes to this file,
+   * returning a cleanup function.
+   */
   handleWriters(cb: (msg: W) => void) {
     this.writable.registerCallback(cb);
     return () => this.writable.unregisterCallback(cb);
@@ -189,7 +192,9 @@ export type MessageFromShell =
   | SendXtermError
   | ClearXterm
   | TtyReceivedLine
-  | SendHistoryLine;
+  | SendHistoryLine
+  | ExternalMessage
+;
 
 /** tty sends and sets xterm prompt */
 interface SendXtermPrompt {
@@ -221,6 +226,11 @@ interface SendHistoryLine {
   key: "send-history-line";
   line: string;
   nextIndex: number;
+}
+
+interface ExternalMessage {
+  key: "external";
+  contents: any; // 🚧
 }
 
 /** `Proxy`s sent as messages should implement `msg[proxyKey] = true` */

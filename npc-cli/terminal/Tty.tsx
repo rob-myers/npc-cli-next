@@ -33,10 +33,10 @@ export default function Tty(props: Props) {
     booted: false,
     bounds,
     fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
-    functionFiles: {} as Props['shFiles'],
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
     pausedPids: {} as Record<number, true>,
+    shFiles: {} as Props['shFiles'],
 
     onFocus() {
       if (state.inputOnFocus !== undefined) {
@@ -84,10 +84,11 @@ export default function Tty(props: Props) {
           delete state.pausedPids[p.key];
         });
     },
-    async sourceFuncs() {
+    async storeAndSourceFuncs() {
       const session = state.base.session;
-      Object.assign(session.etc, state.functionFiles);
+      Object.assign(session.etc, state.shFiles);
 
+      // 🚧 only `source` files which have already been `source`d in this session
       await Promise.all(keys(props.shFiles).map(filename =>
         session.ttyShell.sourceEtcFile(filename).catch(e => {
           if (typeof e?.$type === 'string') {// mvdan.cc/sh/v3/syntax.ParseError
@@ -111,7 +112,7 @@ export default function Tty(props: Props) {
     },
   }));
 
-  state.functionFiles = props.shFiles;
+  state.shFiles = props.shFiles;
 
   React.useEffect(() => {// Pause/resume
     if (props.disabled && state.base.session) {
@@ -124,14 +125,22 @@ export default function Tty(props: Props) {
 
   React.useEffect(() => {// Bind external events
     if (state.base.session) {
+      const { xterm: { xterm }, session } = state.base;
+      
       state.resize();
-      const { xterm } = state.base.xterm;
       const onKeyDispose = xterm.onKey((e) => props.onKey?.(e.domEvent));
       xterm.textarea?.addEventListener("focus", state.onFocus);
       
+      const cleanup = session.ttyShell.io.handleWriters((msg) => {
+        if (msg.key === 'external') {
+          console.log('🚧 Tty external', msg);
+        }
+      });
+
       return () => {
         onKeyDispose.dispose();
         xterm.textarea?.removeEventListener("focus", state.onFocus);
+        cleanup();
       };
     }
   }, [state.base.session, props.onKey]);
@@ -143,7 +152,7 @@ export default function Tty(props: Props) {
 
   React.useEffect(() => {// sync shell functions
     if (state.base.session?.ttyShell.initialized === true) {
-      state.sourceFuncs();
+      state.storeAndSourceFuncs();
     }
   }, [state.base.session, ...Object.entries(props.shFiles).flatMap(x => x)]);
 
@@ -160,7 +169,7 @@ export default function Tty(props: Props) {
       state.booted = true;
       
       session.ttyShell.initialise(xterm).then(async () => {
-        await state.sourceFuncs();
+        await state.storeAndSourceFuncs();
         update();
         await session.ttyShell.runProfile();
       });

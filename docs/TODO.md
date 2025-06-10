@@ -126,7 +126,9 @@
   - ✅ shorter names for src/sh/*.{js,sh}
     - js generators -> sh with extension `jsh` (avoid collision)
   - ✅ separate jsFunctions by filename key (e.g. `game`, `gameWip`)
-  - 🚧 mechanism for communication between `source` and hmr-sourcing
+  - ✅ mechanism for communication between `source` and hmr-sourcing
+    - ✅ send test message from `source`
+  - 🚧 "external" message triggers auto-HMR
 
 - ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
   - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes

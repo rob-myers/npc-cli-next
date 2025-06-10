@@ -4,7 +4,7 @@ import { uid } from "uid";
 import { ansi, EOF } from "./const";
 import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, safeJsonParse } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
+import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
 import { type ReadResult, preProcessRead, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
@@ -598,16 +598,18 @@ class cmdServiceClass {
         break;
       }
       case "source": {
-        if (args[0] === undefined) {
+        const [filepath] = args;
+        if (filepath === undefined) {
           return;
         }
         
         const [script] = this.get(node, args.slice(0, 1));
+        
         if (script === undefined) {
-          throw Error(`source: "${args[0]}" not found`);
+          throw Error(`source: "${filepath}" not found`);
         }
         if (typeof script !== "string") {
-          throw Error(`source: "${args[0]}" is not a string`);
+          throw Error(`source: "${filepath}" is not a string`);
         }
 
         const parsed = parseService.parse(script, true); // we cache scripts
@@ -619,6 +621,16 @@ class cmdServiceClass {
         // We spawn a new process (unlike bash `source`), but we don't localize PWD
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
         await ttyShell.spawn(parsed, { leading: meta.pid === 0, posPositionals: args.slice(1) });
+
+        const absPath = cmdService.absPath(node.meta, filepath);
+        if (absPath.startsWith('/etc/')) {
+          // 🚧 start tracking file via HMR
+          useSession.api.getSession(meta.sessionKey).ttyShell.io.write({
+            key: 'external',
+            contents: { foo: 'bar' },
+          });
+        }
+
         break;
       }
       case "test": {
@@ -685,6 +697,11 @@ class cmdServiceClass {
   private computeCwd(meta: Sh.BaseMeta, root: any) {
     const pwd = useSession.api.getVar(meta, "PWD");
     return resolveNormalized(pwd.split("/"), root);
+  }
+
+  absPath(meta: Sh.BaseMeta, path: string) {
+    const pwd = useSession.api.getVar<string>(meta, "PWD");
+    return absPath(path, pwd);
   }
 
   get(node: Sh.BaseNode, args: string[]) {

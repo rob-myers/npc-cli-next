@@ -586,20 +586,19 @@ export class ttyXtermClass {
         }
         return;
       case "error":
-        this.queueCommands([
-          {
-            key: "line",
-            line: formatMessage(msg.msg, "error"),
-          },
-        ]);
+        this.queueCommands([{
+          key: "line",
+          line: formatMessage(msg.msg, "error"),
+        }]);
         break;
       case "info":
-        this.queueCommands([
-          {
-            key: "line",
-            line: formatMessage(msg.msg, "info"),
-          },
-        ]);
+        this.queueCommands([{
+          key: "line",
+          line: formatMessage(msg.msg, "info"),
+        }]);
+        break;
+      case "external":
+        console.log('🚧 tty.xterm external', msg);
         break;
       default: {
         const other = msg as any;

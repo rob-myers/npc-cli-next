@@ -157,6 +157,11 @@ export function killProcess(p: ProcessMeta, SIGINT?: boolean) {
 
 //#region resolution
 
+export function absPath(path: string, pwd: string) {
+  const absParts = path.startsWith("/") ? path.split("/") : pwd.split("/").concat(path.split("/"));
+  return `/${normalizeAbsParts(absParts).join("/")}`;
+}
+
 export function resolvePath(path: string, root: any, pwd: string) {
   const absParts = path.startsWith("/") ? path.split("/") : pwd.split("/").concat(path.split("/"));
   return resolveAbsParts(absParts, root);
