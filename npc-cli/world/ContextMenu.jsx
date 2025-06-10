@@ -10,7 +10,7 @@ import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/g
 import { WorldContext } from "./world-context";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
-import { PopUp, popUpContentClassName } from "../components/PopUp";
+// import { PopUp, popUpContentClassName } from "../components/PopUp";
 import { Html3d, objectScale } from "../components/Html3d";
 import { Draggable } from "../components/Draggable";
 
@@ -26,7 +26,7 @@ export function ContextMenu() {
     html3d: /** @type {*} */ (null),
     innerRoot: /** @type {*} */ (null),
     offset: undefined,
-    optsPopUp: /** @type {*} */ (null),
+    // optsPopUp: /** @type {*} */ (null),
     position: new THREE.Vector3(),
     tracked: undefined,
     
@@ -185,7 +185,7 @@ export function ContextMenu() {
       state.docked = next;
       
       if (state.docked === true) {// About to dock
-        state.optsPopUp.close();
+        // state.optsPopUp.close();
         state.html3d.innerDiv.style.transform = 'scale(1)';
         // 🔔 crucial to avoid flicker on mobile
         state.draggable.el.style.visibility = 'hidden';
@@ -269,7 +269,7 @@ function ContextMenuLinks({ state }) {
         {state.docked ? '@3d' : 'dock'}
       </button>
 
-      <PopUp
+      {/* <PopUp
         ref={state.ref('optsPopUp')}
         css={optsPopUpCss}
         label="opts"
@@ -283,7 +283,15 @@ function ContextMenuLinks({ state }) {
         >
           scale
         </button>
-      </PopUp>
+      </PopUp> */}
+
+      <button
+        key="toggle-scaled"
+        data-key="toggle-scaled"
+        className={!state.scaled ? 'off' : undefined}
+      >
+        scale
+      </button>
 
       <button
         key="toggle-kvs"
@@ -433,16 +441,15 @@ export const contextMenuCss = css`
   }
 `;
 
-const optsPopUpCss = css`
-  z-index: ${zIndexWorld.popUpInContextMenu};
-
-  .${popUpContentClassName} {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    font-size: small;
-  }
-;`
+// const optsPopUpCss = css`
+//   z-index: ${zIndexWorld.popUpInContextMenu};
+//   .${popUpContentClassName} {
+//     display: flex;
+//     justify-content: space-around;
+//     align-items: center;
+//     font-size: small;
+//   }
+// ;`
 
 /**
  * @typedef State
@@ -458,7 +465,7 @@ const optsPopUpCss = css`
  * @property {Meta} meta
  * @property {undefined | import("three").Vector3Like} offset
  * @property {boolean} open
- * @property {import("../components/PopUp").State} optsPopUp
+ * //@property {import("../components/PopUp").State} optsPopUp
  * @property {import('three').Vector3} position
  * @property {undefined | { npcKey: string } & import('../components/Html3d').TrackedObject3D} tracked
  * @property {boolean} pinned
