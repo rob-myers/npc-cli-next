@@ -26,7 +26,7 @@ export function createNpc(def, w) {
 const lookSecsNoTarget = 0.75;
 
 const staticMaxAcceleration = 4;
-const movingMaxAcceleration = 6;
+const movingMaxAcceleration = 10;
 
 /**
  * 🔔 sudden change can cause jerk onexit doorway
