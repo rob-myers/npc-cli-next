@@ -73,7 +73,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       }
     },
     onTouchStart(e) {
-      // e.stopPropagation();
+      e.stopPropagation();
 
       state.touchId = getTouchIdentifier(e);
       const touchObj = typeof state.touchId  === 'number' && getTouch(e, state.touchId) || null;
@@ -100,7 +100,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       if (state.dragging === false && state.resizing === false) {
         return;
       }
-      // e.stopPropagation();
+      e.stopPropagation();
       
       const touchObj = /** @type {{clientX: number, clientY: number}} */ (getTouch(e, /** @type {number} */ (state.touchId)));
       
