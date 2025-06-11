@@ -188,6 +188,9 @@ done
 
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
 
+- can scroll ContextMenu on mobile
+  - on hold i.e. user can resize instead
+
 - fix run through doorway
 
 - clarify staticSeparationWeight = movingSeparationWeight = 0.5

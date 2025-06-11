@@ -42,6 +42,9 @@ export function ContextMenu() {
     meta: {},
     selectNpcKeys: [],
 
+    canScroll() {
+      return state.innerRoot !== null && state.innerRoot.clientHeight !== state.innerRoot.scrollHeight;
+    },
     computeKvsFromMeta(meta) {
       const skip = /** @type {Record<string, boolean>} */ ({
         doorId: 'gdKey' in meta,
@@ -141,7 +144,7 @@ export function ContextMenu() {
       }
     },
     onWheel(e) {
-      if (state.innerRoot.clientHeight === state.innerRoot.scrollHeight) {
+      if (state.canScroll() === false) {
         // if no vertical scroll, pass scroll through to canvas (i.e. zoom)
         w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
       }
@@ -266,7 +269,7 @@ function ContextMenuLinks({ state }) {
         data-key="toggle-docked"
         onKeyDown={state.onKeyDownButton}
       >
-        {state.docked ? '@3d' : 'dock'}
+        {state.docked ? 'docked' : '3d'}
       </button>
 
       {/* <PopUp
@@ -285,13 +288,13 @@ function ContextMenuLinks({ state }) {
         </button>
       </PopUp> */}
 
-      <button
+      {state.docked === false && <button
         key="toggle-scaled"
         data-key="toggle-scaled"
         className={!state.scaled ? 'off' : undefined}
       >
         scale
-      </button>
+      </button>}
 
       <button
         key="toggle-kvs"
@@ -472,6 +475,7 @@ export const contextMenuCss = css`
  * @property {boolean} scaled
  * @property {string[]} selectNpcKeys
  * @property {boolean} showKvs
+ * @property {() => boolean} canScroll
  * @property {(meta: Meta) => void} computeKvsFromMeta
  * @property {() => void} computeLinks
  * @property {() => THREE.Vector3} getPosition Get actual position e.g. if tracked.
