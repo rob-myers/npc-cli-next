@@ -1,3 +1,3 @@
-source /etc/game.jsh
+source /etc/game.js.sh
 
 awaitWorld

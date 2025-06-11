@@ -58,7 +58,7 @@ export type EtcBasename = FileKeyToEtcBasename<(
 )>
 type FileKeyToEtcBasename<S extends string> = S extends `${infer T}Sh`
   ? `${T}.sh`
-  : `${S}.jsh`;
+  : `${S}.js.sh`;
 
 const shellFunctionFiles = {
 
@@ -67,7 +67,7 @@ const shellFunctionFiles = {
   }), {} as Record<EtcBasename, string>),
 
   ...Object.entries(keyedJsModules).reduce((agg, [key, module]) => ({ ...agg,
-    [`${key}.jsh`]: Object.entries(module).map(
+    [`${key}.js.sh`]: Object.entries(module).map(
       ([key, fn]) => jsFunctionToShellFunction(key, fn)
     ).join('\n\n'),
   }), {} as Record<EtcBasename, string>),
@@ -78,7 +78,7 @@ export type TtyEtcFiles = typeof shellFunctionFiles;
 
 /**
  * 🔔 SWC is minifying the inner JavaScript functions in production,
- * and we don't seem to be able to exclude e.g. game.jsh
+ * and we don't seem to be able to exclude e.g. game.js.sh
  */
 function jsFunctionToShellFunction(
   functionName: string,

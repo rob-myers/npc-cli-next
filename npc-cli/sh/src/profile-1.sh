@@ -1,7 +1,7 @@
-source /etc/util.jsh
+source /etc/util.js.sh
 source /etc/util.sh
-source /etc/game.jsh
-source /etc/gameWip.jsh
+source /etc/game.js.sh
+source /etc/gameWip.js.sh
 
 awaitWorld
 

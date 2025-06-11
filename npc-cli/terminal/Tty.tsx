@@ -257,7 +257,7 @@ export interface Props extends BaseTabProps {
    */
   jsFunc: import('./TtyWithFunctions').TtyJsModules;
   /**
-   * All shell files (*.sh and *.jsh).
+   * All shell files (*.sh and *.js.sh).
    * They are spread into `/etc`.
    */
   shFiles: Record<string, string>;
