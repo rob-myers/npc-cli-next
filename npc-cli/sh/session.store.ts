@@ -227,7 +227,8 @@ const useStore = create<State>()(
       createProcess({ sessionKey, ppid, pgid, src, posPositionals, ptags }) {
         const pid = get().api.getNextPid(sessionKey);
         const processes = get().api.getSession(sessionKey).process;
-        processes[pid] = {
+
+        return processes[pid] = {
           key: pid,
           ppid,
           pgid,
@@ -242,7 +243,6 @@ const useStore = create<State>()(
           inheritVar: {},
           ptags,
         };
-        return processes[pid];
       },
 
       createSession(sessionKey, env) {
