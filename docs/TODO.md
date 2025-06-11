@@ -150,16 +150,20 @@
 - ✅ BUG: fix `echo "...$( echo foo; echo bar; echo baz )"`
   - parent of CmdSubst can be Word or DblQuoted
 
-- 🚧 issue with basic while loop containing `tour` i.e. move can continually throw
-  - provide basic solutions
-  - 🚧 for stop-reason "stuck" can change agent separation weight (currently hard-coded idle/move)
-  - ✅ for stop-reason "locked-door" can provide access e.g. `w e.grantAccess g0d1 rob`
+- 🚧 how to resolve basic while loop `tour` when other npc is in the way?
+  - ℹ️ improved behaviour when force pause after move (even if throw)
+  - ✅ BUG where rob passed through other
+    - seems `npc.s.offMesh` is `null` despite offMeshConnection existing
+    - we async null it when `npc.s.offMesh.seg` is `0`.
 ```sh
-points=$( click 2 )
+points=[{x:5.322,y:0,z:9.746,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:9,grKey:"g0r9",nav:true},xz:{x:5.322,y:9.746}},{x:2.436,y:0,z:10.02,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:3,grKey:"g0r3",nav:true},xz:{x:2.436,y:10.02}}]
 while true; do
   tour npcKey:rob to:$( points )
+  sleep 1
 done
 ```
+
+- easier ctrl-c on mobile?
 
 - for debugging, it would be better if we directly yielded e.g. `jsFunc.gameWip.tour`
   - ℹ️ want to set a breakpoint in e.g. `game-wip.js`

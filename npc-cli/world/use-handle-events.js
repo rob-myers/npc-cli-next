@@ -49,11 +49,16 @@ export default function useHandleEvents(w) {
       }
 
       const { gdKey } = npc.s.offMesh.orig;
-      npc.s.offMesh = null;
 
-      state.doorToOffMesh[gdKey] = state.doorToOffMesh[gdKey].filter(
-        x => x.npcKey !== npc.key
-      );
+      if (npc.s.offMesh.seg === 0) {
+        // 🔔 cool down offMeshConnection attempts
+        // prevents npc passing through another on continual move
+        pause(30).then(() => npc.s.offMesh = null);
+      } else {
+        npc.s.offMesh = null;
+      }
+      
+      state.doorToOffMesh[gdKey] = state.doorToOffMesh[gdKey].filter(x => x.npcKey !== npc.key);
       (state.npcToDoors[npc.key] ??= { inside: null, nearby: new Set() }).inside = null;
       // w.nav.navMesh.setPolyFlags(state.npcToOffMesh[e.npcKey].offMeshRef, w.lib.navPolyFlag.walkable);
     },

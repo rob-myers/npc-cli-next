@@ -407,13 +407,13 @@ export class NpcApi {
     , /** @type {typeof this['m']['toAct']} */ ({}));
   }
 
-//   /**
-//    * Brace expansion of keys of `this.skin` e.g.
-//    * > `'head-{front,back}'` -> `['head-front', 'head-back']`
-//    * - Any keys with braces will be expanded and removed.
-//    * - Later keys override earlier ones.
-//    * - We ignore unresolved expansions (they needn't be errors).
-//    */
+  /**
+   * Brace expansion of keys of `this.skin` e.g.
+   * > `'head-{front,back}'` -> `['head-front', 'head-back']`
+   * - Any keys with braces will be expanded and removed.
+   * - Later keys override earlier ones.
+   * - We ignore unresolved expansions (they needn't be errors).
+   */
   expandSkin() {
     const lookup = this.base.skin;
     const pending = /** @type {typeof lookup} */ ({});
