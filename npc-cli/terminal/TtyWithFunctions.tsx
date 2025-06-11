@@ -7,7 +7,7 @@ import gameSh from "../sh/src/game.sh";
 
 import * as util from '../sh/src/util';
 import * as game from '../sh/src/game';
-import * as gameWip from '../sh/src/game-wip';
+import * as game_1 from '../sh/src/game_1';
 
 import Tty, { type Props as TtyProps } from "./Tty";
 
@@ -44,7 +44,7 @@ const keyedShFiles = {
 const keyedJsModules = {
   util,
   game,
-  gameWip,
+  game_1,
 };
 
 export type TtyJsModules = typeof keyedJsModules;

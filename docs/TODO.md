@@ -28,8 +28,9 @@
     - ✅ can copy line-by-line
     - ✅ can copy all
   - 🚧 mobile tty has textarea disabled option
-  - 🚧 which PROFILE do we want to use?
-    - probably just `awaitWorld`
+  - 🚧 default profile is `default-profile`
+    - includes standard imports: `util.{,js.}sh` `game.{,js.}sh`
+    - `awaitWorld`
   - step through spawning and removing an npc
   - step through making an npc walk back-and-forth
   - next time we'll implement "selection"
@@ -151,7 +152,7 @@
   - parent of CmdSubst can be Word or DblQuoted
 
 - 🚧 how to resolve basic while loop `tour` when other npc is in the way?
-  - ℹ️ improved behaviour when force pause after move (even if throw)
+  - ℹ️ improved behaviour when `sleep 1` in while (handles case where `move` throws)
   - ✅ BUG where rob passed through other
     - seems `npc.s.offMesh` is `null` despite offMeshConnection existing
     - we async null it when `npc.s.offMesh.seg` is `0`.
