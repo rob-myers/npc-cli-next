@@ -25,9 +25,8 @@ export const helper = {
   ...(/** @param {Record<Key.Profile, true>} fromProfileKey */
     (fromProfileKey) => ({ fromProfileKey, profileKeys: keys(fromProfileKey) })
   )({
-    "profile-1-sh": true,
-    "profile-awaitWorld-sh": true,
-    "profile-empty-sh": true,
+    default_profile: true, // 1st is default
+    profile_1: true,
   }),
 
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
@@ -74,7 +73,7 @@ export const helper = {
         {
           type: "terminal",
           filepath: "tty-1",
-          profileKey: 'profile-1-sh',
+          profileKey: 'profile_1',
           env: { WORLD_KEY: "world-0" },
         },
         // {

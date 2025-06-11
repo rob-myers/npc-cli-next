@@ -54,7 +54,7 @@ export default function Manage(props) {
               profileKey: /** @type {Key.Profile} */ (profileSelect.value),
               env: { WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value}` },
             } || {
-              profileKey: 'profile-empty-sh',
+              profileKey: 'default_profile',
             },
           });
           break;

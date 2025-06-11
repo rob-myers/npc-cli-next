@@ -28,7 +28,7 @@
     - ✅ can copy line-by-line
     - ✅ can copy all
   - 🚧 mobile tty has textarea disabled option
-  - 🚧 default profile is `default-profile`
+  - ✅ default profile is `default-profile`
     - includes standard imports: `util.{,js.}sh` `game.{,js.}sh`
     - `awaitWorld`
   - step through spawning and removing an npc
