@@ -80,7 +80,7 @@ export default function Tty(props: Props) {
         || (p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true)
       ));
       
-      const interactivePaused = processes[0].status === ProcessStatus.Running;
+      const interactivePaused = processes[0]?.status === ProcessStatus.Running;
 
       for (const p of processes) {
         p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
