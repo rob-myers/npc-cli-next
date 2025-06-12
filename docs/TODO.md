@@ -286,7 +286,9 @@ done
 - ✅ node-canvas: is it still nondeterministic onchange decor pngs?
   - seems ok
 
-- hmr of Viewer should not reset
+- ✅ hmr: Viewer should not reset onchange image import
+  - do not import image, instead directly `url(/images/foo.webp)`
+  - https://nextjs.org/docs/pages/api-reference/components/image
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel

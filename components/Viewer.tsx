@@ -5,8 +5,6 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 import { useBeforeunload } from "react-beforeunload";
 
-import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
-
 import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
@@ -281,7 +279,7 @@ const tabsContainerCss = css`
     animation: fadeIn 2s forwards;
     
     cursor: pointer;
-    background-image: url(${DesktopEmptyWorldWebp.src});
+    background-image: url(/images/desktop-empty-world__20250612.webp);
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: 0% 100%;
