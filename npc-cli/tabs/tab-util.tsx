@@ -338,7 +338,9 @@ export interface TabsetLayouts {
   started: TabsetLayout;
   synced: TabsetLayout;
   saved: TabsetLayout;
-  /** The tabs of `synced` */
+  /**
+   * These are the actual tabs of `synced` i.e. not clones.
+   */
   tabs: CustomIJsonTabNode[];
   /**
    * Used to trigger tabset model recompute.

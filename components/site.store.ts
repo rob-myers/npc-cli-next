@@ -31,24 +31,26 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     changeTabProps(tabId, partialProps) {
       const { synced: layout, tabs } = get().tabset;
-      const found = tabs.find(x => x.id === tabId);
-      if (found === undefined) {
-        throw Error(`${'changeTabProps'} cannot find tabId "${tabId}"`);
+      const tab = tabs.find(x => x.id === tabId);
+
+      if (tab === undefined) {
+        throw Error(`${'changeTabProps'} cannot find tab "${tabId}"`);
       }
 
-      if (found.config.type === 'component') {
-        Object.assign(found.config.props, partialProps);
-      } else if (found.config.type === 'terminal') {
+      if (tab.config.type === 'component') {
+        Object.assign(tab.config.props, partialProps);
+      } else if (tab.config.type === 'terminal') {
         throw Error(`${'changeTabProps'} cannot change terminal "${tabId}" (useSession instead)`);
       } else {
-        throw Error(`${'changeTabProps'} unexpected tab config "${JSON.stringify(found.config)}"`);
+        throw Error(`${'changeTabProps'} unexpected tab config "${JSON.stringify(tab.config)}"`);
       }
 
       const synced = deepClone(layout);
-      set(({ tabset: lookup }) => ({ tabset: {...lookup,
+      set(({ tabset }) => ({ tabset: {...tabset,
         started: layout,
         synced,
         tabs: extractTabNodes(synced),
+        version: tabset.version + 1,
       } }));
     },
 
@@ -156,8 +158,8 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const { synced: layout } = get().tabset;
       selectTabInLayout({ layout, tabId });
       set(({ tabset }) => ({ tabset: { ...tabset,
-        started: layout,
-        synced: deepClone(layout),
+        started: deepClone(layout),
+        synced: layout, // preserved so needn't recompute tabset.tabs
         version: tabset.version + 1,
       }}), undefined, 'select-tab');
     },

@@ -154,7 +154,11 @@
 - ❌ BUG: cannot pause `w foo`
 - ✅ BUG: ctrl-c profile works with exitCode `130`
 
-- manage: can change tty profile key
+- ✅ manage: change map while paused sometimes doesn't work 
+  - hide World behind other tab, then select it via manage, then change
+  - presumably thinks its "in background"
+
+- manage: show tty profile key
 
 - manage: clean and clarify actions
 
