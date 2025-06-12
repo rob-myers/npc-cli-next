@@ -363,6 +363,8 @@ export const contextMenuCss = css`
   transform-origin: 0 0;
   background: transparent !important;
   pointer-events: none;
+  
+  /* prevent pinch-zoom on mobile */
   touch-action: none;
 
   > div {
