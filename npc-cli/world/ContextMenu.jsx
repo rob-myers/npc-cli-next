@@ -143,12 +143,6 @@ export function ContextMenu() {
         state.refreshOptsPopUp();
       }
     },
-    onTouchStart(e) {// 🚧 trying to prevent mobile pinch zoom
-      if (e.touches.length > 1) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
     onWheel(e) {
       if (state.canScroll() === false) {
         // if no vertical scroll, pass scroll through to canvas (i.e. zoom)
@@ -228,15 +222,8 @@ export function ContextMenu() {
 
   w.cm = state;
   
-  React.useEffect(() => {
-    const { onTouchStart } = state;
-    state.innerRoot?.addEventListener('touchstart', onTouchStart, { passive: false });
-    // Extra initial render: (a) init paused, (b) trigger CSS transition
-    update();
-    return () => {
-      state.innerRoot?.removeEventListener('touchstart', onTouchStart);
-    };
-  }, [state.scaled]);
+  // Extra initial render: (a) init paused, (b) trigger CSS transition
+  React.useEffect(() => void update(), [state.scaled]);
 
   return w.r3f === null ? null : (
     <Html3d
@@ -393,6 +380,8 @@ export const contextMenuCss = css`
     border: 1px solid #333;
     padding: 4px;
     font-size: small;
+
+    touch-action: pan-x, pan-y;
   }
   
   z-index: ${zIndexWorld.contextMenu};
@@ -498,7 +487,6 @@ export const contextMenuCss = css`
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
  * @property {(willOpen: boolean) => void} onToggleOptsPopup
- * @property {(e: TouchEvent) => void} onTouchStart
  * @property {(e: React.WheelEvent) => void} onWheel
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
