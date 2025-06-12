@@ -133,39 +133,6 @@ export async function* initCamAndLights({ args, w }) {
 }
 
 /**
- * Supports manual process suspend/resume
- * ```sh
- * move npcKey:rob to:$( click 1 ) arriveAnim:none
- * ```
- * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
- */
-export async function* move({ api, args, w }, opts = api.jsArg(args)) {
-  const npc = w.n[opts.npcKey];
-  if (!npc) {
-    throw Error(`npcKey invalid: ${opts.npcKey}`)
-  }
-
-  api.addCleanUp(() => npc.reject.move?.(Error('cancelled'))); 
-  
-  while (true) {
-    try {
-      return await Promise.race([
-        npc.api.move(opts),
-        api.throwOnPause('manual-pause', false),
-      ]);
-    } catch (e) {
-      if (e === 'manual-pause') {
-        npc.api.stopMoving();
-        await api.awaitResume();
-        continue;
-      }
-      throw e;
-    }
-  }
-}
-
-/**
  * - Make a single hard-coded polygon non-navigable,
  *   using `w.lib.queryFilterType.respectUnwalkable`
  * - Indicate it via debug polygon in `<Debug />`.
@@ -283,21 +250,6 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 
 /**
  * ```sh
- * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
- * spawn npcKey:rob at:$( click 1 ) grant:.
- * ```
- * @param {NPC.RunArg} ctxt
- * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
- */
-export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
-  await w.npc.spawn(opts);
-  if (typeof opts.grant === 'string') {
-    w.e.grantAccess(opts.grant, opts.npcKey);
-  }
-}
-
-/**
- * ```sh
  * tour npcKey:rob to:"$( click 5 )"
  * tour npcKey:rob to:"$( click 5 | sponge )"
  * tour npcKey:rob to:"$( points )"
@@ -306,7 +258,7 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const { move } = ct.lib.game_1;
+  const { move } = ct.lib.game;
   for (const to of opts.to) {
     // debugger;
     yield* move(ct, { npcKey: opts.npcKey, to });

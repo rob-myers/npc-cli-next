@@ -135,6 +135,54 @@ export async function* events({ api, args, w }) {
 }
 
 /**
+ * Supports manual process suspend/resume
+ * ```sh
+ * move npcKey:rob to:$( click 1 ) arriveAnim:none
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
+ */
+export async function* move({ api, args, w }, opts = api.jsArg(args)) {
+  const npc = w.n[opts.npcKey];
+  if (npc === undefined) {
+    throw Error(`npcKey invalid: ${opts.npcKey}`)
+  }
+
+  api.addCleanUp(() => npc.reject.move?.(Error('cancelled'))); 
+  
+  while (true) {
+    try {
+      return await Promise.race([
+        npc.api.move(opts),
+        api.throwOnPause('manual-pause', false),
+      ]);
+    } catch (e) {
+      if (e === 'manual-pause') {
+        npc.api.stopMoving();
+        await api.awaitResume();
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+/**
+ * ```sh
+ * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
+ * spawn npcKey:rob at:$( click 1 ) grant:.
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
+ */
+export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
+  await w.npc.spawn(opts);
+  if (typeof opts.grant === 'string') {
+    w.e.grantAccess(opts.grant, opts.npcKey);
+  }
+}
+
+/**
  * Usage:
  * ```sh
  * w
