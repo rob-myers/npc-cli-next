@@ -27,6 +27,7 @@ export const helper = {
   )({
     default_profile: true, // 1st is default
     profile_1: true,
+    empty_profile: true,
   }),
 
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
