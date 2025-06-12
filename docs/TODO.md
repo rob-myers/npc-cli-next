@@ -16,7 +16,8 @@
       - ℹ️ `decor quad tilt` tilts around center
     - ✅ try use nodeCanvas for decor svg detail
   - 🚧 three images
-    - 1st 🚧 2nd 3rd
+    - ℹ️ screenshot of node `.tabs-container`
+    - 1st ✅ 2nd 🚧 3rd
     - desktop and mobile (?)
 
 - ❌ refine chosen carousel embla-carousel
@@ -282,12 +283,15 @@ done
 - 🚧 Boxy SVG: sporadic slow save (or at least, triggering of our file mon)
   - https://boxy-svg.com/bugs/370/intermittent-slow-saving
 
-- node-canvas: is it still nondeterministic onchange decor pngs?
+- ✅ node-canvas: is it still nondeterministic onchange decor pngs?
+  - seems ok
+
+- hmr of Viewer should not reset
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
 
-- BUG: hmr offMeshConnectionHalfDepth does not update navmesh
+- ❌ BUG: hmr offMeshConnectionHalfDepth does not update navmesh
 
 - 🚧 improve assets script
   - ✅ more measurements in assets script

@@ -5,7 +5,7 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 import { useBeforeunload } from "react-beforeunload";
 
-import DesktopEmptyWorld from '../public/images/desktop-empty-world__27-05-2025.webp';
+import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
 
 import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
@@ -186,7 +186,7 @@ export default function Viewer() {
 
       <div
         css={tabsContainerCss}
-        className={cx({ collapsed, neverEnabled })}
+        className={cx('tabs-container', { collapsed, neverEnabled })}
         {...neverEnabled && { onPointerUp: () => state.tabs.toggleEnabled(true) }}
       >
         <Tabs
@@ -276,12 +276,12 @@ const tabsContainerCss = css`
   &.neverEnabled {
     @keyframes fadeIn {
       0% { opacity: 0; }
-      100% { opacity: 0.25; }
+      100% { opacity: 0.3; }
     }
     animation: fadeIn 2s forwards;
     
     cursor: pointer;
-    background-image: url(${DesktopEmptyWorld.src});
+    background-image: url(${DesktopEmptyWorldWebp.src});
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: 0% 100%;
