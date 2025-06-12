@@ -134,6 +134,7 @@ interface Props {
 
 const menuCss = css`
   --menu-width: 54px;
+  height: inherit;
 
   position: absolute;
   z-index: ${zIndexTabs.pausedControls};
@@ -145,7 +146,6 @@ const menuCss = css`
   flex-direction: column;
 
   font-size: 0.65rem;
-  /* letter-spacing: 1px; */
   line-height: 1; /** Needed for mobile viewing 'Desktop site' */
   background-color: rgba(0, 0, 0, 0.7);
   border: 1px solid #555;
@@ -208,6 +208,11 @@ const menuCss = css`
       }
       animation: flashIn 500ms;
     }
+  }
+
+  .touch-menu {
+    max-height: 100%;
+    overflow: auto;
   }
 
   .icon {
