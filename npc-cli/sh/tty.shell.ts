@@ -166,6 +166,7 @@ export class ttyShellClass implements Device {
       // see tryParse catch
     } finally {
       this.interactive = true;
+      this.process.status = ProcessStatus.Suspended;
       this.xterm.historyEnabled = true;
       this.prompt("$");
     }
