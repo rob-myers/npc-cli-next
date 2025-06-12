@@ -770,7 +770,7 @@ export default function useHandleEvents(w) {
 
       return w.door.toggleDoorRaw(door, opts);
     },
-    toggleLock(gdKey, opts) {
+    toggleLock(gdKey, opts = {}) {
       const door = w.door.byKey[gdKey];
 
       if (opts.point === undefined || opts.npcKey === undefined) {
