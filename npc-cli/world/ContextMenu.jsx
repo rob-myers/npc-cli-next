@@ -143,9 +143,10 @@ export function ContextMenu() {
         state.refreshOptsPopUp();
       }
     },
-    onTouchStart(e) {
+    onTouchStart(e) {// 🚧 trying to prevent mobile pinch zoom
       if (e.touches.length > 1) {
         e.preventDefault();
+        e.stopPropagation();
       }
     },
     onWheel(e) {
