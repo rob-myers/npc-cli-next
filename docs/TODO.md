@@ -17,7 +17,7 @@
     - ✅ try use nodeCanvas for decor svg detail
   - 🚧 three images
     - ℹ️ screenshot of node `.tabs-container`
-    - 1st ✅ 2nd 🚧 3rd
+    - 🚧 1st ✅ 2nd 🚧 3rd 🚧
     - desktop and mobile (?)
 
 - ❌ refine chosen carousel embla-carousel
