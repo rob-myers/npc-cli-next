@@ -227,8 +227,15 @@ export function ContextMenu() {
 
   w.cm = state;
   
-  // Extra initial render: (a) init paused, (b) trigger CSS transition
-  React.useEffect(() => void update(), [state.scaled]);
+  React.useEffect(() => {
+    const { onTouchStart } = state;
+    state.innerRoot?.addEventListener('touchstart', onTouchStart, { passive: false });
+    // Extra initial render: (a) init paused, (b) trigger CSS transition
+    update();
+    return () => {
+      state.innerRoot?.removeEventListener('touchstart', onTouchStart);
+    };
+  }, [state.scaled]);
 
   return w.r3f === null ? null : (
     <Html3d
@@ -254,7 +261,6 @@ export function ContextMenu() {
           className="inner-root"
           onPointerUp={state.onPointerUp}
           onPointerDown={state.onPointerDown}
-          onTouchStart={state.onTouchStart}
           onWheel={state.onWheel}
         >
           <ContextMenuLinks state={state} />
@@ -491,7 +497,7 @@ export const contextMenuCss = css`
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
  * @property {(willOpen: boolean) => void} onToggleOptsPopup
- * @property {(e: React.TouchEvent<HTMLElement>) => void} onTouchStart
+ * @property {(e: TouchEvent) => void} onTouchStart
  * @property {(e: React.WheelEvent) => void} onWheel
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
