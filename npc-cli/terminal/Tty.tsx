@@ -98,6 +98,8 @@ export default function Tty(props: Props) {
           update();
         };
         update();
+      } else {// avoid resuming interactive process
+        delete state.pausedPids[0];
       }
     },
     reboot() {
@@ -120,8 +122,8 @@ export default function Tty(props: Props) {
       }
     },
     resumeRunningProcesses() {
-      const processes = Object.values(state.base?.session?.process ?? {}).filter(
-        p => state.pausedPids[p.key] === true
+      const processes = Object.values(state.base?.session?.process ?? {}).filter(p =>
+        state.pausedPids[p.key] === true
       );
 
       for (const p of processes) {
