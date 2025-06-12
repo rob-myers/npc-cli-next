@@ -296,14 +296,14 @@ function ContextMenuLinks({ state }) {
         scale
       </button>}
 
-      <button
+      {/* <button
         key="toggle-kvs"
         data-key="toggle-kvs"
         className={!state.showKvs ? 'off' : undefined}
         onKeyDown={state.onKeyDownButton}
       >
         meta
-      </button>
+      </button> */}
 
       <button
         key="toggle-pinned"
@@ -375,7 +375,7 @@ export const contextMenuCss = css`
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.7);
     border-radius: 0 8px 8px 8px;
     border: 1px solid #333;
     padding: 4px;
