@@ -363,6 +363,7 @@ export const contextMenuCss = css`
   transform-origin: 0 0;
   background: transparent !important;
   pointer-events: none;
+  touch-action: none;
 
   > div {
     transform-origin: 0 0;
@@ -381,7 +382,6 @@ export const contextMenuCss = css`
     padding: 4px;
     font-size: small;
 
-    touch-action: pan-x, pan-y;
   }
   
   z-index: ${zIndexWorld.contextMenu};
