@@ -143,6 +143,11 @@ export function ContextMenu() {
         state.refreshOptsPopUp();
       }
     },
+    onTouchStart(e) {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    },
     onWheel(e) {
       if (state.canScroll() === false) {
         // if no vertical scroll, pass scroll through to canvas (i.e. zoom)
@@ -249,6 +254,7 @@ export function ContextMenu() {
           className="inner-root"
           onPointerUp={state.onPointerUp}
           onPointerDown={state.onPointerDown}
+          onTouchStart={state.onTouchStart}
           onWheel={state.onWheel}
         >
           <ContextMenuLinks state={state} />
@@ -485,6 +491,7 @@ export const contextMenuCss = css`
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
  * @property {(willOpen: boolean) => void} onToggleOptsPopup
+ * @property {(e: React.TouchEvent<HTMLElement>) => void} onTouchStart
  * @property {(e: React.WheelEvent) => void} onWheel
  * @property {() => void} persist
  * @property {() => void} refreshOptsPopUp
