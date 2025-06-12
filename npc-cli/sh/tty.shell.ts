@@ -322,8 +322,13 @@ export class ttyShellClass implements Device {
     } finally {
       this.input?.resolve();
       this.input = null;
-      // this.process.status = ProcessStatus.Suspended;
       this.process.ptags = undefined;
+      
+      // 🔔 do not suspend leading process during PROFILE,
+      // otherwise we'll pause before spawning each subprocess
+      if (this.interactive === true) {
+        this.process.status = ProcessStatus.Suspended;
+      }
     }
   }
 

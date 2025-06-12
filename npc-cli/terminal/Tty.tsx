@@ -33,6 +33,7 @@ export default function Tty(props: Props) {
      */
     booted: false,
     bounds,
+    /** Show "CONT" and invoke this onclick  */
     continueInteractive: undefined as undefined | (() => void),
     fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
@@ -79,7 +80,7 @@ export default function Tty(props: Props) {
         || (p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true)
       ));
       
-      const interactivePaused = processes.some(p => p.key !== 0 && p.pgid === 0);
+      const interactivePaused = processes[0].status === ProcessStatus.Running;
 
       for (const p of processes) {
         p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
