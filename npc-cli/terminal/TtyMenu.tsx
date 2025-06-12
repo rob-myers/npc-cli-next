@@ -143,9 +143,10 @@ const menuCss = css`
   display: flex;
   flex-direction: column;
 
+  font-size: 0.65rem;
+  /* letter-spacing: 1px; */
   line-height: 1; /** Needed for mobile viewing 'Desktop site' */
   background-color: rgba(0, 0, 0, 0.7);
-  font-size: 8px;
   border: 1px solid #555;
   border-width: 0 0 2px 2px;
   color: white;
