@@ -50,11 +50,9 @@ export default function Manage(props) {
           tabDef = computeTabDef({
             classKey: tabClassKey,
             id: `tty-${nextTabId}`,
-            ...Number.isInteger(Number(worldKeyInput.value)) && {
-              profileKey: /** @type {Key.Profile} */ (profileSelect.value),
-              env: { WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value}` },
-            } || {
-              profileKey: 'default_profile',
+            profileKey: /** @type {Key.Profile} */ (profileSelect.value),
+            env: {// default WORLD_KEY is `world-0`
+              WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value || 0}`
             },
           });
           break;
