@@ -160,6 +160,8 @@
 
 - ✅ BUG: CONT is showing when it should not
 
+- ✅ manage: open tty tab while paused is now enabled (so can see actual terminal)
+
 - manage: show tty profile key
 
 - manage: clean and clarify actions
