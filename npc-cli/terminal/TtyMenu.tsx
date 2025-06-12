@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import cx from "classnames";
 import { tryLocalStorageGet, tryLocalStorageSet } from "../service/generic";
 import { localStorageKey, zIndexTabs } from "../service/const";
+import { isTouchDevice } from "../service/dom";
 import type { Session } from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -92,12 +93,12 @@ export default function TtyMenu(props: Props) {
       </div>
       
       <div className="touch-menu">
-        {/* <div
+        {isTouchDevice() && <div
           className={cx("icon can-type", { enabled: state.xterm.canType() })}
           title={`text input ${state.xterm.canType() ? "enabled" : "disabled"}`}
         >
           $
-        </div> */}
+        </div>}
         <div className="icon paste" title="or press e.g. Cmd+V">
           paste
         </div>

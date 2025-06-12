@@ -17,6 +17,7 @@
     - ✅ try use nodeCanvas for decor svg detail
   - 🚧 three images
     - 1st 🚧 2nd 3rd
+    - desktop and mobile (?)
 
 - ❌ refine chosen carousel embla-carousel
   - ✅ carousel has labels
@@ -162,9 +163,12 @@
 
 - ✅ manage: open tty tab while paused is now enabled (so can see actual terminal)
 
+- 🚧 tty: mobile textarea disabled by default
+  - clarify enable/disable prompt button
+
 - manage: show tty profile key
 
-- manage: clean and clarify actions
+- ✅ manage: clean and clarify actions
 
 - ✅ if pause while interactive process still running, show CONT UI
   - ✅ also hide on Ctrl-C
