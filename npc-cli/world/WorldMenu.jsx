@@ -166,7 +166,7 @@ export default function WorldMenu(props) {
         <PopUp
           label="⋯"
           css={popUpCss}
-          width={350}
+          width={300}
         >
           <div className="ranges">
             <label>
@@ -331,7 +331,6 @@ const popUpCss = css`
       label div {
         display: flex;
         justify-content: center;
-        /* background-color: red; */
         width: 16px;
       }
       input {
@@ -340,9 +339,14 @@ const popUpCss = css`
     }
 
     .checkboxes {
+      width: 150px;
+      
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
+      flex-wrap: wrap;
+      justify-content: center;
+      label {
+        margin-right: 8px;
+      }
     }
 
     label {
