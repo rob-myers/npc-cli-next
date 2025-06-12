@@ -259,7 +259,8 @@ export class ttyShellClass implements Device {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
       if (opts.leading === true) {
         this.io.write({ key: 'external', msg: { key: 'interactive-finished', exitCode: term.exitCode ?? 0 } })
-      } else if (meta.pid !== 0) {
+        // } else if (meta.pid !== 0) {
+      } else {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       }
     }
@@ -325,9 +326,14 @@ export class ttyShellClass implements Device {
       this.input = null;
       this.process.ptags = undefined;
       
-      // 🔔 do not suspend leading process during PROFILE,
-      // otherwise we'll pause before spawning each subprocess
-      if (this.interactive === true) {
+      if (
+        // do not suspend leading process during PROFILE,
+        // otherwise we'll pause before spawning each subprocess
+        this.interactive === true
+        // do not suspend leading process if killed,
+        // otherwise <Tty> resume will think it was paused
+        && this.process.status === ProcessStatus.Running
+      ) {
         this.process.status = ProcessStatus.Suspended;
       }
     }
