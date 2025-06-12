@@ -49,10 +49,11 @@ export default function Root({ children }: React.PropsWithChildren) {
           <Viewer />
         </div>
       </div>
-      <ReactQueryDevtools
+      {/* 🔔 comment out for screenshots */}
+      {/* <ReactQueryDevtools
         initialIsOpen={false}
         buttonPosition="bottom-right"
-      />
+      /> */}
     </QueryClientProvider>
   );
 }

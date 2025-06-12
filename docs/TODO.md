@@ -16,7 +16,7 @@
       - ℹ️ `decor quad tilt` tilts around center
     - ✅ try use nodeCanvas for decor svg detail
   - 🚧 three images
-    - 1st ✅ 2nd 3rd
+    - 1st 🚧 2nd 3rd
 
 - ❌ refine chosen carousel embla-carousel
   - ✅ carousel has labels
