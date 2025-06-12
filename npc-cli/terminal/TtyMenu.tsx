@@ -165,7 +165,7 @@ const menuCss = css`
   .toggle-and-paused-controls {
     position: absolute;
     top: 0px;
-    right: calc(var(--menu-width) - 1px);
+    right: var(--menu-width);
 
     .toggle {
       width: 32px;
@@ -203,6 +203,7 @@ const menuCss = css`
   .touch-menu {
     max-height: 100%;
     overflow: auto;
+    border-left: 1px solid #444;
   }
 
   .icon {
