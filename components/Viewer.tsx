@@ -154,7 +154,7 @@ export default function Viewer() {
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
 
     // ensure layout if localStorage empty
-    useSite.api.restoreLayoutWithFallback("layout-preset-0", { preserveRestore: false });
+    useSite.api.restoreLayoutWithFallback("world-tty-default_profile", { preserveRestore: false });
 
     // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {

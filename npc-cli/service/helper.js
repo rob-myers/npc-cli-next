@@ -46,44 +46,26 @@ export const helper = {
   },
 
   /**
-   * 🔔 These "basic layouts" are populated when initiateBrowser
    * @type {Record<Key.LayoutPreset, import("../tabs/tab-util").BasicTabsLayout>}
    */
   layoutPreset: {
     "empty-layout": [],
-    "layout-preset-0": [
+    "world-tty-default_profile": [
       [
-        {
-          type: "component",
-          class: "World",
-          filepath: "world-0",
-          props: {
-            worldKey: "world-0",
-            mapKey: "demo-map-1",
-          },
-        },
-        {
-          type: "component",
-          class: "Debug",
-          filepath: "debug-0",
-          props: {},
-        },
+        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "demo-map-1" } },
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        {
-          type: "terminal",
-          filepath: "tty-1",
-          profileKey: 'profile_1',
-          env: { WORLD_KEY: "world-0" },
-        },
-        // {
-        //   type: "terminal",
-        //   filepath: "tty-2",
-        //   profileKey: 'profile-awaitWorld-sh',
-        //   env: { WORLD_KEY: "world-0" },
-        // },
-        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+        { type: "terminal", filepath: "tty-1", profileKey: 'default_profile', env: { WORLD_KEY: "world-0" } },
+      ]
+    ],
+    "world-tty-profile_1": [
+      [
+        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "demo-map-1" } },
+      ],
+      [
+        { type: "component", class: "Manage", filepath: "manage-0", props: {} },
+        { type: "terminal", filepath: "tty-1", profileKey: 'profile_1', env: { WORLD_KEY: "world-0" } },
       ]
     ],
   },

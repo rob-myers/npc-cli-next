@@ -303,8 +303,8 @@ export function removeTabFromLayout({ layout, tabId }: {
 
 export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
   if (!helper.isLayoutPresetKey(layoutPresetKey)) {
-    warn(`${'resolveLayoutPreset'}: invalid layoutKey: ${layoutPresetKey}`);
-    layoutPresetKey = 'layout-preset-0';
+    warn(`${'resolveLayoutPreset'}: invalid layoutPresetKey: ${layoutPresetKey}`);
+    layoutPresetKey = 'world-tty-default_profile';
   }
   return createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey]);
 }
