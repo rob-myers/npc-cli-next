@@ -134,7 +134,7 @@ interface Props {
 
 const menuCss = css`
   --menu-width: 54px;
-  height: inherit;
+  height: calc(100% - 8px);
 
   position: absolute;
   z-index: ${zIndexTabs.pausedControls};
@@ -145,10 +145,9 @@ const menuCss = css`
   display: flex;
   flex-direction: column;
 
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   line-height: 1; /** Needed for mobile viewing 'Desktop site' */
-  background-color: rgba(0, 0, 0, 0.7);
-  border: 1px solid #555;
+  border: none;
   border-width: 0 0 2px 2px;
   color: white;
 
@@ -181,7 +180,7 @@ const menuCss = css`
       background: rgba(0, 0, 0, 0.5);
       color: #ddd;
       border: 2px solid #444;
-      border-width: 0 0 2px 2px;
+      border-width: 0 2px 2px 2px;
     }
     
     .continue-interactive {
@@ -216,12 +215,13 @@ const menuCss = css`
   }
 
   .icon {
-    cursor: pointer;
     width: 100%;
+    height: 32px;
+    cursor: pointer;
     text-align: center;
     padding: 12px;
-    transform: scale(1.2);
     color: #cfc;
+    background-color: rgba(0, 0, 0, 0.7);
   }
 
   .can-type {
