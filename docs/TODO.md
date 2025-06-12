@@ -158,6 +158,8 @@
   - hide World behind other tab, then select it via manage, then change
   - presumably thinks its "in background"
 
+- ✅ BUG: CONT is showing when it should not
+
 - manage: show tty profile key
 
 - manage: clean and clarify actions
@@ -221,6 +223,8 @@ done
 
 - try "turn around before moving" via small acceleration initially
   - could also "pause before moving"
+
+- tty: command-by-command mode by setting leading process `ProcessStatus.Suspended` after each run
 
 - ✅ support decor cuboid meta `max-height` e.g. cuboid under obstacle
 
