@@ -197,14 +197,6 @@ const menuCss = css`
       font-weight: 600;
       font-size: 0.6rem;
       letter-spacing: 2px;
-
-      @keyframes flashIn {
-        0% { background-color: #aaa0; }
-        40% { background-color: #aaaa; }
-        60% { background-color: #aaaa; }
-        100% { background-color: #aaa0; }
-      }
-      animation: flashIn 500ms;
     }
   }
 
