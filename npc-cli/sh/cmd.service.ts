@@ -764,7 +764,6 @@ class cmdServiceClass {
           p.onResumes = p.onResumes.filter((onResume) => onResume());
           p.status = ProcessStatus.Running;
         } else {
-          p.status = ProcessStatus.Killed;
           // Avoid immediate clean because it stops `sleep` (??)
           // window.setTimeout(() => killProcess(p, opts.SIGINT));
           killProcess(p, opts.SIGINT);
