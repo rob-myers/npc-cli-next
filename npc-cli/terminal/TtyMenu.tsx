@@ -174,13 +174,13 @@ const menuCss = css`
       display: flex;
       justify-content: center;
       align-items: center;
-  
+      
       cursor: pointer;
-      font-size: 12px;
+      font-size: 1rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: rgba(0, 0, 0, 0.5);
       color: #ddd;
-      border: 2px solid #444;
-      border-width: 0 2px 2px 2px;
+      border: none;
     }
     
     .continue-interactive {
@@ -192,8 +192,7 @@ const menuCss = css`
       
       cursor: pointer;
       padding: 8px 0;
-      border: 2px solid #444;
-      border-width: 0 0 2px 2px;
+      border: none;
       color: #0f0b;
       font-weight: 600;
       font-size: 0.6rem;
