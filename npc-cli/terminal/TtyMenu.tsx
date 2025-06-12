@@ -195,10 +195,18 @@ const menuCss = css`
       padding: 8px 0;
       border: 2px solid #444;
       border-width: 0 0 2px 2px;
-      color: rgba(0, 255, 0, 0.8);
+      color: #0f0b;
       font-weight: 600;
       font-size: 0.6rem;
       letter-spacing: 2px;
+
+      @keyframes flashIn {
+        0% { background-color: #aaa0; }
+        40% { background-color: #aaaa; }
+        60% { background-color: #aaaa; }
+        100% { background-color: #aaa0; }
+      }
+      animation: flashIn 500ms;
     }
   }
 
