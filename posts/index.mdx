@@ -74,11 +74,9 @@ Under this assumption, no known game solves the underlying problem
 (or even comes close). But why?
 
 > Because it's too damn hard!
-
+>
 > In a nutshell: freely combining behaviours yields state-space explosions.
 
-{/* In a nutshell:
-freely combining behaviours yields state-space explosions.<SideNote>Even in very restricted settings e.g. [Conway's Game of Life](new-tab:https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).</SideNote> */}
 This already happens in very restricted settings e.g. [Conway's Game of Life](new-tab:https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 The number of states becomes too large to effectively explore.
 How can composite behaviour be resolved if the developer has never encountered it?
@@ -87,7 +85,7 @@ Thankfully we can solve all these problems if we _continually react to the Playe
 Rather than situate them in a prefabrication,
 we could fabricate everything around them, as and when we need to.
 
-This leads to intermediate objectives, stepping stones towards the underlying problem.
+This leads to intermediate objectives:
 
 <Card id="our-problem"> 
 **Our Problem**: The underlying problem with a human Game Master.
@@ -97,8 +95,7 @@ This leads to intermediate objectives, stepping stones towards the underlying pr
   A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
 </Card>
 
-Starting with the underlying problem and permitting a human to control the NPCs yields the second objective above.
-But the second objective is only possible via real time control systems i.e. the first objective.
+This is essentially the underlying problem, where a human Game Master controls the NPCs rather than an "automated director".
 
 {/* Reacting continually to the Player requires real-time control systems. */}
 {/* Solving the underlying problem would also require an "automated director". */}
