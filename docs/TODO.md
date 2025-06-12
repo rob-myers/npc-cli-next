@@ -143,6 +143,19 @@
   - ✅ command substitution outputs (jsStringified) js array if multiple values
   - 🔔 `fnFoo $( click 2 )` won't have $1 and $2 but only $1 i.e. `[...]`
 
+- ✅ BUG: pausing whilst PROFILE running was not working
+  - ℹ️ `spawn` was setting `process.status` `ProcessStatus.Running` for leading process
+  - ❌ spawned process should inherit status?
+    - a paused/dead process should never spawn another
+  - ✅ process pauses before `spawn` if paused
+    - currently we only suspend/resume process on read/write to device
+  - ✅ distinguish: auto-pasted lines from PROFILE, interactively specified command
+
+- ❌ BUG: cannot pause `w foo`
+- ✅ BUG: ctrl-c profile works with exitCode `130`
+
+- manage: can change tty profile key
+
 - manage: clean and clarify actions
 
 - ✅ if pause while interactive process still running, show CONT UI

@@ -462,12 +462,12 @@ const useStore = create<State>()(
 
       setLastExitCode(meta, exitCode) {
         const session = api.getSession(meta.sessionKey);
-        if (!session) {
-          return console.warn(`session ${meta.sessionKey} no longer exists`);
+        if (session === undefined) {
+          warn(`session ${meta.sessionKey} no longer exists`);
         } else if (typeof exitCode === "number") {
           session.lastExit[meta.background ? "bg" : "fg"] = exitCode;
         } else {
-          console.warn(`process ${meta.pid} had no exitCode`);
+          warn(`process ${meta.pid} had no exitCode`);
         }
       },
 

@@ -4,7 +4,7 @@ import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
 import { ansi } from "./const";
-import { ProcessError, ShError, ttyError } from "./util";
+import { killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { ProcessMeta, ProcessStatus } from "./session.store";
 import { semanticsService } from "./semantics.service";
@@ -21,6 +21,8 @@ export class ttyShellClass implements Device {
   private readonly maxLines = 500;
   private process!: ProcessMeta;
   private cleanups = [] as (() => void)[];
+  /** Currently only non-interactive when running PROFILE. */
+  private interactive = true;
 
   private oneTimeReaders = [] as {
     resolve: (msg: any) => void;
@@ -73,7 +75,7 @@ export class ttyShellClass implements Device {
         break;
       }
       case "send-line": {
-        if (this.oneTimeReaders.length) {
+        if (this.oneTimeReaders.length > 0) {
           this.oneTimeReaders.shift()!.resolve(msg.line);
           this.io.write({ key: "tty-received-line" });
         } else {
@@ -150,17 +152,22 @@ export class ttyShellClass implements Device {
     const session = useSession.api.getSession(this.sessionKey);
 
     try {
-      session.ttyShell.xterm.historyEnabled = false;
+      this.xterm.historyEnabled = false;
       useSession.api.writeMsg(
         this.sessionKey,
         `${ansi.Blue}${this.sessionKey}${ansi.White} running ${ansi.Blue}/home/PROFILE${ansi.Reset}`,
         "info"
       );
-      await session.ttyShell.xterm.pasteAndRunLines(profile.split("\n"), true);
-      this.prompt("$");
+      
+      this.interactive = false;
+      await this.xterm.pasteAndRunLines(profile.split("\n"), true);
+
     } catch {
+      // see tryParse catch
     } finally {
-      session.ttyShell.xterm.historyEnabled = true;
+      this.interactive = true;
+      this.xterm.historyEnabled = true;
+      this.prompt("$");
     }
   }
 
@@ -189,9 +196,20 @@ export class ttyShellClass implements Device {
   ) {
     const { meta } = term;
 
-    if (opts.leading) {
+    if (opts.leading === true && this.interactive === true) {
+      // interactively specified commands should run while <Tty> paused
       this.process.status = ProcessStatus.Running;
-    } else {
+    }
+
+    if (this.process.status === ProcessStatus.Suspended) {
+      // paused process should not spawn other, e.g. on pause profile
+      await new Promise<void>((resolve, reject) => {
+        this.process.cleanups.push(() => reject(killError(meta, 130)));
+        this.process.onResumes.push(resolve);
+      });
+    }
+
+    if (!opts.leading) {// create process
       const { ppid, pgid } = meta;
       const { positionals, ptags } = useSession.api.getProcess(meta); // parent
       const process = useSession.api.createProcess({
@@ -209,7 +227,7 @@ export class ttyShellClass implements Device {
       const parent = session.process[meta.ppid]; // Exists
       // Shallow clone avoids mutation by descendants
       process.inheritVar = { ...parent.inheritVar, ...parent.localVar };
-      if (opts.localVar) {
+      if (opts.localVar === true) {
         // Some processes need their own PWD e.g. background, subshell
         process.localVar.PWD = parent.inheritVar.PWD ?? session.var.PWD;
         process.localVar.OLDPWD = parent.inheritVar.OLDPWD ?? session.var.OLDPWD;
@@ -220,7 +238,7 @@ export class ttyShellClass implements Device {
       for await (const _ of semanticsService.File(term)) {
         // Unreachable: yielded values already sent to devices (tty, fifo, null, var, voice)
       }
-      term.meta.verbose &&
+      term.meta.verbose === true &&
         console.warn(
           `${meta.sessionKey}${meta.background ? " (background)" : ""}: ${meta.pid}: exit ${
             term.exitCode
@@ -267,7 +285,6 @@ export class ttyShellClass implements Device {
 
       switch (result.key) {
         case "failed": {
-          this.xterm.shouldEcho = true;
           const errMsg = `mvdan-sh: ${result.error.replace(/^src\.sh:/, "")}`;
           error(errMsg);
           this.io.write({ key: "error", msg: errMsg });
@@ -276,7 +293,6 @@ export class ttyShellClass implements Device {
           break;
         }
         case "complete": {
-          this.xterm.shouldEcho = true;
           this.buffer.length = 0;
           const singleLineSrc = srcService.src(result.parsed);
           if (singleLineSrc && this.xterm.historyEnabled) {
@@ -306,7 +322,7 @@ export class ttyShellClass implements Device {
     } finally {
       this.input?.resolve();
       this.input = null;
-      this.process.status = ProcessStatus.Suspended;
+      // this.process.status = ProcessStatus.Suspended;
       this.process.ptags = undefined;
     }
   }

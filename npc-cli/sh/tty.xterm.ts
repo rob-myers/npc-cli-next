@@ -56,8 +56,6 @@ export class ttyXtermClass {
   historyEnabled = true;
   cleanups = [] as (() => void)[];
   maxStringifyLength = 2 * scrollback * 100;
-  /** Paste echo controlled via prefix `NOECHO=1 ` */
-  shouldEcho = true;
 
   get active() {
     return this.xterm.buffer.active;
@@ -635,7 +633,6 @@ export class ttyXtermClass {
    * Paste lines, greedily running them as soon as a newline is encountered.
    */
   async pasteAndRunLines(lines: string[], fromProfile = false) {
-    // Clear pending input which should now prefix `lines[0]`
     this.clearInput();
     this.xterm.write(this.prompt);
 
@@ -766,19 +763,9 @@ export class ttyXtermClass {
           return;
         }
         case "paste-line": {
-          if (command.line.startsWith("NOECHO=1 ")) {
-            this.shouldEcho = false; // Turned off in tty.shell
-          }
-
-          if (this.shouldEcho) {
-            this.xterm.writeln(command.line);
-            this.input = command.line;
-            this.sendLine();
-          } else {
-            this.input = command.line;
-            this.sendLine();
-            // this.input = '';
-          }
+          this.xterm.writeln(command.line);
+          this.input = command.line;
+          this.sendLine();
           return;
         }
         case "resolve": {
@@ -1000,7 +987,11 @@ type XtermOutputCommand =
       key: "newline";
     }
   | {
-      /** Write a pasted line of text and send it to tty */
+      /**
+       * Write a pasted line of text and send it to tty.
+       * - Currently this only happens in PROFILE.
+       * - These are not interactively specified.
+       */
       key: "paste-line";
       line: string;
     }
