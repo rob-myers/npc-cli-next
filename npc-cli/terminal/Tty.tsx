@@ -79,8 +79,11 @@ export default function Tty(props: Props) {
         p.key === 0 // ensure leading process
         || (p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true)
       ));
-      
-      const interactivePaused = processes[0]?.status === ProcessStatus.Running;
+
+      // 🚧 new approach: CONT visible whenever leading process suspended and promptReady false
+      // 🚧 new approach: STOP visible whenever leading process running
+
+      const leadingProcessWasRunning = session.ttyShell.xterm.isPromptReady() === false;
 
       for (const p of processes) {
         p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
@@ -88,17 +91,20 @@ export default function Tty(props: Props) {
         state.pausedPids[p.key] = true;
       }
 
-      if (interactivePaused) {
+      if (leadingProcessWasRunning === true) {
+        // we've suspended leading process, so provide option to resume it
         state.continueInteractive = () => {
           state.continueInteractive = undefined;
           useSession.api.getProcesses(props.sessionKey, 0).forEach(p => {
             p.status = ProcessStatus.Running;
             p.onResumes = p.onResumes.filter(onResume => onResume());
+            delete state.pausedPids[p.key];
           });
           update();
         };
         update();
-      } else {// avoid resuming interactive process
+      } else {
+        // avoid resuming leading process
         delete state.pausedPids[0];
       }
     },
@@ -134,7 +140,7 @@ export default function Tty(props: Props) {
         delete state.pausedPids[p.key];
       }
 
-      if (state.continueInteractive) {
+      if (state.continueInteractive !== undefined) {
         state.continueInteractive = undefined;
         update();
       }

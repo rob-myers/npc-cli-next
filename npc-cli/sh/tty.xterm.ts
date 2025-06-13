@@ -356,12 +356,12 @@ export class ttyXtermClass {
       // ansi escape sequences
       switch (data.slice(1)) {
         case "[A": // Up arrow
-          if (this.promptReady) {
+          if (this.promptReady === true) {
             this.reqHistoryLine(+1);
           }
           break;
         case "[B": // Down arrow
-          if (this.promptReady) {
+          if (this.promptReady === true) {
             this.reqHistoryLine(-1);
           }
           break;
@@ -708,7 +708,7 @@ export class ttyXtermClass {
   }
 
   reqHistoryLine(dir: -1 | 1) {
-    if (this.promptReady) {
+    if (this.promptReady === true) {
       this.session.io.writeToReaders({
         key: "req-history-line",
         historyIndex: this.historyIndex + dir,
@@ -879,7 +879,7 @@ export class ttyXtermClass {
      * (a) delete 1st character of multiline input.
      * (b) delete 1st character while TTY connected to process e.g. `map 'x => 2 ** x'`
      */
-    if (!(realNewInput.endsWith('\n') || !this.promptReady) && this.inputEndsAtEdge(newInput)) {
+    if (!(realNewInput.endsWith('\n') || this.promptReady) && this.inputEndsAtEdge(newInput)) {
       this.xterm.write("\r\n");
     }
     this.input = newInput;
@@ -915,7 +915,7 @@ export class ttyXtermClass {
    * Splice `input` into `this.input`.
    */
   spliceInput(input: string) {
-    if (this.promptReady) {
+    if (this.promptReady === true) {
       const prevInput = this.input;
       const prevCursor = this.cursor;
       this.clearInput();
@@ -930,7 +930,7 @@ export class ttyXtermClass {
   }
 
   warnIfNotReady() {
-    if (!this.promptReady) {
+    if (this.promptReady === false) {
       this.queueCommands([{ key: "line", line: formatMessage("not ready", "info") }]);
       return true; // not ready
     } else {

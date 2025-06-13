@@ -164,6 +164,11 @@
 
 - ✅ manage: open tty tab while paused is now enabled (so can see actual terminal)
 
+- 🚧 CONT/STOP ui new approach:
+  - ℹ️ independent of Tty pause/resume ui
+  - CONT visible whenever leading process suspended and promptReady false
+  - STOP visible whenever leading process running
+
 - 🚧 tty: mobile textarea disabled by default
   - clarify enable/disable prompt button
 

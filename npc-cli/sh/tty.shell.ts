@@ -21,8 +21,7 @@ export class ttyShellClass implements Device {
   private readonly maxLines = 500;
   private process!: ProcessMeta;
   private cleanups = [] as (() => void)[];
-  /** Currently only non-interactive when running PROFILE. */
-  private interactive = true;
+  private profileHasRun = false;
 
   private oneTimeReaders = [] as {
     resolve: (msg: any) => void;
@@ -142,14 +141,14 @@ export class ttyShellClass implements Device {
   /**
    * We run the profile by pasting it into the terminal.
    * This explicit approach can be avoided via `source`.
+   * 
+   * Importantly this sets `this.profileHasRun` as `true`.
    */
   async runProfile() {
     const profile = useSession.api.getVar(
       { pid: 0, sessionKey: this.sessionKey } as Sh.BaseMeta,
       "PROFILE",
     ) || "";
-
-    const session = useSession.api.getSession(this.sessionKey);
 
     try {
       this.xterm.historyEnabled = false;
@@ -159,13 +158,12 @@ export class ttyShellClass implements Device {
         "info"
       );
       
-      this.interactive = false;
       await this.xterm.pasteAndRunLines(profile.split("\n"), true);
 
     } catch {
       // see tryParse catch
     } finally {
-      this.interactive = true;
+      this.profileHasRun = true;
       this.process.status = ProcessStatus.Suspended;
       this.xterm.historyEnabled = true;
       this.prompt("$");
@@ -197,8 +195,8 @@ export class ttyShellClass implements Device {
   ) {
     const { meta } = term;
 
-    if (opts.leading === true && this.interactive === true) {
-      // interactively specified commands should run while <Tty> paused
+    if (opts.leading === true && this.profileHasRun === true) {
+      // after profile, paused/killed leading process can run again
       this.process.status = ProcessStatus.Running;
     }
 
@@ -326,14 +324,9 @@ export class ttyShellClass implements Device {
       this.input = null;
       this.process.ptags = undefined;
       
-      if (
-        // do not suspend leading process during PROFILE,
-        // otherwise we'll pause before spawning each subprocess
-        this.interactive === true
-        // do not suspend leading process if killed,
-        // otherwise <Tty> resume will think it was paused
-        && this.process.status === ProcessStatus.Running
-      ) {
+      // do not suspend leading process during profile,
+      // otherwise we'll pause before spawning each subprocess
+      if (this.profileHasRun === true) {
         this.process.status = ProcessStatus.Suspended;
       }
     }
