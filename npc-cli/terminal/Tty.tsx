@@ -88,8 +88,10 @@ export default function Tty(props: Props) {
 
       if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
         state.canContOrStop = 'CONT';
-        update();
+      } else {
+        state.canContOrStop = null;
       }
+      update();
     },
     reboot() {
       state.booted = false;
@@ -124,14 +126,15 @@ export default function Tty(props: Props) {
         } else if (p.status !== ProcessStatus.Suspended || (noPausePtag in p.ptags)) {
           continue; // only resume if suspended and lacks ptag
         }
-
         p.status = ProcessStatus.Running;
         p.onResumes = p.onResumes.filter(onResume => onResume());
       }
 
-      state.canContOrStop = (
-        session.ttyShell.isInteractive() || !session.ttyShell.isProfileFinished()
-      ) ? null : 'STOP';
+      if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
+        state.canContOrStop = 'STOP';
+      } else {
+        state.canContOrStop = null;
+      }
       update();
     },
     async storeAndSourceFuncs() {
@@ -139,7 +142,7 @@ export default function Tty(props: Props) {
 
       Object.assign(session.etc, props.shFiles);
 
-      // only auto-re-source files that already have been sourced
+      // only auto-rex-source files that already have been sourced
       await Promise.all(keys(state.reSource).map(async filename => {
         try {
           await session.ttyShell.sourceEtcFile(filename);  
@@ -178,8 +181,10 @@ export default function Tty(props: Props) {
     // avoid initial pause when props.disabled true
     const somethingSpawned = session.nextPid > 1;
 
-    if (props.disabled === true && somethingSpawned === true) {
-      state.pauseRunningProcesses();
+    if (props.disabled === true) {
+      if (somethingSpawned === true) {
+        state.pauseRunningProcesses();
+      }
       return () => state.resumeRunningProcesses();
     }
   }, [props.disabled, state.base.session])
