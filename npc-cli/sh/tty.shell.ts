@@ -1,5 +1,5 @@
 import type * as Sh from "./parse";
-import { error, testNever } from "../service/generic";
+import { error, testNever, warn } from "../service/generic";
 import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
@@ -175,7 +175,8 @@ export class ttyShellClass implements Device {
     const src = session.etc[filename];
     const term = parseService.parse(src);
     this.provideContextToParsed(term);
-    return this.spawn(term);
+    // defining shell functions shouldn't be paused
+    await this.spawn(term, { unPausable: true });
   }
 
   /**
@@ -191,6 +192,7 @@ export class ttyShellClass implements Device {
       leading?: boolean;
       localVar?: boolean;
       posPositionals?: string[];
+      unPausable?: boolean;
     } = {}
   ) {
     const { meta } = term;
@@ -200,8 +202,8 @@ export class ttyShellClass implements Device {
       this.process.status = ProcessStatus.Running;
     }
 
-    if (this.process.status === ProcessStatus.Suspended) {
-      // paused process should not spawn other, e.g. on pause profile
+    if (this.process.status === ProcessStatus.Suspended && opts.unPausable !== true) {
+      // paused leading process should not spawn other, e.g. on pause profile
       await new Promise<void>((resolve, reject) => {
         this.process.cleanups.push(() => reject(killError(meta, 130)));
         this.process.onResumes.push(resolve);
@@ -237,12 +239,11 @@ export class ttyShellClass implements Device {
       for await (const _ of semanticsService.File(term)) {
         // Unreachable: yielded values already sent to devices (tty, fifo, null, var, voice)
       }
-      term.meta.verbose === true &&
-        console.warn(
-          `${meta.sessionKey}${meta.background ? " (background)" : ""}: ${meta.pid}: exit ${
-            term.exitCode
-          }`
-        );
+      term.meta.verbose === true && warn(
+        `${meta.sessionKey}${meta.background ? " (background)" : ""}: ${meta.pid}: exit ${
+          term.exitCode
+        }`
+      );
     } catch (e) {
       if (e instanceof ProcessError) {
         // 🔔 possibly via preProcessWrite
