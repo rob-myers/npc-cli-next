@@ -164,10 +164,17 @@
 
 - ✅ manage: open tty tab while paused is now enabled (so can see actual terminal)
 
-- 🚧 CONT/STOP ui new approach:
+- 🚧 `<Tty>` should receive disabled like other tabs, but handles differently
+  - ✅ can boot while disabled
+  - ✅ on open tty tab while paused, tty profile should not pause initially
+    - can test `nextPid > 1`
+  - ✅ if `<Tabs>` disabled then background processes without `'always' in ptags` start suspended (in sync)
+    - ℹ️ ttyShell.bgSuspendUnless := 'always'
+  - ✅ `<Tty>` resumeRunningProcesses resumes all suspended processes sans tag `always`
+  - 🚧 CONT not shown during profile
+
+- CONT/STOP ui new approach:
   - ℹ️ independent of Tty pause/resume ui
-  - if pause profile then CONT, it runs background processes that expect to be paused when the World is...
-    so maybe CONT/STOP should not be available during profile
   - CONT visible whenever leading process suspended and promptReady false
   - STOP visible whenever leading process running
 

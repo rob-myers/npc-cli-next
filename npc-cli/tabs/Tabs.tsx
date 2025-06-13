@@ -189,8 +189,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         };
         
         if (visible) {
-          // 🔔 visible tab enabled iff a terminal or Tabs is enabled
-          tabState.disabled = tabDef.type === 'component' && !state.enabled;
+          // 🔔 visible tab enabled iff Tabs is enabled
+          tabState.disabled = !state.enabled;
           const maxNode = state.model.getMaximizedTabset()?.getSelectedNode();
           tabState.everUncovered ||= maxNode ? node === maxNode : true;
           setTimeout(update); // 🔔 Cannot update a component (`Tabs`) while rendering a different component (`Layout`)

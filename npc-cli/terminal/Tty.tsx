@@ -38,7 +38,6 @@ export default function Tty(props: Props) {
     fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
-    pausedPids: {} as Record<number, true>,
     /** Should file be auto-re-sourced on hot-module-reload? */
     reSource: {} as Record<string, true>,
 
@@ -47,6 +46,7 @@ export default function Tty(props: Props) {
         case 'auto-re-source-file': {
           const basename = msg.absPath.slice('/etc/'.length);
           if (basename in props.shFiles) {
+            // 🔔 works for non-integers i.e. key appended
             delete state.reSource[basename];
             state.reSource[basename] = true;
           } else {
@@ -88,7 +88,6 @@ export default function Tty(props: Props) {
       for (const p of processes) {
         p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
         p.status = ProcessStatus.Suspended;
-        state.pausedPids[p.key] = true;
       }
 
       if (leadingProcessWasRunning === true) {
@@ -98,14 +97,12 @@ export default function Tty(props: Props) {
           useSession.api.getProcesses(props.sessionKey, 0).forEach(p => {
             p.status = ProcessStatus.Running;
             p.onResumes = p.onResumes.filter(onResume => onResume());
-            delete state.pausedPids[p.key];
           });
           update();
         };
         update();
       } else {
         // avoid resuming leading process
-        delete state.pausedPids[0];
       }
     },
     reboot() {
@@ -128,16 +125,22 @@ export default function Tty(props: Props) {
       }
     },
     resumeRunningProcesses() {
-      const processes = Object.values(state.base?.session?.process ?? {}).filter(p =>
-        state.pausedPids[p.key] === true
-      );
+      const { session } = state.base;
+      if (!session) {
+        return;
+      }
 
-      for (const p of processes) {
-        if (p.status === ProcessStatus.Suspended) {
-          p.status = ProcessStatus.Running;
-          p.onResumes = p.onResumes.filter(onResume => onResume());
+      for (const p of Object.values(session.process)) {
+        if (p.key === 0) {
+          if (session.ttyShell.interactive === true) {
+            continue; // only resume leading process if non-interactive
+          }
+        } else if (p.status !== ProcessStatus.Suspended || (noPausePtag in p.ptags)) {
+          continue; // only resume if suspended and lacks ptag
         }
-        delete state.pausedPids[p.key];
+
+        p.status = ProcessStatus.Running;
+        p.onResumes = p.onResumes.filter(onResume => onResume());
       }
 
       if (state.continueInteractive !== undefined) {
@@ -150,7 +153,7 @@ export default function Tty(props: Props) {
 
       Object.assign(session.etc, props.shFiles);
 
-      // 🚧 only auto-re-source files that already have been sourced
+      // only auto-re-source files that already have been sourced
       await Promise.all(keys(state.reSource).map(async filename => {
         try {
           await session.ttyShell.sourceEtcFile(filename);  
@@ -179,7 +182,17 @@ export default function Tty(props: Props) {
   });
 
   React.useEffect(() => {// Pause/resume
-    if (props.disabled && state.base.session) {
+    const { session } = state.base;
+    if (!session) {
+      return;
+    }
+
+    // if disabled, suspend spawned bg processes unless 'always' in ptags
+    session.ttyShell.bgSuspendUnless = !!props.disabled ? noPausePtag : null;
+    // avoid initial pause when props.disabled true
+    const somethingSpawned = session.nextPid > 1;
+
+    if (props.disabled === true && somethingSpawned === true) {
       state.pauseRunningProcesses();
       return () => state.resumeRunningProcesses();
     }
@@ -222,8 +235,8 @@ export default function Tty(props: Props) {
     }
   }, [state.base.session, props.profile]);
 
-  React.useEffect(() => {// Boot profile
-    if (state.base.session && !props.disabled && !state.booted) {
+  React.useEffect(() => {// Boot profile (possibly while disabled)
+    if (state.base.session && !state.booted) {
       const { xterm, session } = state.base;
       xterm.initialise();
       state.booted = true;

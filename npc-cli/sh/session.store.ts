@@ -50,7 +50,7 @@ export type State = {
       pgid: number;
       src: string;
       posPositionals?: string[];
-      ptags?: Meta;
+      ptags: Meta;
     }) => ProcessMeta;
     createFifo: (fifoKey: string, size?: number) => FifoDevice;
     createVarDevice: (meta: BaseMeta, varPath: string, mode: VarDeviceMode) => VarDevice;
@@ -181,7 +181,7 @@ export interface ProcessMeta {
   /** Inherited local variables. */
   inheritVar: Record<string, any>;
   /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
-  ptags?: Record<string, any>;
+  ptags: Record<string, any>;
 }
 
 export interface TtyLinkCtxt {

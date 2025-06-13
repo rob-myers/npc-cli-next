@@ -407,7 +407,7 @@ class cmdServiceClass {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
           const hasLinks = !shouldSuppressLinks(p);
           const linksOrEmpty = hasLinks ? `${statusLinks[p.status]} ` : '';
-          const tagsOrEmpty = p.ptags !== undefined ? `${ansi.BrightYellow}${opts.s ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
+          const tagsOrEmpty = Object.keys(p.ptags).length > 0 ? `${ansi.BrightYellow}${opts.s ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
           const oneLineSrcOrEmpty = !opts.s ? truncateOneLine(p.src.trimStart(), 30) : '';
           const line = `${statusColour[p.status]}${info}${ansi.Reset}${linksOrEmpty}${tagsOrEmpty}${oneLineSrcOrEmpty}`;
           if (hasLinks === true) registerStatusLinks(p, line);

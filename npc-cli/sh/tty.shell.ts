@@ -13,6 +13,9 @@ import { ttyXtermClass } from "./tty.xterm";
 export class ttyShellClass implements Device {
   public key: string;
   public xterm!: ttyXtermClass;
+  /** Suspend background processes unless has this ptag */
+  public bgSuspendUnless = null as null | string;
+
   /** Lines received from a TtyXterm. */
   private inputs = [] as { line: string; resolve: () => void }[];
   private input = null as null | { line: string; resolve: () => void };
@@ -59,7 +62,16 @@ export class ttyShellClass implements Device {
       ppid: 0,
       pgid: 0,
       src: "",
+      ptags: {},
     });
+  }
+
+  /**
+   * The shell is interactive iff the profile has run and the prompt is ready.
+   * This should happen exactly when the leading process is NOT running.
+   */
+  get interactive() {
+    return this.profileHasRun === true && this.xterm.isPromptReady() === true;
   }
 
   private onMessage(msg: MessageFromXterm) {
@@ -196,6 +208,8 @@ export class ttyShellClass implements Device {
   ) {
     const { meta } = term;
 
+    // 🚧 clean
+
     if (opts.leading === true && this.profileHasRun === true) {
       // after profile, we only reach this by interactively specifying a command
       this.process.status = ProcessStatus.Running;
@@ -218,10 +232,20 @@ export class ttyShellClass implements Device {
         sessionKey: meta.sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || positionals.slice(1),
-        ptags,
+        ptags: {...ptags},
       });
       meta.pid = process.key;
       opts.cleanups !== undefined && process.cleanups.push(...opts.cleanups);
+
+      if (
+        process.pgid !== 0 
+        && this.bgSuspendUnless !== null
+        && !(this.bgSuspendUnless in ptags)
+      ) {
+        // If `bgSuspendUnless` non-null, suspend spawned background processes without this ptag.
+        // This permits us to represent <Tabs> disabled.
+        process.status = ProcessStatus.Suspended;
+      }
 
       const session = useSession.api.getSession(meta.sessionKey);
       const parent = session.process[meta.ppid]; // Exists
@@ -323,7 +347,7 @@ export class ttyShellClass implements Device {
     } finally {
       this.input?.resolve();
       this.input = null;
-      this.process.ptags = undefined;
+      this.process.ptags = {};
       
       // do not suspend leading process during profile,
       // otherwise we'll pause before spawning each subprocess
