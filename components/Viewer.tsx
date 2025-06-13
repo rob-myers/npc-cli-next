@@ -280,9 +280,9 @@ const tabsContainerCss = css`
     
     cursor: pointer;
     background-image: url(/images/desktop-empty-world__20250612.webp);
-    background-size: 100%;
+    background-size: 200%;
     background-repeat: no-repeat;
-    background-position: 0% 100%;
+    background-position: 0% 50%;
     filter: brightness(2);
   }
 `;
