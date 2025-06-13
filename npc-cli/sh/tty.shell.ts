@@ -175,8 +175,7 @@ export class ttyShellClass implements Device {
     const src = session.etc[filename];
     const term = parseService.parse(src);
     this.provideContextToParsed(term);
-    // defining shell functions shouldn't be paused
-    await this.spawn(term, { unPausable: true });
+    await this.spawn(term);
   }
 
   /**
@@ -189,28 +188,28 @@ export class ttyShellClass implements Device {
     term: Sh.FileWithMeta,
     opts: {
       cleanups?: (() => void)[];
+      /** This means `term.meta.pid === 0`. */
       leading?: boolean;
       localVar?: boolean;
       posPositionals?: string[];
-      unPausable?: boolean;
     } = {}
   ) {
     const { meta } = term;
 
     if (opts.leading === true && this.profileHasRun === true) {
-      // after profile, paused/killed leading process can run again
+      // after profile, we only reach this by interactively specifying a command
       this.process.status = ProcessStatus.Running;
     }
 
-    if (this.process.status === ProcessStatus.Suspended && opts.unPausable !== true) {
-      // paused leading process should not spawn other, e.g. on pause profile
+    if (this.profileHasRun === false && this.process.status === ProcessStatus.Suspended) {
+      // if leading process paused during profile (via <Tty>), halt all process spawns
       await new Promise<void>((resolve, reject) => {
         this.process.cleanups.push(() => reject(killError(meta, 130)));
         this.process.onResumes.push(resolve);
       });
     }
 
-    if (!opts.leading) {// create process
+    if (opts.leading !== true) {// create process
       const { ppid, pgid } = meta;
       const { positionals, ptags } = useSession.api.getProcess(meta); // parent
       const process = useSession.api.createProcess({
@@ -235,9 +234,10 @@ export class ttyShellClass implements Device {
       }
     }
 
-    try {
+    try {// Run process
       for await (const _ of semanticsService.File(term)) {
-        // Unreachable: yielded values already sent to devices (tty, fifo, null, var, voice)
+        // Unreachable: yielded values already sent to devices:
+        // (tty, fifo, null, var, voice)
       }
       term.meta.verbose === true && warn(
         `${meta.sessionKey}${meta.background ? " (background)" : ""}: ${meta.pid}: exit ${
@@ -257,8 +257,8 @@ export class ttyShellClass implements Device {
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
       if (opts.leading === true) {
+        // 🚧
         this.io.write({ key: 'external', msg: { key: 'interactive-finished', exitCode: term.exitCode ?? 0 } })
-        // } else if (meta.pid !== 0) {
       } else {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       }

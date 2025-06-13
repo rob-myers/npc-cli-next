@@ -166,6 +166,8 @@
 
 - 🚧 CONT/STOP ui new approach:
   - ℹ️ independent of Tty pause/resume ui
+  - if pause profile then CONT, it runs background processes that expect to be paused when the World is...
+    so maybe CONT/STOP should not be available during profile
   - CONT visible whenever leading process suspended and promptReady false
   - STOP visible whenever leading process running
 
