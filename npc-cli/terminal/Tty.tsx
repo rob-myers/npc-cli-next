@@ -125,7 +125,7 @@ export default function Tty(props: Props) {
       }
     },
     resumeRunningProcesses() {
-      const { session } = state.base;
+      const { session } = state.base ?? {};
       if (!session) {
         return;
       }
