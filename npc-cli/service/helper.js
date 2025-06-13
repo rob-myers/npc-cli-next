@@ -52,7 +52,7 @@ export const helper = {
     "empty-layout": [],
     "world-tty-default_profile": [
       [
-        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "demo-map-1" } },
+        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
@@ -61,7 +61,7 @@ export const helper = {
     ],
     "world-tty-profile_1": [
       [
-        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "demo-map-1" } },
+        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
