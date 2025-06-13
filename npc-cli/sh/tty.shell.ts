@@ -21,10 +21,10 @@ export class ttyShellClass implements Device {
   private input = null as null | { line: string; resolve: () => void };
   /** Lines in current interactive parse */
   private buffer = [] as string[];
+  private cleanups = [] as (() => void)[];
   private readonly maxLines = 500;
   private process!: ProcessMeta;
-  private cleanups = [] as (() => void)[];
-  private profileHasRun = false;
+  private profileFinished = false;
 
   private oneTimeReaders = [] as {
     resolve: (msg: any) => void;
@@ -46,10 +46,6 @@ export class ttyShellClass implements Device {
     this.cleanups.length = 0;
   }
 
-  get initialized() {
-    return !!this.process;
-  }
-
   async initialise(xterm: ttyXtermClass) {
     await loadMvdanSh(); // ensure parser loaded
 
@@ -66,12 +62,21 @@ export class ttyShellClass implements Device {
     });
   }
 
+
+  isInitialized() {
+    return !!this.process;
+  }
+
   /**
    * The shell is interactive iff the profile has run and the prompt is ready.
    * This should happen exactly when the leading process is NOT running.
    */
-  get interactive() {
-    return this.profileHasRun === true && this.xterm.isPromptReady() === true;
+  isInteractive() {
+    return this.profileFinished === true && this.xterm.isPromptReady() === true;
+  }
+
+  isProfileFinished() {
+    return this.profileFinished;
   }
 
   private onMessage(msg: MessageFromXterm) {
@@ -175,7 +180,7 @@ export class ttyShellClass implements Device {
     } catch {
       // see tryParse catch
     } finally {
-      this.profileHasRun = true;
+      this.profileFinished = true;
       this.process.status = ProcessStatus.Suspended;
       this.xterm.historyEnabled = true;
       this.prompt("$");
@@ -208,19 +213,22 @@ export class ttyShellClass implements Device {
   ) {
     const { meta } = term;
 
-    // 🚧 clean
-
-    if (opts.leading === true && this.profileHasRun === true) {
-      // after profile, we only reach this by interactively specifying a command
-      this.process.status = ProcessStatus.Running;
-    }
-
-    if (this.profileHasRun === false && this.process.status === ProcessStatus.Suspended) {
-      // if leading process paused during profile (via <Tty>), halt all process spawns
-      await new Promise<void>((resolve, reject) => {
-        this.process.cleanups.push(() => reject(killError(meta, 130)));
-        this.process.onResumes.push(resolve);
-      });
+    if (this.profileFinished === true) {
+      if (opts.leading === true) {
+        // Only reachable by interactively specifying a command after profile has run
+        // We ensure leading process has status Running
+        this.process.status = ProcessStatus.Running;
+        this.io.write({ key: 'external', msg: { key: 'interactive-start' } });
+      }
+    } else {
+      if (this.process.status === ProcessStatus.Suspended) {
+        // Only reachable if leading process paused (via <Tabs>) during profile
+        // We halt all subprocesses
+        await new Promise<void>((resolve, reject) => {
+          this.process.cleanups.push(() => reject(killError(meta, 130)));
+          this.process.onResumes.push(resolve);
+        });
+      }
     }
 
     if (opts.leading !== true) {// create process
@@ -280,11 +288,11 @@ export class ttyShellClass implements Device {
       throw e;
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
-      if (opts.leading === true) {
-        // 🚧
-        this.io.write({ key: 'external', msg: { key: 'interactive-finished', exitCode: term.exitCode ?? 0 } })
-      } else {
+
+      if (opts.leading !== true) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
+      } else if (this.profileFinished === true) {
+        this.io.write({ key: 'external', msg: { key: 'interactive-end', exitCode: term.exitCode ?? 0 } }); 
       }
     }
   }
@@ -351,7 +359,7 @@ export class ttyShellClass implements Device {
       
       // do not suspend leading process during profile,
       // otherwise we'll pause before spawning each subprocess
-      if (this.profileHasRun === true) {
+      if (this.profileFinished === true) {
         this.process.status = ProcessStatus.Suspended;
       }
     }

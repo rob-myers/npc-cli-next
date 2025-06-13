@@ -33,8 +33,7 @@ export default function Tty(props: Props) {
      */
     booted: false,
     bounds,
-    /** Show "CONT" and invoke this onclick  */
-    continueInteractive: undefined as undefined | (() => void),
+    canContOrStop: null as null | 'CONT' | 'STOP',
     fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
@@ -54,11 +53,13 @@ export default function Tty(props: Props) {
           }
           break;
         }
-        case 'interactive-finished':
-          if (state.continueInteractive !== undefined) {
-            state.continueInteractive = undefined;
-            update();
-          }
+        case 'interactive-start':
+          state.canContOrStop = 'STOP';
+          update();
+          break;
+        case 'interactive-end':
+          state.canContOrStop = null;
+          update();
           break;
         default:
           warn(`${'handleExternalMsg'}: unexpected message: ${jsStringify(msg)}`);
@@ -77,32 +78,17 @@ export default function Tty(props: Props) {
       
       const processes = Object.values(session.process ?? {}).filter(p => (
         p.key === 0 // ensure leading process
-        || (p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true)
+        || (p.status === ProcessStatus.Running && !(noPausePtag in p.ptags))
       ));
-
-      // 🚧 new approach: CONT visible whenever leading process suspended and promptReady false
-      // 🚧 new approach: STOP visible whenever leading process running
-
-      const leadingProcessWasRunning = session.ttyShell.xterm.isPromptReady() === false;
 
       for (const p of processes) {
         p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
         p.status = ProcessStatus.Suspended;
       }
 
-      if (leadingProcessWasRunning === true) {
-        // we've suspended leading process, so provide option to resume it
-        state.continueInteractive = () => {
-          state.continueInteractive = undefined;
-          useSession.api.getProcesses(props.sessionKey, 0).forEach(p => {
-            p.status = ProcessStatus.Running;
-            p.onResumes = p.onResumes.filter(onResume => onResume());
-          });
-          update();
-        };
+      if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
+        state.canContOrStop = 'CONT';
         update();
-      } else {
-        // avoid resuming leading process
       }
     },
     reboot() {
@@ -132,7 +118,7 @@ export default function Tty(props: Props) {
 
       for (const p of Object.values(session.process)) {
         if (p.key === 0) {
-          if (session.ttyShell.interactive === true) {
+          if (session.ttyShell.isInteractive()) {
             continue; // only resume leading process if non-interactive
           }
         } else if (p.status !== ProcessStatus.Suspended || (noPausePtag in p.ptags)) {
@@ -143,10 +129,10 @@ export default function Tty(props: Props) {
         p.onResumes = p.onResumes.filter(onResume => onResume());
       }
 
-      if (state.continueInteractive !== undefined) {
-        state.continueInteractive = undefined;
-        update();
-      }
+      state.canContOrStop = (
+        session.ttyShell.isInteractive() || !session.ttyShell.isProfileFinished()
+      ) ? null : 'STOP';
+      update();
     },
     async storeAndSourceFuncs() {
       const session = state.base.session;
@@ -224,7 +210,7 @@ export default function Tty(props: Props) {
   }, [bounds]);
 
   React.useEffect(() => {// sync shell functions
-    if (state.base.session?.ttyShell.initialized === true) {
+    if (state.base.session?.ttyShell.isInitialized()) {
       state.storeAndSourceFuncs();
     }
   }, [state.base.session, ...Object.entries(props.shFiles).flatMap(x => x)]);
@@ -261,9 +247,9 @@ export default function Tty(props: Props) {
       />
       {state.base.session && (
         <TtyMenu
-          session={state.base.session}
-          continueInteractive={state.continueInteractive}
+          canContOrStop={state.canContOrStop}
           disabled={props.disabled}
+          session={state.base.session}
           setTabsEnabled={props.setTabsEnabled}
         />
       )}

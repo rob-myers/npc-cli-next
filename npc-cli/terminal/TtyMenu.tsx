@@ -12,9 +12,12 @@ export default function TtyMenu(props: Props) {
   const update = useUpdate();
 
   const state = useStateRef(() => ({
-    xterm: props.session.ttyShell.xterm,
     touchMenuOpen: true,
+    xterm: props.session.ttyShell.xterm,
 
+    contOrStopInteractive() {
+      console.log('🚧 do:', props.canContOrStop);
+    },
     async onClickMenu(e: React.MouseEvent) {
       const target = e.target as HTMLElement;
       state.xterm.xterm.scrollToBottom();
@@ -54,7 +57,7 @@ export default function TtyMenu(props: Props) {
       tryLocalStorageSet(localStorageKey.touchTtyOpen, `${next}`);
       update();
     },
-  }));
+  }), { deps: [props.canContOrStop] });
 
   state.xterm = props.session.ttyShell.xterm;
 
@@ -72,6 +75,8 @@ export default function TtyMenu(props: Props) {
     return () => void state.xterm.setCanType(true);
   }, []);
 
+  console.log('🚧 can:', props.canContOrStop);
+
   return <>
     <div
       css={menuCss}
@@ -82,12 +87,12 @@ export default function TtyMenu(props: Props) {
         <div className="toggle" onClick={state.toggleTouchMenu}>
           {state.touchMenuOpen ? ">" : "<"}
         </div>
-        {props.continueInteractive !== undefined && (
+        {props.canContOrStop !== undefined && (
           <div
-            className="continue-interactive"
-            onClick={props.continueInteractive}
+            className="cont-or-stop-interactive"
+            onClick={state.contOrStopInteractive}
           >
-            CONT
+            {props.canContOrStop}
           </div>
         )}
       </div>
@@ -126,9 +131,9 @@ export default function TtyMenu(props: Props) {
 }
 
 interface Props {
-  session: Session;
-  continueInteractive?(): void;
+  canContOrStop: null | 'CONT' | 'STOP';
   disabled?: boolean;
+  session: Session;
   setTabsEnabled(next: boolean): void;
 }
 
@@ -183,7 +188,7 @@ const menuCss = css`
       border: none;
     }
     
-    .continue-interactive {
+    .cont-or-stop-interactive {
       width: 32px;
       display: flex;
       align-items: center;
