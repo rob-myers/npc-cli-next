@@ -116,7 +116,7 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
  * ```
  * @param {NPC.RunArg} ctxt
  */
-export async function* initCamAndLights({ args, w }) {
+export async function* initCamAndLights({ api, args, w }) {
   
   w.floor.showLights = true;
   w.update();
@@ -124,11 +124,17 @@ export async function* initCamAndLights({ args, w }) {
   const [npcKey] = args;
   
   if (npcKey in w.n) {
-    w.view.lockDistance(); // prevent zoom-in while look
-
-    // 🚧 killable
-    await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-    await w.view.tween({ distance: 12 });
+    
+    // 🚧 lib.game.tween e.g. can pause/resume, cancels when any component cancels
+    await Promise.race([
+      (async () => {
+        w.view.lockDistance(); // prevent zoom-in while look
+        await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
+        await w.view.tween({ distance: 12 });
+      })(),
+      new Promise((_ , reject) => api.addCleanUp(() => reject(api.getKillError()))),
+    ]).finally(() => w.view.clearTweens());
+    
   }
 }
 
