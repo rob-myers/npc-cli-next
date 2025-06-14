@@ -45,7 +45,7 @@ export default function Tty(props: Props) {
         case 'auto-re-source-file': {
           const basename = msg.absPath.slice('/etc/'.length);
           if (basename in props.shFiles) {
-            // 🔔 works for non-integers i.e. key appended
+            // 🔔 delete and assign _appends_ the key for non-integer keys
             delete state.reSource[basename];
             state.reSource[basename] = true;
           } else {
@@ -53,12 +53,14 @@ export default function Tty(props: Props) {
           }
           break;
         }
-        case 'interactive-start':
-          state.canContOrStop = 'STOP';
-          update();
-          break;
-        case 'interactive-end':
-          state.canContOrStop = null;
+        case 'interactive':
+          if (msg.act === 'started' || msg.act == 'resumed') {
+            state.canContOrStop = 'STOP';
+          } else if (msg.act === 'paused') {
+            state.canContOrStop = 'CONT';
+          } else if (msg.act === 'ended') {
+            state.canContOrStop = null;
+          }
           update();
           break;
         default:

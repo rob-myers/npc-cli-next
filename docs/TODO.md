@@ -173,14 +173,18 @@
   - ✅ `<Tty>` resumeRunningProcesses resumes all suspended processes sans tag `always`
   - ✅ CONT not shown during profile
 
-- 🚧 CONT/STOP ui new approach:
+- ✅ CONT/STOP ui new approach:
   - ✅ CONT visible whenever interactive process suspended
   - ✅ STOP visible whenever interactive process running
   - ✅ while Tab paused only one click needed:
     - ✅ `ptags=always; move npcKey:rob to:$( click 1 ) &`
     - ✅ `ptags=always; echo $( click 1 ) &`
-  - CONT continues
-  - STOP continues
+  - ✅ STOP continues, showing CONT
+    - `interactive-paused`
+    - `interactive-resumed`
+  - ✅ CONT continues, showing STOP
+
+- ✅ re-source /etc/foo cannot be put to sleep during profile run
 
 - 🚧 tty: mobile textarea disabled by default
   - clarify enable/disable prompt button

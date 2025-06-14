@@ -5,6 +5,7 @@ import { tryLocalStorageGet, tryLocalStorageSet } from "../service/generic";
 import { localStorageKey, zIndexTabs } from "../service/const";
 import { isTouchDevice } from "../service/dom";
 import type { Session } from "../sh/session.store";
+import useSession from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 
@@ -16,7 +17,14 @@ export default function TtyMenu(props: Props) {
     xterm: props.session.ttyShell.xterm,
 
     contOrStopInteractive() {
-      console.log('🚧 do:', props.canContOrStop);
+      switch (props.canContOrStop) {
+        case 'CONT':
+          useSession.api.kill(props.session.key, [0], { CONT: true, group: true });
+          break;
+        case 'STOP':
+          useSession.api.kill(props.session.key, [0], { STOP: true, group: true });
+          break;
+      }
     },
     async onClickMenu(e: React.MouseEvent) {
       const target = e.target as HTMLElement;
@@ -75,7 +83,6 @@ export default function TtyMenu(props: Props) {
     return () => void state.xterm.setCanType(true);
   }, []);
 
-  console.log('🚧 can:', props.canContOrStop);
 
   return <>
     <div

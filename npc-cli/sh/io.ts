@@ -232,8 +232,7 @@ export interface ExternalMessage {
   key: "external";
   msg: (
     | { key: 'auto-re-source-file'; absPath: `/etc/${string}`; }
-    | { key: 'interactive-start'; }
-    | { key: 'interactive-end'; exitCode: number; }
+    | { key: 'interactive'; act: 'started' | 'paused' | 'resumed' | 'ended' }
   );
 }
 

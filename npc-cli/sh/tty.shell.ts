@@ -60,8 +60,16 @@ export class ttyShellClass implements Device {
       src: "",
       ptags: {},
     });
-  }
 
+    this.process.onSuspends.push(() => {
+      this.profileFinished && this.io.write({ key: 'external', msg: { key: 'interactive', act: 'paused' } });
+      return true;
+    });
+    this.process.onResumes.push(() => {
+      this.profileFinished && this.io.write({ key: 'external', msg: { key: 'interactive', act: 'resumed' } });
+      return true;
+    });
+  }
 
   isInitialized() {
     return !!this.process;
@@ -192,7 +200,7 @@ export class ttyShellClass implements Device {
     const src = session.etc[filename];
     const term = parseService.parse(src);
     this.provideContextToParsed(term);
-    await this.spawn(term);
+    await this.spawn(term, { internal: true });
   }
 
   /**
@@ -205,7 +213,15 @@ export class ttyShellClass implements Device {
     term: Sh.FileWithMeta,
     opts: {
       cleanups?: (() => void)[];
-      /** This means `term.meta.pid === 0`. */
+      /**
+       * A non-pausable process e.g. `source /etc/util.js.sh` which only defines
+       * shell functions. These processes should not spawn others e.g. they should
+       * only define shell functions and source other such files.
+       * 
+       * More generally they should only execute built-ins.
+       */
+      internal?: boolean;
+      /** `term.meta.pid === 0`. */
       leading?: boolean;
       localVar?: boolean;
       posPositionals?: string[];
@@ -218,11 +234,11 @@ export class ttyShellClass implements Device {
         // Only reachable by interactively specifying a command after profile has run
         // We ensure leading process has status Running
         this.process.status = ProcessStatus.Running;
-        this.io.write({ key: 'external', msg: { key: 'interactive-start' } });
+        this.io.write({ key: 'external', msg: { key: 'interactive', act: 'started' } });
       }
     } else {
-      if (this.process.status === ProcessStatus.Suspended) {
-        // Only reachable if leading process paused (via <Tabs>) during profile
+      if (this.process.status === ProcessStatus.Suspended && opts.internal !== true) {
+        // Only reachable if leading process paused via <Tabs> during profile
         // We halt all subprocesses
         await new Promise<void>((resolve, reject) => {
           this.process.cleanups.push(() => reject(killError(meta, 130)));
@@ -232,15 +248,16 @@ export class ttyShellClass implements Device {
     }
 
     if (opts.leading !== true) {// create process
-      const { ppid, pgid } = meta;
-      const { positionals, ptags } = useSession.api.getProcess(meta); // parent
+      const { ppid, pgid, sessionKey } = meta;
+      const session = useSession.api.getSession(sessionKey);
+      const parent = session.process[ppid]; // Exists
       const process = useSession.api.createProcess({
         ppid,
         pgid,
-        sessionKey: meta.sessionKey,
+        sessionKey,
         src: srcService.src(term),
-        posPositionals: opts.posPositionals || positionals.slice(1),
-        ptags: {...ptags},
+        posPositionals: opts.posPositionals || parent.positionals.slice(1),
+        ptags: { ...parent.ptags },
       });
       meta.pid = process.key;
       opts.cleanups !== undefined && process.cleanups.push(...opts.cleanups);
@@ -248,15 +265,13 @@ export class ttyShellClass implements Device {
       if (
         process.pgid !== 0 
         && this.bgSuspendUnless !== null
-        && !(this.bgSuspendUnless in ptags)
+        && !(this.bgSuspendUnless in process.ptags)
       ) {
         // If `bgSuspendUnless` non-null, suspend spawned background processes without this ptag.
         // This permits us to represent <Tabs> disabled.
         process.status = ProcessStatus.Suspended;
       }
 
-      const session = useSession.api.getSession(meta.sessionKey);
-      const parent = session.process[meta.ppid]; // Exists
       // Shallow clone avoids mutation by descendants
       process.inheritVar = { ...parent.inheritVar, ...parent.localVar };
       if (opts.localVar === true) {
@@ -292,7 +307,7 @@ export class ttyShellClass implements Device {
       if (opts.leading !== true) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       } else if (this.profileFinished === true) {
-        this.io.write({ key: 'external', msg: { key: 'interactive-end', exitCode: term.exitCode ?? 0 } }); 
+        this.io.write({ key: 'external', msg: { key: 'interactive', act: 'ended' } }); 
       }
     }
   }
