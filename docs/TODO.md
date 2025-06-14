@@ -199,6 +199,8 @@
 - ✅ BUG: fix `echo "...$( echo foo; echo bar; echo baz )"`
   - parent of CmdSubst can be Word or DblQuoted
 
+- terminal: shift-enter
+
 - 🚧 how to resolve basic while loop `tour` when other npc is in the way?
   - ℹ️ improved behaviour when `sleep 1` in while (handles case where `move` throws)
   - ✅ BUG where rob passed through other

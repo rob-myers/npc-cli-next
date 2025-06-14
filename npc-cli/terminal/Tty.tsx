@@ -187,8 +187,18 @@ export default function Tty(props: Props) {
     if (state.base.session) {
       const { xterm: { xterm }, session } = state.base;
       
+      xterm.attachCustomKeyEventHandler((e) => {
+        // also send "Shift + Enter" so can resume Tabs from Tty
+        e.type === 'keyup' && props.onKey?.(e);
+        if (e.key === 'Enter' && e.shiftKey === true) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+
       state.resize();
-      const onKeyDispose = xterm.onKey((e) => props.onKey?.(e.domEvent));
+      // const onKeyDispose = xterm.onKey((e) => props.onKey?.(e.domEvent));
       xterm.textarea?.addEventListener("focus", state.onFocus);
       
       const cleanupExternalMsgs = session.ttyShell.io.handleWriters(msg =>
@@ -196,7 +206,7 @@ export default function Tty(props: Props) {
       );
 
       return () => {
-        onKeyDispose.dispose();
+        // onKeyDispose.dispose();
         xterm.textarea?.removeEventListener("focus", state.onFocus);
         cleanupExternalMsgs();
       };

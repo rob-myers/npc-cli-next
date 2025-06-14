@@ -112,10 +112,10 @@ export default function Viewer() {
       window.location.hash = '/internal/noop';
     },
     onKeyDown(e) {
-      if (e.key === "Escape" && state.tabs.enabled) {
+      if (e.key === "Escape" && state.tabs.enabled === true) {
         state.tabs.toggleEnabled(false);
       }
-      if (e.key === "Enter" && !state.tabs.enabled) {
+      if (e.key === "Enter" && state.tabs.enabled === false) {
         state.tabs.toggleEnabled(true);
       }
     },

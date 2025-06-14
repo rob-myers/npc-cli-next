@@ -5,19 +5,22 @@ import { TabDef, getComponent, Terminal, BaseTabProps } from "./tab-factory";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
 
-export function Tab({ def, api, state: tabState }: TabProps) {
+export function Tab({ def, api: tabs, state: tabState }: TabProps) {
 
   const state = useStateRef(() => ({
     component: null as Awaited<ReturnType<typeof getComponent>> | null,
     onTerminalKey(e: KeyboardEvent) {
-      if (api.enabled === true) {
-        e.key === 'Escape' && api.toggleEnabled(false);
+      if (tabs.enabled === true) {
+        if (e.key === 'Escape') tabs.toggleEnabled(false);
+      } else {
+        // 🔔 assume "Shift + Enter" prevented from propagating to tty
+        if (e.shiftKey && e.key === 'Enter') tabs.toggleEnabled(true);
       }
       // 🔔 cannot enable Tabs on 'Enter' because we permit
       // using the terminal whilst !api.enabled (debug mode)
     },
     setTabsEnabled(next: boolean) {
-      api.toggleEnabled(next);
+      tabs.toggleEnabled(next);
     },
   }));
 
