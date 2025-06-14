@@ -81,10 +81,7 @@ export default function Tty(props: Props) {
         || (p.status === ProcessStatus.Running && !(noPausePtag in p.ptags))
       ));
 
-      for (const p of processes) {
-        p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
-        p.status = ProcessStatus.Suspended;
-      }
+      useSession.api.killProcesses(processes, { STOP: true, global: true });
 
       if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
         state.canContOrStop = 'CONT';
@@ -113,22 +110,17 @@ export default function Tty(props: Props) {
       }
     },
     resumeRunningProcesses() {
-      const { session } = state.base ?? {};
-      if (!session) {
-        return;
-      }
+      const { session } = state.base;
 
-      for (const p of Object.values(session.process)) {
-        if (p.key === 0) {
-          if (session.ttyShell.isInteractive()) {
-            continue; // only resume leading process if non-interactive
-          }
-        } else if (p.status !== ProcessStatus.Suspended || (noPausePtag in p.ptags)) {
-          continue; // only resume if suspended and lacks ptag
-        }
-        p.status = ProcessStatus.Running;
-        p.onResumes = p.onResumes.filter(onResume => onResume());
-      }
+      const processes = Object.values(session.process).filter(p =>
+        p.key === 0
+          // cannot resume running leading process
+          ? !session.ttyShell.isInteractive()
+          // cannot resume other unless suspended and lacks ptag
+          : p.status === ProcessStatus.Suspended && !(noPausePtag in p.ptags)
+      );
+
+      useSession.api.killProcesses(processes, { CONT: true, global: true });
 
       if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
         state.canContOrStop = 'STOP';
@@ -185,7 +177,7 @@ export default function Tty(props: Props) {
       if (somethingSpawned === true) {
         state.pauseRunningProcesses();
       }
-      return () => state.resumeRunningProcesses();
+      return () => state.base?.session && state.resumeRunningProcesses();
     }
   }, [props.disabled, state.base.session])
 

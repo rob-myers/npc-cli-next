@@ -448,7 +448,7 @@ class cmdServiceClass {
               linkText: "x",
               linkStartIndex: lineText.indexOf("x") - 1,
               async callback(lineNumber) {
-                useSession.api.kill(meta.sessionKey, [process.key]);
+                useSession.api.kill(meta.sessionKey, [process.key], { SIGINT: true });
                 updateLine(lineNumber);
               },
             },
@@ -891,12 +891,13 @@ class cmdServiceClass {
       await sleep(this.meta, seconds);
     },
 
-    throwOnPause(pauseError: any, global?: boolean) {
+    throwOnPause(pauseError: any, requireGlobal?: boolean) {
       return new Promise((_, reject) => {
         const { onSuspends } = getProcess(this.meta);
-        onSuspends.push((isGlobal) => (
-          global === undefined || global === isGlobal
-        ) && reject(pauseError))
+        onSuspends.push(global =>
+          (requireGlobal === undefined || requireGlobal === global) &&
+          reject(pauseError)
+        );
       });
     },
 

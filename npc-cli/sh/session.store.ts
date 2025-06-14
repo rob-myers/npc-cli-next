@@ -64,7 +64,7 @@ export type State = {
     getVar: <T = any>(meta: BaseMeta, varName: string) => T;
     getVarDeep: (meta: BaseMeta, varPath: string) => any | undefined;
     getSession: (sessionKey: string) => Session;
-    kill(sessionKey: string, pids: number[], opts?: {
+    kill(sessionKey: string, pids: number[], opts: {
       STOP?: boolean;
       CONT?: boolean;
       /** Ctrl-C, originating from pid 0 */
@@ -75,6 +75,8 @@ export type State = {
       STOP?: boolean;
       CONT?: boolean;
       SIGINT?: boolean;
+      /** For STOP */
+      global?: boolean;
     }): void;
     onTtyLink: (opts: {
       sessionKey: string;
@@ -175,7 +177,8 @@ export interface ProcessMeta {
    * Executed on suspend, without clearing `true` returners.
    * The latter should be idempotent, e.g. unsubscribe, pause.
    * 
-   * `global` is true iff the suspension was triggered by disabling the `<Tty>`.
+   * - `global` true iff the suspension was triggered by disabling the `<Tty>`.
+   * - thus can distinguish global pause from process pause
    */
   onSuspends: ((global: boolean) => void | boolean)[];
   /**
@@ -373,7 +376,7 @@ const useStore = create<State>()(
           /** Ctrl-C, originating from pid 0 */
           SIGINT?: boolean;
           group?: boolean;
-        } = {}
+        }
       ) {
         const session = useSession.api.getSession(sessionKey);
 
@@ -399,16 +402,18 @@ const useStore = create<State>()(
           STOP?: boolean;
           CONT?: boolean;
           SIGINT?: boolean;
-        } = {}
+          /** STOP can be global */
+          global?: boolean;
+        },
       ) {
         if (opts.SIGINT === true) {
           for (const p of processes) {
             killProcess(p, opts.SIGINT);
           }
         } else if (opts.STOP === true) {
+          const global = !!opts.global;
           for (const p of processes) {
-            // onSuspend onResume are "first-in first-invoked"
-            p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
+            p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(global));
             p.status = ProcessStatus.Suspended;
           }
         } else if (opts.CONT === true) {
