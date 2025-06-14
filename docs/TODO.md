@@ -173,10 +173,14 @@
   - ✅ `<Tty>` resumeRunningProcesses resumes all suspended processes sans tag `always`
   - ✅ CONT not shown during profile
 
-- CONT/STOP ui new approach:
-  - ℹ️ independent of Tty pause/resume ui
-  - CONT visible whenever interactive process suspended
-  - STOP visible whenever interactive process running
+- 🚧 CONT/STOP ui new approach:
+  - ✅ CONT visible whenever interactive process suspended
+  - ✅ STOP visible whenever interactive process running
+  - ✅ while Tab paused only one click needed:
+    - ✅ `ptags=always; move npcKey:rob to:$( click 1 ) &`
+    - ✅ `ptags=always; echo $( click 1 ) &`
+  - CONT continues
+  - STOP continues
 
 - 🚧 tty: mobile textarea disabled by default
   - clarify enable/disable prompt button
@@ -245,6 +249,8 @@ done
 - try "turn around before moving" via small acceleration initially
   - could also "pause before moving"
 
+- Tty: could debounce/cancel CONT/STOP
+
 - tty: command-by-command mode by setting leading process `ProcessStatus.Suspended` after each run
 
 - ✅ support decor cuboid meta `max-height` e.g. cuboid under obstacle
@@ -296,6 +302,9 @@ done
 
 - 🚧 Boxy SVG: sporadic slow save (or at least, triggering of our file mon)
   - https://boxy-svg.com/bugs/370/intermittent-slow-saving
+
+- seeing `/etc/util.sh: failed to run (see console)` during hmr
+  - maybe on pause profile we're pausing the respective `spawn`
 
 - ✅ node-canvas: is it still nondeterministic onchange decor pngs?
   - seems ok
