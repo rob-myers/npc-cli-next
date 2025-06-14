@@ -71,6 +71,11 @@ export type State = {
       SIGINT?: boolean;
       group?: boolean;
     }): void;
+    killProcesses(processes: ProcessMeta[], opts: {
+      STOP?: boolean;
+      CONT?: boolean;
+      SIGINT?: boolean;
+    }): void;
     onTtyLink: (opts: {
       sessionKey: string;
       lineText: string;
@@ -371,32 +376,45 @@ const useStore = create<State>()(
         } = {}
       ) {
         const session = useSession.api.getSession(sessionKey);
+
         for (const pid of pids) {
           const { [pid]: process } = session.process;
-    
           if (!process) {
             continue; // Already killed
           }
     
-          const processes = process.pgid === pid || opts.group
-            ? // Apply command to whole process group __in reverse__
-              useSession.api.getProcesses(sessionKey, process.pgid).reverse()
+          const processes = process.pgid === pid || opts.group === true
+            // Apply command to whole process group (in reverse)
+            ? useSession.api.getProcesses(sessionKey, process.pgid).reverse()
             : [process] // Apply command to exactly one process
           ;
     
-          // onSuspend onResume are "first-in first-invoked"
+          useSession.api.killProcesses(processes, opts);
+        }
+      },
+
+      killProcesses(
+        processes: ProcessMeta[],
+        opts: {
+          STOP?: boolean;
+          CONT?: boolean;
+          SIGINT?: boolean;
+        } = {}
+      ) {
+        if (opts.SIGINT === true) {
           for (const p of processes) {
-            if (opts.STOP) {
-              p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
-              p.status = ProcessStatus.Suspended;
-            } else if (opts.CONT) {
-              p.onResumes = p.onResumes.filter((onResume) => onResume());
-              p.status = ProcessStatus.Running;
-            } else {
-              // Avoid immediate clean because it stops `sleep` (??)
-              // window.setTimeout(() => killProcess(p, opts.SIGINT));
-              killProcess(p, opts.SIGINT);
-            }
+            killProcess(p, opts.SIGINT);
+          }
+        } else if (opts.STOP === true) {
+          for (const p of processes) {
+            // onSuspend onResume are "first-in first-invoked"
+            p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
+            p.status = ProcessStatus.Suspended;
+          }
+        } else if (opts.CONT === true) {
+          for (const p of processes) {
+            p.onResumes = p.onResumes.filter((onResume) => onResume());
+            p.status = ProcessStatus.Running;
           }
         }
       },
