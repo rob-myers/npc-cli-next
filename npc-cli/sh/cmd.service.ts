@@ -293,7 +293,7 @@ class cmdServiceClass {
           );
         }
 
-        this.killProcesses(meta.sessionKey, pids, { STOP: opts.STOP, CONT: opts.CONT });
+        useSession.api.kill(meta.sessionKey, pids, { STOP: opts.STOP, CONT: opts.CONT });
         break;
       }
       case "local": {// 🔔 see DeclClause
@@ -430,7 +430,7 @@ class cmdServiceClass {
               linkText: "on",
               linkStartIndex: lineText.indexOf("on") - 1,
               callback(lineNumber) {
-                cmdService.killProcesses(meta.sessionKey, [process.key], { STOP: true });
+                useSession.api.kill(meta.sessionKey, [process.key], { STOP: true });
                 updateLine(lineNumber);
               },
             },
@@ -439,7 +439,7 @@ class cmdServiceClass {
               linkText: "no",
               linkStartIndex: lineText.indexOf("no") - 1,
               callback(lineNumber) {
-                cmdService.killProcesses(meta.sessionKey, [process.key], { CONT: true });
+                useSession.api.kill(meta.sessionKey, [process.key], { CONT: true });
                 updateLine(lineNumber);
               },
             },
@@ -448,7 +448,7 @@ class cmdServiceClass {
               linkText: "x",
               linkStartIndex: lineText.indexOf("x") - 1,
               async callback(lineNumber) {
-                cmdService.killProcesses(meta.sessionKey, [process.key]);
+                useSession.api.kill(meta.sessionKey, [process.key]);
                 updateLine(lineNumber);
               },
             },
@@ -730,48 +730,6 @@ class cmdServiceClass {
     return outputs;
   }
 
-  killProcesses(
-    sessionKey: string,
-    pids: number[],
-    opts: {
-      STOP?: boolean;
-      CONT?: boolean;
-      /** Ctrl-C, originating from pid 0 */
-      SIGINT?: boolean;
-      group?: boolean;
-    } = {}
-  ) {
-    const session = useSession.api.getSession(sessionKey);
-    for (const pid of pids) {
-      const { [pid]: process } = session.process;
-
-      if (!process) {
-        continue; // Already killed
-      }
-
-      const processes = process.pgid === pid || opts.group
-        ? // Apply command to whole process group __in reverse__
-          useSession.api.getProcesses(sessionKey, process.pgid).reverse()
-        : [process] // Apply command to exactly one process
-      ;
-
-      // onSuspend onResume are "first-in first-invoked"
-      for (const p of processes) {
-        if (opts.STOP) {
-          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
-          p.status = ProcessStatus.Suspended;
-        } else if (opts.CONT) {
-          p.onResumes = p.onResumes.filter((onResume) => onResume());
-          p.status = ProcessStatus.Running;
-        } else {
-          // Avoid immediate clean because it stops `sleep` (??)
-          // window.setTimeout(() => killProcess(p, opts.SIGINT));
-          killProcess(p, opts.SIGINT);
-        }
-      }
-    }
-  }
-
   async launchFunc(node: Sh.CallExpr, namedFunc: Sh.NamedFunction, args: string[]) {
     const cloned = cloneParsed(namedFunc.node);
     const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
@@ -894,10 +852,6 @@ class cmdServiceClass {
     /** Create succinct JSON projections of JS values */
     json(x: any) {
       return safeJsonCompact(x);
-    },
-
-    kill(group = false) {
-      cmdService.killProcesses(this.meta.sessionKey, [this.meta.pid], { group });
     },
 
     observableToAsyncIterable,

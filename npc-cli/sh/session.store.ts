@@ -64,6 +64,13 @@ export type State = {
     getVar: <T = any>(meta: BaseMeta, varName: string) => T;
     getVarDeep: (meta: BaseMeta, varPath: string) => any | undefined;
     getSession: (sessionKey: string) => Session;
+    kill(sessionKey: string, pids: number[], opts?: {
+      STOP?: boolean;
+      CONT?: boolean;
+      /** Ctrl-C, originating from pid 0 */
+      SIGINT?: boolean;
+      group?: boolean;
+    }): void;
     onTtyLink: (opts: {
       sessionKey: string;
       lineText: string;
@@ -350,6 +357,48 @@ const useStore = create<State>()(
 
       getSession(sessionKey) {
         return get().session[sessionKey];
+      },
+
+      kill(
+        sessionKey: string,
+        pids: number[],
+        opts: {
+          STOP?: boolean;
+          CONT?: boolean;
+          /** Ctrl-C, originating from pid 0 */
+          SIGINT?: boolean;
+          group?: boolean;
+        } = {}
+      ) {
+        const session = useSession.api.getSession(sessionKey);
+        for (const pid of pids) {
+          const { [pid]: process } = session.process;
+    
+          if (!process) {
+            continue; // Already killed
+          }
+    
+          const processes = process.pgid === pid || opts.group
+            ? // Apply command to whole process group __in reverse__
+              useSession.api.getProcesses(sessionKey, process.pgid).reverse()
+            : [process] // Apply command to exactly one process
+          ;
+    
+          // onSuspend onResume are "first-in first-invoked"
+          for (const p of processes) {
+            if (opts.STOP) {
+              p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
+              p.status = ProcessStatus.Suspended;
+            } else if (opts.CONT) {
+              p.onResumes = p.onResumes.filter((onResume) => onResume());
+              p.status = ProcessStatus.Running;
+            } else {
+              // Avoid immediate clean because it stops `sleep` (??)
+              // window.setTimeout(() => killProcess(p, opts.SIGINT));
+              killProcess(p, opts.SIGINT);
+            }
+          }
+        }
       },
 
       onTtyLink(opts) {
