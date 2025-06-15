@@ -191,8 +191,24 @@
 
 - ✅ add `game.look` so can remove `initCamAndLights`
 
-- manage: show tty profile key
+- ❌ `expr` is receiving duplicated args?
+```sh
+# this works
+expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
+# this does not: " and {} have different meanings!
+expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
+```
+
+- 🚧 get stuck starting near neighbour on other side of wall
+```sh
+points=$( expr '[{x:3.467,y:0,z:4.55,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.467,y:4.55}},{x:5.099,y:0,z:6.901,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:5.099,y:6.901}}]' )
+
+while true; do tour npcKey:rob to:$( points ); sleep 1; done
+```
+
 - can we avoid `move` failing with key "stuck" when near others?
+
+- manage: show tty profile key
 
 - ✅ manage: clean and clarify actions
 
@@ -202,7 +218,7 @@
 - ✅ BUG: fix `echo "...$( echo foo; echo bar; echo baz )"`
   - parent of CmdSubst can be Word or DblQuoted
 
-- terminal: shift-enter
+- ✅ terminal: shift-enter
 
 - 🚧 how to resolve basic while loop `tour` when other npc is in the way?
   - ℹ️ improved behaviour when `sleep 1` in while (handles case where `move` throws)

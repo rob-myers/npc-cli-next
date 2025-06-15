@@ -305,7 +305,7 @@ class semanticsServiceClass {
   }
 
   private async *CallExpr(node: Sh.CallExpr) {
-    node.exitCode = 0; // 🚧 justify
+    node.exitCode = 0;
     const args = await sem.performShellExpansion(node.Args);
     const [command, ...cmdArgs] = args;
     node.meta.verbose === true && console.log("simple command", args);
