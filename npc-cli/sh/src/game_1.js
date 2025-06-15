@@ -111,34 +111,6 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 }
 
 /**
- * ```sh
- * initCamAndLights rob # initially look at rob
- * ```
- * @param {NPC.RunArg} ctxt
- */
-export async function* initCamAndLights({ api, args, w }) {
-  
-  // w.floor.showLights = true;
-  // w.update();
-  
-  const [npcKey] = args;
-  
-  if (npcKey in w.n) {
-    
-    // 🚧 lib.game.tween e.g. can pause/resume, cancels when any component cancels
-    await Promise.race([
-      (async () => {
-        w.view.lockDistance(); // prevent zoom-in while look
-        await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-        // await w.view.tween({ distance: 12 });
-      })(),
-      new Promise((_ , reject) => api.addCleanUp(() => reject(api.getKillError()))),
-    ]).finally(() => w.view.clearTweens());
-    
-  }
-}
-
-/**
  * - Make a single hard-coded polygon non-navigable,
  *   using `w.lib.queryFilterType.respectUnwalkable`
  * - Indicate it via debug polygon in `<Debug />`.

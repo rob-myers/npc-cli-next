@@ -189,9 +189,10 @@
 - 🚧 tty: mobile textarea disabled by default
   - clarify enable/disable prompt button
 
-- can we avoid `move` failing with key "stuck" when near others?
+- ✅ add `game.look` so can remove `initCamAndLights`
 
 - manage: show tty profile key
+- can we avoid `move` failing with key "stuck" when near others?
 
 - ✅ manage: clean and clarify actions
 

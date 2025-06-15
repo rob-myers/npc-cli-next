@@ -135,6 +135,30 @@ export async function* events({ api, args, w }) {
 }
 
 /**
+ * @param {NPC.RunArg} ctxt
+ * @param {{ at: string | import('three').Vector3 | Geom.Vect }} [opts]
+ */
+export async function* look({ api, args, w }, opts = api.jsArg(args)) {
+  api.addCleanUp(() => w.view.reject.look?.(Error('cancelled')));
+  
+  while (true) {
+    try {
+      return await Promise.race([
+        w.e.lookAt(opts.at),
+        api.throwOnPause('manual-pause', false),
+      ]);
+    } catch (e) {
+      if (e === 'manual-pause') {
+        w.view.resolve.look?.();
+        await api.awaitResume();
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+/**
  * Supports manual process suspend/resume
  * ```sh
  * move npcKey:rob to:$( click 1 ) arriveAnim:none

@@ -84,5 +84,5 @@ ptags=always; events | handleLoggerLinks &
 
 changeAngleOnKeyDown # WASD camera azimuthal angle
 
-initCamAndLights rob
+look at:rob
 zoom distance:12
