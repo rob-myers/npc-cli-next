@@ -235,13 +235,14 @@ done
 
 - easier ctrl-c on mobile?
 
-- 🚧 for debugging, it would be better if we directly yielded e.g. `jsFunc.gameWip.tour`
+- 🚧 for debugging, it would be better if we directly yielded e.g. `ct.lib.gameWip.tour`
   - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
   - ℹ️ currently, could write `debugger;`
   - ✅ `run` can directly invoke `ct.lib.foo.bar`
     - e.g. `run game move npcKey:rob to:$( click 1 )`
-  - `call` can directly invoke `ct.lib.foo.bar`
-  - `map` can directly invoke `ct.lib.foo.bar`
+  - ✅ `call` can directly invoke `ct.lib.foo.bar`
+  - ✅ `map` can directly invoke `ct.lib.foo.bar`
+  - 🚧 TtyWithFunctions uses above args
 
 - ✅ BUG: Tabs: fix maximize
 

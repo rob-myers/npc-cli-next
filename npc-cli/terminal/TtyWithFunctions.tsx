@@ -69,6 +69,7 @@ const shellFunctionFiles = {
     [`${key.slice(0, -'Sh'.length)}.sh`]: rawModule,
   }), {} as Record<EtcBasename, string>),
 
+  // 🚧 pass (moduleKey, fnKey) instead of fn
   ...Object.entries(keyedJsModules).reduce((agg, [key, module]) => ({ ...agg,
     [`${key}.js.sh`]: Object.entries(module).map(
       ([key, fn]) => jsFunctionToShellFunction(key, fn)

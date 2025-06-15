@@ -5,12 +5,17 @@
  * call "({ home }) => home.foo"
  * call '({ args }) => `Hello, ${args[0]}`' Rob
  * ```
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* call(ctxt) {
-  const func = Function(`return ${ctxt.args[0]}`)();
-  ctxt.args = ctxt.args.slice(1);
-  yield await func(ctxt);
+export async function* call(ct) {
+  if (ct.args[0] in ct.lib) {
+    const func = /** @type {*} */ (ct.lib)[ct.args[0]][ct.args[1]];
+    yield await func(ct);
+  } else {
+    const func = Function(`return ${ct.args[0]}`)();
+    ct.args = ct.args.slice(1);
+    yield await func(ct);
+  }
 }
 
 /**
@@ -97,21 +102,34 @@ export async function* log({ api, args, datum }) {
  * expr window | map navigator.connection | log
  * ```
  * - ℹ️ To use `await`, the provided function must begin with `async`.
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* map(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* map(ct) {
+  let { api, args, datum } = ct;
   const { operands, opts } = api.getOpts(args, { boolean: ["forever"] });
 
-  const baseSelector = api.parseFnOrStr(operands[0]);
-  const func = typeof baseSelector === "string"
-    // e.g. expr "{ foo: { inc: (x) => x+1  }  }" | map foo.inc 3
-    ? api.generateSelector(baseSelector, operands.slice(1).map(api.parseJsArg))
-    // e.g. echo | map "(x, {args}) => args[1]" foo
-    : api.generateSelector(baseSelector)
-  ;
-  // fix e.g. `expr "new Set([1, 2, 3])" | map Array.from`
-  const isNativeCode = /\{\s*\[\s*native code\s*\]\s*\}$/m.test(`${baseSelector}`);
+  /** @type {(x: any, ...xs: any[]) => any} */
+  let func;
+  let isNativeCode = false;
+
+  if (args[0] in ct.lib) {
+
+    func = /** @type {*} */ (ct.lib)[args[0]][args[1]];
+
+  } else {
+
+    const baseSelector = api.parseFnOrStr(operands[0]);
+    func = typeof baseSelector === "string"
+      // e.g. expr "{ foo: { inc: (x) => x+1  }  }" | map foo.inc 3
+      ? api.generateSelector(baseSelector, operands.slice(1).map(api.parseJsArg))
+      // e.g. echo | map "(x, {args}) => args[1]" foo
+      : api.generateSelector(baseSelector)
+    ;
+    // fix e.g. `expr "new Set([1, 2, 3])" | map Array.from`
+    isNativeCode = /\{\s*\[\s*native code\s*\]\s*\}$/m.test(`${baseSelector}`);
+
+  }
+
   const isAsync = func.constructor.name === "AsyncFunction";
   let count = 0;
 
@@ -121,12 +139,12 @@ export async function* map(ctxt) {
       try {
         if (api.isDataChunk(datum) === true) {
           if (isAsync === false) {// fast on chunks:
-            yield api.dataChunk(datum.items.map(x => func(x, ctxt, count++)));
+            yield api.dataChunk(datum.items.map(x => func(x, ct, count++)));
           } else {// unwind chunks:
-            for (const item of datum.items) yield await func(item, ctxt, count++);
+            for (const item of datum.items) yield await func(item, ct, count++);
           }
         } else {
-          yield await func(datum, ctxt, count++);
+          yield await func(datum, ct, count++);
         }
       } catch (e) {
         if (opts.forever === true) {
