@@ -508,12 +508,23 @@ class cmdServiceClass {
         }
         break;
       }
-      /** e.g. run '({ api:{read} }) { yield "foo"; yield await read(); }' */
+      /**
+       * For example:
+       * - run '({ api:{read} }) { yield "foo"; yield await read(); }'
+       * - run game move npcKey:rob to:$( click 1 )
+       */
       case "run": {
         try {
-          const fnName = meta.stack.at(-1) || "generator";
-          const func = Function("_", `return async function *${fnName} ${args[0]}`);
-          yield* func()(this.provideProcessCtxt(meta, args.slice(1)));
+          const ct = this.provideProcessCtxt(meta, args.slice(1));
+
+          if (args[0] in ct.lib) {
+            const func = (ct.lib as any)[args[0]][args[1]];
+            yield* func(ct);
+          } else {
+            const fnName = meta.stack.at(-1) || "generator";
+            const func = Function("_", `return async function *${fnName} ${args[0]}`);
+            yield* func()(ct);
+          }
         } catch (e) {
           if (e instanceof ProcessError) {
             handleProcessError(node, e);

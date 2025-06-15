@@ -192,19 +192,19 @@
 - ✅ add `game.look` so can remove `initCamAndLights`
 
 - ❌ `expr` is receiving duplicated args?
-```sh
-# this works
-expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
-# this does not: " and {} have different meanings!
-expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
-```
+  ```sh
+  # this works
+  expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
+  # this does not: " and {} have different meanings!
+  expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
+  ```
 
 - 🚧 get stuck starting near neighbour on other side of wall
-```sh
-points=$( expr '[{x:3.467,y:0,z:4.55,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.467,y:4.55}},{x:5.099,y:0,z:6.901,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:5.099,y:6.901}}]' )
+  ```sh
+  points=$( expr '[{x:3.467,y:0,z:4.55,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.467,y:4.55}},{x:5.099,y:0,z:6.901,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:5.099,y:6.901}}]' )
 
-while true; do tour npcKey:rob to:$( points ); sleep 1; done
-```
+  while true; do tour npcKey:rob to:$( points ); sleep 1; done
+  ```
 
 - can we avoid `move` failing with key "stuck" when near others?
 
@@ -235,10 +235,13 @@ done
 
 - easier ctrl-c on mobile?
 
-- for debugging, it would be better if we directly yielded e.g. `jsFunc.gameWip.tour`
+- 🚧 for debugging, it would be better if we directly yielded e.g. `jsFunc.gameWip.tour`
   - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
-  - ℹ️ do this instead: `run ({ ... }) { yield* jsFunc.foo(...);  }`
   - ℹ️ currently, could write `debugger;`
+  - ✅ `run` can directly invoke `ct.lib.foo.bar`
+    - e.g. `run game move npcKey:rob to:$( click 1 )`
+  - `call` can directly invoke `ct.lib.foo.bar`
+  - `map` can directly invoke `ct.lib.foo.bar`
 
 - ✅ BUG: Tabs: fix maximize
 
