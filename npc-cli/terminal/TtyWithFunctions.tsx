@@ -14,10 +14,13 @@ import Tty, { type Props as TtyProps } from "./Tty";
 /**
  * Using a separate file permits hot-module reloading,
  * without triggering the terminal's various useEffects.
+ * 
+ * We remount onchange profileKey.
  */
 export default function TtyWithFunctions(props: Props) {
   return (
     <Tty
+      key={props.profileKey}
       {...props}
       jsFunc={keyedJsModules}
       shFiles={shellFunctionFiles}
