@@ -143,10 +143,7 @@ export async function* events({ api, args, w }) {
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
  */
 export async function* move({ api, args, w }, opts = api.jsArg(args)) {
-  const npc = w.n[opts.npcKey];
-  if (npc === undefined) {
-    throw Error(`npcKey invalid: ${opts.npcKey}`)
-  }
+  const npc = w.npc.getOrThrow(opts.npcKey);
 
   api.addCleanUp(() => npc.reject.move?.(Error('cancelled'))); 
   

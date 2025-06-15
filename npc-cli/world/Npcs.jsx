@@ -92,6 +92,14 @@ export default function Npcs(props) {
         return npc;
       }
     },
+    getOrThrow(npcKey) {
+      const npc = state.npc[npcKey];
+      if (npc === undefined) {
+        throw Error(`npcKey invalid: ${npcKey}`)
+      } else {
+        return npc;
+      }
+    },
     hotReloadNpcs() {
       const npcs = Object.values(state.npc);
       let hmrKeys = /**
@@ -137,7 +145,6 @@ export default function Npcs(props) {
         // npc.applyTint();
       }
     },
-
     isPointInNavmesh(input) {
       const v3 = toV3(input);
       const { success, point } = w.crowd.navMeshQuery.findClosestPoint(v3, { halfExtents: { x: smallHalfExtent, y: smallHalfExtent, z: smallHalfExtent } });
@@ -514,6 +521,7 @@ export default function Npcs(props) {
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
+ * @property {(npcKey: string) => NPC.NPC} getOrThrow
  * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
