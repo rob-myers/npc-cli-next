@@ -56,7 +56,7 @@ export const helper = {
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        { type: "terminal", filepath: "tty-1", profileKey: 'default_profile', env: { WORLD_KEY: "world-0" } },
+        { type: "terminal", filepath: "tty-0", profileKey: 'default_profile', env: { WORLD_KEY: "world-0" } },
       ]
     ],
     "world-tty-profile_1": [
@@ -65,7 +65,7 @@ export const helper = {
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        { type: "terminal", filepath: "tty-1", profileKey: 'profile_1', env: { WORLD_KEY: "world-0" } },
+        { type: "terminal", filepath: "tty-0", profileKey: 'profile_1', env: { WORLD_KEY: "world-0" } },
       ]
     ],
   },
