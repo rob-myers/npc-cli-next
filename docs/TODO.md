@@ -189,6 +189,8 @@
 - 🚧 tty: mobile textarea disabled by default
   - clarify enable/disable prompt button
 
+- can we avoid `move` failing with key "stuck" when near others?
+
 - manage: show tty profile key
 
 - ✅ manage: clean and clarify actions

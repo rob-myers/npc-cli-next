@@ -118,8 +118,8 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
  */
 export async function* initCamAndLights({ api, args, w }) {
   
-  w.floor.showLights = true;
-  w.update();
+  // w.floor.showLights = true;
+  // w.update();
   
   const [npcKey] = args;
   
@@ -130,7 +130,7 @@ export async function* initCamAndLights({ api, args, w }) {
       (async () => {
         w.view.lockDistance(); // prevent zoom-in while look
         await w.e.lookAt(npcKey).finally(() => w.view.unlockDistance());
-        await w.view.tween({ distance: 12 });
+        // await w.view.tween({ distance: 12 });
       })(),
       new Promise((_ , reject) => api.addCleanUp(() => reject(api.getKillError()))),
     ]).finally(() => w.view.clearTweens());
