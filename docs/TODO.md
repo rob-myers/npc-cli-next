@@ -242,7 +242,7 @@ done
     - e.g. `run game move npcKey:rob to:$( click 1 )`
   - ✅ `call` can directly invoke `ct.lib.foo.bar`
   - ✅ `map` can directly invoke `ct.lib.foo.bar`
-  - 🚧 TtyWithFunctions uses above args
+  - ✅ TtyWithFunctions uses above args
 
 - ✅ BUG: Tabs: fix maximize
 

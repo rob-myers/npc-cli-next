@@ -518,6 +518,7 @@ class cmdServiceClass {
           const ct = this.provideProcessCtxt(meta, args.slice(1));
 
           if (args[0] in ct.lib) {
+            ct.args = ct.args.slice(1); // remove 1st 2 args
             const func = (ct.lib as any)[args[0]][args[1]];
             yield* func(ct);
           } else {
@@ -985,7 +986,7 @@ class cmdServiceClass {
           return Reflect.ownKeys(target);
         },
       }
-    );
+    ) as ProcessContext;
   }
 
   private async *readLoop(
@@ -1100,7 +1101,13 @@ interface ChoiceReadValue {
   text: string;
 }
 
-export type ProcessContext = ReturnType<CmdService['provideProcessCtxt']>;
+export type ProcessContext = {
+  home: Session['var']; // see RunArg['home']
+  etc: Session['etc'];
+  lib: Session['jsFunc']; // see RunArg['lib']
+} & {
+  set args(args: string[]);
+};
 export type ProcessApi = CmdService['processApi'];
 
 export const cmdService = new cmdServiceClass();

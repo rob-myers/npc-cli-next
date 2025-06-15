@@ -69,10 +69,9 @@ const shellFunctionFiles = {
     [`${key.slice(0, -'Sh'.length)}.sh`]: rawModule,
   }), {} as Record<EtcBasename, string>),
 
-  // 🚧 pass (moduleKey, fnKey) instead of fn
-  ...Object.entries(keyedJsModules).reduce((agg, [key, module]) => ({ ...agg,
-    [`${key}.js.sh`]: Object.entries(module).map(
-      ([key, fn]) => jsFunctionToShellFunction(key, fn)
+  ...Object.entries(keyedJsModules).reduce((agg, [moduleKey, module]) => ({ ...agg,
+    [`${moduleKey}.js.sh`]: Object.entries(module).map(
+      ([fnKey, fn]) => jsFunctionToShellFunction(moduleKey, fnKey, fn)
     ).join('\n\n'),
   }), {} as Record<EtcBasename, string>),
 
@@ -80,12 +79,9 @@ const shellFunctionFiles = {
 
 export type TtyEtcFiles = typeof shellFunctionFiles;
 
-/**
- * 🔔 SWC is minifying the inner JavaScript functions in production,
- * and we don't seem to be able to exclude e.g. game.js.sh
- */
 function jsFunctionToShellFunction(
-  functionName: string,
+  moduleKey: string,
+  fnKey: string,
   fn: (
     | ((arg: NPC.RunArg) => any)
     | ((input: any, arg: NPC.RunArg) => any)
@@ -95,30 +91,13 @@ function jsFunctionToShellFunction(
     'AsyncGeneratorFunction',
     'GeneratorFunction',
   ];
-  return `${functionName}() ${
+  return `${fnKey}() ${
     generatorConstructorNames.includes(fn.constructor.name)
-      ? wrapWithRun(fn as AsyncGeneratorFunction)
-      // : fn.constructor.name === 'Function' && fn.toString().startsWith('(')
+      ? `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
       : fn.constructor.name === 'Function' && !fn.toString().startsWith('function')
         // const foo = (..args) => bar
-        ? wrapWithCall(fn as ((arg: NPC.RunArg) => any))
+        ? `{\n  call ${moduleKey} ${fnKey} "$@"\n}`
         // assume 'AsyncFunction' or 'Function'
-        : wrapWithMap(fn as ((input: any, arg: NPC.RunArg) => any))
+        : `{\n  map ${moduleKey} ${fnKey} "$@"\n}`
   }`;
-}
-
-function wrapWithRun(fn: (arg: NPC.RunArg) => any) {
-  // 🔔 support single-quotes via (a) escaping, (b) bash-syntax $'...'
-  const fnText = `${fn}`.replace(/'/g, "\\'");
-  return `{\n  run $'${fnText.slice(fnText.indexOf('('))}\n' "$@"\n}`;
-}
-
-function wrapWithCall(fn: (arg: NPC.RunArg) => any) {
-  const fnText = `${fn}`.replace(/'/g, "\\'");
-  return `{\n  call $'${fnText}' "$@"\n}`;
-}
-
-function wrapWithMap(fn: (input: any, arg: NPC.RunArg) => any) {
-  const fnText = `${fn}`.replace(/'/g, "\\'");
-  return `{\n  map $'${fnText}' "$@"\n}`;
 }
