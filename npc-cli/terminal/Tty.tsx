@@ -215,7 +215,11 @@ export default function Tty(props: Props) {
 
   React.useEffect(() => {// Handle resize
     state.bounds = bounds;
-    state.base.session && state.resize();
+    if (state.base.session) {
+      state.resize();
+      // 🔔 fix scrollbar sync issue
+      bounds.width > 0 && state.base.xterm.forceResize();
+    } 
   }, [bounds]);
 
   React.useEffect(() => {// sync shell functions
