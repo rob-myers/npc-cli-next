@@ -415,12 +415,13 @@ declare namespace NPC {
 
   interface MoveOpts {
     to: MaybeMeta<Geom.VectJson | THREE.Vector3Like>;
-    /**
-     * Animation to play once we arrive.
-     * - default is `Idle`.
-     * - use 'none' for continuous movement
-     */
-    arriveAnim?: 'none' | Key.Anim;
+
+    /** Can overwrite state initially. */
+    s?: Partial<Pick<NPC.NPC['s'], (
+      | 'arriveAnim'
+      | 'arriveDist'
+    )>>;
+
     /**
      * Show possible path of agent path (only a guide).
      */

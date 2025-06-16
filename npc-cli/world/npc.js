@@ -87,7 +87,9 @@ export function createBaseNpc(def, w) {
       /** Current animation key. */
       anim: /** @type {Key.Anim} */ ('Idle'),
       /** Key of animation to play on arrive, or "none", or default (`Idle`) */
-      arriveAnim: /** @type {NPC.MoveOpts['arriveAnim']} */ (undefined),
+      arriveAnim: /** @type {undefined | 'none' | Key.Anim} */ (undefined),
+      /** Minimal distance at which npc is consider to have arrived */
+      arriveDist: defaultNpcArriveDistance,
       /** Defined iff npc is at a "do point". */
       doMeta: /** @type {null | Meta} */ (null),
       /** Fade duration e.g. during fade spawn */
@@ -841,7 +843,8 @@ export class NpcApi {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(opts.to)}`);
     }
 
-    this.s.arriveAnim = opts.arriveAnim;
+    this.s.arriveAnim = opts.s?.arriveAnim; // undefined ~ Idle
+    this.s.arriveDist = opts.s?.arriveDist ?? defaultNpcArriveDistance;
     this.s.lookSecs = 0.2;
 
     this.base.agent.updateParameters({
@@ -1087,12 +1090,10 @@ export class NpcApi {
 
     const distance = this.s.target.distanceTo(pos);
 
-    // 🚧
-    // if (distance < 0.1) {// Reached target
-    if (distance < defaultNpcArriveDistance) {// Reached target
+    if (distance <= this.s.arriveDist) {// Reached target
       this.stopMoving({ type: 'stop-reason', key: 'arrived' });
       return;
-    } else if (distance < 5 * defaultNpcArriveDistance) {
+    } else if (distance <= 5 * defaultNpcArriveDistance) {
       this.s.lookSecs = 0.5; // avoid fast final turn
     }
 

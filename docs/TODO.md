@@ -199,7 +199,7 @@
   expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
   ```
 
-- 🚧 get stuck starting near neighbour on other side of wall
+- ✅ get stuck starting near neighbour on other side of wall
   - repro:
     ```sh
     points=$( expr '[{x:3.467,y:0,z:4.55,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.467,y:4.55}},{x:5.099,y:0,z:6.901,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:5.099,y:6.901}}]' )
@@ -208,8 +208,8 @@
     ```
   - ℹ️ npc fails to reach target (stuck), then restarts from same failed target (infinite loop)
   - ✅ stop-reason stuck has boolean `nearTarget` using `nearTargetDistance`
-  - 🚧 can set npc arriveDistance
-  - set npc arriveDistance inside `tour`
+  - ✅ npc.s.arriveDistance
+  - ✅ relax npc arriveDistance inside `tour`
 
 - can we avoid `move` failing with key "stuck" when near others?
 
