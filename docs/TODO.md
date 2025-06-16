@@ -192,12 +192,12 @@
 - ✅ add `game.look` so can remove `initCamAndLights`
 
 - ❌ `expr` is receiving duplicated args?
-  ```sh
-  # this works
-  expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
-  # this does not: " and {} have different meanings!
-  expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
-  ```
+```sh
+# this works
+expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
+# this does not: " and {} have different meanings!
+expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
+```
 
 - ✅ get stuck starting near neighbour on other side of wall
   - repro:
@@ -210,6 +210,15 @@
   - ✅ stop-reason stuck has boolean `nearTarget` using `nearTargetDistance`
   - ✅ npc.s.arriveDistance
   - ✅ relax npc arriveDistance inside `tour`
+
+- 🚧 `tour`: simply-looped issues
+  - `while true; do tour npcKey:rob to:$( points ); sleep 1; done`
+  - other npc blocks route to 1st point (keeps trying to get there)
+    - ℹ️ many non-trivial ways of being blocked e.g. cannot rely on pushing other out of way
+  - other npc is too close to 1st point (previously handled nearish npc)
+  - 🚧 IDEA: move other out of way
+
+- ✅ BUG ctrl-c of `while true; do tour npcKey:rob to:$( points ); sleep 1; done` waits for a second
 
 - can we avoid `move` failing with key "stuck" when near others?
 

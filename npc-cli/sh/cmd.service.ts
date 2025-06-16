@@ -4,7 +4,7 @@ import { uid } from "uid";
 import { ansi, EOF } from "./const";
 import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, safeJsonParse } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
+import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
 import { type ReadResult, preProcessRead, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
@@ -905,11 +905,12 @@ class cmdServiceClass {
 
     throwOnPause(pauseError: any, requireGlobal?: boolean) {
       return new Promise((_, reject) => {
-        const { onSuspends } = getProcess(this.meta);
+        const { onSuspends, cleanups } = getProcess(this.meta);
         onSuspends.push(global =>
           (requireGlobal === undefined || requireGlobal === global) &&
           reject(pauseError)
         );
+        cleanups.push(() => reject(killError(this.meta)))
       });
     },
 
