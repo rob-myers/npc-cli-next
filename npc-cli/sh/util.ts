@@ -139,7 +139,7 @@ export function killError(meta: Sh.BaseMeta | ProcessMeta, exitCode?: number, de
     SigEnum.SIGKILL,
     "pid" in meta ? meta.pid : meta.key,
     meta.sessionKey,
-    exitCode,
+    exitCode ?? 130,
     depth
   );
 }
