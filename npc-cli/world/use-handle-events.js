@@ -346,6 +346,12 @@ export default function useHandleEvents(w) {
           state.roomToNpcs[e.gmId][e.roomId]?.delete(e.npcKey);
           break;
         }
+        case "fade-npc":
+          if (w.cm.tracked !== undefined && w.cm.tracked.npcKey === npc.key) {
+            w.cm.setNonDockedOpacity(e.opacityDst);
+          }
+          w.bubble.lookup[npc.key]?.setOpacity(e.opacityDst);
+          break;
         case "removed-npc": {
           w.physics.worker.postMessage({
             type: 'remove-bodies',
@@ -426,12 +432,6 @@ export default function useHandleEvents(w) {
           }
           break;
         }
-        case "fade-npc":
-          if (w.cm.tracked !== undefined && w.cm.tracked.npcKey === npc.key) {
-            w.cm.setNonDockedOpacity(e.opacityDst);
-          }
-          w.bubble.lookup[npc.key]?.setOpacity(e.opacityDst);
-          break;
       }
     },
     async lookAt(input, lookAtOpts = {}) {
