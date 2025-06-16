@@ -170,7 +170,7 @@ export default function ViewerControls({ api }: Props) {
       <div className="status-text">
         {api.tabs.everEnabled
           ? api.tabs.enabled ? 'active' : 'paused'
-          : 'press play'}
+          : 'npc cli'}
       </div>
 
       <button
@@ -242,7 +242,7 @@ const buttonsCss = css`
     justify-content: start;
     align-items: center;
     
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-family: 'Courier New', Courier, monospace;
     color: #dda;
     letter-spacing: 2px;
