@@ -215,6 +215,8 @@ const menuCss = css`
   .touch-menu {
     max-height: 100%;
     overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: white black;
     border-left: 1px solid #444;
   }
 

@@ -183,6 +183,8 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
 
 const loggerCss = css`
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: white black;
   width: 100%;
   height: 100%;
   pointer-events: all;
