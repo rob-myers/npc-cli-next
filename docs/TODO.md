@@ -186,7 +186,7 @@
 
 - ✅ re-source /etc/foo cannot be put to sleep during profile run
 
-- 🚧 tty: mobile textarea disabled by default
+- ✅ tty: mobile textarea disabled by default
   - clarify enable/disable prompt button
 
 - ✅ add `game.look` so can remove `initCamAndLights`
@@ -208,7 +208,7 @@
 
 - can we avoid `move` failing with key "stuck" when near others?
 
-- manage: show tty profile key
+- manage: can select tty profileKey which remounts Tty
 
 - ✅ manage: clean and clarify actions
 

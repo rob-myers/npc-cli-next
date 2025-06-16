@@ -34,12 +34,16 @@ export default function Tty(props: Props) {
     booted: false,
     bounds,
     canContOrStop: null as null | 'CONT' | 'STOP',
-    fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
     /** Should file be auto-re-sourced on hot-module-reload? */
     reSource: {} as Record<string, true>,
 
+    fitDebounced: debounce(() => {
+      // 🔔 fix scrollbar sync issue
+      state.bounds.width > 0 && state.base.xterm.forceResize();
+      state.base?.fitAddon.fit();
+    }, 300),
     handleExternalMsg({ msg }: ExternalMessage) {
       switch (msg.key) {
         case 'auto-re-source-file': {
@@ -215,11 +219,7 @@ export default function Tty(props: Props) {
 
   React.useEffect(() => {// Handle resize
     state.bounds = bounds;
-    if (state.base.session) {
-      state.resize();
-      // 🔔 fix scrollbar sync issue
-      bounds.width > 0 && state.base.xterm.forceResize();
-    } 
+    state.base.session && state.resize();
   }, [bounds]);
 
   React.useEffect(() => {// sync shell functions
