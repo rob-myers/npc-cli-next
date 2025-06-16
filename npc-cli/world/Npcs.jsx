@@ -24,6 +24,7 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
+    doToNpc: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
     gltfAux: /** @type {*} */ ({}),
@@ -188,6 +189,10 @@ export default function Npcs(props) {
           delete state.npc[npcKey];
           state.freeId.add(npc.def.uid);
           state.idToKey.delete(npc.def.uid);
+          if (npc.s.doMeta !== null) {
+            const { doPoint, y } = npc.s.doMeta;
+            delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
+          }
 
           w.events.next({ key: 'removed-npc', npcKey });
         }
@@ -218,6 +223,31 @@ export default function Npcs(props) {
         ...headOverlay !== '-' && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay || 'base' } },
         ...bodyOverlay !== '-' && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay || 'base' } },
       };
+    },
+    setDoMeta(npcKey, doMeta) {
+      const npc = w.n[npcKey];
+
+      if (doMeta === null) {
+        if (npc !== undefined && npc.s.doMeta !== null) {
+          const { doPoint, y } = npc.s.doMeta;
+          delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
+          npc.s.doMeta = null;
+        }
+        return;
+      }
+
+      if (!w.lib.isVectJson(doMeta.doPoint)) {
+        throw Error(`doMeta.doPoint must exist: ${JSON.stringify(doMeta)}`);
+      }
+
+      const { doPoint, y } = doMeta;
+      const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+      if (key in state.doToNpc) {
+        throw Error(`doMeta already in use: ${state.doToNpc[key]}: ${JSON.stringify(doMeta)}`);
+      }
+
+      state.doToNpc[key] = npcKey;
+      npc.s.doMeta = doMeta;
     },
     setupSkins() {
       // 🔔 compute sheetAux e.g. uvMap
@@ -311,6 +341,9 @@ export default function Npcs(props) {
 
       let npc = state.npc[opts.npcKey];
       
+      // set doMeta early in case of error
+      state.setDoMeta(opts.npcKey, at.meta?.do === true ? at.meta : null);
+
       // prevent look e.g. if will Lie
       const nextAnimKey = helper.getAnimKeyFromMeta(at.meta ?? {});
       if (helper.canAnimKeyLook(nextAnimKey) === false) {
@@ -403,7 +436,6 @@ export default function Npcs(props) {
       }
       
       npc.s.spawns++;
-      npc.s.doMeta = at.meta?.do === true ? at.meta : null;
 
       npc.s.offMesh = null;
       w.events.next({ key: 'spawned', npcKey: npc.key, gmRoomId });
@@ -485,6 +517,7 @@ export default function Npcs(props) {
 /**
  * @typedef State
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
+ * @property {Record<`${number},${number},${number}`, string>} doToNpc `${x},${y},${z}` -> npcKey
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
@@ -537,6 +570,7 @@ export default function Npcs(props) {
  * - `"soldier-0"`
  * - `"soldier-0//soldier-0/scientist-0"`
  * - `"soldier-0/-/-/-"`
+ * @property {(npcKey: string, doMeta: null | Meta) => void} setDoMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
  * ```js

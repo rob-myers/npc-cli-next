@@ -100,6 +100,7 @@ export function createBaseNpc(def, w) {
       labelY: 0,
       /** Desired look angle (rotation.y) */
       lookAngleDst: /** @type {null | number} */ (null),
+      /** Look duration e.g. during move or look */
       lookSecs: lookSecsNoTarget,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
@@ -191,8 +192,10 @@ export class NpcApi {
    * @param {import('./World').State} w
    */
   constructor(base, w) {
-    // we attach `this` as `base.api` later
+    // we'll attach `this` as `base.api` later
     this.base = /** @type {NPC.NPC} */ (base);
+    this.w = w;
+    
     this.def = base.def;
     this.delta = base.delta;
     this.key = base.key;
@@ -200,8 +203,6 @@ export class NpcApi {
     this.reject = base.reject;
     this.resolve = base.resolve;
     this.s = base.s;
-
-    this.w = w;
   }
 
   /**
@@ -370,7 +371,7 @@ export class NpcApi {
     // point.meta.nav && npc.doMeta
     if (point.meta.nav === true && this.s.doMeta !== null) {
       if (srcNav === true) {
-        this.s.doMeta = null;
+        w.npc.setDoMeta(this.key, null);
         await this.move({ to: point });
       // } else if (w.npc.canSee(this.getPosition(), point, this.getInteractRadius())) {
       // } else if (true) {
@@ -965,7 +966,7 @@ export class NpcApi {
     const src = this.getPoint();
     const meta = point.meta ?? {};
 
-    /** 🚧 Actual "do point" usually differs from clicked point */
+    /** Actual "do point" usually differs from clicked point */
     const doPoint = /** @type {Geom.VectJson} */ (meta.doPoint) ?? point;
 
     if (meta.do !== true) {
@@ -981,7 +982,7 @@ export class NpcApi {
       : undefined
     ;
     
-    // ℹ️ could do visibility check (raycast)
+    // 🤔 could do visibility check (raycast)
     if (!opts.preferSpawn && this.w.npc.isPointInNavmesh(doPoint) === true) {
       /**
        * Walk, [Turn], Do
@@ -990,9 +991,8 @@ export class NpcApi {
       if (typeof dstRadians === 'number') {
         await this.look(dstRadians, 500 * geom.compareAngles(this.getAngle(), dstRadians));
       }
-      // this.startAnimation('Idle');
+      this.w.npc.setDoMeta(this.key, meta);
       this.startAnimation(meta);
-      this.s.doMeta = meta.do === true ? meta : null;
     } else {
       // sets `this.s.doMeta` because `meta.do === true`
       await this.fadeSpawn(doPoint, {
