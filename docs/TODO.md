@@ -234,11 +234,10 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 
 - ✅ terminal: shift-enter
 
-- 🚧 how to resolve basic while loop `tour` when other npc is in the way?
+- ✅ BUG where rob passed through other
   - ℹ️ improved behaviour when `sleep 1` in while (handles case where `move` throws)
-  - ✅ BUG where rob passed through other
-    - seems `npc.s.offMesh` is `null` despite offMeshConnection existing
-    - we async null it when `npc.s.offMesh.seg` is `0`.
+  - seems `npc.s.offMesh` is `null` despite offMeshConnection existing
+  - we async null it when `npc.s.offMesh.seg` is `0`.
 ```sh
 points=[{x:5.322,y:0,z:9.746,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:9,grKey:"g0r9",nav:true},xz:{x:5.322,y:9.746}},{x:2.436,y:0,z:10.02,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:3,grKey:"g0r3",nav:true},xz:{x:2.436,y:10.02}}]
 while true; do
@@ -249,7 +248,7 @@ done
 
 - easier ctrl-c on mobile?
 
-- 🚧 for debugging, it would be better if we directly yielded e.g. `ct.lib.gameWip.tour`
+- ✅ for debugging, it would be better if we directly yielded e.g. `ct.lib.game_1.tour`
   - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
   - ℹ️ currently, could write `debugger;`
   - ✅ `run` can directly invoke `ct.lib.foo.bar`
