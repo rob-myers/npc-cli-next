@@ -167,8 +167,10 @@ export default function ViewerControls({ api }: Props) {
         </div>
       </div>
 
-      <div className={cx("paused-text", { paused: !api.tabs.enabled })}>
-        paused
+      <div className="status-text">
+        {api.tabs.everEnabled
+          ? api.tabs.enabled ? 'active' : 'paused'
+          : 'press play'}
       </div>
 
       <button
@@ -233,24 +235,19 @@ const buttonsCss = css`
 
   background-color: #000;
   touch-action: none;
-  border-top: 1px solid #333;
+  border-top: 1px solid #555;
 
-  > .paused-text {    
+  > .status-text {    
     display: flex;
     justify-content: start;
     align-items: center;
     
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-family: 'Courier New', Courier, monospace;
     color: #dda;
-    letter-spacing: 7px;
+    letter-spacing: 2px;
     pointer-events: none;
     user-select: none;
-    
-    transition: opacity 300ms;
-    opacity: 0;
-  }
-  .paused-text.paused {
-    opacity: 1;
   }
 
   @media (min-width: ${afterBreakpoint}) {
@@ -262,7 +259,7 @@ const buttonsCss = css`
     border-right: 1px solid #444;
     font-size: 1rem;
 
-    > .paused-text {
+    > .status-text {
       writing-mode: vertical-rl;
       text-orientation: upright;
       padding-top: 32px;
@@ -276,7 +273,7 @@ const buttonsCss = css`
     cursor: row-resize;
     border-bottom: 1px solid #444;
 
-    > .paused-text {
+    > .status-text {
       height: 100%;
       padding-right: 12px;
       margin-top: 2px;
