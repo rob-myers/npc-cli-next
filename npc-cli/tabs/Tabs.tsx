@@ -8,6 +8,7 @@ import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
 import { layoutToModelJson } from './tab-util';
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
+import { isTouchDevice } from "../service/dom";
 
 export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 
@@ -117,7 +118,15 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         return;
       }
 
-      state.everEnabled ||= nextEnabled;
+      if (state.everEnabled === false) {
+        state.everEnabled = true;
+        if (isTouchDevice()) {// Initially stay paused on mobile
+          props.onToggled?.(false)
+          update();
+          return;
+        }
+      }
+
       state.enabled = nextEnabled;
 
       if (nextEnabled === true) {
