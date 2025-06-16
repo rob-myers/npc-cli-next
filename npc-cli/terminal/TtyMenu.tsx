@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
-import { tryLocalStorageGet, tryLocalStorageSet } from "../service/generic";
+import { tryLocalStorageGet, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { localStorageKey, zIndexTabs } from "../service/const";
 import { isTouchDevice } from "../service/dom";
 import type { Session } from "../sh/session.store";
@@ -71,15 +71,19 @@ export default function TtyMenu(props: Props) {
 
   React.useMemo(() => {
     if (!tryLocalStorageGet(localStorageKey.touchTtyCanType)) {
-      // tty enabled by default (including touch devices)
-      tryLocalStorageSet(localStorageKey.touchTtyCanType, "true");
+      tryLocalStorageSet(localStorageKey.touchTtyCanType, JSON.stringify(
+        // tty disabled by default on touch devices
+        isTouchDevice() ? false : true
+      ));
     }
     if (!tryLocalStorageGet(localStorageKey.touchTtyOpen)) {
-      // touch menu closed by default
-      tryLocalStorageSet(localStorageKey.touchTtyOpen, "false");
+      tryLocalStorageSet(localStorageKey.touchTtyOpen, JSON.stringify(
+        // touch menu open by default on touch devices
+        isTouchDevice() ? true : false
+      ));
     }
-    state.xterm.setCanType(tryLocalStorageGet(localStorageKey.touchTtyCanType) === "true");
-    state.touchMenuOpen = tryLocalStorageGet(localStorageKey.touchTtyOpen) === "true";
+    state.xterm.setCanType(tryLocalStorageGetParsed(localStorageKey.touchTtyCanType) === true);
+    state.touchMenuOpen = tryLocalStorageGetParsed(localStorageKey.touchTtyOpen) === true;
     return () => void state.xterm.setCanType(true);
   }, []);
 
