@@ -436,7 +436,7 @@ declare namespace NPC {
     | { key: 'removed'; }
     | { key: 'respawned'; }
     | { key: 'stopped'; }
-    | { key: 'stuck'; }
+    | { key: 'stuck'; nearTarget: boolean; }
   );
 
   //#region sh js

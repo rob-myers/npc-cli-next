@@ -5,7 +5,7 @@ import { lerp } from "maath/misc";
 import braces from "braces";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, npcTargetArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance } from '../service/const';
 import { error, info, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
@@ -686,7 +686,7 @@ export class NpcApi {
       this.w.events.next({ key: 'enter-off-mesh-main', npcKey: this.key });
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
-      if (this.isTargetClose(this.base.position) === true) {
+      if (this.isNearTarget() === true) {
         // 🔔 fix sharp final turn just after offMeshConnection
         this.s.lookSecs = 0.8;
       }
@@ -788,14 +788,11 @@ export class NpcApi {
     this.base.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
-  /**
-   * @param {Geom.VectJson | THREE.Vector3} input 
-   */
-  isTargetClose(input) {
-    input = toXZ(input);
+  isNearTarget() {
+    const { lastTarget, position } = this.base;
     return (
-      Math.abs(this.base.lastTarget.x - input.x) < 0.5
-      && Math.abs(this.base.lastTarget.z - input.y) < 0.5
+      Math.abs(lastTarget.x - position.x) < nearTargetDistance
+      && Math.abs(lastTarget.z - position.z) < nearTargetDistance
     );
   }
 
@@ -1095,10 +1092,12 @@ export class NpcApi {
 
     const distance = this.s.target.distanceTo(pos);
 
-    if (distance < npcTargetArriveDistance) {// Reached target
+    // 🚧
+    // if (distance < 0.1) {// Reached target
+    if (distance < defaultNpcArriveDistance) {// Reached target
       this.stopMoving({ type: 'stop-reason', key: 'arrived' });
       return;
-    } else if (distance < 5 * npcTargetArriveDistance) {
+    } else if (distance < 5 * defaultNpcArriveDistance) {
       this.s.lookSecs = 0.5; // avoid fast final turn
     }
 
@@ -1106,10 +1105,11 @@ export class NpcApi {
   }
 
   /**
+   * 🚧 hard-coding: small distance, long enough time
    * @param {number} deltaMs 
    * @param {NPC.CrowdAgent} agent 
    */
-  onTickDetectStuck(deltaMs, agent) {// 🚧 hard-coding: small distance, long enough time
+  onTickDetectStuck(deltaMs, agent) {
     const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
@@ -1123,8 +1123,12 @@ export class NpcApi {
     }
 
     if (this.w.npc.onStuckNpc === null) {
-      // 🔔 fixes "cannot arrive close enough" due to nearby npc
-      this.stopMoving({ type: 'stop-reason', key: 'stuck' });
+      // 🔔 fixes "cannot arrive close enough" due to nearby-ish npc
+      this.stopMoving({
+        type: 'stop-reason',
+        key: 'stuck',
+        nearTarget: this.isNearTarget(),
+      });
     } else {
       this.w.npc.onStuckNpc?.(this.base, agent);
     }

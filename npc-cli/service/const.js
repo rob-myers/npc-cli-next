@@ -453,6 +453,9 @@ export const skinsLabelsTextureHeight = 200 / 4;
  */
 export const npcLabelMaxChars = 12;
 
-export const npcTargetArriveDistance = 0.05;
+export const defaultNpcArriveDistance = 0.05;
+
+/** Should be less than closest points in two distinct rooms */
+export const nearTargetDistance = 0.5;
 
 export const texAuxDepth = 256;
