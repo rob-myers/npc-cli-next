@@ -236,10 +236,9 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const { move } = ct.lib.game;
+  const { lib } = ct;
   for (const to of opts.to) {
-    // debugger;
-    yield* move(ct, { npcKey: opts.npcKey, to });
+    yield* lib.game.move(ct, { npcKey: opts.npcKey, to });
     await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
