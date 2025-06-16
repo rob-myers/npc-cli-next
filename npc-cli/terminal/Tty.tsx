@@ -40,9 +40,11 @@ export default function Tty(props: Props) {
     reSource: {} as Record<string, true>,
 
     fitDebounced: debounce(() => {
-      // 🔔 fix scrollbar sync issue
-      state.bounds.width > 0 && state.base.xterm.forceResize();
-      state.base?.fitAddon.fit();
+      if (state.base) {
+        // 🔔 fix scrollbar sync issue
+        state.base.xterm.forceResize();
+        state.base.fitAddon.fit();
+      }
     }, 300),
     handleExternalMsg({ msg }: ExternalMessage) {
       switch (msg.key) {
