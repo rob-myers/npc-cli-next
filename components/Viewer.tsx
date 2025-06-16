@@ -272,6 +272,7 @@ const tabsContainerCss = css`
   
   
   &.neverEnabled {
+
     @keyframes fadeIn {
       0% { opacity: 0; }
       100% { opacity: 0.3; }
@@ -280,9 +281,11 @@ const tabsContainerCss = css`
     
     cursor: pointer;
     background-image: url(/images/desktop-empty-world__20250612.webp);
-    background-size: 200%;
+    background-size: 100%;
     background-repeat: no-repeat;
     background-position: 0% 50%;
+    
+    border: 50px solid black;
     filter: brightness(2);
   }
 `;
