@@ -600,7 +600,7 @@ export default function useHandleEvents(w) {
         if (npc.agent.maxSpeed !== maxSpeed) {
           npc.agent.raw.params.set_maxSpeed(maxSpeed);
         }
-        if (npc.s.run === true && npc.s.act !== 'Run') {
+        if (npc.s.run === true && npc.s.anim !== 'Run') {
           npc.api.startAnimation('Run');
         }
       }

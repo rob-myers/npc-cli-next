@@ -161,7 +161,7 @@ export default function Npcs(props) {
     onTickIdleTurn: null,
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
-      const animKeys = npcs.map(x => x.s.act);
+      const animKeys = npcs.map(x => x.s.anim);
       npcs.forEach(npc => state.removeAgent(npc));
 
       await pause();

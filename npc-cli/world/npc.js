@@ -23,23 +23,6 @@ export function createNpc(def, w) {
   return Object.assign(baseNpc, { api });
 }
 
-const lookSecsNoTarget = 0.75;
-
-const staticMaxAcceleration = 4;
-const movingMaxAcceleration = 10;
-
-/**
- * 🔔 sudden change can cause jerk onexit doorway
- * 🔔 relevant to reachability of arrival distance
- * 🚧 support separation weight tweening
- */
-const staticSeparationWeight = 0.25;
-const movingSeparationWeight = 0.5;
-const staticCollisionQueryRange = 2;
-const movingCollisionQueryRange = 2;
-
-const preOffMeshCloseDist = helper.defaults.radius;
-
 /**
  * @param {NPC.NPCDef} def 
  * @param {import('./World').State} w 
@@ -99,8 +82,8 @@ export function createBaseNpc(def, w) {
   
     /** State */
     s: {
-      act: /** @type {Key.Anim} */ ('Idle'), // 🚧 rename as `anim`
       agentState: /** @type {null | number} */ (null),
+      anim: /** @type {Key.Anim} */ ('Idle'),
       arriveAnim: /** @type {NPC.MoveOpts['arriveAnim']} */ (undefined),
       doMeta: /** @type {null | Meta} */ (null),
       fadeSecs: 0.3,
@@ -809,8 +792,8 @@ export class NpcApi {
     if (!Number.isFinite(input)) {
       throw new Error(`${'look'}: 1st arg must be radians or point`);
     }
-    if (helper.canAnimKeyLook(this.s.act) === false) {
-      throw new Error(`${'look'}: cannot whilst "${this.s.act}"`);
+    if (helper.canAnimKeyLook(this.s.anim) === false) {
+      throw new Error(`${'look'}: cannot whilst "${this.s.anim}"`);
     }
 
     this.s.lookAngleDst = this.getEulerAngle(input);
@@ -872,7 +855,7 @@ export class NpcApi {
     this.base.agent.requestMoveTarget(closest);
 
     const nextAct = this.s.run ? 'Run' : 'Walk';
-    if (this.s.act !== nextAct) {
+    if (this.s.anim !== nextAct) {
       this.startAnimation(nextAct);
     }
     
@@ -1221,7 +1204,7 @@ export class NpcApi {
       this.s.offMesh.tToDist = maxSpeed;
     }
 
-    if (this.s.act === 'Run' && exitSpeed < this.def.runSpeed) {
+    if (this.s.anim === 'Run' && exitSpeed < this.def.runSpeed) {
       this.startAnimation('Walk');
     }
   }
@@ -1259,12 +1242,12 @@ export class NpcApi {
     if (typeof input !== 'string') {
       input = helper.getAnimKeyFromMeta(input);
     }
-    const curr = this.m.toAct[this.s.act];
+    const curr = this.m.toAct[this.s.anim];
     const next = this.m.toAct[input];
-    curr.fadeOut(glbFadeOut[this.s.act][input]);
-    next.reset().fadeIn(glbFadeIn[this.s.act][input]).play();
+    curr.fadeOut(glbFadeOut[this.s.anim][input]);
+    next.reset().fadeIn(glbFadeIn[this.s.anim][input]).play();
     this.base.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
-    this.s.act = input;
+    this.s.anim = input;
 
     this.updateLabelOffsets();
   }
@@ -1335,7 +1318,7 @@ export class NpcApi {
   }
 
   updateLabelOffsets() {
-    const { act } = this.s;
+    const { anim: act } = this.s;
     const { animHeights, labelHeight } = this.base.gltfAux;
     const offsetY = animHeights[act] + 3 * labelHeight;
     
@@ -1362,6 +1345,22 @@ export class NpcApi {
   }
 
 }
+
+const lookSecsNoTarget = 0.75;
+const staticMaxAcceleration = 4;
+const movingMaxAcceleration = 10;
+
+/**
+ * 🔔 sudden change can cause jerk onexit doorway
+ * 🔔 relevant to reachability of arrival distance
+ * 🚧 support separation weight tweening
+ */
+const staticSeparationWeight = 0.25;
+const movingSeparationWeight = 0.5;
+const staticCollisionQueryRange = 2;
+const movingCollisionQueryRange = 2;
+
+const preOffMeshCloseDist = helper.defaults.radius;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
