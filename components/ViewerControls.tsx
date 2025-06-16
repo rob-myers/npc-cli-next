@@ -170,7 +170,7 @@ export default function ViewerControls({ api }: Props) {
       <div className="status-text">
         {api.tabs.everEnabled
           ? api.tabs.enabled ? 'active' : 'paused'
-          : 'npc cli'}
+          : 'noop'}
       </div>
 
       <button
