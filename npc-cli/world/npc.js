@@ -82,29 +82,41 @@ export function createBaseNpc(def, w) {
   
     /** State */
     s: {
+      /** Driven by CrowdAgent.state */
       agentState: /** @type {null | number} */ (null),
+      /** Current animation key. */
       anim: /** @type {Key.Anim} */ ('Idle'),
+      /** Key of animation to play on arrive, or "none", or default (`Idle`) */
       arriveAnim: /** @type {NPC.MoveOpts['arriveAnim']} */ (undefined),
+      /** Defined iff npc is at a "do point". */
       doMeta: /** @type {null | Meta} */ (null),
+      /** Fade duration e.g. during fade spawn */
       fadeSecs: 0.3,
+      /** Text of label above npc, or null if empty */
       label: /** @type {null | string} */ (null),
+      /** Height of label above npc */
       labelY: 0,
       /** Desired look angle (rotation.y) */
       lookAngleDst: /** @type {null | number} */ (null),
       lookSecs: lookSecsNoTarget,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
+      /** Opacity e.g. during fade */
       opacity: 1,
       /** Desired opacity */
       opacityDst: /** @type {null | number} */ (null),
+      /** Can walk or run */
       run: false,
+      /** Default is blue */
       selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
       /**
-       * World timer elapsedTime (seconds) when slowness detected.
+       * Time when slowness detected (world timer elapsedTime in seconds).
        * 🤔 Pausing currently resets World timer.
        */
       slowBegin: /** @type {null | number} */ (null),
+      /** Number of spawns. More than 1 means we've respawned. */
       spawns: 0,
+      /** Target during move. */
       target: /** @type {null | THREE.Vector3} */ (null),
       /**
        * Used to change offMeshConnection exit speed via `agentAnim.tScale`.
