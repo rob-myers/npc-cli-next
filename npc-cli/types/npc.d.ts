@@ -86,6 +86,8 @@ declare namespace NPC {
     at: MaybeMeta<(Geom.VectJson | import('three').Vector3Like)>;
     /** Position to look towards (overrides `angle`) */
     look?: Geom.VectJson | import('three').Vector3Like;
+    /** Overrides `at?.meta` e.g. because `meta.doPoint.meta` is not serializable */
+    meta?: Meta;
     /**
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
      * - object permits brace-expansion of keys.

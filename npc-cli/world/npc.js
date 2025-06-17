@@ -507,7 +507,6 @@ export class NpcApi {
    */
   async fadeSpawn(at, opts = {}) {
     try {
-      Object.assign(at.meta ??= {}, opts.meta);
       await this.fade(0, 300);
 
       const currPoint = this.getPoint();
@@ -520,6 +519,7 @@ export class NpcApi {
         ),
         at,
         classKey: opts.classKey,
+        meta: opts.meta,
         npcKey: this.key,
       });
     } finally {

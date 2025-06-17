@@ -218,14 +218,19 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - other npc is too close to 1st point (previously handled nearish npc)
   - 🚧 IDEA: move other out of way
 
-- 🚧 BUG: cannot goto "do point" used by other
+- ✅ BUG: cannot goto "do point" used by other
   - ✅ set/null do-point should be recorded in `w.npc`
   - ✅ connect it up
   - ✅ clean it on remove npc
-  - 🚧 fix mutated doMeta (another issue)
+  - ✅ fix mutated doMeta (another issue)
+
+- BUG: on remove world-0 and then re-add world-0, tty background processes stop working
+  - `click` no longer works?
 
 - BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
   - presumably 2nd click happens whilst traversing offMesh
+
+- BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
 
 - ✅ BUG ctrl-c of `while true; do tour npcKey:rob to:$( points ); sleep 1; done` waits for a second
 

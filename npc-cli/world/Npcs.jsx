@@ -309,7 +309,8 @@ export default function Npcs(props) {
     },
     async spawn(opts) {
       const { at } = opts;
-      const point = toXZ(at ?? {});
+      const point = toXZ(at);
+      const meta = opts.meta ?? at.meta ?? {};
 
       if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
         throw Error(`opts.npcKey must match /^[a-z0-9-_]+$/i`);
@@ -324,11 +325,11 @@ export default function Npcs(props) {
         opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
       }
 
-      const dstNav = at.meta?.nav === true || state.isPointInNavmesh(point);
+      const dstNav = meta.nav === true || state.isPointInNavmesh(point);
       /** Attach agent iff dst navigable */
       const agent = dstNav;
 
-      if (dstNav === false && at.meta?.do !== true) {
+      if (dstNav === false && meta.do !== true) {
         throw Error(`must spawn on navPoly or do point: ${JSON.stringify(at)}`);
       } else if (opts.classKey !== undefined && !w.lib.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
@@ -342,16 +343,16 @@ export default function Npcs(props) {
       let npc = state.npc[opts.npcKey];
       
       // set doMeta early in case of error
-      state.setDoMeta(opts.npcKey, at.meta?.do === true ? at.meta : null);
+      state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
 
       // prevent look e.g. if will Lie
-      const nextAnimKey = helper.getAnimKeyFromMeta(at.meta ?? {});
+      const nextAnimKey = helper.getAnimKeyFromMeta(meta);
       if (helper.canAnimKeyLook(nextAnimKey) === false) {
         opts.angle = opts.look = undefined;
       }
 
-      opts.angle ??= typeof at.meta?.orient === 'number'
-        ? at.meta.orient * (Math.PI / 180) // keep using "cw from north"
+      opts.angle ??= typeof meta.orient === 'number'
+        ? meta.orient * (Math.PI / 180) // keep using "cw from north"
         : undefined
       ;
 
@@ -408,13 +409,13 @@ export default function Npcs(props) {
       // 🔔 input `p` can be Vect (x, y) or Vector3Like (x, y, z)
       const position = toV3(at);
       // 🔔 non-zero height must be set via `p.meta`
-      position.y = typeof at.meta?.y === 'number' ? at.meta.y : 0;
+      position.y = typeof meta.y === 'number' ? meta.y : 0;
 
       npc.position.copy(position);
       npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
-      npc.api.startAnimation(at.meta ?? {}); // 🔔 at.meta.y important
+      npc.api.startAnimation(meta); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
         if (agent === true) {
