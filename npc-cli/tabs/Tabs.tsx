@@ -3,11 +3,14 @@ import { Action, Actions, Layout as FlexLayout, Model, type TabNode, type TabSet
 import debounce from "debounce";
 import { css } from "@emotion/react";
 
+import { TABS_KEY } from "../service/const";
 import { detectTabPrevNextShortcut } from "../service/generic";
+import { removeCached, setCached } from "../service/query-client";
 import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
 import { layoutToModelJson } from './tab-util';
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
+import useTabs from "./tabs.store";
 import { isTouchDevice } from "../service/dom";
 
 export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
@@ -229,6 +232,11 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 
     return output;
   }, [tabsDefChanged, state.resets, props.updates]);
+
+  React.useEffect(() => {// provide useTabs.api to TTYs
+    setCached([TABS_KEY], useTabs.api);
+    return () => removeCached([]);
+  }, []);
 
   React.useImperativeHandle(ref, () => state);
 

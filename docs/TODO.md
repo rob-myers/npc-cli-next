@@ -232,10 +232,10 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ seems timeout is clearing `offMesh` after it has been set by `enter-off-mesh`
   - ✅ cancel timeout on successful enter
 
-- 🚧 new store "tabs.store" contains tabs related stuff from site.store
+- ✅ new store "tabs.store" contains tabs related stuff from site.store
   - ✅ migrate useSite -> useTabs
   - ✅ tabs.store only contains state related to npc-cli/*
-  - 🚧 useTabs.api available in shell via CACHE_SHORTCUT.tabs
+  - ✅ useTabs.api available in shell via CACHE_SHORTCUTS.tabs
 
 - BUG: on remove world-0 and then re-add world-0, tty background processes stop working
   - ✅ `click` no longer works

@@ -1,6 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
 import { shallow } from "zustand/shallow";
+import { TABS_KEY } from "../service/const";
 import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
 import { computeTabDef } from "../tabs/tab-util";
@@ -52,7 +53,8 @@ export default function Manage(props) {
             id: `tty-${nextTabId}`,
             profileKey: /** @type {Key.Profile} */ (profileSelect.value),
             env: {// default WORLD_KEY is `world-0`
-              WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value || 0}`
+              WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value || 0}`,
+              TABS_KEY,
             },
           });
           break;

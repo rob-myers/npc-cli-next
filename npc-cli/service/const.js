@@ -459,3 +459,5 @@ export const defaultNpcArriveDistance = 0.05;
 export const nearTargetDistance = 0.5;
 
 export const texAuxDepth = 256;
+
+export const TABS_KEY = 'TABS_KEY';
