@@ -3,7 +3,7 @@ import { Action, Actions, Layout as FlexLayout, Model, type TabNode, type TabSet
 import debounce from "debounce";
 import { css } from "@emotion/react";
 
-import { TABS_KEY } from "../service/const";
+import { TABS_API_KEY } from "../service/const";
 import { detectTabPrevNextShortcut } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
 import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
@@ -234,7 +234,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
   }, [tabsDefChanged, state.resets, props.updates]);
 
   React.useEffect(() => {// provide useTabs.api to TTYs
-    setCached([TABS_KEY], useTabs.api);
+    setCached([TABS_API_KEY], useTabs.api);
     return () => removeCached([]);
   }, []);
 

@@ -1,4 +1,4 @@
-import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
+import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
 import { keys } from "./generic";
 
 /**
@@ -65,7 +65,7 @@ export const helper = {
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        { type: "terminal", filepath: "tty-0", profileKey: 'default_profile', env: { WORLD_KEY: "world-0" } },
+        { type: "terminal", filepath: "tty-0", profileKey: 'default_profile', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
       ]
     ],
     "world-tty-profile_1": [
@@ -74,7 +74,7 @@ export const helper = {
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        { type: "terminal", filepath: "tty-0", profileKey: 'profile_1', env: { WORLD_KEY: "world-0" } },
+        { type: "terminal", filepath: "tty-0", profileKey: 'profile_1', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
       ]
     ],
   },

@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
 import { shallow } from "zustand/shallow";
-import { TABS_KEY } from "../service/const";
+import { TABS_API_KEY } from "../service/const";
 import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
 import { computeTabDef } from "../tabs/tab-util";
@@ -54,7 +54,7 @@ export default function Manage(props) {
             profileKey: /** @type {Key.Profile} */ (profileSelect.value),
             env: {// default WORLD_KEY is `world-0`
               WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value || 0}`,
-              TABS_KEY,
+              TABS_API_KEY,
             },
           });
           break;
@@ -261,12 +261,12 @@ export default function Manage(props) {
           <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
           <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
           <li><a href={`#/internal/open-tab/HelloWorld?id=hello-world-1`}>open tab hello-world-1</a></li>
-          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR"}`}>open Tty tab</a></li>
+          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li>
           */}
 
           {/* 🔔 do not support custom profile: must use profileKey so can be synced against file */}
-          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld"}`}>open Tty tab</a></li> */}
-          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!"}`}>open Tty tab with PROFILE with spaces via `%20`</a></li> */}
+          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li> */}
+          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab with PROFILE with spaces via `%20`</a></li> */}
           
           {/* <li><a href={`#/internal/open-tab/World?id=world-2&mapKey=small-map-1`}>open World tab</a></li>
           <li><a href={`#/internal/close-tab/hello-world-1`}>close tab hello-world-1</a></li>

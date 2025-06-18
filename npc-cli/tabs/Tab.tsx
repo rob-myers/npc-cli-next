@@ -1,6 +1,6 @@
 import React from "react";
 
-import { TABS_KEY } from "../service/const";
+import { TABS_API_KEY } from "../service/const";
 import type { TabState, State as TabsApi } from "./Tabs";
 import { TabDef, getComponent, Terminal, BaseTabProps } from "./tab-factory";
 import useUpdate from "../hooks/use-update";
@@ -50,7 +50,7 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
         disabled={tabState.disabled}
         env={{ ...def.env, CACHE_SHORTCUTS: {
           w: "WORLD_KEY",
-          tabs: TABS_KEY,
+          tabs: TABS_API_KEY,
         }}}
         onKey={state.onTerminalKey}
         profileKey={def.profileKey}
