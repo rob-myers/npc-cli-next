@@ -228,7 +228,11 @@ export default function Tty(props: Props) {
     if (state.base.session?.ttyShell.isInitialized()) {
       state.storeAndSourceFuncs();
     }
-  }, [state.base.session, ...Object.entries(props.shFiles).flatMap(x => x)]);
+  }, [
+    state.base.session,
+    ...Object.entries(props.shFiles).flatMap(x => x),
+    ...Object.entries(props.jsFunc).flatMap(x => x),
+  ]);
 
   React.useEffect(() => {// sync ~/PROFILE
     if (state.base.session) {

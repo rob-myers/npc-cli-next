@@ -224,7 +224,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ clean it on remove npc
   - ✅ fix mutated doMeta (another issue)
 
-- BUG: hmr not working in game.js
+- ✅ BUG: hmr not working in game.js
 
 - 🚧 BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
   - presumably 2nd click happens whilst traversing offMesh
