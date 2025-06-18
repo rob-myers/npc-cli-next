@@ -56,7 +56,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const { synced: layout } = get().tabset;
       removeTabFromLayout({ layout, tabId });
 
-      // 🚧 if a World tab, remove any TTY with corresponding ttyWorldKey
+      if (tabId.startsWith('world-')) {
+        // remove any TTY with corresponding ttyWorldKey
+        const ttyMetas = Object.values(get().tabsMeta).filter(x => x.ttyWorldKey === tabId);
+        ttyMetas.forEach(({ key }) => removeTabFromLayout({ layout, tabId: key }));
+      }
 
       const synced = deepClone(layout);
 
@@ -266,6 +270,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         return;
       }
       if (meta.disabled === undefined && get().tabsMeta[meta.key] === undefined) {
+        warn(`${'updateTabMeta'}: cannot update before defining disabled: ${meta.key}`);
         return; // 1st update must specify `disabled`
       }
       set(({ tabsMeta }) => ({ tabsMeta: { ...tabsMeta,

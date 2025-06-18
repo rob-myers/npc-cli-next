@@ -237,13 +237,13 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ tabs.store only contains state related to npc-cli/*
   - ✅ useTabs.api available in shell via CACHE_SHORTCUTS.tabs
 
-- 🚧 BUG: on remove world-0 and then re-add world-0, tty background processes stop working
+- ✅ BUG: on remove world-0 and then re-add world-0, tty background processes stop working
   - ✅ `click` no longer works
   - ℹ️ anything referring to old `w` won't work...
   - ✅ remove entries from tabsMeta on remove tabs via Manage
   - ✅ `awaitWorld` sets tabsMeta[sessionKey].ttyWorldKey
-  - 🚧 on close world using Manage, also close Tty indicated by tabs.store
-  - multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
+  - ✅ on close world using Manage, also close Tty indicated by tabs.store
+  - ℹ️ multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
 
 - BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
 
