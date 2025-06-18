@@ -99,10 +99,10 @@ export default function Floor(props) {
       drawPolygons(ct, shadowPolys, ['#101010', null]);
 
       // walls
-      drawPolygons(ct, gm.walls, ['#000', null]);
-      // const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
-      // drawPolygons(ct, walls2[0], ['#000', null]);
-      // drawPolygons(ct, walls2[1], ['#555', null]);
+      // drawPolygons(ct, gm.walls, ['#000', null]);
+      const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
+      drawPolygons(ct, walls2[0], ['#000', null]);
+      drawPolygons(ct, walls2[1], ['#444', null]);
     },
     drawGmLight(gmKey) {
       const { ct } = w.texFloorLight;
