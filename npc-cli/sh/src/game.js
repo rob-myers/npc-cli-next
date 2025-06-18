@@ -55,7 +55,7 @@ export async function* click({ api, args, w }) {
 
   // support `click meta.nav`
   const filterDef = numClicks === Number.MAX_SAFE_INTEGER ? operands[0] : operands[1];
-  const filter = filterDef ? api.generateSelector(api.parseFnOrStr(filterDef), []) : undefined;
+  const filter = filterDef !== undefined ? api.generateSelector(api.parseFnOrStr(filterDef), []) : undefined;
 
   /** @type {import('rxjs').Subscription} */
   let eventsSub;
