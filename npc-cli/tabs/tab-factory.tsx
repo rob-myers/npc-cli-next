@@ -131,4 +131,7 @@ export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
 
-export type CustomIJsonTabNode = Omit<IJsonTabNode, 'config'> & { config: TabDef };
+export type CustomIJsonTabNode = Omit<IJsonTabNode, 'config'> & {
+  id: Key.TabId;
+  config: TabDef;
+};

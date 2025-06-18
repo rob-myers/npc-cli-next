@@ -3,7 +3,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { Model, type IJsonRowNode } from "flexlayout-react";
 
-import { tryLocalStorageGet, tryLocalStorageSet, deepClone, warn } from "../service/generic";
+import { tryLocalStorageGet, tryLocalStorageSet, deepClone, warn, keys } from "../service/generic";
 import { isIOS, isTouchDevice } from "../service/dom";
 import { helper } from "../service/helper";
 import type { TabDef, TabsetLayout } from "../tabs/tab-factory";
@@ -40,6 +40,14 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       } }));
     },
 
+    cleanTabMeta() {
+      const tabIds = new Set(get().tabset.tabs.map(x => x.id));
+      set(({ tabsMeta }) => {
+        keys(tabsMeta).forEach(tabId => !tabIds.has(tabId) && delete tabsMeta[tabId]);
+        return { tabsMeta: {...tabsMeta} }
+      });
+    },
+
     clearTabMeta() {
       set(() => ({ tabsMeta: {}}));
     },
@@ -47,13 +55,19 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     closeTab(tabId) {
       const { synced: layout } = get().tabset;
       removeTabFromLayout({ layout, tabId });
+
+      // 🚧 if a World tab, remove any TTY with corresponding ttyWorldKey
+
       const synced = deepClone(layout);
+
       set(({ tabset }) => ({ tabset: { ...tabset,
         started: layout,
         synced,
         tabs: extractTabNodes(synced),
         version: tabset.version + 1,
       }}));
+
+      useTabs.api.cleanTabMeta();
     },
 
     getNextSuffix(tabClass) {
@@ -261,7 +275,7 @@ const useStore = createWithEqualityFn<State>()(initializer);
 
 export type State = {
   tabset: TabsetLayouts;
-  tabsMeta: { [tabId: string]: SiteTabMeta };
+  tabsMeta: { [tabId: Key.TabId]: TabMeta };
 
   api: {
     /**
@@ -269,8 +283,10 @@ export type State = {
      * - If tab type is terminal we merge into env.
      */
     changeTabProps(tabId: string, partialProps: Record<string, any>): void;
+    /** Remove any tabMeta whose corresponding tab no longer exists */
+    cleanTabMeta(): void;
     clearTabMeta(): void;
-    closeTab(tabId: string): void;
+    closeTab(tabId: Key.TabId): void;
     getNextSuffix(tabClass: Key.TabClass): number;
     initiateBrowser(): void;
     /** ensure every `tab.config` has type @see {TabDef} */
@@ -284,19 +300,22 @@ export type State = {
     selectTab(tabId: string): void;
     /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
     setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
-    /** Track non-layout properties e.g. disabled */
-    updateTabMeta(tabMeta: Partial<SiteTabMeta> & { key: Key.TabId }): void;
     storeCurrentLayout(model: Model): void;
     syncCurrentTabset(model: Model): void;
     testMutateLayout(): void; // 🚧 temp
     tryRestoreLayout(layout: TabsetLayout): TabsetLayout;
+    /** Track non-layout properties e.g. disabled */
+    updateTabMeta(tabMeta: Partial<TabMeta> & { key: Key.TabId }): void;
   };
 };
 
-interface SiteTabMeta {
+interface TabMeta {
   key: Key.TabId;
   disabled: boolean;
-  /** TTY tab: last recorded value of home.WORLD_KEY  */
+  /**
+   * TTY tab only: last recorded value of home.WORLD_KEY,
+   * either via `awaitWorld` or clicking it in `Manage`.
+   */
   ttyWorldKey?: string;
   // ...
 }

@@ -19,7 +19,7 @@ export default function Manage(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     createTabEpoch: 0,
     closeTab(e) {
-      const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
+      const tabId = /** @type {Key.TabId} */ (e.currentTarget.dataset.tabId);
       useTabs.api.closeTab(tabId);
     },
     createTab(e) {
