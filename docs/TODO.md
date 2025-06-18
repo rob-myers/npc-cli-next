@@ -224,11 +224,24 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ clean it on remove npc
   - ✅ fix mutated doMeta (another issue)
 
-- BUG: on remove world-0 and then re-add world-0, tty background processes stop working
-  - `click` no longer works?
+- BUG: hmr not working in game.js
 
-- BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
+- 🚧 BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
   - presumably 2nd click happens whilst traversing offMesh
+  - ℹ️ due to our attempt to "cool down" offMeshTraversal attempts via
+    > `pause(30).then(() => npc.s.offMesh = null)` in clearOffMesh
+  - 🚧 cool down via `npc.s.offMeshEpoch`
+
+- 🚧 new store "tabs.store" contains tabs related stuff from site.store
+  - useTabs.api available in shell via CACHE_SHORTCUT.tabs
+  - tabs.store only contains state related to npc-cli/*
+
+- BUG: on remove world-0 and then re-add world-0, tty background processes stop working
+  - ✅ `click` no longer works
+  - ℹ️ anything referring to old `w` won't work...
+  - `awaitWorld` writes to tabs.store, storing sessionKey and session.uid under worldKey.
+  - on close world using Manage, also close Tty indicated by tabs.store
+  - multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
 
 - BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
 
