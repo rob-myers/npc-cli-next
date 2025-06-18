@@ -764,13 +764,12 @@ class cmdServiceClass {
   /**
    * 🔔 Core per-process API.
    *
-   * Currently, methods only have access to `this.meta` and `this.session`.
+   * Currently, methods only have access to `this.meta`.
    * Sometimes this means working directly with the process object.
    */
   private readonly processApi = {
     // Overwritten via Function.prototype.bind.
     meta: {} as Sh.BaseMeta,
-    session: {} as Session,
 
     ansi,
 

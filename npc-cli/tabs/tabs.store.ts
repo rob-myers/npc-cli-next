@@ -70,6 +70,10 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       useTabs.api.cleanTabMeta();
     },
 
+    get() {
+      return get();
+    },
+
     getNextSuffix(tabClass) {
       const tabClassNodes = get().tabset.tabs.filter(({ config }) => 
         config.type === 'terminal' ? tabClass === 'Tty' : config.class === tabClass
@@ -257,6 +261,10 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
     updateTabMeta(meta) {
+      if (!helper.isTabId(meta.key)) {
+        warn(`${'updateTabMeta'}: invalid tabId meta.key: ${meta.key}`);
+        return;
+      }
       if (meta.disabled === undefined && get().tabsMeta[meta.key] === undefined) {
         return; // 1st update must specify `disabled`
       }
@@ -287,6 +295,7 @@ export type State = {
     cleanTabMeta(): void;
     clearTabMeta(): void;
     closeTab(tabId: Key.TabId): void;
+    get(): State;
     getNextSuffix(tabClass: Key.TabClass): number;
     initiateBrowser(): void;
     /** ensure every `tab.config` has type @see {TabDef} */
@@ -316,7 +325,7 @@ interface TabMeta {
    * TTY tab only: last recorded value of home.WORLD_KEY,
    * either via `awaitWorld` or clicking it in `Manage`.
    */
-  ttyWorldKey?: string;
+  ttyWorldKey?: Key.TabId;
   // ...
 }
 

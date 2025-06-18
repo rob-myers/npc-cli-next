@@ -445,6 +445,7 @@ declare namespace NPC {
   //#region sh js
   
   type WorldState = import('../world/World').State;
+  type TabsState = import('../tabs/tabs.store').State;
   type ProcessApi = import('../sh/cmd.service').ProcessApi;
   type ProcessContext = import('../sh/cmd.service').ProcessContext;
 
@@ -452,6 +453,7 @@ declare namespace NPC {
     api: ProcessApi & { getCached(key: '__WORLD_KEY_VALUE__'): WorldState; };
     args: string[];
     w: WorldState;
+    tabs: TabsState['api'];
 
     home: ProcessContext['home'];
     lib: ProcessContext['lib'];

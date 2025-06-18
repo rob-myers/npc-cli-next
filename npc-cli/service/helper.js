@@ -45,6 +45,15 @@ export const helper = {
     "human-0": true,
   },
 
+  /** @type {Record<Key.TabClassPrefix, true>} */
+  fromTabPrefix: {
+    "hello-world": true,
+    debug: true,
+    manage: true,
+    tty: true,
+    world: true,
+  },
+
   /**
    * @type {Record<Key.LayoutPreset, import("../tabs/tab-util").BasicTabsLayout>}
    */
@@ -349,6 +358,22 @@ export const helper = {
    */
   isTabClassKey(input) {
     return input === 'Tty' || (input in helper.fromComponentClass);
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.TabId}
+   */
+  isTabId(input) {
+    if (typeof input !== 'string') {
+      return false;
+    }
+    const parts = input.split('-');
+    return (
+      parts.length === 2
+      && parts[0] in helper.fromTabPrefix
+      && `${parseInt(parts[1])}` === parts[1]
+    );
   },
 
 };

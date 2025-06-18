@@ -103,7 +103,7 @@ export default function Manage(props) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabId = /** @type {Key.TabId} */ (li.dataset.tabId);
       const worldKey = useSession.api.getSession(tabId)?.var.WORLD_KEY;
-      typeof worldKey === 'string' && useTabs.api.updateTabMeta({
+      helper.isTabId(worldKey) && useTabs.api.updateTabMeta({
         key: tabId,
         ttyWorldKey: worldKey,
       });
