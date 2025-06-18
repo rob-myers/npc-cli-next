@@ -6,26 +6,26 @@ import { helper } from "../service/helper";
 import { computeTabDef } from "../tabs/tab-util";
 // import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
-import useSite from "@/components/site.store";
+import useTabs from "../tabs/tabs.store";
 import useSession from "../sh/session.store";
 import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/components/Icon";
 
 /** @param {Props} props */
 export default function Manage(props) {
-  const tabDefs = useSite(({ tabset: { tabs } }) => tabs.map(x => x.config), shallow);
-  const tabsMeta = useSite(({ tabsMeta }) => tabsMeta, shallow);
+  const tabDefs = useTabs(({ tabset: { tabs } }) => tabs.map(x => x.config), shallow);
+  const tabsMeta = useTabs(({ tabsMeta }) => tabsMeta, shallow);
 
   const state = useStateRef(/** @returns {State} */ () => ({
     createTabEpoch: 0,
     closeTab(e) {
       const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
-      useSite.api.closeTab(tabId);
+      useTabs.api.closeTab(tabId);
     },
     createTab(e) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabClassKey = /** @type {Key.TabClass} */ (li.dataset.tabClass);
 
-      const nextTabId = useSite.api.getNextSuffix(tabClassKey);
+      const nextTabId = useTabs.api.getNextSuffix(tabClassKey);
 
       /** @type {import("../tabs/tab-factory").TabDef} */ let tabDef;
       switch (tabClassKey) {
@@ -79,29 +79,29 @@ export default function Manage(props) {
           throw testNever(tabClassKey);
       }
 
-      const created = useSite.api.openTab(tabDef);
+      const created = useTabs.api.openTab(tabDef);
       
       if (created && Date.now() - state.createTabEpoch >= 600) {
         // select on long-press
-        useSite.api.selectTab(tabDef.filepath);
+        useTabs.api.selectTab(tabDef.filepath);
       }
     },
     selectTab(e) {
       const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
       console.log('select', tabId);
-      useSite.api.selectTab(tabId);
+      useTabs.api.selectTab(tabId);
     },
     setMapKey(e) {
       const mapKey = /** @type {Key.Map} */ (e.currentTarget.value);
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabId = /** @type {string} */ (li.dataset.tabId);
-      useSite.api.changeTabProps(tabId, { mapKey });
+      useTabs.api.changeTabProps(tabId, { mapKey });
     },
     syncWorldKey(e) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabId = /** @type {Key.TabId} */ (li.dataset.tabId);
       const worldKey = useSession.api.getSession(tabId)?.var.WORLD_KEY;
-      typeof worldKey === 'string' && useSite.api.updateTabMeta({
+      typeof worldKey === 'string' && useTabs.api.updateTabMeta({
         key: tabId,
         ttyWorldKey: worldKey,
       });

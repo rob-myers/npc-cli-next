@@ -10,6 +10,7 @@ import { useBeforeunload } from "react-beforeunload";
 import { queryClient } from '@/npc-cli/service/query-client';
 import { afterBreakpoint, breakpoint } from "./const";
 import useSite from "./site.store";
+import useTabs from "@/npc-cli/tabs/tabs.store";
 import useOnResize from "@/npc-cli/hooks/use-on-resize";
 import Nav from "./Nav";
 import Main from "./Main";
@@ -22,7 +23,10 @@ export default function Root({ children }: React.PropsWithChildren) {
   const pathname = usePathname();
   React.useEffect(() => void useSite.api.getPageMetadataFromScript(), [pathname]);
   
-  React.useEffect(() => useSite.api.initiateBrowser(), []);
+  React.useEffect(() => {
+    useSite.api.initiateBrowser();
+    useTabs.api.initiateBrowser();
+  }, []);
   useOnResize(); // Update matchMedia computations
   useBeforeunload(() => void useSite.api.onTerminate());
 

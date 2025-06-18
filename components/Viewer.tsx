@@ -7,13 +7,14 @@ import { useBeforeunload } from "react-beforeunload";
 
 import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
-import useSite from "./site.store";
 
 import { parseJsArg, pause, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { helper } from "@/npc-cli/service/helper";
 import { computeTabDef } from "@/npc-cli/tabs/tab-util";
 
+import useSite from "./site.store";
+import useTabs from "@/npc-cli/tabs/tabs.store";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
@@ -23,10 +24,13 @@ import { Tabs, type State as TabsState, type TabState } from "@/npc-cli/tabs/Tab
 
 export default function Viewer() {
 
-  const site = useSite(({ tabset, viewOpen }) => ({
+  const site = useSite(({ viewOpen }) => ({
+    viewOpen,
+  }), shallow);
+  
+  const tabs = useTabs(({ tabset }) => ({
     tabset: tabset.started,
     tabsetVersion: tabset.version,
-    viewOpen,
   }), shallow);
 
   const update = useUpdate();
@@ -62,12 +66,12 @@ export default function Viewer() {
       switch (parts[0]) {
         case 'change-tab': {// props only, not tty env (useSession instead)
           const tabId = parts[1];
-          useSite.api.changeTabProps(tabId, opts.props);
+          useTabs.api.changeTabProps(tabId, opts.props);
           break;
         }
         case 'close-tab': {
           const tabId = parts[1];
-          useSite.api.closeTab(tabId);
+          useTabs.api.closeTab(tabId);
           break;
         }
         case 'open-tab': {// 🔔 open tab via classKey, opts
@@ -80,20 +84,20 @@ export default function Viewer() {
             classKey,
             id: opts.id,
           });
-          useSite.api.openTab(tabDef);
+          useTabs.api.openTab(tabDef);
           break;
         }
         case 'remember-tabs':
-          useSite.api.rememberCurrentTabs();
+          useTabs.api.rememberCurrentTabs();
           break;
         case 'reset-tabs':
-          useSite.api.revertCurrentTabset();
+          useTabs.api.revertCurrentTabset();
           // setTimeout(update);
           break;
         case 'set-tabs': {// 🔔 set layout via layoutPresetKey
           const layoutPresetKey = parts[1];
           if (helper.isLayoutPresetKey(layoutPresetKey)) {
-            useSite.api.setTabset(layoutPresetKey);
+            useTabs.api.setTabset(layoutPresetKey);
           } else {
             throw Error(`${'onInternalApi'} set-tabs: invalid layoutPresetKey "${layoutPresetKey}"`);
           }
@@ -101,7 +105,7 @@ export default function Viewer() {
           break;
         }
         case 'test-mutate-tabs':
-          useSite.api.testMutateLayout();
+          useTabs.api.testMutateLayout();
           // setTimeout(update);
           break;
         case 'noop':
@@ -120,19 +124,19 @@ export default function Viewer() {
       }
     },
     onModelChange(syncCurrent) {
-      useSite.api.storeCurrentLayout(state.tabs.model);
+      useTabs.api.storeCurrentLayout(state.tabs.model);
 
       if (syncCurrent) {// sync avoids resetting to "initial layout"
-        useSite.api.syncCurrentTabset(state.tabs.model);
+        useTabs.api.syncCurrentTabset(state.tabs.model);
       }
     },
     onTabsReset() {
-      useSite.api.clearTabMeta();
+      useTabs.api.clearTabMeta();
     },
     async onToggleTab(tabState) {
       // 🚧 site.store.ts:254 Cannot update a component (`Viewer`) while rendering a different component (`Layout`).
       await pause();
-      useSite.api.updateTabMeta({
+      useTabs.api.updateTabMeta({
         key: tabState.key,
         disabled: tabState.disabled,
       });
@@ -152,7 +156,7 @@ export default function Viewer() {
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
 
     // ensure layout if localStorage empty
-    useSite.api.restoreLayoutWithFallback("world-tty-default_profile", { preserveRestore: false });
+    useTabs.api.restoreLayoutWithFallback("world-tty-default_profile", { preserveRestore: false });
 
     // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {
@@ -166,7 +170,7 @@ export default function Viewer() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  useBeforeunload(() => useSite.api.storeCurrentLayout(state.tabs.model));
+  useBeforeunload(() => useTabs.api.storeCurrentLayout(state.tabs.model));
 
   const collapsed = !site.viewOpen;
   const neverEnabled = !state.tabs.everEnabled;
@@ -191,15 +195,15 @@ export default function Viewer() {
           ref={state.ref('tabs')}
           id="viewer-tabs"
           initEnabled={false}
-          onHardReset={useSite.api.revertCurrentTabset}
+          onHardReset={useTabs.api.revertCurrentTabset}
           onModelChange={state.onModelChange}
           onToggleTab={state.onToggleTab}
           onToggled={update}
           onReset={state.onTabsReset}
           persistLayout
-          updates={site.tabsetVersion}
+          updates={tabs.tabsetVersion}
           rootOrientationVertical
-          tabset={site.tabset}
+          tabset={tabs.tabset}
         />
       </div>
     </aside>

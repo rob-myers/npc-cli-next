@@ -4,7 +4,7 @@ import { devtools } from "zustand/middleware";
 import { Model, type IJsonRowNode } from "flexlayout-react";
 
 import { tryLocalStorageGet, tryLocalStorageSet, deepClone, warn } from "../service/generic";
-import { isTouchDevice } from "../service/dom";
+import { isIOS, isTouchDevice } from "../service/dom";
 import { helper } from "../service/helper";
 import type { TabDef, TabsetLayout } from "../tabs/tab-factory";
 import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab, selectTabInLayout, fixIOSCrash } from "../tabs/tab-util";
@@ -64,6 +64,13 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const tabIds = new Set(tabClassNodes.map(x => x.id as string));
       const firstGap = [...Array(tabClassNodes.length + 1)].findIndex((_, i) => !tabIds.has(`${tabPrefix}-${i}`));
       return firstGap;
+    },
+
+    initiateBrowser() {
+      if (isIOS()) {// 🔔 iOS 18.5 iPhone Mini fails on large maps
+        set({ tabset: computeStoredTabsetLookup() }, undefined, 'recompute-layout-ios');
+        helper.mapKeys = helper.mapKeys.filter(helper.isSmallMap);
+      }
     },
 
     migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
@@ -245,7 +252,10 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
     },
 
   },
-}));
+}), {
+  name: 'tabs',
+  anonymousActionType: 'anon-tabs-act',
+});
 
 const useStore = createWithEqualityFn<State>()(initializer);
 
@@ -262,6 +272,7 @@ export type State = {
     clearTabMeta(): void;
     closeTab(tabId: string): void;
     getNextSuffix(tabClass: Key.TabClass): number;
+    initiateBrowser(): void;
     /** ensure every `tab.config` has type @see {TabDef} */
     migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
     /** Create a tab (returns `true`), or select it (`false`) */
