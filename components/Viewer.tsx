@@ -71,7 +71,7 @@ export default function Viewer() {
         }
         case 'close-tab': {
           const tabId = parts[1];
-          useTabs.api.closeTab(tabId);
+          useTabs.api.closeTab(tabId as Key.TabId);
           break;
         }
         case 'open-tab': {// 🔔 open tab via classKey, opts
