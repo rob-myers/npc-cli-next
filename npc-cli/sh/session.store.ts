@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { uid } from "uid";
 
 import { ansi } from "./const";
 import {
@@ -140,8 +139,6 @@ export interface Session {
     /** Foreground */ fg: number;
     /** Background */ bg: number;
   };
-  /** To distinguish re-created sessions with same `key` */
-  uid: string;
   verbose: boolean;
 }
 
@@ -290,7 +287,6 @@ const useStore = create<State>()(
               nextPid: 0,
               process: {},
               lastExit: { fg: 0, bg: 0 },
-              uid: uid(),
               verbose: false,
             },
             session
