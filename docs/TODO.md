@@ -245,13 +245,14 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ on close world using Manage, also close Tty indicated by tabs.store
   - ℹ️ multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
 
-- BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
 
 - ✅ BUG ctrl-c of `while true; do tour npcKey:rob to:$( points ); sleep 1; done` waits for a second
 
 - can we avoid `move` failing with key "stuck" when near others?
 
 - manage: can select tty profileKey which remounts Tty
+
+- BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
 
 - ✅ manage: clean and clarify actions
 
