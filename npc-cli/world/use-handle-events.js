@@ -51,9 +51,12 @@ export default function useHandleEvents(w) {
       const { gdKey } = npc.s.offMesh.orig;
 
       if (npc.s.offMesh.seg === 0) {
-        // 🔔 cool down offMeshConnection attempts
-        // prevents npc passing through another on continual move
-        pause(30).then(() => npc.s.offMesh = null);
+        /**
+         * We preserve `npc.s.offMesh` for a bit longer
+         * - prevents npc passing through another on continual move
+         * - cancelled on enter-off-mesh
+         */
+        npc.s.offMeshTimeout = window.setTimeout(() => npc.s.offMesh = null, 300);
       } else {
         npc.s.offMesh = null;
       }
@@ -488,8 +491,6 @@ export default function useHandleEvents(w) {
       const { offMesh } = e;
       const door = w.door.byKey[offMesh.gdKey];
 
-      npc.s.lookSecs = 0.2;
-
       // try open closed door
       if (door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
@@ -499,6 +500,9 @@ export default function useHandleEvents(w) {
         npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(nextCorner));
         return;
       }
+      
+      npc.s.lookSecs = 0.2;
+      window.clearTimeout(npc.s.offMeshTimeout);
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
       /** avoid flicker when next corner after offMeshConnection is too close */      

@@ -104,6 +104,8 @@ export function createBaseNpc(def, w) {
       lookSecs: lookSecsNoTarget,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
+      /** For delayed npc.s.offMesh nulling in initial seg */
+      offMeshTimeout: 0,
       /** Opacity e.g. during fade */
       opacity: 1,
       /** Desired opacity */

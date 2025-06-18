@@ -226,11 +226,11 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 
 - ✅ BUG: hmr not working in game.js
 
-- 🚧 BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
-  - presumably 2nd click happens whilst traversing offMesh
+- ✅ BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
   - ℹ️ due to our attempt to "cool down" offMeshTraversal attempts via
     > `pause(30).then(() => npc.s.offMesh = null)` in clearOffMesh
-  - 🚧 cool down via `npc.s.offMeshEpoch`
+  - ✅ seems timeout is clearing `offMesh` after it has been set by `enter-off-mesh`
+  - ✅ cancel timeout on successful enter
 
 - 🚧 new store "tabs.store" contains tabs related stuff from site.store
   - useTabs.api available in shell via CACHE_SHORTCUT.tabs
