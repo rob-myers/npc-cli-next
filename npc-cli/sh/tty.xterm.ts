@@ -106,7 +106,15 @@ export class ttyXtermClass {
   initialise() {
     const xtermDisposable = this.xterm.onData(this.handleXtermInput.bind(this));
     const unregisterWriters = this.session.io.handleWriters(this.onMessage.bind(this));
-    this.cleanups.push(() => xtermDisposable.dispose(), unregisterWriters);
+    const disposeOnScroll = this.xterm.onScroll((y) => {
+      // 🚧 remove stale links and cross them out
+      // console.log({y});
+    });
+    this.cleanups.push(() => {
+      xtermDisposable.dispose();
+      unregisterWriters();
+      disposeOnScroll.dispose();
+    });
     // user indication after xterm has loaded but session hasn't
     this.xterm.writeln(`${ansi.Italic}${ansi.BrightWhite}Loading...${ansi.Reset}`);
   }
@@ -682,13 +690,10 @@ export class ttyXtermClass {
     const activeBuffer = this.xterm.buffer.active;
 
     if (lineNumber < activeBuffer.baseY + 1) {// too far back
-      await useSession.api.writeMsgCleanly(this.session.key, line, {
-        scrollToBottom: true,
-      });
       return;
     }
 
-    // Move to `lineNumber` 🚧 abstract "move"
+    // Move to `lineNumber`
     const startCursor = { x: activeBuffer.cursorX, y: activeBuffer.cursorY };
     let deltaY = lineNumber - 1 - (activeBuffer.baseY + activeBuffer.cursorY);
     const numWrappedLines = this.getNumWrappedLines(lineNumber);
@@ -705,7 +710,6 @@ export class ttyXtermClass {
 
     // Return to previous cursor position
     deltaY = startCursor.y - activeBuffer.cursorY;
-    console.log(1, {deltaY})
     this.xterm.write(deltaY > 0 ? "\x1b[E".repeat(deltaY) : "\x1b[F".repeat(-deltaY));
 
     // 🔔 await to handle case of multiple replace e.g. `ps`
