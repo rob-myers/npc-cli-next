@@ -218,11 +218,17 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `ps` provides `refresh(lineNumber)` callback per link which updates status of link
   - ✅ useSession.api.refreshTtyLinks(sessionKey)
 - ✅ on `<Tty>` pause/resume we invoke these callbacks
-- 🚧 remove stale links and cross them out
+- ❌ remove stale links and cross them out
   - ℹ️ otherwise they'll be `ps` further up which are out-of-sync
+  - ❌ xterm.onScroll
+  - ℹ️ decided against e.g. small scroll area
+- `ps` only shows kill option
+  - "on/no" are shown but cannot be changed
+  - instead we'll manage processes inside `Manage`
 - `<Tty>` could also cleanup stale links
+- `ps` kill updates others 
+
 - ptags.psPreview used by `ps`
-- `ps` updates others?
 
 - whilst paused, should background processes sans ptags.always start paused?
 
