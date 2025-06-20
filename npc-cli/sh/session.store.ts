@@ -1,37 +1,11 @@
 import { create } from "zustand";
 
 import { ansi } from "./const";
-import {
-  addToLookup,
-  deepClone,
-  removeFromLookup,
-  tryLocalStorageGet,
-  tryLocalStorageSet,
-  KeyedLookup,
-  jsStringify,
-  warn,
-  pause,
-} from "../service/generic";
-import {
-  computeNormalizedParts,
-  formatMessage,
-  killProcess,
-  resolveNormalized,
-  ShError,
-  ttyError,
-} from "./util";
+import { addToLookup, deepClone, removeFromLookup, tryLocalStorageGet, tryLocalStorageSet, KeyedLookup, jsStringify, warn, pause } from "../service/generic";
+import { computeNormalizedParts, formatMessage, killProcess, resolveNormalized, ShError, ttyError } from "./util";
 import type { BaseMeta, FileWithMeta, NamedFunction } from "./parse";
 import type { MessageFromShell, MessageFromXterm } from "./io";
-import {
-  type Device,
-  type ShellIo,
-  type VarDeviceMode,
-  FifoDevice,
-  makeShellIo,
-  NullDevice,
-  VarDevice,
-  VoiceDevice,
-} from "./io";
+import { type Device, type ShellIo, type VarDeviceMode, FifoDevice, makeShellIo, NullDevice, VarDevice, VoiceDevice } from "./io";
 import { srcService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
 
