@@ -39,6 +39,7 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
       allowProposedApi: true, // Needed for WebLinksAddon
       fontSize: 16,
       cursorBlink: true,
+      fontFamily: "'Courier New', Courier, monospace",
       // rendererType: "canvas",
       // mobile: can select single word via long press
       rightClickSelectsWord: true,
