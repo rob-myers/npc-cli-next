@@ -183,8 +183,13 @@ export interface TtyLinkCtxt {
    * or equivalently one character after the leading square bracket.
    */
   linkStartIndex: number;
-  /** Callback associated with link */
-  callback: (/** Line we clicked on (possibly wrapped) */ lineNumber: number) => void;
+  /**
+   * Callback associated with link
+   * @param callback Line we clicked on (possibly wrapped)
+   */
+  callback(lineNumber: number): void;
+  /** Can refresh link e.g. `ps` on/off */
+  refresh?(): void;
 }
 
 const useStore = create<State>()(

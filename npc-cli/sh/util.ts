@@ -251,15 +251,20 @@ export function formatMessage(msg: string, level: "info" | "error") {
 }
 
 /**
- * - We'll compute text `textForTty` where each `[foo](bar)` is replaced by `[foo]`.
+ * - We'll compute text `textForTty` where each `[ foo ](bar)` is replaced by `[ foo ]`.
  * - The relationship between `foo` and `bar` is stored in a `TtyLinkCtxt`.
  * - We need `sessionKey` for special actions e.g. `href:#somewhere else`.
  */
-export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKey: string) {
+export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKey: string): {
+  ttyText: string;
+  /** `ttyText` with ansi colours stripped */
+  ttyTextKey: string;
+  linkCtxtsFactory?(resolve: (v: any) => void): TtyLinkCtxt[];
+} {
   /**
-   * - match[1] is either empty or the escape character (to support ansi special chars)
-   * - match[2] is the link label e.g. "[foo]"
-   * - match[3] is the link value e.g. "bar" (interprets as 'bar') or "2" (interprets as 2)
+   * - `match[1]` is either empty or the escape character (to support ansi special chars)
+   * - `match[2]` is the link label e.g. "[ foo ]"
+   * - `match[3]` is the link value e.g. "bar" (string 'bar') or "2" (number 2)
    */
   // const mdLinksRegex = /(^|[^\x1b])\[([^()]+?)\]\((.*?)\)/g;
   const mdLinksRegex = /(^|[^\x1b])\[ ([^()]+?) \]\((.*?)\)/g;
@@ -273,16 +278,16 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
   const addedZero = boundaries[0] === 0 ? 0 : boundaries.unshift(0) && 1;
   const parts = boundaries
     .map((textIndex, i) => text.slice(textIndex, boundaries[i + 1] ?? text.length))
-    .map((part, i) =>
-      addedZero === i % 2
-        ? formatLink(part.slice(1, part.indexOf("(") - 1))
-        : `${ansi.White}${part}${ansi.Reset}`
+    .map((part, i) => addedZero === i % 2
+      ? formatLink(part.slice(1, part.indexOf("(") - 1))
+      : `${ansi.White}${part}${ansi.Reset}`
     );
   const ttyText = parts.join("");
   const ttyTextKey = stripAnsi(ttyText);
 
-  const linkCtxtsFactory = matches.length
-    ? (resolve: (v: any) => void): TtyLinkCtxt[] =>
+  if (matches.length > 0) {
+    return {
+      linkCtxtsFactory: (resolve: (v: any) => void): TtyLinkCtxt[] =>
         matches.map((match, i) => ({
           lineText: ttyTextKey,
           linkText: stripAnsi(match[2]),
@@ -290,13 +295,15 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
           linkStartIndex: 1 + stripAnsi(parts.slice(0, 2 * i + addedZero).join("")).length,
           callback() {
             let value = parseJsArg(
-              match[3] === "" // links [foo]() has value "foo"
-                ? match[2] // links [foo](-) has value undefined
+              match[3] === "" // links [ foo ]() has value "foo"
+                ? match[2] // links [ foo ](-) has value undefined
                 : match[3] === "-"
                 ? undefined
                 : match[3]
             );
-            value === undefined && (value = defaultValue);
+            if (value === undefined) {
+              value = defaultValue;
+            }
 
             // 🚧 We support special actions
             // if (typeof value === "string") {
@@ -309,15 +316,16 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
             // }
             resolve(value);
           },
-        }))
-    : undefined;
-
-  return {
-    ttyText,
-    /** `ttyText` with ansi colours stripped */
-    ttyTextKey,
-    linkCtxtsFactory,
-  };
+        })),
+      ttyText,
+      ttyTextKey,
+    };
+  } else {
+    return {
+      ttyText,
+      ttyTextKey,
+    };
+  }
 }
 
 /** Avoid clogging logs with "pseudo errors" */
