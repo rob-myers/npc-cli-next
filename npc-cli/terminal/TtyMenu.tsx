@@ -229,7 +229,7 @@ const menuCss = css`
     height: 32px;
     cursor: pointer;
     text-align: center;
-    padding: 12px;
+    padding: 12px 0;
     color: #cfc;
     background-color: rgba(0, 0, 0, 0.7);
   }
