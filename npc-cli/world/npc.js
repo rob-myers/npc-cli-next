@@ -114,6 +114,8 @@ export function createBaseNpc(def, w) {
       run: false,
       /** Default is blue */
       selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
+      /** Can tween agent separation weight */
+      separation: /** @type {null | { current: number; dst: number; smoothTime?: Number; }} */ (null),
       /**
        * Time when slowness detected (world timer elapsedTime in seconds).
        * 🤔 Pausing currently resets World timer.
@@ -153,6 +155,7 @@ export function createBaseNpc(def, w) {
     resolve: {
       fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
       move: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+      separate: /** @type {undefined | ((value?: any) => void)} */ (undefined),
       spawn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
       turn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
     },
@@ -160,6 +163,7 @@ export function createBaseNpc(def, w) {
     reject: {
       fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
       move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
+      separate: /** @type {undefined | ((error: any) => void)} */ (undefined),
       // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
       turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
     },
@@ -857,7 +861,7 @@ export class NpcApi {
       radius: helper.defaults.radius,
       slowDownRadius: helper.defaults.radius,
       collisionQueryRange: movingCollisionQueryRange,
-      separationWeight: movingSeparationWeight ,
+      // separationWeight: movingSeparationWeight,
       queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
     });
 
@@ -1065,23 +1069,25 @@ export class NpcApi {
    * @param {import('@recast-navigation/core').CrowdAgent} agent
    */
   onTickAgent(deltaMs, agent) {
-    const pos = agent.position();
+    const position = agent.position();
     const state = agent.state();
 
-    this.base.delta.copy(pos).sub(this.base.position);
-    this.base.position.copy(pos);
+    this.delta.copy(position).sub(this.base.position);
+    this.base.position.copy(position);
 
     if (state !== this.s.agentState) {
       this.onChangeAgentState(agent, state);
       this.s.agentState = state;
     }
 
+    if (this.s.separation !== null) {
+      this.onTickSeparation(deltaMs, agent, this.s.separation);
+    }
+
     if (this.s.offMesh !== null) {
       this.handleOffMeshConnection(agent, this.s.offMesh);
       return; // Avoid stopMoving whilst offMesh
     }
-
-    // this.speed = tmpVectThree1.copy(agent.velocity()).length();
 
     if (this.s.target === null) {
       this.w.npc.onTickIdleTurn?.(this.base, agent);
@@ -1090,7 +1096,7 @@ export class NpcApi {
 
     this.onTickTurnTarget(agent);
 
-    const distance = this.s.target.distanceTo(pos);
+    const distance = this.s.target.distanceTo(position);
 
     if (distance <= this.s.arriveDist) {// Reached target
       this.stopMoving({ type: 'stop-reason', key: 'arrived' });
@@ -1100,6 +1106,22 @@ export class NpcApi {
     }
 
     this.onTickDetectStuck(deltaMs, agent);
+  }
+
+  /**
+   * @param {number} deltaMs
+   * @param {NPC.CrowdAgent} agent
+   * @param {NonNullable<this['s']['separation']>} separation
+   */
+  onTickSeparation(deltaMs, agent, separation) {
+    const { current, dst, smoothTime = 0.4 } = separation;
+    if (damp(separation, 'current', dst, smoothTime, deltaMs, undefined, undefined, 0.02) === false) {
+      this.s.separation = null;
+      agent.raw.params.set_separationWeight(dst);
+      this.resolve.separate?.();
+    } else {
+      agent.raw.params.set_separationWeight(current);
+    }
   }
 
   /**
@@ -1122,6 +1144,7 @@ export class NpcApi {
 
     if (this.w.npc.onStuckNpc === null) {
       // 🔔 fixes "cannot arrive close enough" due to nearby-ish npc
+      // 🚧 should not prevent low separation weight from dominating
       this.stopMoving({
         type: 'stop-reason',
         key: 'stuck',
@@ -1154,6 +1177,30 @@ export class NpcApi {
     }
 
     this.applyTint();
+  }
+
+  /**
+   * Smoothly change agent.separationWeight
+   * @param {number} separationWeight 
+   * @param {number} [smoothTime] 
+   */
+  async separate(separationWeight, smoothTime = 0.2) {
+    this.reject.separate?.(Error('separate-again'));
+    try {
+      const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+      this.s.separation = {
+        current: agent.raw.params.get_separationWeight(),
+        dst: separationWeight,
+        smoothTime,
+      };
+      await new Promise((resolve, reject) => {
+        this.resolve.separate = resolve;
+        this.reject.separate = reject;
+      });
+    } catch (e) {
+      this.s.separation = null;
+      throw e;
+    }
   }
 
   /**
@@ -1286,7 +1333,7 @@ export class NpcApi {
       updateFlags: defaultAgentUpdateFlags,
       radius: helper.defaults.radius,
       collisionQueryRange: staticCollisionQueryRange,
-      separationWeight: staticSeparationWeight,
+      // separationWeight: staticSeparationWeight,
       // queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
       // updateFlags: 1,
     });
@@ -1365,13 +1412,13 @@ const lookSecsNoTarget = 0.75;
 const staticMaxAcceleration = 4;
 const movingMaxAcceleration = 10;
 
+// const staticSeparationWeight = 0.25;
+// const movingSeparationWeight = 0.5;
 /**
  * 🔔 sudden change can cause jerk onexit doorway
  * 🔔 relevant to reachability of arrival distance
- * 🚧 support separation weight tweening
  */
-const staticSeparationWeight = 0.25;
-const movingSeparationWeight = 0.5;
+const defaultSeparationWeight = 0.5;
 const staticCollisionQueryRange = 2;
 const movingCollisionQueryRange = 2;
 
@@ -1387,7 +1434,7 @@ export const crowdAgentParams = {
   maxAcceleration: staticMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,
   collisionQueryRange: staticCollisionQueryRange,
-  separationWeight: staticSeparationWeight,
+  separationWeight: defaultSeparationWeight,
   queryFilterType: 0,
   updateFlags: defaultAgentUpdateFlags,
 };

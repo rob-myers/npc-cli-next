@@ -213,10 +213,18 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 
 - 🚧 `tour`: simply-looped issues
   - `while true; do tour npcKey:rob to:$( points ); sleep 1; done`
-  - other npc blocks route to 1st point (keeps trying to get there)
-    - ℹ️ many non-trivial ways of being blocked e.g. cannot rely on pushing other out of way
-  - other npc is too close to 1st point (previously handled nearish npc)
-  - 🚧 IDEA: move other out of way
+  - ℹ️ other npc blocks route to 1st point (keeps trying to get there)
+    - many non-trivial ways of being blocked e.g. cannot rely on pushing other out of way
+  - ℹ️ other npc is too close to 1st point (previously handled nearish npc via npc.s.arriveDist)
+  - ℹ️ movement in corridor harder to block
+    - can be blocked at corners tho
+  - ✅ can tween to different separation weight
+    - `w n.rob.api.separate 0.1`
+  - ✅ all npcs have default separation weight 1
+  - ✅ avoid changing separation weight on move/stop
+  - ❌ stuck-detection should not prevent low separation weight from dominating (?)
+  - ℹ️ avoid too much abstraction e.g. why are they trying to walk in a loop?
+  - once blocked then `pause` and wait for help and resume
 
 - ✅ BUG: cannot goto "do point" used by other
   - ✅ set/null do-point should be recorded in `w.npc`
