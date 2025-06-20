@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { ansi } from "./const";
-import { addToLookup, deepClone, removeFromLookup, tryLocalStorageGet, tryLocalStorageSet, KeyedLookup, jsStringify, warn, pause } from "../service/generic";
+import { addToLookup, deepClone, jsStringify, KeyedLookup, pause, removeFromLookup, tryLocalStorageGet, tryLocalStorageSet, warn } from "../service/generic";
 import { computeNormalizedParts, formatMessage, killProcess, resolveNormalized, ShError, ttyError } from "./util";
 import type { BaseMeta, FileWithMeta, NamedFunction } from "./parse";
 import type { MessageFromShell, MessageFromXterm } from "./io";
@@ -49,7 +49,7 @@ export type State = {
       STOP?: boolean;
       CONT?: boolean;
       SIGINT?: boolean;
-      /** For STOP */
+      /** 🚧 */
       global?: boolean;
     }): void;
     onTtyLink: (opts: {
@@ -61,7 +61,7 @@ export type State = {
     }) => void;
     persistHistory: (sessionKey: string) => void;
     persistHome: (sessionKey: string) => void;
-    refreshTtyLinks: (sessionKey: string) => void;
+    refreshTtyLinks: (sessionKey: string) => Promise<void>;
     rehydrate: (sessionKey: string) => Rehydrated;
     removeDevice: (deviceKey: string) => void;
     removeProcess: (pid: number, sessionKey: string) => void;
@@ -190,7 +190,7 @@ export interface TtyLinkCtxt {
    */
   callback(lineNumber: number): void;
   /** Can refresh link e.g. `ps` on/off */
-  refresh?(lineNumber: number): void;
+  refresh?(lineNumber: number): void | Promise<void>;
 }
 
 const useStore = create<State>()(
@@ -454,8 +454,18 @@ const useStore = create<State>()(
         // console.log({persistedVarLookup})
       },
 
-      refreshTtyLinks(sessionKey) {
-        // 🚧 compute all `lineNumber`s matching given set of lines
+      async refreshTtyLinks(sessionKey) {
+        const { ttyShell, ttyLink } = useSession.api.getSession(sessionKey);
+        const lineToNumbers = ttyShell.xterm.getLines();
+        
+        // try to refresh every instance of ttyLink line
+        for (const [lineText, ttyLineCtxts] of Object.entries(ttyLink)) {
+          for (const lineNumber of lineToNumbers[lineText]) {
+            for (const ct of ttyLineCtxts) {
+              await ct.refresh?.(lineNumber);
+            }
+          }
+        }
       },
 
       rehydrate(sessionKey) {

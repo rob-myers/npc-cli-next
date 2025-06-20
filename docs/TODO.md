@@ -211,15 +211,18 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ npc.s.arriveDistance
   - ✅ relax npc arriveDistance inside `tour`
 
-- 🚧 tty links have optional `refresh` callback
+- ✅ tty links have optional `refresh` callback
   - ℹ️ if we don't track lineNumber of link (hard), only traverse all tty lines once
   - ℹ️ assume all instances of the line with the link should be updated
     - works for e.g. process-info-line
   - ✅ `ps` provides `refresh(lineNumber)` callback per link which updates status of link
-  - 🚧 useSession.api.refreshTtyLinks(sessionKey)
-- on `<Tty>` pause/resume we invoke these callbacks
+  - ✅ useSession.api.refreshTtyLinks(sessionKey)
+- ✅ on `<Tty>` pause/resume we invoke these callbacks
 - `<Tty>` could also cleanup stale links
 - ptags.preview used by `ps`
+- `ps` updates others?
+
+- whilst paused, should background processes sans ptags.always start paused?
 
 - 🚧 `tour`: simply-looped issues
   - `while true; do tour npcKey:rob to:$( points ); sleep 1; done`

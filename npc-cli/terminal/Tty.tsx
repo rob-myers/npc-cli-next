@@ -96,6 +96,9 @@ export default function Tty(props: Props) {
       } else {
         state.canContOrStop = null;
       }
+
+      // update any existing `ps`
+      useSession.api.refreshTtyLinks(props.sessionKey);
       update();
     },
     reboot() {
@@ -135,6 +138,9 @@ export default function Tty(props: Props) {
       } else {
         state.canContOrStop = null;
       }
+
+      // update any existing `ps`
+      useSession.api.refreshTtyLinks(props.sessionKey);
       update();
     },
     async storeAndSourceFuncs() {

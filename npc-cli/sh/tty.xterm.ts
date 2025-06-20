@@ -230,14 +230,15 @@ export class ttyXtermClass {
   }
 
   /**
-   * Get non-empty lines as lookup `{ [lineText]: true }`.
-   * ANSI codes are stripped (important for equality testing).
+   * Get non-empty lines as lookup `{ [ansiStrippedLine]: lineNumbers }`.
    */
-  getLines() {
+  getLines(): Record<string, number[]> {
     const activeBuffer = this.xterm.buffer.active;
-    return [...Array(activeBuffer.length)].reduce<Record<string, true>>((agg, _, i) => {
-      const line = activeBuffer.getLine(i)?.translateToString(true);
-      line && (agg[line] = true);
+    return [...Array(activeBuffer.length)].reduce((agg, _, lineIndex) => {
+      const line = activeBuffer.getLine(lineIndex)?.translateToString(true);
+      if (typeof line === 'string' && line !== '') {
+        (agg[line] ??= []).push(lineIndex + 1);
+      }
       return agg;
     }, {});
   }
@@ -680,11 +681,11 @@ export class ttyXtermClass {
   async replaceLine(lineNumber: number, line: string) {
     const activeBuffer = this.xterm.buffer.active;
 
-    if (lineNumber < activeBuffer.baseY + 1) {
-      // too far back
-      return await useSession.api.writeMsgCleanly(this.session.key, line, {
+    if (lineNumber < activeBuffer.baseY + 1) {// too far back
+      await useSession.api.writeMsgCleanly(this.session.key, line, {
         scrollToBottom: true,
       });
+      return;
     }
 
     // Move to `lineNumber` 🚧 abstract "move"
@@ -699,11 +700,17 @@ export class ttyXtermClass {
     this.xterm.write("\x1b[F".repeat(numWrappedLines - 1));
 
     // Write new line
-    this.xterm.write(line, () => {
-      // Return to previous cursor position
-      deltaY = startCursor.y - activeBuffer.cursorY;
-      this.xterm.write(deltaY > 0 ? "\x1b[E".repeat(deltaY) : "\x1b[F".repeat(-deltaY));
-      this.xterm.write("\x1b[C".repeat(startCursor.x));
+    // 🔔 await so can compute `activeBuffer.cursorY` next
+    await new Promise<void>(resolve => this.xterm.write(line, resolve));
+
+    // Return to previous cursor position
+    deltaY = startCursor.y - activeBuffer.cursorY;
+    console.log(1, {deltaY})
+    this.xterm.write(deltaY > 0 ? "\x1b[E".repeat(deltaY) : "\x1b[F".repeat(-deltaY));
+
+    // 🔔 await to handle case of multiple replace e.g. `ps`
+    await new Promise<void>(resolve => {
+      this.xterm.write("\x1b[C".repeat(startCursor.x), resolve);
     });
   }
 

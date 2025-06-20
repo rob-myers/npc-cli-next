@@ -420,11 +420,11 @@ class cmdServiceClass {
         function registerStatusLinks(process: ProcessMeta, processLine: string) {
           const lineText = stripAnsi(processLine);
 
-          function updateLine(lineNumber: number) {
+          async function updateLine(lineNumber: number) {
             useSession.api.removeTtyLineCtxts(meta.sessionKey, lineText);
             const { xterm: ttyXterm } = useSession.api.getSession(meta.sessionKey).ttyShell;
             lineNumber = ttyXterm.getWrapStartLineNumber(lineNumber);
-            ttyXterm.replaceLine(lineNumber, getProcessLineWithLinks(process));
+            await ttyXterm.replaceLine(lineNumber, getProcessLineWithLinks(process));
           }
 
           useSession.api.addTtyLineCtxts(meta.sessionKey, lineText, [
@@ -436,8 +436,8 @@ class cmdServiceClass {
                 useSession.api.kill(meta.sessionKey, [process.key], { STOP: true });
                 updateLine(lineNumber);
               },
-              refresh(lineNumber) {
-                updateLine(lineNumber);
+              async refresh(lineNumber) {
+                await updateLine(lineNumber);
               },
             },
             {
