@@ -61,6 +61,7 @@ export type State = {
     }) => void;
     persistHistory: (sessionKey: string) => void;
     persistHome: (sessionKey: string) => void;
+    refreshTtyLinks: (sessionKey: string) => void;
     rehydrate: (sessionKey: string) => Rehydrated;
     removeDevice: (deviceKey: string) => void;
     removeProcess: (pid: number, sessionKey: string) => void;
@@ -189,7 +190,7 @@ export interface TtyLinkCtxt {
    */
   callback(lineNumber: number): void;
   /** Can refresh link e.g. `ps` on/off */
-  refresh?(): void;
+  refresh?(lineNumber: number): void;
 }
 
 const useStore = create<State>()(
@@ -451,6 +452,10 @@ const useStore = create<State>()(
           jsStringify(persistedVarLookup),
         );
         // console.log({persistedVarLookup})
+      },
+
+      refreshTtyLinks(sessionKey) {
+        // 🚧 compute all `lineNumber`s matching given set of lines
       },
 
       rehydrate(sessionKey) {

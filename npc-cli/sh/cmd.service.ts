@@ -362,13 +362,16 @@ class cmdServiceClass {
       }
       case "ps": {
         const { opts } = getOpts(args, {
-          boolean: ["a" /** Show all processes */, "s" /** Show process src */],
+          boolean: [
+            "a" /** Show all processes */,
+            "s" /** Show process src */,
+          ],
         });
 
         const allProcesses = useSession.api.getSession(meta.sessionKey).process;
 
         /** Either all processes, or all group leaders */
-        const processes = opts.a
+        const processes = opts.a === true
           ? allProcesses
           : Object.values(allProcesses).reduce(
               (agg, proc) => (proc.key === proc.pgid && (agg[proc.key] = proc), agg),
@@ -433,6 +436,9 @@ class cmdServiceClass {
                 useSession.api.kill(meta.sessionKey, [process.key], { STOP: true });
                 updateLine(lineNumber);
               },
+              refresh(lineNumber) {
+                updateLine(lineNumber);
+              },
             },
             {
               lineText,
@@ -460,7 +466,7 @@ class cmdServiceClass {
 
         for (const process of Object.values(processes)) {
           yield getProcessLineWithLinks(process);
-          if (opts.s) {// Avoid multiline white in tty
+          if (opts.s === true) {// Avoid multiline white in tty
             yield* process.src.split("\n").map((x) => `${ansi.Reset}${x}`);
           }
         }
