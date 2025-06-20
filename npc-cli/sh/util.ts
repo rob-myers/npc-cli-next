@@ -251,11 +251,12 @@ export function formatMessage(msg: string, level: "info" | "error") {
 }
 
 /**
+ * Used by builtin `choice`.
  * - We'll compute text `textForTty` where each `[ foo ](bar)` is replaced by `[ foo ]`.
  * - The relationship between `foo` and `bar` is stored in a `TtyLinkCtxt`.
  * - We need `sessionKey` for special actions e.g. `href:#somewhere else`.
  */
-export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKey: string): {
+export function computeChoiceTtyLinkFactory(text: string, defaultValue: any, sessionKey: string): {
   ttyText: string;
   /** `ttyText` with ansi colours stripped */
   ttyTextKey: string;
@@ -287,12 +288,14 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
 
   if (matches.length > 0) {
     return {
-      linkCtxtsFactory: (resolve: (v: any) => void): TtyLinkCtxt[] =>
+      linkCtxtsFactory: (resolve: (value: any) => void): TtyLinkCtxt[] =>
         matches.map((match, i) => ({
           lineText: ttyTextKey,
           linkText: stripAnsi(match[2]),
+
           // 1 + ensures we're inside the square brackets:
           linkStartIndex: 1 + stripAnsi(parts.slice(0, 2 * i + addedZero).join("")).length,
+
           callback() {
             let value = parseJsArg(
               match[3] === "" // links [ foo ]() has value "foo"
@@ -305,7 +308,7 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
               value = defaultValue;
             }
 
-            // 🚧 We support special actions
+            // 🚧 support special actions
             // if (typeof value === "string") {
             //   if (value.startsWith("href:")) {
             //     // `"href:{navigable}"`
@@ -316,6 +319,9 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
             // }
             resolve(value);
           },
+
+          // 🤔 `choice` could support refresh e.g. links change on pause
+          // refresh() {},
         })),
       ttyText,
       ttyTextKey,
