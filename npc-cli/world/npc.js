@@ -1418,7 +1418,7 @@ const movingMaxAcceleration = 10;
  * 🔔 sudden change can cause jerk onexit doorway
  * 🔔 relevant to reachability of arrival distance
  */
-const defaultSeparationWeight = 0.5;
+const defaultSeparationWeight = 0.25;
 const staticCollisionQueryRange = 2;
 const movingCollisionQueryRange = 2;
 
