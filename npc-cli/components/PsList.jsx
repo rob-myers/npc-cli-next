@@ -38,9 +38,8 @@ export default function PsList() {
       const session = useSession.api.getSession(state.sessionKey);
       const leaders = Object.values(session.process).filter(p => p.key === p.pgid);
       // 🚧 compute leading processes
-      state.processes = leaders.map(({ key: pid, pgid, src }) => ({
+      state.processes = leaders.map(({ key: pid, src }) => ({
         pid,
-        pgid,
         src,
       }));
     } catch (e) {
@@ -49,26 +48,28 @@ export default function PsList() {
 
   }, [sessionKeys.length, state.sessionKey]);
 
+  const sessionsExist = sessionKeys.length > 0;
+
   return (
     <div css={psListCss}>
 
       <div className="header">
         <h2>Processes</h2>
-        {sessionKeys.length === 0 && <div className="no-sessions">{`[No sessions found]`}</div>}
-        {sessionKeys.length > 0 && <select onChange={state.onChangeSessionKey}>
+        {!sessionsExist && <div className="no-sessions">{`[No sessions found]`}</div>}
+        {sessionsExist && <select onChange={state.onChangeSessionKey}>
           {sessionKeys.map(x => <option key={x} value={x}>{x}</option>)}
         </select>}
       </div>
       
       {/* 🚧 */}
-      <div className="process-leaders">
+      {sessionsExist && <div className="process-leaders">
         {state.processes.map(p =>
           <div className="process-leader" key={p.pid}>
-            <div>{p.pid}:</div>
+            <div>{p.pid}</div>
             <div>{p.src}</div>
           </div>
         )}
-      </div>
+      </div>}
 
     </div>
   );
@@ -93,10 +94,18 @@ const psListCss = css`
     }
   }
   .process-leaders {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    font-family: 'Courier New', Courier, monospace;
+    font-size: medium;
+    color: #0f0;
   }
   .process-leader {
     display: flex;
     gap: 8px;
+    background-color: #333;
   }
 `;
 
@@ -110,7 +119,6 @@ const psListCss = css`
 /**
  * @typedef ProcessLeader
  * @property {number} pid
- * @property {number} pgid
  * @property {string} src
  * // 🚧
  */
