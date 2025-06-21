@@ -228,8 +228,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ rename `Debug` -> `PsList`
   - ✅ `Manage` shows `PsList`
   - ✅ lists process leaders
-  - 🚧 can manually refresh via button
-  - external message `process-status`
+  - ✅ can manually refresh via button
+  - 🚧 external message `process-status`
   - remove external message `interactive`
 
 - ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
