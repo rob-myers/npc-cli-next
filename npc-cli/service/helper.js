@@ -367,13 +367,13 @@ export const helper = {
   isTabId(input) {
     if (typeof input !== 'string') {
       return false;
+    } else {
+      const matched = input.match(/^(.+)-\d+$/);
+      return (
+        matched !== null
+        && matched[1] in helper.fromTabPrefix
+      );
     }
-    const parts = input.split('-');
-    return (
-      parts.length === 2
-      && parts[0] in helper.fromTabPrefix
-      && `${parseInt(parts[1])}` === parts[1]
-    );
   },
 
 };
