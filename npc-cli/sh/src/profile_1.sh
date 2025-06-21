@@ -6,11 +6,8 @@ source /etc/game_1.js.sh
 awaitWorld
 
 spawn npcKey:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
-
 spawn npcKey:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }'
-
 spawn npcKey:kate skin:medic-0 at:'{ x: 5 * 1.5, y: 7 * 1.5 }'
-
 spawn npcKey:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }'
 
 spawn npcKey:rada angle:Math.PI skin:'{
@@ -23,8 +20,6 @@ spawn npcKey:rada angle:Math.PI skin:'{
 
 w n.rob.api.showSelector true
 selectedNpcKey="rob"
-# torch follows rob
-w n.rob.position | w floor.setTorchTarget -
 
 # re-skin rob
 # w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
@@ -45,16 +40,14 @@ w n.rob.position | w floor.setTorchTarget -
 w e.grantAccess . rob will kate suit rada
 
 # select selectedNpcKey on click npc
-ptags=always; click | filter meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
+ptags=always; click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.api.showSelector(false);
   w.n[meta.npcKey].api.showSelector(true);
   home.selectedNpcKey = meta.npcKey;
 }' &
 
 # open door on click
-click | map '({meta}, {w}) => {
-  meta.door && w.e.toggleDoor(meta.gdKey, {})
-}' &
+click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)' &
 
 w | map '(w, { home }) => w.e.pressMenuFilters.push(
   (meta) => home.selectedNpcKey in w.n && (meta.do === true || meta.floor === true)
@@ -68,7 +61,7 @@ click --long | map --forever 'async (input, {home, w}) => {
 }' &
 
 # click navmesh to move selectedNpcKey
-ptags=always; click | filter meta.floor | map --forever '(input, { w, home }) => {
+ptags=always; click meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;
