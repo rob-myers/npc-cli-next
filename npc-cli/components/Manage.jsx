@@ -10,6 +10,7 @@ import useStateRef from "../hooks/use-state-ref";
 import useTabs from "../tabs/tabs.store";
 import useSession from "../sh/session.store";
 import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/components/Icon";
+import PsList from "./PsList";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -59,12 +60,6 @@ export default function Manage(props) {
           });
           break;
         }
-        case 'Debug':
-          tabDef = computeTabDef({
-            classKey: tabClassKey,
-            id: `debug-${nextTabId}`,
-          });
-          break;
         case 'HelloWorld':
           tabDef = computeTabDef({
             classKey: tabClassKey,
@@ -274,6 +269,8 @@ export default function Manage(props) {
           <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li> */}
         </ul>
       </div>
+
+      <PsList/>
     </div>
   );
 }
@@ -308,15 +305,17 @@ const manageCss = css`
     flex-direction: column;
     gap: 8px;
   }
-
+  
   .current-tabs, .create-tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    background-color: #222;
 
     li {
       display: flex;
       border: var(--separating-border);
+      background-color: #111;
     }
   }
 
@@ -459,10 +458,12 @@ const manageCss = css`
     ul {
       display: flex;
       flex-wrap: wrap;
+      background-color: #222;
     }
     li {
       padding: 4px 8px;
       border: var(--separating-border);
+      background-color: #111;
     }
     a {
       font-size: small;
