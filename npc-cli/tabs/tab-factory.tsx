@@ -118,11 +118,16 @@ export interface BaseTabProps {
 
 function FallbackComponentFactory(componentKey: string) {
   return () =>
-    React.createElement(
-      "div",
-      { style: { color: "white", padding: "0 8px", fontSize: 20 } },
-      `Component "${componentKey}" not found`
-    );
+    React.createElement("div", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        color: "#ff9",
+        fontSize: 16,
+      },
+    }, `Component "${componentKey}" not found`);
 }
 
 export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
