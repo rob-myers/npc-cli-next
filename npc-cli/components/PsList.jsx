@@ -35,18 +35,38 @@ export default function PsList() {
         default:
       }
     },
-    computeProcessLeaders() {
+    connectSession() {
       try {
+        state.disconnectSession?.()
+
         const session = useSession.api.getSession(state.sessionKey);
+        if (session === undefined) {
+          return; // 🚧 initially session may not be ready (despite tabs.tabsMeta)
+        }
+
         const leaders = Object.values(session.process).filter(p => p.key === p.pgid);
-        // 🚧 compute leading processes
+        
+        // compute leading processes
         state.processes = leaders.map(({ key: pid, src }) => ({
           pid,
           src,
         }));
+        
+        // listen for leading process status
+        state.disconnectSession = session.ttyShell.io.handleWriters(msg => 
+          msg?.key === 'external'
+          && msg.msg.key === 'process-leader'
+          && state.handleLeaderMessage(msg.msg)
+        );
+
       } catch (e) {
         error(e);
       }
+    },
+    disconnectSession: null,
+    handleLeaderMessage(msg) {
+      // 🚧
+      console.log(msg);
     },
     onChangeSessionKey(e) {
       const { value } = e.currentTarget;
@@ -54,7 +74,7 @@ export default function PsList() {
       update();
     },
     refreshProcessLeaders() {
-      state.computeProcessLeaders();
+      state.connectSession();
       update();
     },
   }));
@@ -205,7 +225,9 @@ const psListCss = css`
  * @property {null | HTMLSelectElement} sessionSelect
  *
  * @property {(e: React.PointerEvent<HTMLDivElement>) => void} changeProcess
- * @property {() => void} computeProcessLeaders
+ * @property {() => void} connectSession
+ * @property {null | (() => void)} disconnectSession
+ * @property {(msg: import("../sh/io").ExternalMessageProcessLeader) => void} handleLeaderMessage
  * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onChangeSessionKey
  * @property {() => void} refreshProcessLeaders
  */

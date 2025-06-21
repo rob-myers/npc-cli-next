@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import useMeasure from 'react-use-measure';
 import debounce from 'debounce';
 
-import { error, jsStringify, keys, warn } from '../service/generic';
+import { error, jsStringify, keys, testNever, warn } from '../service/generic';
 import { isTouchDevice } from '../service/dom';
 import type { Session } from "../sh/session.store";
 import type { BaseTabProps } from '../tabs/tab-factory';
@@ -69,9 +69,11 @@ export default function Tty(props: Props) {
           }
           update();
           break;
+        case 'process-leader':
+          break;
         default:
           warn(`${'handleExternalMsg'}: unexpected message: ${jsStringify(msg)}`);
-          break;
+          testNever(msg);
       }
     },
     onFocus() {

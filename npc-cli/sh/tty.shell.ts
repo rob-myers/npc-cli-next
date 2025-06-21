@@ -229,20 +229,22 @@ export class ttyShellClass implements Device {
   ) {
     const { meta } = term;
 
+    let process = this.process;
+
     if (this.profileFinished === true) {
       if (opts.leading === true) {
         // Only reachable by interactively specifying a command after profile has run
         // We ensure leading process has status Running
-        this.process.status = ProcessStatus.Running;
+        process.status = ProcessStatus.Running;
         this.io.write({ key: 'external', msg: { key: 'interactive', act: 'started' } });
       }
     } else {
-      if (this.process.status === ProcessStatus.Suspended && opts.internal !== true) {
+      if (process.status === ProcessStatus.Suspended && opts.internal !== true) {
         // Only reachable if leading process paused via <Tabs> during profile
         // We halt all subprocesses
         await new Promise<void>((resolve, reject) => {
-          this.process.cleanups.push(() => reject(killError(meta, 130)));
-          this.process.onResumes.push(resolve);
+          process.cleanups.push(() => reject(killError(meta, 130)));
+          process.onResumes.push(resolve);
         });
       }
     }
@@ -251,7 +253,7 @@ export class ttyShellClass implements Device {
       const { ppid, pgid, sessionKey } = meta;
       const session = useSession.api.getSession(sessionKey);
       const parent = session.process[ppid]; // Exists
-      const process = useSession.api.createProcess({
+      process = useSession.api.createProcess({
         ppid,
         pgid,
         sessionKey,
@@ -279,6 +281,35 @@ export class ttyShellClass implements Device {
         process.localVar.PWD = parent.inheritVar.PWD ?? session.var.PWD;
         process.localVar.OLDPWD = parent.inheritVar.OLDPWD ?? session.var.OLDPWD;
       }
+    }
+
+    if (meta.pid === meta.pgid) {// Process leaders emit external events
+      this.io.write({ key: 'external', msg: {
+        key: 'process-leader',
+        pid: meta.pid,
+        act: 'started',
+        profileRunning: this.profileFinished === false ? true : undefined,
+      }});
+
+      process.onSuspends.push(() => {
+        this.io.write({ key: 'external', msg: {
+          key: 'process-leader',
+          pid: meta.pid,
+          act: 'paused',
+          profileRunning: this.profileFinished === false ? true : undefined,
+        }});
+        return true;
+      });
+
+      process.onResumes.push(() => {
+        this.io.write({ key: 'external', msg: {
+          key: 'process-leader',
+          pid: meta.pid,
+          act: 'resumed',
+          profileRunning: this.profileFinished === false ? true : undefined,
+        }});
+        return true;
+      });
     }
 
     try {// Run process
@@ -309,6 +340,20 @@ export class ttyShellClass implements Device {
       } else if (this.profileFinished === true) {
         this.io.write({ key: 'external', msg: { key: 'interactive', act: 'ended' } }); 
       }
+
+      if (meta.pid === meta.pgid) {
+        this.io.write({ key: 'external', msg: {
+          key: 'process-leader',
+          pid: meta.pid,
+          act: 'ended',
+          profileRunning: this.profileFinished === false ? true : undefined,
+        }});
+
+        // must clear in case of leading process (we reuse it)
+        process.onResumes.length = 0;
+        process.onSuspends.length = 0;
+      }
+
     }
   }
 

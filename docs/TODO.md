@@ -231,7 +231,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ can manually refresh via button
   - ✅ UI for pause, resume, kill
   - ✅ pause, resume, kill buttons work
-  - 🚧 external message `process-status`
+  - ✅ external message `process-leader` provides status
   - process controls indicate if paused/killed
   - remove external message `interactive`
 

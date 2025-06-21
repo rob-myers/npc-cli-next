@@ -232,8 +232,17 @@ export interface ExternalMessage {
   key: "external";
   msg: (
     | { key: 'auto-re-source-file'; absPath: `/etc/${string}`; }
-    | { key: 'interactive'; act: 'started' | 'paused' | 'resumed' | 'ended' }
+    | { key: 'interactive'; act: 'started' | 'paused' | 'resumed' | 'ended' } // 🚧 remove
+    | ExternalMessageProcessLeader
   );
+}
+
+export interface ExternalMessageProcessLeader {
+  key: 'process-leader';
+  pid: number;
+  act: 'started' | 'paused' | 'resumed' | 'ended';
+  /** Pid `0` only */
+  profileRunning?: true;
 }
 
 /** `Proxy`s sent as messages should implement `msg[proxyKey] = true` */
