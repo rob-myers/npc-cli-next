@@ -236,8 +236,8 @@ export default function Manage(props) {
 
       </div>
 
-      <div className="actions">
-        <h2>Actions</h2>
+      <div className="layout-actions">
+        <h2>Layout</h2>
 
         <ul>
           <li>
@@ -451,11 +451,15 @@ const manageCss = css`
     padding: 10px;
   }
 
-  .actions {
+  .layout-actions {
     display: flex;
     flex-direction: column;
     gap: 8px;
-
+    
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+    }
     li {
       padding: 4px 8px;
       border: var(--separating-border);
