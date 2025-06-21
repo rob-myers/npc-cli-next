@@ -176,7 +176,8 @@ const psListCss = css`
       }
       button.refresh {
         border: var(--separating-border);
-        padding: 0 4px;
+        border-bottom: none;
+        padding: 0 8px;
       }
     }
   }
