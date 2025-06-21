@@ -5,7 +5,7 @@ import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import useTabs from "../tabs/tabs.store";
 import useSession from "../sh/session.store";
-import { faRefresh, FontAwesomeIcon } from "./Icon";
+import { faRefresh, faPause, faPlay, faClose, FontAwesomeIcon } from "./Icon";
 
 export default function PsList() {
 
@@ -83,11 +83,23 @@ export default function PsList() {
         )}
       </div>
       
-      {/* 🚧 */}
       {sessionsExist && <div className="process-leaders">
         {state.processes.map(p =>
           <div className="process-leader" key={p.pid}>
-            <div className="pid">{p.pid}</div>
+            <div className="pid">
+              {p.pid}
+            </div>
+            <div className="process-controls">
+              <div>
+                <FontAwesomeIcon icon={faPause} size="sm" />
+              </div>
+              <div>
+                <FontAwesomeIcon icon={faPlay} size="xs" />
+              </div>
+              <div>
+                <FontAwesomeIcon icon={faClose} size="1x" color="#f99" />
+              </div>
+            </div>
             <div className="src">{p.src}</div>
           </div>
         )}
@@ -139,14 +151,26 @@ const psListCss = css`
 
   .process-leader {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+    
     padding: 4px;
     border-radius: 4px;
     background-color: #333;
     color: #0f0;
     font-size: small;
+
     .pid {
       color: #ff9;
+    }
+    .process-controls {
+      display: flex;
+      gap: 4px;
+      color: #fff;
+      div {
+        padding: 0 4px;
+        border: 1px solid #555;
+      }
     }
   }
 `;

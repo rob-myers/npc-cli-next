@@ -229,6 +229,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `Manage` shows `PsList`
   - ✅ lists process leaders
   - ✅ can manually refresh via button
+  - ✅ UI for pause, resume, kill
+  - 🚧 pause, resume, kill buttons work
   - 🚧 external message `process-status`
   - remove external message `interactive`
 

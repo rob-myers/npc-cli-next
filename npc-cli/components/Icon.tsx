@@ -55,6 +55,7 @@ export {
   faGrip,
   faHomeUser,
   faPause,
+  faPlay,
   faPlug,
   faPlus,
   faRefresh,
