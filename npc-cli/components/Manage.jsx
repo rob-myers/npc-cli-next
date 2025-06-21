@@ -267,7 +267,7 @@ export default function Manage(props) {
 }
 
 const manageCss = css`
-  --separating-border: 1px solid rgba(80, 80, 80, 1);
+  --separating-border: 1px solid rgba(80, 80, 80, 0.5);
 
   height: 100%;
   width: 100%;
@@ -292,7 +292,7 @@ const manageCss = css`
       padding: 8px;
       color: #fff;
       font-size: small;
-      background-color: #444
+      background-color: #333;
     }
 
     li {
@@ -439,7 +439,7 @@ const manageCss = css`
       padding: 8px;
       color: #fff;
       font-size: small;
-      background-color: #444;
+      background-color: #333;
     }
     li {
       padding: 4px 8px;
