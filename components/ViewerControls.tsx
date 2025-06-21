@@ -23,7 +23,7 @@ import {
   faChevronRight,
   faGrip,
   faCirclePlay,
-} from "./Icon";
+} from "../npc-cli/components/Icon";
 
 export default function ViewerControls({ api }: Props) {
   const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);

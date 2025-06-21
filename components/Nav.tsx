@@ -6,7 +6,7 @@ import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "r
 import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useStateRef from "../npc-cli/hooks/use-state-ref";
-import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight, faCodeBranch } from "./Icon";
+import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight, faCodeBranch } from "../npc-cli/components/Icon";
 
 export default function Nav() {
   const collapsed = useSite(({ navOpen }) => !navOpen);

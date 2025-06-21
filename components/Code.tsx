@@ -7,7 +7,7 @@ import { sideNoteRootDataAttribute } from './const';
 import { pause } from '@/npc-cli/service/generic';
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
 import useUpdate from '@/npc-cli/hooks/use-update';
-import { FontAwesomeIcon, faCopy } from './Icon';
+import { FontAwesomeIcon, faCopy } from '../npc-cli/components/Icon';
 import SideNote from './SideNote';
 import { documentHasSelection } from '@/npc-cli/service/dom';
 

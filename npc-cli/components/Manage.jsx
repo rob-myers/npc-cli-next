@@ -9,7 +9,7 @@ import { computeTabDef } from "../tabs/tab-util";
 import useStateRef from "../hooks/use-state-ref";
 import useTabs from "../tabs/tabs.store";
 import useSession from "../sh/session.store";
-import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/components/Icon";
+import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/npc-cli/components/Icon";
 import PsList from "./PsList";
 
 /** @param {Props} props */
