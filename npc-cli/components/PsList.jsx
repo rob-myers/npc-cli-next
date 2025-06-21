@@ -111,7 +111,7 @@ export default function PsList() {
               <div className="control" onClick={state.changeProcess} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
               <div className="control" onClick={state.changeProcess} data-act="exit" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" color="#f99" /></div>
             </div>
-            <div className="src">{p.src}</div>
+            {p.src && <div className="src">{p.src}</div>}
           </div>
         )}
       </div>}
@@ -162,6 +162,7 @@ const psListCss = css`
 
   .process-leader {
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: 8px;
     
