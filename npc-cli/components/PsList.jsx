@@ -105,6 +105,7 @@ export default function PsList() {
             <select
               ref={state.ref('sessionSelect')}
               onChange={state.onChangeSessionKey}
+              title="sessionKey"
             >
               {sessionKeys.map(x => <option key={x} value={x}>{x}</option>)}
             </select>
@@ -149,19 +150,27 @@ const psListCss = css`
   .header {
     display: flex;
     justify-content: space-between;
+    align-items: stretch;
+
+    > h2 {
+      font-size: small;
+      color: #ccc;
+    }
 
     .no-sessions {
       font-size: small;
       color: #999;
     }
+
     .session-controls {
       display: flex;
-      margin-bottom: 2px;
+      align-items: stretch;
       
       select {
         width: 60px;
         padding: 2px 0;
         font-size: 0.9rem;
+        font-family: 'Courier New', Courier, monospace;
         /* 🔔 fixes safari */
         text-align-last: center;
       }
@@ -192,25 +201,26 @@ const psListCss = css`
     border-radius: 4px;
     background-color: #222;
     color: #0f0;
-    font-size: small;
-
+    
     .pid {
       color: #ff9;
     }
     .src {
+      padding: 4px 8px;
       background-color: black;
       border: var(--separating-border);
-      padding: 4px 8px;
+      font-size: small;
     }
     .process-controls {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       gap: 4px;
       color: #fff;
+
       > .control {
         display: flex;
         align-items: center;
-        padding: 0 4px;
+        padding: 2px 8px;
         cursor: pointer;
         border: 1px solid #555;
       }

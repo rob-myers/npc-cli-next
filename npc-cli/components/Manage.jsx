@@ -295,15 +295,15 @@ const manageCss = css`
   background-color: #111;
   padding: 16px;
   
-  h2 {
-    font-size: small;
-    color: #ccc;
-  }
-
+  
   .current-tabs-container, .create-tabs-container {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    > h2 {
+      font-size: small;
+      color: #ccc;
+    }
   }
   
   .current-tabs, .create-tabs {
@@ -454,6 +454,11 @@ const manageCss = css`
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    > h2 {
+      font-size: small;
+      color: #ccc;
+    }
     
     ul {
       display: flex;
