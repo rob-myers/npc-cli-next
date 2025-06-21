@@ -108,177 +108,163 @@ export default function Manage(props) {
   return (
     <div css={manageCss}>
 
-      <div className="current-tabs-container">
-        <h2>Tabs</h2>
+      <ul className="current-tabs">
+        <li className="title">Tabs</li>
 
-        <ul className="current-tabs">
-          {tabDefs.map(def => {
-            const tabId = def.filepath;
-            const tabMeta = tabsMeta[tabId];
-            const disabled = tabMeta?.disabled === true;
-            const unmounted = tabMeta === undefined;
+        {tabDefs.map(def => {
+          const tabId = def.filepath;
+          const tabMeta = tabsMeta[tabId];
+          const disabled = tabMeta?.disabled === true;
+          const unmounted = tabMeta === undefined;
 
-            return <li key={tabId} data-tab-id={tabId}>
-              <span className="tab-def">
-                <span className="tab-status-and-id">
-                  <span className="tab-status">
-                    {(
-                      disabled === true && <FontAwesomeIcon title="disabled" icon={faPause} size="1x" />
-                      || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlug} size="1x" />
-                      || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
-                    )}
-                  </span>
-                  <button
-                    className="tab-id"
-                    data-tab-id={tabId}
-                    onClick={state.selectTab}
+          return <li key={tabId} data-tab-id={tabId}>
+            <span className="tab-def">
+              <span className="tab-status-and-id">
+                <span className="tab-status">
+                  {(
+                    disabled === true && <FontAwesomeIcon title="disabled" icon={faPause} size="1x" />
+                    || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlug} size="1x" />
+                    || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
+                  )}
+                </span>
+                <button
+                  className="tab-id"
+                  data-tab-id={tabId}
+                  onClick={state.selectTab}
+                >
+                  {def.filepath}
+                </button>
+              </span>
+              <span className="options">
+                {def.type === 'terminal' && (
+                  <span
+                    className="sync-world-key"
+                    onClick={state.syncWorldKey}
                   >
-                    {def.filepath}
-                  </button>
-                </span>
-                <span className="options">
-                  {def.type === 'terminal' && (
-                    <span
-                      className="sync-world-key"
-                      onClick={state.syncWorldKey}
-                    >
-                      {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
-                    </span>
-                  )}
-                  {def.type === 'component' && def.class === 'World' && (
-                    <select
-                      defaultValue={def.props.mapKey}
-                      onChange={state.setMapKey}
-                    >
-                      {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
-                    </select>
-                  )}
-                </span>
+                    {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
+                  </span>
+                )}
+                {def.type === 'component' && def.class === 'World' && (
+                  <select
+                    defaultValue={def.props.mapKey}
+                    onChange={state.setMapKey}
+                  >
+                    {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
+                  </select>
+                )}
               </span>
-              <button
-                onClick={state.closeTab}
-                data-tab-id={tabId}
-              >
-                <FontAwesomeIcon
-                  className={cssName.closeTab}
-                  color="#f66"
-                  icon={faClose}
-                  size="1x"
-                />
-              </button>
-            </li>
-          })}
-        </ul>
-      </div>
+            </span>
+            <button
+              onClick={state.closeTab}
+              data-tab-id={tabId}
+            >
+              <FontAwesomeIcon
+                className="close-tab"
+                color="#f66"
+                icon={faClose}
+                size="1x"
+              />
+            </button>
+          </li>
+        })}
+      </ul>
       
-      <div className="create-tabs-container">
-        <h2>Create</h2>
+      <ul className="create-tabs">
+        <li className="title">Create</li>
+
+        <li data-tab-class={helper.toTabClassMeta.World.key}>
+          <span className="tab-def">
+            <span className="tab-class">
+              World
+            </span>
+            <span className="options">
+              <select data-map-key defaultValue={helper.mapKeys[0]}>
+                {helper.mapKeys.map(mapKey =>
+                  <option key={mapKey} value={mapKey}>{mapKey}</option>
+                )}
+              </select>
+            </span>
+          </span>
+          <CreateButton state={state} />
+        </li>
+
+        <li data-tab-class={helper.toTabClassMeta.Tty.key}>
+          <span className="tab-def">
+            <span className="tab-class">
+              Tty
+            </span>
+            <span className="options">
+              <select data-profile-key defaultValue={helper.profileKeys[0]}>
+                {helper.profileKeys.map(profileKey =>
+                  <option key={profileKey} value={profileKey}>{profileKey}</option>
+                )}
+              </select>
+              <span className="world-key">
+                world-
+                <input
+                  data-world-key-suffix
+                  type="text"
+                  placeholder="0"
+                  pattern="[0-9]{1}"
+                  size={2}
+                  defaultValue={0}
+                />
+              </span>
+            </span>
+          </span>
+          <CreateButton state={state} />
+        </li>
+
+        <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
+          <span className="tab-def">
+            <span className="tab-class">
+              HelloWorld
+            </span>
+          </span>
+          <CreateButton state={state} />
+        </li>
+      </ul>
+
+      <ul className="layout-actions">
+        <li className="title">Layout</li>
+        <li>
+          <a href={`#/internal/set-tabs/world-tty-default_profile`}>world + tty (default_profile)</a>
+        </li>
+        <li>
+          <a href={`#/internal/set-tabs/world-tty-profile_1`}>world + tty (profile_1)</a>
+        </li>
+        <li>
+          <a href={`#/internal/remember-tabs`}>remember tabset</a>
+        </li>
+        <li>
+          <a href={`#/internal/reset-tabs`}>revert tabset</a>
+        </li>
+        <li>
+          <a href={`#/internal/set-tabs/empty-layout`}>clear tabs</a>
+        </li>
+
+        {/*           
+        <li><a href={`#/internal/reset-tabs`}>reset current tabset</a></li>
+        <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
+        <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
+        <li><a href={`#/internal/open-tab/HelloWorld?id=hello-world-1`}>open tab hello-world-1</a></li>
+        <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li>
+        */}
+
+        {/* 🔔 do not support custom profile: must use profileKey so can be synced against file */}
+        {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li> */}
+        {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab with PROFILE with spaces via `%20`</a></li> */}
         
-        <ul className="create-tabs">
-
-          <li data-tab-class={helper.toTabClassMeta.World.key}>
-            <span className="tab-def">
-              <span className="tab-class">
-                World
-              </span>
-              <span className="options">
-                <select data-map-key defaultValue={helper.mapKeys[0]}>
-                  {helper.mapKeys.map(mapKey =>
-                    <option key={mapKey} value={mapKey}>{mapKey}</option>
-                  )}
-                </select>
-              </span>
-            </span>
-            <CreateButton state={state} />
-          </li>
-
-          <li data-tab-class={helper.toTabClassMeta.Tty.key}>
-            <span className="tab-def">
-              <span className="tab-class">
-                Tty
-              </span>
-              <span className="options">
-                <select data-profile-key defaultValue={helper.profileKeys[0]}>
-                  {helper.profileKeys.map(profileKey =>
-                    <option key={profileKey} value={profileKey}>{profileKey}</option>
-                  )}
-                </select>
-                <span className="world-key">
-                  world-
-                  <input
-                    data-world-key-suffix
-                    type="text"
-                    placeholder="0"
-                    pattern="[0-9]{1}"
-                    size={2}
-                    defaultValue={0}
-                  />
-                </span>
-              </span>
-            </span>
-            <CreateButton state={state} />
-          </li>
-
-          <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
-            <span className="tab-def">
-              <span className="tab-class">
-                HelloWorld
-              </span>
-            </span>
-            <CreateButton state={state} />
-          </li>
-        </ul>
-
-      </div>
-
-      <div className="layout-actions">
-        <h2>Layout</h2>
-
-        <ul>
-          <li>
-            <a href={`#/internal/set-tabs/world-tty-default_profile`}>world + tty (default_profile)</a>
-          </li>
-          <li>
-            <a href={`#/internal/set-tabs/world-tty-profile_1`}>world + tty (profile_1)</a>
-          </li>
-          <li>
-            <a href={`#/internal/remember-tabs`}>remember tabset</a>
-          </li>
-          <li>
-            <a href={`#/internal/reset-tabs`}>revert tabset</a>
-          </li>
-          <li>
-            <a href={`#/internal/set-tabs/empty-layout`}>clear tabs</a>
-          </li>
-
-{/*           
-          <li><a href={`#/internal/reset-tabs`}>reset current tabset</a></li>
-          <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
-          <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
-          <li><a href={`#/internal/open-tab/HelloWorld?id=hello-world-1`}>open tab hello-world-1</a></li>
-          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li>
-          */}
-
-          {/* 🔔 do not support custom profile: must use profileKey so can be synced against file */}
-          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li> */}
-          {/* <li><a href={`#/internal/open-tab/Tty?suffix=4&env={WORLD_KEY:"test-world-1",PROFILE:"awaitWorld;%20echo%20foo%20bar!",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab with PROFILE with spaces via `%20`</a></li> */}
-          
-          {/* <li><a href={`#/internal/open-tab/World?id=world-2&mapKey=small-map-1`}>open World tab</a></li>
-          <li><a href={`#/internal/close-tab/hello-world-1`}>close tab hello-world-1</a></li>
-          <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}`}>change "test-world-1" tab props: mapKey=small-map-1 </a></li>
-          <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li> */}
-        </ul>
-      </div>
+        {/* <li><a href={`#/internal/open-tab/World?id=world-2&mapKey=small-map-1`}>open World tab</a></li>
+        <li><a href={`#/internal/close-tab/hello-world-1`}>close tab hello-world-1</a></li>
+        <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}`}>change "test-world-1" tab props: mapKey=small-map-1 </a></li>
+        <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li> */}
+      </ul>
 
       <PsList/>
     </div>
   );
 }
-
-const cssName = /** @type {const} */ ({
-  closeTab: 'close-tab',
-  openTab: 'open-tab',
-});
 
 const manageCss = css`
   --separating-border: 1px solid rgba(80, 80, 80, 1);
@@ -295,22 +281,19 @@ const manageCss = css`
   background-color: #111;
   padding: 16px;
   
-  
-  .current-tabs-container, .create-tabs-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    > h2 {
-      font-size: small;
-      color: #ccc;
-    }
-  }
-  
   .current-tabs, .create-tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     background-color: #222;
+    
+    .title {
+      align-self: center;
+      padding: 8px;
+      color: #fff;
+      font-size: small;
+      background-color: #444
+    }
 
     li {
       display: flex;
@@ -359,7 +342,7 @@ const manageCss = css`
     }
   }
 
-  .${cssName.closeTab} {
+  .close-tab {
     cursor: pointer;
     font-family: monospace;
     font-size: large;
@@ -397,18 +380,12 @@ const manageCss = css`
     max-width: 200px;
     align-items: stretch;
 
-    /* background-color: #222; */
-    
     .sync-world-key {
       display: flex;
       align-items: center;
       font-size: small;
       cursor: pointer;
-      
-      /* &:hover, &:active {
-        font-style: italic;
-        } */
-      }
+    }
       
     .world-key {
       display: flex;
@@ -420,6 +397,7 @@ const manageCss = css`
       }
     }
   }
+
   select, input {
     width: 100%;
     height: 100%;
@@ -432,6 +410,7 @@ const manageCss = css`
     padding: 0 2px;
     text-align: center;
   }
+
   select::placeholder, input::placeholder {
     color: #555;
   }
@@ -442,7 +421,7 @@ const manageCss = css`
     height: 100%;
   }
   
-  .${cssName.openTab} {
+  .open-tab {
     border-left: var(--separating-border);
     padding: 8px;
     cursor: pointer;
@@ -452,18 +431,15 @@ const manageCss = css`
 
   .layout-actions {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-wrap: wrap;
+    background-color: #222;
 
-    > h2 {
+    .title {
+      align-self: center;
+      padding: 8px;
+      color: #fff;
       font-size: small;
-      color: #ccc;
-    }
-    
-    ul {
-      display: flex;
-      flex-wrap: wrap;
-      background-color: #222;
+      background-color: #444;
     }
     li {
       padding: 4px 8px;
@@ -511,7 +487,7 @@ function CreateButton({ state }) {
       onPointerDown={() => state.createTabEpoch = Date.now()}
     >
       <FontAwesomeIcon
-        className={cssName.openTab}
+        className="open-tab"
         color="#5a5"
         icon={faPlus}
         size="1x"
