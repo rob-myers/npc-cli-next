@@ -10,7 +10,6 @@ export const helper = {
 
   /** @type {Record<Key.ComponentClass, true>} */
   fromComponentClass: {
-    Debug: true,
     HelloWorld: true,
     Manage: true,
     World: true,
@@ -48,7 +47,6 @@ export const helper = {
   /** @type {Record<Key.TabClassPrefix, true>} */
   fromTabPrefix: {
     "hello-world": true,
-    debug: true,
     manage: true,
     tty: true,
     world: true,
@@ -95,7 +93,6 @@ export const helper = {
 
   /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: Key.TabClassPrefix; }>} */
   toTabClassMeta: {
-    Debug: { key: 'Debug', tabPrefix: 'debug' },
     HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
     Manage: { key: 'Manage', tabPrefix: 'manage' },
     Tty: { key: 'Tty', tabPrefix: 'tty' },

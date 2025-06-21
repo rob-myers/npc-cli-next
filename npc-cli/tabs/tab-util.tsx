@@ -69,7 +69,6 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
  */
 export function computeTabDef(
   opts: (
-    | { id: `debug-${number}`; classKey: 'Debug';  }
     | { id: `hello-world-${number}`; classKey: 'HelloWorld';  }
     | { id: `manage-${number}`; classKey: 'Manage';  }
     | { id: `tty-${number}`; classKey: 'Tty'; profileKey?: Key.Profile; env?: Record<string, any> }
@@ -92,7 +91,6 @@ export function computeTabDef(
   let tabDef: TabDef;
 
   switch (opts.classKey) {
-    case 'Debug':
     case 'HelloWorld':
     case 'Manage':
       tabDef = {

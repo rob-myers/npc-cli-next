@@ -57,7 +57,6 @@ export interface TabsBaseProps {
 }
 
 const classToComponent = {
-  Debug: loadableComponentFactory(() => import("../components/Debug")),
   HelloWorld: loadableComponentFactory(() => import("../components/HelloWorld")),
   Manage: loadableComponentFactory(() => import("../components/Manage")),
   World: loadableComponentFactory(() => import("../world/World")),
