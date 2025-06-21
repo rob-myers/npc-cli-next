@@ -142,6 +142,8 @@ const psListCss = css`
         width: 60px;
         padding: 2px 0;
         font-size: 0.9rem;
+        /* 🔔 fixes safari */
+        text-align-last: center;
       }
       button.refresh {
         border: var(--separating-border);
@@ -178,7 +180,7 @@ const psListCss = css`
     .src {
       background-color: black;
       border: var(--separating-border);
-      padding: 4px;
+      padding: 4px 8px;
     }
     .process-controls {
       display: flex;
@@ -186,6 +188,8 @@ const psListCss = css`
       gap: 4px;
       color: #fff;
       > .control {
+        display: flex;
+        align-items: center;
         padding: 0 4px;
         cursor: pointer;
         border: 1px solid #555;
