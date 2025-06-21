@@ -684,6 +684,7 @@ class semanticsServiceClass {
     } else if (Param.Value === "@") {
       yield expand(useSession.api.getProcess(meta).positionals.slice(1));
     } else if (Param.Value === "$") {
+      yield expand(`${useSession.api.getProcess(meta).key}`);
     } else if (Param.Value === "*") {
       yield expand(useSession.api.getProcess(meta).positionals.slice(1).join(' '));
     } else if (Param.Value === "$") {
