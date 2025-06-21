@@ -225,15 +225,25 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ℹ️ decided against e.g. small scroll area
 
 - 🚧 `PsList`: pause/resume/killable process list
-  - rename `Debug` -> `PsList`
-  - `Manage` shows `PsList`
-  - ...
+  - ✅ rename `Debug` -> `PsList`
+  - ✅ `Manage` shows `PsList`
+  - ✅ lists process leaders
+  - 🚧 can manually refresh via button
+  - 🚧 can we extend external message `interactive`
 
-- remove tty buttons from `ps`
-  - ℹ️ instead we'll manage processes i.e. `PsList` inside `Manage`
+- BUG: sh: multi-line history with repro
+```sh
+# 2nd line has "exactly one space and log"
+# happens when we go forwards and arrive at this line
+expr window.document.querySelector'("section")' | log
+```
+
+- remove on/no/x buttons from `ps`
+  - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
   - ℹ️ maybe keep "replace line" code for future use cases
-  - "on/no" are shown but cannot be changed
-  - kill button is removed
+  - show "on/no" but cannot be changed
+  - remove kill button
+  - ❌ maybe include button linking to PsList
 
 - ptags.psPreview used by `ps`
 
