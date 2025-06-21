@@ -107,9 +107,9 @@ export default function PsList() {
               {p.pid}
             </div>
             <div className="process-controls">
-              <div onClick={state.changeProcess} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
-              <div onClick={state.changeProcess} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
-              <div onClick={state.changeProcess} data-act="exit" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" color="#f99" /></div>
+              <div className="control" onClick={state.changeProcess} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
+              <div className="control" onClick={state.changeProcess} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
+              <div className="control" onClick={state.changeProcess} data-act="exit" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" color="#f99" /></div>
             </div>
             <div className="src">{p.src}</div>
           </div>
@@ -181,9 +181,10 @@ const psListCss = css`
     }
     .process-controls {
       display: flex;
+      align-items: center;
       gap: 4px;
       color: #fff;
-      > div {
+      > .control {
         padding: 0 4px;
         cursor: pointer;
         border: 1px solid #555;
