@@ -229,7 +229,11 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `Manage` shows `PsList`
   - ✅ lists process leaders
   - 🚧 can manually refresh via button
-  - 🚧 can we extend external message `interactive`
+  - external message `process-status`
+  - remove external message `interactive`
+
+- ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
+  - `sleep` not initially triggered if starts paused
 
 - BUG: sh: multi-line history with repro
 ```sh

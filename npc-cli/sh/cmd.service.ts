@@ -1097,7 +1097,7 @@ export async function sleep(meta: Sh.BaseMeta, seconds: number) {
     process.onSuspends.push(onSuspend);
     process.onResumes.push(onResume);
     process.cleanups.push(onCleanup);
-    onResume();
+    process.status === ProcessStatus.Running && onResume();
   });
 }
 
