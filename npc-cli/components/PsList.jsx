@@ -18,6 +18,23 @@ export default function PsList() {
     sessionKey: '',
     sessionSelect: null,
 
+    changeProcess(e) {
+      const pid = Number(e.currentTarget.dataset.pid);
+      const act = /** @type {'pause' | 'resume' | 'exit'} */ (e.currentTarget.dataset.act);
+      // console.log({act,pid});
+      switch (act) {
+        case 'exit':
+          useSession.api.kill(state.sessionKey, [pid], { group: true, SIGINT: true });
+          break;
+        case 'pause':
+          useSession.api.kill(state.sessionKey, [pid], { group: true, STOP: true });
+          break;
+        case 'resume':
+          useSession.api.kill(state.sessionKey, [pid], { group: true, CONT: true });
+          break;
+        default:
+      }
+    },
     computeProcessLeaders() {
       try {
         const session = useSession.api.getSession(state.sessionKey);
@@ -90,15 +107,9 @@ export default function PsList() {
               {p.pid}
             </div>
             <div className="process-controls">
-              <div>
-                <FontAwesomeIcon icon={faPause} size="sm" />
-              </div>
-              <div>
-                <FontAwesomeIcon icon={faPlay} size="xs" />
-              </div>
-              <div>
-                <FontAwesomeIcon icon={faClose} size="1x" color="#f99" />
-              </div>
+              <div onClick={state.changeProcess} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
+              <div onClick={state.changeProcess} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
+              <div onClick={state.changeProcess} data-act="exit" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" color="#f99" /></div>
             </div>
             <div className="src">{p.src}</div>
           </div>
@@ -156,19 +167,25 @@ const psListCss = css`
     
     padding: 4px;
     border-radius: 4px;
-    background-color: #333;
+    background-color: #222;
     color: #0f0;
     font-size: small;
 
     .pid {
       color: #ff9;
     }
+    .src {
+      background-color: black;
+      border: var(--separating-border);
+      padding: 4px;
+    }
     .process-controls {
       display: flex;
       gap: 4px;
       color: #fff;
-      div {
+      > div {
         padding: 0 4px;
+        cursor: pointer;
         border: 1px solid #555;
       }
     }
@@ -180,8 +197,10 @@ const psListCss = css`
  * @property {ProcessLeader[]} processes
  * @property {string} sessionKey
  * @property {null | HTMLSelectElement} sessionSelect
- * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onChangeSessionKey
+ *
+ * @property {(e: React.PointerEvent<HTMLDivElement>) => void} changeProcess
  * @property {() => void} computeProcessLeaders
+ * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onChangeSessionKey
  * @property {() => void} refreshProcessLeaders
  */
 
