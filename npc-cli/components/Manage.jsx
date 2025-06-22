@@ -108,7 +108,7 @@ export default function Manage(props) {
   return (
     <div css={manageCss}>
 
-      <ul className="current-tabs">
+      <ul className="tabs-and-create">
         <li className="title">Tabs</li>
 
         {tabDefs.map(def => {
@@ -167,13 +167,11 @@ export default function Manage(props) {
             </button>
           </li>
         })}
-      </ul>
       
-      <ul className="create-tabs">
         <li className="title">Create</li>
 
         <li data-tab-class={helper.toTabClassMeta.World.key}>
-          <span className="tab-def">
+          <span className="tab-create-def">
             <span className="tab-class">
               World
             </span>
@@ -189,7 +187,7 @@ export default function Manage(props) {
         </li>
 
         <li data-tab-class={helper.toTabClassMeta.Tty.key}>
-          <span className="tab-def">
+          <span className="tab-create-def">
             <span className="tab-class">
               Tty
             </span>
@@ -216,7 +214,7 @@ export default function Manage(props) {
         </li>
 
         <li data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
-          <span className="tab-def">
+          <span className="tab-create-def">
             <span className="tab-class">
               HelloWorld
             </span>
@@ -281,7 +279,7 @@ const manageCss = css`
   background-color: #111;
   padding: 16px;
   
-  .current-tabs, .create-tabs {
+  .tabs-and-create {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -302,7 +300,7 @@ const manageCss = css`
     }
   }
 
-  .current-tabs li {
+  .tabs-and-create li {
     justify-content: space-between;
     align-items: stretch;
     gap: 8px;
@@ -340,24 +338,8 @@ const manageCss = css`
       align-items: stretch;
       gap: 8px;
     }
-  }
 
-  .close-tab {
-    cursor: pointer;
-    font-family: monospace;
-    font-size: large;
-    user-select: none;
-    padding: 10px;
-    border-left: var(--separating-border);
-  }
-
-  .create-tabs li {
-    display: flex;
-    align-items: stretch;
-    gap: 8px;
-    color: #aaa;
-    
-    .tab-def {
+    .tab-create-def {
       display: flex;
       padding-left: 12px;
       gap: 4px;
@@ -372,6 +354,15 @@ const manageCss = css`
       font-size: medium;
       font-weight: 500;
     }
+  }
+
+  .close-tab {
+    cursor: pointer;
+    font-family: monospace;
+    font-size: large;
+    user-select: none;
+    padding: 10px;
+    border-left: var(--separating-border);
   }
   
   .options {
