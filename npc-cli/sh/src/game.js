@@ -173,7 +173,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getOrThrow(opts.npcKey);
-  const moves = npc.s.moves;
+  const moves = npc.s.moves + 1;
   
   while (true) {
     try {
