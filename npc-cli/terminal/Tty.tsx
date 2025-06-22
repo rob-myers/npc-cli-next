@@ -59,7 +59,10 @@ export default function Tty(props: Props) {
           }
           break;
         }
-        case 'interactive':
+        case 'process-leader': {
+          if (msg.pid !== 0 || msg.profileRunning === true) {
+            break;
+          }
           if (msg.act === 'started' || msg.act == 'resumed') {
             state.canContOrStop = 'STOP';
           } else if (msg.act === 'paused') {
@@ -69,8 +72,7 @@ export default function Tty(props: Props) {
           }
           update();
           break;
-        case 'process-leader':
-          break;
+        }
         default:
           warn(`${'handleExternalMsg'}: unexpected message: ${jsStringify(msg)}`);
           testNever(msg);

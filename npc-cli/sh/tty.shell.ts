@@ -60,15 +60,6 @@ export class ttyShellClass implements Device {
       src: "",
       ptags: {},
     });
-
-    this.process.onSuspends.push(() => {
-      this.profileFinished && this.io.write({ key: 'external', msg: { key: 'interactive', act: 'paused' } });
-      return true;
-    });
-    this.process.onResumes.push(() => {
-      this.profileFinished && this.io.write({ key: 'external', msg: { key: 'interactive', act: 'resumed' } });
-      return true;
-    });
   }
 
   isInitialized() {
@@ -236,7 +227,6 @@ export class ttyShellClass implements Device {
         // Only reachable by interactively specifying a command after profile has run
         // We ensure leading process has status Running
         process.status = ProcessStatus.Running;
-        this.io.write({ key: 'external', msg: { key: 'interactive', act: 'started' } });
       }
     } else {
       if (process.status === ProcessStatus.Suspended && opts.internal !== true) {
@@ -337,8 +327,6 @@ export class ttyShellClass implements Device {
 
       if (opts.leading !== true) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
-      } else if (this.profileFinished === true) {
-        this.io.write({ key: 'external', msg: { key: 'interactive', act: 'ended' } }); 
       }
 
       if (meta.pid === meta.pgid) {
@@ -350,6 +338,7 @@ export class ttyShellClass implements Device {
         }});
 
         // must clear in case of leading process (we reuse it)
+        process.cleanups.length = 0;
         process.onResumes.length = 0;
         process.onSuspends.length = 0;
       }

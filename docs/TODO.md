@@ -232,11 +232,21 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ UI for pause, resume, kill
   - ✅ pause, resume, kill buttons work
   - ✅ external message `process-leader` provides status
+  - ✅ remove external message `interactive`
   - process controls indicate if paused/killed
-  - remove external message `interactive`
 
 - ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
   - `sleep` not initially triggered if starts paused
+
+- fix code-linking e.g. starting from `game.move` doesn't work
+  - try importing instead
+
+- think about yielding e.g. `game.move`
+  - ℹ️ sometimes we want `npc.api.move` to override previous continuously
+    - probably also need option to not reject move on kill
+  - cannot be programmatically interrupted?
+  - `for await of` and interrupt by invoking all "later" cleanups in current process?
+  - yielding or awaiting these functions will add stale onResumes, onSleeps, cleanups
 
 - BUG: sh: multi-line history with repro
 ```sh
