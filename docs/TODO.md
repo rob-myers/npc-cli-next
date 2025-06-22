@@ -247,13 +247,14 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `ctsTour` restores on finish/kill
   - ✅ `ctsTour` restores/reverts on pause/resume
   - ✅ remove change slowDownRadius onenter small room
-  - merge `ctsTour` into `tour`
+  - 🚧 merge `ctsTour` into `tour`
+    - ✅ `move` cleans its own callbacks
 
 - 🚧 clean and clarify `move`
 
 - 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
   - ✅ `sleep` tidies its callbacks
-  - 🚧 `move` tidies its callbacks
+  - ✅ `move` tidies its callbacks
   - programmatically interruptible
     - could `for await of` and invoke all "later" cleanups?
 

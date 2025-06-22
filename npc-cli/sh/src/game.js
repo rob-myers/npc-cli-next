@@ -174,25 +174,22 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getOrThrow(opts.npcKey);
   
-  // 🚧 remove this cleanup before return
-  // 🚧 remove this cleanup on handled throw (?)
-  api.addCleanUp(() => npc.reject.move?.(Error('cancelled')));
+  const handlers = api.handleStatus({
+    cleanups() { npc.reject.move?.(Error('cancelled')); },
+    onSuspends() { npc.reject.move?.(Error('manual-pause')); return true; },
+  });
 
   while (true) {
     try {
-      await Promise.race([
-        npc.api.move(opts),
-        // 🚧 this keeps adding callbacks to cleanups/onSuspends
-        // 🚧 try adding exactly one, finally cleaning up
-        api.throwOnPause('manual-pause', false),
-      ]);
-      return;
+      await npc.api.move(opts);
+      handlers.dispose();
+      break;
     } catch (e) {
-      if (e === 'manual-pause') {
-        npc.api.stopMoving();
+      if (e instanceof Error && e.message === 'manual-pause') {
         await api.awaitResume();
         continue;
       }
+      handlers.dispose();
       throw e;
     }
   }

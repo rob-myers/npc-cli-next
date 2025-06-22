@@ -817,12 +817,19 @@ class cmdServiceClass {
 
     addStdinToArgs,
 
-    awaitResume() {
-      return new Promise<void>((resolve, reject) => {
-        const { cleanups, onResumes } = getProcess(this.meta);
-        cleanups.push(() => reject(killError(this.meta)));
-        onResumes.push(resolve);
+    async awaitResume() {
+      let resolve = emptyResolve, reject = emptyReject;
+      const handlers = cmdService.handleStatus(this.meta, {
+        onResumes: () => resolve(),
+        cleanups: () => reject(killError(this.meta)),
       });
+      try {
+        await new Promise<void>((resolveResume, rejectResume) => {
+          resolve = resolveResume, reject = rejectResume;
+        });
+      } finally {
+        handlers.dispose();
+      }
     },
     
     dataChunk,
@@ -1059,8 +1066,8 @@ class cmdServiceClass {
   async sleep(meta: Sh.BaseMeta, seconds: number) {
     const process = getProcess(meta);
     
-    let resolve = () => {};
-    let reject = (e: any) => {};
+    let resolve = emptyResolve;
+    let reject = emptyReject;
     let durationMs = 1000 * seconds;
     let startedAt = 0;
     let timeoutId = 0;
@@ -1157,3 +1164,6 @@ export interface HandleStatusHandlers {
 export const cmdService = new cmdServiceClass();
 
 export type CmdService = typeof cmdService;
+
+const emptyResolve = () => {};
+const emptyReject = (e: any) => {};
