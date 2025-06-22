@@ -1081,10 +1081,12 @@ export async function sleep(meta: Sh.BaseMeta, seconds: number) {
     function onResume() {
       startedAt = Date.now();
       timeoutId = window.setTimeout(onResolve, durationMs);
+      return true;
     }
     function onSuspend() {
       window.clearTimeout(timeoutId);
       durationMs -= (Date.now() - startedAt);
+      return true;
     }
     function onResolve() {
       removeFirst(process.cleanups, onCleanup);
