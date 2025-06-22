@@ -245,8 +245,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - 🚧 get variant of `tour` working with continuous traversal of multiple points
   - ✅ basic version `ctsTour`
   - ✅ `ctsTour` restores on finish/kill
-  - 🚧 `ctsTour` restores/reverts on pause/resume
-  - handle change slowDownRadius onenter small room
+  - ✅ `ctsTour` restores/reverts on pause/resume
+  - 🚧 handle change slowDownRadius onenter small room
   - merge `ctsTour` into `tour`
 
 - 🚧 clean and clarify `move`

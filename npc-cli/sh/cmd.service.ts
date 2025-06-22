@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast } from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
@@ -853,6 +853,24 @@ class cmdServiceClass {
     /** Returns a string e.g. `60f5bfdb9b9` */
     getUid() {
       return uid();
+    },
+
+    /** Returns dispose. */
+    handleStatus(handlers: {
+      cleanups?: ProcessMeta['cleanups'][0];
+      onResumes?: ProcessMeta['onResumes'][0];
+      onSuspends?: ProcessMeta['onSuspends'][0];
+    }, opts: {
+      initially?: boolean;
+      finally?: boolean;
+    } = {}) {
+      const process = getProcess(this.meta);
+      for (const [key, fn] of entries(handlers)) process[key].push(fn as any);
+      opts.initially === true && handlers.onResumes?.();
+      return () => {
+        for (const [key, fn] of entries(handlers)) removeLast(process[key], fn)
+        opts.finally === true && handlers.onSuspends?.(false);
+      }
     },
 
     isDataChunk,

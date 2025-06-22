@@ -249,18 +249,20 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const { lib, w } = ct;
+  const { api, lib, w } = ct;
   const npc = w.npc.getOrThrow(opts.npcKey);
 
-  npc.s.preventStop = true;
-  const prevRadius = npc.api.setSlowDownRadius(0.05);
+  let prevRadius = 0;
+  const unHandleStatus = api.handleStatus({
+    onSuspends() { npc.s.preventStop = false; npc.api.setSlowDownRadius(prevRadius); },
+    onResumes() { npc.s.preventStop = true; prevRadius = npc.api.setSlowDownRadius(0.05); }
+  }, { initially: true, finally: true });
 
   try {
     for (const to of opts.to) {
       await lib.game.move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
     }
   } finally {
-    npc.s.preventStop = false;
-    npc.api.setSlowDownRadius(prevRadius);
+    unHandleStatus();
   }
 }
