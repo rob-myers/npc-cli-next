@@ -242,13 +242,15 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - need to ctrl-c twice to stop pid 0
   - awaitResume needed to send killError in cleanup
 
+- 🚧 think about yielding e.g. `game.move`
+  - 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
+    - ✅ `sleep` tidies its callbacks
+    - 🚧 `move` tidies its callbacks
+  - programmatically interruptible
+    - could `for await of` and invoking all "later" cleanups?
+
 - fix code-linking e.g. starting from `game.move` doesn't work
   - try importing instead
-
-- 🚧 think about yielding e.g. `game.move`
-  - yielding or awaiting functions will add stale onResumes, onSleeps, cleanups
-  - cannot be programmatically interrupted?
-    - `for await of` and interrupt by invoking all "later" cleanups in current process?
 
 - BUG: sh: multi-line history with repro
 ```sh

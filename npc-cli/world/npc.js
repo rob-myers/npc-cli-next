@@ -102,6 +102,8 @@ export function createBaseNpc(def, w) {
       lookAngleDst: /** @type {null | number} */ (null),
       /** Look duration e.g. during move or look */
       lookSecs: lookSecsNoTarget,
+      /** Number of times we've moved */
+      moves: 0,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
       /** For delayed npc.s.offMesh nulling in initial seg */
@@ -888,6 +890,7 @@ export class NpcApi {
     });
 
     try {
+      this.s.moves++;
       await this.waitUntilStopped();
     } catch (e) {
       if (/** @type {NPC.StopReason} */ (e)?.key !== 'move-again') {
