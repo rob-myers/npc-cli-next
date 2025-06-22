@@ -238,15 +238,17 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
   - `sleep` not initially triggered if starts paused
 
+- ✅ BUG: stop `tour` via TtyMenu then ctrl-c
+  - need to ctrl-c twice to stop pid 0
+  - awaitResume needed to send killError in cleanup
+
 - fix code-linking e.g. starting from `game.move` doesn't work
   - try importing instead
 
-- think about yielding e.g. `game.move`
-  - ℹ️ sometimes we want `npc.api.move` to override previous continuously
-    - probably also need option to not reject move on kill
+- 🚧 think about yielding e.g. `game.move`
+  - yielding or awaiting functions will add stale onResumes, onSleeps, cleanups
   - cannot be programmatically interrupted?
-  - `for await of` and interrupt by invoking all "later" cleanups in current process?
-  - yielding or awaiting these functions will add stale onResumes, onSleeps, cleanups
+    - `for await of` and interrupt by invoking all "later" cleanups in current process?
 
 - BUG: sh: multi-line history with repro
 ```sh

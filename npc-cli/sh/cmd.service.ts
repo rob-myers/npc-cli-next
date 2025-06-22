@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg } from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
 import type * as Sh from "./parse";
@@ -801,10 +801,10 @@ class cmdServiceClass {
 
     addStdinToArgs,
 
-    awaitResume(cleanUpError = Error('cancelled')) {
+    awaitResume() {
       return new Promise<void>((resolve, reject) => {
         const { cleanups, onResumes } = getProcess(this.meta);
-        cleanups.push(() => reject(cleanUpError));
+        cleanups.push(() => reject(killError(this.meta)));
         onResumes.push(resolve);
       });
     },
@@ -1089,11 +1089,17 @@ export async function sleep(meta: Sh.BaseMeta, seconds: number) {
       return true;
     }
     function onResolve() {
-      removeFirst(process.cleanups, onCleanup);
+      removeCallbacks();
       resolveSleep();
     }
     function onCleanup() {
+      removeCallbacks();
       rejectSleep(killError(meta));
+    }
+    function removeCallbacks() {
+      removeLast(process.onSuspends, onSuspend);
+      removeLast(process.onResumes, onResume);
+      removeLast(process.cleanups, onCleanup);
     }
 
     process.onSuspends.push(onSuspend);

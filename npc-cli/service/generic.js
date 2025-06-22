@@ -473,6 +473,21 @@ export function removeFirst(array, elem) {
 }
 
 /**
+ * Remove the _last_ occurrence of `elem` from _`array`_,
+ * **mutating** the latter if the former exists.
+ * @template T
+ * @param {T[]} array
+ * @param {T} elem
+ */
+export function removeLast(array, elem) {
+  const lastIndex = array.lastIndexOf(elem);
+  if (lastIndex !== -1) {
+    array.splice(lastIndex, 1);
+  }
+  return array;
+}
+
+/**
  * @template {{ key: string }} LookupItem
  * @param {string} itemKey
  * @param {KeyedLookup<LookupItem>} lookup
