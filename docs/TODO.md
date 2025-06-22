@@ -242,10 +242,16 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - need to ctrl-c twice to stop pid 0
   - awaitResume needed to send killError in cleanup
 
-- 🚧 think about yielding e.g. `game.move`
-  - 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
-    - ✅ `sleep` tidies its callbacks
-    - 🚧 `move` tidies its callbacks
+- clean and clarify `move`
+  - get variant of `tour` working with continuous traversal of multiple points
+  - unclear if can do it
+  - some relevant stuff:
+    - `arriveAnim: 'none'`
+    - `w n.rob.agent.raw.params.set_slowDownRadius 0.01`
+
+- 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
+  - ✅ `sleep` tidies its callbacks
+  - 🚧 `move` tidies its callbacks
   - programmatically interruptible
     - could `for await of` and invoking all "later" cleanups?
 

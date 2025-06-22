@@ -173,16 +173,20 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getOrThrow(opts.npcKey);
-  const moves = npc.s.moves + 1;
   
+  // 🚧 remove this cleanup before return
+  // 🚧 remove this cleanup on handled throw (?)
+  api.addCleanUp(() => npc.reject.move?.(Error('cancelled')));
+
   while (true) {
     try {
-      return await Promise.race([
+      await Promise.race([
         npc.api.move(opts),
         // 🚧 this keeps adding callbacks to cleanups/onSuspends
         // 🚧 try adding exactly one, finally cleaning up
         api.throwOnPause('manual-pause', false),
       ]);
+      return;
     } catch (e) {
       if (e === 'manual-pause') {
         npc.api.stopMoving();
@@ -190,10 +194,6 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
         continue;
       }
       throw e;
-    } finally {
-      if (npc.s.moves === moves) {// avoid cancelling later move
-        npc.reject.move?.(Error('cancelled'));
-      }
     }
   }
 }

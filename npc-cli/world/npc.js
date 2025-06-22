@@ -102,7 +102,6 @@ export function createBaseNpc(def, w) {
       lookAngleDst: /** @type {null | number} */ (null),
       /** Look duration e.g. during move or look */
       lookSecs: lookSecsNoTarget,
-      /** Number of times we've moved */
       moves: 0,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
