@@ -1279,6 +1279,7 @@ export class NpcApi {
   }
 
   /**
+   * 🔔 controlled when `this.s.preventStop`
    * @param {number} nextValue 
    * @returns {number} previous value
    */

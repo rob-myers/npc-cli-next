@@ -570,8 +570,6 @@ export default function useHandleEvents(w) {
         }
 
         npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
-        // avoid speed up after slow down in doorway
-        agent.raw.params.set_slowDownRadius(2 * w.lib.defaults.radius);
       }
     },
     onExitDoorCollider(e) {// e.type === 'nearby'
