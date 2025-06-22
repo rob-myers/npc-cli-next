@@ -44,6 +44,7 @@ export type State = {
       /** Ctrl-C, originating from pid 0 */
       SIGINT?: boolean;
       group?: boolean;
+      ptags?: Record<string, any>;
     }): void;
     killProcesses(processes: ProcessMeta[], opts: {
       STOP?: boolean;
@@ -51,6 +52,7 @@ export type State = {
       SIGINT?: boolean;
       /** 🚧 */
       global?: boolean;
+      ptags?: Record<string, any>;
     }): void;
     onTtyLink: (opts: {
       sessionKey: string;
@@ -347,17 +349,7 @@ const useStore = create<State>()(
         return get().session[sessionKey];
       },
 
-      kill(
-        sessionKey: string,
-        pids: number[],
-        opts: {
-          STOP?: boolean;
-          CONT?: boolean;
-          /** Ctrl-C, originating from pid 0 */
-          SIGINT?: boolean;
-          group?: boolean;
-        }
-      ) {
+      kill(sessionKey, pids, opts) {
         const session = useSession.api.getSession(sessionKey);
 
         for (const pid of pids) {
@@ -376,16 +368,7 @@ const useStore = create<State>()(
         }
       },
 
-      killProcesses(
-        processes: ProcessMeta[],
-        opts: {
-          STOP?: boolean;
-          CONT?: boolean;
-          SIGINT?: boolean;
-          /** STOP can be global */
-          global?: boolean;
-        },
-      ) {
+      killProcesses(processes, opts) {
         if (opts.SIGINT === true) {
           for (const p of processes) {
             killProcess(p, opts.SIGINT);
@@ -401,6 +384,10 @@ const useStore = create<State>()(
             p.onResumes = p.onResumes.filter((onResume) => onResume());
             p.status = ProcessStatus.Running;
           }
+        }
+
+        if (opts.ptags !== undefined) {
+          processes.forEach(p => Object.assign(p.ptags, opts.ptags));
         }
       },
 
