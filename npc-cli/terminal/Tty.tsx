@@ -89,14 +89,13 @@ export default function Tty(props: Props) {
       const { session } = state.base;
       
       const processes = Object.values(session.process ?? {}).filter(p => (
-        p.key === 0 // ensure leading process
-        || (p.status === ProcessStatus.Running && !(noPausePtag in p.ptags))
+        p.status === ProcessStatus.Running && !(noPausePtag in p.ptags)
       ));
 
       useSession.api.killProcesses(processes, { STOP: true, global: true });
 
       if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
-        state.canContOrStop = 'CONT';
+        state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
       } else {
         state.canContOrStop = null;
       }
@@ -126,19 +125,20 @@ export default function Tty(props: Props) {
     },
     resumeRunningProcesses() {
       const { session } = state.base;
+      const interactive = session.ttyShell.isInteractive()
 
       const processes = Object.values(session.process).filter(p =>
-        p.key === 0
-          // cannot resume running leading process
-          ? !session.ttyShell.isInteractive()
+        !(noPausePtag in p.ptags) && (p.pgid === 0
+          // cannot resume non-interactive leading process group
+          ? interactive === false
           // cannot resume other unless suspended and lacks ptag
-          : p.status === ProcessStatus.Suspended && !(noPausePtag in p.ptags)
+          : p.status === ProcessStatus.Suspended)
       );
 
       useSession.api.killProcesses(processes, { CONT: true, global: true });
 
       if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
-        state.canContOrStop = 'STOP';
+        state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
       } else {
         state.canContOrStop = null;
       }
@@ -310,4 +310,4 @@ const rootCss = css`
   padding: 4px;
 `;
 
-const noPausePtag = 'always';
+export const noPausePtag = 'always';

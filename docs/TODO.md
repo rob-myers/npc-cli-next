@@ -257,8 +257,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - programmatically interruptible
     - could `for await of` and invoke all "later" cleanups?
 
-- should manually paused interactive process be resumed on play?
-  - e.g. could add ptags.always on stop (and remove if wasn't there)
+- ✅ manually paused interactive process should not be resumed on `<Tty>` pause/resume
+  - add ptags.always on `<TtyMenu>` STOP
 
 - fix code-linking e.g. starting from `game.move` doesn't work
   - try importing instead
@@ -277,7 +277,13 @@ expr window.document.querySelector'("section")' | log
   - remove kill button
   - ❌ maybe include button linking to PsList
 
-- ptags.psPreview used by `ps`
+- `ptags=always` -> `PTAGS=always`
+
+- `kill` supports `--PTAGS_CONT` and `--PTAGS_STOP` based on `PTAGS.always`
+  - in particular, pause/resume all processes lacking `PTAGS.always` is part of `useSession`
+  - then `<Tty>` can just invoke these functions instead
+
+- ptags.preview used by `ps` and `PsList`
 
 - ✅ whilst paused, should background processes sans ptags.always start paused?
 
