@@ -242,3 +242,25 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
     await api.sleep(opts.pauseMs ?? 0.8);
   }
 }
+
+/**
+ * 🚧 continuous tour
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
+ */
+export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
+  const { lib, w } = ct;
+  const npc = w.npc.getOrThrow(opts.npcKey);
+
+  npc.s.preventStop = true;
+  const prevRadius = npc.api.setSlowDownRadius(0.05);
+
+  try {
+    for (const to of opts.to) {
+      await lib.game.move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+    }
+  } finally {
+    npc.s.preventStop = false;
+    npc.api.setSlowDownRadius(prevRadius);
+  }
+}

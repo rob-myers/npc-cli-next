@@ -102,7 +102,7 @@ export function createBaseNpc(def, w) {
       lookAngleDst: /** @type {null | number} */ (null),
       /** Look duration e.g. during move or look */
       lookSecs: lookSecsNoTarget,
-      moves: 0,
+      preventStop: false,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
       /** For delayed npc.s.offMesh nulling in initial seg */
@@ -840,7 +840,7 @@ export class NpcApi {
     if (this.base.agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
     } else if (Vect.isVectJson(opts.to) === false) {
-      throw new Error(`${this.key}: opts.to must be a point`);
+      throw new Error(`${this.key}: expected opts.to {x,y}`);
     }
 
     this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
@@ -860,7 +860,7 @@ export class NpcApi {
       maxSpeed: this.getMaxSpeed(),
       // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
       radius: helper.defaults.radius,
-      slowDownRadius: helper.defaults.radius,
+      // slowDownRadius: helper.defaults.radius, // 🚧
       collisionQueryRange: movingCollisionQueryRange,
       // separationWeight: movingSeparationWeight,
       queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
@@ -875,13 +875,15 @@ export class NpcApi {
         this.s.agentState = -1;
       }
     }
+
     this.base.agent.requestMoveTarget(closest);
 
-    const nextAct = this.s.run ? 'Run' : 'Walk';
+    const nextAct = this.s.run === true ? 'Run' : 'Walk';
     if (this.s.anim !== nextAct) {
       this.startAnimation(nextAct);
     }
     
+    // 🚧 sometimes continued-moving
     this.w.events.next({
       key: 'started-moving',
       npcKey: this.key,
@@ -889,11 +891,10 @@ export class NpcApi {
     });
 
     try {
-      this.s.moves++;
       await this.waitUntilStopped();
     } catch (e) {
       if (/** @type {NPC.StopReason} */ (e)?.key !== 'move-again') {
-        this.stopMoving();
+        this.stopMoving(); // 🚧 clarify
       }
       throw e;
     }
@@ -1101,7 +1102,11 @@ export class NpcApi {
     const distance = this.s.target.distanceTo(position);
 
     if (distance <= this.s.arriveDist) {// Reached target
-      this.stopMoving({ type: 'stop-reason', key: 'arrived' });
+      if (this.s.preventStop === true) {
+        this.resolve.move?.(); // continuous movement
+      } else {
+        this.stopMoving({ type: 'stop-reason', key: 'arrived' });
+      }
       return;
     } else if (distance <= 5 * defaultNpcArriveDistance) {
       this.s.lookSecs = 0.5; // avoid fast final turn
@@ -1274,6 +1279,17 @@ export class NpcApi {
   }
 
   /**
+   * @param {number} nextValue 
+   * @returns {number} previous value
+   */
+  setSlowDownRadius(nextValue) {
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const prevValue = agent.raw.params.get_slowDownRadius();
+    agent.raw.params.set_slowDownRadius(nextValue);
+    return prevValue;
+  }
+
+  /**
    * @param {'opacity' | 'labelY'} name 
    * @param {number} value 
    */
@@ -1369,16 +1385,16 @@ export class NpcApi {
   }
 
   tryStopOffMesh() {
-    // offMeshConnection can happen when `this.s.offMesh` null,
+    // 🔔 offMeshConnection can happen when `this.s.offMesh` null,
     // e.g. when npc without access is close to door
     if (this.base.agentAnim === null || this.base.agentAnim?.active === false) {
       return false;
-    } else if (this.base.agentAnim.t <= this.base.agentAnim.tmid) {
+    }
+    if (this.base.agentAnim.t <= this.base.agentAnim.tmid) {
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   updateLabelOffsets() {

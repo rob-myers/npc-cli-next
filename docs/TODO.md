@@ -242,18 +242,23 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - need to ctrl-c twice to stop pid 0
   - awaitResume needed to send killError in cleanup
 
-- clean and clarify `move`
-  - get variant of `tour` working with continuous traversal of multiple points
-  - unclear if can do it
-  - some relevant stuff:
-    - `arriveAnim: 'none'`
-    - `w n.rob.agent.raw.params.set_slowDownRadius 0.01`
+- 🚧 get variant of `tour` working with continuous traversal of multiple points
+  - ✅ basic version `ctsTour`
+  - ✅ `ctsTour` restores on finish/kill
+  - 🚧 `ctsTour` restores/reverts on pause/resume
+  - handle change slowDownRadius onenter small room
+  - merge `ctsTour` into `tour`
+
+- 🚧 clean and clarify `move`
 
 - 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
   - ✅ `sleep` tidies its callbacks
   - 🚧 `move` tidies its callbacks
   - programmatically interruptible
-    - could `for await of` and invoking all "later" cleanups?
+    - could `for await of` and invoke all "later" cleanups?
+
+- should manually paused interactive process be resumed on play?
+  - e.g. could add ptags.always on stop (and remove if wasn't there)
 
 - fix code-linking e.g. starting from `game.move` doesn't work
   - try importing instead
