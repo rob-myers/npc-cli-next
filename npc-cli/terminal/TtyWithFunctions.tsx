@@ -91,13 +91,21 @@ function jsFunctionToShellFunction(
     'AsyncGeneratorFunction',
     'GeneratorFunction',
   ];
+  const functionConstructorNames = [
+    'Function',
+    'AsyncFunction',
+  ];
   return `${fnKey}() ${
     generatorConstructorNames.includes(fn.constructor.name)
+      // function* foo { bar }
+      // async function* foo { bar }
       ? `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
-      : fn.constructor.name === 'Function' && !fn.toString().startsWith('function')
+      : functionConstructorNames.includes(fn.constructor.name) && !fn.toString().startsWith('function')
         // const foo = (..args) => bar
+        // const foo = async (..args) => bar
         ? `{\n  call ${moduleKey} ${fnKey} "$@"\n}`
-        // assume 'AsyncFunction' or 'Function'
+        // function foo { bar }
+        // async function foo { bar }
         : `{\n  map ${moduleKey} ${fnKey} "$@"\n}`
   }`;
 }

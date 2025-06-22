@@ -171,7 +171,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
  */
-export async function* move({ api, args, w }, opts = api.jsArg(args)) {
+export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getOrThrow(opts.npcKey);
 
   api.addCleanUp(() => npc.reject.move?.(Error('cancelled'))); 
