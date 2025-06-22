@@ -168,9 +168,8 @@ export default function Manage(props) {
           </li>
         })}
       
-        <li className="title">Create</li>
-
         <li data-tab-class={helper.toTabClassMeta.World.key}>
+          <span className="title">Create</span>
           <span className="tab-create-def">
             <span className="tab-class">
               World
