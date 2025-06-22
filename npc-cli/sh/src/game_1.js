@@ -253,7 +253,7 @@ export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })
   const npc = w.npc.getOrThrow(opts.npcKey);
 
   let prevRadius = 0;
-  const unHandleStatus = api.handleStatus({
+  const handlers = api.handleStatus({
     onSuspends() { npc.s.preventStop = false; npc.api.setSlowDownRadius(prevRadius); },
     onResumes() { npc.s.preventStop = true; prevRadius = npc.api.setSlowDownRadius(0.05); }
   }, { initially: true, finally: true });
@@ -263,6 +263,6 @@ export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })
       await lib.game.move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
     }
   } finally {
-    unHandleStatus();
+    handlers.dispose();
   }
 }

@@ -612,7 +612,7 @@ class cmdServiceClass {
       }
       case "sleep": {
         const seconds = args.length ? parseFloat(parseJsonArg(args[0])) || 0 : 1;
-        await sleep(meta, seconds);
+        await this.sleep(meta, seconds);
         break;
       }
       case "source": {
@@ -748,6 +748,22 @@ class cmdServiceClass {
     return outputs;
   }
 
+  handleStatus(meta: Sh.BaseMeta, handlers: HandleStatusHandlers, opts: {
+    initially?: boolean;
+    finally?: boolean;
+  } = {}) {
+    const process = getProcess(meta);
+    for (const [key, fn] of entries(handlers)) process[key].push(fn as any);
+    opts.initially === true && handlers.onResumes?.();
+    return {
+      ...handlers,
+      dispose() {
+        for (const [key, fn] of entries(handlers)) removeLast(process[key], fn)
+        opts.finally === true && handlers.onSuspends?.(false);
+      },
+    };
+  }
+
   async launchFunc(node: Sh.CallExpr, namedFunc: Sh.NamedFunction, args: string[]) {
     const cloned = cloneParsed(namedFunc.node);
     const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
@@ -856,21 +872,11 @@ class cmdServiceClass {
     },
 
     /** Returns dispose. */
-    handleStatus(handlers: {
-      cleanups?: ProcessMeta['cleanups'][0];
-      onResumes?: ProcessMeta['onResumes'][0];
-      onSuspends?: ProcessMeta['onSuspends'][0];
-    }, opts: {
+    handleStatus(handlers: HandleStatusHandlers, opts: {
       initially?: boolean;
       finally?: boolean;
     } = {}) {
-      const process = getProcess(this.meta);
-      for (const [key, fn] of entries(handlers)) process[key].push(fn as any);
-      opts.initially === true && handlers.onResumes?.();
-      return () => {
-        for (const [key, fn] of entries(handlers)) removeLast(process[key], fn)
-        opts.finally === true && handlers.onSuspends?.(false);
-      }
+      return cmdService.handleStatus(this.meta, handlers, opts);
     },
 
     isDataChunk,
@@ -923,7 +929,7 @@ class cmdServiceClass {
     safeJsStringify,
 
     async sleep(seconds: number) {
-      await sleep(this.meta, seconds);
+      await cmdService.sleep(this.meta, seconds);
     },
 
     throwOnPause(pauseError: any, requireGlobal?: boolean) {
@@ -1049,6 +1055,42 @@ class cmdServiceClass {
     }
     return { eof: true };
   }
+
+  async sleep(meta: Sh.BaseMeta, seconds: number) {
+    const process = getProcess(meta);
+    
+    let resolve = () => {};
+    let reject = (e: any) => {};
+    let durationMs = 1000 * seconds;
+    let startedAt = 0;
+    let timeoutId = 0;
+
+    const handlers = this.handleStatus(meta, {
+      onResumes() {
+        startedAt = Date.now();
+        timeoutId = window.setTimeout(resolve, durationMs);
+        return true;
+      },
+      onSuspends() {
+        window.clearTimeout(timeoutId);
+        durationMs -= (Date.now() - startedAt);
+        return true;
+      },
+      cleanups() {
+        reject(killError(meta));
+      },
+    });
+
+    try {
+      await new Promise<void>((resolveSleep, rejectSleep) => {
+        resolve = resolveSleep;
+        reject = rejectSleep; // cannot resume until now:
+        process.status === ProcessStatus.Running && handlers.onResumes!();
+      });
+    } finally {
+      handlers.dispose();
+    }
+  }
 }
 
 //#region processApi related
@@ -1088,45 +1130,6 @@ async function read(meta: Sh.BaseMeta, chunks = false) {
   return result?.eof === true ? EOF : result.data;
 }
 
-export async function sleep(meta: Sh.BaseMeta, seconds: number) {
-  const process = getProcess(meta);
-  
-  await new Promise<void>((resolveSleep, rejectSleep) => {
-    let durationMs = 1000 * seconds;
-    let startedAt = 0;
-    let timeoutId = 0;
-
-    function onResume() {
-      startedAt = Date.now();
-      timeoutId = window.setTimeout(onResolve, durationMs);
-      return true;
-    }
-    function onSuspend() {
-      window.clearTimeout(timeoutId);
-      durationMs -= (Date.now() - startedAt);
-      return true;
-    }
-    function onResolve() {
-      removeCallbacks();
-      resolveSleep();
-    }
-    function onCleanup() {
-      removeCallbacks();
-      rejectSleep(killError(meta));
-    }
-    function removeCallbacks() {
-      removeLast(process.onSuspends, onSuspend);
-      removeLast(process.onResumes, onResume);
-      removeLast(process.cleanups, onCleanup);
-    }
-
-    process.onSuspends.push(onSuspend);
-    process.onResumes.push(onResume);
-    process.cleanups.push(onCleanup);
-    process.status === ProcessStatus.Running && onResume();
-  });
-}
-
 //#endregion
 
 interface ChoiceReadValue {
@@ -1141,6 +1144,15 @@ export type ProcessContext = {
   set args(args: string[]);
 };
 export type ProcessApi = CmdService['processApi'];
+
+export interface HandleStatusHandlers {
+  /* An optional cleanup */
+  cleanups?: ProcessMeta['cleanups'][0];
+  /* An optional resume */
+  onResumes?: ProcessMeta['onResumes'][0];
+  /* An optional suspend */
+  onSuspends?: ProcessMeta['onSuspends'][0];
+}
 
 export const cmdService = new cmdServiceClass();
 

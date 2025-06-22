@@ -19,7 +19,7 @@ import {
   handleProcessError,
   ttyError,
 } from "./util";
-import { cmdService, isTtyAt, sleep } from "./cmd.service";
+import { cmdService, isTtyAt } from "./cmd.service";
 import { srcService } from "./parse";
 import { preProcessWrite, redirectNode } from "./io";
 import { cloneParsed, collectIfClauses, reconstructReplParamExp, wrapInFile } from "./parse";
@@ -795,7 +795,7 @@ class semanticsServiceClass {
       }
       /** Force iteration to take at least @see {itMinLengthMs} milliseconds */
       if ((itLengthMs = Date.now() - itStartMs) < itMinLengthMs) {
-        await sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
+        await cmdService.sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
       }
       itStartMs = Date.now();
 
