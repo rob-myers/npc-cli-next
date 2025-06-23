@@ -216,6 +216,7 @@ export class ttyShellClass implements Device {
       internal?: boolean;
       localVar?: boolean;
       posPositionals?: string[];
+      ptags?: Record<string, any>;
     } = {}
   ) {
     const { meta } = term;
@@ -225,13 +226,13 @@ export class ttyShellClass implements Device {
     if (this.profileFinished === true) {
       if (opts.builtin === true) {
         // Only reachable by interactively specifying a command after profile has run
-        // We ensure leading process has status Running
+        // We ensure session leader has status Running
         process.status = ProcessStatus.Running;
       }
     } else {
       if (process.status === ProcessStatus.Suspended && opts.internal !== true) {
-        // Only reachable if leading process paused via <Tabs> during profile
-        // We halt all subprocesses
+        // Only reachable if session leader paused via <Tabs> during profile
+        // We halt
         await new Promise<void>((resolve, reject) => {
           process.cleanups.push(() => reject(killError(meta, 130)));
           process.onResumes.push(resolve);
@@ -250,18 +251,16 @@ export class ttyShellClass implements Device {
         sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || parent.positionals.slice(1),
-        ptags: { ...parent.ptags },
+        ptags: { ...parent.ptags, ...opts.ptags },
       });
       meta.pid = process.key;
       opts.cleanups !== undefined && process.cleanups.push(...opts.cleanups);
 
       if (
-        process.pgid !== 0 
+        process.pgid !== 0
+        && !process.ptags.iPipe
         && this.bgSuspendUnless !== null
         && !(this.bgSuspendUnless in process.ptags)
-        // 🚧 `seq 5` should work whilst Tabs paused
-        // 🚧 BUT some bg processes should be suspended?
-        // && this.profileFinished === false
       ) {
         // If `bgSuspendUnless` non-null, suspend spawned background processes without this ptag.
         // This permits us to represent <Tabs> disabled.

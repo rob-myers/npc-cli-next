@@ -250,11 +250,21 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - 🚧 merge `ctsTour` into `tour`
     - ✅ `move` cleans its own callbacks
 
-- 🚧 clean and clarify `move`
+- ✅ can run `seq 5` while paused
+  - ℹ️ `range 5` works
+  - ℹ️ `range 5 | split` works
+  - ℹ️ `ptags=always; seq 5` works
+  - ✅ ptags.iPipe (interactive pipe)
+
+- ❌ fix resume `seq 5 &` via `ps`
+  - happens because two process groups (`ps -a`)
+
+- fix bad exit code: `foo () { echo foo; echo bar; return; }; foo`
 
 - 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
   - ✅ `sleep` tidies its callbacks
   - ✅ `move` tidies its callbacks
+  - ✅ `awaitResume` tidies its callbacks
   - programmatically interruptible
     - could `for await of` and invoke all "later" cleanups?
 

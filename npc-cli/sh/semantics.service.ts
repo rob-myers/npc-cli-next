@@ -232,10 +232,9 @@ class semanticsServiceClass {
               try {
                 await ttyShell.spawn(file, {
                   localVar: true,
-                  cleanups: // for e.g. `take 3 | true`
-                    i === 0 && isTtyAt(file.meta, 0)
-                      ? [() => ttyShell.finishedReading()]
-                      : undefined,
+                  // e.g. `take 3 | true`
+                  cleanups: i === 0 && isTtyAt(file.meta, 0) ? [() => ttyShell.finishedReading()] : undefined,
+                  ptags: { iPipe: node.meta.pgid === 0 },
                 });
                 resolve();
               } catch (e) {
