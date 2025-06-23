@@ -90,7 +90,10 @@ export async function* handleContextMenu({ api, w, datum: e }) {
 }
 
 /**
- * e.g. events | handleLoggerLinks
+ * For example,
+ * ```sh
+ * events | handleLoggerLinks
+ * ```
  * @param {NPC.RunArg<NPC.Event>} ctxt
  */
 export async function* handleLoggerLinks({ api, datum: e, w }) {
@@ -139,45 +142,45 @@ export async function* selectPolysDemo({ w }) {
 */
 export const setupContextMenu = ({ w }) => {
 
-w.cm.match.door = ({ meta }) => {
-  const showLinks = /** @type {NPC.ContextMenuLink[]} */ ([]);
+  w.cm.match.door = ({ meta }) => {
+    const showLinks = /** @type {NPC.ContextMenuLink[]} */ ([]);
 
-  showLinks.push({ key: "look", label: "look" });
+    showLinks.push({ key: "look", label: "look" });
 
-  if (typeof meta.switch === "number") {
-    showLinks.push(
-      { key: "open", label: "open" },
-      { key: "close", label: "close" },
-      { key: "lock", label: "lock" },
-      { key: "unlock", label: "unlock" },
-      // 🚧 ring bell
-    );
-  }
+    if (typeof meta.switch === "number") {
+      showLinks.push(
+        { key: "open", label: "open" },
+        { key: "close", label: "close" },
+        { key: "lock", label: "lock" },
+        { key: "unlock", label: "unlock" },
+        // 🚧 ring bell
+      );
+    }
 
-  if (meta.door === true) {
-    showLinks.push(
-      { key: "open", label: "open" },
-      { key: "close", label: "close" },
-      { key: "lock", label: "lock" },
-      { key: "unlock", label: "unlock" },
-      // 🚧 knock
-    );
-  }
+    if (meta.door === true) {
+      showLinks.push(
+        { key: "open", label: "open" },
+        { key: "close", label: "close" },
+        { key: "lock", label: "lock" },
+        { key: "unlock", label: "unlock" },
+        // 🚧 knock
+      );
+    }
 
-  if (typeof meta.npcKey === "string") {
-    showLinks.push({
-      key: "follow",
-      label: "follow",
-      selected() {
-        return w.e.isFollowingNpc(meta.npcKey);
-      },
-    });
-  }
+    if (typeof meta.npcKey === "string") {
+      showLinks.push({
+        key: "follow",
+        label: "follow",
+        selected() {
+          return w.e.isFollowingNpc(meta.npcKey);
+        },
+      });
+    }
 
-  return { showLinks };
-};
+    return { showLinks };
+  };
 
-w.cm.toggleDocked(true);
+  w.cm.toggleDocked(true);
 }
 
 // /**

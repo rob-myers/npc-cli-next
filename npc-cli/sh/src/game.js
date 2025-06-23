@@ -138,8 +138,10 @@ export async function* events({ api, args, w }) {
   ) : undefined;
   
   const asyncIterable = api.observableToAsyncIterable(w.events);
-  // could not catch asyncIterable.throw?.(api.getKillError())
-  api.addCleanUp(() => asyncIterable.return?.());
+  const handlers = api.handleStatus({
+    // could not catch asyncIterable.throw?.(api.getKillError())
+    cleanups() { asyncIterable.return?.() },
+  });
 
   for await (const event of asyncIterable) {
     if (filter === undefined || filter?.(event)) {
@@ -147,6 +149,7 @@ export async function* events({ api, args, w }) {
     }
   }
   // get here via ctrl-c or `kill`
+  handlers.dispose();
   throw api.getKillError();
 }
 
