@@ -66,7 +66,7 @@ export default function PsList() {
     disconnectSession: null,
     handleLeaderMessage(msg) {
       // 🚧
-      console.log(msg);
+      // console.log(msg);
     },
     onChangeSessionKey(e) {
       const { value } = e.currentTarget;
