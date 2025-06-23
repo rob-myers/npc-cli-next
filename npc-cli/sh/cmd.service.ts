@@ -910,15 +910,21 @@ class cmdServiceClass {
 
     parseFnOrStr,
 
-    /** Output 1, 2, ... at fixed intervals */
+    /** Output 1, 2, ... at fixed intervals (minimum every 0.5s) */
     async *poll(args: string[]) {
       const seconds = args.length ? parseFloat(parseJsonArg(args[0])) || 1 : 1;
       const [delayMs, deferred] = [Math.max(seconds, 0.5) * 1000, new Deferred<void>()];
-      getProcess(this.meta).cleanups.push(() => deferred.reject(killError(this.meta)));
+      const handlers = cmdService.handleStatus(this.meta, {
+        cleanups: () => deferred.reject(killError(this.meta)),
+      });
       let count = 1;
-      while (true) {
-        yield count++;
-        await Promise.race([pause(delayMs), deferred.promise]);
+      try {
+        while (true) {
+          yield count++;
+          await Promise.race([pause(delayMs), deferred.promise]);
+        }
+      } finally {
+        handlers.dispose();
       }
     },
 
