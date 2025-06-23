@@ -1,3 +1,5 @@
+import { isStringInt, removeFirst } from '../../service/generic';
+
 /**
  * @param {NPC.RunArg} ctxt
  */
@@ -45,21 +47,18 @@ export async function* click({ api, args, w, w: { lib } }) {
     opts.left = true; // default to left clicks only
   }
 
-  if (
-    w.lib.generic.isStringInteger(operands[0]) === false
-    && w.lib.generic.isStringInteger(operands[1]) === true
-  ) {// support reverse order `click meta.nav 2`
-    operands = [operands[1], operands[0]];
+  if (!isStringInt(operands[0]) && isStringInt(operands[1])) {
+    operands = [operands[1], operands[0]]; // support reverse order `click meta.nav 2`
   }
 
-  let numClicks = Number(operands[0]) || Number.MAX_SAFE_INTEGER;
-  const clickId = numClicks < Number.MAX_SAFE_INTEGER || opts.blocking === true
+  let numClicks = isStringInt(operands[0]) ? parseInt(operands[0]) : Number.MAX_SAFE_INTEGER;
+  const clickId = isStringInt(operands[0]) || opts.blocking === true
     ? api.getUid()
     : undefined
   ;
 
   // support `click meta.nav`
-  const filterDef = numClicks === Number.MAX_SAFE_INTEGER ? operands[0] : operands[1];
+  const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
   const filter = filterDef !== undefined ? api.generateSelector(api.parseFnOrStr(filterDef), []) : undefined;
 
   /** @type {import('rxjs').Subscription} */
@@ -68,7 +67,7 @@ export async function* click({ api, args, w, w: { lib } }) {
   // suspend/resume handled by `api.isRunning()` below
   const handlers = api.handleStatus({
     cleanups() {
-      clickId !== undefined && w.lib.generic.removeFirst(w.view.clickIds, clickId);
+      clickId !== undefined && removeFirst(w.view.clickIds, clickId);
       eventsSub?.unsubscribe();
     },
   });

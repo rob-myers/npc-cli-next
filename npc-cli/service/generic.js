@@ -316,7 +316,7 @@ export function isInsideWebWorker() {
 }
 
 /** @param {string} input  */
-export function isStringInteger(input) {
+export function isStringInt(input) {
   return String(parseInt(input)) === input;
 }
 

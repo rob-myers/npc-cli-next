@@ -10,7 +10,6 @@ import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
 import { debug, isDevelopment, pause, mapValues, range, entries, hashText } from "../service/generic";
-import * as generic from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { geom } from "../service/geom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
@@ -479,12 +478,10 @@ export default function World(props) {
  * @property {typeof deltaAngle} deltaAngle
  * @property {typeof geom} geom
  * @property {typeof Vect['isVectJson']} isVectJson
- * @property {typeof generic} generic
  */
 
 const lib = {
   deltaAngle,
-  generic,
   geom,
   isVectJson: Vect.isVectJson,
   ...helper,
