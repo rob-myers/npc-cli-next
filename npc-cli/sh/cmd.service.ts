@@ -794,26 +794,6 @@ class cmdServiceClass {
 
     ansi,
 
-    /** Returns provided cleanup */
-    addCleanUp(cleanup: () => void) {
-      getProcess(this.meta).cleanups.push(cleanup);
-      return cleanup;
-    },
-    /**
-     * Executed on suspend, without clearing `true` returners.
-     * The latter should be idempotent, e.g. unsubscribe, pause.
-     */
-    addResume(cleanup: () => void) {
-      getProcess(this.meta).onResumes.push(cleanup);
-    },
-    /**
-     * Executed on suspend, without clearing `true` returners.
-     * The latter should be idempotent, e.g. unsubscribe, pause.
-     */
-    addSuspend(cleanup: ProcessMeta['onSuspends'][0]) {
-      getProcess(this.meta).onSuspends.push(cleanup);
-    },
-
     addStdinToArgs,
 
     async awaitResume() {
@@ -877,7 +857,10 @@ class cmdServiceClass {
       return uid();
     },
 
-    /** Returns dispose. */
+    /**
+     * Optionally add cleanup, onSuspend, onResume.
+     * Returns dispose.
+     */
     handleStatus(handlers: HandleStatusHandlers, opts: {
       initially?: boolean;
       finally?: boolean;

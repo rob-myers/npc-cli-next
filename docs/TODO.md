@@ -289,6 +289,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - fix code-linking e.g. starting from `game.move` doesn't work
   - try importing instead
 
+- sometimes tty-0 fails to persist home?
+
 - BUG: sh: multi-line history with repro
 ```sh
 # 2nd line has "exactly one space and log"
