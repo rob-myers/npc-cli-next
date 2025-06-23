@@ -287,7 +287,7 @@ const manageCss = css`
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    /* background-color: #222; */
+    font-size: small;
     
     .title-container {
       background-color: #333;
@@ -298,7 +298,6 @@ const manageCss = css`
       align-self: center;
       padding: 8px;
       color: #ddd;
-      font-size: small;
     }
 
     li {
