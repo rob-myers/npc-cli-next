@@ -554,34 +554,30 @@ class cmdServiceClass {
           string: ["v"],
         });
 
-        if (opts.v === "?") {
-          // List available voices
+        if (opts.v === "?") {// List available voices
           yield* window.speechSynthesis.getVoices().map(({ name, lang }) => `${name} (${lang})`);
           return;
         }
 
         redirectNode(node.parent!, { 1: "/dev/voice" });
 
-        const process = getProcess(meta);
-        process.cleanups.push(() => window.speechSynthesis.cancel());
-        process.onSuspends.push(() => {
-          window.speechSynthesis.pause();
-          return true;
-        });
-        process.onResumes.push(() => {
-          window.speechSynthesis.resume();
-          return true;
+        const handlers = cmdService.handleStatus(meta, {
+          cleanups() { window.speechSynthesis.cancel(); },
+          onResumes() { window.speechSynthesis.resume(); return true; },
+          onSuspends() { window.speechSynthesis.pause(); return true; }
         });
 
-        if (!operands.length) {
-          // Say lines from stdin
-          let datum: string | VoiceCommand | null;
-          while ((datum = await read(meta)) !== EOF) {
-            yield { voice: opts.v, text: `${datum}` };
+        try {
+          if (!operands.length) {// Say lines from stdin
+            let datum: string | VoiceCommand | null;
+            while ((datum = await read(meta)) !== EOF) {
+              yield { voice: opts.v, text: `${datum}` };
+            }
+          } else {// Say operands
+            yield { voice: opts.v, text: operands.join(" ") };
           }
-        } else {
-          // Say operands
-          yield { voice: opts.v, text: operands.join(" ") };
+        } finally {
+          handlers.dispose();
         }
 
         break;
