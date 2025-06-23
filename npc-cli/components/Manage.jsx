@@ -116,7 +116,11 @@ export default function Manage(props) {
           const unmounted = tabMeta === undefined;
 
           return <li key={tabId} data-tab-id={tabId}>
-            {i === 0 && <span className="title">Tabs</span>}
+            {i === 0 && (
+              <span className="title-container">
+                <span className="title">Tabs</span>
+              </span>
+            )}
             <span className="tab-def">
               <span className="tab-status-and-id">
                 <span className="tab-status">
@@ -168,7 +172,9 @@ export default function Manage(props) {
         })}
       
         <li data-tab-class={helper.toTabClassMeta.World.key}>
-          <span className="title">Create</span>
+          <span className="title-container">
+            <span className="title">Create</span>
+          </span>
           <span className="tab-create-def">
             <span className="tab-class">
               World
@@ -281,14 +287,18 @@ const manageCss = css`
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    background-color: #222;
+    /* background-color: #222; */
     
+    .title-container {
+      background-color: #333;
+      align-self: stretch;
+      display: flex;
+    }
     .title {
       align-self: center;
       padding: 8px;
-      color: #fff;
+      color: #ddd;
       font-size: small;
-      background-color: #333;
     }
 
     li {
@@ -310,7 +320,7 @@ const manageCss = css`
       cursor: pointer;
       padding-left: 8px;
     }
-    
+
     .tab-status {
       margin-right: 8px;
       cursor: auto;
