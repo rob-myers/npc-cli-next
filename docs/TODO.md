@@ -272,9 +272,12 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `move` tidies its callbacks
   - ✅ `awaitResume` tidies its callbacks
   - ✅ `look` tidies its callbacks
-  - `zoom` tidies its callbacks
-  - programmatically interruptible
-    - could `for await of` and invoke all "later" cleanups?
+  - ✅ `zoom` tidies its callbacks
+  - 🚧
+  
+- `game.move` programmatically interruptible by JavaScript
+  - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`
+  - could `for await of` and invoke all "later" cleanups?
 
 - ✅ manually paused interactive process should not be resumed on `<Tty>` pause/resume
   - add ptags.always on `<TtyMenu>` STOP

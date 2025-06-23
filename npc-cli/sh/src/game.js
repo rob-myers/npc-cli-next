@@ -268,22 +268,23 @@ export async function* w(ctxt) {
  * @param {{ distance: number }} [opts]
  */
 export async function* zoom({ api, args, w }, opts = api.jsArg(args)) {
-  if (typeof opts.distance !== 'number') throw Error(`opts.distance must be numeric`);
-  api.addCleanUp(() => w.view.reject.distance?.(Error('cancelled')));
-  
+  if (typeof opts.distance !== 'number') {
+    throw Error(`opts.distance must be numeric`);
+  }
+  const handlers = api.handleStatus({
+    cleanups() { w.view.reject.distance?.('cancelled'); },
+    onSuspends() { w.view.reject.distance?.('pause'); return true; },
+  });
+
   while (true) {
     try {
-      return await Promise.race([
-        w.view.tween({ distance: opts.distance }),
-        api.throwOnPause('manual-pause', false),
-      ]);
+      return await w.view.tween({ distance: opts.distance }).then(handlers.dispose);
     } catch (e) {
-      if (e === 'manual-pause') {
-        w.view.resolve.distance?.();
-        await api.awaitResume();
-        continue;
+      if (e !== 'pause') {
+        handlers.dispose();
+        throw e;
       }
-      throw e;
     }
+    await api.awaitResume();
   }
 }
