@@ -235,7 +235,7 @@ class semanticsServiceClass {
                   cleanups: // for e.g. `take 3 | true`
                     i === 0 && isTtyAt(file.meta, 0)
                       ? [() => ttyShell.finishedReading()]
-                      : [],
+                      : undefined,
                 });
                 resolve();
               } catch (e) {
