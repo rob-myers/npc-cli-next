@@ -94,7 +94,7 @@ function NpcSpeechBubble({ cm }) {
       visible
     >
       <div className="speech">
-        <span className="npc-key">{cm.key}{': '}</span>
+        <span className="npc-key">{cm.speech === '' ? '' : `${cm.key}: `}</span>
         {cm.speech}
       </div>
     </Html3d>
@@ -142,7 +142,8 @@ export const npcSpeechBubbleCss = css`
     /* font-style: italic; */
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.6);
-    /* background-color: rgba(0, 0, 0, 0.3); */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 0, 0, 0.6);
     /* letter-spacing: 2px; */
     line-height: 1.4;
     padding: 0px 8px;

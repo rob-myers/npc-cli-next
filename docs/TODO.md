@@ -277,7 +277,9 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `click`
   - ✅ `events`
   - ✅ `w`
-  - 🚧 cmd.service, semantics.service
+  - ✅ cmd.service
+  - 🚧 semantics.service
+  - 🚧 io
   
 - `game.move` programmatically interruptible by JavaScript
   - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`
@@ -289,7 +291,9 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - fix code-linking e.g. starting from `game.move` doesn't work
   - try importing instead
 
-- sometimes tty-0 fails to persist home?
+- BUG: Logger: fix links
+
+- BUG: sometimes tty-0 fails to persist /home?
 
 - BUG: sh: multi-line history with repro
 ```sh
@@ -297,6 +301,11 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 # happens when we go forwards and arrive at this line
 expr window.document.querySelector'("section")' | log
 ```
+
+- tidy example commands
+  - includes "quoting gotchas" e.g. `w e.say kate Well, this is awkward...`
+
+- can `w e.say` at different heights, to avoid collisions (e.g. when sitting next to each other)
 
 - remove on/no/x buttons from `ps`
   - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
