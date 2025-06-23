@@ -92,7 +92,7 @@ export default function Tty(props: Props) {
         p.status === ProcessStatus.Running && !(noPausePtag in p.ptags)
       ));
 
-      useSession.api.killProcesses(processes, { STOP: true, global: true });
+      useSession.api.killProcesses(processes, { STOP: true, byPtags: true });
 
       if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
         state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
@@ -133,7 +133,7 @@ export default function Tty(props: Props) {
           : p.status === ProcessStatus.Suspended)
       );
 
-      useSession.api.killProcesses(processes, { CONT: true, global: true });
+      useSession.api.killProcesses(processes, { CONT: true, byPtags: true });
 
       if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
         state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';

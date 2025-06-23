@@ -811,7 +811,7 @@ class cmdServiceClass {
      * Executed on suspend, without clearing `true` returners.
      * The latter should be idempotent, e.g. unsubscribe, pause.
      */
-    addSuspend(cleanup: (global?: boolean) => void) {
+    addSuspend(cleanup: ProcessMeta['onSuspends'][0]) {
       getProcess(this.meta).onSuspends.push(cleanup);
     },
 
@@ -939,11 +939,12 @@ class cmdServiceClass {
       await cmdService.sleep(this.meta, seconds);
     },
 
-    throwOnPause(pauseError: any, requireGlobal?: boolean) {
+    // 🚧 remove
+    throwOnPause(pauseError: any, requireByPtags?: boolean) {
       return new Promise((_, reject) => {
         const { onSuspends, cleanups } = getProcess(this.meta);
-        onSuspends.push(global =>
-          (requireGlobal === undefined || requireGlobal === global) &&
+        onSuspends.push(byPtags =>
+          (requireByPtags === undefined || requireByPtags === byPtags) &&
           reject(pauseError)
         );
         cleanups.push(() => reject(killError(this.meta)))

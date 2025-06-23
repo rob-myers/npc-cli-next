@@ -250,7 +250,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - 🚧 merge `ctsTour` into `tour`
     - ✅ `move` cleans its own callbacks
 
-- 🚧 "global pause" should not influence "manual-pause" in `move`
+- ✅ "byPtags pause" (global pause) should not influence "manual-pause" in `move`
+  - ✅ likewise for `ctsTour`
 
 - 🚧 ptags.iPipe -> ptags.interactive and fix nested interactive pipelines
 

@@ -254,7 +254,7 @@ export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })
 
   let prevRadius = 0;
   const handlers = api.handleStatus({
-    onSuspends() { npc.s.preventStop = false; npc.api.setSlowDownRadius(prevRadius); },
+    onSuspends(byPtags) { if (!byPtags) { npc.s.preventStop = false; npc.api.setSlowDownRadius(prevRadius) } },
     onResumes() { npc.s.preventStop = true; prevRadius = npc.api.setSlowDownRadius(0.05); },
   }, { initially: true, finally: true });
 

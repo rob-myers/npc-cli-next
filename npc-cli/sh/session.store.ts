@@ -38,22 +38,8 @@ export type State = {
     getVar: <T = any>(meta: BaseMeta, varName: string) => T;
     getVarDeep: (meta: BaseMeta, varPath: string) => any | undefined;
     getSession: (sessionKey: string) => Session;
-    kill(sessionKey: string, pids: number[], opts: {
-      STOP?: boolean;
-      CONT?: boolean;
-      /** Ctrl-C, originating from pid 0 */
-      SIGINT?: boolean;
-      group?: boolean;
-      ptags?: Record<string, any>;
-    }): void;
-    killProcesses(processes: ProcessMeta[], opts: {
-      STOP?: boolean;
-      CONT?: boolean;
-      SIGINT?: boolean;
-      /** 🚧 */
-      global?: boolean;
-      ptags?: Record<string, any>;
-    }): void;
+    kill(sessionKey: string, pids: number[], opts: KillOpts): void;
+    killProcesses(processes: ProcessMeta[], opts: KillOpts): void;
     onTtyLink: (opts: {
       sessionKey: string;
       lineText: string;
@@ -154,10 +140,10 @@ export interface ProcessMeta {
    * Executed on suspend, without clearing `true` returners.
    * The latter should be idempotent, e.g. unsubscribe, pause.
    * 
-   * - `global` true iff the suspension was triggered by disabling the `<Tty>`.
-   * - thus can distinguish global pause from process pause
+   * - `byPtags` true iff suspended by ptags
+   * - thus can distinguish <Tty> pause from process pause
    */
-  onSuspends: ((global: boolean) => void | boolean)[];
+  onSuspends: ((byPtags: boolean) => void | boolean)[];
   /**
    * Executed on resume, without clearing `true` returners.
    * The latter should be idempotent, e.g. reject, resolve.
@@ -174,6 +160,15 @@ export interface ProcessMeta {
   inheritVar: Record<string, any>;
   /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
   ptags: Record<string, any>;
+}
+
+interface KillOpts {
+  STOP?: boolean;
+  CONT?: boolean;
+  SIGINT?: boolean;
+  byPtags?: boolean;
+  group?: boolean;
+  ptags?: Record<string, any>;
 }
 
 export interface TtyLinkCtxt {
@@ -374,9 +369,9 @@ const useStore = create<State>()(
             killProcess(p, opts.SIGINT);
           }
         } else if (opts.STOP === true) {
-          const global = !!opts.global;
+          const byPtags = !!opts.byPtags;
           for (const p of processes) {
-            p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(global));
+            p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(byPtags));
             p.status = ProcessStatus.Suspended;
           }
         } else if (opts.CONT === true) {

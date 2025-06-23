@@ -175,7 +175,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   
   const handlers = api.handleStatus({
     cleanups() { npc.reject.move?.(Error('cancelled')); },
-    onSuspends() { npc.reject.move?.(Error('manual-pause')); return true; },
+    onSuspends(byPtags) { if (!byPtags) { npc.reject.move?.(Error('manual-pause')); return true; } },
   });
 
   while (true) {
