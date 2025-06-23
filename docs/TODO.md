@@ -276,7 +276,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `zoom` tidies its callbacks
   - ✅ `click`
   - ✅ `events`
-  - 🚧 `w`
+  - ✅ `w`
   - 🚧 cmd.service, semantics.service
   
 - `game.move` programmatically interruptible by JavaScript

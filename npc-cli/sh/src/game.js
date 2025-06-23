@@ -227,52 +227,59 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
  * Usage:
  * ```sh
  * w
- * w 'x => x.crowd'`
+ * w 'x => x.crowd'
  * w crowd
  * w e.toggleDoor g0d0
  * w gmGraph.findRoomContaining $( click 1 | map xz )
- * click 1 | map xz | w --stdin gmGraph.findRoomContaining
- * echo image/webp | w --stdin view.openSnapshot _ 0
+ * click 1 | map xz | w gmGraph.findRoomContaining -
+ * echo image/webp | w view.openSnapshot - 50
+ * click 1 | w n.rob.api.look - 500
  * ```
  *
- * ℹ️ can always `ctrl-c`, even without cleaning up ongoing computations
- * ℹ️ --stdin option assumes stdin arg is represented via `_` (hyphen breaks getopts)
+ * - can always `ctrl-c`, even without cleaning up ongoing computations
+ * - can read stdin via hyphen arg
  * 
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* w(ctxt) {
-  const { api, args, w } = ctxt;
-  const getHandleProm = () => new Promise((resolve, reject) => api.addCleanUp(
-    () => reject("potential ongoing computation")
-  ));
+export async function* w(ct) {
+  const { api, args, w } = ct;
 
-  // also support piped inputs via hyphen args -
+  // support piped inputs via hyphen args -
   // e.g. `click 1 | map xz | w gmGraph.findRoomContaining -`
-  // const { opts, operands } = api.getOpts(args);
-
   const stdinInputChar = "-";
-  const stdin = args.slice(1).some(arg => arg === stdinInputChar);
+  const readStdin = args.slice(1).some(arg => arg === stdinInputChar);
+  
+  let reject = /** @param {*} e */ (e) => {};
+  const handlers = api.handleStatus({
+    cleanups() { reject("potential ongoing computation") },
+  });
+  /** @param {any} value */
+  async function awaitOrIgnore(value) {// handle non-promise or promise
+    return Promise.race([value, new Promise((_, rej) => reject = rej)]).finally(() => {
+      reject(null);
+      handlers.dispose();
+    });
+  }
 
-  if (stdin !== true) {
+  if (readStdin !== true) {
     const func = api.generateSelector(
       api.parseFnOrStr(args[0]),
       args.slice(1).map(api.parseJsArg),
     );
-    const v = func(w, ctxt);
-    yield v instanceof Promise ? Promise.race([v, getHandleProm()]) : v;
-  } else {
-    /** @type {*} */ let datum;
-    while ((datum = await api.read()) !== api.eof) {
-      const func = api.generateSelector(
-        api.parseFnOrStr(args[0]),
-        args.slice(1).map(x => x === stdinInputChar ? datum : api.parseJsArg(x)),
-      );
-      try {
-        const v = func(w, ctxt);
-        yield v instanceof Promise ? Promise.race([v, getHandleProm()]) : v;
-      } catch (e) {
-        yield `${api.ansi.Cyan}${e}${api.ansi.Reset}`;
-      }
+    yield await awaitOrIgnore(func(w, ct));
+    return;
+  }
+  
+  /** @type {*} */ let datum;
+  while ((datum = await api.read()) !== api.eof) {
+    const func = api.generateSelector(
+      api.parseFnOrStr(args[0]),
+      args.slice(1).map(x => x === stdinInputChar ? datum : api.parseJsArg(x)),
+    );
+    try {
+      yield awaitOrIgnore(func(w, ct));
+    } catch (e) {
+      yield `${api.ansi.Cyan}${e}${api.ansi.Reset}`;
     }
   }
 }
