@@ -249,6 +249,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ remove change slowDownRadius onenter small room
   - 🚧 merge `ctsTour` into `tour`
     - ✅ `move` cleans its own callbacks
+  - `ctsTour` jerks when stuck via other
 
 - ✅ "byPtags pause" (global pause) should not influence "manual-pause" in `move`
   - ✅ likewise for `ctsTour`
@@ -273,7 +274,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `awaitResume` tidies its callbacks
   - ✅ `look` tidies its callbacks
   - ✅ `zoom` tidies its callbacks
-  - 🚧
+  - ✅ `click`
+  - 🚧 ...
   
 - `game.move` programmatically interruptible by JavaScript
   - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`

@@ -27,11 +27,12 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
  * click 5 '({ meta }) => meta.nav'
  * click 5 meta.nav
  * click meta.nav
+ * click meta.nav 2
  * ```
  * @param {NPC.RunArg} ctxt
  */
-export async function* click({ api, args, w }) {
-  const { opts, operands } = api.getOpts(args, {
+export async function* click({ api, args, w, w: { lib } }) {
+  let { opts, operands } = api.getOpts(args, {
     boolean: [
       "left",     // left clicks only
       "right",    // right clicks only
@@ -40,23 +41,22 @@ export async function* click({ api, args, w }) {
       "blocking", // e.g. `click --blocking`
     ],
   });
-
-  if (opts["left"] === false && opts["right"] === false && opts["any"] === false)  {
+  if (opts["right"] === false && opts["any"] === false)  {
     opts.left = true; // default to left clicks only
   }
 
+  if (
+    w.lib.generic.isStringInteger(operands[0]) === false
+    && w.lib.generic.isStringInteger(operands[1]) === true
+  ) {// support reverse order `click meta.nav 2`
+    operands = [operands[1], operands[0]];
+  }
+
   let numClicks = Number(operands[0]) || Number.MAX_SAFE_INTEGER;
-  // if (!Number.isFinite(numClicks)) {
-  //   throw new Error("format: \`click [{numberOfClicks}]\`");
-  // }
-  
   const clickId = numClicks < Number.MAX_SAFE_INTEGER || opts.blocking === true
     ? api.getUid()
     : undefined
   ;
-  if (clickId !== undefined) {
-    api.addCleanUp(() => w.lib.removeFirst(w.view.clickIds, clickId));
-  }
 
   // support `click meta.nav`
   const filterDef = numClicks === Number.MAX_SAFE_INTEGER ? operands[0] : operands[1];
@@ -64,50 +64,61 @@ export async function* click({ api, args, w }) {
 
   /** @type {import('rxjs').Subscription} */
   let eventsSub;
-  api.addCleanUp(() => eventsSub?.unsubscribe());
 
-  while (numClicks > 0) {
-    clickId !== undefined && w.view.clickIds.push(clickId);
-    
-    const e = await /** @type {Promise<NPC.PointerUpEvent>} */ (new Promise((resolve, reject) => {
-      eventsSub = w.events.subscribe({ next(e) {
-        if (e.key !== "pointerup" || e.pointers > 1 || w.view.isPointerEventDrag(e) === true || api.isRunning() === false) {
-          return;
-        } else if (e.clickId !== undefined && clickId === undefined) {
-          return; // `click {n}` overrides `click`
-        } else if (e.clickId !== undefined && clickId !== e.clickId) {
-          return; // later `click {n}` overrides earlier `click {n}`
-        }
-        resolve(e); // Must resolve before tear-down induced by unsubscribe 
-        eventsSub.unsubscribe();
-      }});
-      eventsSub.add(() => reject(api.getKillError()));
-    }));
+  // suspend/resume handled by `api.isRunning()` below
+  const handlers = api.handleStatus({
+    cleanups() {
+      clickId !== undefined && w.lib.generic.removeFirst(w.view.clickIds, clickId);
+      eventsSub?.unsubscribe();
+    },
+  });
 
-    if (
-      (opts.left === true && e.rmb === true)
-      || (opts.right === true && e.rmb === false)
-      || (opts.long !== e.justLongDown)
-    ) {
-      continue;
+  try {
+    while (numClicks > 0) {
+      clickId !== undefined && w.view.clickIds.push(clickId);
+      
+      const e = await /** @type {Promise<NPC.PointerUpEvent>} */ (new Promise((resolve, reject) => {
+        eventsSub = w.events.subscribe({ next(e) {
+          if (e.key !== "pointerup" || e.pointers > 1 || w.view.isPointerEventDrag(e) === true || api.isRunning() === false) {
+            return;
+          } else if (e.clickId !== undefined && clickId === undefined) {
+            return; // `click {n}` overrides `click`
+          } else if (e.clickId !== undefined && clickId !== e.clickId) {
+            return; // later `click {n}` overrides earlier `click {n}`
+          }
+          resolve(e); // Must resolve before tear-down induced by unsubscribe 
+          eventsSub.unsubscribe();
+        }});
+        eventsSub.add(() => reject(api.getKillError()));
+      }));
+  
+      if (
+        (opts.left === true && e.rmb === true)
+        || (opts.right === true && e.rmb === false)
+        || (opts.long !== e.justLongDown)
+      ) {
+        continue;
+      }
+  
+      /** @type {NPC.ClickOutput} */
+      const output = {
+        ...e.position,
+        ...e.keys && { keys: e.keys },
+        meta: {
+          ...e.meta,
+          nav: e.meta.floor === true ? w.npc.isPointInNavmesh(e.point) : false,
+          // longClick: e.justLongDown,
+        },
+        xz: {...e.point},
+      };
+  
+      if (filter === undefined || filter?.(output)) {
+        numClicks--;
+        yield output;
+      }
     }
-
-    /** @type {NPC.ClickOutput} */
-    const output = {
-      ...e.position,
-      ...e.keys && { keys: e.keys },
-      meta: {
-        ...e.meta,
-        nav: e.meta.floor === true ? w.npc.isPointInNavmesh(e.point) : false,
-        // longClick: e.justLongDown,
-      },
-      xz: {...e.point},
-    };
-
-    if (filter === undefined || filter?.(output)) {
-      numClicks--;
-      yield output;
-    }
+  } finally {
+    handlers.dispose();
   }
 }
 

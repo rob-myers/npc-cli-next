@@ -315,6 +315,11 @@ export function isInsideWebWorker() {
   return typeof self !== 'undefined' && self.document === undefined;
 }
 
+/** @param {string} input  */
+export function isStringInteger(input) {
+  return String(parseInt(input)) === input;
+}
+
 /**
  * Outputs JS expressions.
  * @param {*} input 

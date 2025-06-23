@@ -9,7 +9,8 @@ import { Vect } from "../geom";
 import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
-import { debug, isDevelopment, removeFirst, pause, mapValues, range, entries, hashText } from "../service/generic";
+import { debug, isDevelopment, pause, mapValues, range, entries, hashText } from "../service/generic";
+import * as generic from "../service/generic";
 import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
 import { geom } from "../service/geom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
@@ -144,7 +145,7 @@ export default function World(props) {
         state.texAux.updateIndex(Number(indexStr), new Float32Array(buffer));
       }
     },
-  }), { reset: { lib: true, texFloor: false, texCeil: false } });
+  }), { reset: { lib: false, texFloor: false, texCeil: false } });
 
   state.disabled = !!props.disabled;
 
@@ -325,8 +326,9 @@ export default function World(props) {
     networkMode: isDevelopment() ? 'always' : 'online',
   });
 
-  React.useEffect(() => {// provide world for tty
+  React.useEffect(() => {// cache world, sync lib
     setCached([props.worldKey], state);
+    Object.assign(state.lib, lib); // preserve reference
     return () => removeCached([props.worldKey]);
   }, []);
 
@@ -477,13 +479,13 @@ export default function World(props) {
  * @property {typeof deltaAngle} deltaAngle
  * @property {typeof geom} geom
  * @property {typeof Vect['isVectJson']} isVectJson
- * @property {typeof removeFirst} removeFirst
+ * @property {typeof generic} generic
  */
 
 const lib = {
   deltaAngle,
+  generic,
   geom,
   isVectJson: Vect.isVectJson,
-  removeFirst,
   ...helper,
 };
