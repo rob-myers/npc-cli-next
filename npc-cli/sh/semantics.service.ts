@@ -19,7 +19,7 @@ import {
   handleProcessError,
   ttyError,
 } from "./util";
-import { cmdService, isTtyAt } from "./cmd.service";
+import { cmdService, isTtyAt, getProcess } from "./cmd.service";
 import { srcService } from "./parse";
 import { preProcessWrite, redirectNode } from "./io";
 import { cloneParsed, collectIfClauses, reconstructReplParamExp, wrapInFile } from "./parse";
@@ -201,7 +201,7 @@ class semanticsServiceClass {
         const pgid = ppid; // 🔔 `node.meta.pgid` breaks pgid 0, and nested pipelines
         const { ttyShell } = useSession.api.getSession(sessionKey);
 
-        const process = useSession.api.getProcess(node.meta);
+        const process = getProcess(node.meta);
         function killPipeChildren(SIGINT?: boolean) {
           useSession.api
             .getProcesses(process.sessionKey, pgid)
@@ -297,7 +297,7 @@ class semanticsServiceClass {
     if (assign?.Value != null) {
       const expanded = await this.lastExpanded(sem.Expand(assign.Value));
       const ptags = tagsToMeta(textToTags(expanded.value));
-      useSession.api.getProcess(node.meta).ptags = ptags;
+      getProcess(node.meta).ptags = ptags;
       // console.log({ptags});
     }
   }
@@ -379,7 +379,7 @@ class semanticsServiceClass {
             throw new ShError("not implemented", 2);
         }
       }
-      const process = useSession.api.getProcess(node.meta);
+      const process = getProcess(node.meta);
       let stdoutFd = node.meta.fd[1];
       let device = useSession.api.resolve(1, node.meta);
       if (device === undefined) {// Pipeline already failed
@@ -432,7 +432,7 @@ class semanticsServiceClass {
       yield* cmdService.runCmd(node, 'declare', args);
     } else {
       // 🔔 we support assignments, so we ignore cmd.service 'local'
-      const process = useSession.api.getProcess(node.meta);
+      const process = getProcess(node.meta);
       if (process.key === 0) {
         throw Error(`local: cannot be used in session leader`);
       }
@@ -454,7 +454,7 @@ class semanticsServiceClass {
     //   }
     // } else if (node.Variant.Value === "local") {
     //   for (const arg of node.Args) {
-    //     const process = useSession.api.getProcess(node.meta);
+    //     const process = getProcess(node.meta);
     //     if (process.key > 0) {
     //       // Can only set local variable outside session leader,
     //       // where variables are e.g. /home/foo
@@ -680,17 +680,17 @@ class semanticsServiceClass {
           throw new ShError(`ParamExp: ${Param.Value}: unsupported operation`, 2);
       }
     } else if (Param.Value === "@") {
-      yield expand(useSession.api.getProcess(meta).positionals.slice(1));
+      yield expand(getProcess(meta).positionals.slice(1));
     } else if (Param.Value === "$") {
-      yield expand(`${useSession.api.getProcess(meta).key}`);
+      yield expand(`${getProcess(meta).key}`);
     } else if (Param.Value === "*") {
-      yield expand(useSession.api.getProcess(meta).positionals.slice(1).join(' '));
+      yield expand(getProcess(meta).positionals.slice(1).join(' '));
     } else if (Param.Value === "$") {
       yield expand(`${meta.pid}`);
     } else if (Param.Value === "?") {
       yield expand(`${useSession.api.getLastExitCode(meta)}`);
     } else if (Param.Value === "#") {
-      yield expand(`${useSession.api.getProcess(meta).positionals.slice(1).length}`);
+      yield expand(`${getProcess(meta).positionals.slice(1).length}`);
     } else {
       yield expand(this.expandParameter(meta, Param.Value));
     }
@@ -790,7 +790,7 @@ class semanticsServiceClass {
 
   private async *WhileClause(node: Sh.WhileClause) {
     const { Cond, Do, Until } = node;
-    const process = useSession.api.getProcess(node.meta);
+    const process = getProcess(node.meta);
     let itStartMs = -1, itLengthMs = 0;
 
     while (true) {

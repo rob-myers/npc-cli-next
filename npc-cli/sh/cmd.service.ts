@@ -297,7 +297,7 @@ class cmdServiceClass {
         break;
       }
       case "local": {// 🔔 see DeclClause
-        const process = useSession.api.getProcess(node.meta);
+        const process = getProcess(meta);
         if (process.key === 0) {
           throw new ShError("session leader doesn't support local variables", 1);
         }
@@ -602,7 +602,7 @@ class cmdServiceClass {
         if (!(Number.isInteger(shiftBy) && shiftBy >= 0)) {
           throw new ShError("usage: `shift [n]` for non-negative integer n", 1);
         }
-        const { positionals } = useSession.api.getProcess(meta);
+        const { positionals } = getProcess(meta);
         for (let i = 0; i < shiftBy; i++) positionals.shift();
         break;
       }
@@ -727,7 +727,7 @@ class cmdServiceClass {
   get(node: Sh.BaseNode, args: string[]) {
     const root = this.provideProcessCtxt(node.meta);
     const pwd = useSession.api.getVar<string>(node.meta, "PWD");
-    const process = useSession.api.getProcess(node.meta);
+    const process = getProcess(node.meta);
 
     const outputs = args.map((arg) => {
       const parts = arg.split("/");
@@ -1009,7 +1009,7 @@ class cmdServiceClass {
     once = false,
     chunks: boolean
   ) {
-    const process = useSession.api.getProcess(meta);
+    const process = getProcess(meta);
     const device = useSession.api.resolve(0, meta);
 
     if (device === undefined) {
@@ -1079,7 +1079,7 @@ class cmdServiceClass {
 
 //#region processApi related
 
-function getProcess(meta: Sh.BaseMeta) {
+export function getProcess(meta: Sh.BaseMeta) {
   return useSession.api.getProcess(meta);
 }
 
