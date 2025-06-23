@@ -259,7 +259,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - ❌ fix resume `seq 5 &` via `ps`
   - happens because two process groups (`ps -a`)
 
-- fix bad exit code: `foo () { echo foo; echo bar; return; }; foo`
+- ✅ fix bad exit code: `foo () { echo foo; echo bar; return; }; foo`
 
 - 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
   - ✅ `sleep` tidies its callbacks

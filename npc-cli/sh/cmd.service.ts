@@ -478,7 +478,7 @@ class cmdServiceClass {
         break;
       }
       case "return": {
-        let exitCode = parseInt(args[0] || "1");
+        let exitCode = parseInt(args[0] || '0');
         if (!Number.isFinite(exitCode)) {
           useSession.api.writeMsg(meta.sessionKey, `return: numeric argument required`, "error");
           exitCode = 2;
