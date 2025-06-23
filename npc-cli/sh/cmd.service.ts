@@ -693,21 +693,24 @@ class cmdServiceClass {
       yield ttyText;
     }
 
-    try {
-      if (parsedLines.some((x) => x.linkCtxtsFactory !== undefined) === true) {
-        // some link must be clicked to proceed
-        yield await new Promise<any>((resolve, reject) => {
-          getProcess(meta).cleanups.push(reject);
-          parsedLines.forEach(({ ttyTextKey, linkCtxtsFactory }) =>
-            linkCtxtsFactory !== undefined && useSession.api.addTtyLineCtxts(
-              meta.sessionKey,
-              ttyTextKey,
-              linkCtxtsFactory(resolve),
-            )
-          );
-        })
-      }
+    if (!parsedLines.some((x) => x.linkCtxtsFactory !== undefined)) {
+      return;
+    }
+    
+    let handlers: HandleStatusReturns;
+    try {// some link must be clicked to proceed
+      yield await new Promise<any>((resolve, reject) => {
+        handlers = cmdService.handleStatus(meta, { cleanups: reject });
+        parsedLines.forEach(({ ttyTextKey, linkCtxtsFactory }) =>
+          linkCtxtsFactory !== undefined && useSession.api.addTtyLineCtxts(
+            meta.sessionKey,
+            ttyTextKey,
+            linkCtxtsFactory(resolve),
+          )
+        );
+      });
     } finally {
+      handlers!.dispose();
       // ℹ️ currently assume one time usage
       parsedLines.forEach(({ ttyTextKey }) =>
         useSession.api.removeTtyLineCtxts(meta.sessionKey, ttyTextKey)
@@ -939,18 +942,6 @@ class cmdServiceClass {
       await cmdService.sleep(this.meta, seconds);
     },
 
-    // 🚧 remove
-    throwOnPause(pauseError: any, requireByPtags?: boolean) {
-      return new Promise((_, reject) => {
-        const { onSuspends, cleanups } = getProcess(this.meta);
-        onSuspends.push(byPtags =>
-          (requireByPtags === undefined || requireByPtags === byPtags) &&
-          reject(pauseError)
-        );
-        cleanups.push(() => reject(killError(this.meta)))
-      });
-    },
-
     writeError(message: string) {
       const device = useSession.api.resolve(1, this.meta);
       device.writeData(`${ansi.Red}${message}${ansi.Reset}`); // do not wait for promise
@@ -1161,6 +1152,8 @@ export interface HandleStatusHandlers {
   /* An optional suspend */
   onSuspends?: ProcessMeta['onSuspends'][0];
 }
+
+export type HandleStatusReturns = ReturnType<CmdService['handleStatus']>;
 
 export const cmdService = new cmdServiceClass();
 
