@@ -109,15 +109,14 @@ export default function Manage(props) {
     <div css={manageCss}>
 
       <ul className="tabs-and-create">
-        <li className="title">Tabs</li>
-
-        {tabDefs.map(def => {
+        {tabDefs.map((def, i) => {
           const tabId = def.filepath;
           const tabMeta = tabsMeta[tabId];
           const disabled = tabMeta?.disabled === true;
           const unmounted = tabMeta === undefined;
 
           return <li key={tabId} data-tab-id={tabId}>
+            {i === 0 && <span className="title">Tabs</span>}
             <span className="tab-def">
               <span className="tab-status-and-id">
                 <span className="tab-status">
