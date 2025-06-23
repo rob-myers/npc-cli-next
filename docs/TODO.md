@@ -250,6 +250,10 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - 🚧 merge `ctsTour` into `tour`
     - ✅ `move` cleans its own callbacks
 
+- 🚧 "global pause" should not influence "manual-pause" in `move`
+
+- 🚧 ptags.iPipe -> ptags.interactive and fix nested interactive pipelines
+
 - ✅ can run `seq 5` while paused
   - ℹ️ `range 5` works
   - ℹ️ `range 5 | split` works
@@ -265,6 +269,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `sleep` tidies its callbacks
   - ✅ `move` tidies its callbacks
   - ✅ `awaitResume` tidies its callbacks
+  - ✅ `look` tidies its callbacks
+  - `zoom` tidies its callbacks
   - programmatically interruptible
     - could `for await of` and invoke all "later" cleanups?
 

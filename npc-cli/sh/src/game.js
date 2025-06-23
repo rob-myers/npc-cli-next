@@ -144,22 +144,21 @@ export async function* events({ api, args, w }) {
  * @param {{ at: string | import('three').Vector3 | Geom.Vect }} [opts]
  */
 export async function* look({ api, args, w }, opts = api.jsArg(args)) {
-  api.addCleanUp(() => w.view.reject.look?.(Error('cancelled')));
-  
+  const handlers = api.handleStatus({
+    cleanups() { w.view.reject.look?.('cancelled'); },
+    onSuspends() { w.view.reject.look?.('pause'); return true; },
+  });
+
   while (true) {
     try {
-      return await Promise.race([
-        w.e.lookAt(opts.at),
-        api.throwOnPause('manual-pause', false),
-      ]);
+      return await w.e.lookAt(opts.at).then(handlers.dispose);
     } catch (e) {
-      if (e === 'manual-pause') {
-        w.view.resolve.look?.();
-        await api.awaitResume();
-        continue;
+      if (e !== 'pause') {
+        handlers.dispose();
+        throw e;
       }
-      throw e;
     }
+    await api.awaitResume();
   }
 }
 
