@@ -87,7 +87,7 @@ export default function Tty(props: Props) {
     },
     pauseRunningProcesses() {
       const { session } = state.base;
-      
+
       const processes = Object.values(session.process ?? {}).filter(p => (
         p.status === ProcessStatus.Running && !(noPausePtag in p.ptags)
       ));
@@ -129,9 +129,7 @@ export default function Tty(props: Props) {
 
       const processes = Object.values(session.process).filter(p =>
         !(noPausePtag in p.ptags) && (p.pgid === 0
-          // cannot resume non-interactive leading process group
           ? interactive === false
-          // cannot resume other unless suspended and lacks ptag
           : p.status === ProcessStatus.Suspended)
       );
 

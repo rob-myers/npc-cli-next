@@ -203,17 +203,17 @@ export class ttyShellClass implements Device {
   async spawn(
     term: Sh.FileWithMeta,
     opts: {
+      /**
+       * Execute inside session leader `this.process`?
+       * We expect `term.meta.pid === 0`.
+       */
+      builtin?: boolean;
       cleanups?: (() => void)[];
       /**
        * A non-pausable process e.g. `source /etc/util.js.sh` which only defines
-       * shell functions. These processes should not spawn others e.g. they should
-       * only define shell functions and source other such files.
-       * 
-       * More generally they should only execute built-ins.
+       * shell functions. These processes should not spawn others.
        */
       internal?: boolean;
-      /** `term.meta.pid === 0`. */
-      leading?: boolean;
       localVar?: boolean;
       posPositionals?: string[];
     } = {}
@@ -223,7 +223,7 @@ export class ttyShellClass implements Device {
     let process = this.process;
 
     if (this.profileFinished === true) {
-      if (opts.leading === true) {
+      if (opts.builtin === true) {
         // Only reachable by interactively specifying a command after profile has run
         // We ensure leading process has status Running
         process.status = ProcessStatus.Running;
@@ -239,7 +239,8 @@ export class ttyShellClass implements Device {
       }
     }
 
-    if (opts.leading !== true) {// create process
+    if (opts.builtin !== true) {
+      // Create subprocess
       const { ppid, pgid, sessionKey } = meta;
       const session = useSession.api.getSession(sessionKey);
       const parent = session.process[ppid]; // Exists
@@ -258,6 +259,9 @@ export class ttyShellClass implements Device {
         process.pgid !== 0 
         && this.bgSuspendUnless !== null
         && !(this.bgSuspendUnless in process.ptags)
+        // 🚧 `seq 5` should work whilst Tabs paused
+        // 🚧 BUT some bg processes should be suspended?
+        // && this.profileFinished === false
       ) {
         // If `bgSuspendUnless` non-null, suspend spawned background processes without this ptag.
         // This permits us to represent <Tabs> disabled.
@@ -325,7 +329,7 @@ export class ttyShellClass implements Device {
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
 
-      if (opts.leading !== true) {
+      if (opts.builtin !== true) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       }
 
@@ -384,7 +388,7 @@ export class ttyShellClass implements Device {
           // Run command
           this.process.src = singleLineSrc;
           this.provideContextToParsed(result.parsed);
-          await this.spawn(result.parsed, { leading: true });
+          await this.spawn(result.parsed, { builtin: true });
 
           this.prompt("$");
           break;

@@ -638,7 +638,7 @@ class cmdServiceClass {
 
         // We spawn a new process (unlike bash `source`); we don't localize PWD
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
-        await ttyShell.spawn(parsed, { leading: meta.pid === 0, posPositionals: args.slice(1) });
+        await ttyShell.spawn(parsed, { builtin: meta.pid === 0, posPositionals: args.slice(1) });
 
         // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
         const absPath = cmdService.absPath(node.meta, filepath);
