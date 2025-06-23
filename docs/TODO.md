@@ -253,7 +253,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - ✅ "byPtags pause" (global pause) should not influence "manual-pause" in `move`
   - ✅ likewise for `ctsTour`
 
-- 🚧 ptags.iPipe -> ptags.interactive and fix nested interactive pipelines
+- ✅ ptags.iPipe -> ptags.interactive and fix nested interactive pipelines
+  - `foo() { echo foo | { map 'x => [x, x]' | map length; } }; foo`
 
 - ✅ can run `seq 5` while paused
   - ℹ️ `range 5` works

@@ -231,10 +231,9 @@ class semanticsServiceClass {
             new Promise<void>(async (resolve, reject) => {
               try {
                 await ttyShell.spawn(file, {
-                  localVar: true,
-                  // e.g. `take 3 | true`
+                  localVar: true, // e.g. `take 3 | true`:
                   cleanups: i === 0 && isTtyAt(file.meta, 0) ? [() => ttyShell.finishedReading()] : undefined,
-                  ptags: { iPipe: node.meta.pgid === 0 },
+                  // 🔔 despite new process group we do not overwrite ptags.interactive
                 });
                 resolve();
               } catch (e) {
@@ -737,9 +736,9 @@ class semanticsServiceClass {
   }
 
   private async *Stmt(stmt: Sh.Stmt) {
-    if (!stmt.Cmd) {
+    if (stmt.Cmd === null) {
       throw new ShError("pure redirects are unsupported", 2);
-    } else if (stmt.Background && stmt.meta.pgid === 0) {
+    } else if (stmt.Background === true && stmt.meta.pgid === 0) {
       /**
        * Run a background process without awaiting.
        */
@@ -749,13 +748,19 @@ class semanticsServiceClass {
         pgid: nextPid,
         background: true,
       });
-      ttyShell.spawn(file, { localVar: true }).catch((e) => {
+
+      try {
+        ttyShell.spawn(file, {
+          localVar: true,
+          ptags: { interactive: false },
+        });  
+      } catch (e) {
         if (e instanceof ProcessError) {
           this.handleTopLevelProcessError(e);
         } else {
           ttyError("background process error", e);
         }
-      });
+      }
       stmt.exitCode = stmt.Negated ? 1 : 0;
     } else {
       try {

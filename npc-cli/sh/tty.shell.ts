@@ -31,6 +31,14 @@ export class ttyShellClass implements Device {
     reject: (e: any) => void;
   }[];
 
+  /**
+   * `ptags.interactive` inherited until overwritten via `&` (background operator).
+   * Pipes don't overwrite, despite having their own process group.
+   */
+  private get sessionLeaderPtags() {
+    return { interactive: true };
+  }
+
   constructor(
     public sessionKey: string,
     public io: ShellIo<MessageFromXterm, MessageFromShell>,
@@ -58,7 +66,7 @@ export class ttyShellClass implements Device {
       ppid: 0,
       pgid: 0,
       src: "",
-      ptags: {},
+      ptags: this.sessionLeaderPtags,
     });
   }
 
@@ -258,7 +266,7 @@ export class ttyShellClass implements Device {
 
       if (
         process.pgid !== 0
-        && !process.ptags.iPipe
+        && !process.ptags.interactive
         && this.bgSuspendUnless !== null
         && !(this.bgSuspendUnless in process.ptags)
       ) {
@@ -407,7 +415,7 @@ export class ttyShellClass implements Device {
     } finally {
       this.input?.resolve();
       this.input = null;
-      this.process.ptags = {};
+      this.process.ptags = this.sessionLeaderPtags;
       
       // do not suspend leading process during profile,
       // otherwise we'll pause before spawning each subprocess
