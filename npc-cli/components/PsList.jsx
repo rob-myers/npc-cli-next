@@ -211,6 +211,8 @@ const psListCss = css`
       background-color: black;
       border: var(--separating-border);
       font-size: small;
+      overflow-x: auto;
+      /* word-break: break-all; */
     }
     .process-controls {
       display: flex;
