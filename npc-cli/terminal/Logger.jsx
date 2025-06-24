@@ -191,7 +191,7 @@ const loggerCss = css`
   height: 100%;
   pointer-events: all;
   /* prevent pinch-zoom on mobile */
-  touch-action: pan-y;
+  touch-action: none;
 
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.2);

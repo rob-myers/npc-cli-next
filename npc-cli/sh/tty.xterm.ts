@@ -12,7 +12,6 @@ import {
   isProxy,
 } from "./io";
 import { jsStringify, testNever, warn } from "../service/generic";
-import useSession from "./session.store";
 
 /**
  * Wraps xtermjs `Terminal`.
@@ -106,14 +105,9 @@ export class ttyXtermClass {
   initialise() {
     const xtermDisposable = this.xterm.onData(this.handleXtermInput.bind(this));
     const unregisterWriters = this.session.io.handleWriters(this.onMessage.bind(this));
-    const disposeOnScroll = this.xterm.onScroll((y) => {
-      // 🚧 remove stale links and cross them out
-      // console.log({y});
-    });
     this.cleanups.push(() => {
       xtermDisposable.dispose();
       unregisterWriters();
-      disposeOnScroll.dispose();
     });
     // user indication after xterm has loaded but session hasn't
     this.xterm.writeln(`${ansi.Italic}${ansi.BrightWhite}Loading...${ansi.Reset}`);
