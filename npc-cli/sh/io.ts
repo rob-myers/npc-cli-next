@@ -236,6 +236,7 @@ export interface ExternalMessage {
   );
 }
 
+/** Only sent when `process.src !== ''`. */
 export interface ExternalMessageProcessLeader {
   key: 'process-leader';
   pid: number;

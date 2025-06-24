@@ -1,10 +1,11 @@
 import React from "react";
+import cx from "classnames";
 import { css } from "@emotion/react";
 import { error } from "../service/generic";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import useTabs from "../tabs/tabs.store";
-import useSession from "../sh/session.store";
+import useSession, { ProcessStatus } from "../sh/session.store";
 import { faRefresh, faPause, faPlay, faClose, FontAwesomeIcon } from "./Icon";
 
 export default function PsList() {
@@ -37,20 +38,22 @@ export default function PsList() {
     },
     connectSession() {
       try {
-        state.disconnectSession?.()
+        state.disconnectSession?.();
 
         const session = useSession.api.getSession(state.sessionKey);
         if (session === undefined) {
-          return; // 🚧 initially session may not be ready (despite tabs.tabsMeta)
+          // - sessionKey could be empty string
+          // - 🚧 initially session may not be ready (despite tabs.tabsMeta)
+          return;
         }
 
         const leaders = Object.values(session.process).filter(p => p.key === p.pgid);
         
         // compute leading processes
-        state.processes = leaders.map(({ key: pid, src }) => ({
-          pid,
-          src,
-        }));
+        state.processes = leaders.reduce((agg, { key: pid, src, status }) => {
+          agg[pid] = { pid, src, status };
+          return agg;
+        }, /** @type {ProcessLeader[]} */ ([]));
         
         // listen for leading process status
         state.disconnectSession = session.ttyShell.io.handleWriters(msg => 
@@ -64,9 +67,16 @@ export default function PsList() {
       }
     },
     disconnectSession: null,
-    handleLeaderMessage(msg) {
-      // 🚧
-      // console.log(msg);
+    handleLeaderMessage(msg) {// 🚧
+      console.log(msg);
+      switch (msg.act) {
+        case 'ended':
+          if (msg.pid in state.processes) {
+            state.processes[msg.pid].status = ProcessStatus.Killed;
+            update();
+          }
+          break;
+      }
     },
     onChangeSessionKey(e) {
       const { value } = e.currentTarget;
@@ -121,21 +131,29 @@ export default function PsList() {
         )}
       </div>
       
-      {sessionsExist && <div className="process-leaders">
-        {state.processes.map(p =>
-          <div className="process-leader" key={p.pid}>
-            <div className="pid">
-              {p.pid}
+      {sessionsExist && (
+        <div className="process-leaders">
+          {state.processes.map(p =>
+            <div className="process-leader" key={p.pid}>
+              <div className="pid">
+                {p.pid}
+              </div>
+              <div className="process-controls">
+                <div className="control" onClick={state.changeProcess} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
+                <div className="control" onClick={state.changeProcess} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
+                <div className="control" onClick={state.changeProcess} data-act="exit" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" color="#f99" /></div>
+              </div>
+              {p.src !== '' && (
+                <div className={cx("src", {
+                  killed: p.status === ProcessStatus.Killed,
+                })}>
+                  {p.src}
+                </div>
+              )}
             </div>
-            <div className="process-controls">
-              <div className="control" onClick={state.changeProcess} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
-              <div className="control" onClick={state.changeProcess} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
-              <div className="control" onClick={state.changeProcess} data-act="exit" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" color="#f99" /></div>
-            </div>
-            {p.src && <div className="src">{p.src}</div>}
-          </div>
-        )}
-      </div>}
+          )}
+        </div>
+      )}
 
     </div>
   );
@@ -206,15 +224,6 @@ const psListCss = css`
     .pid {
       color: #ff9;
     }
-    .src {
-      padding: 4px 8px;
-      background-color: black;
-      border: var(--separating-border);
-      font-size: small;
-      overflow-x: auto;
-      /* max-height: 100px; */
-      /* word-break: break-all; */
-    }
     .process-controls {
       display: flex;
       align-items: stretch;
@@ -229,6 +238,20 @@ const psListCss = css`
         border: 1px solid #555;
       }
     }
+
+    .src {
+      padding: 4px 8px;
+      background-color: black;
+      border: var(--separating-border);
+      font-size: small;
+      overflow-x: auto;
+      /* max-height: 100px; */
+      /* word-break: break-all; */
+    }
+    .src.killed {
+      color: #f99;
+    }
+
   }
 `;
 
@@ -250,5 +273,6 @@ const psListCss = css`
  * @typedef ProcessLeader
  * @property {number} pid
  * @property {string} src
+ * @property {ProcessStatus} status
  * // 🚧
  */

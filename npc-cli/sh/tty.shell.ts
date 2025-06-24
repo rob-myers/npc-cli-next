@@ -306,7 +306,7 @@ export class ttyShellClass implements Device {
     const leading = builtin ? opts.by === 'root' : meta.pid === meta.pgid;
 
     if (leading) {// Process leaders emit external events
-      this.io.write({ key: 'external', msg: {
+      process.src !== '' && this.io.write({ key: 'external', msg: {
         key: 'process-leader',
         pid: meta.pid,
         act: 'started',
@@ -363,7 +363,7 @@ export class ttyShellClass implements Device {
       }
 
       if (leading) {
-        this.io.write({ key: 'external', msg: {
+        process.src !== '' && this.io.write({ key: 'external', msg: {
           key: 'process-leader',
           pid: meta.pid,
           act: 'ended',
