@@ -231,6 +231,7 @@ class semanticsServiceClass {
             new Promise<void>(async (resolve, reject) => {
               try {
                 await ttyShell.spawn(file, {
+                  by: '|',
                   localVar: true, // e.g. `take 3 | true`:
                   cleanups: i === 0 && isTtyAt(file.meta, 0) ? [() => ttyShell.finishedReading()] : undefined,
                   // 🔔 despite new process group we do not overwrite ptags.interactive
@@ -575,7 +576,10 @@ class semanticsServiceClass {
         cloned.meta.fd[1] = device.key;
 
         const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
-        await ttyShell.spawn(cloned, { localVar: true });
+        await ttyShell.spawn(cloned, {
+          by: '$()',
+          localVar: true,
+        });
 
         try {
           const values = device.readAll();
@@ -751,6 +755,7 @@ class semanticsServiceClass {
 
       try {
         ttyShell.spawn(file, {
+          by: '&',
           localVar: true,
           ptags: { interactive: false },
         });  
@@ -776,7 +781,10 @@ class semanticsServiceClass {
   private async *Subshell(node: Sh.Subshell) {
     const cloned = wrapInFile(cloneParsed(node));
     const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
-    await ttyShell.spawn(cloned, { localVar: true });
+    await ttyShell.spawn(cloned, {
+      by: '()',
+      localVar: true,
+    });
   }
 
   /** Bash language variant only? */

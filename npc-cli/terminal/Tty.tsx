@@ -150,10 +150,11 @@ export default function Tty(props: Props) {
 
       Object.assign(session.etc, props.shFiles);
 
-      // only auto-rex-source files that already have been sourced
+      // only auto-re-source shell function declaration files,
+      // that have already have been sourced in this session
       await Promise.all(keys(state.reSource).map(async filename => {
         try {
-          await session.ttyShell.sourceEtcFile(filename);  
+          await session.ttyShell.sourceFuncDeclarations(filename);  
         } catch (e: any) {
           if (typeof e?.$type === 'string') {// mvdan.cc/sh/v3/syntax.ParseError
             const fileContents = props.shFiles[filename];

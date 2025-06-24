@@ -634,7 +634,10 @@ class cmdServiceClass {
 
         // We spawn a new process (unlike bash `source`); we don't localize PWD
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
-        await ttyShell.spawn(parsed, { builtin: meta.pid === 0, posPositionals: args.slice(1) });
+        await ttyShell.spawn(parsed, {
+          by: 'source',
+          posPositionals: args.slice(1),
+        });
 
         // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
         const absPath = cmdService.absPath(node.meta, filepath);
@@ -773,7 +776,10 @@ class cmdServiceClass {
     } as Sh.BaseMeta);
     try {
       // Run function in own process, yet without localized PWD
-      await ttyShell.spawn(cloned, { posPositionals: args.slice() });
+      await ttyShell.spawn(cloned, {
+        by: 'function',
+        posPositionals: args.slice(),
+      });
     } finally {
       // Propagate function exitCode to callee
       // ℹ️ Errors are usually caught earlier via `handleShError`,

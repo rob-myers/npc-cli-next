@@ -194,12 +194,20 @@ export class ttyShellClass implements Device {
     }
   }
 
-  async sourceEtcFile(filename: string) {
+  /**
+   * 🔔 We run `/etc/foo` in session leader `this.process`,
+   * even if latter is already running. This is a bit of a
+   * hack, but it should be OK if these files only contain shell
+   * function declarations.
+   * 
+   * @param filename `/etc/foo` which only contains shell function declarations
+   */
+  async sourceFuncDeclarations(filename: string) {
     const session = useSession.api.getSession(this.sessionKey);
     const src = session.etc[filename];
     const term = parseService.parse(src);
     this.provideContextToParsed(term);
-    await this.spawn(term, { internal: true });
+    await this.spawn(term, { by: 'source-external' });
   }
 
   /**
@@ -212,33 +220,39 @@ export class ttyShellClass implements Device {
     term: Sh.FileWithMeta,
     opts: {
       /**
-       * Execute inside session leader `this.process`?
-       * We expect `term.meta.pid === 0`.
+       * Spawned by:
+       * - `&` -- background operator.
+       * - `|` -- shell pipeline.
+       * - `()` -- subshell.
+       * - `$()` -- command substitution.
+       * - `function` -- shell function.
+       * - `root` -- session leader after parsed term.
+       * - `source` -- builtin `source`.
+       * - `source-external` -- non-pausable externally triggered "source".
        */
-      builtin?: boolean;
+      by: '&' | '|' | '()' | '$()' | 'function' | 'root' | 'source' | 'source-external';
       cleanups?: (() => void)[];
-      /**
-       * A non-pausable process e.g. `source /etc/util.js.sh` which only defines
-       * shell functions. These processes should not spawn others.
-       */
-      internal?: boolean;
       localVar?: boolean;
       posPositionals?: string[];
+      /** Process tags overriding those inherited from parent */
       ptags?: Record<string, any>;
-    } = {}
+    }
   ) {
     const { meta } = term;
+
+    /** A "builtin spawn" runs by re-using the session leader i.e. `this.process`. */
+    const builtin = meta.pgid === 0 && (opts.by === 'source' || opts.by === 'root');
 
     let process = this.process;
 
     if (this.profileFinished === true) {
-      if (opts.builtin === true) {
+      if (builtin === true) {
         // Only reachable by interactively specifying a command after profile has run
         // We ensure session leader has status Running
         process.status = ProcessStatus.Running;
       }
     } else {
-      if (process.status === ProcessStatus.Suspended && opts.internal !== true) {
+      if (process.status === ProcessStatus.Suspended && opts.by !== 'source-external') {
         // Only reachable if session leader paused via <Tabs> during profile
         // We halt
         await new Promise<void>((resolve, reject) => {
@@ -248,7 +262,7 @@ export class ttyShellClass implements Device {
       }
     }
 
-    if (opts.builtin !== true) {
+    if (builtin !== true) {
       // Create subprocess
       const { ppid, pgid, sessionKey } = meta;
       const session = useSession.api.getSession(sessionKey);
@@ -284,12 +298,20 @@ export class ttyShellClass implements Device {
       }
     }
 
-    if (meta.pid === meta.pgid) {// Process leaders emit external events
+    /**
+     * This spawn is leading if either:
+     * 1. `pgid === 0` and it was spawned by session leader (not `source`).
+     * 2. `pid === pgid !== 0`
+     */
+    const leading = builtin ? opts.by === 'root' : meta.pid === meta.pgid;
+
+    if (leading) {// Process leaders emit external events
       this.io.write({ key: 'external', msg: {
         key: 'process-leader',
         pid: meta.pid,
         act: 'started',
         profileRunning: this.profileFinished === false ? true : undefined,
+        // src: process.src,
       }});
 
       process.onSuspends.push(() => {
@@ -336,11 +358,11 @@ export class ttyShellClass implements Device {
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
 
-      if (opts.builtin !== true) {
+      if (builtin !== true) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       }
 
-      if (meta.pid === meta.pgid) {
+      if (leading) {
         this.io.write({ key: 'external', msg: {
           key: 'process-leader',
           pid: meta.pid,
@@ -395,7 +417,7 @@ export class ttyShellClass implements Device {
           // Run command
           this.process.src = singleLineSrc;
           this.provideContextToParsed(result.parsed);
-          await this.spawn(result.parsed, { builtin: true });
+          await this.spawn(result.parsed, { by: 'root' });
 
           this.prompt("$");
           break;

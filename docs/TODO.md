@@ -233,7 +233,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ pause, resume, kill buttons work
   - ✅ external message `process-leader` provides status
   - ✅ remove external message `interactive`
-  - process controls indicate if paused/killed
+  - 🚧 process controls indicate if paused/killed
+    - ✅ fix dup external `leading-process` e.g. (1) initial after parse, (2) inside builtin `source`
 
 - HMR strategy for running processes
   - `PsList` supports "restart" option for each leading process
