@@ -234,7 +234,7 @@ const buttonsCss = css`
   align-items: center;
 
   background-color: #000;
-  touch-action: none;
+  touch-action: pan-y;
   border-top: 1px solid #555;
 
   > .status-text {    
