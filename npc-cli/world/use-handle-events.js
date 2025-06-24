@@ -7,6 +7,7 @@ import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
 import { getTempInstanceMesh, toV3 } from "../service/three";
+import { helper } from "../service/helper";
 import useStateRef from "../hooks/use-state-ref";
 
 /**
@@ -63,7 +64,7 @@ export default function useHandleEvents(w) {
       
       state.doorToOffMesh[gdKey] = state.doorToOffMesh[gdKey].filter(x => x.npcKey !== npc.key);
       (state.npcToDoors[npc.key] ??= { inside: null, nearby: new Set() }).inside = null;
-      // w.nav.navMesh.setPolyFlags(state.npcToOffMesh[e.npcKey].offMeshRef, w.lib.navPolyFlag.walkable);
+      // w.nav.navMesh.setPolyFlags(state.npcToOffMesh[e.npcKey].offMeshRef, helper.navPolyFlag.walkable);
     },
     decodeObjectPick(r, g, b, a) {
       if (r === 1) {// wall
@@ -167,7 +168,7 @@ export default function useHandleEvents(w) {
     },
     followNpc(npcKey) {
       const npc = w.n[npcKey];
-      w.view.followPosition(npc.position, { height: w.lib.defaults.height });
+      w.view.followPosition(npc.position, { height: helper.defaults.height });
     },
     getRaycastIntersection(e, decoded) {// 🚧 move to WorldView
       /** @type {THREE.Mesh} */
@@ -242,7 +243,7 @@ export default function useHandleEvents(w) {
           break;
         }
         case "nav-updated": {
-          // const excludeDoorsFilter = w.crowd.getFilter(w.lib.queryFilterType.excludeDoors);
+          // const excludeDoorsFilter = w.crowd.getFilter(helper.queryFilterType.excludeDoors);
           // excludeDoorsFilter.includeFlags = 2 ** 1; // walkable only, not unwalkable
           break;
         }
@@ -440,7 +441,7 @@ export default function useHandleEvents(w) {
     async lookAt(input, lookAtOpts = {}) {
       if (typeof input === 'string') {// npcKey
         input = w.n[input].position;
-        lookAtOpts.height = w.lib.defaults.height;
+        lookAtOpts.height = helper.defaults.height;
       }
       await w.view.lookAt(toV3(input), lookAtOpts);
     },
@@ -531,7 +532,7 @@ export default function useHandleEvents(w) {
         adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
       }
 
-      w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.srcGrKey) });
+      w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(e.offMesh.srcGrKey) });
     },
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
@@ -557,7 +558,7 @@ export default function useHandleEvents(w) {
       }
       
       if (offMesh.orig.dstRoomMeta.small === true) {// small room
-        const { gmId, roomId } = w.lib.getGmRoomId(offMesh.orig.dstGrKey);
+        const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);
 
         for (const otherNpcKey of state.roomToNpcs[gmId][roomId] ?? []) {
           const { position } = w.n[otherNpcKey];
@@ -607,7 +608,7 @@ export default function useHandleEvents(w) {
         }
       }
 
-      w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...w.lib.getGmRoomId(e.offMesh.dstGrKey) });
+      w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...helper.getGmRoomId(e.offMesh.dstGrKey) });
     },
     onPointerUpMenuDesktop(e) {
       if (e.rmb && e.distancePx <= 5) {
@@ -753,7 +754,7 @@ export default function useHandleEvents(w) {
     },
     testOffMeshDisjoint(offMesh1, offMesh2) {
       // 🚧 handle diagonal doors
-      const npcRadius = w.lib.defaults.radius;
+      const npcRadius = helper.defaults.radius;
       const rect1 = tmpRect1.setFromPoints(offMesh1.src, offMesh1.dst).outset(npcRadius);
       const rect2 = tmpRect2.setFromPoints(offMesh2.src, offMesh2.dst).outset(npcRadius);
       return rect1.intersects(rect2) === false;

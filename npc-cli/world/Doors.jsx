@@ -7,6 +7,7 @@ import { doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDept
 import * as glsl from "../service/glsl";
 import { getBoxGeometry, getColor, getQuadGeometryXY } from "../service/three";
 import { geomorph } from "../service/geomorph";
+import { helper } from "../service/helper";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 
@@ -141,7 +142,7 @@ export default function Doors(props) {
         doorId < gm.doors.length ? true : (doorId -= gm.doors.length, false)
       ));
       const { meta } = w.gms[gmId].doors[doorId];
-      return { ...w.lib.getGmDoorId(gmId, doorId), ...meta, instanceId };
+      return { ...helper.getGmDoorId(gmId, doorId), ...meta, instanceId };
     },
     getAdjRoomByDir(gdKey, direction) {// 🚧 unused
       const { door } = state.byKey[gdKey];

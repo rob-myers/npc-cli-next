@@ -235,6 +235,12 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ remove external message `interactive`
   - process controls indicate if paused/killed
 
+- HMR strategy for running processes
+  - `PsList` supports "restart" option for each leading process
+  - tag processes so `PsList` can "maintain process order" (not by pid)
+  - `Tty` can send HMR-delta message (which modules got reloaded)
+  - leave auto-reload for future work (richer UI)
+
 - ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
   - `sleep` not initially triggered if starts paused
 
@@ -281,15 +287,17 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - 🚧 semantics.service
   - 🚧 io
   
-- `game.move` programmatically interruptible by JavaScript
+- ✅ `game.move` programmatically interruptible by JavaScript
   - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`
-  - could `for await of` and invoke all "later" cleanups?
+  - could count cleanups before and e.g. `api.killPartial(count)`
+  - could `npc.api.stopMoving()` and catch error
 
 - ✅ manually paused interactive process should not be resumed on `<Tty>` pause/resume
   - add ptags.always on `<TtyMenu>` STOP
 
-- fix code-linking e.g. starting from `game.move` doesn't work
+- ✅ fix code-linking e.g. starting from `game.move` doesn't work
   - try importing instead
+  - ✅ remove `w.lib` i.e. always import instead
 
 - BUG: Logger: fix links
 

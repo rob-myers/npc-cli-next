@@ -79,7 +79,7 @@ export default function WorldWorkers() {
       } else {
         w.events.next({ key: isEnter === true ? 'enter-collider' : 'exit-collider', npcKey,
           ...type === 'nearby' 
-            ? { type, ...w.lib.getGmDoorId(subKey) }
+            ? { type, ...helper.getGmDoorId(subKey) }
             : { type, decorKey: subKey }
         });
       }

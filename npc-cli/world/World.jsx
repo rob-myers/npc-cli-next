@@ -94,8 +94,6 @@ export default function World(props) {
     bubble: /** @type {*} */ (null), // NpcSpeechBubbles
     cm: /** @type {*} */ (null),
 
-    lib,
-
     e: /** @type {*} */ (null), // useHandleEvents
     n: {}, // w.npc.npc
     a: {}, // w.npc.byAgId
@@ -144,7 +142,7 @@ export default function World(props) {
         state.texAux.updateIndex(Number(indexStr), new Float32Array(buffer));
       }
     },
-  }), { reset: { lib: false, texFloor: false, texCeil: false } });
+  }), { reset: { texFloor: false, texCeil: false } });
 
   state.disabled = !!props.disabled;
 
@@ -327,7 +325,6 @@ export default function World(props) {
 
   React.useEffect(() => {// cache world, sync lib
     setCached([props.worldKey], state);
-    Object.assign(state.lib, lib); // preserve reference
     return () => removeCached([props.worldKey]);
   }, []);
 
@@ -434,7 +431,6 @@ export default function World(props) {
  * @property {import("./NpcSpeechBubbles").State} bubble
  * Npc speech bubbles
  * @property {import('./Debug').State} debug
- * @property {StateUtil & import("../service/helper").Helper} lib
  *
  * @property {import("./use-handle-events").State} e
  * Events state i.e. useHandleEvents state
@@ -479,10 +475,3 @@ export default function World(props) {
  * @property {typeof geom} geom
  * @property {typeof Vect['isVectJson']} isVectJson
  */
-
-const lib = {
-  deltaAngle,
-  geom,
-  isVectJson: Vect.isVectJson,
-  ...helper,
-};

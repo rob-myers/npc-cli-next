@@ -33,7 +33,7 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
  * ```
  * @param {NPC.RunArg} ctxt
  */
-export async function* click({ api, args, w, w: { lib } }) {
+export async function* click({ api, args, w }) {
   let { opts, operands } = api.getOpts(args, {
     boolean: [
       "left",     // left clicks only

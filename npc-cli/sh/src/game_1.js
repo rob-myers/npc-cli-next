@@ -1,3 +1,8 @@
+import { deltaAngle } from "maath/misc";
+import { geom } from '@/npc-cli/service/geom';
+import { helper } from "@/npc-cli/service/helper";
+import { move } from "./game";
+
 /**
  * @param {NPC.RunArg} ctxt
  */
@@ -7,18 +12,18 @@ export const changeAngleOnKeyDown = ({ w }) => {
 
     // if (key === 'w') {
     //   return await w.view.tween({
-    //     polar: Math.abs(w.lib.deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0
+    //     polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0
     //   });
     // }
     
-    const angle = w.lib.geom.radRange(w.view.controls.getAzimuthalAngle());
+    const angle = geom.radRange(w.view.controls.getAzimuthalAngle());
     const delta = Math.PI * 0.5;
     const ratio = angle / delta; // [0..4)
     switch (key) {
       case "w": {
         await w.view.tween({
           azimuthal: Math.round(ratio) * delta,
-          polar: Math.abs(w.lib.deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0,
+          polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0,
         });
         break;
       }
@@ -131,7 +136,7 @@ export async function* selectPolysDemo({ w }) {
   );
   console.log({ polyRefs });
 
-  const { navPolyFlag } = w.lib;
+  const { navPolyFlag } = helper;
   polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
   w.debug.selectNavPolys(...polyRefs); // display via debug
 }
@@ -217,7 +222,7 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
     if (nei.dist <= (other.s.run === true ? 0.8 : 0.6)) {
       // turn towards "closest neighbour" if they have a target
       npc.s.lookAngleDst = npc.api.getEulerAngle(
-        w.lib.geom.clockwiseFromNorth((
+        geom.clockwiseFromNorth((
           other.position.z - npc.position.z),
           (other.position.x - npc.position.x)
         )
@@ -239,9 +244,9 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const { api, lib } = ct;
+  const { api } = ct;
   for (const to of opts.to) {// relax arrival dist
-    await lib.game.move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+    await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
     await api.sleep(opts.pauseMs ?? 0.8);
   }
 }
@@ -252,7 +257,7 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const { api, lib, w } = ct;
+  const { api, w } = ct;
   const npc = w.npc.getOrThrow(opts.npcKey);
 
   let prevRadius = 0;
@@ -263,7 +268,7 @@ export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })
 
   try {
     for (const to of opts.to) {
-      await lib.game.move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
     }
   } finally {
     handlers.dispose();

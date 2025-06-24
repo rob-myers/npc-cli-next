@@ -212,6 +212,7 @@ const psListCss = css`
       border: var(--separating-border);
       font-size: small;
       overflow-x: auto;
+      /* max-height: 100px; */
       /* word-break: break-all; */
     }
     .process-controls {

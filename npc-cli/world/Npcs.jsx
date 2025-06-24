@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
+import { Vect } from "../geom";
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
 import { entries, isDevelopment, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
@@ -40,7 +41,7 @@ export default function Npcs(props) {
         npc.agent = npc.w.crowd.addAgent(npc.position, {
           ...crowdAgentParams,
           maxSpeed: npc.s.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
-          queryFilterType: npc.w.lib.queryFilterType.respectUnwalkable,
+          queryFilterType: helper.queryFilterType.respectUnwalkable,
         });
         npc.agentAnim = npc.w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
 
@@ -72,7 +73,7 @@ export default function Npcs(props) {
       const { success, point: closest } = w.crowd.navMeshQuery.findClosestPoint(p, {
         // 🔔 ~ (2 * maxDelta) * (2 * smallHalfExtent) * (2 * maxDelta) search space
         halfExtents: { x: maxDelta, y: smallHalfExtent, z: maxDelta },
-        filter: w.crowd.getFilter(w.lib.queryFilterType.respectUnwalkable),
+        filter: w.crowd.getFilter(helper.queryFilterType.respectUnwalkable),
       });
 
       if (success === true && p.distanceTo(closest) <= maxDelta) {
@@ -236,7 +237,7 @@ export default function Npcs(props) {
         return;
       }
 
-      if (!w.lib.isVectJson(doMeta.doPoint)) {
+      if (!Vect.isVectJson(doMeta.doPoint)) {
         throw Error(`doMeta.doPoint must exist: ${JSON.stringify(doMeta)}`);
       }
 
@@ -320,7 +321,7 @@ export default function Npcs(props) {
         throw Error(`opts.at must be a valid point`);
       }
 
-      if (w.lib.isVectJson(opts.look) === true) {
+      if (Vect.isVectJson(opts.look) === true) {
         opts.look = toXZ(opts.look);
         opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
       }
@@ -331,7 +332,7 @@ export default function Npcs(props) {
 
       if (dstNav === false && meta.do !== true) {
         throw Error(`must spawn on navPoly or do point: ${JSON.stringify(at)}`);
-      } else if (opts.classKey !== undefined && !w.lib.isNpcClassKey(opts.classKey)) {
+      } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
       

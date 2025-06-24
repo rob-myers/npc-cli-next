@@ -280,10 +280,10 @@ export class GmGraphClass extends BaseGraph {
   getOtherGmRoomId(door, roomId) {
     if (door.hull === false) {
       const otherRoomId = door.door.roomIds.find(x => x !== roomId) ?? null;
-      return otherRoomId === null ? null : this.w.lib.getGmRoomId(door.gmId, otherRoomId);
+      return otherRoomId === null ? null : helper.getGmRoomId(door.gmId, otherRoomId);
     } else {
       const adj = this.getAdjacentRoomCtxt(door.gmId, door.doorId);
-      return adj === null ? null : this.w.lib.getGmRoomId(adj.adjGmId, adj.adjRoomId);
+      return adj === null ? null : helper.getGmRoomId(adj.adjGmId, adj.adjRoomId);
     }
   }
 

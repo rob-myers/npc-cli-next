@@ -808,7 +808,7 @@ export class NpcApi {
    * @param {number} [ms]
    */
   async look(input, ms = 300) {
-    if (this.w.lib.isVectJson(input) === true) {
+    if (Vect.isVectJson(input) === true) {
       input = this.getLookAngle(input);
     }
     if (!Number.isFinite(input)) {
@@ -863,7 +863,7 @@ export class NpcApi {
       // slowDownRadius: helper.defaults.radius, // 🚧
       collisionQueryRange: movingCollisionQueryRange,
       // separationWeight: movingSeparationWeight,
-      queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
+      queryFilterType: helper.queryFilterType.respectUnwalkable,
     });
 
     this.base.lastStart.copy(this.base.position);
@@ -1353,7 +1353,7 @@ export class NpcApi {
       radius: helper.defaults.radius,
       collisionQueryRange: staticCollisionQueryRange,
       // separationWeight: staticSeparationWeight,
-      // queryFilterType: this.w.lib.queryFilterType.respectUnwalkable,
+      // queryFilterType: helper.queryFilterType.respectUnwalkable,
       // updateFlags: 1,
     });
     
