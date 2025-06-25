@@ -24,10 +24,10 @@ export default function PsList() {
 
     changeProcess(e) {
       const pid = Number(e.currentTarget.dataset.pid);
-      const act = /** @type {'pause' | 'resume' | 'exit'} */ (e.currentTarget.dataset.act);
+      const act = /** @type {'pause' | 'resume' | 'kill'} */ (e.currentTarget.dataset.act);
       // console.log({act,pid});
       switch (act) {
-        case 'exit':
+        case 'kill':
           if (pid === 0) {
             useSession.api.killSessionLeader(state.sessionKey);
           } else {
@@ -71,14 +71,24 @@ export default function PsList() {
       }
     },
     disconnectSession: null,
-    handleLeaderMessage(msg) {// 🚧
-      console.log(msg);
+    handleLeaderMessage(msg) {
+      // console.log(msg);
+      const process = state.processes[msg.pid];
+      if (!process) {
+        return;
+      }
       switch (msg.act) {
         case 'ended':
-          if (msg.pid in state.processes) {
-            state.processes[msg.pid].status = ProcessStatus.Killed;
-            update();
-          }
+          process.status = ProcessStatus.Killed;
+          update();
+          break;
+        case 'paused':
+          process.status = ProcessStatus.Suspended;
+          update();
+          break;
+        case 'resumed':
+          process.status = ProcessStatus.Running;
+          update();
           break;
       }
     },
@@ -145,19 +155,23 @@ export default function PsList() {
       {sessionsExist && (
         <div className="process-leaders">
           {state.processes.map(p =>
-            <div className="process-leader" key={p.pid}>
+            <div
+              key={p.pid}
+              className={cx(
+                "process-leader",
+                p.status === ProcessStatus.Suspended ? 'paused' : p.status === ProcessStatus.Running ? 'running' : 'killed'
+              )}
+            >
               <div className="pid">
                 {p.pid}
               </div>
               <div className="process-controls">
-                <div className="control" onClick={state.changeProcess} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
-                <div className="control" onClick={state.changeProcess} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
-                <div className="control" onClick={state.changeProcess} data-act="exit" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" color="#f99" /></div>
+                <div className="control" onClick={p.status !== ProcessStatus.Suspended ? state.changeProcess : undefined} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
+                <div className="control" onClick={p.status !== ProcessStatus.Running ? state.changeProcess : undefined} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
+                <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act="kill" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" /></div>
               </div>
               {p.src !== '' && (
-                <div className={cx("src", {
-                  killed: p.status === ProcessStatus.Killed,
-                })}>
+                <div className="src">
                   {p.src}
                 </div>
               )}
@@ -172,6 +186,8 @@ export default function PsList() {
 
 const psListCss = css`
   --separating-border: 1px solid rgba(80, 80, 80, 1);
+  --disabled-color: #888;
+  --disabled-border-color: #555;
 
   color: white;
   min-height: 50px;
@@ -241,13 +257,17 @@ const psListCss = css`
       gap: 4px;
       color: #fff;
 
-      > .control {
+      .control {
         display: flex;
         align-items: center;
         padding: 2px 8px;
         cursor: pointer;
-        border: 1px solid #555;
+        border: 1px solid #999;
       }
+
+    }
+    .control[data-act="kill"] svg {
+      color: #faa;
     }
 
     .src {
@@ -259,9 +279,43 @@ const psListCss = css`
       /* max-height: 100px; */
       /* word-break: break-all; */
     }
-    .src.killed {
-      color: #f99;
+
+    &.running {
+      .control[data-act="resume"] {
+        border-color: var(--disabled-border-color);
+        cursor: auto;
+        svg {
+          color: var(--disabled-color);
+        }
+      }
+      .src {
+        color: #0f0;
+      }
     }
+    &.paused {
+      .control[data-act="pause"] {
+        border-color: var(--disabled-border-color);
+        cursor: auto;
+        svg {
+          color: var(--disabled-color);
+        }
+      }
+      .src {
+        color: #ccc;
+      }
+    }
+    &.killed {
+      .control {
+        border-color: var(--disabled-border-color);
+        cursor: auto;
+        svg {
+          color: var(--disabled-color);
+        }
+      }
+      .src {
+        color: #f99;
+      }
+    }  
 
   }
 `;

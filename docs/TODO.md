@@ -224,7 +224,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ❌ xterm.onScroll
   - ℹ️ decided against e.g. small scroll area
 
-- 🚧 `PsList`: pause/resume/killable process list
+- ✅ `PsList`: pause/resume/killable process list
   - ✅ rename `Debug` -> `PsList`
   - ✅ `Manage` shows `PsList`
   - ✅ lists process leaders
@@ -236,9 +236,12 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ process controls indicate if killed
     - ✅ fix dup external `leading-process` e.g. (1) initial after parse, (2) inside builtin `source`
   - ✅ fix unhandled kill in console
-  - 🚧 process controls indicate if paused
+  - ✅ process controls indicate if paused
 
-- remove on/no/x buttons from `ps`
+- tag processes so `PsList` can "maintain process order" (not by pid)
+- consider keeping recently killed processes
+
+- 🚧 remove on/no/x buttons from `ps`
   - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
   - ℹ️ maybe keep "replace line" code for future use cases
   - show "on/no" but cannot be changed
@@ -249,7 +252,6 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - `ps` uses these values 
 
 - HMR strategy for running processes
-  - tag processes so `PsList` can "maintain process order" (not by pid)
   - `PsList` supports "restart" option for each leading process
   - `Tty` can send HMR-delta message (which modules got reloaded)
   - leave auto-reload for future work (richer UI)
