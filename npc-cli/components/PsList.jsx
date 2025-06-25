@@ -80,17 +80,21 @@ export default function PsList() {
       switch (msg.act) {
         case 'ended':
           process.status = ProcessStatus.Killed;
-          update();
           break;
         case 'paused':
           process.status = ProcessStatus.Suspended;
-          update();
           break;
         case 'resumed':
           process.status = ProcessStatus.Running;
-          update();
           break;
+        case 'started': {
+          process.status = ProcessStatus.Running;
+          const session = useSession.api.getSession(state.sessionKey);
+          process.src = session.process[msg.pid]?.src ?? process.src;
+          break;
+        }
       }
+      update();
     },
     onChangeSessionKey(e) {
       const { value } = e.currentTarget;
