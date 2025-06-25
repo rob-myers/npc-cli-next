@@ -442,7 +442,9 @@ export type State = {
     getVar: <T = any>(meta: BaseMeta, varName: string) => T;
     getVarDeep: (meta: BaseMeta, varPath: string) => any | undefined;
     getSession: (sessionKey: string) => Session;
+    /** Kill, suspend, resume or decorate with ptags */
     kill(sessionKey: string, pids: number[], opts: KillOpts): void;
+    /** Kill, suspend, resume or decorate with ptags */
     killProcesses(processes: ProcessMeta[], opts: KillOpts): void;
     killSessionLeader(sessionKey: string): void;
     onTtyLink: (opts: {

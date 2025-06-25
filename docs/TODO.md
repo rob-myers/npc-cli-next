@@ -238,6 +238,9 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ fix unhandled kill in console
   - ✅ process controls indicate if paused
 
+- ✅ BUG: `kill {pid}` 
+  - pass opts.SIGNT true by default if not stopping or resuming
+
 - 🚧 remove on/no/x buttons from `ps`
   - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
   - ℹ️ maybe keep "replace line" code for future use cases

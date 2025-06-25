@@ -282,6 +282,12 @@ class cmdServiceClass {
           ],
         });
 
+        /**
+         * Actually kill (SIGINT) if we're not stopping or resuming.
+         * We don't support setting ptags from the command line.
+         */
+        const SIGINT = opts.STOP === false && opts.CONT === false;
+
         let pids = [] as number[];
 
         if (opts.all === true || opts.ALL === true) {
@@ -293,7 +299,11 @@ class cmdServiceClass {
           );
         }
 
-        useSession.api.kill(meta.sessionKey, pids, { STOP: opts.STOP, CONT: opts.CONT });
+        useSession.api.kill(meta.sessionKey, pids, {
+          CONT: opts.CONT,
+          STOP: opts.STOP,
+          SIGINT,
+        });
         break;
       }
       case "local": {// 🔔 see DeclClause
