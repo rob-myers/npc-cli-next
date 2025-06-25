@@ -254,8 +254,10 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - 🚧 move ptags.always into sh/* i.e. not from `<Tty>`
   - ✅ use `ProcessTag.always`
   - ✅ use `ProcessTag.interactive`
-  - `ttyShell.bgSuspendUnless` -> `ttyShell.suspendNonInteractive`
-  - useSession.api.kill supports `STOP_BY_PTAGS`, `CONT_BY_PTAGS`
+  - ✅ `ttyShell.bgSuspendUnless` -> `ttyShell.suspendNonInteractive`
+  - 🚧 `useSession.api.kill` supports boolean `opts.byPtags`
+    - currently we just pass it through
+    - additionally we want to use it to select the processes
 
 - tag processes so `PsList` can "maintain process order" (not by pid)
 - consider keeping recently killed processes

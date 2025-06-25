@@ -573,6 +573,11 @@ interface KillOpts {
   STOP?: boolean;
   CONT?: boolean;
   SIGINT?: boolean;
+  /**
+   * - For `api.killProcesses` this is just passed to suspend callbacks.
+   * - 🚧 For `api.kill` this selects the processes to be killed, i.e. those
+   *   lacking the process tag `ProcessTag.always`
+   */
   byPtags?: boolean;
   group?: boolean;
   ptags?: Record<string, any>;

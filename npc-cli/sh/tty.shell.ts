@@ -13,8 +13,8 @@ import { ttyXtermClass } from "./tty.xterm";
 export class ttyShellClass implements Device {
   public key: string;
   public xterm!: ttyXtermClass;
-  /** Suspend background processes unless has this ptag */
-  public bgSuspendUnless = null as null | string;
+  /** Suspend processes without process tag 'interactive'? */
+  public suspendNonInteractive = false;
 
   /** Lines received from a TtyXterm. */
   private inputs = [] as { line: string; resolve: () => void }[];
@@ -292,14 +292,13 @@ export class ttyShellClass implements Device {
         });
       }
 
-      // 🚧 clean
-      if (
-        !(ProcessTag.interactive in process.ptags)
-        && this.bgSuspendUnless !== null
-        && !(this.bgSuspendUnless in process.ptags)
+      if (// Represent <Tabs> disabled
+        this.suspendNonInteractive === true
+        // processes not tagged with 'always' are paused,
+        // except those which are tagged interactive
+        && !(ProcessTag.always in process.ptags)
+        && !(ProcessTag.interactive in process.ptags)
       ) {
-        // If `bgSuspendUnless` non-null, suspend spawned background processes without this ptag.
-        // This permits us to represent <Tabs> disabled.
         process.status = ProcessStatus.Suspended;
       }
 
