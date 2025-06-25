@@ -170,7 +170,9 @@ export default function Manage(props) {
             </button>
           </li>
         })}
-      
+      </ul>
+
+      <ul className="tabs-and-create">
         <li data-tab-class={helper.toTabClassMeta.World.key}>
           <span className="title-container">
             <span className="title">Create</span>
@@ -286,7 +288,7 @@ const manageCss = css`
   .tabs-and-create {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    /* gap: 8px; */
     font-size: small;
     
     .title-container {
@@ -345,13 +347,15 @@ const manageCss = css`
       align-items: stretch;
       gap: 8px;
     }
-
+    .tab-id {
+      color: white;
+      /* text-decoration: underline; */
+    }
     .tab-create-def {
       display: flex;
       padding-left: 12px;
       gap: 4px;
     }
-
     .tab-class {
       display: flex;
       gap: 6px;
@@ -360,6 +364,7 @@ const manageCss = css`
       font-family: 'Courier New', Courier, monospace;
       font-size: medium;
       font-weight: 500;
+      color: white;
     }
   }
 
