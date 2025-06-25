@@ -238,9 +238,19 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - 🚧 process controls indicate if paused
   - fix unhandled kill in console
 
+- remove on/no/x buttons from `ps`
+  - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
+  - ℹ️ maybe keep "replace line" code for future use cases
+  - show "on/no" but cannot be changed
+  - remove kill button
+  - ❌ maybe include button linking to PsList
+  - ptags.interactive is `'i'` or does not exist
+  - ptags.always is `'a'` or does not exist
+  - `ps` uses these values 
+
 - HMR strategy for running processes
-  - `PsList` supports "restart" option for each leading process
   - tag processes so `PsList` can "maintain process order" (not by pid)
+  - `PsList` supports "restart" option for each leading process
   - `Tty` can send HMR-delta message (which modules got reloaded)
   - leave auto-reload for future work (richer UI)
 
@@ -318,12 +328,6 @@ expr window.document.querySelector'("section")' | log
 
 - can `w e.say` at different heights, to avoid collisions (e.g. when sitting next to each other)
 
-- remove on/no/x buttons from `ps`
-  - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
-  - ℹ️ maybe keep "replace line" code for future use cases
-  - show "on/no" but cannot be changed
-  - remove kill button
-  - ❌ maybe include button linking to PsList
 
 - `ptags=always` -> `PTAGS=always`
 
