@@ -396,7 +396,7 @@ class cmdServiceClass {
 
         function getProcessLine(p: ProcessMeta) {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
-          const tagsOrEmpty = Object.keys(p.ptags).length > 0 ? `${ansi.BrightYellow}${opts.s ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
+          const tagsOrEmpty = Object.keys(p.ptags).length > 0 ? `${ansi.BrightYellow}${opts.s === true ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
           const oneLineSrcOrEmpty = !opts.s ? truncateOneLine(p.src.trimStart(), 30) : '';
           const line = `${statusColour[p.status]}${info}${ansi.Reset}${tagsOrEmpty}${oneLineSrcOrEmpty}`;
           return line;
@@ -573,7 +573,6 @@ class cmdServiceClass {
         // Note pid will be overwritten in `ttyShell.spawn`
         Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
 
-        // We spawn a new process (unlike bash `source`); we don't localize PWD
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
         await ttyShell.spawn(parsed, {
           by: 'source',

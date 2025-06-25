@@ -1,6 +1,6 @@
 import { uid } from "uid";
 
-import { ansi } from "./const";
+import { ansi, ProcessTag } from "./const";
 import type * as Sh from "./parse";
 import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags } from "../service/generic";
 import { parseJsArg } from "../service/generic";
@@ -574,6 +574,7 @@ class semanticsServiceClass {
         const device = useSession.api.createFifo(fifoKey);
         const cloned = wrapInFile(cloneParsed(node));
         cloned.meta.fd[1] = device.key;
+        cloned.meta.ppid = cloned.meta.pid;
 
         const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
         await ttyShell.spawn(cloned, {
@@ -754,7 +755,7 @@ class semanticsServiceClass {
       ttyShell.spawn(file, {
         by: '&',
         localVar: true,
-        ptags: { interactive: false },
+        ptags: { [ProcessTag.interactive]: undefined }, // delete process tag
       }).catch((e) => {
         if (e instanceof ProcessError) {
           this.handleTopLevelProcessError(e);
@@ -778,6 +779,8 @@ class semanticsServiceClass {
 
   private async *Subshell(node: Sh.Subshell) {
     const cloned = wrapInFile(cloneParsed(node));
+    cloned.meta.ppid = cloned.meta.pid;
+
     const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
     await ttyShell.spawn(cloned, {
       by: '()',

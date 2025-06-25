@@ -126,11 +126,11 @@ export default function Tty(props: Props) {
     },
     resumeRunningProcesses() {
       const { session } = state.base;
-      const interactive = session.ttyShell.isInteractive()
+      const interactiveSession = session.ttyShell.isInteractive()
 
       const processes = Object.values(session.process).filter(p =>
         !(ProcessTag.always in p.ptags) && (p.pgid === 0
-          ? interactive === false
+          ? interactiveSession === false
           : p.status === ProcessStatus.Suspended)
       );
 

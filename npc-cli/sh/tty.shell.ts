@@ -3,7 +3,7 @@ import { error, testNever, warn } from "../service/generic";
 import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
-import { ansi } from "./const";
+import { ansi, ProcessTag } from "./const";
 import { killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { ProcessMeta, ProcessStatus } from "./session.store";
@@ -36,7 +36,7 @@ export class ttyShellClass implements Device {
    * Pipes don't overwrite, despite having their own process group.
    */
   private get sessionLeaderPtags() {
-    return { interactive: true };
+    return { [ProcessTag.interactive]: true }; // 🚧 value should be e.g. 'i'
   }
 
   constructor(
@@ -75,8 +75,11 @@ export class ttyShellClass implements Device {
   }
 
   /**
-   * The shell is interactive iff the profile has run and the prompt is ready.
+   * The shell is "interactive" iff the profile has run and the prompt is ready.
    * This should happen exactly when the leading process is NOT running.
+   * 
+   * We also tag processes with `ProcessTag.interactive`,
+   * where the session leader is always tagged.
    */
   isInteractive() {
     return this.profileFinished === true && this.xterm.isPromptReady() === true;
@@ -273,15 +276,25 @@ export class ttyShellClass implements Device {
         sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || parent.positionals.slice(1),
-        ptags: { ...parent.ptags, ...opts.ptags },
+        ptags: { ...parent.ptags },
       });
       meta.pid = process.key;
-      opts.cleanups !== undefined && process.cleanups.push(...opts.cleanups);
+
+      if (opts.cleanups !== undefined) {
+        process.cleanups.push(...opts.cleanups);
+      }
+      if (opts.ptags !== undefined) {
+        Object.entries(opts.ptags).forEach(([k, v]) => {
+          // A process "has" tag `key` iff `key in process.ptags`.
+          // If its value is a string we'll use it as "short preview".
+          if (v === undefined) delete process.ptags[k];
+          else process.ptags[k] = v;
+        });
+      }
 
       // 🚧 clean
       if (
-        process.pgid !== 0
-        && !process.ptags.interactive
+        !(ProcessTag.interactive in process.ptags)
         && this.bgSuspendUnless !== null
         && !(this.bgSuspendUnless in process.ptags)
       ) {
