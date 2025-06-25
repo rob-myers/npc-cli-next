@@ -4,8 +4,8 @@ import cx from "classnames";
 import { tryLocalStorageGet, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { localStorageKey, zIndexTabs } from "../service/const";
 import { isTouchDevice } from "../service/dom";
+import { ProcessTag } from "../sh/const";
 import type { Session } from "../sh/session.store";
-import { noPausePtag } from "./Tty";
 import useSession from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -24,7 +24,11 @@ export default function TtyMenu(props: Props) {
           break;
         case 'STOP':
           // on manual STOP interactive process, add ptags.always i.e. now independent of <Tty> pause/resume
-          useSession.api.kill(props.session.key, [0], { STOP: true, group: true, ptags: { [noPausePtag]: true } });
+          useSession.api.kill(props.session.key, [0], {
+            STOP: true,
+            group: true,
+            ptags: { [ProcessTag.always]: true }, // 🚧 value should be preview e.g. 'a'
+          });
           break;
       }
     },

@@ -244,9 +244,15 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ show "on/no" but cannot be changed
   - ✅ remove kill button
   - ❌ maybe include button linking to PsList
-  - ptags.interactive is `'i'` or does not exist
-  - ptags.always is `'a'` or does not exist
-  - `ps` uses these values 
+  - 🚧 ptags.interactive is `'i'` or does not exist
+  - 🚧 ptags.always is `'a'` or does not exist
+  - 🚧 `ps` uses these values 
+
+- 🚧 move ptags.always into sh/* i.e. not from `<Tty>`
+  - ✅ use `ProcessTag.always`
+  - use `ProcessTag.interactive`
+  - remove `ttyShell.bgSuspendUnless`
+  - useSession.api.kill supports `STOP_BY_PTAGS`, `CONT_BY_PTAGS`
 
 - tag processes so `PsList` can "maintain process order" (not by pid)
 - consider keeping recently killed processes

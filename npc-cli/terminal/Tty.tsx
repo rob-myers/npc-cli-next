@@ -5,6 +5,7 @@ import debounce from 'debounce';
 
 import { error, jsStringify, keys, testNever, warn } from '../service/generic';
 import { isTouchDevice } from '../service/dom';
+import { ProcessTag } from '../sh/const';
 import type { Session } from "../sh/session.store";
 import type { BaseTabProps } from '../tabs/tab-factory';
 import type { ExternalMessage } from '../sh/io';
@@ -89,7 +90,7 @@ export default function Tty(props: Props) {
       const { session } = state.base;
 
       const processes = Object.values(session.process ?? {}).filter(p => (
-        p.status === ProcessStatus.Running && !(noPausePtag in p.ptags)
+        p.status === ProcessStatus.Running && !(ProcessTag.always in p.ptags)
       ));
 
       useSession.api.killProcesses(processes, { STOP: true, byPtags: true });
@@ -128,7 +129,7 @@ export default function Tty(props: Props) {
       const interactive = session.ttyShell.isInteractive()
 
       const processes = Object.values(session.process).filter(p =>
-        !(noPausePtag in p.ptags) && (p.pgid === 0
+        !(ProcessTag.always in p.ptags) && (p.pgid === 0
           ? interactive === false
           : p.status === ProcessStatus.Suspended)
       );
@@ -186,7 +187,7 @@ export default function Tty(props: Props) {
     }
 
     // if disabled, suspend spawned bg processes unless 'always' in ptags
-    session.ttyShell.bgSuspendUnless = !!props.disabled ? noPausePtag : null;
+    session.ttyShell.bgSuspendUnless = !!props.disabled ? ProcessTag.always : null;
     // avoid initial pause when props.disabled true
     const somethingSpawned = session.nextPid > 1;
 
@@ -314,5 +315,3 @@ const rootCss = css`
   height: 100%;
   padding: 4px;
 `;
-
-export const noPausePtag = 'always';
