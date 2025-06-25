@@ -36,3 +36,8 @@ export const ProcessTag = {
   /** Interactive processes e.g. a non-background pipeline spawned from shell */
   interactive: 'interactive',
 } as const;
+
+export const ProcessTagPreview = {
+  always: 'a',
+  interactive: 'i',
+} as const;

@@ -36,7 +36,7 @@ export class ttyShellClass implements Device {
    * Pipes don't overwrite, despite having their own process group.
    */
   private get sessionLeaderPtags() {
-    return { [ProcessTag.interactive]: true }; // 🚧 value should be e.g. 'i'
+    return { [ProcessTag.interactive]: true };
   }
 
   constructor(

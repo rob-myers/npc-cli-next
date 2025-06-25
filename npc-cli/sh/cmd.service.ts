@@ -1,7 +1,7 @@
 import cliColumns from "cli-columns";
 import { uid } from "uid";
 
-import { ansi, EOF } from "./const";
+import { ansi, EOF, ProcessTagPreview } from "./const";
 import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
@@ -396,7 +396,8 @@ class cmdServiceClass {
 
         function getProcessLine(p: ProcessMeta) {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
-          const tagsOrEmpty = Object.keys(p.ptags).length > 0 ? `${ansi.BrightYellow}${opts.s === true ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
+          const ptagPreviews = opts.s === true ? [] : Object.keys(p.ptags).map(key => (ProcessTagPreview as any)[key] ?? key[0]);
+          const tagsOrEmpty = `${ansi.BrightYellow}${opts.s === true ? jsStringify(p.ptags) : `${ptagPreviews.join('')}${ptagPreviews.length > 0 ? ' ' : ''}`}${ansi.Reset}`;
           const oneLineSrcOrEmpty = opts.s === false ? truncateOneLine(p.src.trimStart(), 30) : '';
           const oneLineSrcColour = p.status === ProcessStatus.Suspended ? statusColour[p.status] : '';
           const line = `${statusColour[p.status]}${info}${ansi.Reset}${tagsOrEmpty}${oneLineSrcColour}${oneLineSrcOrEmpty}`;

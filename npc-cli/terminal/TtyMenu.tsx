@@ -27,7 +27,7 @@ export default function TtyMenu(props: Props) {
           useSession.api.kill(props.session.key, [0], {
             STOP: true,
             group: true,
-            ptags: { [ProcessTag.always]: true }, // 🚧 value should be preview e.g. 'a'
+            ptags: { [ProcessTag.always]: true },
           });
           break;
       }
