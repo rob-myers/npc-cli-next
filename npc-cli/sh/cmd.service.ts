@@ -368,104 +368,35 @@ class cmdServiceClass {
           ],
         });
 
-        const allProcesses = useSession.api.getSession(meta.sessionKey).process;
-
         /** Either all processes, or all group leaders */
-        const processes = opts.a === true
-          ? allProcesses
-          : Object.values(allProcesses).reduce(
-              (agg, proc) => (proc.key === proc.pgid && (agg[proc.key] = proc), agg),
-              {} as typeof allProcesses,
-            )
-        ;
+        let processes = useSession.api.getSession(meta.sessionKey).process;
+
+        if (opts.a === false) {
+          processes = Object.values(processes).reduce((agg, p) => {
+            if (p.key === p.pgid) agg[p.key] = p;
+            return agg;
+          }, {} as Session['process']);
+        }
 
         const statusColour: Record<ProcessStatus, string> = {
           0: ansi.DarkGrey,
           1: ansi.White,
           2: ansi.Red,
         };
-        const statusLinks: Record<ProcessStatus, string> = {
-          0: `${formatLink(`${statusColour[0]} no `)} ${formatLink(`${statusColour[2]} x `)}`,
-          1: `${formatLink(`${statusColour[1]} on `)} ${formatLink(`${statusColour[2]} x `)}`,
-          2: "",
-        };
 
-        function getProcessDescendants(leader: ProcessMeta) {// 🚧 better way?
-          const lookup = { [leader.key]: true };
-          Object.values(useSession.api.getSession(meta.sessionKey).process).forEach((other) => {
-            if (other.ppid in lookup) lookup[other.key] = true;
-          });
-          return Object.keys(lookup).slice(1).filter((pid) => processes[pid]);
-        }
-
-        function shouldSuppressLinks(process: ProcessMeta) {
-          return (
-            process.status === ProcessStatus.Killed ||
-            process.key === 0 || // suppress links when leader has descendant leader
-            (!opts.a && !opts.s && getProcessDescendants(process).length > 0)
-          );
-        }
-
-        function getProcessLineWithLinks(p: ProcessMeta) {
+        function getProcessLine(p: ProcessMeta) {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
-          const hasLinks = !shouldSuppressLinks(p);
-          const linksOrEmpty = hasLinks ? `${statusLinks[p.status]} ` : '';
           const tagsOrEmpty = Object.keys(p.ptags).length > 0 ? `${ansi.BrightYellow}${opts.s ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
           const oneLineSrcOrEmpty = !opts.s ? truncateOneLine(p.src.trimStart(), 30) : '';
-          const line = `${statusColour[p.status]}${info}${ansi.Reset}${linksOrEmpty}${tagsOrEmpty}${oneLineSrcOrEmpty}`;
-          if (hasLinks === true) registerStatusLinks(p, line);
+          const line = `${statusColour[p.status]}${info}${ansi.Reset}${tagsOrEmpty}${oneLineSrcOrEmpty}`;
           return line;
-        }
-
-        function registerStatusLinks(process: ProcessMeta, processLine: string) {
-          const lineText = stripAnsi(processLine);
-
-          async function updateLine(lineNumber: number) {
-            useSession.api.removeTtyLineCtxts(meta.sessionKey, lineText);
-            const { xterm: ttyXterm } = useSession.api.getSession(meta.sessionKey).ttyShell;
-            lineNumber = ttyXterm.getWrapStartLineNumber(lineNumber);
-            await ttyXterm.replaceLine(lineNumber, getProcessLineWithLinks(process));
-          }
-
-          useSession.api.addTtyLineCtxts(meta.sessionKey, lineText, [
-            {
-              lineText,
-              linkText: "on",
-              linkStartIndex: lineText.indexOf("on") - 1,
-              callback(lineNumber) {
-                useSession.api.kill(meta.sessionKey, [process.key], { STOP: true });
-                updateLine(lineNumber);
-              },
-              async refresh(lineNumber) {
-                await updateLine(lineNumber);
-              },
-            },
-            {
-              lineText,
-              linkText: "no",
-              linkStartIndex: lineText.indexOf("no") - 1,
-              callback(lineNumber) {
-                useSession.api.kill(meta.sessionKey, [process.key], { CONT: true });
-                updateLine(lineNumber);
-              },
-            },
-            {
-              lineText,
-              linkText: "x",
-              linkStartIndex: lineText.indexOf("x") - 1,
-              async callback(lineNumber) {
-                useSession.api.kill(meta.sessionKey, [process.key], { SIGINT: true });
-                updateLine(lineNumber);
-              },
-            },
-          ]);
         }
 
         const title = ["pid", "ppid", "pgid"].map((x) => x.padEnd(5)).join(" ");
         yield `${ansi.Blue}${title}${ansi.Reset}`;
 
         for (const process of Object.values(processes)) {
-          yield getProcessLineWithLinks(process);
+          yield getProcessLine(process);
           if (opts.s === true) {// Avoid multiline white in tty
             yield* process.src.split("\n").map((x) => `${ansi.Reset}${x}`);
           }
