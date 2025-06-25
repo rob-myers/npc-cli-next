@@ -190,8 +190,7 @@ export default function PsList() {
 
 const psListCss = css`
   --separating-border: 1px solid rgba(80, 80, 80, 1);
-  --disabled-color: #888;
-  --disabled-border-color: #555;
+  --disabled-color: #777;
 
   color: white;
   min-height: 50px;
@@ -266,7 +265,7 @@ const psListCss = css`
         align-items: center;
         padding: 2px 8px;
         cursor: pointer;
-        border: 1px solid #999;
+        border: 1px solid #555;
       }
 
     }
@@ -286,7 +285,6 @@ const psListCss = css`
 
     &.running {
       .control[data-act="resume"] {
-        border-color: var(--disabled-border-color);
         cursor: auto;
         svg {
           color: var(--disabled-color);
@@ -298,7 +296,6 @@ const psListCss = css`
     }
     &.paused {
       .control[data-act="pause"] {
-        border-color: var(--disabled-border-color);
         cursor: auto;
         svg {
           color: var(--disabled-color);
@@ -310,7 +307,6 @@ const psListCss = css`
     }
     &.killed {
       .control {
-        border-color: var(--disabled-border-color);
         cursor: auto;
         svg {
           color: var(--disabled-color);
