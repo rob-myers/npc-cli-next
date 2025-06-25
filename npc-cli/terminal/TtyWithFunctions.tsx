@@ -15,7 +15,7 @@ import Tty, { type Props as TtyProps } from "./Tty";
  * Using a separate file permits hot-module reloading,
  * without triggering the terminal's various useEffects.
  * 
- * We remount onchange profileKey.
+ * We remount `<Tty>` onchange profileKey.
  */
 export default function TtyWithFunctions(props: Props) {
   return (

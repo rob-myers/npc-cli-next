@@ -288,7 +288,7 @@ const useStore = createWithEqualityFn<State>()(initializer);
 
 export type State = {
   tabset: TabsetLayouts;
-  tabsMeta: { [tabId: Key.TabId]: TabMeta };
+  tabsMeta: { [tabId: Key.TabId]: TabStoreTabMeta };
 
   api: {
     /**
@@ -319,19 +319,20 @@ export type State = {
     testMutateLayout(): void; // 🚧 temp
     tryRestoreLayout(layout: TabsetLayout): TabsetLayout;
     /** Track non-layout properties e.g. disabled */
-    updateTabMeta(tabMeta: Partial<TabMeta> & { key: Key.TabId }): void;
+    updateTabMeta(tabMeta: Partial<TabStoreTabMeta> & { key: Key.TabId }): void;
   };
 };
 
-interface TabMeta {
+export interface TabStoreTabMeta {
   key: Key.TabId;
-  disabled: boolean;
+  disabled?: boolean;
+
   /**
    * TTY tab only: last recorded value of home.WORLD_KEY,
    * either via `awaitWorld` or clicking it in `Manage`.
    */
   ttyWorldKey?: Key.TabId;
-  // ...
+  ttyBootedAt?: number;
 }
 
 const useTabs = Object.assign(useStore, { api: useStore.getState().api });

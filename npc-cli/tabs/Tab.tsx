@@ -3,6 +3,7 @@ import React from "react";
 import { TABS_API_KEY } from "../service/const";
 import type { TabState, State as TabsApi } from "./Tabs";
 import { TabDef, getComponent, Terminal, BaseTabProps } from "./tab-factory";
+import useTabs from "./tabs.store";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
 
@@ -40,6 +41,7 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
       React.createElement(state.component as unknown as React.FunctionComponent<BaseTabProps>, {
         disabled: tabState.disabled,
         setTabsEnabled: state.setTabsEnabled,
+        updateTabMeta: useTabs.api.updateTabMeta,
         ...def.props,
       }) || null;
   }
@@ -56,6 +58,7 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
         profileKey={def.profileKey}
         sessionKey={def.filepath}
         setTabsEnabled={state.setTabsEnabled}
+        updateTabMeta={useTabs.api.updateTabMeta}
       />
     );
   }

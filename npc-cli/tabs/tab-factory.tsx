@@ -4,6 +4,7 @@ import type { IJsonRowNode, IJsonTabNode, TabNode } from "flexlayout-react";
 
 import type ActualTerminal from "../terminal/TtyWithFunctions";
 import type { State as TabsApi } from "./Tabs";
+import { type TabStoreTabMeta } from "./tabs.store";
 import { TabMemo } from "./Tab";
 import { CentredSpinner } from "../components/Spinner";
 
@@ -92,7 +93,7 @@ type TabMetaPropsDistributed<K extends ComponentClassKey> = K extends infer A
 
 type TabMetaPropsGeneric<K extends ComponentClassKey> = {
   class: K;
-  props: Omit<ComponentClassKeyToProps[K], 'setTabsEnabled'>;
+  props: Omit<ComponentClassKeyToProps[K], 'setTabsEnabled' | 'updateTabMeta'>;
 };
 
 type ComponentClassKeyToProps = {
@@ -114,6 +115,12 @@ export interface BaseTabProps {
    * - onclick a link (Tty)
    */
   setTabsEnabled(next: boolean): void;
+  /**
+   * Components can update their meta in tabs.store.
+   * For example, Tty can update ttyBootedAt to distinguish
+   * hot-reloaded sessions.
+   */
+  updateTabMeta(meta: TabStoreTabMeta): void;
 }
 
 function FallbackComponentFactory(componentKey: string) {

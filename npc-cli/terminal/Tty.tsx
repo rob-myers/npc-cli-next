@@ -255,6 +255,12 @@ export default function Tty(props: Props) {
       xterm.initialise();
       state.booted = true;
       
+      // distinguish this instance of sessionKey from hot reloads
+      props.updateTabMeta({
+        key: /** @type {Key.TabId} */ (props.sessionKey),
+        ttyBootedAt: Date.now(),
+      });
+
       session.ttyShell.initialise(xterm).then(async () => {
         await state.storeAndSourceFuncs();
         update();

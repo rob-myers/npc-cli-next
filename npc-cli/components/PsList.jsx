@@ -1,5 +1,6 @@
 import React from "react";
 import cx from "classnames";
+import { shallow } from "zustand/shallow";
 import { css } from "@emotion/react";
 import { error } from "../service/generic";
 import useStateRef from "../hooks/use-state-ref";
@@ -10,14 +11,16 @@ import { faRefresh, faPause, faPlay, faClose, FontAwesomeIcon } from "./Icon";
 
 export default function PsList() {
 
-  const sessionKeys = useTabs(({ tabsMeta }) =>
-    Object.keys(tabsMeta).filter(x => x.startsWith('tty-'))
+  const ttyTabMetas = useTabs(({ tabsMeta }) =>
+    Object.values(tabsMeta).filter(x => x.key.startsWith('tty-')),
+    shallow,
   );
 
   const state = useStateRef(/** @returns {State} */ () => ({
     processes: [],
     sessionKey: '',
     sessionSelect: null,
+    ttyTabMeta: null,
 
     changeProcess(e) {
       const pid = Number(e.currentTarget.dataset.pid);
@@ -43,17 +46,14 @@ export default function PsList() {
     connectSession() {
       try {
         state.disconnectSession?.();
-
         const session = useSession.api.getSession(state.sessionKey);
-        if (session === undefined) {
-          // - sessionKey could be empty string
-          // - 🚧 initially session may not be ready (despite tabs.tabsMeta)
+        if (session === undefined) {// sessionKey could be empty string
+          state.processes = [];
           return;
         }
 
         const leaders = Object.values(session.process).filter(p => p.key === p.pgid);
         
-        // compute leading processes
         state.processes = leaders.reduce((agg, { key: pid, src, status }) => {
           agg[pid] = { pid, src, status };
           return agg;
@@ -85,29 +85,36 @@ export default function PsList() {
     onChangeSessionKey(e) {
       const { value } = e.currentTarget;
       state.sessionKey = value;
+      state.ttyTabMeta = ttyTabMetas[ttyTabMetas.findIndex(x => x.key === state.sessionKey)];
       update();
     },
     refreshProcessLeaders() {
       state.connectSession();
       update();
     },
-  }));
+  }), { deps: [ttyTabMetas] });
 
   const update = useUpdate();
 
+  // 🚧 cleaner approach to syncing state.ttyTabMeta
   React.useEffect(() => {
-    if (sessionKeys.length === 0) {
+    const sessionKeys = /** @type {string[]} */ (ttyTabMetas.map(x => x.key));
+    if (ttyTabMetas.length === 0) {
       state.sessionKey = '';
+      state.ttyTabMeta = null;
     } else if (!sessionKeys.includes(state.sessionKey)) {
       state.sessionKey = state.sessionSelect?.value ?? sessionKeys[0];
+      state.ttyTabMeta = ttyTabMetas[ttyTabMetas.findIndex(x => x.key === state.sessionKey)];
+    } else {// Must sync
+      state.ttyTabMeta = ttyTabMetas[ttyTabMetas.findIndex(x => x.key === state.sessionKey)];
     }
-  }, [sessionKeys.length]);
+  }, [ttyTabMetas]);
   
-  React.useEffect(() => {
+  React.useEffect(() => {// sync onchange session or hmr session
     state.refreshProcessLeaders();
-  }, [state.sessionKey])
+  }, [state.ttyTabMeta?.ttyBootedAt])
 
-  const sessionsExist = sessionKeys.length > 0;
+  const sessionsExist = ttyTabMetas.length > 0;
 
   return (
     <div css={psListCss}>
@@ -121,7 +128,7 @@ export default function PsList() {
               onChange={state.onChangeSessionKey}
               title="sessionKey"
             >
-              {sessionKeys.map(x => <option key={x} value={x}>{x}</option>)}
+              {ttyTabMetas.map(({ key }) => <option key={key} value={key}>{key}</option>)}
             </select>
             <button
               className="refresh"
@@ -264,6 +271,7 @@ const psListCss = css`
  * @property {ProcessLeader[]} processes
  * @property {string} sessionKey
  * @property {null | HTMLSelectElement} sessionSelect
+ * @property {null | import("../tabs/tabs.store").TabStoreTabMeta} ttyTabMeta
  *
  * @property {(e: React.PointerEvent<HTMLDivElement>) => void} changeProcess
  * @property {() => void} connectSession

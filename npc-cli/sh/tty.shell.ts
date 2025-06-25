@@ -278,6 +278,7 @@ export class ttyShellClass implements Device {
       meta.pid = process.key;
       opts.cleanups !== undefined && process.cleanups.push(...opts.cleanups);
 
+      // 🚧 clean
       if (
         process.pgid !== 0
         && !process.ptags.interactive
