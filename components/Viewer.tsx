@@ -60,8 +60,7 @@ export default function Viewer() {
        * `['foo', 'bar']`
        */
       const parts = parsedUrl.pathname.split('/').slice(2);
-      
-      console.log({ internalApiPath, parts, opts });
+      // console.log({ internalApiPath, parts, opts });
 
       switch (parts[0]) {
         case 'change-tab': {// props only, not tty env (useSession instead)
