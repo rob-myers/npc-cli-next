@@ -793,11 +793,11 @@ export class NpcApi {
     this.base.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
-  isNearTarget() {
+  isNearTarget(nearDistance = nearTargetDistance) {
     const { lastTarget, position } = this.base;
     return (
-      Math.abs(lastTarget.x - position.x) < nearTargetDistance
-      && Math.abs(lastTarget.z - position.z) < nearTargetDistance
+      Math.abs(lastTarget.x - position.x) < nearDistance
+      && Math.abs(lastTarget.z - position.z) < nearDistance
     );
   }
 
