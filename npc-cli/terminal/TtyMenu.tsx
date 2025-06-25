@@ -43,7 +43,7 @@ export default function TtyMenu(props: Props) {
         next && state.xterm.warnIfNotReady();
         update();
       } else if (target.classList.contains("ctrl-c")) {
-        state.xterm.sendSigKill();
+        useSession.api.killSessionLeader(props.session.key);
       } else if (target.classList.contains("enter")) {
         if (!state.xterm.warnIfNotReady()) {
           // avoid sending 'newline' whilst 'await-prompt'

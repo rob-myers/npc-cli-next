@@ -25,7 +25,11 @@ export default function PsList() {
       // console.log({act,pid});
       switch (act) {
         case 'exit':
-          useSession.api.kill(state.sessionKey, [pid], { group: true, SIGINT: true });
+          if (pid === 0) {
+            useSession.api.killSessionLeader(state.sessionKey);
+          } else {
+            useSession.api.kill(state.sessionKey, [pid], { group: true, SIGINT: true });
+          }
           break;
         case 'pause':
           useSession.api.kill(state.sessionKey, [pid], { group: true, STOP: true });

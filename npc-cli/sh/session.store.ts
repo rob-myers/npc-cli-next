@@ -162,21 +162,21 @@ const useStore = create<State>()((set, get): State => ({
     },
 
     kill(sessionKey, pids, opts) {
-      const session = useSession.api.getSession(sessionKey);
+      const { process } = api.getSession(sessionKey);
 
       for (const pid of pids) {
-        const { [pid]: process } = session.process;
-        if (!process) {
-          continue; // Already killed
+        const p = process[pid];
+        if (!p) {// Already killed
+          continue;
         }
   
-        const processes = process.pgid === pid || opts.group === true
-          // Apply command to whole process group (in reverse)
-          ? useSession.api.getProcesses(sessionKey, process.pgid).reverse()
-          : [process] // Apply command to exactly one process
+        const processes = p.pgid === pid || opts.group === true
+          // Apply command to whole process group in reverse
+          ? useSession.api.getProcesses(sessionKey, p.pgid).reverse()
+          : [p] // Apply command to exactly one process
         ;
   
-        useSession.api.killProcesses(processes, opts);
+        api.killProcesses(processes, opts);
       }
     },
 
@@ -201,6 +201,11 @@ const useStore = create<State>()((set, get): State => ({
       if (opts.ptags !== undefined) {
         processes.forEach(p => Object.assign(p.ptags, opts.ptags));
       }
+    },
+
+    killSessionLeader(sessionKey) {
+      const { ttyShell } = api.getSession(sessionKey);
+      ttyShell.xterm.sendSigKill();
     },
 
     onTtyLink(opts) {
@@ -439,6 +444,7 @@ export type State = {
     getSession: (sessionKey: string) => Session;
     kill(sessionKey: string, pids: number[], opts: KillOpts): void;
     killProcesses(processes: ProcessMeta[], opts: KillOpts): void;
+    killSessionLeader(sessionKey: string): void;
     onTtyLink: (opts: {
       sessionKey: string;
       lineText: string;

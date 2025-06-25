@@ -221,14 +221,14 @@ export class ttyShellClass implements Device {
     opts: {
       /**
        * Spawned by:
-       * - `&` -- background operator.
-       * - `|` -- shell pipeline.
-       * - `()` -- subshell.
-       * - `$()` -- command substitution.
-       * - `function` -- shell function.
-       * - `root` -- session leader after parsed term.
-       * - `source` -- builtin `source`.
-       * - `source-external` -- non-pausable externally triggered "source".
+       * - `&` -- running a background operator.
+       * - `|` -- running a shell pipeline.
+       * - `()` -- running a subshell.
+       * - `$()` -- running a command substitution.
+       * - `function` -- invoking shell function.
+       * - `root` -- the session leader right after parsing shell code.
+       * - `source` -- the builtin `source` in cmd.service.
+       * - `source-external` -- a non-pausable externally triggered "source".
        */
       by: '&' | '|' | '()' | '$()' | 'function' | 'root' | 'source' | 'source-external';
       cleanups?: (() => void)[];
@@ -370,7 +370,7 @@ export class ttyShellClass implements Device {
           profileRunning: this.profileFinished === false ? true : undefined,
         }});
 
-        // must clear in case of leading process (we reuse it)
+        // must clear in case of leading process (reused)
         process.cleanups.length = 0;
         process.onResumes.length = 0;
         process.onSuspends.length = 0;
