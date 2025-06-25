@@ -235,8 +235,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ remove external message `interactive`
   - ✅ process controls indicate if killed
     - ✅ fix dup external `leading-process` e.g. (1) initial after parse, (2) inside builtin `source`
+  - ✅ fix unhandled kill in console
   - 🚧 process controls indicate if paused
-  - fix unhandled kill in console
 
 - remove on/no/x buttons from `ps`
   - ℹ️ instead we'll manage processes using `PsList` inside `Manage`

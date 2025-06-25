@@ -741,35 +741,33 @@ class semanticsServiceClass {
 
   private async *Stmt(stmt: Sh.Stmt) {
     if (stmt.Cmd === null) {
-      throw new ShError("pure redirects are unsupported", 2);
+      throw new ShError("pure redirects unsupported", 2);
     } else if (stmt.Background === true && stmt.meta.pgid === 0) {
-      /**
-       * Run a background process without awaiting.
-       */
       const { ttyShell, nextPid } = useSession.api.getSession(stmt.meta.sessionKey);
       const file = wrapInFile(cloneParsed(stmt), {
         ppid: stmt.meta.pid,
         pgid: nextPid,
         background: true,
       });
-
-      try {
-        ttyShell.spawn(file, {
-          by: '&',
-          localVar: true,
-          ptags: { interactive: false },
-        });  
-      } catch (e) {
+      
+      // Run a background process without awaiting
+      ttyShell.spawn(file, {
+        by: '&',
+        localVar: true,
+        ptags: { interactive: false },
+      }).catch((e) => {
         if (e instanceof ProcessError) {
           this.handleTopLevelProcessError(e);
         } else {
           ttyError("background process error", e);
         }
-      }
-      stmt.exitCode = stmt.Negated ? 1 : 0;
+      });
+      
+      // e.g. `! { sleep 10 & }` has immediate exit code 1
+      stmt.exitCode = stmt.Negated === true ? 1 : 0;
+
     } else {
-      try {
-        // Run a simple or compound command
+      try {// Run a simple or compound command
         yield* sem.Command(stmt.Cmd, stmt.Redirs);
       } finally {
         stmt.exitCode = stmt.Cmd.exitCode;
