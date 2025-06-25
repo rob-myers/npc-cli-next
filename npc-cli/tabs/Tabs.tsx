@@ -229,6 +229,9 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         delete state.tabsState[tabId];
       }
     }
+    
+    // Restrict tab meta to extant tabs
+    useTabs.api.cleanTabMeta();
 
     return output;
   }, [tabsDefChanged, state.resets, props.updates]);
