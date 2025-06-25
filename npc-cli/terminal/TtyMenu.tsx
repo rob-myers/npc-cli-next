@@ -180,6 +180,7 @@ const menuCss = css`
       background: rgba(0, 0, 0, 0.5);
     }
   }
+
   &:not(.open) {
     transform: translate(var(--menu-width), 0px);
   }
@@ -228,6 +229,9 @@ const menuCss = css`
     scrollbar-width: thin;
     scrollbar-color: white black;
     border-left: 1px solid #444;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+    border-radius: 0 0 8px 8px;
   }
 
   .icon {

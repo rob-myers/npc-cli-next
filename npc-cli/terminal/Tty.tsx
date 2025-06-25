@@ -61,17 +61,16 @@ export default function Tty(props: Props) {
           break;
         }
         case 'process-leader': {
-          if (msg.pid !== 0 || msg.profileRunning === true) {
-            break;
+          if (msg.pid === 0) {
+            if (msg.act === 'started' || msg.act == 'resumed') {
+              state.canContOrStop = 'STOP';
+            } else if (msg.act === 'paused') {
+              state.canContOrStop = 'CONT';
+            } else if (msg.act === 'ended') {
+              state.canContOrStop = null;
+            }
+            update();
           }
-          if (msg.act === 'started' || msg.act == 'resumed') {
-            state.canContOrStop = 'STOP';
-          } else if (msg.act === 'paused') {
-            state.canContOrStop = 'CONT';
-          } else if (msg.act === 'ended') {
-            state.canContOrStop = null;
-          }
-          update();
           break;
         }
         default:
@@ -86,11 +85,11 @@ export default function Tty(props: Props) {
         state.inputOnFocus = undefined;
       }
     },
-    pauseRunningProcesses() {
+    pauseByPtags() {
       useSession.api.kill(props.sessionKey, [], { byPtags: true, STOP: true });
       
       const { session } = state.base;
-      if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
+      if (!session.ttyShell.isInteractive()) {
         state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
       } else {
         state.canContOrStop = null;
@@ -117,11 +116,11 @@ export default function Tty(props: Props) {
         state.fitDebounced();
       }
     },
-    resumeRunningProcesses() {
+    resumeByPtags() {
       useSession.api.kill(props.sessionKey, [], { byPtags: true, CONT: true });
       
       const { session } = state.base;
-      if (!session.ttyShell.isInteractive() && session.ttyShell.isProfileFinished()) {
+      if (!session.ttyShell.isInteractive()) {
         state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
       } else {
         state.canContOrStop = null;
@@ -176,9 +175,9 @@ export default function Tty(props: Props) {
 
     if (props.disabled === true) {
       if (somethingSpawned === true) {
-        state.pauseRunningProcesses();
+        state.pauseByPtags();
       }
-      return () => state.base?.session && state.resumeRunningProcesses();
+      return () => state.base?.session && state.resumeByPtags();
     }
   }, [props.disabled, state.base.session])
 

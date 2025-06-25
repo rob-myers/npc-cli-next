@@ -262,7 +262,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
     - ✅ additionally select the processes
     - ✅ cleanup `<Tty>`
 
-- can resume profile after pause `<Tty>`
+- ✅ can resume profile after pause `<Tty>`
 - tag processes so `PsList` can "maintain process order" (not by pid)
 - consider keeping recently killed processes
 
