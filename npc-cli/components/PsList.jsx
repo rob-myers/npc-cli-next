@@ -2,6 +2,8 @@ import React from "react";
 import cx from "classnames";
 import { shallow } from "zustand/shallow";
 import { css } from "@emotion/react";
+import debounce from "debounce";
+
 import { error } from "../service/generic";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -15,6 +17,8 @@ export default function PsList() {
     Object.values(tabsMeta).filter(x => x.key.startsWith('tty-')),
     shallow,
   );
+
+  const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
     processes: [],
@@ -70,6 +74,7 @@ export default function PsList() {
         error(e);
       }
     },
+    debouncedUpdate: debounce(update, 200, { immediate: true }),
     disconnectSession: null,
     handleLeaderMessage(msg) {
       // console.log(msg);
@@ -78,23 +83,27 @@ export default function PsList() {
         return;
       }
       switch (msg.act) {
-        case 'ended':
+        case 'ended': {
           process.status = ProcessStatus.Killed;
+          msg.pid === 0 ? state.debouncedUpdate() : update();
           break;
+        }
         case 'paused':
           process.status = ProcessStatus.Suspended;
+          update();
           break;
         case 'resumed':
           process.status = ProcessStatus.Running;
+          update();
           break;
         case 'started': {
           process.status = ProcessStatus.Running;
           const session = useSession.api.getSession(state.sessionKey);
           process.src = session.process[msg.pid]?.src ?? process.src;
+          msg.pid === 0 ? state.debouncedUpdate() : update();
           break;
         }
       }
-      update();
     },
     onChangeSessionKey(e) {
       const { value } = e.currentTarget;
@@ -107,8 +116,6 @@ export default function PsList() {
       update();
     },
   }), { deps: [ttyTabMetas] });
-
-  const update = useUpdate();
 
   // 🚧 cleaner approach to syncing state.ttyTabMeta
   React.useEffect(() => {
@@ -329,6 +336,7 @@ const psListCss = css`
  *
  * @property {(e: React.PointerEvent<HTMLDivElement>) => void} changeProcess
  * @property {() => void} connectSession
+ * @property {debounce.DebouncedFunction<() => void>} debouncedUpdate
  * @property {null | (() => void)} disconnectSession
  * @property {(msg: import("../sh/io").ExternalMessageProcessLeader) => void} handleLeaderMessage
  * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onChangeSessionKey
@@ -340,5 +348,4 @@ const psListCss = css`
  * @property {number} pid
  * @property {string} src
  * @property {ProcessStatus} status
- * // 🚧
  */
