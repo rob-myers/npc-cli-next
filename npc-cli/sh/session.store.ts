@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { ansi } from "./const";
+import { ansi, ProcessTag } from "./const";
 import { addToLookup, deepClone, jsStringify, KeyedLookup, pause, removeFromLookup, tryLocalStorageGet, tryLocalStorageSet, warn } from "../service/generic";
 import { computeNormalizedParts, formatMessage, killProcess, resolveNormalized, ShError, ttyError } from "./util";
 import type { BaseMeta, FileWithMeta, NamedFunction } from "./parse";
@@ -162,17 +162,36 @@ const useStore = create<State>()((set, get): State => ({
     },
 
     kill(sessionKey, pids, opts) {
-      const { process } = api.getSession(sessionKey);
+      const session = api.getSession(sessionKey);
+
+      if (opts.byPtags === true) {
+        if (opts.STOP === true) {
+          const processes = Object.values(session.process).filter(p => 
+            p.status === ProcessStatus.Running
+              && !(ProcessTag.always in p.ptags)
+          );
+          return api.killProcesses(processes, opts);
+        }
+
+        if (opts.CONT === true) {
+          const interactive = session.ttyShell.isInteractive()
+          const processes = Object.values(session.process).filter(p => 
+            (p.pgid === 0 ? interactive === false : p.status === ProcessStatus.Suspended)
+              && !(ProcessTag.always in p.ptags)
+          );
+          return api.killProcesses(processes, opts);
+        }
+      }
 
       for (const pid of pids) {
-        const p = process[pid];
+        const p = session.process[pid];
         if (!p) {// Already killed
           continue;
         }
   
         const processes = p.pgid === pid || opts.group === true
           // Apply command to whole process group in reverse
-          ? useSession.api.getProcesses(sessionKey, p.pgid).reverse()
+          ? api.getProcesses(sessionKey, p.pgid).reverse()
           : [p] // Apply command to exactly one process
         ;
   
@@ -575,7 +594,7 @@ interface KillOpts {
   SIGINT?: boolean;
   /**
    * - For `api.killProcesses` this is just passed to suspend callbacks.
-   * - 🚧 For `api.kill` this selects the processes to be killed, i.e. those
+   * - For `api.kill` this selects the processes to be killed, i.e. those
    *   lacking the process tag `ProcessTag.always`
    */
   byPtags?: boolean;

@@ -378,7 +378,7 @@ class cmdServiceClass {
           ],
         });
 
-        /** Either all processes, or all group leaders */
+        /** Either all processes or all process leaders */
         let processes = useSession.api.getSession(meta.sessionKey).process;
 
         if (opts.a === false) {
@@ -389,7 +389,7 @@ class cmdServiceClass {
         }
 
         const statusColour: Record<ProcessStatus, string> = {
-          0: ansi.DarkGrey,
+          0: `${ansi.Grey}${ansi.Italic}`,
           1: ansi.White,
           2: ansi.Red,
         };
@@ -397,8 +397,9 @@ class cmdServiceClass {
         function getProcessLine(p: ProcessMeta) {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
           const tagsOrEmpty = Object.keys(p.ptags).length > 0 ? `${ansi.BrightYellow}${opts.s === true ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
-          const oneLineSrcOrEmpty = !opts.s ? truncateOneLine(p.src.trimStart(), 30) : '';
-          const line = `${statusColour[p.status]}${info}${ansi.Reset}${tagsOrEmpty}${oneLineSrcOrEmpty}`;
+          const oneLineSrcOrEmpty = opts.s === false ? truncateOneLine(p.src.trimStart(), 30) : '';
+          const oneLineSrcColour = p.status === ProcessStatus.Suspended ? statusColour[p.status] : '';
+          const line = `${statusColour[p.status]}${info}${ansi.Reset}${tagsOrEmpty}${oneLineSrcColour}${oneLineSrcOrEmpty}`;
           return line;
         }
 
@@ -456,9 +457,11 @@ class cmdServiceClass {
         break;
       }
       /**
-       * For example:
-       * - run '({ api:{read} }) { yield "foo"; yield await read(); }'
-       * - run game move npcKey:rob to:$( click 1 )
+       * e.g.
+       * ```sh
+       * run '({ api:{read} }) { yield "foo"; yield await read(); }'
+       * run game move npcKey:rob to:$( click 1 )
+       * ```
        */
       case "run": {
         try {

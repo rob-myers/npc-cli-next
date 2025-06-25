@@ -10,6 +10,7 @@ export const ansi = {
   BrightWhite: "\x1b[97m",
   Cyan: "\x1b[96m",
   DarkGreen: "\x1b[32m",
+  Grey: "\x1b[38;5;248m",
   DarkGrey: "\x1b[90m",
   DarkGreyBg: "\x1b[100m",
   GreyBg: "\x1b[47m",
