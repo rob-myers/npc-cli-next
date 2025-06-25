@@ -9,187 +9,6 @@ import { type Device, type ShellIo, type VarDeviceMode, FifoDevice, makeShellIo,
 import { srcService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
 
-export type State = {
-  session: KeyedLookup<Session>;
-  device: KeyedLookup<Device>;
-
-  readonly api: {
-    addFunc: (sessionKey: string, funcName: string, wrappedFile: FileWithMeta) => void;
-    /** We assume `lineText` and `ctxts` have already been stripped of ansi codes. */
-    addTtyLineCtxts: (sessionKey: string, lineText: string, ctxts: TtyLinkCtxt[]) => void;
-    createSession: (sessionKey: string, env: Record<string, any>) => Session;
-    createProcess: (def: {
-      sessionKey: string;
-      ppid: number;
-      pgid: number;
-      src: string;
-      posPositionals?: string[];
-      ptags: Meta;
-    }) => ProcessMeta;
-    createFifo: (fifoKey: string, size?: number) => FifoDevice;
-    createVarDevice: (meta: BaseMeta, varPath: string, mode: VarDeviceMode) => VarDevice;
-    getFunc: (sessionKey: string, funcName: string) => NamedFunction | undefined;
-    getFuncs: (sessionKey: string) => NamedFunction[];
-    getLastExitCode: (meta: BaseMeta) => number;
-    getNextPid: (sessionKey: string) => number;
-    getProcess: (meta: BaseMeta) => ProcessMeta;
-    getProcesses: (sessionKey: string, pgid?: number) => ProcessMeta[];
-    getPositional: (pid: number, sessionKey: string, varName: number) => string;
-    getVar: <T = any>(meta: BaseMeta, varName: string) => T;
-    getVarDeep: (meta: BaseMeta, varPath: string) => any | undefined;
-    getSession: (sessionKey: string) => Session;
-    kill(sessionKey: string, pids: number[], opts: KillOpts): void;
-    killProcesses(processes: ProcessMeta[], opts: KillOpts): void;
-    onTtyLink: (opts: {
-      sessionKey: string;
-      lineText: string;
-      linkText: string;
-      linkStartIndex: number;
-      lineNumber: number;
-    }) => void;
-    persistHistory: (sessionKey: string) => void;
-    persistHome: (sessionKey: string) => void;
-    refreshTtyLinks: (sessionKey: string) => Promise<void>;
-    rehydrate: (sessionKey: string) => Rehydrated;
-    removeDevice: (deviceKey: string) => void;
-    removeProcess: (pid: number, sessionKey: string) => void;
-    removeSession: (sessionKey: string) => void;
-    /** Expect `line` to be stripped of ansi-codes. */
-    removeTtyLineCtxts: (sessionKey: string, line: string) => void;
-    resolve: (fd: number, meta: BaseMeta) => Device;
-    setLastExitCode(meta: BaseMeta, exitCode?: number): void;
-    setVar: (meta: BaseMeta, varName: string, varValue: any) => void;
-    setVarDeep: (meta: BaseMeta, varPath: string, varValue: any) => void;
-    writeMsg: (sessionKey: string, msg: string, level: "info" | "error") => void;
-    writeMsgCleanly: (
-      sessionKey: string,
-      msg: string,
-      opts?: {
-        level?: "info" | "error";
-        scrollToBottom?: boolean;
-      }
-    ) => Promise<void>;
-  };
-};
-
-export interface Session {
-  key: string;
-  process: KeyedLookup<ProcessMeta>;
-  func: KeyedLookup<NamedFunction>;
-
-  /**
-   * Currently only support one tty per session,
-   * i.e. cannot have two terminals in same session.
-   * This could be changed e.g. `ttys: { io, shell }[]`.
-   */
-  ttyIo: ShellIo<MessageFromXterm, MessageFromShell>;
-  ttyShell: ttyShellClass;
-  ttyLink: { [lineText: string]: TtyLinkCtxt[] };
-
-  etc: Record<string, any>;
-  var: {
-    [varName: string]: any;
-    PWD: string;
-    OLDPWD: string;
-    /** `processApi[key]` is `processApi.getCached(var[CACHE_SHORTCUTS[key]])` */
-    CACHE_SHORTCUTS?: { [key: string]: string };
-  };
-  jsFunc: import('../terminal/TtyWithFunctions').TtyJsModules;
-
-  nextPid: number;
-  /** Last exit code: */
-  lastExit: {
-    /** Foreground */ fg: number;
-    /** Background */ bg: number;
-  };
-  verbose: boolean;
-}
-
-interface Rehydrated {
-  history: string[] | null;
-  var: Record<string, any> | null;
-}
-
-/**
- * - `0` is suspended
- * - `1` is running
- * - `2` is killed
- */
-export enum ProcessStatus {
-  Suspended,
-  Running,
-  Killed,
-}
-
-export interface ProcessMeta {
-  /** pid */
-  key: number;
-  ppid: number;
-  pgid: number;
-  sessionKey: string;
-  /** `0` is suspended, `1` is running, `2` is killed */
-  status: ProcessStatus;
-  /** Source of code defining this process. */
-  src: string;
-  /**
-   * Executed on Ctrl-C or `kill`.
-   * May contain `() => reject(killError(meta))` ...
-   */
-  cleanups: ((SIGINT?: boolean) => void)[];
-  /**
-   * Executed on suspend, without clearing `true` returners.
-   * The latter should be idempotent, e.g. unsubscribe, pause.
-   * 
-   * - `byPtags` true iff suspended by ptags
-   * - thus can distinguish <Tty> pause from process pause
-   */
-  onSuspends: ((byPtags: boolean) => void | boolean)[];
-  /**
-   * Executed on resume, without clearing `true` returners.
-   * The latter should be idempotent, e.g. reject, resolve.
-   */
-  onResumes: (() => void | boolean)[];
-  positionals: string[];
-  /**
-   * Variables specified locally in this process.
-   * Particularly helpful for background processes and subshells,
-   * which have their own PWD and OLDPWD.
-   */
-  localVar: Record<string, any>;
-  /** Inherited local variables. */
-  inheritVar: Record<string, any>;
-  /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
-  ptags: Record<string, any>;
-}
-
-interface KillOpts {
-  STOP?: boolean;
-  CONT?: boolean;
-  SIGINT?: boolean;
-  byPtags?: boolean;
-  group?: boolean;
-  ptags?: Record<string, any>;
-}
-
-export interface TtyLinkCtxt {
-  /** Line stripped of ansi-codes. */
-  lineText: string;
-  /** Label text stripped of ansi-codes e.g. `[ foo ]` has link text `foo` */
-  linkText: string;
-  /**
-   * One character before the link text occurs,
-   * or equivalently one character after the leading square bracket.
-   */
-  linkStartIndex: number;
-  /**
-   * Callback associated with link
-   * @param callback Line we clicked on (possibly wrapped)
-   */
-  callback(lineNumber: number): void;
-  /** Can refresh link e.g. `ps` on/off */
-  refresh?(lineNumber: number): void | Promise<void>;
-}
-
 const useStore = create<State>()(
   
   (set, get): State => ({
@@ -592,6 +411,187 @@ const useStore = create<State>()(
   }),
   
 );
+
+export type State = {
+  session: KeyedLookup<Session>;
+  device: KeyedLookup<Device>;
+
+  readonly api: {
+    addFunc: (sessionKey: string, funcName: string, wrappedFile: FileWithMeta) => void;
+    /** We assume `lineText` and `ctxts` have already been stripped of ansi codes. */
+    addTtyLineCtxts: (sessionKey: string, lineText: string, ctxts: TtyLinkCtxt[]) => void;
+    createSession: (sessionKey: string, env: Record<string, any>) => Session;
+    createProcess: (def: {
+      sessionKey: string;
+      ppid: number;
+      pgid: number;
+      src: string;
+      posPositionals?: string[];
+      ptags: Meta;
+    }) => ProcessMeta;
+    createFifo: (fifoKey: string, size?: number) => FifoDevice;
+    createVarDevice: (meta: BaseMeta, varPath: string, mode: VarDeviceMode) => VarDevice;
+    getFunc: (sessionKey: string, funcName: string) => NamedFunction | undefined;
+    getFuncs: (sessionKey: string) => NamedFunction[];
+    getLastExitCode: (meta: BaseMeta) => number;
+    getNextPid: (sessionKey: string) => number;
+    getProcess: (meta: BaseMeta) => ProcessMeta;
+    getProcesses: (sessionKey: string, pgid?: number) => ProcessMeta[];
+    getPositional: (pid: number, sessionKey: string, varName: number) => string;
+    getVar: <T = any>(meta: BaseMeta, varName: string) => T;
+    getVarDeep: (meta: BaseMeta, varPath: string) => any | undefined;
+    getSession: (sessionKey: string) => Session;
+    kill(sessionKey: string, pids: number[], opts: KillOpts): void;
+    killProcesses(processes: ProcessMeta[], opts: KillOpts): void;
+    onTtyLink: (opts: {
+      sessionKey: string;
+      lineText: string;
+      linkText: string;
+      linkStartIndex: number;
+      lineNumber: number;
+    }) => void;
+    persistHistory: (sessionKey: string) => void;
+    persistHome: (sessionKey: string) => void;
+    refreshTtyLinks: (sessionKey: string) => Promise<void>;
+    rehydrate: (sessionKey: string) => Rehydrated;
+    removeDevice: (deviceKey: string) => void;
+    removeProcess: (pid: number, sessionKey: string) => void;
+    removeSession: (sessionKey: string) => void;
+    /** Expect `line` to be stripped of ansi-codes. */
+    removeTtyLineCtxts: (sessionKey: string, line: string) => void;
+    resolve: (fd: number, meta: BaseMeta) => Device;
+    setLastExitCode(meta: BaseMeta, exitCode?: number): void;
+    setVar: (meta: BaseMeta, varName: string, varValue: any) => void;
+    setVarDeep: (meta: BaseMeta, varPath: string, varValue: any) => void;
+    writeMsg: (sessionKey: string, msg: string, level: "info" | "error") => void;
+    writeMsgCleanly: (
+      sessionKey: string,
+      msg: string,
+      opts?: {
+        level?: "info" | "error";
+        scrollToBottom?: boolean;
+      }
+    ) => Promise<void>;
+  };
+};
+
+export interface Session {
+  key: string;
+  process: KeyedLookup<ProcessMeta>;
+  func: KeyedLookup<NamedFunction>;
+
+  /**
+   * Currently only support one tty per session,
+   * i.e. cannot have two terminals in same session.
+   * This could be changed e.g. `ttys: { io, shell }[]`.
+   */
+  ttyIo: ShellIo<MessageFromXterm, MessageFromShell>;
+  ttyShell: ttyShellClass;
+  ttyLink: { [lineText: string]: TtyLinkCtxt[] };
+
+  etc: Record<string, any>;
+  var: {
+    [varName: string]: any;
+    PWD: string;
+    OLDPWD: string;
+    /** `processApi[key]` is `processApi.getCached(var[CACHE_SHORTCUTS[key]])` */
+    CACHE_SHORTCUTS?: { [key: string]: string };
+  };
+  jsFunc: import('../terminal/TtyWithFunctions').TtyJsModules;
+
+  nextPid: number;
+  /** Last exit code: */
+  lastExit: {
+    /** Foreground */ fg: number;
+    /** Background */ bg: number;
+  };
+  verbose: boolean;
+}
+
+interface Rehydrated {
+  history: string[] | null;
+  var: Record<string, any> | null;
+}
+
+/**
+ * - `0` is suspended
+ * - `1` is running
+ * - `2` is killed
+ */
+export enum ProcessStatus {
+  Suspended,
+  Running,
+  Killed,
+}
+
+export interface ProcessMeta {
+  /** pid */
+  key: number;
+  ppid: number;
+  pgid: number;
+  sessionKey: string;
+  /** `0` is suspended, `1` is running, `2` is killed */
+  status: ProcessStatus;
+  /** Source of code defining this process. */
+  src: string;
+  /**
+   * Executed on Ctrl-C or `kill`.
+   * May contain `() => reject(killError(meta))` ...
+   */
+  cleanups: ((SIGINT?: boolean) => void)[];
+  /**
+   * Executed on suspend, without clearing `true` returners.
+   * The latter should be idempotent, e.g. unsubscribe, pause.
+   * 
+   * - `byPtags` true iff suspended by ptags
+   * - thus can distinguish <Tty> pause from process pause
+   */
+  onSuspends: ((byPtags: boolean) => void | boolean)[];
+  /**
+   * Executed on resume, without clearing `true` returners.
+   * The latter should be idempotent, e.g. reject, resolve.
+   */
+  onResumes: (() => void | boolean)[];
+  positionals: string[];
+  /**
+   * Variables specified locally in this process.
+   * Particularly helpful for background processes and subshells,
+   * which have their own PWD and OLDPWD.
+   */
+  localVar: Record<string, any>;
+  /** Inherited local variables. */
+  inheritVar: Record<string, any>;
+  /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
+  ptags: Record<string, any>;
+}
+
+interface KillOpts {
+  STOP?: boolean;
+  CONT?: boolean;
+  SIGINT?: boolean;
+  byPtags?: boolean;
+  group?: boolean;
+  ptags?: Record<string, any>;
+}
+
+export interface TtyLinkCtxt {
+  /** Line stripped of ansi-codes. */
+  lineText: string;
+  /** Label text stripped of ansi-codes e.g. `[ foo ]` has link text `foo` */
+  linkText: string;
+  /**
+   * One character before the link text occurs,
+   * or equivalently one character after the leading square bracket.
+   */
+  linkStartIndex: number;
+  /**
+   * Callback associated with link
+   * @param callback Line we clicked on (possibly wrapped)
+   */
+  callback(lineNumber: number): void;
+  /** Can refresh link e.g. `ps` on/off */
+  refresh?(lineNumber: number): void | Promise<void>;
+}
 
 const api = useStore.getState().api;
 const useSession = Object.assign(useStore, { api });
