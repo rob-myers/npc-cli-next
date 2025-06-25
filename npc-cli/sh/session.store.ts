@@ -9,408 +9,404 @@ import { type Device, type ShellIo, type VarDeviceMode, FifoDevice, makeShellIo,
 import { srcService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
 
-const useStore = create<State>()(
-  
-  (set, get): State => ({
-    device: {},
-    session: {},
-    //@ts-ignore
-    persist: {},
+const useStore = create<State>()((set, get): State => ({
+  device: {},
+  session: {},
+  //@ts-ignore
+  persist: {},
 
-    api: {
-      addFunc(sessionKey, funcName, file) {
-        api.getSession(sessionKey).func[funcName] = {
-          key: funcName,
-          node: file,
-          src: srcService.multilineSrc(file),
-        };
-      },
-
-      addTtyLineCtxts(sessionKey, lineText, ctxts) {
-        api.getSession(sessionKey).ttyLink[lineText] = ctxts;
-      },
-
-      createFifo(key, size) {
-        const fifo = new FifoDevice(key, size);
-        return (get().device[fifo.key] = fifo);
-      },
-
-      createProcess({ sessionKey, ppid, pgid, src, posPositionals, ptags }) {
-        const pid = get().api.getNextPid(sessionKey);
-        const processes = get().api.getSession(sessionKey).process;
-
-        return processes[pid] = {
-          key: pid,
-          ppid,
-          pgid,
-          sessionKey,
-          status: ProcessStatus.Running,
-          src,
-          positionals: ["jsh", ...(posPositionals ?? [])],
-          cleanups: [],
-          onSuspends: [],
-          onResumes: [],
-          localVar: {},
-          inheritVar: {},
-          ptags,
-        };
-      },
-
-      createSession(sessionKey, env) {
-        const persisted = api.rehydrate(sessionKey);
-        const ttyIo = makeShellIo<MessageFromXterm, MessageFromShell>();
-        const ttyShell = new ttyShellClass(sessionKey, ttyIo, persisted.history || []);
-        get().device[ttyShell.key] = ttyShell;
-        get().device["/dev/null"] = new NullDevice("/dev/null");
-        get().device["/dev/voice"] = new VoiceDevice("/dev/voice");
-
-        set(({ session }) => ({
-          session: addToLookup(
-            {
-              key: sessionKey,
-              func: {},
-              ttyIo,
-              ttyShell,
-              ttyLink: {},
-              etc: {},
-              var: {
-                PWD: "/home",
-                OLDPWD: "",
-                ...persisted.var,
-                ...deepClone(env),
-              },
-              jsFunc: {} as any,
-              nextPid: 0,
-              process: {},
-              lastExit: { fg: 0, bg: 0 },
-              verbose: false,
-            },
-            session
-          ),
-        }));
-        return get().session[sessionKey];
-      },
-
-      createVarDevice(meta, varPath, mode) {
-        const device = new VarDevice(meta, varPath, mode);
-        return (get().device[device.key] = device);
-      },
-
-      getFunc(sessionKey, funcName) {
-        return get().session[sessionKey].func[funcName] || undefined;
-      },
-
-      getFuncs(sessionKey) {
-        return Object.values(get().session[sessionKey].func);
-      },
-
-      getLastExitCode(meta) {
-        return get().session[meta.sessionKey].lastExit[meta.background ? "bg" : "fg"];
-      },
-
-      getNextPid(sessionKey) {
-        return get().session[sessionKey].nextPid++;
-      },
-
-      getPositional(pid, sessionKey, varName) {
-        return get().session[sessionKey].process[pid].positionals[varName] || "";
-      },
-
-      getProcess({ pid, sessionKey }) {
-        return get().session[sessionKey].process[pid];
-      },
-
-      getProcesses(sessionKey, pgid) {
-        const session = get().session[sessionKey];
-        if (session !== undefined) {
-          const processes = Object.values(session.process);
-          return pgid === undefined ? processes : processes.filter((x) => x.pgid === pgid);
-        } else {
-          warn(`getProcesses: session ${sessionKey} does not exist`);
-          return [];
-        }
-      },
-
-      getVar(meta, varName): any {
-        const process = api.getProcess(meta);
-        if (varName in process?.localVar) {
-          // Got locally specified variable
-          return process.localVar[varName];
-        } else if (varName in process?.inheritVar) {
-          // Got variable locally specified in ancestral process
-          return process.inheritVar[varName];
-        } else {
-          // Got top-level variable in "file-system" e.g. /home/foo
-          return get().session[meta.sessionKey].var[varName];
-        }
-      },
-
-      getVarDeep(meta, varPath) {
-        const session = get().session[meta.sessionKey];
-        /**
-         * Can deep get /home/* and /etc/*
-         * TODO support deep get of local vars?
-         */
-        const root = { home: session.var, etc: session.etc };
-        const parts = computeNormalizedParts(varPath, api.getVar(meta, "PWD") as string);
-        return Function(
-          "__",
-          `return ${JSON.stringify(parts)}.reduce((agg, x) => agg[x], __)`
-        )(root);
-      },
-
-      getSession(sessionKey) {
-        return get().session[sessionKey];
-      },
-
-      kill(sessionKey, pids, opts) {
-        const session = useSession.api.getSession(sessionKey);
-
-        for (const pid of pids) {
-          const { [pid]: process } = session.process;
-          if (!process) {
-            continue; // Already killed
-          }
-    
-          const processes = process.pgid === pid || opts.group === true
-            // Apply command to whole process group (in reverse)
-            ? useSession.api.getProcesses(sessionKey, process.pgid).reverse()
-            : [process] // Apply command to exactly one process
-          ;
-    
-          useSession.api.killProcesses(processes, opts);
-        }
-      },
-
-      killProcesses(processes, opts) {
-        if (opts.SIGINT === true) {
-          for (const p of processes) {
-            killProcess(p, opts.SIGINT);
-          }
-        } else if (opts.STOP === true) {
-          const byPtags = !!opts.byPtags;
-          for (const p of processes) {
-            p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(byPtags));
-            p.status = ProcessStatus.Suspended;
-          }
-        } else if (opts.CONT === true) {
-          for (const p of processes) {
-            p.onResumes = p.onResumes.filter((onResume) => onResume());
-            p.status = ProcessStatus.Running;
-          }
-        }
-
-        if (opts.ptags !== undefined) {
-          processes.forEach(p => Object.assign(p.ptags, opts.ptags));
-        }
-      },
-
-      onTtyLink(opts) {
-        // console.log('onTtyLink', opts,
-        //   api.getSession(opts.sessionKey).ttyLink,
-        //   api.getSession(opts.sessionKey).ttyLink[opts.lineText],
-        // );
-
-        try {
-          // 🔔 HACK: permit toggle link (e.g. on/off) without leaving link first
-          const { xterm } = api.getSession(opts.sessionKey).ttyShell.xterm;
-          const linkifier = (xterm as any)._core.linkifier;
-          // console.log(linkifier);
-          setTimeout(() => {
-            const position = linkifier._positionFromMouseEvent(
-              linkifier._lastMouseEvent,
-              linkifier._element,
-              linkifier._mouseService!
-            );
-            position && linkifier._askForLink(position, false);
-          });
-        } catch (e) {
-          console.warn("HACK: permit toggle link: failed", e);
-        }
-
-
-        api.getSession(opts.sessionKey).ttyLink[opts.lineText]?.find(
-          x => x.linkStartIndex === opts.linkStartIndex && x.linkText === opts.linkText
-        )?.callback(opts.lineNumber);
-      },
-
-      persistHistory(sessionKey) {
-        const { ttyShell } = api.getSession(sessionKey);
-
-        tryLocalStorageSet(
-          `history@session-${sessionKey}`,
-          JSON.stringify(ttyShell.getHistory())
-        );
-      },
-
-      persistHome(sessionKey) {
-        const {
-          PWD, OLDPWD, CACHE_SHORTCUTS, ...persistedVarLookup
-        } = api.getSession(sessionKey).var;
-
-        tryLocalStorageSet(
-          `var@session-${sessionKey}`,
-          jsStringify(persistedVarLookup),
-        );
-        // console.log({persistedVarLookup})
-      },
-
-      async refreshTtyLinks(sessionKey) {
-        const { ttyShell, ttyLink } = useSession.api.getSession(sessionKey);
-        const lineToNumbers = ttyShell.xterm.getLines();
-        
-        // try to refresh every instance of ttyLink line
-        for (const [lineText, ttyLineCtxts] of Object.entries(ttyLink)) {
-          for (const lineNumber of lineToNumbers[lineText]) {
-            for (const ct of ttyLineCtxts) {
-              await ct.refresh?.(lineNumber);
-            }
-          }
-        }
-      },
-
-      rehydrate(sessionKey) {
-        let storedHistory = null as null | string[];
-        let storedVar = null as null | Record<string, any>;
-
-        try {
-          storedHistory = JSON.parse(
-            tryLocalStorageGet(`history@session-${sessionKey}`) || "null"
-          );
-        } catch (e) {// Can fail in CodeSandbox in Chrome Incognito
-          ttyError(`${sessionKey}: rehydrate history failed`);
-          ttyError(e);
-        }
-
-        const prevValue = tryLocalStorageGet(`var@session-${sessionKey}`) || "null";
-        try {
-          // storedVar = JSON.parse(tryLocalStorageGet(`var@session-${sessionKey}`) || "null");
-          // 🔔 must handle newlines generated by npm module "javascript-stringify"
-          storedVar = Function(`return ${prevValue.replace(/\n/g, '\\n')}`)();
-          // console.log({storedVar})
-        } catch (e) {// Can fail in CodeSandbox in Chrome Incognito
-          ttyError(`${sessionKey}: rehydrate variables failed: ${prevValue}`);
-          ttyError(e);
-        }
-
-        return { history: storedHistory, var: storedVar };
-      },
-
-      removeDevice(deviceKey) {
-        delete get().device[deviceKey];
-      },
-
-      removeProcess(pid, sessionKey) {
-        const processes = get().session[sessionKey].process;
-        delete processes[pid];
-      },
-
-      removeSession(sessionKey) {
-        const session = get().session[sessionKey];
-        if (session) {
-          const { process, ttyShell } = session;
-          session.verbose = false;
-          ttyShell.dispose();
-          Object.values(process).reverse().forEach((x) => killProcess(x));
-          delete get().device[ttyShell.key];
-          set(({ session }) => ({ session: removeFromLookup(sessionKey, session) }));
-        } else {
-          warn(`removeSession: ${sessionKey}: cannot remove non-existent session`);
-        }
-      },
-
-      removeTtyLineCtxts(sessionKey, lineText) {
-        delete api.getSession(sessionKey).ttyLink[lineText];
-      },
-
-      resolve(fd, meta) {
-        return get().device[meta.fd[fd]];
-      },
-
-      setLastExitCode(meta, exitCode) {
-        const session = api.getSession(meta.sessionKey);
-        if (session === undefined) {
-          warn(`session ${meta.sessionKey} no longer exists`);
-        } else if (typeof exitCode === "number") {
-          session.lastExit[meta.background ? "bg" : "fg"] = exitCode;
-        } else {
-          warn(`process ${meta.pid} had no exitCode`);
-        }
-      },
-
-      setVar(meta, varName, varValue) {
-        const session = api.getSession(meta.sessionKey);
-        const process = session.process[meta.pid];
-        if (varName in process?.localVar || varName in process?.inheritVar) {
-          /**
-           * One can set a local variable from an ancestral process,
-           * but it will only change the value in current process.
-           */
-          process.localVar[varName] = varValue;
-        } else {
-          session.var[varName] = varValue;
-        }
-      },
-
-      setVarDeep(meta, varPath, varValue) {
-        const session = api.getSession(meta.sessionKey);
-        const process = session.process[meta.pid];
-        const parts = varPath.split("/");
-
-        let root: Record<string, any>, normalParts: string[];
-
-        /**
-         * We support writing to local process variables,
-         * e.g. `( cd && echo 'pwn3d!'>PWD && pwd )`
-         */
-        const localCtxt =
-          parts[0] in process.localVar
-            ? process.localVar
-            : parts[0] in process.inheritVar
-            ? process.inheritVar
-            : null;
-        if (localCtxt) {
-          root = localCtxt;
-          normalParts = parts;
-        } else {
-          root = { home: session.var };
-          normalParts = computeNormalizedParts(varPath, api.getVar(meta, "PWD") as string);
-
-          if (!(normalParts[0] === "home" && normalParts.length > 1)) {
-            throw new ShError("only the home directory is writable", 1);
-          }
-        }
-
-        try {
-          const leafKey = normalParts.pop() as string;
-          const parent = resolveNormalized(normalParts, root);
-          parent[leafKey] = varValue;
-        } catch (e) {
-          throw new ShError(`cannot resolve /${normalParts.join("/")}`, 1);
-        }
-      },
-
-      writeMsg(sessionKey, msg, level) {
-        api.getSession(sessionKey).ttyIo.write({ key: level, msg });
-      },
-
-      async writeMsgCleanly(sessionKey, msg, opts = {}) {
-        const { xterm } = api.getSession(sessionKey).ttyShell;
-        xterm.prepareForCleanMsg();
-        await new Promise<void>((resolve) =>
-          xterm.queueCommands([
-            { key: "line", line: opts.level ? formatMessage(msg, opts.level) : `${msg}${ansi.Reset}` },
-            { key: "resolve", resolve },
-          ])
-        );
-        await pause();
-        xterm.showPendingInputImmediately();
-        opts.scrollToBottom === true && xterm.xterm.scrollToBottom();
-      },
+  api: {
+    addFunc(sessionKey, funcName, file) {
+      api.getSession(sessionKey).func[funcName] = {
+        key: funcName,
+        node: file,
+        src: srcService.multilineSrc(file),
+      };
     },
-  }),
+
+    addTtyLineCtxts(sessionKey, lineText, ctxts) {
+      api.getSession(sessionKey).ttyLink[lineText] = ctxts;
+    },
+
+    createFifo(key, size) {
+      const fifo = new FifoDevice(key, size);
+      return (get().device[fifo.key] = fifo);
+    },
+
+    createProcess({ sessionKey, ppid, pgid, src, posPositionals, ptags }) {
+      const pid = get().api.getNextPid(sessionKey);
+      const processes = get().api.getSession(sessionKey).process;
+
+      return processes[pid] = {
+        key: pid,
+        ppid,
+        pgid,
+        sessionKey,
+        status: ProcessStatus.Running,
+        src,
+        positionals: ["jsh", ...(posPositionals ?? [])],
+        cleanups: [],
+        onSuspends: [],
+        onResumes: [],
+        localVar: {},
+        inheritVar: {},
+        ptags,
+      };
+    },
+
+    createSession(sessionKey, env) {
+      const persisted = api.rehydrate(sessionKey);
+      const ttyIo = makeShellIo<MessageFromXterm, MessageFromShell>();
+      const ttyShell = new ttyShellClass(sessionKey, ttyIo, persisted.history || []);
+      get().device[ttyShell.key] = ttyShell;
+      get().device["/dev/null"] = new NullDevice("/dev/null");
+      get().device["/dev/voice"] = new VoiceDevice("/dev/voice");
+
+      set(({ session }) => ({
+        session: addToLookup(
+          {
+            key: sessionKey,
+            func: {},
+            ttyIo,
+            ttyShell,
+            ttyLink: {},
+            etc: {},
+            var: {
+              PWD: "/home",
+              OLDPWD: "",
+              ...persisted.var,
+              ...deepClone(env),
+            },
+            jsFunc: {} as any,
+            nextPid: 0,
+            process: {},
+            lastExit: { fg: 0, bg: 0 },
+            verbose: false,
+          },
+          session
+        ),
+      }));
+      return get().session[sessionKey];
+    },
+
+    createVarDevice(meta, varPath, mode) {
+      const device = new VarDevice(meta, varPath, mode);
+      return (get().device[device.key] = device);
+    },
+
+    getFunc(sessionKey, funcName) {
+      return get().session[sessionKey].func[funcName] || undefined;
+    },
+
+    getFuncs(sessionKey) {
+      return Object.values(get().session[sessionKey].func);
+    },
+
+    getLastExitCode(meta) {
+      return get().session[meta.sessionKey].lastExit[meta.background ? "bg" : "fg"];
+    },
+
+    getNextPid(sessionKey) {
+      return get().session[sessionKey].nextPid++;
+    },
+
+    getPositional(pid, sessionKey, varName) {
+      return get().session[sessionKey].process[pid].positionals[varName] || "";
+    },
+
+    getProcess({ pid, sessionKey }) {
+      return get().session[sessionKey].process[pid];
+    },
+
+    getProcesses(sessionKey, pgid) {
+      const session = get().session[sessionKey];
+      if (session !== undefined) {
+        const processes = Object.values(session.process);
+        return pgid === undefined ? processes : processes.filter((x) => x.pgid === pgid);
+      } else {
+        warn(`getProcesses: session ${sessionKey} does not exist`);
+        return [];
+      }
+    },
+
+    getVar(meta, varName): any {
+      const process = api.getProcess(meta);
+      if (varName in process?.localVar) {
+        // Got locally specified variable
+        return process.localVar[varName];
+      } else if (varName in process?.inheritVar) {
+        // Got variable locally specified in ancestral process
+        return process.inheritVar[varName];
+      } else {
+        // Got top-level variable in "file-system" e.g. /home/foo
+        return get().session[meta.sessionKey].var[varName];
+      }
+    },
+
+    getVarDeep(meta, varPath) {
+      const session = get().session[meta.sessionKey];
+      /**
+       * Can deep get /home/* and /etc/*
+       * TODO support deep get of local vars?
+       */
+      const root = { home: session.var, etc: session.etc };
+      const parts = computeNormalizedParts(varPath, api.getVar(meta, "PWD") as string);
+      return Function(
+        "__",
+        `return ${JSON.stringify(parts)}.reduce((agg, x) => agg[x], __)`
+      )(root);
+    },
+
+    getSession(sessionKey) {
+      return get().session[sessionKey];
+    },
+
+    kill(sessionKey, pids, opts) {
+      const session = useSession.api.getSession(sessionKey);
+
+      for (const pid of pids) {
+        const { [pid]: process } = session.process;
+        if (!process) {
+          continue; // Already killed
+        }
   
-);
+        const processes = process.pgid === pid || opts.group === true
+          // Apply command to whole process group (in reverse)
+          ? useSession.api.getProcesses(sessionKey, process.pgid).reverse()
+          : [process] // Apply command to exactly one process
+        ;
+  
+        useSession.api.killProcesses(processes, opts);
+      }
+    },
+
+    killProcesses(processes, opts) {
+      if (opts.SIGINT === true) {
+        for (const p of processes) {
+          killProcess(p, opts.SIGINT);
+        }
+      } else if (opts.STOP === true) {
+        const byPtags = !!opts.byPtags;
+        for (const p of processes) {
+          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(byPtags));
+          p.status = ProcessStatus.Suspended;
+        }
+      } else if (opts.CONT === true) {
+        for (const p of processes) {
+          p.onResumes = p.onResumes.filter((onResume) => onResume());
+          p.status = ProcessStatus.Running;
+        }
+      }
+
+      if (opts.ptags !== undefined) {
+        processes.forEach(p => Object.assign(p.ptags, opts.ptags));
+      }
+    },
+
+    onTtyLink(opts) {
+      // console.log('onTtyLink', opts,
+      //   api.getSession(opts.sessionKey).ttyLink,
+      //   api.getSession(opts.sessionKey).ttyLink[opts.lineText],
+      // );
+
+      try {
+        // 🔔 HACK: permit toggle link (e.g. on/off) without leaving link first
+        const { xterm } = api.getSession(opts.sessionKey).ttyShell.xterm;
+        const linkifier = (xterm as any)._core.linkifier;
+        // console.log(linkifier);
+        setTimeout(() => {
+          const position = linkifier._positionFromMouseEvent(
+            linkifier._lastMouseEvent,
+            linkifier._element,
+            linkifier._mouseService!
+          );
+          position && linkifier._askForLink(position, false);
+        });
+      } catch (e) {
+        console.warn("HACK: permit toggle link: failed", e);
+      }
+
+
+      api.getSession(opts.sessionKey).ttyLink[opts.lineText]?.find(
+        x => x.linkStartIndex === opts.linkStartIndex && x.linkText === opts.linkText
+      )?.callback(opts.lineNumber);
+    },
+
+    persistHistory(sessionKey) {
+      const { ttyShell } = api.getSession(sessionKey);
+
+      tryLocalStorageSet(
+        `history@session-${sessionKey}`,
+        JSON.stringify(ttyShell.getHistory())
+      );
+    },
+
+    persistHome(sessionKey) {
+      const {
+        PWD, OLDPWD, CACHE_SHORTCUTS, ...persistedVarLookup
+      } = api.getSession(sessionKey).var;
+
+      tryLocalStorageSet(
+        `var@session-${sessionKey}`,
+        jsStringify(persistedVarLookup),
+      );
+      // console.log({persistedVarLookup})
+    },
+
+    async refreshTtyLinks(sessionKey) {
+      const { ttyShell, ttyLink } = useSession.api.getSession(sessionKey);
+      const lineToNumbers = ttyShell.xterm.getLines();
+      
+      // try to refresh every instance of ttyLink line
+      for (const [lineText, ttyLineCtxts] of Object.entries(ttyLink)) {
+        for (const lineNumber of lineToNumbers[lineText]) {
+          for (const ct of ttyLineCtxts) {
+            await ct.refresh?.(lineNumber);
+          }
+        }
+      }
+    },
+
+    rehydrate(sessionKey) {
+      let storedHistory = null as null | string[];
+      let storedVar = null as null | Record<string, any>;
+
+      try {
+        storedHistory = JSON.parse(
+          tryLocalStorageGet(`history@session-${sessionKey}`) || "null"
+        );
+      } catch (e) {// Can fail in CodeSandbox in Chrome Incognito
+        ttyError(`${sessionKey}: rehydrate history failed`);
+        ttyError(e);
+      }
+
+      const prevValue = tryLocalStorageGet(`var@session-${sessionKey}`) || "null";
+      try {
+        // storedVar = JSON.parse(tryLocalStorageGet(`var@session-${sessionKey}`) || "null");
+        // 🔔 must handle newlines generated by npm module "javascript-stringify"
+        storedVar = Function(`return ${prevValue.replace(/\n/g, '\\n')}`)();
+        // console.log({storedVar})
+      } catch (e) {// Can fail in CodeSandbox in Chrome Incognito
+        ttyError(`${sessionKey}: rehydrate variables failed: ${prevValue}`);
+        ttyError(e);
+      }
+
+      return { history: storedHistory, var: storedVar };
+    },
+
+    removeDevice(deviceKey) {
+      delete get().device[deviceKey];
+    },
+
+    removeProcess(pid, sessionKey) {
+      const processes = get().session[sessionKey].process;
+      delete processes[pid];
+    },
+
+    removeSession(sessionKey) {
+      const session = get().session[sessionKey];
+      if (session) {
+        const { process, ttyShell } = session;
+        session.verbose = false;
+        ttyShell.dispose();
+        Object.values(process).reverse().forEach((x) => killProcess(x));
+        delete get().device[ttyShell.key];
+        set(({ session }) => ({ session: removeFromLookup(sessionKey, session) }));
+      } else {
+        warn(`removeSession: ${sessionKey}: cannot remove non-existent session`);
+      }
+    },
+
+    removeTtyLineCtxts(sessionKey, lineText) {
+      delete api.getSession(sessionKey).ttyLink[lineText];
+    },
+
+    resolve(fd, meta) {
+      return get().device[meta.fd[fd]];
+    },
+
+    setLastExitCode(meta, exitCode) {
+      const session = api.getSession(meta.sessionKey);
+      if (session === undefined) {
+        warn(`session ${meta.sessionKey} no longer exists`);
+      } else if (typeof exitCode === "number") {
+        session.lastExit[meta.background ? "bg" : "fg"] = exitCode;
+      } else {
+        warn(`process ${meta.pid} had no exitCode`);
+      }
+    },
+
+    setVar(meta, varName, varValue) {
+      const session = api.getSession(meta.sessionKey);
+      const process = session.process[meta.pid];
+      if (varName in process?.localVar || varName in process?.inheritVar) {
+        /**
+         * One can set a local variable from an ancestral process,
+         * but it will only change the value in current process.
+         */
+        process.localVar[varName] = varValue;
+      } else {
+        session.var[varName] = varValue;
+      }
+    },
+
+    setVarDeep(meta, varPath, varValue) {
+      const session = api.getSession(meta.sessionKey);
+      const process = session.process[meta.pid];
+      const parts = varPath.split("/");
+
+      let root: Record<string, any>, normalParts: string[];
+
+      /**
+       * We support writing to local process variables,
+       * e.g. `( cd && echo 'pwn3d!'>PWD && pwd )`
+       */
+      const localCtxt =
+        parts[0] in process.localVar
+          ? process.localVar
+          : parts[0] in process.inheritVar
+          ? process.inheritVar
+          : null;
+      if (localCtxt) {
+        root = localCtxt;
+        normalParts = parts;
+      } else {
+        root = { home: session.var };
+        normalParts = computeNormalizedParts(varPath, api.getVar(meta, "PWD") as string);
+
+        if (!(normalParts[0] === "home" && normalParts.length > 1)) {
+          throw new ShError("only the home directory is writable", 1);
+        }
+      }
+
+      try {
+        const leafKey = normalParts.pop() as string;
+        const parent = resolveNormalized(normalParts, root);
+        parent[leafKey] = varValue;
+      } catch (e) {
+        throw new ShError(`cannot resolve /${normalParts.join("/")}`, 1);
+      }
+    },
+
+    writeMsg(sessionKey, msg, level) {
+      api.getSession(sessionKey).ttyIo.write({ key: level, msg });
+    },
+
+    async writeMsgCleanly(sessionKey, msg, opts = {}) {
+      const { xterm } = api.getSession(sessionKey).ttyShell;
+      xterm.prepareForCleanMsg();
+      await new Promise<void>((resolve) =>
+        xterm.queueCommands([
+          { key: "line", line: opts.level ? formatMessage(msg, opts.level) : `${msg}${ansi.Reset}` },
+          { key: "resolve", resolve },
+        ])
+      );
+      await pause();
+      xterm.showPendingInputImmediately();
+      opts.scrollToBottom === true && xterm.xterm.scrollToBottom();
+    },
+  },
+}));
 
 export type State = {
   session: KeyedLookup<Session>;
