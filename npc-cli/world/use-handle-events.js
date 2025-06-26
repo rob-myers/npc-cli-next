@@ -57,7 +57,7 @@ export default function useHandleEvents(w) {
          * - prevents npc passing through another on continual move
          * - cancelled on enter-off-mesh
          */
-        npc.s.offMeshTimeout = window.setTimeout(() => npc.s.offMesh = null, 300);
+        npc.s.offMeshTimeout = window.setTimeout(() => npc.s.offMesh = null, 30);
       } else {
         npc.s.offMesh = null;
       }
@@ -536,7 +536,6 @@ export default function useHandleEvents(w) {
     },
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
-      const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
 
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (
@@ -547,16 +546,24 @@ export default function useHandleEvents(w) {
           continue;
         }
 
+        const other = w.n[tr.npcKey];
+
         if (// traversal same direction, other far enough ahead
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
-          && npc.api.getOtherDoorwayLead(w.n[tr.npcKey]) >= 0.4
+          && other.s.tScale === null // avoid jerk when other slows down
+          && npc.api.getOtherDoorwayLead(other) >= 0.4
         ) {
           continue;
         }
 
         return state.onBlockedDoorway(npc, tr.npcKey); // STOP
       }
-      
+
+      if (npc.api.isNearTarget(1) && npc.agent?.raw.nneis === 0) {
+        // slow down through doorway when no neighbours
+        npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
+      }
+
       if (offMesh.orig.dstRoomMeta.small === true) {// small room
         const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);
 
@@ -569,8 +576,6 @@ export default function useHandleEvents(w) {
             return state.onBlockedDoorway(npc, otherNpcKey); // STOP
           }
         }
-
-        npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
       }
     },
     onExitDoorCollider(e) {// e.type === 'nearby'
