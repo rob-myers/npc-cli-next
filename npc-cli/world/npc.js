@@ -856,14 +856,14 @@ export class NpcApi {
     this.s.lookSecs = 0.2;
 
     this.base.agent.updateParameters({
-      maxAcceleration: movingMaxAcceleration,
+      maxAcceleration: defaultMaxAcceleration,
       maxSpeed: this.getMaxSpeed(),
-      // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
-      radius: helper.defaults.radius,
-      // slowDownRadius: helper.defaults.radius, // 🚧
-      collisionQueryRange: movingCollisionQueryRange,
-      // separationWeight: movingSeparationWeight,
+      collisionQueryRange: defaultCollisionQueryRange,
       queryFilterType: helper.queryFilterType.respectUnwalkable,
+      // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
+      // radius: helper.defaults.radius,
+      // slowDownRadius: helper.defaults.radius,
+      // separationWeight: movingSeparationWeight,
     });
 
     this.base.lastStart.copy(this.base.position);
@@ -1255,14 +1255,11 @@ export class NpcApi {
       return warn(`${'setOffMeshExitSpeed'}: ${this.key}: no agent`);
     }
     if (exitSpeed < 0.05) {
-      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: exit speed to slow (${exitSpeed})`);
+      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: exit speed too slow (${exitSpeed})`);
     }
 
     const maxSpeed = this.getMaxSpeed();
-    this.s.tScale = {
-      start: this.base.agentAnim.t,
-      dst: exitSpeed / maxSpeed,
-    };
+    this.s.tScale = { start: this.base.agentAnim.t, dst: exitSpeed / maxSpeed };
 
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.updateParameters({ maxSpeed: exitSpeed });
@@ -1348,10 +1345,10 @@ export class NpcApi {
 
     agent.updateParameters({
       maxSpeed: this.getMaxSpeed() * 0.75,
-      maxAcceleration: staticMaxAcceleration,
+      maxAcceleration: defaultMaxAcceleration,
       updateFlags: defaultAgentUpdateFlags,
-      radius: helper.defaults.radius,
-      collisionQueryRange: staticCollisionQueryRange,
+      collisionQueryRange: defaultCollisionQueryRange,
+      // radius: helper.defaults.radius,
       // separationWeight: staticSeparationWeight,
       // queryFilterType: helper.queryFilterType.respectUnwalkable,
       // updateFlags: 1,
@@ -1428,8 +1425,7 @@ export class NpcApi {
 }
 
 const lookSecsNoTarget = 0.75;
-const staticMaxAcceleration = 4;
-const movingMaxAcceleration = 10;
+const defaultMaxAcceleration = 10;
 
 // const staticSeparationWeight = 0.25;
 // const movingSeparationWeight = 0.5;
@@ -1438,8 +1434,7 @@ const movingMaxAcceleration = 10;
  * 🔔 relevant to reachability of arrival distance
  */
 const defaultSeparationWeight = 0.25;
-const staticCollisionQueryRange = 2;
-const movingCollisionQueryRange = 2;
+const defaultCollisionQueryRange = 2;
 
 const preOffMeshCloseDist = helper.defaults.radius;
 
@@ -1450,9 +1445,9 @@ export const crowdAgentParams = {
   // slowDownRadius: npcTargetArriveDistance,
   // slowDownRadius: helper.defaults.radius,
   height: 1.5,
-  maxAcceleration: staticMaxAcceleration,
+  maxAcceleration: defaultMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,
-  collisionQueryRange: staticCollisionQueryRange,
+  collisionQueryRange: defaultCollisionQueryRange,
   separationWeight: defaultSeparationWeight,
   queryFilterType: 0,
   updateFlags: defaultAgentUpdateFlags,
