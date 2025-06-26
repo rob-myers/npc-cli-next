@@ -578,7 +578,7 @@ const instancedFloorShader = {
         float lighter = clamp(4.0 * lightTexel.w, 1.0, 3.0);
         gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
       } else {
-        gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 2.0;
+        gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 1.0;
       }
       
       #include <logdepthbuf_fragment>
