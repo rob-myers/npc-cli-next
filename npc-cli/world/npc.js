@@ -836,8 +836,9 @@ export class NpcApi {
    * @param {NPC.MoveOpts} opts
    */
   async move(opts) {
+    const agent = this.base.agent;
     
-    if (this.base.agent === null) {
+    if (agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
     } else if (Vect.isVectJson(opts.to) === false) {
       throw new Error(`${this.key}: expected opts.to {x,y}`);
@@ -855,28 +856,23 @@ export class NpcApi {
     this.s.arriveDist = opts.s?.arriveDist ?? defaultNpcArriveDistance;
     this.s.lookSecs = 0.2;
 
-    this.base.agent.updateParameters({
-      maxAcceleration: defaultMaxAcceleration,
-      maxSpeed: this.getMaxSpeed(),
-      collisionQueryRange: defaultCollisionQueryRange,
-      queryFilterType: helper.queryFilterType.respectUnwalkable,
-      // radius: (this.s.run ? 3 : 2) * helper.defaults.radius, // reset
-      // radius: helper.defaults.radius,
-      // slowDownRadius: helper.defaults.radius,
-      // separationWeight: movingSeparationWeight,
-    });
+    agent.raw.params.set_maxAcceleration(defaultMaxAcceleration);
+    agent.raw.params.set_maxSpeed(this.getMaxSpeed());
+    agent.raw.params.set_collisionQueryRange(defaultAgentUpdateFlags);
+    agent.raw.params.set_queryFilterType(helper.queryFilterType.respectUnwalkable);
+    agent.raw.params.set_radius((this.s.run ? 1.5 : 1) * helper.defaults.radius);
 
     this.base.lastStart.copy(this.base.position);
     this.s.target = this.base.lastTarget.copy(closest);
 
     if (this.tryStopOffMesh() === true) {
-      this.base.agent.teleport(this.base.position);
+      agent.teleport(this.base.position);
       if (this.s.agentState === 2) {// in case of immediate new offMeshConnection
         this.s.agentState = -1;
       }
     }
 
-    this.base.agent.requestMoveTarget(closest);
+    agent.requestMoveTarget(closest);
 
     const nextAct = this.s.run === true ? 'Run' : 'Walk';
     if (this.s.anim !== nextAct) {
@@ -1343,16 +1339,11 @@ export class NpcApi {
     this.s.slowBegin = null;
     this.s.target = null;
 
-    agent.updateParameters({
-      maxSpeed: this.getMaxSpeed() * 0.75,
-      maxAcceleration: defaultMaxAcceleration,
-      updateFlags: defaultAgentUpdateFlags,
-      collisionQueryRange: defaultCollisionQueryRange,
-      // radius: helper.defaults.radius,
-      // separationWeight: staticSeparationWeight,
-      // queryFilterType: helper.queryFilterType.respectUnwalkable,
-      // updateFlags: 1,
-    });
+    agent.raw.params.set_maxSpeed(this.getMaxSpeed() * 0.75);
+    agent.raw.params.set_maxAcceleration(defaultMaxAcceleration);
+    agent.raw.params.set_updateFlags(defaultAgentUpdateFlags);
+    agent.raw.params.set_collisionQueryRange(defaultAgentUpdateFlags);
+    agent.raw.params.set_radius(helper.defaults.radius);
     
     if (reason.key === 'arrived') {
       if (this.s.arriveAnim !== 'none') {
