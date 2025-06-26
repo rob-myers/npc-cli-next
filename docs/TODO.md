@@ -329,7 +329,9 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - try importing instead
   - ✅ remove `w.lib` i.e. always import instead
 
-- BUG: Logger: fix links
+- 🚧 BUG: Logger: fix links
+
+- BUG: paused click sometimes not selecting
 
 - BUG: sometimes tty-0 fails to persist /home?
 
