@@ -141,9 +141,9 @@ class semanticsServiceClass {
       useSession.api.setVar(meta, Name.Value, '');
       return;
     }
-    // if (Name.Value === 'ptags') {
-    //   return; // used to tag process instead
-    // }
+    if (Name.Value === 'ptags') {
+      return; // used to tag process instead
+    }
 
     const { value, values } = await this.lastExpanded(sem.Expand(Value));
     const firstValue = values[0]; // know values.length > 0 because not Naked
@@ -288,18 +288,16 @@ class semanticsServiceClass {
   }
 
   /**
-   * We support process tagging like:
-   * - `ptags='foo bar=baz' sleep 10 &`
-   * - `{ ptags=always; sleep 10; } &`
-   * - `ptags=always; foo | bar &` (via inheritance)
+   * - We support process tagging like `ptags+=always; foo | bar &`
+   * - We modify `process.ptagsDelta` and apply in __next spawn only__.
    */
   private async supportPTags(node: Sh.CallExpr) {
-    const assign = node.Assigns.find(x => x.Name?.Value === 'ptags');
-    if (assign?.Value != null) {
-      const expanded = await this.lastExpanded(sem.Expand(assign.Value));
+    const assigns = node.Assigns.filter(x => x.Name?.Value === 'ptags' && x.Append === true && x.Value !== null);
+    const process = getProcess(node.meta);
+    for (const assign of assigns) {
+      const expanded = await this.lastExpanded(sem.Expand(assign.Value!));
       const ptags = tagsToMeta(textToTags(expanded.value));
-      getProcess(node.meta).ptags = ptags;
-      // console.log({ptags});
+      Object.assign(process.ptagsDelta, ptags);
     }
   }
 
@@ -743,7 +741,9 @@ class semanticsServiceClass {
   private async *Stmt(stmt: Sh.Stmt) {
     if (stmt.Cmd === null) {
       throw new ShError("pure redirects unsupported", 2);
-    } else if (stmt.Background === true && stmt.meta.pgid === 0) {
+    }
+    
+    if (stmt.Background === true && stmt.meta.pgid === 0) {
       const { ttyShell, nextPid } = useSession.api.getSession(stmt.meta.sessionKey);
       const file = wrapInFile(cloneParsed(stmt), {
         ppid: stmt.meta.pid,
@@ -766,14 +766,14 @@ class semanticsServiceClass {
       
       // e.g. `! { sleep 10 & }` has immediate exit code 1
       stmt.exitCode = stmt.Negated === true ? 1 : 0;
-
-    } else {
-      try {// Run a simple or compound command
-        yield* sem.Command(stmt.Cmd, stmt.Redirs);
-      } finally {
-        stmt.exitCode = stmt.Cmd.exitCode;
-        stmt.Negated && (stmt.exitCode = 1 - Number(!!stmt.Cmd.exitCode));
-      }
+      return;
+    }
+  
+    try {// Run a simple or compound command
+      yield* sem.Command(stmt.Cmd, stmt.Redirs);
+    } finally {
+      stmt.exitCode = stmt.Cmd.exitCode;
+      stmt.Negated === true && (stmt.exitCode = 1 - Number(!!stmt.Cmd.exitCode));
     }
   }
 

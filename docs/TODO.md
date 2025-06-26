@@ -336,7 +336,12 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - ✅ BUG: Logger: fix links
   - put patch back
 
-- 🚧 BUG: on `kill --all` then `source PROFILE` saw unexpected processes with `ptags.always`
+- ✅ BUG: on `kill --all` then `source PROFILE` saw unexpected processes with `ptags.always`
+  - ℹ️ due to `ptags=always; ...` occurring in "big term induced by PROFILE"
+  - ℹ️ must set ptags BEFORE spawn, so know to initially suspend if suspendNonInteractive
+  - ✅ `ptags+='foo bar'` mutates `process.ptagsDelta`
+  - ✅ on spawn we inherit `process.ptags` modified by `process.ptagsDelta` and `opts.ptags`
+  - ✅ after spawn we reset `process.ptagsDelta` to `{}`.
 
 - BUG: paused click sometimes not selecting
 

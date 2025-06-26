@@ -40,7 +40,7 @@ selectedNpcKey="rob"
 w e.grantAccess . rob will kate suit rada
 
 # select selectedNpcKey on click npc
-ptags=always; click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
+ptags+=always; click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.api.showSelector(false);
   w.n[meta.npcKey].api.showSelector(true);
   home.selectedNpcKey = meta.npcKey;
@@ -61,7 +61,7 @@ click --long | map --forever 'async (input, {home, w}) => {
 }' &
 
 # click navmesh to move selectedNpcKey
-ptags=always; click meta.floor | map --forever '(input, { w, home }) => {
+ptags+=always; click meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;
@@ -71,9 +71,9 @@ ptags=always; click meta.floor | map --forever '(input, { w, home }) => {
 w update 'w => w.decor.showLabels = true'
 
 setupContextMenu
-ptags=always; events | handleContextMenu &
+ptags+=always; events | handleContextMenu &
 
-ptags=always; events | handleLoggerLinks & 
+ptags+=always; events | handleLoggerLinks & 
 
 changeAngleOnKeyDown # WASD camera azimuthal angle
 

@@ -4,7 +4,7 @@ import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
 import { ansi, ProcessTag } from "./const";
-import { killError, ProcessError, ShError, ttyError } from "./util";
+import { killError, ProcessError, ShError, ttyError, updatePtags } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
 import { semanticsService } from "./semantics.service";
@@ -276,21 +276,14 @@ export class ttyShellClass implements Device {
         sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || parent.positionals.slice(1),
-        ptags: { ...parent.ptags },
+        ptags: updatePtags(parent.ptags, { ...parent.ptagsDelta, ...opts.ptags }),
       });
       meta.pid = process.key;
 
       if (opts.cleanups !== undefined) {
         process.cleanups.push(...opts.cleanups);
       }
-      if (opts.ptags !== undefined) {
-        Object.entries(opts.ptags).forEach(([k, v]) => {
-          // A process "has" tag `key` iff `key in process.ptags`.
-          // If its value is a string we'll use it as "short preview".
-          if (v === undefined) delete process.ptags[k];
-          else process.ptags[k] = v;
-        });
-      }
+      parent.ptagsDelta = {}; // reset after spawn
 
       if (// Represent <Tabs> disabled
         this.suspendNonInteractive === true
@@ -371,7 +364,7 @@ export class ttyShellClass implements Device {
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
 
-      if (builtin !== true) {
+      if (!builtin) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       }
 
@@ -383,7 +376,7 @@ export class ttyShellClass implements Device {
           profileRunning: this.profileFinished === false ? true : undefined,
         }});
 
-        // must clear in case of leading process (reused)
+        // must clear in case of session leader (reused)
         process.cleanups.length = 0;
         process.onResumes.length = 0;
         process.onSuspends.length = 0;

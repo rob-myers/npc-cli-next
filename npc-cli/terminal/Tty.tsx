@@ -5,7 +5,6 @@ import debounce from 'debounce';
 
 import { error, jsStringify, keys, testNever, warn } from '../service/generic';
 import { isTouchDevice } from '../service/dom';
-import { ProcessTag } from '../sh/const';
 import type { Session } from "../sh/session.store";
 import type { BaseTabProps } from '../tabs/tab-factory';
 import type { ExternalMessage } from '../sh/io';
@@ -172,10 +171,10 @@ export default function Tty(props: Props) {
     session.ttyShell.suspendNonInteractive = !!props.disabled;
     
     if (props.disabled === true) {
-      if (session.nextPid > 1) {// something was spawned
-        state.pauseByPtags();
-        return () => void (state.base?.session && state.resumeByPtags());
-      }
+      // avoid initial pause: something was spawned
+      session.nextPid > 1 && state.pauseByPtags();
+    } else {
+      state.resumeByPtags();
     }
   }, [props.disabled, state.base.session])
 

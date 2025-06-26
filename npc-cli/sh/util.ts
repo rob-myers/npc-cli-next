@@ -153,6 +153,20 @@ export function killProcess(p: ProcessMeta, SIGINT?: boolean) {
   p.cleanups.length = 0;
 }
 
+/**
+ * Computes fresh ptags.
+ * - A process "has" tag `key` iff `key in process.ptags`.
+ * - An updates value of `undefined` or `null` deletes the tag.
+ */
+export function updatePtags(ptags: Ptags, updates: Ptags) {
+  const output = { ...ptags }; // same as deep clone
+  Object.entries(updates).forEach(([k, v]) => {
+    if (v == null) delete output[k];
+    else output[k] = v;
+  });
+  return output;
+}
+
 //#endregion
 
 //#region resolution

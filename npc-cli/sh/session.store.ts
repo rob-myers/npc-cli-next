@@ -51,6 +51,7 @@ const useStore = create<State>()((set, get): State => ({
         localVar: {},
         inheritVar: {},
         ptags,
+        ptagsDelta: {},
       };
     },
 
@@ -587,6 +588,13 @@ export interface ProcessMeta {
   inheritVar: Record<string, any>;
   /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
   ptags: Ptags;
+  /**
+   * Process tags for next spawn.
+   * - Defaults to `ptags`.
+   * - Can be altered via e.g. `ptags+='foo bar'`.
+   * - Resets to `{}` after spawn.
+   */
+  ptagsDelta: Ptags;
 }
 
 interface KillOpts {
@@ -603,7 +611,7 @@ interface KillOpts {
   ptags?: Ptags;
 }
 
-export type Ptags = Record<string, any>;
+export type Ptags = Record<string, string | boolean | number | undefined | null>;
 
 export interface TtyLinkCtxt {
   /** Line stripped of ansi-codes. */
