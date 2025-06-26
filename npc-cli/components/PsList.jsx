@@ -10,7 +10,7 @@ import useUpdate from "../hooks/use-update";
 import useTabs from "../tabs/tabs.store";
 import { getPtagsPreview } from "../sh/util";
 import useSession, { ProcessStatus } from "../sh/session.store";
-import { faRefresh, faPause, faPlay, faClose, FontAwesomeIcon } from "./Icon";
+import { faRefresh, faPause, faPlay, faClose, FontAwesomeIcon, faCopy } from "./Icon";
 
 export default function PsList() {
 
@@ -88,10 +88,18 @@ export default function PsList() {
         error(e);
       }
     },
+    async copyCode(e) {
+      const pid = Number(e.currentTarget.dataset.pid);
+      const { src, ptags } = useSession.api.getProcess({ sessionKey: state.sessionKey, pid });
+      // 🚧 remove ptags.interactive; support ptags.foo value
+      const ptagKeys = Object.keys(ptags);
+      const code = `${ptagKeys.length === 0 ? '' : `ptags='${ptagKeys.join(" ")}'; `}${src}`;
+      await navigator.clipboard.writeText(code);
+    },
     debouncedUpdate: debounce(update, 200, { immediate: true }),
     disconnectSession: null,
     handleLeaderMessage(msg) {
-      console.log(msg);
+      // console.log(msg);
       const process = state.processes[msg.pid];
       if (!process) {
         return;
@@ -196,9 +204,10 @@ export default function PsList() {
                 </div>}
               </div> 
               <div className="process-controls">
-                <div className="control" onClick={p.status !== ProcessStatus.Suspended ? state.changeProcess : undefined} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
-                <div className="control" onClick={p.status !== ProcessStatus.Running ? state.changeProcess : undefined} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
-                <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act="kill" data-pid={p.pid}><FontAwesomeIcon icon={faClose} size="1x" /></div>
+                <div className="control" onClick={p.status !== ProcessStatus.Suspended ? state.changeProcess : undefined} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} title="pause" size="sm" /></div>
+                <div className="control" onClick={p.status !== ProcessStatus.Running ? state.changeProcess : undefined} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} title="play" size="xs" /></div>
+                <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act="kill" data-pid={p.pid}><FontAwesomeIcon icon={faClose} title="kill" size="1x" /></div>
+                <div className="control" onClick={state.copyCode} data-act="copy" data-pid={p.pid}><FontAwesomeIcon icon={faCopy} title="copy" size="xs" /></div>
               </div>
               {p.src !== '' && (
                 <div className="src">
@@ -311,6 +320,9 @@ const psListCss = css`
     .control[data-act="kill"] svg {
       color: #faa;
     }
+    .control[data-act="copy"] svg {
+      color: #bac;
+    }
 
     .src {
       padding: 4px 8px;
@@ -369,6 +381,7 @@ const psListCss = css`
  *
  * @property {(e: React.PointerEvent<HTMLDivElement>) => void} changeProcess
  * @property {() => void} connectSession
+ * @property {(e: React.PointerEvent<HTMLDivElement>) => Promise<void>} copyCode
  * @property {debounce.DebouncedFunction<() => void>} debouncedUpdate
  * @property {null | (() => void)} disconnectSession
  * @property {(msg: import("../sh/io").ExternalMessageProcessLeader) => void} handleLeaderMessage

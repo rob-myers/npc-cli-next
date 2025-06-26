@@ -456,7 +456,7 @@ export type State = {
     getFuncs: (sessionKey: string) => NamedFunction[];
     getLastExitCode: (meta: BaseMeta) => number;
     getNextPid: (sessionKey: string) => number;
-    getProcess: (meta: BaseMeta) => ProcessMeta;
+    getProcess: (meta: Pick<BaseMeta, 'sessionKey' | 'pid'>) => ProcessMeta;
     getProcesses: (sessionKey: string, pgid?: number) => ProcessMeta[];
     getPositional: (pid: number, sessionKey: string, varName: number) => string;
     getVar: <T = any>(meta: BaseMeta, varName: string) => T;

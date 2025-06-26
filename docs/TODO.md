@@ -267,10 +267,11 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - ✅ `PsList` sort processes by tags and src (not pid, except when pid `0`)
   - ✅ show tag keys
 
-- consider keeping recently killed processes
-
-- HMR strategy for running processes
-  - `PsList` supports "restart" option for each leading process
+- 🚧 HMR strategy for running processes
+  - ❌ `PsList` supports "restart" option for each leading process
+    - doesn't fit into "shell interface"
+  - ✅ `PsList` can copy process src
+    - very manual approach to restarting a process
   - `Tty` can send HMR-delta message (which modules got reloaded)
   - leave auto-reload for future work (richer UI)
 
@@ -335,6 +336,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - ✅ BUG: Logger: fix links
   - put patch back
 
+- 🚧 BUG: on `kill --all` then `source PROFILE` saw unexpected processes with `ptags.always`
+
 - BUG: paused click sometimes not selecting
 
 - BUG: collide whilst running does not enter Idle
@@ -347,6 +350,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 # happens when we go forwards and arrive at this line
 expr window.document.querySelector'("section")' | log
 ```
+
+- PsList: consider keeping recently killed processes
 
 - tidy example commands
   - includes "quoting gotchas" e.g. `w e.say kate Well, this is awkward...`
