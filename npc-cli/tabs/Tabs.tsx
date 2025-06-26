@@ -169,6 +169,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     props.onHardReset, 
     props.onToggled
   ]});
+
+  React.useImperativeHandle(ref, () => state);
   
   const tabsDefChanged = state.updateHash(JSON.stringify(props.tabset));
 
@@ -230,18 +232,17 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       }
     }
     
-    // Restrict tab meta to extant tabs
-    useTabs.api.cleanTabMeta();
-
+    
     return output;
   }, [tabsDefChanged, state.resets, props.updates]);
+  
+  // Restrict tab meta to extant tabs
+  React.useEffect(() => void useTabs.api.cleanTabMeta(), [state.model]);
 
   React.useEffect(() => {// provide useTabs.api to TTYs
     setCached([TABS_API_KEY], useTabs.api);
     return () => removeCached([]);
   }, []);
-
-  React.useImperativeHandle(ref, () => state);
 
   const update = useUpdate();
 
