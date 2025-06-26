@@ -89,7 +89,7 @@ export default function Tty(props: Props) {
       useSession.api.kill(props.sessionKey, [], { byPtags: true, STOP: true });
       
       const { session } = state.base;
-      if (!session.ttyShell.isInteractive()) {
+      if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
         state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
       } else {
         state.canContOrStop = null;
@@ -120,7 +120,7 @@ export default function Tty(props: Props) {
       useSession.api.kill(props.sessionKey, [], { byPtags: true, CONT: true });
       
       const { session } = state.base;
-      if (!session.ttyShell.isInteractive()) {
+      if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
         state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
       } else {
         state.canContOrStop = null;
@@ -168,16 +168,14 @@ export default function Tty(props: Props) {
       return;
     }
 
-    // if disabled, suspend spawned bg processes unless 'always' in ptags
+    // if disabled, suspend spawned bg processes sans process tag 'always'
     session.ttyShell.suspendNonInteractive = !!props.disabled;
-    // avoid initial pause when props.disabled true
-    const somethingSpawned = session.nextPid > 1;
-
+    
     if (props.disabled === true) {
-      if (somethingSpawned === true) {
+      if (session.nextPid > 1) {// something was spawned
         state.pauseByPtags();
+        return () => void (state.base?.session && state.resumeByPtags());
       }
-      return () => state.base?.session && state.resumeByPtags();
     }
   }, [props.disabled, state.base.session])
 
