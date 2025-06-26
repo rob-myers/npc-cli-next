@@ -8,6 +8,7 @@ import { error } from "../service/generic";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import useTabs from "../tabs/tabs.store";
+import { getPtagsPreview } from "../sh/util";
 import useSession, { ProcessStatus } from "../sh/session.store";
 import { faRefresh, faPause, faPlay, faClose, FontAwesomeIcon } from "./Icon";
 
@@ -22,6 +23,7 @@ export default function PsList() {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     processes: [],
+    ordered: [],
     sessionKey: '',
     sessionSelect: null,
     ttyTabMeta: null,
@@ -58,10 +60,22 @@ export default function PsList() {
 
         const leaders = Object.values(session.process).filter(p => p.key === p.pgid);
         
-        state.processes = leaders.reduce((agg, { key: pid, src, status }) => {
-          agg[pid] = { pid, src, status };
+        state.processes = leaders.reduce((agg, { key: pid, src, status, ptags }) => {
+          agg[pid] = {
+            pid,
+            src,
+            status,
+            ptagsPreview: getPtagsPreview(ptags).join(''),
+          };
           return agg;
         }, /** @type {ProcessLeader[]} */ ([]));
+        
+        // 🚧 order by pid=0, tags, src
+        state.ordered = state.processes.slice().sort((p, q) => {
+          if (p.pid === 0) return -1;
+          if (q.pid === 0) return +1;
+          return (p.ptagsPreview < q.ptagsPreview || p.src < q.src) ? -1 : +1;
+        });
         
         // listen for leading process status
         state.disconnectSession = session.ttyShell.io.handleWriters(msg => 
@@ -77,7 +91,7 @@ export default function PsList() {
     debouncedUpdate: debounce(update, 200, { immediate: true }),
     disconnectSession: null,
     handleLeaderMessage(msg) {
-      // console.log(msg);
+      console.log(msg);
       const process = state.processes[msg.pid];
       if (!process) {
         return;
@@ -165,17 +179,22 @@ export default function PsList() {
       
       {sessionsExist && (
         <div className="process-leaders">
-          {state.processes.map(p =>
+          {state.ordered.map(p =>
             <div
               key={p.pid}
-              className={cx(
-                "process-leader",
-                p.status === ProcessStatus.Suspended ? 'paused' : p.status === ProcessStatus.Running ? 'running' : 'killed'
+              className={cx("process-leader", p.status === ProcessStatus.Suspended
+                ? 'paused'
+                : p.status === ProcessStatus.Running ? 'running' : 'killed'
               )}
             >
-              <div className="pid">
-                {p.pid}
-              </div>
+              <div className="pid-and-ptags">  
+                <div className="pid">
+                  {p.pid}
+                </div>
+                {p.ptagsPreview && <div className="ptags">
+                  {p.ptagsPreview}
+                </div>}
+              </div> 
               <div className="process-controls">
                 <div className="control" onClick={p.status !== ProcessStatus.Suspended ? state.changeProcess : undefined} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} size="sm" /></div>
                 <div className="control" onClick={p.status !== ProcessStatus.Running ? state.changeProcess : undefined} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} size="xs" /></div>
@@ -258,9 +277,22 @@ const psListCss = css`
     background-color: #222;
     color: #0f0;
     
+    .pid-and-ptags {
+      display: flex;
+      justify-content: space-between;
+      gap: 0;
+      background-color: black;
+      border: 1px solid #aaca;
+    }
     .pid {
       color: #ff9;
+      padding: 0 4px;
     }
+    .ptags {
+      padding: 0 4px;
+      background-color: #222;
+    }
+
     .process-controls {
       display: flex;
       align-items: stretch;
@@ -330,6 +362,7 @@ const psListCss = css`
 /**
  * @typedef State
  * @property {ProcessLeader[]} processes
+ * @property {ProcessLeader[]} ordered Re-ordered `processes`
  * @property {string} sessionKey
  * @property {null | HTMLSelectElement} sessionSelect
  * @property {null | import("../tabs/tabs.store").TabStoreTabMeta} ttyTabMeta
@@ -348,4 +381,5 @@ const psListCss = css`
  * @property {number} pid
  * @property {string} src
  * @property {ProcessStatus} status
+ * @property {string} ptagsPreview
  */

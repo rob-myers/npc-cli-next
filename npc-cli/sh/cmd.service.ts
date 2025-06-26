@@ -1,10 +1,10 @@
 import cliColumns from "cli-columns";
 import { uid } from "uid";
 
-import { ansi, EOF, ProcessTagPreview } from "./const";
+import { ansi, EOF } from "./const";
 import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
+import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError, getPtagsPreview } from "./util";
 import type * as Sh from "./parse";
 import { type ReadResult, preProcessRead, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
@@ -396,7 +396,7 @@ class cmdServiceClass {
 
         function getProcessLine(p: ProcessMeta) {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
-          const ptagPreviews = opts.s === true ? [] : Object.keys(p.ptags).map(key => (ProcessTagPreview as any)[key] ?? key[0]);
+          const ptagPreviews = opts.s === true ? [] : getPtagsPreview(p.ptags);
           const tagsOrEmpty = `${ansi.BrightYellow}${opts.s === true ? jsStringify(p.ptags) : `${ptagPreviews.join('')}${ptagPreviews.length > 0 ? ' ' : ''}`}${ansi.Reset}`;
           const oneLineSrcOrEmpty = opts.s === false ? truncateOneLine(p.src.trimStart(), 30) : '';
           const oneLineSrcColour = p.status === ProcessStatus.Suspended ? statusColour[p.status] : '';

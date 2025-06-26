@@ -6,7 +6,7 @@ import { Device, ReadResult, SigEnum } from "./io";
 import { ansi, ProcessTag } from "./const";
 import { killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
-import useSession, { ProcessMeta, ProcessStatus } from "./session.store";
+import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
 import { semanticsService } from "./semantics.service";
 import { ttyXtermClass } from "./tty.xterm";
 
@@ -238,7 +238,7 @@ export class ttyShellClass implements Device {
       localVar?: boolean;
       posPositionals?: string[];
       /** Process tags overriding those inherited from parent */
-      ptags?: Record<string, any>;
+      ptags?: Ptags;
     }
   ) {
     const { meta } = term;

@@ -586,7 +586,7 @@ export interface ProcessMeta {
   /** Inherited local variables. */
   inheritVar: Record<string, any>;
   /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
-  ptags: Record<string, any>;
+  ptags: Ptags;
 }
 
 interface KillOpts {
@@ -600,8 +600,10 @@ interface KillOpts {
    */
   byPtags?: boolean;
   group?: boolean;
-  ptags?: Record<string, any>;
+  ptags?: Ptags;
 }
+
+export type Ptags = Record<string, any>;
 
 export interface TtyLinkCtxt {
   /** Line stripped of ansi-codes. */

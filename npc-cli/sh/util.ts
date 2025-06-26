@@ -1,7 +1,7 @@
 import braces from "braces";
-import { ansi } from "./const";
+import { ansi, ProcessTagPreview } from "./const";
 import { debug, last, parseJsArg } from "../service/generic";
-import { ProcessMeta, ProcessStatus, TtyLinkCtxt } from "./session.store";
+import { type ProcessMeta, ProcessStatus, type Ptags, type TtyLinkCtxt } from "./session.store";
 import { SigEnum } from "./io";
 import type * as Sh from "./parse";
 
@@ -248,6 +248,10 @@ export function formatMessage(msg: string, level: "info" | "error") {
   return level === "info"
     ? `${ansi.Cyan}${msg}${ansi.Reset}`
     : `${ansi.Red}${msg}${ansi.Reset}`;
+}
+
+export function getPtagsPreview(ptags: Ptags) {
+  return Object.keys(ptags).map(key => (ProcessTagPreview as any)[key] ?? `(${key[0]})`);
 }
 
 /**
