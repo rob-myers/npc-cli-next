@@ -165,16 +165,17 @@ const useStore = create<State>()((set, get): State => ({
       const session = api.getSession(sessionKey);
 
       if (opts.byPtags === true) {
+        const interactive = session.ttyShell.isInteractive()
+
         if (opts.STOP === true) {
           const processes = Object.values(session.process).filter(p => 
-            p.status === ProcessStatus.Running
+            (p.pgid === 0 ? interactive === false :  p.status === ProcessStatus.Running)
               && !(ProcessTag.always in p.ptags)
           );
           return api.killProcesses(processes, opts);
         }
 
         if (opts.CONT === true) {
-          const interactive = session.ttyShell.isInteractive()
           const processes = Object.values(session.process).filter(p => 
             (p.pgid === 0 ? interactive === false : p.status === ProcessStatus.Suspended)
               && !(ProcessTag.always in p.ptags)
