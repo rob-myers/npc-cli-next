@@ -230,7 +230,7 @@ const psListCss = css`
         text-align-last: center;
       }
       button.refresh {
-        border: var(--separating-border);
+        border: none;
         border-bottom: none;
         padding: 0 8px;
       }
