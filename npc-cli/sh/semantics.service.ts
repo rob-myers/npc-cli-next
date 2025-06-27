@@ -18,6 +18,7 @@ import {
   killProcess,
   handleProcessError,
   ttyError,
+  formatMessage,
 } from "./util";
 import { cmdService, isTtyAt, getProcess } from "./cmd.service";
 import { srcService } from "./parse";
@@ -403,8 +404,8 @@ class semanticsServiceClass {
         (e as Error).message || e
       }`;
       if (command === "run" && node.meta.stack.length === 0) {
-        // When directly using `run`, append helpful error message
-        error.message += `\n\rformat \`run {async_generator}\` e.g. run \'({ api:{read} }) { yield "foo"; yield await read(); }\'`;
+        // When directly using `run` append helpful format message
+        error.message += '\n\r' + formatMessage(`format: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
       }
       sem.handleShError(node, e);
     }
