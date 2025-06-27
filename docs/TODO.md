@@ -343,6 +343,16 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ on spawn we inherit `process.ptags` modified by `process.ptagsDelta` and `opts.ptags`
   - ✅ after spawn we reset `process.ptagsDelta` to `{}`.
 
+- 🚧 BUG: why does this work yet throws error early?
+  - ✅ `run game move npcKey:rob to:'{ x: 3, y: 2 }'`
+    - ℹ️ these work fine:
+      - `move npcKey:rob to:$( click 1 )`
+      - `move npcKey:rob to:'{x:3,y:2}'`
+    - ℹ️ this originally worked `call game npcKey:rob to:'{ x: 3, y: 2 }'`
+    - fixed by detecting Function or AsyncFunction in `run`
+  - all functions should go through `run` i.e. don't use `call`
+    
+
 - BUG: paused click sometimes not selecting
 
 - BUG: collide whilst running does not enter Idle

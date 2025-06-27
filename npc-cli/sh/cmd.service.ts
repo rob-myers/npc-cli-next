@@ -469,13 +469,29 @@ class cmdServiceClass {
           const ct = this.provideProcessCtxt(meta, args.slice(1));
 
           if (args[0] in ct.lib) {
-            ct.args = ct.args.slice(1); // remove 1st 2 args
+            
             const func = (ct.lib as any)[args[0]][args[1]];
-            yield* func(ct);
+            if (func === undefined) {
+              throw Error(`not found: ${args[0]} ${args[1]}`)
+            }
+
+            meta.stack.push(args[0], args[1]); // better error handling
+            ct.args = ct.args.slice(1); // discard 2nd arg too
+            
+            if (functionOrAsync.includes(func.constructor.name)) {
+              await func(ct); // support all sh/src/* functions
+            } else {
+              yield* func(ct);
+            }
+
           } else {
+
+            // Function provided as argument
+            // 🚧 require prefix *{fnName} so can support non-generators
             const fnName = meta.stack.at(-1) || "generator";
             const func = Function("_", `return async function *${fnName} ${args[0]}`);
             yield* func()(ct);
+
           }
         } catch (e) {
           if (e instanceof ProcessError) {
@@ -1076,7 +1092,9 @@ export type ProcessContext = {
   lib: Session['jsFunc']; // see RunArg['lib']
 } & {
   set args(args: string[]);
+  get api(): ProcessApi;
 };
+
 export type ProcessApi = CmdService['processApi'];
 
 export interface HandleStatusHandlers {
@@ -1096,3 +1114,4 @@ export type CmdService = typeof cmdService;
 
 const emptyResolve = () => {};
 const emptyReject = (e: any) => {};
+const functionOrAsync = ['Function', 'AsyncFunction'];

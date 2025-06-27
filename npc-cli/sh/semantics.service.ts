@@ -342,6 +342,8 @@ class semanticsServiceClass {
 
   /** Construct a simple command or a compound command. */
   private async *Command(node: Sh.Command, Redirs: Sh.Redirect[]) {
+    const cmdStackIndex = node.meta.stack.length;
+    
     try {
       await sem.applyRedirects(node, Redirs);
 
@@ -397,13 +399,13 @@ class semanticsServiceClass {
         await device.writeData(item);
       }
     } catch (e) {
-      // e.g. CallExpr `foo=bar` has no command
-      const command = node.type === "CallExpr" ? node.Args[0]?.string : node.type;
+      // now know CallExpr command (1st arg), although `foo=bar` has no command
+      const command = node.type === 'CallExpr' ? node.Args[0]?.string ?? 'CallExpr' : node.type;
+      node.meta.stack.splice(cmdStackIndex, 0, command);
+
       const error = e instanceof ShError ? e : new ShError("", 1, e as Error);
-      error.message = `${node.meta.stack.concat(command ?? []).join(": ")}: ${
-        (e as Error).message || e
-      }`;
-      if (command === "run" && node.meta.stack.length === 0) {
+      error.message = `${node.meta.stack.join(": ")}: ${(e as Error).message || e}`;
+      if (command === "run" && node.meta.stack.length === 1) {
         // When directly using `run` append helpful format message
         error.message += '\n\r' + formatMessage(`format: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
       }
