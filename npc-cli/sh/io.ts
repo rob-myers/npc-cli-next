@@ -147,10 +147,12 @@ export async function preProcessRead(process: ProcessMeta, _device: Device) {
 //#region data chunk
 export const dataChunkKey = "__chunk__";
 export function isDataChunk(data: any): data is DataChunk {
-  if (data === undefined || data === null) {
-    return false;
-  }
-  return !!data[dataChunkKey];
+  return (
+    data !== undefined
+    && data !== null
+    // && dataChunkKey in data
+    && !!data[dataChunkKey]
+  );
 }
 export function dataChunk(items: any[]): DataChunk {
   return { __chunk__: true, items };

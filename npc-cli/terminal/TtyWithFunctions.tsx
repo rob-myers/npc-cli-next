@@ -103,7 +103,7 @@ function jsFunctionToShellFunction(
       : functionConstructorNames.includes(fn.constructor.name) && !fn.toString().startsWith('function')
         // const foo = (..args) => bar
         // const foo = async (..args) => bar
-        ? `{\n  call ${moduleKey} ${fnKey} "$@"\n}`
+        ? `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
         // function foo { bar }
         // async function foo { bar }
         : `{\n  map ${moduleKey} ${fnKey} "$@"\n}`

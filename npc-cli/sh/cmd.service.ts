@@ -479,7 +479,7 @@ class cmdServiceClass {
             ct.args = ct.args.slice(1); // discard 2nd arg too
             
             if (functionOrAsync.includes(func.constructor.name)) {
-              await func(ct); // support all sh/src/* functions
+              yield await func(ct); // support all sh/src/* functions
             } else {
               yield* func(ct);
             }

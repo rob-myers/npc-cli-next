@@ -27,9 +27,9 @@ export async function* call(ct) {
  * ```
  * @param {NPC.RunArg} ctxt 
  */
-export function* expr({ api, args }) {
+export const expr = ({ api, args }) => {
   const input = args.join(" ");
-  yield api.parseJsArg(input);
+  return api.parseJsArg(input);
 }
 
 /**
@@ -138,17 +138,18 @@ export async function* map(ct) {
     while ((datum = await api.read(true)) !== api.eof) {
       try {
         if (api.isDataChunk(datum) === true) {
-          if (isAsync === false) {// fast on chunks:
+          if (isAsync === false) {// fast on chunks
             yield api.dataChunk(datum.items.map(x => func(x, ct, count++)));
-          } else {// unwind chunks:
-            for (const item of datum.items) yield await func(item, ct, count++);
+          } else {// unwind chunks
+            for (const item of datum.items)
+              yield await func(item, ct, count++);
           }
         } else {
           yield await func(datum, ct, count++);
         }
       } catch (e) {
         if (opts.forever === true) {
-          api.writeError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
+          api.writeError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}`);
           continue;
         }
         throw e;

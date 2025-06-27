@@ -273,7 +273,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `PsList` can copy process src
     - very manual approach to restarting a process
   - `Tty` can send HMR-delta message (which modules got reloaded)
-  - leave auto-reload for future work (richer UI)
+  - NEW APPROACH: reboot `run` without respawning processes
+    - IDEA: provide callback which invokes "all later cleanups"
 
 - ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
   - `sleep` not initially triggered if starts paused
@@ -350,8 +351,9 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
       - `move npcKey:rob to:'{x:3,y:2}'`
     - ℹ️ this originally worked `call game npcKey:rob to:'{ x: 3, y: 2 }'`
     - fixed by detecting Function or AsyncFunction in `run`
-  - all functions should go through `run` i.e. don't use `call`
-    
+  - ✅ TtyFunctions: `call` -> `run`
+  - 🚧 TtyFunctions: `map` -> `run`
+    - unclear how to deal with `map` e.g. might be reading
 
 - BUG: paused click sometimes not selecting
 
