@@ -54,7 +54,7 @@ export default function PsList() {
         state.disconnectSession?.();
         const session = useSession.api.getSession(state.sessionKey);
         if (session === undefined) {// sessionKey could be empty string
-          state.processes = [];
+          state.processes = state.ordered = [];
           return;
         }
 
@@ -70,7 +70,7 @@ export default function PsList() {
           return agg;
         }, /** @type {ProcessLeader[]} */ ([]));
         
-        // 🚧 order by pid=0, tags, src
+        // order by pid=0, tags, src
         state.ordered = state.processes.slice().sort((p, q) => {
           if (p.pid === 0) return -1;
           if (q.pid === 0) return +1;

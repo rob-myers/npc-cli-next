@@ -265,7 +265,9 @@ export function formatMessage(msg: string, level: "info" | "error") {
 }
 
 export function getPtagsPreview(ptags: Ptags) {
-  return Object.keys(ptags).map(key => (ProcessTagPreview as any)[key] ?? `(${key[0]})`);
+  return Object.keys(ptags).map(key =>
+    key in ProcessTagPreview ? (ProcessTagPreview)[key as keyof typeof ProcessTagPreview] : `[${key[0]}]`
+  );
 }
 
 /**
