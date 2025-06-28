@@ -206,14 +206,14 @@ class semanticsServiceClass {
         function killPipeChildren(SIGINT?: boolean) {
           useSession.api
             .getProcesses(process.sessionKey, pgid)
-            // 🚧 safety while debug nested-pipeline-issue
+            // nested-pipeline issue?
             .filter((x) => x.key !== ppid && x.status !== ProcessStatus.Killed)
             .reverse()
             .forEach((x) => killProcess(x, SIGINT));
         }
+        // 🚧 api.handleStatus
         process.cleanups.push(killPipeChildren); // Handle Ctrl-C
 
-        // const stdIn = useSession.api.resolve(0, stmts[0].meta);
         const fifos = stmts.slice(0, -1).map(({ meta }, i) =>
           useSession.api.createFifo(`/dev/fifo-${sessionKey}-${meta.pid}-${i}`)
         );
@@ -233,9 +233,10 @@ class semanticsServiceClass {
               try {
                 await ttyShell.spawn(file, {
                   by: '|',
-                  localVar: true, // e.g. `take 3 | true`:
+                  localVar: true,
+                  // e.g. `take 3 | true`:
                   cleanups: i === 0 && isTtyAt(file.meta, 0) ? [() => ttyShell.finishedReading()] : undefined,
-                  // 🔔 despite new process group we do not overwrite ptags.interactive
+                  // 🔔 despite new process group we do not delete ptags.interactive
                 });
                 resolve();
               } catch (e) {
