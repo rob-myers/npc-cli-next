@@ -1342,7 +1342,7 @@ export class NpcApi {
     agent.raw.params.set_maxSpeed(this.getMaxSpeed() * 0.75);
     agent.raw.params.set_maxAcceleration(defaultMaxAcceleration);
     agent.raw.params.set_updateFlags(defaultAgentUpdateFlags);
-    agent.raw.params.set_collisionQueryRange(defaultAgentUpdateFlags);
+    agent.raw.params.set_collisionQueryRange(defaultCollisionQueryRange);
     agent.raw.params.set_radius(helper.defaults.radius);
     
     if (reason.key === 'arrived') {
