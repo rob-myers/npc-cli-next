@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn } from "../service/generic";
+import { deepGet, keysDeep, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview } from "./util";
 import type * as Sh from "./parse";

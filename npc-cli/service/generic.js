@@ -94,21 +94,6 @@ function* deepKeys(t, path = []) {
 }
 
 /**
- * @template T
- */
-export class Deferred {
-  /** @type {(value: T | PromiseLike<T>) => void} */
-  resolve = () => {};
-  /** @type {(reason?: any) => void} */
-  reject = () => {};
-  /** @type {Promise<T>} */
-  promise = new Promise((resolve, reject) => {
-    this.resolve = resolve;
-    this.reject = reject;
-  });
-}
-
-/**
  * Test equality, i.e. test fn `equality`,
  * falling back to primitive equality,
  * and recurse on arrays/objects.
