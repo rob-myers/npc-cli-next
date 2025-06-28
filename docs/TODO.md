@@ -286,8 +286,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
     - ℹ️ this is pause/resumable `c=0; while true; do c+=1; echo $c; done`
   - ✅ BUG rebooted paused `poll` exits
     - both interactive and background
-  - 🚧 BUG twice rebooted paused `poll` exits
-
+  - ✅ BUG twice-rebooted paused `poll` exits
+    - fixed by generator.throw in `for await of`
 
 - profile_1: move inline-functions into js modules
 

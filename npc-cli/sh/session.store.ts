@@ -572,7 +572,7 @@ export interface ProcessMeta {
   /** Source of code defining this process. */
   src: string;
   /**
-   * Executed on Ctrl-C or `kill`.
+   * Executed on Ctrl-C or `kill` or reboot builtin.
    * May contain `() => reject(killError(meta))` ...
    */
   cleanups: ((SIGINT?: boolean) => void)[];

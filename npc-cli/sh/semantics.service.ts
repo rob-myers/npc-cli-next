@@ -393,7 +393,11 @@ class semanticsServiceClass {
 
       // 🔔 Actually run the code
       for await (const item of generator) {
-        await preProcessWrite(process, device);
+        try {
+          await preProcessWrite(process, device);
+        } catch (e) {
+          await generator.throw(e);
+        }
         if (node.meta.fd[1] !== stdoutFd) {
           // e.g. `say` redirects stdout to /dev/voice
           stdoutFd = node.meta.fd[1];
