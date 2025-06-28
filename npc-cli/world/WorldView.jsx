@@ -156,9 +156,9 @@ export default function WorldView(props) {
         point: toXZ(position),
         distancePx,
         justLongDown,
-        keys: getModifierKeys(event.nativeEvent),
+        keys: getModifierKeys(event),
         pointers: state.getNumPointers(),
-        rmb: isRMB(event.nativeEvent),
+        rmb: isRMB(event),
         screenPoint: getRelativePointer(event),
         touch: isTouchDevice(),
         meta,
@@ -168,12 +168,12 @@ export default function WorldView(props) {
       }
       return e;
     },
-    handleClickInDebugMode(e) {// debug <=> paused
+    handlePausedClick(screenPoint) {
       if (
         w.disabled === true
         && state.lastDown !== undefined
         && state.lastDown.longDown === false
-        && state.lastDown.screenPoint.distanceTo(getRelativePointer(e)) < 1
+        && state.lastDown.screenPoint.distanceTo(screenPoint) < 1
       ) {
         w.npc.tickOnceDebug();
       }
@@ -324,7 +324,7 @@ export default function WorldView(props) {
           state.lastDown.longDown = true;
           w.events.next(state.getWorldPointerEvent({
             key: "long-pointerdown",
-            event: e,
+            event: e.nativeEvent,
             justLongDown: false,
             meta: {},
             position: state.lastDown.position,
@@ -337,7 +337,7 @@ export default function WorldView(props) {
       state.pickObject(e);
     },
     onPointerLeave(e) {
-      if (!state.down) {
+      if (state.down === null) {
         return;
       }
 
@@ -370,7 +370,7 @@ export default function WorldView(props) {
         // object-pick has finished, so can send world event
         w.events.next(state.getWorldPointerEvent({
           key: "pointerup",
-          event: e,
+          event: e.nativeEvent,
           meta: state.lastDown.meta ?? {},
           position: state.lastDown.position,
         }));
@@ -378,8 +378,6 @@ export default function WorldView(props) {
 
       state.onPointerLeave(e);
       state.justLongDown = false;
-
-      state.handleClickInDebugMode(e); // step world in debug mode
     },
     onTick(deltaMs) {
       if (state.dst.azimuthal !== undefined) {// azimuthal angle
@@ -455,9 +453,8 @@ export default function WorldView(props) {
       gl.render(state.pickingScene, camera);
 
       state.epoch.pickStart = Date.now();
-      e.persist();
       gl.readRenderTargetPixelsAsync(pickingRenderTarget, 0, 0, 1, 1, pixelBuffer)
-        .then(state.onObjectPickPixel.bind(null, e))
+        .then(state.onObjectPickPixel.bind(null, e.nativeEvent))
         .finally(() => state.epoch.pickEnd = Date.now())
       ;
 
@@ -720,9 +717,9 @@ export default function WorldView(props) {
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
- * @property {(e: React.PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
+ * @property {(e: PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
- * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
+ * @property {(screenPoint: Geom.VectJson) => void} handlePausedClick
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
  * @property {() => void} lockDistance
  * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
@@ -786,7 +783,7 @@ const statsCss = css`
  * @typedef WorldPointerEventDef
  * @property {'pointerup' | 'pointerdown' | 'long-pointerdown'} key
  * @property {number} [distancePx]
- * @property {React.PointerEvent | React.MouseEvent} event
+ * @property {PointerEvent | MouseEvent} event
  * @property {boolean} [justLongDown]
  * @property {Meta} meta
  * @property {THREE.Vector3Like} position

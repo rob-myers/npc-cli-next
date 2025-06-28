@@ -252,6 +252,7 @@ export default function useHandleEvents(w) {
           break;
         case "pointerup":
           !e.touch && state.onPointerUpMenuDesktop(e);
+          w.view.handlePausedClick(e.screenPoint); // step world whilst paused
           break;
         case "pre-request-nav": {
           // ℹ️ (re)compute npcToRoom and roomToNpcs
@@ -559,10 +560,10 @@ export default function useHandleEvents(w) {
         return state.onBlockedDoorway(npc, tr.npcKey); // STOP
       }
 
-      if (npc.api.isNearTarget(1) && npc.agent?.raw.nneis === 0) {
-        // slow down through doorway when no neighbours
-        npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
-      }
+      // if (npc.api.isNearTarget(1) && npc.agent?.raw.nneis === 0) {
+      //   // slow down through doorway when no neighbours
+      //   npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
+      // }
 
       if (offMesh.orig.dstRoomMeta.small === true) {// small room
         const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);
@@ -856,7 +857,7 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(npcKey: string) => void} followNpc
- * @property {(e: React.PointerEvent<Element>, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
+ * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
  * @property {(regexDef: string, ...npcKeys: string[]) => void} grantAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
