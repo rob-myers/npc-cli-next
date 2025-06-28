@@ -891,18 +891,11 @@ class cmdServiceClass {
     /** Output 1, 2, ... at fixed intervals (minimum every 0.5s) */
     async *poll(args: string[]) {
       const seconds = args.length ? parseFloat(parseJsonArg(args[0])) || 1 : 1;
-      const [delayMs, deferred] = [Math.max(seconds, 0.5) * 1000, new Deferred<void>()];
-      const handlers = cmdService.handleStatus(this.meta, {
-        cleanups: () => deferred.reject(killError(this.meta)),
-      });
+      const delaySecs = Math.max(seconds, 0.5);
       let count = 1;
-      try {
-        while (true) {
-          yield count++;
-          await Promise.race([pause(delayMs), deferred.promise]);
-        }
-      } finally {
-        handlers.dispose();
+      while (true) {
+        yield count++;
+        await cmdService.sleep(this.meta, delaySecs);
       }
     },
 
