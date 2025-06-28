@@ -670,6 +670,25 @@ class cmdServiceClass {
     }
   }
 
+  absPath(meta: Sh.BaseMeta, path: string) {
+    const pwd = useSession.api.getVar<string>(meta, "PWD");
+    return absPath(path, pwd);
+  }
+
+  async awaitResume(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">) {
+    let handlers: HandleStatusReturns;
+    try {
+      await new Promise<void>((resolve, reject) => {
+        handlers = cmdService.handleStatus(meta, {
+          onResumes: resolve,
+          cleanups: () => reject(killError(meta)),
+        });
+      });
+    } finally {
+      handlers!.dispose();
+    }
+  }
+
   private async *choice(meta: Sh.BaseMeta, { text }: ChoiceReadValue) {
     const lines = text.replace(/\r/g, "").split(/\n/);
     const defaultValue = undefined;
@@ -706,25 +725,6 @@ class cmdServiceClass {
   private computeCwd(meta: Sh.BaseMeta, root: any) {
     const pwd = useSession.api.getVar(meta, "PWD");
     return resolveNormalized(pwd.split("/"), root);
-  }
-
-  absPath(meta: Sh.BaseMeta, path: string) {
-    const pwd = useSession.api.getVar<string>(meta, "PWD");
-    return absPath(path, pwd);
-  }
-
-  async awaitResume(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">) {
-    let handlers: HandleStatusReturns;
-    try {
-      await new Promise<void>((resolve, reject) => {
-        handlers = cmdService.handleStatus(meta, {
-          onResumes: resolve,
-          cleanups: () => reject(killError(meta)),
-        });
-      });
-    } finally {
-      handlers!.dispose();
-    }
   }
 
   get(node: Sh.BaseNode, args: string[]) {
