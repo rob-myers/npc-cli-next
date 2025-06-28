@@ -327,7 +327,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `events`
   - ✅ `w`
   - ✅ cmd.service
-  - 🚧 semantics.service
+  - ✅ semantics.service
   - 🚧 io
   
 - ✅ `game.move` programmatically interruptible by JavaScript

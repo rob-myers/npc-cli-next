@@ -202,22 +202,23 @@ class semanticsServiceClass {
         const pgid = ppid; // 🔔 `node.meta.pgid` breaks pgid 0, and nested pipelines
         const { ttyShell } = useSession.api.getSession(sessionKey);
 
-        const process = getProcess(node.meta);
         function killPipeChildren(SIGINT?: boolean) {
           useSession.api
-            .getProcesses(process.sessionKey, pgid)
+            .getProcesses(sessionKey, pgid)
             // nested-pipeline issue?
             .filter((x) => x.key !== ppid && x.status !== ProcessStatus.Killed)
             .reverse()
             .forEach((x) => killProcess(x, SIGINT));
         }
-        // 🚧 api.handleStatus
-        process.cleanups.push(killPipeChildren); // Handle Ctrl-C
+        const statusHandlers = cmdService.handleStatus(node.meta, {
+          cleanups: killPipeChildren,
+        });
 
         const fifos = stmts.slice(0, -1).map(({ meta }, i) =>
           useSession.api.createFifo(`/dev/fifo-${sessionKey}-${meta.pid}-${i}`)
         );
         const stdOut = useSession.api.resolve(1, stmts.at(-1)!.meta);
+        const process = getProcess(node.meta);
 
         try {
           // Clone, connecting stdout to stdin of subsequent process
@@ -259,7 +260,7 @@ class semanticsServiceClass {
             })
           ));
           // 🔔 Avoid above `killPipeChildren` killing children of next pipeline
-          // e.g. call '() => { throw "❌" }' | true; true | { sleep 1; echo 🔔; }
+          // e.g. call '() => { throw "☹️" }' | true; true | { sleep 1; echo 🔔; }
           await pause(cleanupSetupMs);
 
           if (
@@ -277,6 +278,7 @@ class semanticsServiceClass {
             fifo.finishedWriting();
             useSession.api.removeDevice(fifo.key);
           });
+          statusHandlers.dispose();
         }
         break;
       }
