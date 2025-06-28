@@ -267,7 +267,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 - ✅ `PsList` sort processes by tags and src (not pid, except when pid `0`)
   - ✅ show tag keys
 
-- 🚧 HMR strategy for running processes
+- ✅ HMR strategy for running processes
   - ❌ `PsList` supports "restart" option for each leading process
     - doesn't fit into "shell interface"
   - ✅ `PsList` can copy process src
@@ -280,7 +280,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
       - `call 'x => api.getProcess()'`
     - `call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 0 })'`
   - ✅ can reboot using button in `PsList`
-  - 🚧 careful about reboot of process in pipe (do not finish reading/writing)
+  - ✅ careful about reboot of process in pipe (do not finish reading/writing)
     - ✅ works interactively: `poll 2 | map 'x => [x, x]'`
   - ✅ BUG resume `poll 2`
     - ℹ️ this is pause/resumable `c=0; while true; do c+=1; echo $c; done`

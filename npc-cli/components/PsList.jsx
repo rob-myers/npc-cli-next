@@ -200,8 +200,7 @@ export default function PsList() {
                 </div>}
               </div> 
               <div className="process-controls">
-                <div className="control" onClick={p.status === ProcessStatus.Running ? state.changeProcess : undefined} data-act="pause" data-pid={p.pid}><FontAwesomeIcon icon={faPause} title="pause" size="sm" /></div>
-                <div className="control" onClick={p.status === ProcessStatus.Suspended ? state.changeProcess : undefined} data-act="resume" data-pid={p.pid}><FontAwesomeIcon icon={faPlay} title="play" size="xs" /></div>
+                <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act={p.status === ProcessStatus.Suspended ? "resume" : "pause"} data-pid={p.pid}><FontAwesomeIcon icon={p.status === ProcessStatus.Suspended ? faPlay : faPause} title={p.status === ProcessStatus.Suspended ? "resume" : "pause"} size="xs" /></div>
                 <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act="kill" data-pid={p.pid}><FontAwesomeIcon icon={faClose} title="kill" size="1x" /></div>
                 <div className="control" onClick={state.changeProcess} data-act="reboot" data-pid={p.pid}><FontAwesomeIcon icon={faRefreshThin} title="reboot" size="xs" /></div>
               </div>
@@ -307,9 +306,12 @@ const psListCss = css`
       .control {
         display: flex;
         align-items: center;
+        justify-content: center;
         padding: 2px 8px;
         cursor: pointer;
         border: 1px solid #555;
+
+        width: 28px;
       }
 
     }
