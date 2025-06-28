@@ -20,9 +20,9 @@ import {
   ttyError,
   formatMessage,
 } from "./util";
-import { cmdService, isTtyAt, getProcess } from "./cmd.service";
+import { cmdService, isTtyAt, getProcess, preProcessWrite } from "./cmd.service";
 import { srcService } from "./parse";
-import { preProcessWrite, redirectNode } from "./io";
+import { redirectNode } from "./io";
 import { cloneParsed, collectIfClauses, reconstructReplParamExp, wrapInFile } from "./parse";
 
 class semanticsServiceClass {

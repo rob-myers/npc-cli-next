@@ -264,7 +264,7 @@ export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })
   const handlers = api.handleStatus({
     onSuspends(byPtags) { if (!byPtags) { npc.s.preventStop = false; npc.api.setSlowDownRadius(prevRadius) } },
     onResumes() { npc.s.preventStop = true; prevRadius = npc.api.setSlowDownRadius(0.05); },
-  }, { initially: true, finally: true });
+  }, { initially: true, finally: true }); // only usage so far, but might be helpful
 
   try {
     for (const to of opts.to) {

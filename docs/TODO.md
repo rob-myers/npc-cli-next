@@ -281,6 +281,10 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
     - `call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 0 })'`
   - ✅ can reboot using button in `PsList`
   - 🚧 careful about reboot of process in pipe (do not finish reading/writing)
+    - ✅ works interactively: `poll 2 | map 'x => [x, x]'`
+
+- ✅ BUG resume `poll 2`
+  - ℹ️ this is pause/resumable `c=0; while true; do c+=1; echo $c; done`
 
 - profile_1: move inline-functions into js modules
 

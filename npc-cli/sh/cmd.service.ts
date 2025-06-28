@@ -4,9 +4,9 @@ import { uid } from "uid";
 import { ansi, EOF } from "./const";
 import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError, getPtagsPreview } from "./util";
+import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview } from "./util";
 import type * as Sh from "./parse";
-import { type ReadResult, preProcessRead, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk } from "./io";
+import { type ReadResult, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk, type Device } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
 import { cloneParsed, getOpts, parseService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
@@ -714,18 +714,16 @@ class cmdServiceClass {
   }
 
   async awaitResume(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">) {
-    let resolve = emptyResolve, reject = emptyReject;
-    const handlers = cmdService.handleStatus(meta, {
-      onResumes: resolve,
-      cleanups: () => reject(killError(meta)),
-    });
+    let handlers: HandleStatusReturns;
     try {
-      await new Promise<void>((resolveResume, rejectResume) => {
-        resolve = resolveResume;
-        reject = rejectResume;
+      await new Promise<void>((resolve, reject) => {
+        handlers = cmdService.handleStatus(meta, {
+          onResumes: resolve,
+          cleanups: () => reject(killError(meta)),
+        });
       });
     } finally {
-      handlers.dispose();
+      handlers!.dispose();
     }
   }
 
@@ -1071,6 +1069,22 @@ class cmdServiceClass {
     } finally {
       handlers.dispose();
     }
+  }
+}
+
+export async function preProcessWrite(process: ProcessMeta, device: Device) {
+  if (process.status === ProcessStatus.Killed || device.finishedReading(true) === true) {
+    throw killError(process);
+  } else if (process.status === ProcessStatus.Suspended) {
+    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
+  }
+}
+
+export async function preProcessRead(process: ProcessMeta, _device: Device) {
+  if (process.status === ProcessStatus.Killed) {
+    throw killError(process);
+  } else if (process.status === ProcessStatus.Suspended) {
+    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
   }
 }
 

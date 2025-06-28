@@ -2,9 +2,9 @@ import { Subject, Subscription } from "rxjs";
 import { deepClone, last } from "../service/generic";
 import type * as Sh from "./parse";
 import { traverseParsed } from "./parse";
-import { killError, ttyError } from "./util";
-import useSession, { type ProcessMeta, ProcessStatus } from "./session.store";
-import { cmdService } from "./cmd.service";
+import { ttyError } from "./util";
+import useSession from "./session.store";
+// 🔔 cmd.service circular import issue
 
 export const scrollback = 200;
 
@@ -117,22 +117,6 @@ export interface Device {
 export interface ReadResult {
   eof?: boolean;
   data?: any;
-}
-
-export async function preProcessWrite(process: ProcessMeta, device: Device) {
-  if (process.status === ProcessStatus.Killed || device.finishedReading(true) === true) {
-    throw killError(process);
-  } else if (process.status === ProcessStatus.Suspended) {
-    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
-  }
-}
-
-export async function preProcessRead(process: ProcessMeta, _device: Device) {
-  if (process.status === ProcessStatus.Killed) {
-    throw killError(process);
-  } else if (process.status === ProcessStatus.Suspended) {
-    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
-  }
 }
 
 //#region data chunk
