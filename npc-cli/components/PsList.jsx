@@ -88,7 +88,7 @@ export default function PsList() {
         error(e);
       }
     },
-    async copyCode(e) {
+    async copyCode(e) {// 🚧 -> reboot instead
       const pid = Number(e.currentTarget.dataset.pid);
       const { src, ptags } = useSession.api.getProcess({ sessionKey: state.sessionKey, pid });
       // 🚧 remove ptags.interactive; support ptags.foo value

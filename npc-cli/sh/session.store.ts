@@ -565,6 +565,16 @@ export interface ProcessMeta {
    */
   cleanups: ((SIGINT?: boolean) => void)[];
   /**
+   * Processes with src `run {moduleName} {fnName} ...` can be rebooted,
+   * to avoid stale JavaScript on hot module reload.
+   */
+  reboot?: {
+    apply(): void;
+    applying: boolean;
+    /** Each `cleanups[i]` where `i ≥ cleanupId` will be invoked. */
+    cleanupId: number;
+  };
+  /**
    * Executed on suspend, without clearing `true` returners.
    * The latter should be idempotent, e.g. unsubscribe, pause.
    * 

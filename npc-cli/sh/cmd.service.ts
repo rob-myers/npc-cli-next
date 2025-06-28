@@ -2,7 +2,7 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries } from "../service/generic";
+import { Deferred, deepGet, keysDeep, pause, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { absPath, addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError, getPtagsPreview } from "./util";
 import type * as Sh from "./parse";
@@ -469,30 +469,56 @@ class cmdServiceClass {
           const ct = this.provideProcessCtxt(meta, args.slice(1));
 
           if (args[0] in ct.lib) {
-            
-            const func = (ct.lib as any)[args[0]][args[1]];
-            if (func === undefined) {
-              throw Error(`not found: ${args[0]} ${args[1]}`)
-            }
 
-            meta.stack.push(args[0], args[1]); // better error handling
-            ct.args = ct.args.slice(1); // discard 2nd arg too
-            
-            if (functionOrAsync.includes(func.constructor.name)) {
-              yield await func(ct); // support all sh/src/* functions
-            } else {
-              yield* func(ct);
+            // 🔔 support process hot-reloading
+            // ℹ️ e.g. call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 11 }).reboot.apply()'
+            const process = getProcess(meta);
+            process.reboot = {
+              apply() {
+                if (this.applying === true) return warn(`already rebooting process ${process.key}: ${process.src}`);
+                this.applying = true;
+                const removed = process.cleanups.splice(this.cleanupId, process.cleanups.length - this.cleanupId);
+                removed.forEach(cleanup => cleanup());
+              },
+              applying: false,
+              cleanupId: process.cleanups.length,
+            };
+
+            while (true) {
+              try {
+                const func = (ct.lib as any)[args[0]]?.[args[1]];
+                if (func === undefined) {
+                  throw Error(`not found: ${args[0]} ${args[1]}`)
+                }
+    
+                meta.stack.push(`${args[0]}.${args[1]}`);
+                ct.args = args.slice(2); // discard 2nd arg too
+                
+                if (functionOrAsync.includes(func.constructor.name)) {
+                  yield await func(ct); // support all sh/src/* functions
+                } else {
+                  yield* func(ct);
+                }
+                
+                break;
+
+              } catch (e) {// 🔔 distinguish hot-reload from error
+                if (process.reboot.applying === false || process.status === ProcessStatus.Killed) {
+                  throw e;
+                }
+                process.reboot.applying = false;
+              }
             }
 
           } else {
 
             // Function provided as argument
-            // 🚧 require prefix *{fnName} so can support non-generators
             const fnName = meta.stack.at(-1) || "generator";
             const func = Function("_", `return async function *${fnName} ${args[0]}`);
             yield* func()(ct);
 
           }
+
         } catch (e) {
           if (e instanceof ProcessError) {
             handleProcessError(node, e);
@@ -810,8 +836,8 @@ class cmdServiceClass {
 
     getOpts,
 
-    getProcess() {
-      return getProcess(this.meta);
+    getProcess(meta?: Parameters<typeof getProcess>[0]) {
+      return getProcess(meta ?? this.meta);
     },
 
     getShError(message: string, exitCode = 1) {
@@ -1045,7 +1071,7 @@ class cmdServiceClass {
 
 //#region processApi related
 
-export function getProcess(meta: Sh.BaseMeta) {
+export function getProcess(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">) {
   return useSession.api.getProcess(meta);
 }
 

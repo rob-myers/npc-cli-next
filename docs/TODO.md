@@ -273,8 +273,13 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `PsList` can copy process src
     - very manual approach to restarting a process
   - `Tty` can send HMR-delta message (which modules got reloaded)
-  - NEW APPROACH: reboot `run` without respawning processes
-    - IDEA: provide callback which invokes "all later cleanups"
+  - ✅ can process.reboot.apply() `run` without respawning processes
+    - ℹ️ might work because `run` refers to `ct.lib`
+    - ✅ fix hang
+      - `call '({ api }) => api.getProcess())'`
+      - `call 'x => api.getProcess()'`
+    - `call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 0 })'`
+  - can reboot using button in `PsList`
 
 - ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
   - `sleep` not initially triggered if starts paused
@@ -354,8 +359,11 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ TtyFunctions: `call` -> `run`
   - 🚧 TtyFunctions: `map` -> `run`
     - unclear how to deal with `map` e.g. might be reading
+    - maybe ok because `map` is run by `run`
 
-- BUG: paused click sometimes not selecting
+- BUG: idle npcs are sometimes not staying in place on nav reload?
+
+- ✅ BUG: paused click sometimes not selecting
 
 - BUG: collide whilst running does not enter Idle
 
@@ -428,7 +436,6 @@ expr window.document.querySelector'("section")' | log
   - ✅ on close world using Manage, also close Tty indicated by tabs.store
   - ℹ️ multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
 
-
 - ✅ BUG ctrl-c of `while true; do tour npcKey:rob to:$( points ); sleep 1; done` waits for a second
 
 - can we avoid `move` failing with key "stuck" when near others?
@@ -436,6 +443,11 @@ expr window.document.querySelector'("section")' | log
 - manage: can select tty profileKey which remounts Tty
 
 - BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
+
+- BUG (?) spread of command subst
+  - on `x=$( echo foo; echo bar )` then `x` should be `['foo', 'bar]`
+  - on `x=...$( echo foo; echo bar)` then `x` should be `foo bar`
+  - `echo ...$( expr [1,2,3] )` should output `1 2 3`
 
 - ✅ manage: clean and clarify actions
 
