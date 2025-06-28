@@ -317,7 +317,7 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 
 - ✅ fix bad exit code: `foo () { echo foo; echo bar; return; }; foo`
 
-- 🚧 yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
+- ✅ yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
   - ✅ `sleep` tidies its callbacks
   - ✅ `move` tidies its callbacks
   - ✅ `awaitResume` tidies its callbacks
@@ -328,8 +328,8 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
   - ✅ `w`
   - ✅ cmd.service
   - ✅ semantics.service
-  - 🚧 io
-  
+  - ✅ io
+
 - ✅ `game.move` programmatically interruptible by JavaScript
   - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`
   - could count cleanups before and e.g. `api.killPartial(count)`

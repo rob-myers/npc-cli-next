@@ -713,6 +713,22 @@ class cmdServiceClass {
     return absPath(path, pwd);
   }
 
+  async awaitResume(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">) {
+    let resolve = emptyResolve, reject = emptyReject;
+    const handlers = cmdService.handleStatus(meta, {
+      onResumes: resolve,
+      cleanups: () => reject(killError(meta)),
+    });
+    try {
+      await new Promise<void>((resolveResume, rejectResume) => {
+        resolve = resolveResume;
+        reject = rejectResume;
+      });
+    } finally {
+      handlers.dispose();
+    }
+  }
+
   get(node: Sh.BaseNode, args: string[]) {
     const root = this.provideProcessCtxt(node.meta);
     const pwd = useSession.api.getVar<string>(node.meta, "PWD");
@@ -736,7 +752,7 @@ class cmdServiceClass {
     return outputs;
   }
 
-  handleStatus(meta: Sh.BaseMeta, handlers: HandleStatusHandlers, opts: {
+  handleStatus(meta: Pick<Sh.BaseMeta, 'sessionKey' | 'pid'>, handlers: HandleStatusHandlers, opts: {
     initially?: boolean;
     finally?: boolean;
   } = {}) {
@@ -789,18 +805,7 @@ class cmdServiceClass {
     addStdinToArgs,
 
     async awaitResume() {
-      let resolve = emptyResolve, reject = emptyReject;
-      const handlers = cmdService.handleStatus(this.meta, {
-        onResumes: () => resolve(),
-        cleanups: () => reject(killError(this.meta)),
-      });
-      try {
-        await new Promise<void>((resolveResume, rejectResume) => {
-          resolve = resolveResume, reject = rejectResume;
-        });
-      } finally {
-        handlers.dispose();
-      }
+      await cmdService.awaitResume(this.meta);
     },
     
     dataChunk,

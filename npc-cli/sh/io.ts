@@ -1,9 +1,10 @@
 import { Subject, Subscription } from "rxjs";
-import { deepClone, removeFirst, last } from "../service/generic";
+import { deepClone, last } from "../service/generic";
 import type * as Sh from "./parse";
 import { traverseParsed } from "./parse";
 import { killError, ttyError } from "./util";
 import useSession, { type ProcessMeta, ProcessStatus } from "./session.store";
+import { cmdService } from "./cmd.service";
 
 export const scrollback = 200;
 
@@ -122,12 +123,7 @@ export async function preProcessWrite(process: ProcessMeta, device: Device) {
   if (process.status === ProcessStatus.Killed || device.finishedReading(true) === true) {
     throw killError(process);
   } else if (process.status === ProcessStatus.Suspended) {
-    let cleanup: () => any;
-    await new Promise<void>((resolve, reject) => {
-      process.onResumes.push(resolve);
-      process.cleanups.push((cleanup = () => reject(killError(process))));
-    });
-    removeFirst(process.cleanups, cleanup!);
+    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
   }
 }
 
@@ -135,12 +131,7 @@ export async function preProcessRead(process: ProcessMeta, _device: Device) {
   if (process.status === ProcessStatus.Killed) {
     throw killError(process);
   } else if (process.status === ProcessStatus.Suspended) {
-    let cleanup = () => {};
-    await new Promise<void>((resolve, reject) => {
-      process.onResumes.push(resolve);
-      process.cleanups.push((cleanup = () => reject(killError(process))));
-    });
-    removeFirst(process.cleanups, cleanup);
+    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
   }
 }
 

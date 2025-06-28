@@ -134,7 +134,7 @@ export class ProcessError extends Error {
   }
 }
 
-export function killError(meta: Sh.BaseMeta | ProcessMeta, exitCode?: number, depth?: number) {
+export function killError(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid"> | ProcessMeta, exitCode?: number, depth?: number) {
   return new ProcessError(
     SigEnum.SIGKILL,
     "pid" in meta ? meta.pid : meta.key,
