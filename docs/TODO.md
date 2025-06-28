@@ -279,7 +279,10 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
       - `call '({ api }) => api.getProcess())'`
       - `call 'x => api.getProcess()'`
     - `call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 0 })'`
-  - can reboot using button in `PsList`
+  - ✅ can reboot using button in `PsList`
+  - 🚧 careful about reboot of process in pipe (do not finish reading/writing)
+
+- profile_1: move inline-functions into js modules
 
 - ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
   - `sleep` not initially triggered if starts paused

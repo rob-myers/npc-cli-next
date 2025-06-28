@@ -125,7 +125,7 @@ const useStore = create<State>()((set, get): State => ({
         const processes = Object.values(session.process);
         return pgid === undefined ? processes : processes.filter((x) => x.pgid === pgid);
       } else {
-        warn(`getProcesses: session ${sessionKey} does not exist`);
+        warn(`${'getProcesses'}: session does not exist: ${sessionKey}`);
         return [];
       }
     },
@@ -277,6 +277,16 @@ const useStore = create<State>()((set, get): State => ({
         jsStringify(persistedVarLookup),
       );
       // console.log({persistedVarLookup})
+    },
+
+    reboot(sessionKey, pid) {
+      const { process } = api.getSession(sessionKey);
+      const { pgid } = process[pid];
+      for (const p of Object.values(process)) {
+        if (p.pgid === pgid) {
+          p.reboot?.apply();
+        }
+      }
     },
 
     async refreshTtyLinks(sessionKey) {
@@ -477,6 +487,8 @@ export type State = {
     }) => void;
     persistHistory: (sessionKey: string) => void;
     persistHome: (sessionKey: string) => void;
+    /** Invoke `process.reboot?.apply()` for all processes in same group */
+    reboot: (sessionKey: string, pid: number) => void;
     refreshTtyLinks: (sessionKey: string) => Promise<void>;
     rehydrate: (sessionKey: string) => Rehydrated;
     removeDevice: (deviceKey: string) => void;
