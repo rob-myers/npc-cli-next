@@ -25,7 +25,7 @@ export default function PsList() {
     processes: [],
     ordered: [],
     sessionKey: '',
-    sessionSelect: null,
+    sessionSelectEl: null,
     ttyTabMeta: null,
 
     changeProcess(e) {
@@ -138,14 +138,14 @@ export default function PsList() {
     },
   }), { deps: [ttyTabMetas] });
 
-  // 🚧 cleaner approach to syncing state.ttyTabMeta
   React.useEffect(() => {
+    // 🚧 cleaner approach to syncing state.ttyTabMeta
     const sessionKeys = /** @type {string[]} */ (ttyTabMetas.map(x => x.key));
     if (ttyTabMetas.length === 0) {
       state.sessionKey = '';
       state.ttyTabMeta = null;
     } else if (!sessionKeys.includes(state.sessionKey)) {
-      state.sessionKey = state.sessionSelect?.value ?? sessionKeys[0];
+      state.sessionKey = state.sessionSelectEl?.value ?? sessionKeys[0];
       state.ttyTabMeta = ttyTabMetas[ttyTabMetas.findIndex(x => x.key === state.sessionKey)];
     } else {// Must sync
       state.ttyTabMeta = ttyTabMetas[ttyTabMetas.findIndex(x => x.key === state.sessionKey)];
@@ -153,7 +153,9 @@ export default function PsList() {
   }, [ttyTabMetas]);
   
   React.useEffect(() => {// sync onchange session or hmr session
-    state.refreshProcessLeaders();
+    if (state.processes.length > 0) {
+      state.refreshProcessLeaders();
+    }
   }, [state.ttyTabMeta?.ttyBootedAt])
 
   const sessionsExist = ttyTabMetas.length > 0;
@@ -166,7 +168,7 @@ export default function PsList() {
         {sessionsExist && (
           <div className="session-controls">
             <select
-              ref={state.ref('sessionSelect')}
+              ref={state.ref('sessionSelectEl')}
               onChange={state.onChangeSessionKey}
               title="sessionKey"
             >
@@ -186,6 +188,7 @@ export default function PsList() {
       
       {sessionsExist && (
         <div className="process-leaders">
+          
           {state.ordered.map(p =>
             <div
               key={p.pid}
@@ -214,6 +217,13 @@ export default function PsList() {
               )}
             </div>
           )}
+
+          {state.ordered.length === 0 && (
+            <div className="no-processes">
+              Refresh to track current processes.
+            </div>
+          )}
+
         </div>
       )}
 
@@ -233,7 +243,7 @@ const psListCss = css`
     justify-content: space-between;
     align-items: stretch;
 
-    > h2 {
+    h2 {
       color: #ccc;
       align-self: end;
       font-family: 'Courier New', Courier, monospace;
@@ -252,10 +262,11 @@ const psListCss = css`
       select {
         width: 60px;
         padding: 2px 0;
-        font-size: 0.9rem;
-        font-family: 'Courier New', Courier, monospace;
         /* 🔔 fixes safari */
         text-align-last: center;
+        font-size: 0.9rem;
+        font-family: 'Courier New', Courier, monospace;
+        background: #333;
       }
 
       button.refresh {
@@ -271,9 +282,16 @@ const psListCss = css`
     flex-direction: column;
     gap: 4px;
 
-    font-family: 'Courier New', Courier, monospace;
     font-size: medium;
     color: #fff;
+    
+    .no-processes {
+      font-size: small;
+      color: #ff9;
+      border: 1px solid #555;
+      padding: 16px;
+      border-radius: 4px;
+    }
   }
 
   .process-leader {
@@ -286,6 +304,7 @@ const psListCss = css`
     border-radius: 4px;
     background-color: #222;
     color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
     
     .pid-and-ptags {
       display: flex;
@@ -380,7 +399,7 @@ const psListCss = css`
  * @property {ProcessLeader[]} processes
  * @property {ProcessLeader[]} ordered Re-ordered `processes`
  * @property {string} sessionKey
- * @property {null | HTMLSelectElement} sessionSelect
+ * @property {null | HTMLSelectElement} sessionSelectEl
  * @property {null | import("../tabs/tabs.store").TabStoreTabMeta} ttyTabMeta
  *
  * @property {(e: React.PointerEvent<HTMLDivElement>) => void} changeProcess

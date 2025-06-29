@@ -54,6 +54,10 @@
 
 ### World
 
+- 🚧 PsList issues
+  - ✅ should not initially track on hmr
+  - should not re-track on hmr by file edit
+
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
   - ✅ invert npc (when WorldMenu invert on)
   - ❌ torch radius/opacity
