@@ -56,51 +56,9 @@
 
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
   - ✅ invert npc (when WorldMenu invert on)
-  - torch radius/opacity
+  - ❌ torch radius/opacity
   - breathTriIds (one per classKey)
   - ...
-
-- ✅ manage tabs
-  - ✅ can close tab
-  - ✅ can open new tab
-  - ✅ create tab needn't select it
-  - ✅ close tab needn't select it
-  - ✅ can specify props when open new tab
-    - ✅ get all mapKeys somehow
-    - ✅ directly import deserialized geomorphs
-    - ✅ world: can specify mapKey
-    - ✅ tty: can specify
-      - ✅ profileKey
-      - ✅ worldKey
-  - ✅ fix select on remove i.e. should not switch away from manage
-  - ✅ tab grey if disabled (e.g. never mounted)
-    - ℹ️ TTY tabs not disabled in background, others are
-    - ✅ should not set background tab enabled when Tabs enabled
-    - ✅ site.store has tabset.tabs derived from tabset.synced
-    - ✅ ensure keys are removed from Tabs.tabsState
-    - ✅ expose Viewer tabs disabled
-    - ✅ style when disabled
-    - ✅ style when unmounted
-  - ✅ select tab on click
-  - ✅ ongoing restyle
-    - ✅ clean
-    - ✅ paused represented via icon
-    - ✅ unmounted represented via icon
-    - ✅ use many onClick rather than "one for many"
-  - ❌ "create tab" labelled with next id
-    - might be confusing
-  - ✅ enforce tab id format i.e. `${Key.TabClassPrefix}-${number}`
-  - ✅ can change world mapKey
-    - ✅ works when World tab in foreground
-    - ✅ fix background tab
-      - ℹ️ `door[useEffect]` not invoked while bg because `useEffect`
-      - nav.worker should be re-triggered in background
-  - ✅ create tty worldKey is numeric
-    - if invalid, env.WORLD_KEY won't be defined
-  - ❌ can change tty worldKey (numeric)
-    - must use tty
-  - ✅ tty worldKey reflects home.WORLD_KEY onclick
-  - ✅ "open tab" long-press should select it
 
 - 🚧 iOS 18.5 not working, probably when recast (WASM) is loaded
   - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
@@ -109,194 +67,6 @@
   - ℹ️ `small-map-1` works, so could restrict in case of iOS
   - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
   - 🚧 check iPad
-
-- ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
-  - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
-    wrap around "nav-deformed" corner
-  - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
-
-- ✅ Draggable: towards resizable via corner
-  - ✅ remove controls from PopUp
-  - ✅ can resize
-  - ✅ ContextMenu and Logger work
-  - ✅ ContextMenu: only forward scroll even not scrollable
-    - test `innerRoot.scrollHeight` vs `innerRoot.clientHeight` (we don't show horizontal scroll)
-
-- ✅ selectively `source /etc/foo` with HMR tracking
-  - ℹ️ currently every js-induced-file is auto-sourced and tracked
-  - ℹ️ instead, profiles will start with e.g. `source /etc/game-generators.sh`
-  - ✅ RunArg -> NPC.RunArg
-  - ✅ sh/src/index.js -> sh/src/profiles.js
-  - ✅ shorter names for src/sh/*.{js,sh}
-    - js generators -> sh with extension `jsh` (avoid collision)
-  - ✅ separate jsFunctions by filename key (e.g. `game`, `gameWip`)
-  - ✅ mechanism for communication between `source` and hmr-sourcing
-    - ✅ send test message from `source`
-  - ✅ "external" message triggers auto-HMR
-    - ✅ mutate lookup in `<Tty>` and adjust useEffect
-
-- ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
-  - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes
-  - these non-quoted versions work:
-    - `tour npcKey:rob to:$( click 2 | sponge )`
-    - `points=$( click 2 ); tour npcKey:rob to:$( points )`
-
-- ✅ can `tour npcKey:rob to:$( click 2 )`
-  - ✅ command substitution outputs (jsStringified) js array if multiple values
-  - 🔔 `fnFoo $( click 2 )` won't have $1 and $2 but only $1 i.e. `[...]`
-
-- ✅ BUG: pausing whilst PROFILE running was not working
-  - ℹ️ `spawn` was setting `process.status` `ProcessStatus.Running` for leading process
-  - ❌ spawned process should inherit status?
-    - a paused/dead process should never spawn another
-  - ✅ process pauses before `spawn` if paused
-    - currently we only suspend/resume process on read/write to device
-  - ✅ distinguish: auto-pasted lines from PROFILE, interactively specified command
-
-- ❌ BUG: cannot pause `w foo`
-- ✅ BUG: ctrl-c profile works with exitCode `130`
-
-- ✅ manage: change map while paused sometimes doesn't work 
-  - hide World behind other tab, then select it via manage, then change
-  - presumably thinks its "in background"
-
-- ✅ BUG: CONT is showing when it should not
-
-- ✅ manage: open tty tab while paused is now enabled (so can see actual terminal)
-
-- ✅ `<Tty>` should receive disabled like other tabs, but handles differently
-  - ✅ can boot while disabled
-  - ✅ on open tty tab while paused, tty profile should not pause initially
-    - can test `nextPid > 1`
-  - ✅ if `<Tabs>` disabled then background processes without `'always' in ptags` start suspended (in sync)
-    - ℹ️ ttyShell.bgSuspendUnless := 'always'
-  - ✅ `<Tty>` resumeRunningProcesses resumes all suspended processes sans tag `always`
-  - ✅ CONT not shown during profile
-
-- ✅ CONT/STOP ui new approach:
-  - ✅ CONT visible whenever interactive process suspended
-  - ✅ STOP visible whenever interactive process running
-  - ✅ while Tab paused only one click needed:
-    - ✅ `ptags=always; move npcKey:rob to:$( click 1 ) &`
-    - ✅ `ptags=always; echo $( click 1 ) &`
-  - ✅ STOP continues, showing CONT
-    - `interactive-paused`
-    - `interactive-resumed`
-  - ✅ CONT continues, showing STOP
-
-- ✅ re-source /etc/foo cannot be put to sleep during profile run
-
-- ✅ tty: mobile textarea disabled by default
-  - clarify enable/disable prompt button
-
-- ✅ add `game.look` so can remove `initCamAndLights`
-
-- ❌ `expr` is receiving duplicated args?
-```sh
-# this works
-expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
-# this does not: " and {} have different meanings!
-expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
-```
-
-- ✅ get stuck starting near neighbour on other side of wall
-  - repro:
-    ```sh
-    points=$( expr '[{x:3.467,y:0,z:4.55,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.467,y:4.55}},{x:5.099,y:0,z:6.901,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:5.099,y:6.901}}]' )
-
-    while true; do tour npcKey:rob to:$( points ); sleep 1; done
-    ```
-  - ℹ️ npc fails to reach target (stuck), then restarts from same failed target (infinite loop)
-  - ✅ stop-reason stuck has boolean `nearTarget` using `nearTargetDistance`
-  - ✅ npc.s.arriveDistance
-  - ✅ relax npc arriveDistance inside `tour`
-
-- ✅ tty links have optional `refresh` callback
-  - ℹ️ if we don't track lineNumber of link (hard), only traverse all tty lines once
-  - ℹ️ assume all instances of the line with the link should be updated
-    - works for e.g. process-info-line
-  - ✅ `ps` provides `refresh(lineNumber)` callback per link which updates status of link
-  - ✅ useSession.api.refreshTtyLinks(sessionKey)
-- ✅ on `<Tty>` pause/resume we invoke these callbacks
-- ❌ remove stale links and cross them out
-  - 🔔 otherwise they'll be `ps` further up which are out-of-sync
-    - cannot edit buffer above current scroll
-  - ❌ xterm.onScroll
-  - ℹ️ decided against e.g. small scroll area
-
-- ✅ `PsList`: pause/resume/killable process list
-  - ✅ rename `Debug` -> `PsList`
-  - ✅ `Manage` shows `PsList`
-  - ✅ lists process leaders
-  - ✅ can manually refresh via button
-  - ✅ UI for pause, resume, kill
-  - ✅ pause, resume, kill buttons work
-  - ✅ external message `process-leader` provides status
-  - ✅ remove external message `interactive`
-  - ✅ process controls indicate if killed
-    - ✅ fix dup external `leading-process` e.g. (1) initial after parse, (2) inside builtin `source`
-  - ✅ fix unhandled kill in console
-  - ✅ process controls indicate if paused
-
-- ✅ BUG: `kill {pid}` 
-  - pass opts.SIGNT true by default if not stopping or resuming
-
-- ✅ remove on/no/x buttons from `ps`
-  - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
-  - ℹ️ maybe keep "replace line" code for future use cases
-  - ✅ show "on/no" but cannot be changed
-  - ✅ remove kill button
-  - ❌ maybe include button linking to PsList
-  - ✅ paused gray more visible
-  - ✅ ptags.interactive is `true` or does not exist
-  - ✅ ptags.always is `true` or does not exist
-  - ✅ `ptags=always` auto has preview
-  - ✅ `ps` uses these values
-
-- ✅ move ptags.always into sh/* i.e. not from `<Tty>`
-  - ✅ use `ProcessTag.always`
-  - ✅ use `ProcessTag.interactive`
-  - ✅ `ttyShell.bgSuspendUnless` -> `ttyShell.suspendNonInteractive`
-  - ✅ `useSession.api.kill` supports boolean `opts.byPtags`
-    - ℹ️ currently we just pass it through
-    - ✅ additionally select the processes
-    - ✅ cleanup `<Tty>`
-
-- ✅ can resume profile after pause `<Tty>`
-
-- ✅ `PsList` sort processes by tags and src (not pid, except when pid `0`)
-  - ✅ show tag keys
-
-- ✅ HMR strategy for running processes
-  - ❌ `PsList` supports "restart" option for each leading process
-    - doesn't fit into "shell interface"
-  - ✅ `PsList` can copy process src
-    - very manual approach to restarting a process
-  - `Tty` can send HMR-delta message (which modules got reloaded)
-  - ✅ can process.reboot.apply() `run` without respawning processes
-    - ℹ️ might work because `run` refers to `ct.lib`
-    - ✅ fix hang
-      - `call '({ api }) => api.getProcess())'`
-      - `call 'x => api.getProcess()'`
-    - `call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 0 })'`
-  - ✅ can reboot using button in `PsList`
-  - ✅ careful about reboot of process in pipe (do not finish reading/writing)
-    - ✅ works interactively: `poll 2 | map 'x => [x, x]'`
-  - ✅ BUG resume `poll 2`
-    - ℹ️ this is pause/resumable `c=0; while true; do c+=1; echo $c; done`
-  - ✅ BUG rebooted paused `poll` exits
-    - both interactive and background
-  - ✅ BUG twice-rebooted paused `poll` exits
-    - fixed by generator.throw in `for await of`
-
-- profile_1: move inline-functions into js modules
-
-- ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
-  - `sleep` not initially triggered if starts paused
-
-- ✅ BUG: stop `tour` via TtyMenu then ctrl-c
-  - need to ctrl-c twice to stop pid 0
-  - awaitResume needed to send killError in cleanup
 
 - 🚧 get variant of `tour` working with continuous traversal of multiple points
   - ✅ basic version `ctsTour`
@@ -307,73 +77,13 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
     - ✅ `move` cleans its own callbacks
   - `ctsTour` jerks when stuck via other
 
-- ✅ "byPtags pause" (global pause) should not influence "manual-pause" in `move`
-  - ✅ likewise for `ctsTour`
+- `tour`: once blocked then `pause` and wait for help and resume
+  - ℹ️ there is no good general solution otherwise
 
-- ✅ ptags.iPipe -> ptags.interactive and fix nested interactive pipelines
-  - `foo() { echo foo | { map 'x => [x, x]' | map length; } }; foo`
-
-- ✅ can run `seq 5` while paused
-  - ℹ️ `range 5` works
-  - ℹ️ `range 5 | split` works
-  - ℹ️ `ptags=always; seq 5` works
-  - ✅ ptags.iPipe (interactive pipe)
-
-- ❌ fix resume `seq 5 &` via `ps`
-  - happens because two process groups (`ps -a`)
-
-- ✅ fix bad exit code: `foo () { echo foo; echo bar; return; }; foo`
-
-- ✅ yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
-  - ✅ `sleep` tidies its callbacks
-  - ✅ `move` tidies its callbacks
-  - ✅ `awaitResume` tidies its callbacks
-  - ✅ `look` tidies its callbacks
-  - ✅ `zoom` tidies its callbacks
-  - ✅ `click`
-  - ✅ `events`
-  - ✅ `w`
-  - ✅ cmd.service
-  - ✅ semantics.service
-  - ✅ io
-
-- ✅ `game.move` programmatically interruptible by JavaScript
-  - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`
-  - could count cleanups before and e.g. `api.killPartial(count)`
-  - could `npc.api.stopMoving()` and catch error
-
-- ✅ manually paused interactive process should not be resumed on `<Tty>` pause/resume
-  - add ptags.always on `<TtyMenu>` STOP
-
-- ✅ fix code-linking e.g. starting from `game.move` doesn't work
-  - try importing instead
-  - ✅ remove `w.lib` i.e. always import instead
-
-- ✅ BUG: Logger: fix links
-  - put patch back
-
-- ✅ BUG: on `kill --all` then `source PROFILE` saw unexpected processes with `ptags.always`
-  - ℹ️ due to `ptags=always; ...` occurring in "big term induced by PROFILE"
-  - ℹ️ must set ptags BEFORE spawn, so know to initially suspend if suspendNonInteractive
-  - ✅ `ptags+='foo bar'` mutates `process.ptagsDelta`
-  - ✅ on spawn we inherit `process.ptags` modified by `process.ptagsDelta` and `opts.ptags`
-  - ✅ after spawn we reset `process.ptagsDelta` to `{}`.
-
-- 🚧 BUG: why does this work yet throws error early?
-  - ✅ `run game move npcKey:rob to:'{ x: 3, y: 2 }'`
-    - ℹ️ these work fine:
-      - `move npcKey:rob to:$( click 1 )`
-      - `move npcKey:rob to:'{x:3,y:2}'`
-    - ℹ️ this originally worked `call game npcKey:rob to:'{ x: 3, y: 2 }'`
-    - fixed by detecting Function or AsyncFunction in `run`
-  - ✅ TtyFunctions: `call` -> `run`
-  - 🚧 TtyFunctions: `map` -> `run`
-    - unclear how to deal with `map` e.g. might be reading
-    - maybe ok because `map` is run by `run`
+- profile_1: move inline-functions into js modules
+  - not needed in all cases e.g. reboot still works for `map`
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
-
-- ✅ BUG: paused click sometimes not selecting
 
 - BUG: collide whilst running does not enter Idle
 
@@ -386,72 +96,6 @@ expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,r
 expr window.document.querySelector'("section")' | log
 ```
 
-- PsList: consider keeping recently killed processes
-
-- tidy example commands
-  - includes "quoting gotchas" e.g. `w e.say kate Well, this is awkward...`
-
-- can `w e.say` at different heights, to avoid collisions (e.g. when sitting next to each other)
-
-
-- `ptags=always` -> `PTAGS=always`
-
-- `kill` supports `--PTAGS_CONT` and `--PTAGS_STOP` based on `PTAGS.always`
-  - in particular, pause/resume all processes lacking `PTAGS.always` is part of `useSession`
-  - then `<Tty>` can just invoke these functions instead
-
-- ptags.preview used by `ps` and `PsList`
-
-- ✅ whilst paused, should background processes sans ptags.always start paused?
-
-- 🚧 `tour`: simply-looped issues
-  - `while true; do tour npcKey:rob to:$( points ); sleep 1; done`
-  - ℹ️ other npc blocks route to 1st point (keeps trying to get there)
-    - many non-trivial ways of being blocked e.g. cannot rely on pushing other out of way
-  - ℹ️ other npc is too close to 1st point (previously handled nearish npc via npc.s.arriveDist)
-  - ℹ️ movement in corridor harder to block
-    - can be blocked at corners tho
-  - ✅ can tween to different separation weight
-    - `w n.rob.api.separate 0.1`
-  - ✅ all npcs have default separation weight 1
-  - ✅ avoid changing separation weight on move/stop
-  - ❌ stuck-detection should not prevent low separation weight from dominating (?)
-  - ℹ️ avoid too much abstraction e.g. why are they trying to walk in a loop?
-  - once blocked then `pause` and wait for help and resume
-
-- ✅ BUG: cannot goto "do point" used by other
-  - ✅ set/null do-point should be recorded in `w.npc`
-  - ✅ connect it up
-  - ✅ clean it on remove npc
-  - ✅ fix mutated doMeta (another issue)
-
-- ✅ BUG: hmr not working in game.js
-
-- ✅ BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
-  - ℹ️ due to our attempt to "cool down" offMeshTraversal attempts via
-    > `pause(30).then(() => npc.s.offMesh = null)` in clearOffMesh
-  - ✅ seems timeout is clearing `offMesh` after it has been set by `enter-off-mesh`
-  - ✅ cancel timeout on successful enter
-
-- ✅ new store "tabs.store" contains tabs related stuff from site.store
-  - ✅ migrate useSite -> useTabs
-  - ✅ tabs.store only contains state related to npc-cli/*
-  - ✅ useTabs.api available in shell via CACHE_SHORTCUTS.tabs
-
-- ✅ BUG: on remove world-0 and then re-add world-0, tty background processes stop working
-  - ✅ `click` no longer works
-  - ℹ️ anything referring to old `w` won't work...
-  - ✅ remove entries from tabsMeta on remove tabs via Manage
-  - ✅ `awaitWorld` sets tabsMeta[sessionKey].ttyWorldKey
-  - ✅ on close world using Manage, also close Tty indicated by tabs.store
-  - ℹ️ multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
-
-- ✅ BUG ctrl-c of `while true; do tour npcKey:rob to:$( points ); sleep 1; done` waits for a second
-
-- can we avoid `move` failing with key "stuck" when near others?
-
-- manage: can select tty profileKey which remounts Tty
-
 - BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
 
 - BUG (?) spread of command subst
@@ -459,46 +103,21 @@ expr window.document.querySelector'("section")' | log
   - on `x=...$( echo foo; echo bar)` then `x` should be `foo bar`
   - `echo ...$( expr [1,2,3] )` should output `1 2 3`
 
-- ✅ manage: clean and clarify actions
 
-- ✅ if pause while interactive process still running, show CONT UI
-  - ✅ also hide on Ctrl-C
+- tidy example commands
+  - includes "quoting gotchas" e.g. `w e.say kate Well, this is awkward...`
 
-- ✅ BUG: fix `echo "...$( echo foo; echo bar; echo baz )"`
-  - parent of CmdSubst can be Word or DblQuoted
+- can `w e.say` at different heights, to avoid collisions
+  - e.g. when sitting next to each other
 
-- ✅ terminal: shift-enter
+- try avoid `move` failing with key "stuck" when near others?
 
-- ✅ BUG where rob passed through other
-  - ℹ️ improved behaviour when `sleep 1` in while (handles case where `move` throws)
-  - seems `npc.s.offMesh` is `null` despite offMeshConnection existing
-  - we async null it when `npc.s.offMesh.seg` is `0`.
-```sh
-points=[{x:5.322,y:0,z:9.746,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:9,grKey:"g0r9",nav:true},xz:{x:5.322,y:9.746}},{x:2.436,y:0,z:10.02,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:3,grKey:"g0r3",nav:true},xz:{x:2.436,y:10.02}}]
-while true; do
-  tour npcKey:rob to:$( points )
-  sleep 1
-done
-```
-
-- easier ctrl-c on mobile?
-
-- ✅ for debugging, it would be better if we directly yielded e.g. `ct.lib.game_1.tour`
-  - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
-  - ℹ️ currently, could write `debugger;`
-  - ✅ `run` can directly invoke `ct.lib.foo.bar`
-    - e.g. `run game move npcKey:rob to:$( click 1 )`
-  - ✅ `call` can directly invoke `ct.lib.foo.bar`
-  - ✅ `map` can directly invoke `ct.lib.foo.bar`
-  - ✅ TtyWithFunctions uses above args
-
-- ✅ BUG: Tabs: fix maximize
+- manage: can select tty profileKey which remounts Tty
 
 - wasd camera controls does not work with follow
-  - ℹ️ need to start porting to our own camera controller
-  - related to w.view.controls.update(true);
-- ❌ bug: sh: support $@ deeply inside double quotes
-  - not a bug: e.g. `foo() { echo "foo bar $( bar ${@} )"; }` behaves like bash
+  - ℹ️ related to w.view.controls.update(true);
+  - 🔔 start porting to our own camera controller
+
 - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
 
 - doors can be further secured by "full match" e.g. `.*` vs `.`
@@ -582,13 +201,6 @@ done
 
 - seeing `/etc/util.sh: failed to run (see console)` during hmr
   - maybe on pause profile we're pausing the respective `spawn`
-
-- ✅ node-canvas: is it still nondeterministic onchange decor pngs?
-  - seems ok
-
-- ✅ hmr: Viewer should not reset onchange image import
-  - do not import image, instead directly `url(/images/foo.webp)`
-  - https://nextjs.org/docs/pages/api-reference/components/image
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
@@ -1791,3 +1403,393 @@ done
 - ✅ avoid re-request navmesh onchange skin
 - ✅ avoid re-request navmesh onchange lights
   - maybe because assets.json is changing due to hash change?
+
+## Branch `get-blog-ready`
+
+### World
+
+- ✅ ptags.preview used by `ps` and `PsList`
+
+- ✅ manage tabs
+  - ✅ can close tab
+  - ✅ can open new tab
+  - ✅ create tab needn't select it
+  - ✅ close tab needn't select it
+  - ✅ can specify props when open new tab
+    - ✅ get all mapKeys somehow
+    - ✅ directly import deserialized geomorphs
+    - ✅ world: can specify mapKey
+    - ✅ tty: can specify
+      - ✅ profileKey
+      - ✅ worldKey
+  - ✅ fix select on remove i.e. should not switch away from manage
+  - ✅ tab grey if disabled (e.g. never mounted)
+    - ℹ️ TTY tabs not disabled in background, others are
+    - ✅ should not set background tab enabled when Tabs enabled
+    - ✅ site.store has tabset.tabs derived from tabset.synced
+    - ✅ ensure keys are removed from Tabs.tabsState
+    - ✅ expose Viewer tabs disabled
+    - ✅ style when disabled
+    - ✅ style when unmounted
+  - ✅ select tab on click
+  - ✅ ongoing restyle
+    - ✅ clean
+    - ✅ paused represented via icon
+    - ✅ unmounted represented via icon
+    - ✅ use many onClick rather than "one for many"
+  - ❌ "create tab" labelled with next id
+    - might be confusing
+  - ✅ enforce tab id format i.e. `${Key.TabClassPrefix}-${number}`
+  - ✅ can change world mapKey
+    - ✅ works when World tab in foreground
+    - ✅ fix background tab
+      - ℹ️ `door[useEffect]` not invoked while bg because `useEffect`
+      - nav.worker should be re-triggered in background
+  - ✅ create tty worldKey is numeric
+    - if invalid, env.WORLD_KEY won't be defined
+  - ❌ can change tty worldKey (numeric)
+    - must use tty
+  - ✅ tty worldKey reflects home.WORLD_KEY onclick
+  - ✅ "open tab" long-press should select it
+
+- ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
+  - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
+    wrap around "nav-deformed" corner
+  - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
+
+- ✅ Draggable: towards resizable via corner
+  - ✅ remove controls from PopUp
+  - ✅ can resize
+  - ✅ ContextMenu and Logger work
+  - ✅ ContextMenu: only forward scroll even not scrollable
+    - test `innerRoot.scrollHeight` vs `innerRoot.clientHeight` (we don't show horizontal scroll)
+
+- ✅ selectively `source /etc/foo` with HMR tracking
+  - ℹ️ currently every js-induced-file is auto-sourced and tracked
+  - ℹ️ instead, profiles will start with e.g. `source /etc/game-generators.sh`
+  - ✅ RunArg -> NPC.RunArg
+  - ✅ sh/src/index.js -> sh/src/profiles.js
+  - ✅ shorter names for src/sh/*.{js,sh}
+    - js generators -> sh with extension `jsh` (avoid collision)
+  - ✅ separate jsFunctions by filename key (e.g. `game`, `gameWip`)
+  - ✅ mechanism for communication between `source` and hmr-sourcing
+    - ✅ send test message from `source`
+  - ✅ "external" message triggers auto-HMR
+    - ✅ mutate lookup in `<Tty>` and adjust useEffect
+
+- ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
+  - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes
+  - these non-quoted versions work:
+    - `tour npcKey:rob to:$( click 2 | sponge )`
+    - `points=$( click 2 ); tour npcKey:rob to:$( points )`
+
+- ✅ can `tour npcKey:rob to:$( click 2 )`
+  - ✅ command substitution outputs (jsStringified) js array if multiple values
+  - 🔔 `fnFoo $( click 2 )` won't have $1 and $2 but only $1 i.e. `[...]`
+
+- ✅ BUG: pausing whilst PROFILE running was not working
+  - ℹ️ `spawn` was setting `process.status` `ProcessStatus.Running` for leading process
+  - ❌ spawned process should inherit status?
+    - a paused/dead process should never spawn another
+  - ✅ process pauses before `spawn` if paused
+    - currently we only suspend/resume process on read/write to device
+  - ✅ distinguish: auto-pasted lines from PROFILE, interactively specified command
+
+- ❌ BUG: cannot pause `w foo`
+- ✅ BUG: ctrl-c profile works with exitCode `130`
+
+- ✅ manage: change map while paused sometimes doesn't work 
+  - hide World behind other tab, then select it via manage, then change
+  - presumably thinks its "in background"
+
+- ✅ BUG: CONT is showing when it should not
+
+- ✅ manage: open tty tab while paused is now enabled (so can see actual terminal)
+
+- ✅ `<Tty>` should receive disabled like other tabs, but handles differently
+  - ✅ can boot while disabled
+  - ✅ on open tty tab while paused, tty profile should not pause initially
+    - can test `nextPid > 1`
+  - ✅ if `<Tabs>` disabled then background processes without `'always' in ptags` start suspended (in sync)
+    - ℹ️ ttyShell.bgSuspendUnless := 'always'
+  - ✅ `<Tty>` resumeRunningProcesses resumes all suspended processes sans tag `always`
+  - ✅ CONT not shown during profile
+
+- ✅ CONT/STOP ui new approach:
+  - ✅ CONT visible whenever interactive process suspended
+  - ✅ STOP visible whenever interactive process running
+  - ✅ while Tab paused only one click needed:
+    - ✅ `ptags=always; move npcKey:rob to:$( click 1 ) &`
+    - ✅ `ptags=always; echo $( click 1 ) &`
+  - ✅ STOP continues, showing CONT
+    - `interactive-paused`
+    - `interactive-resumed`
+  - ✅ CONT continues, showing STOP
+
+- ✅ re-source /etc/foo cannot be put to sleep during profile run
+
+- ✅ tty: mobile textarea disabled by default
+  - clarify enable/disable prompt button
+
+- ✅ add `game.look` so can remove `initCamAndLights`
+
+- ❌ `expr` is receiving duplicated args?
+```sh
+# this works
+expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
+# this does not: " and {} have different meanings!
+expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
+```
+
+- ✅ get stuck starting near neighbour on other side of wall
+  - repro:
+    ```sh
+    points=$( expr '[{x:3.467,y:0,z:4.55,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.467,y:4.55}},{x:5.099,y:0,z:6.901,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:5.099,y:6.901}}]' )
+
+    while true; do tour npcKey:rob to:$( points ); sleep 1; done
+    ```
+  - ℹ️ npc fails to reach target (stuck), then restarts from same failed target (infinite loop)
+  - ✅ stop-reason stuck has boolean `nearTarget` using `nearTargetDistance`
+  - ✅ npc.s.arriveDistance
+  - ✅ relax npc arriveDistance inside `tour`
+
+- ✅ tty links have optional `refresh` callback
+  - ℹ️ if we don't track lineNumber of link (hard), only traverse all tty lines once
+  - ℹ️ assume all instances of the line with the link should be updated
+    - works for e.g. process-info-line
+  - ✅ `ps` provides `refresh(lineNumber)` callback per link which updates status of link
+  - ✅ useSession.api.refreshTtyLinks(sessionKey)
+- ✅ on `<Tty>` pause/resume we invoke these callbacks
+- ❌ remove stale links and cross them out
+  - 🔔 otherwise they'll be `ps` further up which are out-of-sync
+    - cannot edit buffer above current scroll
+  - ❌ xterm.onScroll
+  - ℹ️ decided against e.g. small scroll area
+
+- ✅ `PsList`: pause/resume/killable process list
+  - ✅ rename `Debug` -> `PsList`
+  - ✅ `Manage` shows `PsList`
+  - ✅ lists process leaders
+  - ✅ can manually refresh via button
+  - ✅ UI for pause, resume, kill
+  - ✅ pause, resume, kill buttons work
+  - ✅ external message `process-leader` provides status
+  - ✅ remove external message `interactive`
+  - ✅ process controls indicate if killed
+    - ✅ fix dup external `leading-process` e.g. (1) initial after parse, (2) inside builtin `source`
+  - ✅ fix unhandled kill in console
+  - ✅ process controls indicate if paused
+
+- ✅ BUG: `kill {pid}` 
+  - pass opts.SIGNT true by default if not stopping or resuming
+
+- ✅ remove on/no/x buttons from `ps`
+  - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
+  - ℹ️ maybe keep "replace line" code for future use cases
+  - ✅ show "on/no" but cannot be changed
+  - ✅ remove kill button
+  - ❌ maybe include button linking to PsList
+  - ✅ paused gray more visible
+  - ✅ ptags.interactive is `true` or does not exist
+  - ✅ ptags.always is `true` or does not exist
+  - ✅ `ptags=always` auto has preview
+  - ✅ `ps` uses these values
+
+- ✅ move ptags.always into sh/* i.e. not from `<Tty>`
+  - ✅ use `ProcessTag.always`
+  - ✅ use `ProcessTag.interactive`
+  - ✅ `ttyShell.bgSuspendUnless` -> `ttyShell.suspendNonInteractive`
+  - ✅ `useSession.api.kill` supports boolean `opts.byPtags`
+    - ℹ️ currently we just pass it through
+    - ✅ additionally select the processes
+    - ✅ cleanup `<Tty>`
+
+- ✅ can resume profile after pause `<Tty>`
+
+- ✅ `PsList` sort processes by tags and src (not pid, except when pid `0`)
+  - ✅ show tag keys
+
+- ✅ HMR strategy for running processes
+  - ❌ `PsList` supports "restart" option for each leading process
+    - doesn't fit into "shell interface"
+  - ✅ `PsList` can copy process src
+    - very manual approach to restarting a process
+  - `Tty` can send HMR-delta message (which modules got reloaded)
+  - ✅ can process.reboot.apply() `run` without respawning processes
+    - ℹ️ might work because `run` refers to `ct.lib`
+    - ✅ fix hang
+      - `call '({ api }) => api.getProcess())'`
+      - `call 'x => api.getProcess()'`
+    - `call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 0 })'`
+  - ✅ can reboot using button in `PsList`
+  - ✅ careful about reboot of process in pipe (do not finish reading/writing)
+    - ✅ works interactively: `poll 2 | map 'x => [x, x]'`
+  - ✅ BUG resume `poll 2`
+    - ℹ️ this is pause/resumable `c=0; while true; do c+=1; echo $c; done`
+  - ✅ BUG rebooted paused `poll` exits
+    - both interactive and background
+  - ✅ BUG twice-rebooted paused `poll` exits
+    - fixed by generator.throw in `for await of`
+
+- ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
+  - `sleep` not initially triggered if starts paused
+
+- ✅ BUG: stop `tour` via TtyMenu then ctrl-c
+  - need to ctrl-c twice to stop pid 0
+  - awaitResume needed to send killError in cleanup
+
+- ✅ "byPtags pause" (global pause) should not influence "manual-pause" in `move`
+  - ✅ likewise for `ctsTour`
+
+- ✅ ptags.iPipe -> ptags.interactive and fix nested interactive pipelines
+  - `foo() { echo foo | { map 'x => [x, x]' | map length; } }; foo`
+
+- ✅ can run `seq 5` while paused
+  - ℹ️ `range 5` works
+  - ℹ️ `range 5 | split` works
+  - ℹ️ `ptags=always; seq 5` works
+  - ✅ ptags.iPipe (interactive pipe)
+
+- ❌ fix resume `seq 5 &` via `ps`
+  - happens because two process groups (`ps -a`)
+
+- ✅ fix bad exit code: `foo () { echo foo; echo bar; return; }; foo`
+
+- ✅ yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
+  - ✅ `sleep` tidies its callbacks
+  - ✅ `move` tidies its callbacks
+  - ✅ `awaitResume` tidies its callbacks
+  - ✅ `look` tidies its callbacks
+  - ✅ `zoom` tidies its callbacks
+  - ✅ `click`
+  - ✅ `events`
+  - ✅ `w`
+  - ✅ cmd.service
+  - ✅ semantics.service
+  - ✅ io
+
+- ✅ `game.move` programmatically interruptible by JavaScript
+  - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`
+  - could count cleanups before and e.g. `api.killPartial(count)`
+  - could `npc.api.stopMoving()` and catch error
+
+- ✅ manually paused interactive process should not be resumed on `<Tty>` pause/resume
+  - add ptags.always on `<TtyMenu>` STOP
+
+- ✅ fix code-linking e.g. starting from `game.move` doesn't work
+  - try importing instead
+  - ✅ remove `w.lib` i.e. always import instead
+
+- ✅ BUG: Logger: fix links
+  - put patch back
+
+- ✅ BUG: on `kill --all` then `source PROFILE` saw unexpected processes with `ptags.always`
+  - ℹ️ due to `ptags=always; ...` occurring in "big term induced by PROFILE"
+  - ℹ️ must set ptags BEFORE spawn, so know to initially suspend if suspendNonInteractive
+  - ✅ `ptags+='foo bar'` mutates `process.ptagsDelta`
+  - ✅ on spawn we inherit `process.ptags` modified by `process.ptagsDelta` and `opts.ptags`
+  - ✅ after spawn we reset `process.ptagsDelta` to `{}`.
+
+- ✅ BUG: why does this work yet throws error early?
+  - ✅ `run game move npcKey:rob to:'{ x: 3, y: 2 }'`
+    - ℹ️ these work fine:
+      - `move npcKey:rob to:$( click 1 )`
+      - `move npcKey:rob to:'{x:3,y:2}'`
+    - ℹ️ this originally worked `call game npcKey:rob to:'{ x: 3, y: 2 }'`
+    - ✅ fixed by detecting Function or AsyncFunction in `run`
+  - ✅ TtyFunctions: `call` -> `run`
+  - ❌ TtyFunctions: `map` -> `run`
+    - no need because `map` is run by `run`
+
+- ✅ BUG: paused click sometimes not selecting
+
+- ✅ whilst paused, should background processes sans ptags.always start paused?
+
+- 🚧 `tour`: simply-looped issues
+  - `while true; do tour npcKey:rob to:$( points ); sleep 1; done`
+  - ℹ️ other npc blocks route to 1st point (keeps trying to get there)
+    - many non-trivial ways of being blocked e.g. cannot rely on pushing other out of way
+  - ℹ️ other npc is too close to 1st point (previously handled nearish npc via npc.s.arriveDist)
+  - ℹ️ movement in corridor harder to block
+    - can be blocked at corners tho
+  - ✅ can tween to different separation weight
+    - `w n.rob.api.separate 0.1`
+  - ✅ all npcs have default separation weight 1
+  - ✅ avoid changing separation weight on move/stop
+  - ❌ stuck-detection should not prevent low separation weight from dominating (?)
+  - ℹ️ avoid too much abstraction e.g. why are they trying to walk in a loop?
+
+- ✅ BUG: cannot goto "do point" used by other
+  - ✅ set/null do-point should be recorded in `w.npc`
+  - ✅ connect it up
+  - ✅ clean it on remove npc
+  - ✅ fix mutated doMeta (another issue)
+
+- ✅ BUG: hmr not working in game.js
+
+- ✅ BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
+  - ℹ️ due to our attempt to "cool down" offMeshTraversal attempts via
+    > `pause(30).then(() => npc.s.offMesh = null)` in clearOffMesh
+  - ✅ seems timeout is clearing `offMesh` after it has been set by `enter-off-mesh`
+  - ✅ cancel timeout on successful enter
+
+- ✅ new store "tabs.store" contains tabs related stuff from site.store
+  - ✅ migrate useSite -> useTabs
+  - ✅ tabs.store only contains state related to npc-cli/*
+  - ✅ useTabs.api available in shell via CACHE_SHORTCUTS.tabs
+
+- ✅ BUG: on remove world-0 and then re-add world-0, tty background processes stop working
+  - ✅ `click` no longer works
+  - ℹ️ anything referring to old `w` won't work...
+  - ✅ remove entries from tabsMeta on remove tabs via Manage
+  - ✅ `awaitWorld` sets tabsMeta[sessionKey].ttyWorldKey
+  - ✅ on close world using Manage, also close Tty indicated by tabs.store
+  - ℹ️ multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
+
+- ✅ BUG ctrl-c of `while true; do tour npcKey:rob to:$( points ); sleep 1; done` waits for a second
+
+- ✅ manage: clean and clarify actions
+
+- ✅ if pause while interactive process still running, show CONT UI
+  - ✅ also hide on Ctrl-C
+
+- ✅ BUG: fix `echo "...$( echo foo; echo bar; echo baz )"`
+  - parent of CmdSubst can be Word or DblQuoted
+
+- ✅ terminal: shift-enter
+
+- ✅ BUG where rob passed through other
+  - ℹ️ improved behaviour when `sleep 1` in while (handles case where `move` throws)
+  - seems `npc.s.offMesh` is `null` despite offMeshConnection existing
+  - we async null it when `npc.s.offMesh.seg` is `0`.
+```sh
+points=[{x:5.322,y:0,z:9.746,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:9,grKey:"g0r9",nav:true},xz:{x:5.322,y:9.746}},{x:2.436,y:0,z:10.02,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:3,grKey:"g0r3",nav:true},xz:{x:2.436,y:10.02}}]
+while true; do
+  tour npcKey:rob to:$( points )
+  sleep 1
+done
+```
+
+- ✅ for debugging, it would be better if we directly yielded e.g. `ct.lib.game_1.tour`
+  - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
+  - ℹ️ currently, could write `debugger;`
+  - ✅ `run` can directly invoke `ct.lib.foo.bar`
+    - e.g. `run game move npcKey:rob to:$( click 1 )`
+  - ✅ `call` can directly invoke `ct.lib.foo.bar`
+  - ✅ `map` can directly invoke `ct.lib.foo.bar`
+  - ✅ TtyWithFunctions uses above args
+
+- ✅ BUG: Tabs: fix maximize
+
+- ❌ bug: sh: support $@ deeply inside double quotes
+  - not a bug: e.g. `foo() { echo "foo bar $( bar ${@} )"; }` behaves like bash
+
+
+### Dev Env
+
+- ✅ node-canvas: is it still nondeterministic onchange decor pngs?
+  - seems ok
+
+- ✅ hmr: Viewer should not reset onchange image import
+  - do not import image, instead directly `url(/images/foo.webp)`
+  - https://nextjs.org/docs/pages/api-reference/components/image

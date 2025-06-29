@@ -257,6 +257,7 @@ const psListCss = css`
         /* 🔔 fixes safari */
         text-align-last: center;
       }
+
       button.refresh {
         border: none;
         border-bottom: none;
