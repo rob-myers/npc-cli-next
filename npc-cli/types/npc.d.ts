@@ -416,7 +416,7 @@ declare namespace NPC {
   }
 
   interface MoveOpts {
-    to: MaybeMeta<Geom.VectJson | THREE.Vector3Like>;
+    to: MaybeMeta<Geom.VectJson | import('three').Vector3Like>;
 
     /** Can overwrite state initially. */
     s?: Partial<Pick<NPC.NPC['s'], (

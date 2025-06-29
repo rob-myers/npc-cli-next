@@ -56,6 +56,14 @@
 
 - ✅ PsList should not initially track on hmr
 
+- ✅ `tour`: once blocked then `pause` and wait for help and resume
+  - ℹ️ there is no good general solution otherwise
+    ```sh
+    while true; do
+      tour npcKey:rob to:$( points )
+    done
+    ```
+
 - 🚧 get variant of `tour` working with continuous traversal of multiple points
   - ✅ basic version `ctsTour`
   - ✅ `ctsTour` restores on finish/kill
@@ -65,8 +73,6 @@
     - ✅ `move` cleans its own callbacks
   - `ctsTour` jerks when stuck via other
 
-- `tour`: once blocked then `pause` and wait for help and resume
-  - ℹ️ there is no good general solution otherwise
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`

@@ -1,6 +1,7 @@
 import { deltaAngle } from "maath/misc";
 import { geom } from '@/npc-cli/service/geom';
 import { helper } from "@/npc-cli/service/helper";
+import { pause } from "./util";
 import { move } from "./game";
 
 /**
@@ -244,10 +245,18 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const { api } = ct;
-  for (const to of opts.to) {// relax arrival dist
-    await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-    await api.sleep(opts.pauseMs ?? 0.8);
+  const tos = opts.to.slice();
+  let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
+  while (to = tos.shift()) {
+    try {// relax arrival dist
+      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+    } catch (e) {// pause on fail
+      yield 'Awaiting input from GM...';
+      yield* pause(ct);
+      tos.unshift(to) // retry point
+      continue;
+    }
+    await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
 
