@@ -178,7 +178,7 @@ export default function PsList() {
               className="refresh"
               onClick={state.refreshProcessLeaders}
             >
-              <FontAwesomeIcon title="refresh" icon={faRefresh} size="sm" />
+              <FontAwesomeIcon title="refresh" icon={faRefresh} size="xs" />
             </button>
           </div>
         ) || (
@@ -247,6 +247,7 @@ const psListCss = css`
       color: #ccc;
       align-self: end;
       font-family: 'Courier New', Courier, monospace;
+      font-size: 0.9rem;
       padding-bottom: 2px;
     }
 
@@ -264,15 +265,15 @@ const psListCss = css`
         padding: 2px 0;
         /* 🔔 fixes safari */
         text-align-last: center;
-        font-size: 0.9rem;
+        font-size: small;
         font-family: 'Courier New', Courier, monospace;
         background: #333;
       }
 
       button.refresh {
-        border: none;
-        border-bottom: none;
         padding: 0 8px;
+        border: 1px solid #555;
+        border-bottom: none;
       }
     }
   }
@@ -287,10 +288,11 @@ const psListCss = css`
     
     .no-processes {
       font-size: small;
-      color: #ff9;
+      color: #ff9b;
       border: 1px solid #555;
       padding: 16px;
       border-radius: 4px;
+      border-top-right-radius: 0;
     }
   }
 
