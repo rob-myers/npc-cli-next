@@ -234,8 +234,10 @@ const psListCss = css`
     align-items: stretch;
 
     > h2 {
-      font-size: small;
       color: #ccc;
+      align-self: end;
+      font-family: 'Courier New', Courier, monospace;
+      padding-bottom: 2px;
     }
 
     .no-sessions {
