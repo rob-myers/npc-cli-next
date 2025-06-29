@@ -65,11 +65,14 @@ export default function PsList() {
         const leaders = Object.values(session.process).filter(p => p.key === p.pgid);
         
         state.processes = leaders.reduce((agg, { key: pid, src, status, ptags }) => {
+          const group = useSession.api.getProcesses(state.sessionKey, pid);
+          const bootable = group.some(p => p.reboot !== undefined);
           agg[pid] = {
             pid,
             src,
             status,
-            ptagsPreview: getPtagsPreview(ptags).join(''),
+            ptagsText: getPtagsPreview(ptags).join(''),
+            bootable,
           };
           return agg;
         }, /** @type {ProcessLeader[]} */ ([]));
@@ -78,7 +81,7 @@ export default function PsList() {
         state.ordered = state.processes.slice().sort((p, q) => {
           if (p.pid === 0) return -1;
           if (q.pid === 0) return +1;
-          return (p.ptagsPreview < q.ptagsPreview || p.src < q.src) ? -1 : +1;
+          return (p.ptagsText < q.ptagsText || p.src < q.src) ? -1 : +1;
         });
         
         // listen for leading process status
@@ -195,14 +198,14 @@ export default function PsList() {
                 <div className="pid">
                   {p.pid}
                 </div>
-                {p.ptagsPreview && <div className="ptags">
-                  {p.ptagsPreview}
+                {p.ptagsText && <div className="ptags">
+                  {p.ptagsText}
                 </div>}
               </div> 
               <div className="process-controls">
                 <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act={p.status === ProcessStatus.Suspended ? "resume" : "pause"} data-pid={p.pid}><FontAwesomeIcon icon={p.status === ProcessStatus.Suspended ? faPlay : faPause} title={p.status === ProcessStatus.Suspended ? "resume" : "pause"} size="xs" /></div>
                 <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act="kill" data-pid={p.pid}><FontAwesomeIcon icon={faClose} title="kill" size="1x" /></div>
-                <div className="control" onClick={state.changeProcess} data-act="reboot" data-pid={p.pid}><FontAwesomeIcon icon={faRefreshThin} title="reboot" size="xs" /></div>
+                {p.bootable && <div className="control" onClick={state.changeProcess} data-act="reboot" data-pid={p.pid}><FontAwesomeIcon icon={faRefreshThin} title="reboot" size="xs" /></div>}
               </div>
               {p.src !== '' && (
                 <div className="src">
@@ -391,5 +394,6 @@ const psListCss = css`
  * @property {number} pid
  * @property {string} src
  * @property {ProcessStatus} status
- * @property {string} ptagsPreview
+ * @property {string} ptagsText
+ * @property {boolean} bootable
  */
