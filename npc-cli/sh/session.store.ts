@@ -291,20 +291,6 @@ const useStore = create<State>()((set, get): State => ({
       }
     },
 
-    async refreshTtyLinks(sessionKey) {
-      const { ttyShell, ttyLink } = useSession.api.getSession(sessionKey);
-      const lineToNumbers = ttyShell.xterm.getLines();
-      
-      // try to refresh every instance of ttyLink line
-      for (const [lineText, ttyLineCtxts] of Object.entries(ttyLink)) {
-        for (const lineNumber of lineToNumbers[lineText]) {
-          for (const ct of ttyLineCtxts) {
-            await ct.refresh?.(lineNumber);
-          }
-        }
-      }
-    },
-
     rehydrate(sessionKey) {
       let storedHistory = null as null | string[];
       let storedVar = null as null | Record<string, any>;
@@ -491,7 +477,6 @@ export type State = {
     persistHome: (sessionKey: string) => void;
     /** Invoke `process.reboot?.apply()` for all processes in same group */
     reboot: (sessionKey: string, pid: number, group?: boolean) => void;
-    refreshTtyLinks: (sessionKey: string) => Promise<void>;
     rehydrate: (sessionKey: string) => Rehydrated;
     removeDevice: (deviceKey: string) => void;
     removeProcess: (pid: number, sessionKey: string) => void;
@@ -652,8 +637,6 @@ export interface TtyLinkCtxt {
    * @param callback Line we clicked on (possibly wrapped)
    */
   callback(lineNumber: number): void;
-  /** Can refresh link e.g. `ps` on/off */
-  refresh?(lineNumber: number): void | Promise<void>;
 }
 
 const api = useStore.getState().api;
