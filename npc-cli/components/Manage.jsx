@@ -114,7 +114,7 @@ export default function Manage(props) {
   return (
     <div css={manageCss}>
 
-      <ul className="tabs-and-create">
+      <ul className="created-tabs">
         {tabDefs.map((def, i) => {
           const tabId = def.filepath;
           const tabMeta = tabsMeta[tabId];
@@ -186,7 +186,7 @@ export default function Manage(props) {
         })}
       </ul>
 
-      <ul className="tabs-and-create">
+      <ul className="create-tabs">
 
         <li data-tab-class={helper.toTabClassMeta.World.key}>
           <span className="title-container">
@@ -299,8 +299,8 @@ const manageCss = css`
 
   background-color: #111;
   padding: 16px;
-  
-  .tabs-and-create {
+
+  .create-tabs, .created-tabs {
     display: flex;
     flex-wrap: wrap;
     /* gap: 8px; */
@@ -325,7 +325,7 @@ const manageCss = css`
     }
   }
 
-  .tabs-and-create li {
+  .create-tabs li, .created-tabs li {
     justify-content: space-between;
     align-items: stretch;
     gap: 8px;
@@ -359,13 +359,11 @@ const manageCss = css`
 
     .tab-def {
       display: flex;
-      /* flex-wrap: wrap; */
       align-items: stretch;
       gap: 8px;
     }
     .tab-id {
       color: white;
-      /* text-decoration: underline; */
     }
     .tab-create-def {
       display: flex;
@@ -384,7 +382,8 @@ const manageCss = css`
     }
 
     select, input {
-      filter: sepia();
+      /* filter: sepia(); */
+      color: #ffce6b;
     }
   }
 
@@ -406,6 +405,7 @@ const manageCss = css`
     .sync-world-key {
       display: flex;
       align-items: center;
+      min-width: 60px;
       font-size: small;
       cursor: pointer;
     }
@@ -420,7 +420,6 @@ const manageCss = css`
       }
     }
   }
-
   
   .open-tab {
     border-left: var(--separating-border);
