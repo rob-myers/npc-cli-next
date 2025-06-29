@@ -366,6 +366,10 @@ const manageCss = css`
       font-weight: 500;
       color: white;
     }
+
+    select, input {
+      filter: sepia();
+    }
   }
 
   .close-tab {
@@ -401,17 +405,18 @@ const manageCss = css`
     }
   }
 
+  /* 🔔 Applies to subcomponents e.g. <PsList/> */
   select, input {
     width: 100%;
     height: 100%;
     -webkit-appearance: none;
     appearance: none;
+    padding: 0 2px;
     background-color: inherit;
-    filter: sepia();
     color: inherit;
     font-size: small;
-    padding: 0 2px;
     text-align: center;
+    cursor: pointer;
   }
 
   select::placeholder, input::placeholder {
