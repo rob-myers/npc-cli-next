@@ -54,23 +54,7 @@
 
 ### World
 
-- 🚧 PsList issues
-  - ✅ should not initially track on hmr
-  - should not re-track on hmr by file edit
-
-- 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
-  - ✅ invert npc (when WorldMenu invert on)
-  - ❌ torch radius/opacity
-  - breathTriIds (one per classKey)
-  - ...
-
-- 🚧 iOS 18.5 not working, probably when recast (WASM) is loaded
-  - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
-  - https://bugs.webkit.org/show_bug.cgi?id=291677
-  - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
-  - ℹ️ `small-map-1` works, so could restrict in case of iOS
-  - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
-  - 🚧 check iPad
+- ✅ PsList should not initially track on hmr
 
 - 🚧 get variant of `tour` working with continuous traversal of multiple points
   - ✅ basic version `ctsTour`
@@ -86,6 +70,20 @@
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`
+
+- 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
+  - ✅ invert npc (when WorldMenu invert on)
+  - ❌ torch radius/opacity
+  - breathTriIds (one per classKey)
+  - ...
+
+- 🚧 iOS 18.5 not working, probably when recast (WASM) is loaded
+  - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
+  - https://bugs.webkit.org/show_bug.cgi?id=291677
+  - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
+  - ℹ️ `small-map-1` works, so could restrict in case of iOS
+  - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
+  - 🚧 check iPad
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 

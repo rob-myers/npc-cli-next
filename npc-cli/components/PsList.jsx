@@ -139,7 +139,6 @@ export default function PsList() {
   }), { deps: [ttyTabMetas] });
 
   React.useEffect(() => {
-    // 🚧 cleaner approach to syncing state.ttyTabMeta
     const sessionKeys = /** @type {string[]} */ (ttyTabMetas.map(x => x.key));
     if (ttyTabMetas.length === 0) {
       state.sessionKey = '';
