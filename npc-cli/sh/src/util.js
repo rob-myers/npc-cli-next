@@ -38,17 +38,17 @@ export const expr = ({ api, args }) => {
  * seq 10 | filter 'x => !(x % 2)'
  * expr window | keysAll | split | filter /^n/
  * ```
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* filter(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* filter(ct) {
+  let { api, args, datum } = ct;
   const func = api.generateSelector(
     api.parseFnOrStr(args[0]),
     args.slice(1).map((x) => api.parseJsArg(x))
   );
   while ((datum = await api.read(true)) !== api.eof)
-    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.filter((x) => func(x, ctxt)));
-    else if (func(datum, ctxt)) yield datum;
+    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.filter((x) => func(x, ct)));
+    else if (func(datum, ct)) yield datum;
 }
 
 /**
@@ -58,15 +58,15 @@ export async function* filter(ctxt) {
  * { range 10; range 20; } | flatMap 'x => x'
  * ```
  * - ℹ️ supports chunks
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* flatMap(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* flatMap(ct) {
+  let { api, args, datum } = ct;
   let result;
   const func = Function(`return ${args[0]}`)();
   while ((datum = await api.read(true)) !== api.eof) {
-    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.flatMap((x) => func(x, ctxt)));
-    else if (Array.isArray((result = func(datum, ctxt)))) yield* result;
+    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.flatMap((x) => func(x, ct)));
+    else if (Array.isArray((result = func(datum, ct)))) yield* result;
     else yield result;
   }
 }
@@ -180,10 +180,10 @@ export async function* map(ct) {
  * ```
  * - ℹ️ We do not support chunks.
  * - ℹ️ To use `await`, the one-arg-function must begin with `async`.
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* mapBasic(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* mapBasic(ct) {
+  let { api, args, datum } = ct;
   const { operands, opts } = api.getOpts(args, { boolean: ["forever"] });
   // e.g. "Array.from", "x => [x, x]"
   const func = Function(`return ${operands[0]}`)();
@@ -202,6 +202,14 @@ export async function* mapBasic(ctxt) {
 }
 
 /**
+ * @param {NPC.RunArg} ct
+ */
+export async function* pause(ct) {
+  ct.api.pause();
+  yield; // blocking empty write
+}
+
+/**
  * @param {NPC.RunArg} ctxt 
  */
 export async function* poll({ api, args }) {
@@ -210,7 +218,7 @@ export async function* poll({ api, args }) {
 
 /**
  * Reduce all items from stdin
- * @param {NPC.RunArg} ctxt 
+ * @param {NPC.RunArg} ct 
  */
 export async function* reduce({ api, args, datum }) {
   const inputs = []; // eslint-disable-next-line no-new-func
@@ -230,7 +238,7 @@ export async function* reduce({ api, args, datum }) {
  * Split strings by optional separator (default `''`), e.g.
  * - `split ,` splits by comma
  * - `split '/\n/'` splits by newlines
- * @param {NPC.RunArg} ctxt 
+ * @param {NPC.RunArg} ct
  */
 export async function* split({ api, args, datum }) {
   let arg = api.parseJsArg( args[0] || "");
@@ -249,7 +257,7 @@ export async function* split({ api, args, datum }) {
 
 /**
  * Collect stdin into a single array
- * @param {NPC.RunArg} ctxt 
+ * @param {NPC.RunArg} ct
  */
 export async function* sponge({ api, datum }) {
   const outputs = [];
@@ -266,7 +274,7 @@ export async function* sponge({ api, datum }) {
 /**
  * Usage
  * - `poll 1 | while x=$( take 1 ); do echo ${x} ${x}; done`
- * @param {NPC.RunArg} ctxt 
+ * @param {NPC.RunArg} ct
  */
 export async function* take({ api, args, datum }) {
   try {

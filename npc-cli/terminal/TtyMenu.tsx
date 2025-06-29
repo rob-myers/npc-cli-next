@@ -20,13 +20,13 @@ export default function TtyMenu(props: Props) {
     contOrStopInteractive() {
       switch (props.canContOrStop) {
         case 'CONT':
-          useSession.api.kill(props.session.key, [0], { CONT: true, group: true });
+          useSession.api.kill(props.session.key, [0], { CONT: true, GROUP: true });
           break;
         case 'STOP':
           // on manual STOP interactive process, add ptags.always i.e. now independent of <Tty> pause/resume
           useSession.api.kill(props.session.key, [0], {
             STOP: true,
-            group: true,
+            GROUP: true,
             ptags: { [ProcessTag.always]: true },
           });
           break;

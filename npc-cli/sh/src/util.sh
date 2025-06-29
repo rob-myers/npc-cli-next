@@ -25,10 +25,6 @@ keysAll() {
   ))'
 }
 
-pause() {
-  kill $$ --STOP --GROUP
-}
-
 # usage: `expr location | pretty`
 pretty() {
   map '(x, { api }) => api.pretty(x)'

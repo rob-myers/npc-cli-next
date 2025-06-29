@@ -876,6 +876,8 @@ class cmdServiceClass {
       return isTtyAt(this.meta, fd);
     },
 
+    jsArg,
+
     /** Create succinct JSON projections of JS values */
     json(x: any) {
       return safeJsonCompact(x);
@@ -883,12 +885,17 @@ class cmdServiceClass {
 
     observableToAsyncIterable,
 
-    jsArg,
-
     /** js parse with string fallback */
     parseJsArg,
 
     parseFnOrStr,
+
+    pause() {
+      useSession.api.kill(this.meta.sessionKey, [this.meta.pgid], {
+        STOP: true,
+        GROUP: true, // already follows because [pgid]
+      });
+    },
 
     /** Output 1, 2, ... at fixed intervals (minimum every 0.5s) */
     async *poll(args: string[]) {
