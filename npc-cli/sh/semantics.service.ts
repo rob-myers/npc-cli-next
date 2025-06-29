@@ -395,15 +395,17 @@ class semanticsServiceClass {
       for await (const item of generator) {
         try {
           await preProcessWrite(process, device);
-        } catch (e) {
+
+          if (node.meta.fd[1] !== stdoutFd) {
+            // e.g. `say` redirects stdout to /dev/voice
+            stdoutFd = node.meta.fd[1];
+            device = useSession.api.resolve(1, node.meta);
+          }
+
+          await device.writeData(item);
+        } catch (e) {// reachable e.g. on twice reboot `poll` while paused
           await generator.throw(e);
         }
-        if (node.meta.fd[1] !== stdoutFd) {
-          // e.g. `say` redirects stdout to /dev/voice
-          stdoutFd = node.meta.fd[1];
-          device = useSession.api.resolve(1, node.meta);
-        }
-        await device.writeData(item);
       }
     } catch (e) {
       // now know CallExpr command (1st arg), although `foo=bar` has no command
