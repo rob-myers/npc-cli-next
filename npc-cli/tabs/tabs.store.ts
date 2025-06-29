@@ -6,7 +6,7 @@ import { Model, type IJsonRowNode } from "flexlayout-react";
 import { tryLocalStorageGet, tryLocalStorageSet, deepClone, warn, keys } from "../service/generic";
 import { isIOS, isTouchDevice } from "../service/dom";
 import { helper } from "../service/helper";
-import type { TabDef, TabsetLayout } from "../tabs/tab-factory";
+import type { TabDef, TabMetaProps, TabsetLayout, TtyTabDef } from "../tabs/tab-factory";
 import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab, selectTabInLayout, fixIOSCrash } from "../tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
@@ -25,8 +25,9 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
       if (tab.config.type === 'component') {
         Object.assign(tab.config.props, partialProps);
-      } else if (tab.config.type === 'terminal') {
-        throw Error(`${'changeTabProps'} cannot change terminal "${tabId}" (useSession instead)`);
+      } else if (tab.config.type === 'terminal') {// 🔔 only support profileKey
+        const { profileKey } = partialProps as TtyTabDef;
+        Object.assign(tab.config, { profileKey });
       } else {
         throw Error(`${'changeTabProps'} unexpected tab config "${JSON.stringify(tab.config)}"`);
       }
@@ -292,10 +293,13 @@ export type State = {
 
   api: {
     /**
-     * - If tab type is component we merge into props.
-     * - If tab type is terminal we merge into env.
+     * - If tab type 'component' we merge into props.
+     * - If tab type 'terminal' we overwrite `tab.config.profileKey`.
      */
-    changeTabProps(tabId: string, partialProps: Record<string, any>): void;
+    changeTabProps(
+      tabId: string,
+      partialProps: Partial<TabMetaProps['props']> | Partial<TtyTabDef>
+    ): void;
     /** Remove any tabMeta whose corresponding tab no longer exists */
     cleanTabMeta(): void;
     clearTabMeta(): void;

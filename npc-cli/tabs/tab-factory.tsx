@@ -83,7 +83,7 @@ export async function getComponent(componentClassKey: ComponentClassKey, errorId
 /** Components we can instantiate inside a tab */
 export type ComponentClassKey = keyof typeof classToComponent;
 
-type TabMetaProps = TabMetaPropsDistributed<ComponentClassKey>;
+export type TabMetaProps = TabMetaPropsDistributed<ComponentClassKey>;
 
 type TabMetaPropsDistributed<K extends ComponentClassKey> = K extends infer A
   ? A extends ComponentClassKey

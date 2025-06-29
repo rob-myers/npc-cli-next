@@ -19,6 +19,12 @@ export default function Manage(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     createTabEpoch: 0,
+    changeTtyProfile(e) {
+      const profileKey = /** @type {Key.Profile} */ (e.currentTarget.value);
+      const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
+      const tabId = /** @type {string} */ (li.dataset.tabId);
+      useTabs.api.changeTabProps(tabId, { profileKey });
+    },
     closeTab(e) {
       const tabId = /** @type {Key.TabId} */ (e.currentTarget.dataset.tabId);
       useTabs.api.closeTab(tabId);
@@ -139,14 +145,22 @@ export default function Manage(props) {
                 </button>
               </span>
               <span className="options">
-                {def.type === 'terminal' && (
+                {def.type === 'terminal' && <>
                   <span
                     className="sync-world-key"
                     onClick={state.syncWorldKey}
                   >
                     {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
                   </span>
-                )}
+                  <select
+                    value={def.profileKey}
+                    onChange={state.changeTtyProfile}
+                  >
+                    {helper.profileKeys.map(profileKey =>
+                      <option key={profileKey} value={profileKey}>{profileKey}</option>
+                    )}
+                  </select>
+                </>}
                 {def.type === 'component' && def.class === 'World' && (
                   <select
                     defaultValue={def.props.mapKey}
@@ -173,6 +187,7 @@ export default function Manage(props) {
       </ul>
 
       <ul className="tabs-and-create">
+
         <li data-tab-class={helper.toTabClassMeta.World.key}>
           <span className="title-container">
             <span className="title">Create</span>
@@ -469,6 +484,7 @@ const manageCss = css`
 /**
  * @typedef State
  * @property {number} createTabEpoch
+ * @property {OnChangeHandler} changeTtyProfile
  * @property {OnClickHandler} closeTab
  * @property {OnClickHandler} createTab
  * @property {OnClickHandler} selectTab
