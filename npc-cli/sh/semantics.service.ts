@@ -86,7 +86,7 @@ class semanticsServiceClass {
   handleTopLevelProcessError(e: ProcessError) {
     const session = useSession.api.getSession(e.sessionKey);
     if (session !== undefined) {
-      useSession.api.kill(e.sessionKey, [e.pid], { group: true, SIGINT: true });
+      useSession.api.kill(e.sessionKey, [e.pid], { GROUP: true, SIGINT: true });
       session.lastExit.fg = e.exitCode ?? 1;
     } else {
       return ttyError(`session not found: ${e.sessionKey}`);

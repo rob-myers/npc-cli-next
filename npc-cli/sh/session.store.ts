@@ -191,7 +191,7 @@ const useStore = create<State>()((set, get): State => ({
           continue;
         }
   
-        const processes = p.pgid === pid || opts.group === true
+        const processes = p.pgid === pid || opts.GROUP === true
           // Apply command to whole process group in reverse
           ? api.getProcesses(sessionKey, p.pgid).reverse()
           : [p] // Apply command to exactly one process
@@ -616,7 +616,7 @@ interface KillOpts {
    *   lacking the process tag `ProcessTag.always`
    */
   byPtags?: boolean;
-  group?: boolean;
+  GROUP?: boolean;
   ptags?: Ptags;
 }
 

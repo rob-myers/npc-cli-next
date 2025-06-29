@@ -37,14 +37,14 @@ export default function PsList() {
           if (pid === 0) {
             useSession.api.killSessionLeader(state.sessionKey);
           } else {
-            useSession.api.kill(state.sessionKey, [pid], { group: true, SIGINT: true });
+            useSession.api.kill(state.sessionKey, [pid], { GROUP: true, SIGINT: true });
           }
           break;
         case 'pause':
-          useSession.api.kill(state.sessionKey, [pid], { group: true, STOP: true });
+          useSession.api.kill(state.sessionKey, [pid], { GROUP: true, STOP: true });
           break;
         case 'resume':
-          useSession.api.kill(state.sessionKey, [pid], { group: true, CONT: true });
+          useSession.api.kill(state.sessionKey, [pid], { GROUP: true, CONT: true });
           break;
         case 'reboot': {
           useSession.api.reboot(state.sessionKey, pid);

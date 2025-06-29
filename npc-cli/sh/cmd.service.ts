@@ -277,8 +277,9 @@ class cmdServiceClass {
           boolean: [
             "all"  /** --all all processes */,
             "ALL"  /** --ALL all processes */,
-            "STOP" /** --STOP pauses a process */,
             "CONT" /** --CONT continues a paused process */,
+            "GROUP" /** --GROUP extends pids to their process groups */,
+            "STOP" /** --STOP pauses a process */,
           ],
         });
 
@@ -301,6 +302,7 @@ class cmdServiceClass {
 
         useSession.api.kill(meta.sessionKey, pids, {
           CONT: opts.CONT,
+          GROUP: opts.GROUP,
           STOP: opts.STOP,
           SIGINT,
         });
