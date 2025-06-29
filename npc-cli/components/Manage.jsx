@@ -290,6 +290,7 @@ const manageCss = css`
     flex-wrap: wrap;
     /* gap: 8px; */
     font-size: small;
+    border: var(--separating-border);
     
     .title-container {
       background-color: #333;
@@ -405,29 +406,6 @@ const manageCss = css`
     }
   }
 
-  /* 🔔 Applies to subcomponents e.g. <PsList/> */
-  select, input {
-    width: 100%;
-    height: 100%;
-    -webkit-appearance: none;
-    appearance: none;
-    padding: 0 2px;
-    background-color: inherit;
-    color: inherit;
-    font-size: small;
-    text-align: center;
-    cursor: pointer;
-  }
-
-  select::placeholder, input::placeholder {
-    color: #555;
-  }
-
-  button {
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
   
   .open-tab {
     border-left: var(--separating-border);
@@ -440,7 +418,8 @@ const manageCss = css`
   .layout-actions {
     display: flex;
     flex-wrap: wrap;
-    background-color: #222;
+    /* background-color: #222; */
+    border: var(--separating-border);
 
     .title {
       align-self: center;
@@ -458,6 +437,28 @@ const manageCss = css`
       font-size: small;
       color: #a7a7fb;
     }
+  }
+
+  /* 🔔 Applies to subcomponents e.g. <PsList/> */
+  select, input {
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0 2px;
+    background-color: inherit;
+    color: inherit;
+    font-size: small;
+    text-align: center;
+    cursor: pointer;
+  }
+  select::placeholder, input::placeholder {
+    color: #555;
+  }
+  button {
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
 `;
 

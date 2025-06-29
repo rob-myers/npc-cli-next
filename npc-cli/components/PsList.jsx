@@ -288,7 +288,7 @@ const psListCss = css`
     .no-processes {
       font-size: small;
       color: #ff9b;
-      border: 1px solid #555;
+      border: var(--separating-border);
       padding: 16px;
       border-radius: 4px;
       border-top-right-radius: 0;
