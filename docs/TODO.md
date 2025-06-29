@@ -69,10 +69,11 @@
   - ✅ `ctsTour` restores on finish/kill
   - ✅ `ctsTour` restores/reverts on pause/resume
   - ✅ remove change slowDownRadius onenter small room
+  - ✅ `ctsTour` jerks when stuck via other
+    - we'll pause and await GM input
   - 🚧 merge `ctsTour` into `tour`
     - ✅ `move` cleans its own callbacks
-  - `ctsTour` jerks when stuck via other
-
+    - ✅ slowDownRadius change only used for continuous movement
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`

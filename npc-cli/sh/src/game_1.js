@@ -241,19 +241,20 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * tour npcKey:rob to:"$( click 5 | sponge )"
  * tour npcKey:rob to:"$( points )"
  * ```
+ * ℹ️ we mutate `opts.to`
+ * ℹ️ we relax arrival dist
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const tos = opts.to.slice();
   let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
-  while (to = tos.shift()) {
-    try {// relax arrival dist
+  while (to = opts.to.shift()) {
+    try {
       await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-    } catch (e) {// pause on fail
+    } catch (e) {
       yield 'Awaiting input from GM...';
       yield* pause(ct);
-      tos.unshift(to) // retry point
+      opts.to.unshift(to) // retry point
       continue;
     }
     await ct.api.sleep(opts.pauseMs ?? 0.8);
@@ -268,11 +269,9 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
 export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
   const { api, w } = ct;
   const npc = w.npc.getOrThrow(opts.npcKey);
-
-  let prevRadius = 0;
   const handlers = api.handleStatus({
-    onSuspends(byPtags) { if (!byPtags) { npc.s.preventStop = false; npc.api.setSlowDownRadius(prevRadius) } },
-    onResumes() { npc.s.preventStop = true; prevRadius = npc.api.setSlowDownRadius(0.05); },
+    onSuspends(byPtags) { if (!byPtags) { npc.api.setContinuousMotion(false); } },
+    onResumes() { npc.api.setContinuousMotion(true); },
   }, { initially: true, finally: true }); // only usage so far, but might be helpful
 
   try {

@@ -90,6 +90,15 @@ export function createBaseNpc(def, w) {
       arriveAnim: /** @type {undefined | 'none' | Key.Anim} */ (undefined),
       /** Minimal distance at which npc is consider to have arrived */
       arriveDist: defaultNpcArriveDistance,
+      /**
+       * During continuous movement we do not invoke `npc.api.stopMoving` on
+       * arrive at target, instead only invoking `npc.resolve.move`.
+       * A controlling process is expected to set the next target.
+       * 
+       * The npc's "slow down radius" is changed to reflect this.
+       * This is currently the only reason why the "slow down radius" is changed.
+       */
+      continuous: false,
       /** Defined iff npc is at a "do point". */
       doMeta: /** @type {null | Meta} */ (null),
       /** Fade duration e.g. during fade spawn */
@@ -98,14 +107,13 @@ export function createBaseNpc(def, w) {
       label: /** @type {null | string} */ (null),
       /** Height of label above npc */
       labelY: 0,
-      /** Desired look angle (rotation.y) */
+      /** Desired look angle (`rotation.y`) */
       lookAngleDst: /** @type {null | number} */ (null),
       /** Look duration e.g. during move or look */
       lookSecs: lookSecsNoTarget,
-      preventStop: false,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
-      /** For delayed npc.s.offMesh nulling in initial seg */
+      /** For delayed `npc.s.offMesh` `null`ing during initial seg */
       offMeshTimeout: 0,
       /** Opacity e.g. during fade */
       opacity: 1,
@@ -1098,7 +1106,7 @@ export class NpcApi {
     const distance = this.s.target.distanceTo(position);
 
     if (distance <= this.s.arriveDist) {// Reached target
-      if (this.s.preventStop === true) {
+      if (this.s.continuous === true) {
         this.resolve.move?.(); // continuous movement
       } else {
         this.stopMoving({ type: 'stop-reason', key: 'arrived' });
@@ -1272,15 +1280,13 @@ export class NpcApi {
   }
 
   /**
-   * 🔔 controlled when `this.s.preventStop`
-   * @param {number} nextValue 
-   * @returns {number} previous value
+   * @param {boolean} continuous 
    */
-  setSlowDownRadius(nextValue) {
+  setContinuousMotion(continuous) {
+    this.s.continuous = continuous;
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-    const prevValue = agent.raw.params.get_slowDownRadius();
-    agent.raw.params.set_slowDownRadius(nextValue);
-    return prevValue;
+    const slowDownRadius = continuous === true ? 0.05 : defaultSlowDownRadius;
+    agent.raw.params.set_slowDownRadius(slowDownRadius);
   }
 
   /**
@@ -1426,13 +1432,14 @@ const defaultMaxAcceleration = 10;
  */
 const defaultSeparationWeight = 0.25;
 const defaultCollisionQueryRange = 2;
+const defaultSlowDownRadius = helper.defaults.radius * 2;
 
 const preOffMeshCloseDist = helper.defaults.radius;
 
 /** @type {Partial<import("@recast-navigation/core").CrowdAgentParams>} */
 export const crowdAgentParams = {
   radius: helper.defaults.radius, // 🔔 too large causes jerky collisions
-  slowDownRadius: helper.defaults.radius * 2,
+  slowDownRadius: defaultSlowDownRadius,
   // slowDownRadius: npcTargetArriveDistance,
   // slowDownRadius: helper.defaults.radius,
   height: 1.5,
