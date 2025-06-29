@@ -279,13 +279,15 @@ const useStore = create<State>()((set, get): State => ({
       // console.log({persistedVarLookup})
     },
 
-    reboot(sessionKey, pid) {
-      const { process } = api.getSession(sessionKey);
-      const { pgid } = process[pid];
-      for (const p of Object.values(process)) {
-        if (p.pgid === pgid) {
-          p.reboot?.apply();
-        }
+    reboot(sessionKey, pid, group = true) {
+      const process = api.getProcess({ sessionKey, pid });
+      if (group === true) {
+        const { pgid } = process;
+        api.getProcesses(sessionKey, pgid).forEach(
+          p => p.reboot?.apply()
+        );
+      } else {
+        process.reboot?.apply();
       }
     },
 
@@ -488,7 +490,7 @@ export type State = {
     persistHistory: (sessionKey: string) => void;
     persistHome: (sessionKey: string) => void;
     /** Invoke `process.reboot?.apply()` for all processes in same group */
-    reboot: (sessionKey: string, pid: number) => void;
+    reboot: (sessionKey: string, pid: number, group?: boolean) => void;
     refreshTtyLinks: (sessionKey: string) => Promise<void>;
     rehydrate: (sessionKey: string) => Rehydrated;
     removeDevice: (deviceKey: string) => void;
