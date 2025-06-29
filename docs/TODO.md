@@ -71,9 +71,12 @@
   - ✅ remove change slowDownRadius onenter small room
   - ✅ `ctsTour` jerks when stuck via other
     - we'll pause and await GM input
-  - 🚧 merge `ctsTour` into `tour`
+  - ✅ merge `ctsTour` into `tour`
     - ✅ `move` cleans its own callbacks
     - ✅ slowDownRadius change only used for continuous movement
+  - 🚧 interrupting `tour` via direct-navigation should restore non-cts motion?
+  - 🚧 remove `ctsTour`
+
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`
