@@ -248,19 +248,19 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  // 🚧 pause, interrupt, resume, see "Awaiting ..."
-  // - maybe not an issue
-  
   let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
   while (to = opts.to.shift()) {
     try {
       await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
     } catch (e) {
-      if (/** @type {NPC.StopReason} */ (e)?.type !== 'stop-reason') {
+      if (!helper.isStopReason(e)) {
         throw e; // e.g. reboot
       }
-      yield 'Awaiting input from GM...';
-      await pause(ct); // No escape hatch?
+      if (!(e.key === 'move-again' && ct.api.isPaused())) {
+        // on paused interrupt, resume should not block
+        yield 'Awaiting input from GM...';
+      }
+      await pause(ct);
       // empty-array continues pendingTargets
       opts.to.unshift(Array.isArray(to) ? [] : to);
       continue;

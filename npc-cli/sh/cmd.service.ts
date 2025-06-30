@@ -864,6 +864,11 @@ class cmdServiceClass {
 
     isDataChunk,
 
+    /** Is the process paused? */
+    isPaused() {
+      return getProcess(this.meta).status === ProcessStatus.Suspended;
+    },
+
     /** Is the process running? */
     isRunning() {
       return getProcess(this.meta).status === ProcessStatus.Running;

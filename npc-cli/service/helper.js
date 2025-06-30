@@ -350,6 +350,14 @@ export const helper = {
   },
 
   /**
+   * @param {*} error
+   * @returns {error is NPC.StopReason} 
+   */
+  isStopReason(error) {
+    return !!error && /** @type {NPC.StopReason} */ (error)?.type === 'stop-reason';
+  },
+
+  /**
    * @param {string} input 
    * @returns {input is Key.TabClass}
    */

@@ -98,7 +98,11 @@
   - ✅ update slowDownRadius per pendingTargets
   - ✅ can extend pendingTargets
   - ✅ can `tour`
+  - ✅ `tour` seems "freely combinable" with `move` interruptions
   - 🚧 `tour` nested arrays
+
+- PsList: pause/resume while Tabs paused broke?
+  - no repro yet
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`
