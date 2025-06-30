@@ -186,6 +186,7 @@ export class NpcApi {
   /** @type {NPC.NPCDef} */ def;
   /** @type {THREE.Vector3} */ delta;
   /** @type {BaseNPC['m']} */ m;
+  /** @type {THREE.Vector3[]} */ pendingTargets;
   /** @type {BaseNPC['reject']} */ reject;
   /** @type {BaseNPC['resolve']} */ resolve;
   /** @type {BaseNPC['s']} */ s;
@@ -207,6 +208,7 @@ export class NpcApi {
     this.delta = base.delta;
     this.key = base.key;
     this.m = base.m;
+    this.pendingTargets = base.pendingTargets;
     this.reject = base.reject;
     this.resolve = base.resolve;
     this.s = base.s;
@@ -836,7 +838,7 @@ export class NpcApi {
    * @param {NPC.MoveOpts} opts
    */
   async move(opts) {
-    const { agent, pendingTargets } = this.base;
+    const { agent } = this.base;
 
     if (agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
@@ -846,10 +848,10 @@ export class NpcApi {
     // 🚧 validate items as {x,y} or {x,y,z}
     
     if (points.length === 0) {// can continue pendingTargets
-      points.push(...pendingTargets);
+      points.push(...this.pendingTargets);
     }
     
-    pendingTargets.length = 0;
+    this.pendingTargets.length = 0;
     this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
 
     if (points.length === 0) {
@@ -857,8 +859,8 @@ export class NpcApi {
     }
     
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
-    pendingTargets.push(...points.map(toV3));
-    this.disableSlowDownRadius(pendingTargets.length > 0);
+    this.pendingTargets.push(...points.map(toV3));
+    this.disableSlowDownRadius(this.pendingTargets.length > 0);
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
     const closest = this.w.npc.getClosestNavigable(toV3(to), 0.5);
@@ -902,6 +904,9 @@ export class NpcApi {
     try {
       await this.waitUntilStopped();
     } catch (e) {
+      // remember last unreached
+      this.pendingTargets.push(this.base.lastTarget.clone());
+
       if (/** @type {NPC.StopReason} */ (e)?.key !== 'move-again') {
         this.stopMoving(); // 🚧 clarify
       }
@@ -1111,10 +1116,9 @@ export class NpcApi {
     this.onTickTurnTarget(agent);
 
     const distance = this.s.target.distanceTo(position);
-    const { pendingTargets } = this.base;
 
     if (distance <= this.s.arriveDist) {// Reached target
-      const pendingTarget = pendingTargets.shift();
+      const pendingTarget = this.pendingTargets.shift();
       if (pendingTarget === undefined) {
         this.stopMoving({ type: 'stop-reason', key: 'arrived' });
       } else {
@@ -1125,7 +1129,7 @@ export class NpcApi {
       return;
     }
     
-    if (pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
+    if (this.pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
       // 🚧 do not continually assign
       this.s.lookSecs = 0.5; // avoid fast final turn
     }

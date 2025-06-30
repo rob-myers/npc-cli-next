@@ -87,7 +87,11 @@
   - ✅ can `npc.api.move`
     - `w n.rob.api.move "{ to: $( click 1 ) }"`
     - `w n.rob.api.move "{ to: $( click 2 ) }"`
-  - 🚧 can `move`
+  - ✅ can `move`
+    - `move npcKey:rob to:$( click 2 )`
+    - can pause/resume
+    - can interrupt
+  - 🚧 try clean `move`
   - emit events on continue to pendingTargets
   - on extend pendingTargets may need to `npc.api.disableSlowDownRadius(true)`
 
