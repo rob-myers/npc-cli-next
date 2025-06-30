@@ -79,8 +79,8 @@
   - 🚧 remove `ctsTour`
 
 - 🚧 avoid "continuous true issues" in general via `npc.pendingTargets`
-  - 🚧 on reject reset `slowDownRadius`
-  - 🚧 on reject what happens to unreached e.g. how can we resume?
+  - ✅ finally reset `slowDownRadius`
+  - ✅ on reject what happens to unreached e.g. how can we resume?
     - ✅ do not clear pending targets
     - ✅ next `move` without points resumes, otherwise clears
   - ✅ remove `npc.s.continuous`
@@ -97,7 +97,8 @@
   - ✅ emit event `continued-moving` on continue to pendingTargets
   - ✅ update slowDownRadius per pendingTargets
   - ✅ can extend pendingTargets
-  - can `tour`
+  - ✅ can `tour`
+  - 🚧 `tour` nested arrays
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`

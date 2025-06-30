@@ -248,44 +248,24 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const npc = ct.w.npc.getOrThrow(opts.npcKey);
+  // 🚧 pause, interrupt, resume, see "Awaiting ..."
+  // - maybe not an issue
   
-  // 🚧 avoid "continuous true issues" in general via `pendingTargets`
-  
-  // ℹ️ interrupt while moving seems to work
-  // ✅ pause then interrupt by direct move is still continuous
-  //    - fixed by fixing `move` i.e. when `move` manually-paused should reject if npc.reject.move
-  // 🚧 avoid double resume
-  // 🚧 fix reboot while paused
-  // 🚧 clean
-
-  const continuous = opts.pauseMs === 0;  
-  const handlers = continuous ? ct.api.handleStatus({
-    onSuspends(byPtags) { if (!byPtags) { npc.api.setSlowDown(true); } },
-    onResumes() { npc.api.setSlowDown(false); },
-  }) : undefined;
-
-  try {
-    let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
-    while (to = opts.to.shift()) {
-      try {
-        handlers?.onResumes?.();
-        await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-      } catch (e) {
-        handlers?.onSuspends?.(false); // 🚧
-        if (/** @type {NPC.StopReason} */ (e)?.type !== 'stop-reason') {
-          throw e; // e.g. reboot
-        }
-        yield 'Awaiting input from GM...';
-        await pause(ct);
-        // yield 'Resuming...';
-        opts.to.unshift(to) // retry
-        continue;
+  let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
+  while (to = opts.to.shift()) {
+    try {
+      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+    } catch (e) {
+      if (/** @type {NPC.StopReason} */ (e)?.type !== 'stop-reason') {
+        throw e; // e.g. reboot
       }
-      await ct.api.sleep(opts.pauseMs ?? 0.8);
+      yield 'Awaiting input from GM...';
+      await pause(ct); // No escape hatch?
+      // empty-array continues pendingTargets
+      opts.to.unshift(Array.isArray(to) ? [] : to);
+      continue;
     }
-  } finally {
-    handlers?.dispose();
+    await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
 
