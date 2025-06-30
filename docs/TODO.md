@@ -111,6 +111,17 @@
 - PsList: pause/resume while Tabs paused broke?
   - no repro yet
 
+- ✅ move arrival is still delicate
+  - arriveDist:0.1 does not always work
+  - tweak: idle separationWeight 0.25, moving separationWeight 0.1
+
+- ✅ fix spawn onto do point
+  ```sh
+  c=-1; while c+=1; do
+    spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
+  done
+  ```
+
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`
 

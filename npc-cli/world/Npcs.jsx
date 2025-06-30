@@ -229,26 +229,18 @@ export default function Npcs(props) {
       const npc = w.n[npcKey];
 
       if (doMeta === null) {
-        if (npc !== undefined && npc.s.doMeta !== null) {
+        if (npc.s.doMeta !== null) {
           const { doPoint, y } = npc.s.doMeta;
           delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
           npc.s.doMeta = null;
         }
-        return;
+      } else {
+        const { doPoint, y } = doMeta;
+        const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+        state.doToNpc[key] = npcKey;
+        npc.s.doMeta = doMeta;
       }
 
-      if (!Vect.isVectJson(doMeta.doPoint)) {
-        throw Error(`doMeta.doPoint must exist: ${JSON.stringify(doMeta)}`);
-      }
-
-      const { doPoint, y } = doMeta;
-      const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
-      if (key in state.doToNpc) {
-        throw Error(`doMeta already in use: ${state.doToNpc[key]}: ${JSON.stringify(doMeta)}`);
-      }
-
-      state.doToNpc[key] = npcKey;
-      npc.s.doMeta = doMeta;
     },
     setupSkins() {
       // 🔔 compute sheetAux e.g. uvMap
@@ -341,10 +333,9 @@ export default function Npcs(props) {
         throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }
 
-      let npc = state.npc[opts.npcKey];
+      state.validateDoMeta(meta.do === true ? meta : null);
       
-      // set doMeta early in case of error
-      state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
+      let npc = state.npc[opts.npcKey];
 
       // prevent look e.g. if will Lie
       const nextAnimKey = helper.getAnimKeyFromMeta(meta);
@@ -389,6 +380,8 @@ export default function Npcs(props) {
 
         npc.api.initialize(state.gltf[npc.def.classKey]);
       }
+
+      state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
 
       if (typeof opts.skin === 'string') {
         opts.skin = state.resolveSkin(opts.skin);
@@ -456,6 +449,21 @@ export default function Npcs(props) {
       w.r3f.advance(Date.now());
     },
     update,
+    validateDoMeta(doMeta) {
+      if (doMeta === null) {
+        return;
+      }
+
+      if (!Vect.isVectJson(doMeta.doPoint)) {
+        throw Error(`doMeta.doPoint must exist: ${JSON.stringify(doMeta)}`);
+      }
+
+      const { doPoint, y } = doMeta;
+      const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+      if (key in state.doToNpc) {
+        throw Error(`doMeta already in use: ${state.doToNpc[key]}: ${JSON.stringify(doMeta)}`);
+      }
+    },
   }), { reset: { showLastNavPath: true } });
 
   w.npc = state;
@@ -587,6 +595,7 @@ export default function Npcs(props) {
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
      avoidable by precomputing labels 
+ * @property {(doMeta: null | Meta) => void} validateDoMeta
  */
 
 /**
