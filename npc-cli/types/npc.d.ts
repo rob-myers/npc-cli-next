@@ -83,9 +83,9 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
-    at: MaybeMeta<(Geom.VectJson | import('three').Vector3Like)>;
+    at: MaybeMeta<NPC.GroundPoint>;
     /** Position to look towards (overrides `angle`) */
-    look?: Geom.VectJson | import('three').Vector3Like;
+    look?: NPC.GroundPoint;
     /** Overrides `at?.meta` e.g. because `meta.doPoint.meta` is not serializable */
     meta?: Meta;
     /**
@@ -415,8 +415,14 @@ declare namespace NPC {
     labelHeight: number;
   }
 
+  /** Support {x,y} or {x,z} */
+  type GroundPoint = (
+    | Geom.VectJson
+    | import('three').Vector3Like
+  );
+
   interface MoveOpts {
-    to: MaybeMeta<Geom.VectJson | import('three').Vector3Like>;
+    to: GroundPoint | GroundPoint[];
 
     /** Can overwrite state initially. */
     s?: Partial<Pick<NPC.NPC['s'], (

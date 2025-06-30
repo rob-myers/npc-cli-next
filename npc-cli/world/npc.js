@@ -90,15 +90,6 @@ export function createBaseNpc(def, w) {
       arriveAnim: /** @type {undefined | 'none' | Key.Anim} */ (undefined),
       /** Minimal distance at which npc is consider to have arrived */
       arriveDist: defaultNpcArriveDistance,
-      /**
-       * During continuous movement we do not invoke `npc.api.stopMoving` on
-       * arrive at target, instead only invoking `npc.resolve.move`.
-       * A controlling process is expected to set the next target.
-       * 
-       * The npc's "slow down radius" is changed to reflect this.
-       * This is currently the only reason why the "slow down radius" is changed.
-       */
-      continuous: false,
       /** Defined iff npc is at a "do point". */
       doMeta: /** @type {null | Meta} */ (null),
       /** Fade duration e.g. during fade spawn */
@@ -147,20 +138,21 @@ export function createBaseNpc(def, w) {
     /** @type {null | dtCrowdAgentAnimation} */
     agentAnim: null,
     
-    /**
-     * Last starting position.
-     */
+    /** Last starting position. */
     lastStart: new THREE.Vector3(),
-    /**
-     * - Current target (if moving)
-     * - Last set one (if not)
-     */
+    /** Current target (if moving), last set one (if not) */
     lastTarget: new THREE.Vector3(),
   
     /** ContextMenu has different position when `this.s.act` is `Lie` */
     offsetMenu: new THREE.Vector3(),
     offsetSpeech: new THREE.Vector3(),
   
+    /**
+     * For continuous motion between multiple targets.
+     * @type {THREE.Vector3[]}
+     */
+    pendingTargets: [],
+
     resolve: {
       fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
       move: /** @type {undefined | ((value?: any) => void)} */ (undefined),
@@ -844,20 +836,34 @@ export class NpcApi {
    * @param {NPC.MoveOpts} opts
    */
   async move(opts) {
-    const agent = this.base.agent;
-    
+    const { agent, pendingTargets } = this.base;
+
     if (agent === null) {
       throw new Error(`${this.key}: npc lacks agent`);
-    } else if (Vect.isVectJson(opts.to) === false) {
-      throw new Error(`${this.key}: expected opts.to {x,y}`);
     }
 
+    const points = Array.isArray(opts.to) ? opts.to : [opts.to];
+    // 🚧 validate items as {x,y} or {x,y,z}
+    
+    if (points.length === 0) {// can continue pendingTargets
+      points.push(...pendingTargets);
+    }
+    
+    pendingTargets.length = 0;
     this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
 
+    if (points.length === 0) {
+      return;
+    }
+    
+    const to = /** @type {NPC.GroundPoint} */ (points.shift());
+    pendingTargets.push(...points.map(toV3));
+    this.disableSlowDownRadius(pendingTargets.length > 0);
+
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
-    const closest = this.w.npc.getClosestNavigable(toV3(opts.to), 0.5);
+    const closest = this.w.npc.getClosestNavigable(toV3(to), 0.5);
     if (closest === null) {
-      throw new Error(`${this.key}: not navigable: ${JSON.stringify(opts.to)}`);
+      throw new Error(`${this.key}: not navigable: ${JSON.stringify(to)}`);
     }
 
     this.s.arriveAnim = opts.s?.arriveAnim; // undefined ~ Idle
@@ -886,8 +892,7 @@ export class NpcApi {
     if (this.s.anim !== nextAct) {
       this.startAnimation(nextAct);
     }
-    
-    // 🚧 sometimes continued-moving
+
     this.w.events.next({
       key: 'started-moving',
       npcKey: this.key,
@@ -901,6 +906,8 @@ export class NpcApi {
         this.stopMoving(); // 🚧 clarify
       }
       throw e;
+    } finally {// turn off continuous motion
+      this.disableSlowDownRadius(false);
     }
   }
 
@@ -1104,15 +1111,22 @@ export class NpcApi {
     this.onTickTurnTarget(agent);
 
     const distance = this.s.target.distanceTo(position);
+    const { pendingTargets } = this.base;
 
     if (distance <= this.s.arriveDist) {// Reached target
-      if (this.s.continuous === true) {
-        this.resolve.move?.(); // continuous movement
-      } else {
+      const pendingTarget = pendingTargets.shift();
+      if (pendingTarget === undefined) {
         this.stopMoving({ type: 'stop-reason', key: 'arrived' });
+      } else {
+        this.base.lastStart.copy(this.base.position);
+        this.s.target = this.base.lastTarget.copy(pendingTarget);
+        agent.requestMoveTarget(this.s.target);
       }
       return;
-    } else if (distance <= 5 * defaultNpcArriveDistance) {
+    }
+    
+    if (pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
+      // 🚧 do not continually assign
       this.s.lookSecs = 0.5; // avoid fast final turn
     }
 
@@ -1280,11 +1294,10 @@ export class NpcApi {
   }
 
   /**
-   * @param {boolean} continuous 
+   * @param {boolean} disabled 
    */
-  setContinuousMotion(continuous) {
-    this.s.continuous = continuous;
-    const slowDownRadius = continuous === true ? 0.05 : defaultSlowDownRadius;
+  disableSlowDownRadius(disabled) {
+    const slowDownRadius = disabled === true ? 0.05 : defaultSlowDownRadius;
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
   }
@@ -1413,7 +1426,7 @@ export class NpcApi {
   }
 
   async waitUntilStopped() {
-    this.s.target !== null && await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       this.resolve.move = resolve; // see "stopped-moving"
       this.reject.move = reject; // see w.npc.remove
     });

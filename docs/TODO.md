@@ -78,13 +78,18 @@
     - maybe fixed by re-throw non "stopped-reason"
   - 🚧 remove `ctsTour`
 
-- 🚧 avoid "continuous true issues" in general via `pendingTargets`
-  - continuous motion handled inside npc via `pendingTargets`
-    - on reject reset `slowDownRadius`
-    - on reject what happens to unreached e.g. how can we resume?
-      - stopped-reason does not clear pending targets?
-      - `move` without points resumes?
-  - remove `npc.s.continuous`
+- 🚧 avoid "continuous true issues" in general via `npc.pendingTargets`
+  - 🚧 on reject reset `slowDownRadius`
+  - 🚧 on reject what happens to unreached e.g. how can we resume?
+    - ✅ do not clear pending targets
+    - ✅ next `move` without points resumes, otherwise clears
+  - ✅ remove `npc.s.continuous`
+  - ✅ can `npc.api.move`
+    - `w n.rob.api.move "{ to: $( click 1 ) }"`
+    - `w n.rob.api.move "{ to: $( click 2 ) }"`
+  - 🚧 can `move`
+  - emit events on continue to pendingTargets
+  - on extend pendingTargets may need to `npc.api.disableSlowDownRadius(true)`
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`
