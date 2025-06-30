@@ -329,15 +329,6 @@ export class NpcApi {
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
   }
 
-  /**
-   * @param {boolean} enabled 
-   */
-  setSlowDown(enabled) {
-    const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-    agent.raw.params.set_slowDownRadius(slowDownRadius);
-  }
-
   disposeModel() {
     this.m.animations = [];
     this.m.bones = [];
@@ -889,6 +880,7 @@ export class NpcApi {
     agent.raw.params.set_maxAcceleration(defaultMaxAcceleration);
     agent.raw.params.set_maxSpeed(this.getMaxSpeed());
     agent.raw.params.set_collisionQueryRange(defaultAgentUpdateFlags);
+    agent.raw.params.set_separationWeight(defaultSeparationWeight);
     agent.raw.params.set_queryFilterType(helper.queryFilterType.respectUnwalkable);
     agent.raw.params.set_radius((this.s.run ? 1.5 : 1) * helper.defaults.radius);
 
@@ -1315,6 +1307,15 @@ export class NpcApi {
     }
   }
 
+  /**
+   * @param {boolean} enabled 
+   */
+  setSlowDown(enabled) {
+    const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    agent.raw.params.set_slowDownRadius(slowDownRadius);
+  }
+
   /** @param {NPC.StopReason | Error} error */
   rejectMove(error) {
     this.reject.moves.forEach(reject => reject(error));
@@ -1381,6 +1382,7 @@ export class NpcApi {
     agent.raw.params.set_maxAcceleration(defaultMaxAcceleration);
     agent.raw.params.set_updateFlags(defaultAgentUpdateFlags);
     agent.raw.params.set_collisionQueryRange(defaultCollisionQueryRange);
+    agent.raw.params.set_separationWeight(defaultIdleSeparationWeight);
     agent.raw.params.set_radius(helper.defaults.radius);
     
     if (reason.key === 'arrived') {
@@ -1462,7 +1464,8 @@ const defaultMaxAcceleration = 10;
  * 🔔 sudden change can cause jerk onexit doorway
  * 🔔 relevant to reachability of arrival distance
  */
-const defaultSeparationWeight = 0.25;
+const defaultSeparationWeight = 0.1;
+const defaultIdleSeparationWeight = 0.25;
 const defaultCollisionQueryRange = 2;
 const defaultSlowDownRadius = helper.defaults.radius * 2;
 
@@ -1478,7 +1481,7 @@ export const crowdAgentParams = {
   maxAcceleration: defaultMaxAcceleration,
   pathOptimizationRange: helper.defaults.radius * 30,
   collisionQueryRange: defaultCollisionQueryRange,
-  separationWeight: defaultSeparationWeight,
+  separationWeight: defaultIdleSeparationWeight,
   queryFilterType: 0,
   updateFlags: defaultAgentUpdateFlags,
 };
