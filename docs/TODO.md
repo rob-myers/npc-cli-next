@@ -95,7 +95,8 @@
     - ✅ support multiple move rejects
     - ✅ awaitResume has optional `exposeReject`
   - ✅ emit event `continued-moving` on continue to pendingTargets
-  - 🚧 on extend pendingTargets may need to `npc.api.disableSlowDownRadius(true)`
+  - ✅ update slowDownRadius per pendingTargets
+  - ✅ can extend pendingTargets
   - can `tour`
 
 - profile_1: move inline-functions into js modules

@@ -490,6 +490,11 @@ export class NpcApi {
     this.base.tint = pending;
   }
 
+  /** @param {NPC.GroundPoint[]} pendingTargets  */
+  extendMove(pendingTargets) {
+    this.pendingTargets.push(...pendingTargets.map(toV3));
+  }
+
   /**
    * @param {number} [opacityDst] 
    * @param {number} [ms] 
@@ -1135,6 +1140,7 @@ export class NpcApi {
         this.base.lastStart.copy(this.base.position);
         this.s.target = this.base.lastTarget.copy(pendingTarget);
         agent.requestMoveTarget(this.s.target);
+        this.disableSlowDown(this.pendingTargets.length > 0); // update per pendingTarget
         this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
       }
 
