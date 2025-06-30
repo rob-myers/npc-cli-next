@@ -330,10 +330,10 @@ export class NpcApi {
   }
 
   /**
-   * @param {boolean} disabled 
+   * @param {boolean} enabled 
    */
-  disableSlowDown(disabled) {
-    const slowDownRadius = disabled === true ? 0.05 : defaultSlowDownRadius;
+  setSlowDown(enabled) {
+    const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
   }
@@ -874,7 +874,7 @@ export class NpcApi {
     
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
     this.pendingTargets.push(...points.map(toV3));
-    this.disableSlowDown(this.pendingTargets.length > 0);
+    this.setSlowDown(this.pendingTargets.length === 0);
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
     const closest = this.w.npc.getClosestNavigable(toV3(to), 0.5);
@@ -926,7 +926,7 @@ export class NpcApi {
       }
       throw e;
     } finally {// turn off continuous motion
-      this.disableSlowDown(false);
+      this.setSlowDown(true);
     }
   }
 
@@ -1140,7 +1140,7 @@ export class NpcApi {
         this.base.lastStart.copy(this.base.position);
         this.s.target = this.base.lastTarget.copy(pendingTarget);
         agent.requestMoveTarget(this.s.target);
-        this.disableSlowDown(this.pendingTargets.length > 0); // update per pendingTarget
+        this.setSlowDown(this.pendingTargets.length === 0); // update per pendingTarget
         this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
       }
 
