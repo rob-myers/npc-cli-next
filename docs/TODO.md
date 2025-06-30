@@ -78,7 +78,7 @@
     - maybe fixed by re-throw non "stopped-reason"
   - 🚧 remove `ctsTour`
 
-- 🚧 avoid "continuous true issues" in general via `npc.pendingTargets`
+- ✅ avoid "continuous true issues" in general via `npc.pendingTargets`
   - ✅ finally reset `slowDownRadius`
   - ✅ on reject what happens to unreached e.g. how can we resume?
     - ✅ do not clear pending targets
@@ -99,7 +99,14 @@
   - ✅ can extend pendingTargets
   - ✅ can `tour`
   - ✅ `tour` seems "freely combinable" with `move` interruptions
-  - 🚧 `tour` nested arrays
+  - ✅ `tour` nested arrays
+    - `tour npcKey:rob to:$( array $( click 2 ) )` continuous
+    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) )` stop, then cts
+    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) $( click 1 ) )`
+    ```sh
+    nestedPoints=$( array $( click 1 ) $( click 2 ) $( click 1 ) )
+    tour npcKey:rob to:$( nestedPoints )
+    ```
 
 - PsList: pause/resume while Tabs paused broke?
   - no repro yet
