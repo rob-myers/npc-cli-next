@@ -64,7 +64,7 @@
     done
     ```
 
-- 🚧 get variant of `tour` working with continuous traversal of multiple points
+- ✅ get variant of `tour` working with continuous traversal of multiple points
   - ✅ basic version `ctsTour`
   - ✅ `ctsTour` restores on finish/kill
   - ✅ `ctsTour` restores/reverts on pause/resume
@@ -76,7 +76,7 @@
     - ✅ slowDownRadius change only used for continuous movement
   - ✅ reboot needs to be handled differently in try catch?
     - maybe fixed by re-throw non "stopped-reason"
-  - 🚧 remove `ctsTour`
+  - ✅ remove `ctsTour`
 
 - ✅ avoid "continuous true issues" in general via `npc.pendingTargets`
   - ✅ finally reset `slowDownRadius`
@@ -147,7 +147,6 @@ expr window.document.querySelector'("section")' | log
   - on `x=$( echo foo; echo bar )` then `x` should be `['foo', 'bar]`
   - on `x=...$( echo foo; echo bar)` then `x` should be `foo bar`
   - `echo ...$( expr [1,2,3] )` should output `1 2 3`
-
 
 - tidy example commands
   - includes "quoting gotchas" e.g. `w e.say kate Well, this is awkward...`

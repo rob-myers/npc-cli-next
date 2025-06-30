@@ -238,11 +238,16 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 /**
  * - we mutate `opts.to`
  * - we relax arrival dist
- * - supports continuous motion
+ * - continuous motion via inner arrays
+ * 
  * ```sh
  * tour npcKey:rob to:"$( click 5 )"
  * tour npcKey:rob to:"$( click 5 | sponge )"
  * tour npcKey:rob to:"$( points )"
+ * 
+ * tour npcKey:rob to:"$( array $( points ) )"
+ * nestedPoints=$( array $( click 1 ) $( click 2 ) $( click 1 ) )
+ * tour npcKey:rob to:$( nestedPoints )
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
@@ -266,29 +271,5 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
       continue;
     }
     await ct.api.sleep(opts.pauseMs ?? 0.8);
-  }
-}
-
-/**
- * 🚧 continuous tour
- * @param {NPC.RunArg} ct
- * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
- */
-export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const { api, w } = ct;
-  const npc = w.npc.getOrThrow(opts.npcKey);
-  const handlers = api.handleStatus({
-    onSuspends(byPtags) { if (!byPtags) { npc.api.setSlowDown(true); } },
-    onResumes() { npc.api.setSlowDown(false); },
-  });
-
-  try {
-    for (const to of opts.to) {
-      handlers.onResumes?.();
-      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-    }
-  } finally {
-    handlers.onSuspends?.(false);
-    handlers.dispose();
   }
 }
