@@ -1128,13 +1128,16 @@ export class NpcApi {
 
     if (distance <= this.s.arriveDist) {// Reached target
       const pendingTarget = this.pendingTargets.shift();
+      
       if (pendingTarget === undefined) {
         this.stopMoving({ type: 'stop-reason', key: 'arrived' });
       } else {
         this.base.lastStart.copy(this.base.position);
         this.s.target = this.base.lastTarget.copy(pendingTarget);
         agent.requestMoveTarget(this.s.target);
+        this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
       }
+
       return;
     }
     

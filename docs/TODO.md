@@ -94,8 +94,9 @@
   - ✅ try clean `move`
     - ✅ support multiple move rejects
     - ✅ awaitResume has optional `exposeReject`
-  - emit events on continue to pendingTargets
-  - on extend pendingTargets may need to `npc.api.disableSlowDownRadius(true)`
+  - ✅ emit event `continued-moving` on continue to pendingTargets
+  - 🚧 on extend pendingTargets may need to `npc.api.disableSlowDownRadius(true)`
+  - can `tour`
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`
