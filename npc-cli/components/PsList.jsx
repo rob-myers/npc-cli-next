@@ -353,8 +353,8 @@ const psListCss = css`
       background-color: black;
       border: var(--separating-border);
       font-size: small;
-      overflow-x: auto;
-      /* max-height: 100px; */
+      overflow: auto;
+      max-height: 80px;
       /* word-break: break-all; */
     }
 
