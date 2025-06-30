@@ -261,8 +261,8 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
 
   const continuous = opts.pauseMs === 0;  
   const handlers = continuous ? ct.api.handleStatus({
-    onSuspends(byPtags) { if (!byPtags) { npc.api.disableSlowDownRadius(false); } },
-    onResumes() { npc.api.disableSlowDownRadius(true); },
+    onSuspends(byPtags) { if (!byPtags) { npc.api.disableSlowDown(false); } },
+    onResumes() { npc.api.disableSlowDown(true); },
   }) : undefined;
 
   try {
@@ -298,8 +298,8 @@ export async function* ctsTour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })
   const { api, w } = ct;
   const npc = w.npc.getOrThrow(opts.npcKey);
   const handlers = api.handleStatus({
-    onSuspends(byPtags) { if (!byPtags) { npc.api.disableSlowDownRadius(false); } },
-    onResumes() { npc.api.disableSlowDownRadius(true); },
+    onSuspends(byPtags) { if (!byPtags) { npc.api.disableSlowDown(false); } },
+    onResumes() { npc.api.disableSlowDown(true); },
   });
 
   try {

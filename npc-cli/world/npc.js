@@ -161,9 +161,9 @@ export function createBaseNpc(def, w) {
       turn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
     },
   
-    reject: {
+    reject: {// 🚧 support multiple rejects in each case
       fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
-      move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
+      moves: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
       separate: /** @type {undefined | ((error: any) => void)} */ (undefined),
       // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
       turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
@@ -323,10 +323,19 @@ export class NpcApi {
     info(`${'cancel'}: cancelling ${this.key}`);
 
     this.reject.fade?.(`${'cancel'}: cancelled fade`);
-    this.reject.move?.({ type: 'stop-reason', key: reason });
+    this.rejectMove({ type: 'stop-reason', key: reason });
     this.reject.turn?.(`${'cancel'}: cancelled turn`);
 
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
+  }
+
+  /**
+   * @param {boolean} disabled 
+   */
+  disableSlowDown(disabled) {
+    const slowDownRadius = disabled === true ? 0.05 : defaultSlowDownRadius;
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    agent.raw.params.set_slowDownRadius(slowDownRadius);
   }
 
   disposeModel() {
@@ -852,7 +861,7 @@ export class NpcApi {
     }
     
     this.pendingTargets.length = 0;
-    this.reject.move?.({ type: 'stop-reason', key: 'move-again' });
+    this.rejectMove({ type: 'stop-reason', key: 'move-again' });
 
     if (points.length === 0) {
       return;
@@ -860,7 +869,7 @@ export class NpcApi {
     
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
     this.pendingTargets.push(...points.map(toV3));
-    this.disableSlowDownRadius(this.pendingTargets.length > 0);
+    this.disableSlowDown(this.pendingTargets.length > 0);
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
     const closest = this.w.npc.getClosestNavigable(toV3(to), 0.5);
@@ -912,7 +921,7 @@ export class NpcApi {
       }
       throw e;
     } finally {// turn off continuous motion
-      this.disableSlowDownRadius(false);
+      this.disableSlowDown(false);
     }
   }
 
@@ -1297,13 +1306,10 @@ export class NpcApi {
     }
   }
 
-  /**
-   * @param {boolean} disabled 
-   */
-  disableSlowDownRadius(disabled) {
-    const slowDownRadius = disabled === true ? 0.05 : defaultSlowDownRadius;
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-    agent.raw.params.set_slowDownRadius(slowDownRadius);
+  /** @param {NPC.StopReason | Error} error */
+  rejectMove(error) {
+    this.reject.moves.forEach(reject => reject(error));
+    this.reject.moves.length = 0;
   }
 
   /**
@@ -1390,7 +1396,7 @@ export class NpcApi {
     if (reason.key === 'arrived') {
       this.resolve.move?.();
     } else {
-      this.reject.move?.(reason);
+      this.rejectMove(reason);
     }
 
     this.w.events.next({ key: 'stopped-moving', npcKey: this.key, reason });
@@ -1432,7 +1438,7 @@ export class NpcApi {
   async waitUntilStopped() {
     await new Promise((resolve, reject) => {
       this.resolve.move = resolve; // see "stopped-moving"
-      this.reject.move = reject; // see w.npc.remove
+      this.reject.moves.push(reject); // see w.npc.remove
     });
   }
 

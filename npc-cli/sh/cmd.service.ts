@@ -677,7 +677,11 @@ class cmdServiceClass {
     return absPath(path, pwd);
   }
 
-  async awaitResume(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">) {
+  /** Wait for process to resume with escape-hatch `exposeReject`. */
+  async awaitResume(
+    meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">,
+    exposeReject?: (reject: (reason?: any) => void) => void,
+  ) {
     let handlers: HandleStatusReturns;
     try {
       await new Promise<void>((resolve, reject) => {
@@ -685,6 +689,7 @@ class cmdServiceClass {
           onResumes: resolve,
           cleanups: () => reject(killError(meta)),
         });
+        exposeReject?.(reject);
       });
     } finally {
       handlers!.dispose();
@@ -799,8 +804,8 @@ class cmdServiceClass {
 
     addStdinToArgs,
 
-    async awaitResume() {
-      await cmdService.awaitResume(this.meta);
+    async awaitResume(exposeReject?: (reject: (reason?: any) => void) => void) {
+      await cmdService.awaitResume(this.meta, exposeReject);
     },
     
     dataChunk,
