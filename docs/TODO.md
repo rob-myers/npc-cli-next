@@ -74,9 +74,17 @@
   - ✅ merge `ctsTour` into `tour`
     - ✅ `move` cleans its own callbacks
     - ✅ slowDownRadius change only used for continuous movement
-  - 🚧 interrupting `tour` via direct-navigation should restore non-cts motion?
+  - ✅ reboot needs to be handled differently in try catch?
+    - maybe fixed by re-throw non "stopped-reason"
   - 🚧 remove `ctsTour`
 
+- 🚧 avoid "continuous true issues" in general via `pendingTargets`
+  - continuous motion handled inside npc via `pendingTargets`
+    - on reject reset `slowDownRadius`
+    - on reject what happens to unreached e.g. how can we resume?
+      - stopped-reason does not clear pending targets?
+      - `move` without points resumes?
+  - remove `npc.s.continuous`
 
 - profile_1: move inline-functions into js modules
   - not needed in all cases e.g. reboot still works for `map`

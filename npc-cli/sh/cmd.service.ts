@@ -752,20 +752,15 @@ class cmdServiceClass {
     return outputs;
   }
 
-  handleStatus(meta: Pick<Sh.BaseMeta, 'sessionKey' | 'pid'>, handlers: HandleStatusHandlers, opts: {
-    initially?: boolean;
-    finally?: boolean;
-  } = {}) {
+  handleStatus(meta: Pick<Sh.BaseMeta, 'sessionKey' | 'pid'>, handlers: HandleStatusHandlers) {
     const process = getProcess(meta);
-    for (const [key, fn] of entries(handlers)) process[key].push(fn as any);
-    opts.initially === true && handlers.onResumes?.();
-    return {
-      ...handlers,
+    const handlerEntries = entries(handlers);
+    for (const [key, fn] of handlerEntries) process[key].push(fn as any);
+    return Object.assign(handlers, {
       dispose() {
-        for (const [key, fn] of entries(handlers)) removeLast(process[key], fn)
-        opts.finally === true && handlers.onSuspends?.(false);
+        for (const [key, fn] of handlerEntries) removeLast(process[key], fn);
       },
-    };
+    });
   }
 
   async launchFunc(node: Sh.CallExpr, namedFunc: Sh.NamedFunction, args: string[]) {
@@ -858,11 +853,8 @@ class cmdServiceClass {
      * Optionally add cleanup, onSuspend, onResume.
      * Returns dispose.
      */
-    handleStatus(handlers: HandleStatusHandlers, opts: {
-      initially?: boolean;
-      finally?: boolean;
-    } = {}) {
-      return cmdService.handleStatus(this.meta, handlers, opts);
+    handleStatus(handlers: HandleStatusHandlers) {
+      return cmdService.handleStatus(this.meta, handlers);
     },
 
     isDataChunk,

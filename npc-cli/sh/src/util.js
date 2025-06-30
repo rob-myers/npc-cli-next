@@ -204,9 +204,10 @@ export async function* mapBasic(ct) {
 /**
  * @param {NPC.RunArg} ct
  */
-export async function* pause(ct) {
+export async function pause(ct) {
   ct.api.pause();
-  yield; // blocking empty write
+  await ct.api.awaitResume();
+  // yield; // blocking empty write
 }
 
 /**

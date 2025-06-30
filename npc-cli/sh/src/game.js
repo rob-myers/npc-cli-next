@@ -186,24 +186,32 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getOrThrow(opts.npcKey);
   
+  // 🚧 refactor once npc supports pendingTargets
+
   const handlers = api.handleStatus({
     cleanups() { npc.reject.move?.(Error('cancelled')); },
     onSuspends(byPtags) { if (!byPtags) { npc.reject.move?.(Error('manual-pause')); return true; } },
   });
 
-  while (true) {
-    try {
-      await npc.api.move(opts);
-      handlers.dispose();
-      break;
-    } catch (e) {
-      if (e instanceof Error && e.message === 'manual-pause') {
-        await api.awaitResume();
-        continue;
+  try {
+    while (true) {
+      try {
+        await npc.api.move(opts);
+        break;
+      } catch (e) {
+        if (e instanceof Error && e.message === 'manual-pause') {
+          // await api.awaitResume(); // 🚧 another move should cancel here
+          await Promise.race([
+            api.awaitResume(),
+            new Promise((_, reject) => npc.reject.move = reject),
+          ]);
+          continue;
+        }
+        throw e;
       }
-      handlers.dispose();
-      throw e;
     }
+  } finally {
+    handlers.dispose();
   }
 }
 

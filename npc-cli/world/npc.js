@@ -1284,8 +1284,8 @@ export class NpcApi {
    */
   setContinuousMotion(continuous) {
     this.s.continuous = continuous;
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     const slowDownRadius = continuous === true ? 0.05 : defaultSlowDownRadius;
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
   }
 
