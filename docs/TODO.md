@@ -25,17 +25,22 @@
   - ❌ clean carousel css e.g. more css variables
   - ❌ auto png to webp in public/images
 
-- 🚧 lead into "basic behaviour list"
+- 🚧 strategy subsection
   - ✅ need `<Code>`
     - ✅ can copy line-by-line
     - ✅ can copy all
-  - 🚧 mobile tty has textarea disabled option
+  - ✅ mobile tty has textarea disabled option
   - ✅ default profile is `default-profile`
     - includes standard imports: `util.{,js.}sh` `game.{,js.}sh`
     - `awaitWorld`
-  - step through spawning and removing an npc
-  - step through making an npc walk back-and-forth
-  - next time we'll implement "selection"
+  - load default_profile
+  - spawn npc
+  - move npc
+  - load profile_1
+  - select npc, move it
+  - select some points
+  - go on a tour
+  - move another npc into the way
 
 - mention Starship Geomorphs early
 - mention recent improvements in AI
@@ -165,9 +170,11 @@ expr window.document.querySelector'("section")' | log
 - can `w e.say` at different heights, to avoid collisions
   - e.g. when sitting next to each other
 
-- try avoid `move` failing with key "stuck" when near others?
+- ✅ try avoid `move` failing with key "stuck" when near others?
+  - idle has larger separationWeight
+  - larger arriveDist i.e. 0.1
 
-- manage: can select tty profileKey which remounts Tty
+- ✅ manage: can select tty profileKey which remounts Tty
 
 - wasd camera controls does not work with follow
   - ℹ️ related to w.view.controls.update(true);
