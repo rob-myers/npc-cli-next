@@ -287,6 +287,7 @@ export default function Manage(props) {
 
 const manageCss = css`
   --separating-border: 1px solid rgba(80, 80, 80, 0.5);
+  --select-or-input-color: #f1d092;
 
   height: 100%;
   width: 100%;
@@ -383,8 +384,7 @@ const manageCss = css`
     }
 
     select, input {
-      /* filter: sepia(); */
-      color: #ffce6b;
+      color: var(--select-or-input-color);
     }
   }
 
