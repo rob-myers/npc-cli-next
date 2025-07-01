@@ -1,8 +1,9 @@
 import { deltaAngle } from "maath/misc";
 import { geom } from '@/npc-cli/service/geom';
 import { helper } from "@/npc-cli/service/helper";
+import { ansi } from "../const";
 import { pause } from "./util";
-import { move } from "./game";
+import { move, w } from "./game";
 
 /**
  * @param {NPC.RunArg} ctxt
@@ -250,6 +251,8 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
+  const npc = ct.w.npc.getOrThrow(opts.npcKey);
+
   let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
   while (to = opts.to.shift()) {
     try {
@@ -258,13 +261,12 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
       if (!helper.isStopReason(e)) {
         throw e; // e.g. reboot
       }
+      opts.to.unshift(npc.pendingTargets.slice());
       // on paused interrupt, avoid resuming twice
       if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield 'Awaiting input from GM...';
+        yield `[ ${ansi.Cyan}${opts.npcKey}${ansi.Reset} ] awaiting GM resolution...`;
       }
       await pause(ct);
-      // empty array continues pendingTargets
-      opts.to.unshift(Array.isArray(to) ? [] : to);
       continue;
     }
     await ct.api.sleep(opts.pauseMs ?? 0.8);
