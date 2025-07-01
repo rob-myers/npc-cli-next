@@ -364,7 +364,7 @@ const manageCss = css`
     }
     .tab-id {
       color: white;
-      min-width: 60px;
+      text-wrap: nowrap;
     }
     .tab-create-def {
       display: flex;
