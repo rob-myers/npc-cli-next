@@ -113,6 +113,18 @@
     tour npcKey:rob to:$( nestedPoints )
     ```
 
+- 🚧 api to indicate points using decor points and numeric sprites
+  - ✅ add `decor/icon--#{1,2,3}.svg` and extend `fromDecorImgKey`
+  - ✅ run `yarn assets-bun` (seems not auto-picked-up)
+  - ✅ create decor circle via a command
+  - 🚧 refactor decor creation
+    - ℹ️ do not use script-only `geomorph.createLayoutDecorFromPoly`
+    - 🚧 `w.decor.add(...defs)`
+  - 🚧 create decor quad with texture via a command
+```sh
+# 🚧
+```
+
 - PsList: pause/resume while Tabs paused broke?
   - no repro yet
 

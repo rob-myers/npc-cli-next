@@ -1,12 +1,14 @@
 import { deltaAngle } from "maath/misc";
 import { geom } from '@/npc-cli/service/geom';
 import { helper } from "@/npc-cli/service/helper";
+import { Poly } from "@/npc-cli/geom/poly";
+import { geomorph } from "@/npc-cli/service/geomorph"; // 🚧 remove
 import { ansi } from "../const";
 import { pause } from "./util";
 import { move, w } from "./game";
 
 /**
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
 export const changeAngleOnKeyDown = ({ w }) => {
   w.view.keyDowns.changeAngle = async (e) => {
@@ -37,10 +39,24 @@ export const changeAngleOnKeyDown = ({ w }) => {
 };
 
 /**
+ * @param {NPC.RunArg} ct
+ */
+export const testAddDecor = (ct) => {
+  // 🚧 w.decor.add(...defs)
+  const poly = Poly.fromRect({x: 1, y: 1, width: 3, height: 3});
+  poly.meta.circle = true;
+  const decor = geomorph.createLayoutDecorFromPoly(poly);
+  decor.key = 'foo';
+  ct.w.decor.registerDecor([decor]);
+  
+  return decor;
+};
+
+/**
  * ```sh
  * events | handleContextMenu
  * ```
- * @param {NPC.RunArg<NPC.Event>} ctxt
+ * @param {NPC.RunArg<NPC.Event>} ct
  */
 export async function* handleContextMenu({ api, w, datum: e }) {
   while ((e = await api.read()) !== api.eof) {
@@ -101,7 +117,7 @@ export async function* handleContextMenu({ api, w, datum: e }) {
  * ```sh
  * events | handleLoggerLinks
  * ```
- * @param {NPC.RunArg<NPC.Event>} ctxt
+ * @param {NPC.RunArg<NPC.Event>} ct
  */
 export async function* handleLoggerLinks({ api, datum: e, w }) {
   while ((e = await api.read()) !== api.eof) {
@@ -128,7 +144,7 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
  * ```sh
  * selectPolysDemo
  * ```
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
 export async function* selectPolysDemo({ w }) {
   const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
@@ -145,7 +161,7 @@ export async function* selectPolysDemo({ w }) {
 
 /**
 * 🔔 "export const" uses `call` rather than `map`
-* @param {NPC.RunArg} ctxt
+* @param {NPC.RunArg} ct
 */
 export const setupContextMenu = ({ w }) => {
 
@@ -191,7 +207,7 @@ export const setupContextMenu = ({ w }) => {
 }
 
 // /**
-//  * @param {NPC.RunArg} ctxt
+//  * @param {NPC.RunArg} ct
 //  */
 // export const setupOnStuckNpc = ({ w, args }) => {
 //   w.npc.onStuckCustom = (npc, agent) => {
@@ -201,7 +217,7 @@ export const setupContextMenu = ({ w }) => {
 // }
 
 /**
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
 export const setupOnTickIdleTurn = ({ w, args }) => {
   w.npc.onTickIdleTurn = (npc, agent) => {

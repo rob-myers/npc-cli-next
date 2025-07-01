@@ -90,7 +90,7 @@ class GeomorphService {
     const decor = /** @type {Geomorph.Decor[]} */ ([]);
     const labels = /** @type {Geomorph.DecorPoint[]} */ ([]);
     for (const poly of symbol.decor) {
-      const d = this.decorFromPoly(poly, assets);
+      const d = this.createLayoutDecorFromPoly(poly);
       if (typeof poly.meta.label === 'string' && d.type === 'point') {
         labels.push(d); // decor points with meta.label
       } else {
@@ -309,12 +309,12 @@ class GeomorphService {
 
   /**
    * - Script only.
-   * - Only invoked for layouts, not nested symbols.
+   * - Layout only i.e. not nested symbols.
+   * - Should be instantiated inside `<Decor/>`
    * @param {Geom.Poly} poly
-   * @param {Geomorph.Assets} assets
    * @returns {Geomorph.Decor}
    */
-  decorFromPoly(poly, assets) {
+  createLayoutDecorFromPoly(poly) {
     // 🔔 key, gmId, roomId provided on instantiation
     const meta = /** @type {Meta<Geomorph.GmRoomId>} */ (poly.meta);
     meta.y = toPrecision(Number(meta.y) || 0);
@@ -362,7 +362,11 @@ class GeomorphService {
       const center = poly.center.precision(precision);
       const radius = decorIconRadius + 2;
       const bounds2d = tmpRect1.set(center.x - radius, center.y - radius, 2 * radius, 2 * radius).precision(precision).json;
-      // direction determines orient (degrees), where (1, 0) understood as 0 degrees
+      /**
+       * meta.direction:
+       * - comes from <use transform> of decor symbol
+       * - determines orient (degrees), where direction (1, 0) understood as 0 degrees.
+       */
       const direction = /** @type {Geom.VectJson} */ (meta.direction) || { x: 0, y: 0 };
       delete meta.direction;
       const orient = toPrecision((180 / Math.PI) * Math.atan2(direction.y, direction.x));

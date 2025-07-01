@@ -42,56 +42,9 @@ export default function Decor(props) {
     seenHash : /** @type {*} */ (null),
     showLabels: false,
 
-    addDecor(ds, removeExisting = true) {
-      const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
-        void warn(`decor "${d.key}" cannot be added: not in any room`, d)
-      );
-      if (addable.length === 0) {
-        return;
-      }
-
-      const grouped = addable.reduce((agg, d) => {
-        (agg[d.meta.grKey] ??= { meta: d.meta, add: [], remove: [] }).add.push(d);
-        
-        const prev = state.byKey[d.key];
-        if (prev !== undefined) {// Add pre-existing decor to removal group
-          d.updatedAt = Date.now();
-          (agg[prev.meta.grKey] ??= { meta: prev.meta, add: [], remove: [] }).remove.push(prev);
-        }
-
-        return agg;
-      }, /** @type {Record<`g${number}r${number}`, { meta: Meta<Geomorph.GmRoomId> } & { [x in 'add' | 'remove']: Geomorph.Decor[] }>} */ ({}));
-
-      if (removeExisting) {
-        Object.values(grouped).forEach(({ meta, remove }) =>
-          state.removeDecorFromRoom(meta.gmId, meta.roomId, remove)
-        );
-      }
-
-      Object.values(grouped).forEach(({ meta, add }) =>
-        state.addDecorToRoom(meta.gmId, meta.roomId, add)
-      );
-
-      state.updateDecorLists();
-      w.events.next({ key: 'decors-added', decors: ds });
-      update();
-    },
-    addDecorToRoom(gmId, roomId, ds) {
-      const atRoom = state.byRoom[gmId][roomId];
-
-      for (const d of ds) {
-        if (d.key in state.byKey) {
-          continue;
-        }
-        addToDecorGrid(d, state.byGrid);
-        state.byKey[d.key] = d;
-        atRoom.add(d);
-        state.rmKeys.delete(d.key);
-      }
-    },
     addGm(gmId) {
       const gm = w.gms[gmId];
-      state.addDecor(gm.decor.map(d => state.instantiateDecor(d, gmId, gm))
+      state.registerDecor(gm.decor.map(d => state.instantiateDecor(d, gmId, gm))
         // Don't re-instantiate explicitly removed
         // .filter(d => !state.rmKeys.has(d.key) && (d.meta.roomId >= 0 ||
         .filter(d => (d.meta.roomId >= 0 ||
@@ -388,6 +341,53 @@ export default function Decor(props) {
       }
       quadInst.computeBoundingSphere();
     },
+    registerDecor(ds, removeExisting = true) {
+      const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
+        void warn(`decor "${d.key}" cannot be added: not in any room`, d)
+      );
+      if (addable.length === 0) {
+        return;
+      }
+
+      const grouped = addable.reduce((agg, d) => {
+        (agg[d.meta.grKey] ??= { meta: d.meta, add: [], remove: [] }).add.push(d);
+        
+        const prev = state.byKey[d.key];
+        if (prev !== undefined) {// Add pre-existing decor to removal group
+          d.updatedAt = Date.now();
+          (agg[prev.meta.grKey] ??= { meta: prev.meta, add: [], remove: [] }).remove.push(prev);
+        }
+
+        return agg;
+      }, /** @type {Record<`g${number}r${number}`, { meta: Meta<Geomorph.GmRoomId> } & { [x in 'add' | 'remove']: Geomorph.Decor[] }>} */ ({}));
+
+      if (removeExisting === true) {
+        Object.values(grouped).forEach(({ meta, remove }) =>
+          state.removeDecorFromRoom(meta.gmId, meta.roomId, remove)
+        );
+      }
+
+      Object.values(grouped).forEach(({ meta, add }) =>
+        state.registerDecorInRoom(meta.gmId, meta.roomId, add)
+      );
+
+      state.updateDecorLists();
+      w.events.next({ key: 'decors-added', decors: ds });
+      update();
+    },
+    registerDecorInRoom(gmId, roomId, ds) {
+      const atRoom = state.byRoom[gmId][roomId];
+
+      for (const d of ds) {
+        if (d.key in state.byKey) {
+          continue;
+        }
+        addToDecorGrid(d, state.byGrid);
+        state.byKey[d.key] = d;
+        atRoom.add(d);
+        state.rmKeys.delete(d.key);
+      }
+    },
     removeAllInstantiated() {
       for (const d of Object.values(state.byKey)) {
         d.src !== undefined && delete state.byKey[d.key];
@@ -651,13 +651,13 @@ export default function Decor(props) {
  * @property {Geomorph.GeomorphsHash} seenHash Clone of last seen value of `w.hash`
  * @property {boolean} showLabels
  *
- * @property {(ds: Geomorph.Decor[], removeExisting?: boolean) => void} addDecor
+ * @property {(ds: Geomorph.Decor[], removeExisting?: boolean) => void} registerDecor
  * Can manually `removeExisting` e.g. during re-instantiation of geomorph decor
  * @property {() => void} addLabelUvs
  * @property {() => void} addQuadUvs
  * @property {() => void} addCuboidAttributes
  * @property {(decor: Geomorph.Decor, instanceId: number) => Meta} computeDecorMeta
- * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} addDecorToRoom
+ * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerDecorInRoom
  * @property {(d: Geomorph.DecorCuboid) => THREE.Matrix4} createCuboidMatrix4
  * @property {(d: Geomorph.DecorPoint | Geomorph.DecorQuad) => THREE.Matrix4} createQuadMatrix4
  * @property {(d: Geomorph.DecorPoint) => THREE.Matrix4} createLabelMatrix4
