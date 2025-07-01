@@ -469,7 +469,7 @@ export default function useHandleEvents(w) {
       );
     },
     onBlockedDoorway(npc, otherNpcKey) {
-      npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey });
+      npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey, remainingPath: npc.api.getRemainingPath() });
       // teleport to prevent ongoing offMesh traversal
       const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
       agent.teleport(npc.position); 
@@ -498,7 +498,7 @@ export default function useHandleEvents(w) {
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
         const nextCorner = npc.api.getNextCorner();
-        npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door' });
+        npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door', remainingPath: npc.api.getRemainingPath() });
         npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(nextCorner));
         return;
       }

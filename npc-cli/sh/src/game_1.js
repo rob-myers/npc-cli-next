@@ -251,8 +251,6 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  const npc = ct.w.npc.getOrThrow(opts.npcKey);
-
   let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
   while (to = opts.to.shift()) {
     try {
@@ -261,7 +259,11 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
       if (!helper.isStopReason(e)) {
         throw e; // e.g. reboot
       }
-      opts.to.unshift(npc.pendingTargets.slice());
+      if ('remainingPath' in e) {
+        opts.to.unshift(e.remainingPath);
+      } else {
+        throw e; // respawn or remove
+      }
       // on paused interrupt, avoid resuming twice
       if (!(e.key === 'move-again' && ct.api.isPaused())) {
         yield `[ ${ansi.Cyan}${opts.npcKey}${ansi.Reset} ] awaiting GM resolution...`;

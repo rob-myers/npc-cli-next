@@ -669,6 +669,17 @@ export class NpcApi {
     }
   }
 
+  getRemainingPath() {
+    if (this.s.target === null) {
+      warn(`${'getRemainingPath'}: ${this.key}: npc.s.target is null`);
+      return this.pendingTargets.map(toXZ);
+    } else if (this.isNearTarget() === true) {
+      return this.pendingTargets.map(toXZ);
+    } else {
+      return [this.s.target].concat(this.pendingTargets).map(toXZ);
+    }
+  }
+
   /**
    * 1. Step `offMesh.seg` through `[0, 1, 2]`
    * 
@@ -761,7 +772,13 @@ export class NpcApi {
         continue;
       }
 
-      return this.stopMoving({ type: 'stop-reason', key: 'collided', otherNpcKey: other.key });
+      this.stopMoving({
+        type: 'stop-reason',
+        key: 'collided',
+        otherNpcKey: other.key,
+        remainingPath: this.getRemainingPath(),
+      });
+      return;
     }
   }
 
@@ -854,12 +871,20 @@ export class NpcApi {
       throw Error(`${'npc.api.move'}: opts.to must be {x,y}, {x,y,z} or array`);
     }
     
-    if (points.length === 0) {// can continue pendingTargets
-      points.push(...this.pendingTargets);
-    }
+    // 🚧 pendingTargets should exist during move i.e. cannot resume them
+    // 🚧 instead, each stop-reason provides them
+
+    // if (points.length === 0) {// continue pendingTargets if points empty
+    //   points.push(...this.pendingTargets);
+    // }
     
+    this.s.target !== null && this.rejectMove({
+      type: 'stop-reason',
+      key: 'move-again',
+      remainingPath: this.getRemainingPath(),
+    });
+
     this.pendingTargets.length = 0;
-    this.rejectMove({ type: 'stop-reason', key: 'move-again' });
 
     if (points.length === 0) {
       return;
@@ -912,15 +937,13 @@ export class NpcApi {
     try {
       await this.waitUntilStopped();
     } catch (e) {
-      // remember last unreached
-      this.pendingTargets.push(this.base.lastTarget.clone());
-
-      if (/** @type {NPC.StopReason} */ (e)?.key !== 'move-again') {
-        this.stopMoving(); // 🚧 clarify
+      if (!(helper.isStopReason(e) && e.key === 'move-again') && this.s.target !== null) {
+        this.stopMoving(); // stop on error except "move-again"
       }
       throw e;
     } finally {// turn off continuous motion
       this.setSlowDown(true);
+      this.pendingTargets.length = 0;
     }
   }
 
@@ -1190,6 +1213,7 @@ export class NpcApi {
         type: 'stop-reason',
         key: 'stuck',
         nearTarget: this.isNearTarget(),
+        remainingPath: this.getRemainingPath(),
       });
     } else {
       this.w.npc.onStuckNpc?.(this.base, agent);
@@ -1368,7 +1392,7 @@ export class NpcApi {
   }
 
   /** @param {NPC.StopReason} reason */
-  stopMoving(reason = { type: 'stop-reason', key: 'stopped' }) {
+  stopMoving(reason = { type: 'stop-reason', key: 'stopped', remainingPath: this.getRemainingPath() }) {
     const agent = this.base.agent;
 
     if (agent === null || this.s.target === null) {
