@@ -86,16 +86,22 @@ we could fabricate everything around them, as and when we need to.
 This leads to intermediate objectives:
 
 <Card id="our-problem"> 
-**Our Problem**: Underlying problem with human Game Master.
+**Our Problem**: _Underlying problem with human Game Master_.
 
 1. Build real-time control systems for NPCs.
 2. Enable a Game Master to act indistinguishably from many humans. <SideNote>
   A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
 </Card>
 
-Then we have restricted the underlying problem, by permitting a human to control the NPCs rather than an "automated director".
+Our objectives arise naturally from the discussion above.
+We want to avoid monolithic state-spaces by continually observing and reacting to the Player.
+Then we're going to need real-time control systems,
+and we're going to need a human (the Game Master) who observes/reacts using them.
+We can now reinterpret the underlying problem.
+We still want the NPCs to behave indistinguishably from human Players.
+However, we permit NPCs to be controlled by a human Game Master rather than an automated director.
 
-{/* Reacting continually to the Player requires real-time control systems. */}
+{/* Then we have restricted the underlying problem, by permitting a human to control the NPCs rather than an "automated director". */}
 {/* Solving the underlying problem would also require an "automated director". */}
 {/* As an intermediate step we permit a human Game Master to control these systems. */}
 {/* Then the underlying problem becomes (2) above: can a single human act indistinguishably from many? */}
