@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { Vect } from "../geom";
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
 import { entries, isDevelopment, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
@@ -313,7 +312,7 @@ export default function Npcs(props) {
         throw Error(`opts.at must be a valid point`);
       }
 
-      if (Vect.isVectJson(opts.look) === true) {
+      if (helper.isVectJson(opts.look) === true) {
         opts.look = toXZ(opts.look);
         opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
       }
@@ -454,7 +453,7 @@ export default function Npcs(props) {
         return;
       }
 
-      if (!Vect.isVectJson(doMeta.doPoint)) {
+      if (!helper.isVectJson(doMeta.doPoint)) {
         throw Error(`doMeta.doPoint must exist: ${JSON.stringify(doMeta)}`);
       }
 

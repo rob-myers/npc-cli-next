@@ -355,7 +355,7 @@ export class NpcApi {
    * @param {any[]} [opts.extraParams] // 🚧 clarify
    */
   async do(p, opts = {}) {
-    if (Vect.isVectJson(p) === false) {
+    if (helper.isVectJson(p) === false) {
       throw Error('point expected');
     } else if (p.meta == null) {
       throw Error('point.meta expected');
@@ -815,7 +815,7 @@ export class NpcApi {
    * @param {number} [ms]
    */
   async look(input, ms = 300) {
-    if (Vect.isVectJson(input) === true) {
+    if (helper.isVectJson(input) === true) {
       input = this.getLookAngle(input);
     }
     if (!Number.isFinite(input)) {
@@ -850,7 +850,9 @@ export class NpcApi {
     }
 
     const points = Array.isArray(opts.to) ? opts.to : [opts.to];
-    // 🚧 validate items as {x,y} or {x,y,z}
+    if (!(points.every(helper.isVectJson))) {
+      throw Error(`${'npc.api.move'}: opts.to must be {x,y}, {x,y,z} or array`);
+    }
     
     if (points.length === 0) {// can continue pendingTargets
       points.push(...this.pendingTargets);

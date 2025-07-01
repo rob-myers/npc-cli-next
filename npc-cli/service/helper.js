@@ -381,6 +381,14 @@ export const helper = {
     }
   },
 
+  /**
+   * @param {*} input 
+   * @return {input is Geom.VectJson}
+   */
+  isVectJson(input) {
+    return !!input && typeof input.x === 'number' && typeof input.y === 'number';
+  }
+
 };
 
 /**

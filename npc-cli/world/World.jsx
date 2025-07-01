@@ -468,10 +468,3 @@ export default function World(props) {
  * @property {(mutator?: (w: State) => void | Promise<void>) => void} update
  * @property {(partial: Record<number, [number, number, number, number]>) => void} updateTexAux
  */
-
-/**
- * @typedef StateUtil Utility functions and classes
- * @property {typeof deltaAngle} deltaAngle
- * @property {typeof geom} geom
- * @property {typeof Vect['isVectJson']} isVectJson
- */
