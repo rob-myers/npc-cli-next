@@ -6,7 +6,7 @@ import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "r
 import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useStateRef from "../npc-cli/hooks/use-state-ref";
-import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight, faCodeBranch } from "../npc-cli/components/Icon";
+import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight } from "../npc-cli/components/Icon";
 
 export default function Nav() {
   const collapsed = useSite(({ navOpen }) => !navOpen);
@@ -67,12 +67,12 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <SubMenu icon={icon.devBlog} label="Dev Blog">
+        <SubMenu icon={icon.devBlog} label="Dev">
           <MenuItem>Tech</MenuItem>
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <MenuItem icon={icon.research}>Research</MenuItem>
+        {/* <MenuItem icon={icon.research}>Research</MenuItem> */}
         <MenuItem icon={icon.help}>Help</MenuItem>
         <MenuItem icon={icon.about}>About</MenuItem>
       </Menu>
@@ -196,7 +196,7 @@ const icon = {
   devBlog: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
   help: <FontAwesomeIcon icon={faCircleQuestion} color="white" size="1x" />,
   about: <FontAwesomeIcon icon={faCircleInfo} color="white" size="1x" />,
-  research: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
+  // research: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
 };
 
 const toggleCss = css`
