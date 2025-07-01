@@ -185,7 +185,6 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getOrThrow(opts.npcKey);
-  
   const handlers = api.handleStatus({
     cleanups() { npc.api.rejectMove(Error('cancelled')); },
     onSuspends(byPtags) { if (!byPtags) { npc.api.rejectMove(Error('manual-pause')); return true; } },

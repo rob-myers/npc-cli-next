@@ -236,9 +236,6 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 }
 
 /**
- * - we mutate `opts.to`
- * - we relax arrival dist
- * - continuous motion via inner arrays
  * 
  * ```sh
  * tour npcKey:rob to:"$( click 5 )"
@@ -261,12 +258,12 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
       if (!helper.isStopReason(e)) {
         throw e; // e.g. reboot
       }
+      // on paused interrupt, avoid resuming twice
       if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        // on paused interrupt, resume should not block
         yield 'Awaiting input from GM...';
       }
       await pause(ct);
-      // empty-array continues pendingTargets
+      // empty array continues pendingTargets
       opts.to.unshift(Array.isArray(to) ? [] : to);
       continue;
     }
