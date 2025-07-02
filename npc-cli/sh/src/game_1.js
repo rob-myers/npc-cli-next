@@ -39,44 +39,28 @@ export const changeAngleOnKeyDown = ({ w }) => {
 
 /**
  * @param {NPC.RunArg} ct
+ * @param {{ from: NPC.GroundPoint; to: NPC.GroundPoint; decorKey?: string }} [opts]
  */
-export const testAddDecor = (ct) => {
-  const decorCircle = ct.w.decor.create({
-    type: 'circle',
-    key: 'test-decor-circle',
-    center: { x: 2.5, y: 2.5 },
-    radius: 1.5,
-  });
-  
-  const decorPoint = ct.w.decor.create({
-    type: 'point',
-    key: 'test-decor-point',
-    x: 3,
-    y: 7.5,
-    img: 'icon--robot',
-    orient: 0,
-    y3d: 0.01,
-  });
+export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
 
-  const decorQuad = ct.w.decor.create({
+  const from = helper.toXZ(opts.from);
+  const to = helper.toXZ(opts.to);
+  const delta = tmpVect1.copy(to).sub(from);
+  
+  const _decorQuad = ct.w.decor.create({
     type: 'quad',
-    key: 'test-decor-quad',
-    x: 3,
-    y: 7.5,
-    width: 2,
+    key: opts.decorKey ?? `line-${Date.now()}`,
+    x: from.x,
+    y: from.y,
+    width: delta.length,
     height: 0.025,
     img: 'colour--white',
-    transform: tmpMat1.setRotation(Math.PI/4).toArray(),
-    y3d: 0.1,
-    color: '#f00',
+    transform: tmpMat1.setRotation(delta.angle).toArray(),
+    y3d: 0.1, // 🚧
+    color: '#f00', // 🚧
   });
 
-  return {
-    decorCircle,
-    decorPoint,
-    decorQuad,
-  };
-};
+}
 
 /**
  * ```sh
@@ -280,28 +264,44 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 
 /**
  * @param {NPC.RunArg} ct
- * @param {{ from: NPC.GroundPoint; to: NPC.GroundPoint; decorKey?: string }} [opts]
  */
-export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
-
-  const from = helper.toXZ(opts.from);
-  const to = helper.toXZ(opts.to);
-  const delta = tmpVect1.copy(to).sub(from);
+export const testAddDecor = (ct) => {
+  const decorCircle = ct.w.decor.create({
+    type: 'circle',
+    key: 'test-decor-circle',
+    center: { x: 2.5, y: 2.5 },
+    radius: 1.5,
+  });
   
-  const _decorQuad = ct.w.decor.create({
-    type: 'quad',
-    key: opts.decorKey ?? `line-${Date.now()}`,
-    x: from.x,
-    y: from.y,
-    width: delta.length,
-    height: 0.025,
-    img: 'colour--white',
-    transform: tmpMat1.setRotation(delta.angle).toArray(),
-    y3d: 0.1, // 🚧
-    color: '#f00', // 🚧
+  const decorPoint = ct.w.decor.create({
+    type: 'point',
+    key: 'test-decor-point',
+    x: 3,
+    y: 7.5,
+    img: 'icon--robot',
+    orient: 0,
+    y3d: 0.01,
   });
 
-}
+  const decorQuad = ct.w.decor.create({
+    type: 'quad',
+    key: 'test-decor-quad',
+    x: 3,
+    y: 7.5,
+    width: 2,
+    height: 0.025,
+    img: 'colour--white',
+    transform: tmpMat1.setRotation(Math.PI/4).toArray(),
+    y3d: 0.1,
+    color: '#f00',
+  });
+
+  return {
+    decorCircle,
+    decorPoint,
+    decorQuad,
+  };
+};
 
 /**
  * 
