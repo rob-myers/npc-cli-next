@@ -171,8 +171,15 @@ export default function Decor(props) {
         }
         case 'quad': {
           const transform = def.transform ?? [1, 0, 0, 1, 0, 0];
+          // scale must be represented inside transform
+          // - default direction seems to be +z
+          transform[0] = 1 / def.height;
+          transform[3] = 1 / def.width;
+          // translation must be represented inside transform
+          transform[4] += def.x;
+          transform[5] += def.y;
           const matrix = tmpMat1.feedFromArray(transform);
-          const poly = Poly.fromRect(def).applyMatrix(matrix);
+          const poly = Poly.fromRect({ x:0, y:0, width: def.width, height: def.height }).applyMatrix(matrix);
 
           if (!helper.isDecorImgKey(def.img)) {
             warn(`${'Decor.create'}: def.img not a DecorImgKey, using "icon--warn"`);

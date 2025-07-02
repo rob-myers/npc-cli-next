@@ -57,9 +57,23 @@ export const testAddDecor = (ct) => {
     y3d: 0.1,
   });
 
+  const decorQuad = ct.w.decor.create({
+    type: 'quad',
+    key: 'test-decor-quad',
+    x: 3,
+    y: 7.5,
+    width: 2,
+    height: 0.1,
+    img: 'colour--blue',
+    // 🚧
+    // transform: tmpMat1.setRotationAbout(Math.PI/4, ),
+    y3d: 0.1,
+  });
+
   return {
     decorCircle,
     decorPoint,
+    decorQuad,
   };
 };
 

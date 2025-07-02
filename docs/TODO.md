@@ -123,10 +123,12 @@
     - ✅ `w.decor.create(def)`
   - ✅ create decor quad with texture via command `testAddDecor`
   - 🚧 can create monochromatic line
+    - ✅ translation + scale
+    - 🚧 rotation
 
 ```sh
 testAddDecor
-w decor.remove test-decor-{circle,point}
+w decor.remove test-decor-{circle,point,quad}
 ```
 
 - PsList: pause/resume while Tabs paused broke?
