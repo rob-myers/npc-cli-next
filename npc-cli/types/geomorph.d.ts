@@ -391,9 +391,11 @@ declare namespace Geomorph {
   }
   interface DecorPointDef extends BaseDecorDef, Geom.VectJson {
     type: 'point';
+    img?: Key.DecorImg;
     /** Orientation in degrees, where the unit vector `(1, 0)` corresponds to `0`  */
     orient?: number;
-    img?: Key.DecorImg;
+    /** Height off ground */
+    y3d?: number;
   }
   
   /** Simple polygon sans holes. */
@@ -407,8 +409,10 @@ declare namespace Geomorph {
   }
   interface DecorQuadDef extends BaseDecorDef, Geom.RectJson {
     type: 'quad';
-    transform?: Geom.SixTuple;
     img: Key.DecorImg;
+    transform?: Geom.SixTuple;
+    /** Height off ground */
+    y3d?: number;
   }
 
   interface DecorRect extends BaseDecor {

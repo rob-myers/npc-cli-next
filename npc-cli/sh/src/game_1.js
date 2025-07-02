@@ -40,15 +40,27 @@ export const changeAngleOnKeyDown = ({ w }) => {
  * @param {NPC.RunArg} ct
  */
 export const testAddDecor = (ct) => {
-  // 🚧 decor point
-  const decor = ct.w.decor.create({
+  const decorCircle = ct.w.decor.create({
     type: 'circle',
-    key: 'foo',
+    key: 'test-decor-circle',
     center: { x: 2.5, y: 2.5 },
     radius: 1.5,
   });
   
-  return decor;
+  const decorPoint = ct.w.decor.create({
+    type: 'point',
+    key: 'test-decor-point',
+    x: 3,
+    y: 7.5,
+    img: 'icon--robot',
+    orient: 0,
+    y3d: 0.1,
+  });
+
+  return {
+    decorCircle,
+    decorPoint,
+  };
 };
 
 /**
