@@ -8,7 +8,7 @@ import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance } from '../service/const';
 import { error, info, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, toXZ } from '../service/three';
+import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3 } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 
@@ -360,7 +360,7 @@ export class NpcApi {
     } else if (p.meta == null) {
       throw Error('point.meta expected');
     }
-    const point = /** @type {Meta<Geom.VectJson>} */ (toXZ(p));
+    const point = /** @type {Meta<Geom.VectJson>} */ (helper.toXZ(p));
     point.meta = p.meta;
 
     const w = this.w;
@@ -399,7 +399,7 @@ export class NpcApi {
     // handle offMesh and click near nav
     if (srcNav === false && point.meta.nav === false) {
       const closest = w.npc.getClosestNavigable(toV3(p));
-      if (closest !== null) await this.offMeshDo({...toXZ(closest), meta: { nav: true }});
+      if (closest !== null) await this.offMeshDo({...helper.toXZ(closest), meta: { nav: true }});
     }
   }
 
@@ -617,7 +617,7 @@ export class NpcApi {
    */
   getLookAngle(input) {
     const src = this.getPoint();
-    const dst = toXZ(input);
+    const dst = helper.toXZ(input);
     return src.x === dst.x && src.y === dst.y
       ? this.getAngle()
       : geom.clockwiseFromNorth(dst.y - src.y, dst.x - src.x)
@@ -672,11 +672,11 @@ export class NpcApi {
   getRemainingPath() {
     if (this.s.target === null) {
       warn(`${'getRemainingPath'}: ${this.key}: npc.s.target is null`);
-      return this.pendingTargets.map(toXZ);
+      return this.pendingTargets.map(helper.toXZ);
     } else if (this.isNearTarget() === true) {
-      return this.pendingTargets.map(toXZ);
+      return this.pendingTargets.map(helper.toXZ);
     } else {
-      return [this.s.target].concat(this.pendingTargets).map(toXZ);
+      return [this.s.target].concat(this.pendingTargets).map(helper.toXZ);
     }
   }
 

@@ -6,10 +6,11 @@ import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 
 import { debug, entries, keys } from "../service/generic.js";
+import { helper } from "../service/helper";
 import { Rect, Vect } from "../geom/index.js";
-import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isSmallViewport, isTouchDevice } from "../service/dom.js";
+import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isTouchDevice } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
-import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, toXZ, unitXVector3, v3Precision } from "../service/three.js";
+import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
 import { WorldContext } from "./world-context.js";
 import useStateRef from "../hooks/use-state-ref.js";
@@ -153,7 +154,7 @@ export default function WorldView(props) {
       const e = {
         key,
         position: new THREE.Vector3().copy(position),
-        point: toXZ(position),
+        point: helper.toXZ(position),
         distancePx,
         justLongDown,
         keys: getModifierKeys(event),
@@ -269,7 +270,7 @@ export default function WorldView(props) {
       const meta = {
         ...decoded,
         ...pickedTypesInSomeRoom[decoded.picked] === true
-          && w.gmGraph.findRoomContaining(toXZ(position), true),
+          && w.gmGraph.findRoomContaining(helper.toXZ(position), true),
       };
 
       state.lastDown = {

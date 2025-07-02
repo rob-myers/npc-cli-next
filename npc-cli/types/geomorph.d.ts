@@ -411,6 +411,7 @@ declare namespace Geomorph {
     type: 'quad';
     /** For monochromatic use `"colour-white"` and set `color` option. */
     img: Key.DecorImg;
+    /** three.js colour rep */
     color?: string;
     /** Applied before translation `x`, `y` */
     transform?: Geom.SixTuple;

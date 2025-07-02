@@ -1,5 +1,5 @@
 import { deltaAngle } from "maath/misc";
-import { Mat } from "@/npc-cli/geom";
+import { Mat, Vect } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from '@/npc-cli/service/geom';
 import { ansi } from "../const";
@@ -279,6 +279,31 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 }
 
 /**
+ * @param {NPC.RunArg} ct
+ * @param {{ from: NPC.GroundPoint; to: NPC.GroundPoint; decorKey?: string }} [opts]
+ */
+export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
+
+  const from = helper.toXZ(opts.from);
+  const to = helper.toXZ(opts.to);
+  const delta = tmpVect1.copy(to).sub(from);
+  
+  const _decorQuad = ct.w.decor.create({
+    type: 'quad',
+    key: opts.decorKey ?? `line-${Date.now()}`,
+    x: from.x,
+    y: from.y,
+    width: delta.length,
+    height: 0.025,
+    img: 'colour--white',
+    transform: tmpMat1.setRotation(delta.angle).toArray(),
+    y3d: 0.1, // 🚧
+    color: '#f00', // 🚧
+  });
+
+}
+
+/**
  * 
  * ```sh
  * tour npcKey:rob to:"$( click 5 )"
@@ -318,3 +343,4 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
 }
 
 const tmpMat1 = new Mat();
+const tmpVect1 = new Vect();

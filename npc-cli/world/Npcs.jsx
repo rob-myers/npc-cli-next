@@ -5,7 +5,7 @@ import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
 import { entries, isDevelopment, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
-import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
+import { computeMeshUvMappings, emptyAnimationMixer, toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
 import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
@@ -173,7 +173,7 @@ export default function Npcs(props) {
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
           npc.api.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
-          npc.api.move({ to: toXZ(npc.s.target) });
+          npc.api.move({ to: helper.toXZ(npc.s.target) });
         } else {// so they'll move "out of the way" of other npcs
           agent.requestMoveTarget(npc.position);
         }
@@ -301,7 +301,7 @@ export default function Npcs(props) {
     },
     async spawn(opts) {
       const { at } = opts;
-      const point = toXZ(at);
+      const point = helper.toXZ(at);
       const meta = opts.meta ?? at.meta ?? {};
 
       if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
@@ -313,7 +313,7 @@ export default function Npcs(props) {
       }
 
       if (helper.isVectJson(opts.look) === true) {
-        opts.look = toXZ(opts.look);
+        opts.look = helper.toXZ(opts.look);
         opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
       }
 

@@ -395,8 +395,23 @@ export const helper = {
    */
   isVectJson(input) {
     return !!input && typeof input.x === 'number' && typeof input.y === 'number';
-  }
+  },
 
+  /**
+   * - `{ x, y, z }` -> `{ x, y: z }`
+   * - `THREE.Vector3` -> `{ x, y: z }`
+   * - `{ x, y }` -> `{ x, y }` (fresh)
+   * @param {Geom.VectJson | import('three').Vector3Like} input 
+   * @returns {Geom.VectJson}
+   */
+  toXZ(input) {
+    if ('z' in input) {
+      return { x: input.x, y: input.z };
+    } else {
+      return { x: input.x, y: input.y };
+    }
+  },
+  
 };
 
 /**

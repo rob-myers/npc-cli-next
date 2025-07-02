@@ -126,6 +126,8 @@
     - ✅ translation + scale
     - ✅ rotation
   - 🚧 `click` can create monochromatic line
+    - ✅ `createDecorLine` creates line
+    - 🚧 hook up to `click`
   - refine `click` opts
 
 ```sh
