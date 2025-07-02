@@ -53,10 +53,8 @@ export async function* click(ct) {
   }
 
   let numClicks = isStringInt(operands[0]) ? parseInt(operands[0]) : Number.MAX_SAFE_INTEGER;
-  const clickId = isStringInt(operands[0]) || opts.block === true
-    ? api.getUid()
-    : undefined
-  ;
+  const clickId = isStringInt(operands[0]) || opts.block === true ? api.getUid() : undefined;
+  const blocking = clickId !== undefined;
 
   // support `click meta.nav`
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
@@ -68,7 +66,7 @@ export async function* click(ct) {
   // suspend/resume handled by `api.isRunning()` below
   const handlers = api.handleStatus({
     cleanups() {
-      clickId !== undefined && removeFirst(w.view.clickIds, clickId);
+      blocking && removeFirst(w.view.clickIds, clickId);
       eventsSub?.unsubscribe();
     },
   });
@@ -78,7 +76,7 @@ export async function* click(ct) {
 
   try {
     while (numClicks > 0) {
-      clickId !== undefined && w.view.clickIds.push(clickId);
+      blocking && w.view.clickIds.push(clickId);
       
       const e = await /** @type {Promise<NPC.PointerUpEvent>} */ (new Promise((resolve, reject) => {
         eventsSub = w.events.subscribe({ next(e) {
@@ -121,7 +119,7 @@ export async function* click(ct) {
         numClicks--;
         yield output;
 
-        if (prevClick !== null) {
+        if (blocking === true && prevClick !== null) {
           const decorKey = `click-line-${numClicks}`;
           lib.game_1.createDecorLine(ct, { decorKey, from: prevClick, to: output });
         }
