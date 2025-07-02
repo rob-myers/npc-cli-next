@@ -43076,6 +43076,15 @@
         "y": 391,
         "width": 38,
         "height": 58
+      },
+      "colour--blue": {
+        "colour": true,
+        "decorImgKey": "colour--blue",
+        "sheetId": 0,
+        "x": 507,
+        "y": 205,
+        "width": 6,
+        "height": 6
       }
     },
     "decorDims": [{"width": 517, "height": 486}],
@@ -43875,7 +43884,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": 517884934
+    "imagesHash": 1567252754
   },
   "skin": {
     "numSheets": {"human-0": 2},
