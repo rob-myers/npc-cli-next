@@ -62,7 +62,7 @@ export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
     img: 'colour--white',
     transform: tmpMat1.setRotation(delta.angle).toArray(),
     y3d: opts.y ?? 0.1,
-    color: opts.color ?? '#00f', // default blue
+    color: opts.color ?? '#aaf', // default light blue
   });
 }
 

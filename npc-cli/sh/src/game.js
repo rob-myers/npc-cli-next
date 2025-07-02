@@ -31,16 +31,17 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
  * click meta.nav
  * click meta.nav 2
  * ```
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* click({ api, args, w }) {
-  let { opts, operands } = api.getOpts(args, {
+export async function* click(ct) {
+  const { args, api, w, lib } = ct;
+  let { opts, operands } = ct.api.getOpts(args, {
     boolean: [
-      "left",     // left clicks only
-      "right",    // right clicks only
-      "long",     // long press only
-      "any",      // any permitted
-      "blocking", // e.g. `click --blocking`
+      "left",  // left clicks only
+      "right", // right clicks only
+      "long",  // long press only
+      "any",   // any permitted
+      "block", // e.g. `click --block`
     ],
   });
   if (opts["right"] === false && opts["any"] === false)  {
@@ -52,7 +53,7 @@ export async function* click({ api, args, w }) {
   }
 
   let numClicks = isStringInt(operands[0]) ? parseInt(operands[0]) : Number.MAX_SAFE_INTEGER;
-  const clickId = isStringInt(operands[0]) || opts.blocking === true
+  const clickId = isStringInt(operands[0]) || opts.block === true
     ? api.getUid()
     : undefined
   ;
@@ -72,13 +73,18 @@ export async function* click({ api, args, w }) {
     },
   });
 
+  /** @type {null | NPC.ClickOutput} */
+  let prevClick = null; // 🚧 optionally show line segs as decor quads
+
   try {
     while (numClicks > 0) {
       clickId !== undefined && w.view.clickIds.push(clickId);
       
       const e = await /** @type {Promise<NPC.PointerUpEvent>} */ (new Promise((resolve, reject) => {
         eventsSub = w.events.subscribe({ next(e) {
-          if (e.key !== "pointerup" || e.pointers > 1 || w.view.isPointerEventDrag(e) === true || api.isRunning() === false) {
+          if (e.key !== "pointerup" || e.pointers > 1 || w.view.isPointerEventDrag(e) === true) {
+            return;
+          } else if (api.isRunning() === false) {
             return;
           } else if (e.clickId !== undefined && clickId === undefined) {
             return; // `click {n}` overrides `click`
@@ -110,10 +116,16 @@ export async function* click({ api, args, w }) {
         },
         xz: {...e.point},
       };
-  
+
       if (filter === undefined || filter?.(output)) {
         numClicks--;
         yield output;
+
+        if (prevClick !== null) {
+          const decorKey = `click-line-${numClicks}`;
+          lib.game_1.createDecorLine(ct, { decorKey, from: prevClick, to: output });
+        }
+        prevClick = output;
       }
     }
   } finally {

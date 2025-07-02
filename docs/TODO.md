@@ -129,8 +129,8 @@
     - ✅ `createDecorLine` creates line
     - ✅ on re-add decor it should update
       - `createDecorLine decorKey:foo from:$( click 1 ) to:$( click 1 )`
-    - 🚧 hook up to `click`
-  - refine `click` opts
+    - ✅ hook up to `click`
+    - 🚧 refine `click` opts
 
 ```sh
 testAddDecor
