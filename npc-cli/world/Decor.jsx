@@ -2,9 +2,10 @@ import React from "react";
 import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 
-import { decorGridSize, decorIconRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
+import { Poly } from "../geom/poly";
+import { decorGridSize, decorIconRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
 import { isDevelopment, pause, removeDups, testNever, toPrecision, warn } from "../service/generic";
-import { tmpMat1, tmpRect1 } from "../service/geom";
+import { geom, tmpMat1, tmpRect1, tmpVec1 } from "../service/geom";
 import { getCanvas } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { addToDecorGrid, removeFromDecorGrid } from "../service/grid";
@@ -95,7 +96,7 @@ export default function Decor(props) {
       for (const [instanceId, d] of state.quads.entries()) {
         if (d.type === 'point') {
           const { x, y, width, height, sheetId } = sheet[
-            geomorph.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.point
+            helper.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.point
           ];
           uvTextureIds.push(sheetId);
 
@@ -103,7 +104,7 @@ export default function Decor(props) {
           uvDimensions.push(width / maxDecorDim.width, height / maxDecorDim.height);
         } else {
           const { x, y, width, height, sheetId } = sheet[
-            geomorph.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.quad
+            helper.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.quad
           ];
           uvTextureIds.push(sheetId);
           
@@ -135,6 +136,100 @@ export default function Decor(props) {
       state.quad.setAttribute('instanceIds',
         new THREE.InstancedBufferAttribute(new Uint32Array(instanceIds), 1),
       );
+    },
+    create(def) {
+      // 🚧 testing
+      
+      /** @type {Geomorph.Decor} */ let d;
+      const meta = /** @type {Meta<Geomorph.GmRoomId>} */ (def.meta ?? {});
+
+      switch (def.type) {
+        case 'circle':
+          d = {
+            type: 'circle',
+            key: def.key,
+            meta: Object.assign(meta, { circle: true }),
+            bounds2d: { x: def.center.x - def.radius, y: def.center.y - def.radius, width: def.radius * 2, height: def.radius * 2 },
+            radius: def.radius,
+            center: def.center,
+          };
+          break;
+        case 'cuboid': {
+          const transform = def.transform ?? [1, 0, 0, 1, 0, 0];
+          const matrix = tmpMat1.feedFromArray(transform);
+          const poly = Poly.fromRect(def).applyMatrix(matrix);
+          const center2d = poly.center;
+          d = {
+            type: 'cuboid',
+            key: def.key,
+            meta: Object.assign(meta, { cuboid: true, h: def.height3d, y: def.baseY }),
+            bounds2d: poly.rect.precision(precision).json,
+            center: geom.toPrecisionV3({ x: center2d.x, y: def.baseY + def.height3d/2, z: center2d.y }),
+            transform,
+          };
+          break;
+        }
+        case 'quad': {
+          const transform = def.transform ?? [1, 0, 0, 1, 0, 0];
+          const matrix = tmpMat1.feedFromArray(transform);
+          const poly = Poly.fromRect(def).applyMatrix(matrix);
+
+          if (!helper.isDecorImgKey(def.img)) {
+            warn(`${'Decor.create'}: def.img must be in DecorImgKey (using "icon--warn")`);
+            def.img = 'icon--warn';
+          }
+
+          d = {
+            type: 'quad',
+            key: def.key,
+            meta: Object.assign(meta, { quad: true, img: def.img }),
+            bounds2d: poly.rect.precision(precision).json,
+            transform,
+            center: poly.center.precision(3).json,
+            det: matrix.a * matrix.d - matrix.b * matrix.c,
+          };
+          break;
+        }
+        case 'rect': {
+          const poly = geom.angledRectToPoly({ baseRect: tmpRect1.setFromJson(def), angle: def.angle ?? 0 })
+          d = {
+            type: 'rect',
+            key: def.key,
+            meta: Object.assign(meta, { rect: true }),
+            bounds2d: poly.rect.json,
+            points: poly.outline.map(x => x.json),
+            center: poly.center.precision(3).json,
+            angle: def.angle ?? 0,
+          };
+          break;
+        }
+        case 'point':
+        default: {
+          const center = tmpVec1.copy(def).precision(precision);
+          const radius = decorIconRadius + 2;
+          const bounds2d = tmpRect1.set(center.x - radius, center.y - radius, 2 * radius, 2 * radius).precision(precision).json;
+
+          if ('img' in meta && !helper.isDecorImgKey(meta.img)) {
+            warn(`${'Decor.create'}: def.img must be in DecorImgKey (using "icon--warn")`);
+            def.img = 'icon--warn';
+          }
+
+          d = {
+            type: 'point',
+            key: def.key,
+            meta: Object.assign(meta, { point: true }),
+            bounds2d,
+            x: center.x,
+            y: center.y,
+            orient: def.orient ?? 0,
+          };
+          break;
+        }
+      }
+
+      state.ensureGmRoomId(d);
+
+      state.registerDecor([d]);
     },
     computeDecorMeta(decor, instanceId) {
       /** @type {Meta} */
@@ -656,6 +751,7 @@ export default function Decor(props) {
  * @property {() => void} addLabelUvs
  * @property {() => void} addQuadUvs
  * @property {() => void} addCuboidAttributes
+ * @property {(def: Geomorph.DecorDef) => void} create
  * @property {(decor: Geomorph.Decor, instanceId: number) => Meta} computeDecorMeta
  * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerDecorInRoom
  * @property {(d: Geomorph.DecorCuboid) => THREE.Matrix4} createCuboidMatrix4

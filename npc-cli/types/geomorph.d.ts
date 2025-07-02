@@ -339,7 +339,11 @@ declare namespace Geomorph {
 
   //#region decor
 
-  /** Serializable */
+  /**
+   * The actual decor instances in `<Decor>`.
+   * - They are serializable.
+   * - They're also used to represent un-instantiated layout decor in geomorphs.json.
+   */
   type Decor = (
     | DecorCircle
     | DecorCuboid
@@ -347,8 +351,20 @@ declare namespace Geomorph {
     | DecorQuad
     | DecorRect
   );
+  
+  /** Used during runtime creation. */
+  type DecorDef = (
+    | DecorCircleDef
+    | DecorCuboidDef
+    | DecorPointDef
+    | DecorQuadDef
+    | DecorRectDef
+  );
 
   interface DecorCircle extends BaseDecor, Geom.Circle {
+    type: 'circle';
+  }
+  interface DecorCircleDef extends BaseDecorDef, Geom.Circle {
     type: 'circle';
   }
 
@@ -360,12 +376,24 @@ declare namespace Geomorph {
     center: import('three').Vector3Like;
     transform: Geom.SixTuple;
   }
+  interface DecorCuboidDef extends BaseDecorDef, Geom.RectJson {
+    type: 'cuboid';
+    baseY: number;
+    height3d: number;
+    transform?: Geom.SixTuple;
+  }
 
   interface DecorPoint extends BaseDecor, Geom.VectJson {
     type: 'point';
     /** Orientation in degrees, where the unit vector `(1, 0)` corresponds to `0`  */
     orient: number;
     meta: Meta<Geomorph.GmRoomId & { img?: Key.DecorImg }>;
+  }
+  interface DecorPointDef extends BaseDecorDef, Geom.VectJson {
+    type: 'point';
+    /** Orientation in degrees, where the unit vector `(1, 0)` corresponds to `0`  */
+    orient?: number;
+    img?: Key.DecorImg;
   }
   
   /** Simple polygon sans holes. */
@@ -377,6 +405,11 @@ declare namespace Geomorph {
     det: number;
     meta: Meta<Geomorph.GmRoomId & { img: Key.DecorImg }>;
   }
+  interface DecorQuadDef extends BaseDecorDef, Geom.RectJson {
+    type: 'quad';
+    transform?: Geom.SixTuple;
+    img: Key.DecorImg;
+  }
 
   interface DecorRect extends BaseDecor {
     type: 'rect';
@@ -385,6 +418,11 @@ declare namespace Geomorph {
     center: Geom.VectJson;
     /** Radians; makes an `Geom.AngledRect` together with `bounds2d`  */
     angle: number;
+  }
+  interface DecorRectDef extends BaseDecorDef, Geom.RectJson {
+    type: 'rect';
+    /** Radians; makes an `Geom.AngledRect` together with `bounds2d`  */
+    angle?: number;
   }
 
   interface BaseDecor {
@@ -402,6 +440,10 @@ declare namespace Geomorph {
     src?: Key.Geomorph;
     // /** For defining decor via CLI (more succinct) */
     // tags?: string[];
+  }
+  interface BaseDecorDef {
+    key: string;
+    meta?: Meta;
   }
 
   type DecorSheetRectCtxt = Meta<{

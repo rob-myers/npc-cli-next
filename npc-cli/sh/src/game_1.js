@@ -1,11 +1,9 @@
 import { deltaAngle } from "maath/misc";
 import { geom } from '@/npc-cli/service/geom';
 import { helper } from "@/npc-cli/service/helper";
-import { Poly } from "@/npc-cli/geom/poly";
-import { geomorph } from "@/npc-cli/service/geomorph"; // 🚧 remove
 import { ansi } from "../const";
 import { pause } from "./util";
-import { move, w } from "./game";
+import { move } from "./game";
 
 /**
  * @param {NPC.RunArg} ct
@@ -42,12 +40,13 @@ export const changeAngleOnKeyDown = ({ w }) => {
  * @param {NPC.RunArg} ct
  */
 export const testAddDecor = (ct) => {
-  // 🚧 w.decor.add(...defs)
-  const poly = Poly.fromRect({x: 1, y: 1, width: 3, height: 3});
-  poly.meta.circle = true;
-  const decor = geomorph.createLayoutDecorFromPoly(poly);
-  decor.key = 'foo';
-  ct.w.decor.registerDecor([decor]);
+  // 🚧 decor point
+  const decor = ct.w.decor.create({
+    type: 'circle',
+    key: 'foo',
+    center: { x: 2.5, y: 2.5 },
+    radius: 1.5,
+  });
   
   return decor;
 };

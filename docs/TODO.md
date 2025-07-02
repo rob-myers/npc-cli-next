@@ -119,7 +119,8 @@
   - ✅ create decor circle via a command
   - 🚧 refactor decor creation
     - ℹ️ do not use script-only `geomorph.createLayoutDecorFromPoly`
-    - 🚧 `w.decor.add(...defs)`
+    - ✅ `Geomorph.DecorDef`
+    - 🚧 `w.decor.create(...defs)`
   - 🚧 create decor quad with texture via a command
 ```sh
 # 🚧

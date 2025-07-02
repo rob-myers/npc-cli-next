@@ -333,7 +333,7 @@ class GeomorphService {
       delete poly.meta.transform;
 
       const quadMeta = /** @type {Geomorph.DecorQuad['meta']} */ (base.meta);
-      if (!this.isDecorImgKey(quadMeta.img)) {
+      if (!helper.isDecorImgKey(quadMeta.img)) {
         warn(`${'decorFromPoly'}: decor quad meta.img must be in DecorImgKey (using "icon--warn")`);
         quadMeta.img = 'icon--warn';
       }
@@ -371,7 +371,7 @@ class GeomorphService {
       delete meta.direction;
       const orient = toPrecision((180 / Math.PI) * Math.atan2(direction.y, direction.x));
 
-      if ('img' in meta && !this.isDecorImgKey(meta.img)) {
+      if ('img' in meta && !helper.isDecorImgKey(meta.img)) {
         warn(`${'decorFromPoly'}: decor point with meta.img must be in DecorImgKey (using "icon--warn")`);
         meta.img = 'icon--warn';
       }
@@ -819,14 +819,6 @@ class GeomorphService {
       windows: sym.windows.map((x) => x.cleanClone(tmpMat1, meta)),
       unsorted: sym.unsorted.map((x) => x.cleanClone(tmpMat1)),
     };
-  }
-
-  /**
-   * @param {string | undefined} input
-   * @returns {input is Key.DecorImg}
-   */
-  isDecorImgKey(input) {
-    return input !== undefined && input in helper.fromDecorImgKey;
   }
 
   /**

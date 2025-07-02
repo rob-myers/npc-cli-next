@@ -303,6 +303,14 @@ export const helper = {
   },
 
   /**
+   * @param {string | undefined} input
+   * @returns {input is Key.DecorImg}
+   */
+  isDecorImgKey(input) {
+    return input !== undefined && input in helper.fromDecorImgKey;
+  },
+
+  /**
    * @param {string} input 
    * @returns {input is Key.LayoutPreset}
    */
