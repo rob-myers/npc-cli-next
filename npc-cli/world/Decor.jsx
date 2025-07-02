@@ -172,9 +172,8 @@ export default function Decor(props) {
         case 'quad': {
           const transform = def.transform ?? [1, 0, 0, 1, 0, 0];
           // scale must be represented inside transform
-          // - default direction seems to be +z
-          transform[0] = 1 / def.height;
-          transform[3] = 1 / def.width;
+          transform[0] = def.width;
+          transform[3] = def.height;
           // translation must be represented inside transform
           transform[4] += def.x;
           transform[5] += def.y;
