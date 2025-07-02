@@ -70,7 +70,7 @@ declare namespace Geomorph {
 
   interface DoorState extends Geomorph.GmDoorId {
     /** gmDoorKey format i.e. `g{gmId}d{doorId}` */
-    gdKey: `g${number}d${number}`;
+    gdKey: GmDoorKey;
     door: Geomorph.Connector;
     instanceId: number;
 

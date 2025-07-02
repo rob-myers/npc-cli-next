@@ -27,6 +27,7 @@ export default function Decor(props) {
     cuboidGeom: getBoxGeometry(`${w.key}-decor-cuboid`),
     cuboids: [],
     cuboidInst: /** @type {*} */ (null),
+    registeredAt: 0,
     labels: [],
     labelInst: /** @type {*} */ (null),
     label: {
@@ -45,7 +46,7 @@ export default function Decor(props) {
 
     addGm(gmId) {
       const gm = w.gms[gmId];
-      state.registerDecor(gm.decor.map(d => state.instantiateDecor(d, gmId, gm))
+      state.register(gm.decor.map(d => state.instantiateDecor(d, gmId, gm))
         // Don't re-instantiate explicitly removed
         // .filter(d => !state.rmKeys.has(d.key) && (d.meta.roomId >= 0 ||
         .filter(d => (d.meta.roomId >= 0 ||
@@ -246,7 +247,7 @@ export default function Decor(props) {
       }
 
       state.ensureGmRoomId(d);
-      state.registerDecor([d]);
+      state.register([d]);
       return d;
     },
     createCuboidMatrix4(d) {
@@ -448,10 +449,11 @@ export default function Decor(props) {
       }
       quadInst.computeBoundingSphere();
     },
-    registerDecor(ds, removeExisting = true) {
+    register(ds, removeExisting = true) {
       const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
         void warn(`decor "${d.key}" cannot be added: not in any room`, d)
       );
+
       if (addable.length === 0) {
         return;
       }
@@ -466,7 +468,14 @@ export default function Decor(props) {
         }
 
         return agg;
-      }, /** @type {Record<`g${number}r${number}`, { meta: Meta<Geomorph.GmRoomId> } & { [x in 'add' | 'remove']: Geomorph.Decor[] }>} */ ({}));
+      }, /**
+          * @type {Record<Geomorph.GmRoomKey, {
+          *   add: Geomorph.Decor[];
+          *   remove: Geomorph.Decor[];
+          *   meta: Meta<Geomorph.GmRoomId>;
+          * }>}
+          */ ({})
+      );
 
       if (removeExisting === true) {
         Object.values(grouped).forEach(({ meta, remove }) =>
@@ -475,14 +484,16 @@ export default function Decor(props) {
       }
 
       Object.values(grouped).forEach(({ meta, add }) =>
-        state.registerDecorInRoom(meta.gmId, meta.roomId, add)
+        state.registerInRoom(meta.gmId, meta.roomId, add)
       );
 
       state.updateDecorLists();
       w.events.next({ key: 'decors-added', decors: ds });
+
+      state.registeredAt = Date.now();
       update();
     },
-    registerDecorInRoom(gmId, roomId, ds) {
+    registerInRoom(gmId, roomId, ds) {
       const atRoom = state.byRoom[gmId][roomId];
 
       for (const d of ds) {
@@ -520,7 +531,7 @@ export default function Decor(props) {
       const grouped = ds.reduce((agg, d) => {
         (agg[d.meta.grKey] ??= { meta: d.meta, ds: [] }).ds.push(d);
         return agg;
-      }, /** @type {Record<`g${number}r${number}`, { meta: Meta<Geomorph.GmRoomId> } & { ds: Geomorph.Decor[] }>} */ ({}));
+      }, /** @type {Record<Geomorph.GmRoomKey, { meta: Meta<Geomorph.GmRoomId> } & { ds: Geomorph.Decor[] }>} */ ({}));
 
       for (const { meta, ds } of Object.values(grouped)) {
         state.removeFromRoom(meta.gmId, meta.roomId, ds)
@@ -658,7 +669,7 @@ export default function Decor(props) {
     } else if (query.data === false && query.isRefetching === false) {
       query.refetch(); // hmr
     }
-  }, [query.data, state.cuboids.length, state.quads.length, labels.length]);
+  }, [query.data, state.cuboids.length, state.quads.length, labels.length, state.registeredAt]);
 
   const update = useUpdate();
   const ready = !!state.seenHash;
@@ -744,6 +755,8 @@ export default function Decor(props) {
  * @property {THREE.BufferGeometry} cuboidGeom
  * @property {Geomorph.DecorCuboid[]} cuboids
  * @property {THREE.InstancedMesh} cuboidInst
+ * @property {number} registeredAt
+ * The epoch we last registered; used to force length-preserving updates
  * @property {Geomorph.DecorPoint[]} labels
  * @property {THREE.InstancedMesh} labelInst
  * @property {import("../service/three").LabelsSheetAndTex} label
@@ -758,13 +771,13 @@ export default function Decor(props) {
  * @property {Geomorph.GeomorphsHash} seenHash Clone of last seen value of `w.hash`
  * @property {boolean} showLabels
  *
- * @property {(ds: Geomorph.Decor[], removeExisting?: boolean) => void} registerDecor
+ * @property {(ds: Geomorph.Decor[], removeExisting?: boolean) => void} register
  * Can manually `removeExisting` e.g. during re-instantiation of geomorph decor
  * @property {() => void} addLabelUvs
  * @property {() => void} addQuadUvs
  * @property {() => void} addCuboidAttributes
  * @property {(def: Geomorph.DecorDef) => Geomorph.Decor} create
- * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerDecorInRoom
+ * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerInRoom
  * @property {(d: Geomorph.DecorCuboid) => THREE.Matrix4} createCuboidMatrix4
  * @property {(d: Geomorph.DecorPoint | Geomorph.DecorQuad) => THREE.Matrix4} createQuadMatrix4
  * @property {(d: Geomorph.DecorPoint) => THREE.Matrix4} createLabelMatrix4
