@@ -39,27 +39,31 @@ export const changeAngleOnKeyDown = ({ w }) => {
 
 /**
  * @param {NPC.RunArg} ct
- * @param {{ from: NPC.GroundPoint; to: NPC.GroundPoint; decorKey?: string }} [opts]
+ * @param {{
+ *   from: NPC.GroundPoint;
+ *   to: NPC.GroundPoint;
+ *   color?: string;
+ *   decorKey?: string;
+ *   y?: number;
+ * }} [opts]
  */
 export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
-
   const from = helper.toXZ(opts.from);
   const to = helper.toXZ(opts.to);
   const delta = tmpVect1.copy(to).sub(from);
   
-  const _decorQuad = ct.w.decor.create({
+  ct.w.decor.create({
     type: 'quad',
-    key: opts.decorKey ?? `line-${Date.now()}`,
+    key: opts.decorKey ?? `line-${from.x},${from.y},${to.x},${to.y}`,
     x: from.x,
     y: from.y,
     width: delta.length,
-    height: 0.025,
+    height: 0.025, // line thickness
     img: 'colour--white',
     transform: tmpMat1.setRotation(delta.angle).toArray(),
-    y3d: 0.1, // 🚧
-    color: '#f00', // 🚧
+    y3d: opts.y ?? 0.1,
+    color: opts.color ?? '#00f', // default blue
   });
-
 }
 
 /**
