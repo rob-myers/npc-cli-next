@@ -172,8 +172,10 @@ export default function Decor(props) {
         case 'quad': {
           const transform = def.transform ?? [1, 0, 0, 1, 0, 0];
           // scale must be represented inside transform
-          transform[0] = def.width;
-          transform[3] = def.height;
+          transform[0] *= def.width;
+          transform[1] *= def.width;
+          transform[2] *= def.height;
+          transform[3] *= def.height;
           // translation must be represented inside transform
           transform[4] += def.x;
           transform[5] += def.y;
@@ -188,7 +190,12 @@ export default function Decor(props) {
           d = {
             type: 'quad',
             key: def.key,
-            meta: Object.assign(meta, { quad: true, y: def.y3d, img: def.img }),
+            meta: Object.assign(meta, {
+              quad: true,
+              color: def.color,
+              img: def.img,
+              y: def.y3d,
+            }),
             bounds2d: poly.rect.precision(precision).json,
             transform,
             center: poly.center.precision(3).json,

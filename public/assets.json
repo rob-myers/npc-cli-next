@@ -559,9 +559,9 @@
         "width": 38,
         "height": 58
       },
-      "colour--blue": {
+      "colour--white": {
         "colour": true,
-        "decorImgKey": "colour--blue",
+        "decorImgKey": "colour--white",
         "sheetId": 0,
         "x": 507,
         "y": 205,
@@ -1366,7 +1366,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": 1567252754
+    "imagesHash": -1905137444
   },
   "skin": {
     "numSheets": {"human-0": 2},

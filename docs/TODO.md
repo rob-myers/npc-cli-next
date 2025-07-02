@@ -122,14 +122,18 @@
     - ✅ `Geomorph.DecorDef`
     - ✅ `w.decor.create(def)`
   - ✅ create decor quad with texture via command `testAddDecor`
-  - 🚧 can create monochromatic line
+  - ✅ can create monochromatic line
     - ✅ translation + scale
-    - 🚧 rotation
+    - ✅ rotation
+  - 🚧 `click` can create monochromatic line
+  - refine `click` opts
 
 ```sh
 testAddDecor
 w decor.remove test-decor-{circle,point,quad}
 ```
+
+- tty: fix mobile closed bracket
 
 - PsList: pause/resume while Tabs paused broke?
   - no repro yet

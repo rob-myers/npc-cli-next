@@ -1,6 +1,7 @@
 import { deltaAngle } from "maath/misc";
-import { geom } from '@/npc-cli/service/geom';
+import { Mat } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
+import { geom } from '@/npc-cli/service/geom';
 import { ansi } from "../const";
 import { pause } from "./util";
 import { move } from "./game";
@@ -54,7 +55,7 @@ export const testAddDecor = (ct) => {
     y: 7.5,
     img: 'icon--robot',
     orient: 0,
-    y3d: 0.1,
+    y3d: 0.01,
   });
 
   const decorQuad = ct.w.decor.create({
@@ -63,11 +64,11 @@ export const testAddDecor = (ct) => {
     x: 3,
     y: 7.5,
     width: 2,
-    height: 0.1,
-    img: 'colour--blue',
-    // 🚧
-    // transform: tmpMat1.setRotationAbout(Math.PI/4, ),
+    height: 0.025,
+    img: 'colour--white',
+    transform: tmpMat1.setRotation(Math.PI/4).toArray(),
     y3d: 0.1,
+    color: '#f00',
   });
 
   return {
@@ -315,3 +316,5 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
     await ct.api.sleep(opts.pauseMs ?? 0.8);
   }
 }
+
+const tmpMat1 = new Mat();

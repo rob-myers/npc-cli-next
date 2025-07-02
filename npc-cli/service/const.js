@@ -189,7 +189,7 @@ export const doorSwitchDecorImgKey = /** @type {const} */ ('icon--square');
 
 /** Aligned to media/decor/{key}.svg */
 export const fromDecorImgKey = /** @type {const} */ ({// 🔔 must extend when adding new decor
-  'colour--blue': true,
+  'colour--white': true,
   'door--hull': true,
   'door--standard': true,
   'icon--#1': true,

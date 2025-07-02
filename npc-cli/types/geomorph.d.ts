@@ -409,7 +409,10 @@ declare namespace Geomorph {
   }
   interface DecorQuadDef extends BaseDecorDef, Geom.RectJson {
     type: 'quad';
+    /** For monochromatic use `"colour-white"` and set `color` option. */
     img: Key.DecorImg;
+    color?: string;
+    /** Applied before translation `x`, `y` */
     transform?: Geom.SixTuple;
     /** Height off ground */
     y3d?: number;
