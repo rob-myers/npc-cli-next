@@ -43140,11 +43140,20 @@
         "width": 60,
         "height": 60
       },
+      "icon--white-circle": {
+        "icon": true,
+        "decorImgKey": "icon--white-circle",
+        "sheetId": 0,
+        "x": 374,
+        "y": 453,
+        "width": 60,
+        "height": 60
+      },
       "icon--square": {
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
-        "x": 374,
+        "x": 436,
         "y": 453,
         "width": 38,
         "height": 58
@@ -43956,7 +43965,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": 1287907351
+    "imagesHash": -1187547045
   },
   "skin": {
     "numSheets": {"human-0": 2},
