@@ -485,15 +485,15 @@ class cmdServiceClass {
               applying: false,
               cleanupId: process.cleanups.length,
             };
+            meta.stack.push(`${args[0]}.${args[1]}`);
 
             while (true) {
               try {
                 const func = (ct.lib as any)[args[0]]?.[args[1]];
                 if (func === undefined) {
-                  throw Error(`not found: ${args[0]} ${args[1]}`)
+                  throw Error(`not found`);
                 }
     
-                meta.stack.push(`${args[0]}.${args[1]}`);
                 ct.args = args.slice(2); // discard 2nd arg too
                 
                 if (functionOrAsync.includes(func.constructor.name)) {
