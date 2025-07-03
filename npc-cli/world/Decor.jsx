@@ -27,7 +27,7 @@ export default function Decor(props) {
     cuboidGeom: getBoxGeometry(`${w.key}-decor-cuboid`),
     cuboids: [],
     cuboidInst: /** @type {*} */ (null),
-    registeredAt: 0,
+    group: {},
     labels: [],
     labelInst: /** @type {*} */ (null),
     label: {
@@ -40,6 +40,7 @@ export default function Decor(props) {
     quad: getQuadGeometryXZ(`${w.key}-decor-xz`),
     quadInst: /** @type {*} */ (null),
     queryStatus: 'pending',
+    registeredAt: 0,
     rmKeys: new Set(),
     seenHash : /** @type {*} */ (null),
     showLabels: false,
@@ -506,21 +507,8 @@ export default function Decor(props) {
         state.rmKeys.delete(d.key);
       }
     },
-    removeAllInstantiated() {
-      for (const d of Object.values(state.byKey)) {
-        d.src !== undefined && delete state.byKey[d.key];
-      }
-      for (const byRoomId of state.byRoom) {
-        for (const decorSet of byRoomId) {
-          decorSet.forEach(d => d.src !== undefined && decorSet.delete(d));
-        }
-      }
-      for (const byY of state.byGrid) {
-        for (const decorSet of byY ?? []) {
-          // array can contain `undefined` (untouched by decor)
-          decorSet?.forEach(d => d.src !== undefined && decorSet.delete(d));
-        }
-      }
+    rememberInGroup(groupName, ...decorKeys) {
+      (state.group[groupName] ??= []).push(...decorKeys);
     },
     remove(...decorKeys) {
       const ds = decorKeys.map(x => state.byKey[x]).filter(Boolean);
@@ -540,6 +528,22 @@ export default function Decor(props) {
       state.updateDecorLists();
       w.events.next({ key: 'decors-removed', decors: ds });
       update();
+    },
+    removeAllInstantiated() {
+      for (const d of Object.values(state.byKey)) {
+        d.src !== undefined && delete state.byKey[d.key];
+      }
+      for (const byRoomId of state.byRoom) {
+        for (const decorSet of byRoomId) {
+          decorSet.forEach(d => d.src !== undefined && decorSet.delete(d));
+        }
+      }
+      for (const byY of state.byGrid) {
+        for (const decorSet of byY ?? []) {
+          // array can contain `undefined` (untouched by decor)
+          decorSet?.forEach(d => d.src !== undefined && decorSet.delete(d));
+        }
+      }
     },
     removeFromRoom(gmId, roomId, ds) {
       const atRoom = state.byRoom[gmId][roomId];
@@ -569,6 +573,11 @@ export default function Decor(props) {
           inner[j]?.forEach(d => d.src !== undefined && inner[j].delete(d));
         }
       }
+    },
+    removeGroup(groupName) {
+      const decorKeys = state.group[groupName];
+      state.remove(...decorKeys ?? []);
+      delete state.group[groupName];
     },
     updateDecorLists() {
       state.cuboids = Object.values(state.byKey).filter(geomorph.isDecorCuboid);
@@ -757,6 +766,7 @@ export default function Decor(props) {
  * @property {THREE.InstancedMesh} cuboidInst
  * @property {number} registeredAt
  * The epoch we last registered; used to force length-preserving updates
+ * @property {{ [decorKeysGroupName: string]: string[] }} group
  * @property {Geomorph.DecorPoint[]} labels
  * @property {THREE.InstancedMesh} labelInst
  * @property {import("../service/three").LabelsSheetAndTex} label
@@ -790,10 +800,12 @@ export default function Decor(props) {
  * @property {() => void} positionInstances
  * @property {() => void} positionLabels
  * @property {() => void} positionQuads
- * @property {() => void} removeAllInstantiated
+ * @property {(groupName: string, ...decorKeys: string[]) => void} rememberInGroup
  * @property {(...decorKeys: string[]) => void} remove
+ * @property {() => void} removeAllInstantiated
  * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} removeFromRoom
  * @property {(gmId: number) => void} removeGm
+ * @property {(groupName: string) => void} removeGroup
  * @property {() => void} updateDecorLists
  */
 

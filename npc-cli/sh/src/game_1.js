@@ -67,7 +67,7 @@ export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
 }
 
 /**
- * Creates floor icon for numbers 0 ... 10
+ * Creates floor icon for numbers 0 ... 10, afterwards we use an empty circle.
  * @param {NPC.RunArg} ct
  * @param {{
  *   at: NPC.GroundPoint;
@@ -80,17 +80,21 @@ export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
 export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
   const at = helper.toXZ(opts.at);
   const number = opts.number;
+  const decorKey = opts.decorKey ?? `#${number}-${at.x},${at.y}`;
   
-  if (!(Number.isInteger(number) && number >= 0 && number <= 10)) {
-    throw Error(`${'createDecorNumber'}: opts.number must be in [0, 10]`)
-  }
+  /** @type {Key.DecorImg} */
+  const img = Number.isInteger(number) && number >= 0 && number <= 10
+    ? `icon--#${/** @type {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10} */ (number)}`
+    : 'icon--white-circle'
+  ;
+
 
   ct.w.decor.create({
     type: 'point',
-    key: opts.decorKey ?? `#${number}-${at.x},${at.y}`,
+    key: decorKey,
     x: at.x,
     y: at.y,
-    img: `icon--#${/** @type {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10} */ (number)}`,
+    img,
     meta: opts.meta,
     y3d: opts.y ?? 0.001, // below npc selector
   });

@@ -125,7 +125,7 @@
   - ✅ can create monochromatic line
     - ✅ translation + scale
     - ✅ rotation
-  - 🚧 `click` can create monochromatic points
+  - ✅ `click` can create monochromatic points
     - ✅ `createDecorLine` creates line
     - ✅ on re-add decor it should update
       - `createDecorLine decorKey:foo from:$( click 1 ) to:$( click 1 )`
@@ -133,7 +133,7 @@
     - ✅ avoid z-fighting via monochrome white
     - ❌ clicks too close to previous?
     - ✅ decor quads can have meta.nav true
-    - 🚧 clicks over 10 receive icon sans number
+    - ✅ clicks over 10 receive icon sans number
 
 - 🚧 BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
   - try fix by removing unnecessary `this.pendingTargets.length = 0`

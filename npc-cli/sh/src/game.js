@@ -1,4 +1,5 @@
-import { isStringInt, range, removeFirst } from '../../service/generic';
+import { isStringInt, removeFirst } from '../../service/generic';
+import { createDecorNumber } from './game_1';
 
 /**
  * @param {NPC.RunArg} ctxt
@@ -34,7 +35,7 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
  * @param {NPC.RunArg} ct
  */
 export async function* click(ct) {
-  const { args, api, w, lib } = ct;
+  const { args, api, w } = ct;
   let { opts, operands } = ct.api.getOpts(args, {
     boolean: [
       "left",  // left clicks only
@@ -51,6 +52,9 @@ export async function* click(ct) {
   if (!isStringInt(operands[0]) && isStringInt(operands[1])) {
     operands = [operands[1], operands[0]]; // support reverse order `click meta.nav 2`
   }
+  if (isStringInt(args[0]) && Number(args[0]) < 0) {
+    return; // check arg: -1 an opt not an operand
+  }
 
   /** Number of clicks remaining */
   let numClicks = isStringInt(operands[0]) ? parseInt(operands[0]) : Number.MAX_SAFE_INTEGER;
@@ -58,9 +62,8 @@ export async function* click(ct) {
   const clickId = isStringInt(operands[0]) || opts.block === true ? api.getUid() : undefined;
   const blocking = clickId !== undefined;
   
-  const showIcons = blocking === true && totalClicks <= 10;
-  if (showIcons === true) {
-    w.decor.remove(...range(10 + 1).map(n => `click-${n}`));
+  if (blocking === true) {// clear UI
+    w.decor.removeGroup('click');
   }
 
   // support `click meta.nav`
@@ -123,10 +126,12 @@ export async function* click(ct) {
         numClicks--;
         yield output;
 
-        if (showIcons === true) {
-          const number = totalClicks - numClicks; // 1..10
-          const decorKey = `click-${number}`; // 🔔 need meta.floor to set meta.nav
-          lib.game_1.createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true } });
+        if (blocking === true) {
+          const number = totalClicks - numClicks; // 1, 2, ...
+          const decorKey = `click-#${number}`;
+          // 🔔 meta.floor induces meta.nav
+          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true } });
+          w.decor.rememberInGroup('click', decorKey);
         }
       }
     }
