@@ -1068,7 +1068,8 @@ class cmdServiceClass {
       await new Promise<void>((resolveSleep, rejectSleep) => {
         resolve = resolveSleep;
         reject = rejectSleep; // cannot resume until now:
-        process.status === ProcessStatus.Running && handlers.onResumes!();
+        if (process.status === ProcessStatus.Running) handlers.onResumes!();
+        if (process.status === ProcessStatus.Killed) handlers.cleanups!();
       });
     } finally {
       handlers.dispose();
