@@ -67,6 +67,7 @@ export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
 }
 
 /**
+ * Creates floor icon for numbers 0 ... 10
  * @param {NPC.RunArg} ct
  * @param {{
  *   at: NPC.GroundPoint;
@@ -364,7 +365,7 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
       }
       // on paused interrupt, avoid resuming twice
       if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield `[ ${ansi.Cyan}${opts.npcKey}${ansi.Reset} ] awaiting GM resolution...`;
+        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting GM resolution...`;
       }
       await pause(ct);
       continue;
