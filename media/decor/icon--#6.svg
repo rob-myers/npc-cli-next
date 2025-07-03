@@ -3,8 +3,8 @@
   <defs>
     <bx:grid x="0" y="0" width="300" height="300"/>
   </defs>
-  <ellipse style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 4px; filter: none;" cx="50" cy="50" rx="48" ry="48">
+  <ellipse style="stroke-width: 4px; filter: none; fill: none; stroke: rgb(255, 255, 255);" cx="50" cy="50" rx="48" ry="48">
     <title>circle</title>
   </ellipse>
-  <text style="fill: rgb(51, 51, 51); font-family: &quot;Courier New&quot;; font-size: 80px; font-weight: 700; white-space: pre; filter: none;" x="25.995" y="71.319">6</text>
+  <text style="fill: rgb(255, 255, 255); font-family: &quot;Courier New&quot;; font-size: 80px; font-weight: 700; white-space: pre;" x="25.995" y="71.319">6</text>
 </svg>
