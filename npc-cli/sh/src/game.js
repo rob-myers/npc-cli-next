@@ -1,4 +1,4 @@
-import { isStringInt, removeFirst } from '../../service/generic';
+import { isStringInt, range, removeFirst } from '../../service/generic';
 
 /**
  * @param {NPC.RunArg} ctxt
@@ -52,9 +52,16 @@ export async function* click(ct) {
     operands = [operands[1], operands[0]]; // support reverse order `click meta.nav 2`
   }
 
+  /** Number of clicks remaining */
   let numClicks = isStringInt(operands[0]) ? parseInt(operands[0]) : Number.MAX_SAFE_INTEGER;
+  const totalClicks = numClicks;
   const clickId = isStringInt(operands[0]) || opts.block === true ? api.getUid() : undefined;
   const blocking = clickId !== undefined;
+  
+  const showIcons = blocking === true && totalClicks <= 10;
+  if (showIcons === true) {
+    w.decor.remove(...range(10 + 1).map(n => `click-${n}`));
+  }
 
   // support `click meta.nav`
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
@@ -70,9 +77,6 @@ export async function* click(ct) {
       eventsSub?.unsubscribe();
     },
   });
-
-  /** @type {null | NPC.ClickOutput} */
-  let prevClick = null; // 🚧 optionally show line segs as decor quads
 
   try {
     while (numClicks > 0) {
@@ -119,11 +123,11 @@ export async function* click(ct) {
         numClicks--;
         yield output;
 
-        if (blocking === true && prevClick !== null) {
-          const decorKey = `click-line-${numClicks}`;
-          lib.game_1.createDecorLine(ct, { decorKey, from: prevClick, to: output });
+        if (showIcons === true) {
+          const number = totalClicks - numClicks; // 1 ... 10
+          const decorKey = `click-${number}`;
+          lib.game_1.createDecorNumber(ct, { decorKey, at: output, number });
         }
-        prevClick = output;
       }
     }
   } finally {

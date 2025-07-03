@@ -130,6 +130,9 @@
     - ✅ on re-add decor it should update
       - `createDecorLine decorKey:foo from:$( click 1 ) to:$( click 1 )`
     - ✅ hook up to `click`
+    - ✅ avoid z-fighting via monochrome white
+    - 🚧 these decor quads should inherit meta.nav
+    - 🚧 clicks too close to previous?
     - 🚧 refine `click` opts
 
 ```sh
@@ -137,7 +140,13 @@ testAddDecor
 w decor.remove test-decor-{circle,point,quad}
 ```
 
-- tty: fix mobile closed bracket
+- ℹ️ example commands
+  - `points/reverse'()'`
+  - `points/at'(-1)'`
+
+- ✅ tty: fix mobile closed bracket
+  - ℹ️ works on google gboard, but not microsoft swiftkey
+  - can turn "quick prediction insert" and "quick punctuation" off
 
 - PsList: pause/resume while Tabs paused broke?
   - no repro yet

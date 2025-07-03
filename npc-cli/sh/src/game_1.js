@@ -67,6 +67,33 @@ export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
 }
 
 /**
+ * @param {NPC.RunArg} ct
+ * @param {{
+ *   at: NPC.GroundPoint;
+ *   number: number;
+ *   decorKey?: string;
+ *   y?: number;
+ * }} [opts]
+ */
+export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
+  const at = helper.toXZ(opts.at);
+  const number = opts.number;
+  
+  if (!(Number.isInteger(number) && number >= 0 && number <= 10)) {
+    throw Error(`${'createDecorNumber'}: opts.number must be in [0, 10]`)
+  }
+
+  ct.w.decor.create({
+    type: 'point',
+    key: opts.decorKey ?? `#${number}-${at.x},${at.y}`,
+    x: at.x,
+    y: at.y,
+    img: `icon--#${/** @type {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10} */ (number)}`,
+    y3d: opts.y ?? 0.001, // below npc selector
+  });
+}
+
+/**
  * ```sh
  * events | handleContextMenu
  * ```
