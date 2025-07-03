@@ -113,7 +113,7 @@
     tour npcKey:rob to:$( nestedPoints )
     ```
 
-- 🚧 api to indicate points using decor points/quads
+- ✅ api to indicate points using decor points/quads
   - ✅ add `decor/icon--#{1,2,3}.svg` and extend `fromDecorImgKey`
   - ✅ run `yarn assets-bun` (seems not auto-picked-up)
   - ✅ create decor circle via a command
@@ -138,14 +138,18 @@
 - 🚧 BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
   - try fix by removing unnecessary `this.pendingTargets.length = 0`
 
-```sh
-testAddDecor
-w decor.remove test-decor-{circle,point,quad}
-```
+- `ptags+=foo` -> builtin `ptags foo`
+
+- 🚧 sh: fail early semantics i.e. `set -e`
+  - ℹ️ profile seems "ok": we paste each line, regardless of exitCode
+  - ✅ stmts fails as soon as one does
+  - ✅ while fails if body does
 
 - ℹ️ example commands
   - `points/reverse'()'`
   - `points/at'(-1)'`
+  - `testAddDecor`
+  - `w decor.remove test-decor-{circle,point,quad}`
 
 - ✅ tty: fix mobile closed bracket
   - ℹ️ works on google gboard, but not microsoft swiftkey

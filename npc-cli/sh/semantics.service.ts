@@ -104,6 +104,9 @@ class semanticsServiceClass {
     for (const node of nodes) {
       try {
         yield* sem.Stmt(node);
+        if (node.exitCode !== 0) {// set -e
+          throw killError(node.meta, node.exitCode);
+        }
       } finally {
         parent.exitCode = node.exitCode;
         useSession.api.setLastExitCode(node.meta, node.exitCode);
@@ -811,14 +814,11 @@ class semanticsServiceClass {
 
   private async *WhileClause(node: Sh.WhileClause) {
     const { Cond, Do, Until } = node;
-    const process = getProcess(node.meta);
     let itStartMs = -1, itLengthMs = 0;
 
     while (true) {
-      if (process.status === ProcessStatus.Killed) {
-        throw killError(node.meta);
-      }
-      /** Force iteration to take at least @see {itMinLengthMs} milliseconds */
+      // Force iteration to take at least @see {itMinLengthMs} milliseconds
+      // Also throws if process killed
       if ((itLengthMs = Date.now() - itStartMs) < itMinLengthMs) {
         await cmdService.sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
       }
