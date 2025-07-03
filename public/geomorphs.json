@@ -43041,12 +43041,21 @@
         "width": 60,
         "height": 60
       },
+      "icon--#10": {
+        "icon": true,
+        "decorImgKey": "icon--#10",
+        "sheetId": 0,
+        "x": 445,
+        "y": 267,
+        "width": 60,
+        "height": 60
+      },
       "icon--#2": {
         "icon": true,
         "decorImgKey": "icon--#2",
         "sheetId": 0,
-        "x": 445,
-        "y": 267,
+        "x": 368,
+        "y": 329,
         "width": 60,
         "height": 60
       },
@@ -43054,7 +43063,7 @@
         "icon": true,
         "decorImgKey": "icon--#3",
         "sheetId": 0,
-        "x": 368,
+        "x": 430,
         "y": 329,
         "width": 60,
         "height": 60
@@ -43063,8 +43072,8 @@
         "icon": true,
         "decorImgKey": "icon--#4",
         "sheetId": 0,
-        "x": 430,
-        "y": 329,
+        "x": 368,
+        "y": 391,
         "width": 60,
         "height": 60
       },
@@ -43072,7 +43081,7 @@
         "icon": true,
         "decorImgKey": "icon--#5",
         "sheetId": 0,
-        "x": 368,
+        "x": 430,
         "y": 391,
         "width": 60,
         "height": 60
@@ -43081,8 +43090,8 @@
         "icon": true,
         "decorImgKey": "icon--#6",
         "sheetId": 0,
-        "x": 430,
-        "y": 391,
+        "x": 2,
+        "y": 486,
         "width": 60,
         "height": 60
       },
@@ -43090,7 +43099,7 @@
         "icon": true,
         "decorImgKey": "icon--#7",
         "sheetId": 0,
-        "x": 2,
+        "x": 64,
         "y": 486,
         "width": 60,
         "height": 60
@@ -43099,8 +43108,8 @@
         "icon": true,
         "decorImgKey": "icon--#8",
         "sheetId": 0,
-        "x": 64,
-        "y": 486,
+        "x": 126,
+        "y": 441,
         "width": 60,
         "height": 60
       },
@@ -43108,8 +43117,8 @@
         "icon": true,
         "decorImgKey": "icon--#9",
         "sheetId": 0,
-        "x": 126,
-        "y": 441,
+        "x": 188,
+        "y": 453,
         "width": 60,
         "height": 60
       },
@@ -43117,7 +43126,7 @@
         "icon": true,
         "decorImgKey": "icon--info",
         "sheetId": 0,
-        "x": 188,
+        "x": 250,
         "y": 453,
         "width": 60,
         "height": 60
@@ -43126,7 +43135,7 @@
         "icon": true,
         "decorImgKey": "icon--robot",
         "sheetId": 0,
-        "x": 250,
+        "x": 312,
         "y": 453,
         "width": 60,
         "height": 60
@@ -43135,8 +43144,8 @@
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
-        "x": 312,
-        "y": 443,
+        "x": 374,
+        "y": 453,
         "width": 38,
         "height": 58
       },
@@ -43947,7 +43956,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": -1473496184
+    "imagesHash": 1287907351
   },
   "skin": {
     "numSheets": {"human-0": 2},

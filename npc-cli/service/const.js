@@ -202,6 +202,7 @@ export const fromDecorImgKey = /** @type {const} */ ({// 🔔 must extend when a
   'icon--#7': true,
   'icon--#8': true,
   'icon--#9': true,
+  'icon--#10': true,
   'icon--doc': true,
   'icon--door-closed': true,
   'icon--door-locked': true,
