@@ -505,12 +505,21 @@
         "width": 72,
         "height": 48
       },
+      "icon--#0": {
+        "icon": true,
+        "decorImgKey": "icon--#0",
+        "sheetId": 0,
+        "x": 438,
+        "y": 205,
+        "width": 60,
+        "height": 60
+      },
       "icon--#1": {
         "icon": true,
         "decorImgKey": "icon--#1",
         "sheetId": 0,
-        "x": 438,
-        "y": 205,
+        "x": 383,
+        "y": 267,
         "width": 60,
         "height": 60
       },
@@ -518,7 +527,7 @@
         "icon": true,
         "decorImgKey": "icon--#2",
         "sheetId": 0,
-        "x": 383,
+        "x": 445,
         "y": 267,
         "width": 60,
         "height": 60
@@ -527,8 +536,62 @@
         "icon": true,
         "decorImgKey": "icon--#3",
         "sheetId": 0,
-        "x": 445,
-        "y": 267,
+        "x": 368,
+        "y": 329,
+        "width": 60,
+        "height": 60
+      },
+      "icon--#4": {
+        "icon": true,
+        "decorImgKey": "icon--#4",
+        "sheetId": 0,
+        "x": 430,
+        "y": 329,
+        "width": 60,
+        "height": 60
+      },
+      "icon--#5": {
+        "icon": true,
+        "decorImgKey": "icon--#5",
+        "sheetId": 0,
+        "x": 368,
+        "y": 391,
+        "width": 60,
+        "height": 60
+      },
+      "icon--#6": {
+        "icon": true,
+        "decorImgKey": "icon--#6",
+        "sheetId": 0,
+        "x": 430,
+        "y": 391,
+        "width": 60,
+        "height": 60
+      },
+      "icon--#7": {
+        "icon": true,
+        "decorImgKey": "icon--#7",
+        "sheetId": 0,
+        "x": 2,
+        "y": 486,
+        "width": 60,
+        "height": 60
+      },
+      "icon--#8": {
+        "icon": true,
+        "decorImgKey": "icon--#8",
+        "sheetId": 0,
+        "x": 64,
+        "y": 486,
+        "width": 60,
+        "height": 60
+      },
+      "icon--#9": {
+        "icon": true,
+        "decorImgKey": "icon--#9",
+        "sheetId": 0,
+        "x": 126,
+        "y": 441,
         "width": 60,
         "height": 60
       },
@@ -536,8 +599,8 @@
         "icon": true,
         "decorImgKey": "icon--info",
         "sheetId": 0,
-        "x": 368,
-        "y": 329,
+        "x": 188,
+        "y": 453,
         "width": 60,
         "height": 60
       },
@@ -545,8 +608,8 @@
         "icon": true,
         "decorImgKey": "icon--robot",
         "sheetId": 0,
-        "x": 430,
-        "y": 329,
+        "x": 250,
+        "y": 453,
         "width": 60,
         "height": 60
       },
@@ -554,8 +617,8 @@
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
-        "x": 368,
-        "y": 391,
+        "x": 312,
+        "y": 443,
         "width": 38,
         "height": 58
       },
@@ -569,8 +632,8 @@
         "height": 6
       }
     },
-    "decorDims": [{"width": 517, "height": 486}],
-    "maxDecorDim": {"width": 517, "height": 486},
+    "decorDims": [{"width": 517, "height": 548}],
+    "maxDecorDim": {"width": 517, "height": 548},
     "obstacle": {
       "bridge--042--8x9 4": {
         "x": 2,
@@ -1366,7 +1429,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": -1905137444
+    "imagesHash": 1817853290
   },
   "skin": {
     "numSheets": {"human-0": 2},
