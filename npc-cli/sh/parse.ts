@@ -321,13 +321,12 @@ function getChildren(node: ParsedSh): ParsedSh[] {
 }
 
 export function getOpts(args: string[], options?: GetOpts.Options) {
-  /**
-   * Changes e.g. -a1 to -1a (avoid short-opt-assigns)
-   * Does not alter e.g. --STOP
-   */
   const sortedOpts = args
-    .filter((x) => x[0] === "-")
-    .map((x) => (x[1] === "-" ? x : Array.from(x).sort().join("")));
+    .filter(x => x[0] === "-")
+    // -a1 --> -1a (avoid short-opt-assigns)
+    // --foo is preserved
+    .map(x => (x[1] === "-" ? x : Array.from(x).sort().join("")))
+  ;
   const operands = args.filter((x) => x[0] !== "-");
   return {
     opts: simplifyGetOpts(getopts(sortedOpts, options)),
