@@ -673,7 +673,7 @@ export class NpcApi {
     if (this.s.target === null) {
       warn(`${'getRemainingPath'}: ${this.key}: npc.s.target is null`);
       return this.pendingTargets.map(helper.toXZ);
-    } else if (this.isNearTarget() === true) {
+    } else if (this.pendingTargets.length > 0 && this.isNearTarget() === true) {
       return this.pendingTargets.map(helper.toXZ);
     } else {
       return [this.s.target].concat(this.pendingTargets).map(helper.toXZ);
@@ -709,7 +709,7 @@ export class NpcApi {
       this.w.events.next({ key: 'enter-off-mesh-main', npcKey: this.key });
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
-      if (this.isNearTarget() === true) {
+      if (this.pendingTargets.length === 0 && this.isNearTarget() === true) {
         // 🔔 fix sharp final turn just after offMeshConnection
         this.s.lookSecs = 0.8;
       }
