@@ -73,6 +73,7 @@ export const createDecorLine = (ct, opts = ct.api.jsArg(ct.args)) => {
  *   at: NPC.GroundPoint;
  *   number: number;
  *   decorKey?: string;
+ *   meta?: Meta;
  *   y?: number;
  * }} [opts]
  */
@@ -90,6 +91,7 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
     x: at.x,
     y: at.y,
     img: `icon--#${/** @type {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10} */ (number)}`,
+    meta: opts.meta,
     y3d: opts.y ?? 0.001, // below npc selector
   });
 }

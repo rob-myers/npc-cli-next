@@ -124,9 +124,9 @@ export async function* click(ct) {
         yield output;
 
         if (showIcons === true) {
-          const number = totalClicks - numClicks; // 1 ... 10
-          const decorKey = `click-${number}`;
-          lib.game_1.createDecorNumber(ct, { decorKey, at: output, number });
+          const number = totalClicks - numClicks; // 1..10
+          const decorKey = `click-${number}`; // 🔔 need meta.floor to set meta.nav
+          lib.game_1.createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true } });
         }
       }
     }
