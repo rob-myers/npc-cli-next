@@ -871,20 +871,11 @@ export class NpcApi {
       throw Error(`${'npc.api.move'}: opts.to must be {x,y}, {x,y,z} or array`);
     }
     
-    // 🚧 pendingTargets should exist during move i.e. cannot resume them
-    // 🚧 instead, each stop-reason provides them
-
-    // if (points.length === 0) {// continue pendingTargets if points empty
-    //   points.push(...this.pendingTargets);
-    // }
-    
     this.s.target !== null && this.rejectMove({
       type: 'stop-reason',
-      key: 'move-again',
+      key: 'move-again',// turn off continuous motion
       remainingPath: this.getRemainingPath(),
     });
-
-    this.pendingTargets.length = 0;
 
     if (points.length === 0) {
       return;
@@ -941,8 +932,8 @@ export class NpcApi {
         this.stopMoving(); // stop on error except "move-again"
       }
       throw e;
-    } finally {// turn off continuous motion
-      this.setSlowDown(true);
+    } finally {
+      this.setSlowDown(true); // turn off continuous motion
       this.pendingTargets.length = 0;
     }
   }
@@ -1165,8 +1156,9 @@ export class NpcApi {
     }
     
     if (this.pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
+      // avoid fast final turn
       // 🚧 do not continually assign
-      this.s.lookSecs = 0.5; // avoid fast final turn
+      this.s.lookSecs = 0.5;
     }
 
     this.onTickDetectStuck(deltaMs, agent);

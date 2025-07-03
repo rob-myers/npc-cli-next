@@ -131,9 +131,12 @@
       - `createDecorLine decorKey:foo from:$( click 1 ) to:$( click 1 )`
     - ✅ hook up to `click`
     - ✅ avoid z-fighting via monochrome white
-    - 🚧 these decor quads should inherit meta.nav
-    - 🚧 clicks too close to previous?
+    - 🚧 decor quads should inherit meta.nav
+    - ❌ clicks too close to previous?
     - 🚧 refine `click` opts
+
+- 🚧 BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
+  - try fix by removing unnecessary `this.pendingTargets.length = 0`
 
 ```sh
 testAddDecor
