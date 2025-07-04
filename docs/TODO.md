@@ -25,6 +25,9 @@
   - ❌ clean carousel css e.g. more css variables
   - ❌ auto png to webp in public/images
 
+- ✅ support multiple slides in carousel e.g. for small viewport images
+  - ✅ clean up approach
+
 - 🚧 strategy subsection
   - ✅ need `<Code>`
     - ✅ can copy line-by-line
@@ -56,6 +59,9 @@
 - Tabs: debug is global among Tab instances
   - defunct if we remove debug i.e. always paused when paused
 - start adding cypress
+
+- navigate to `#foo` then back should preserve scroll
+  - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
 
 ### World
 
@@ -185,6 +191,8 @@
   - ℹ️ `small-map-1` works, so could restrict in case of iOS
   - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
   - 🚧 check iPad
+
+- investigate efficient Decor add/remove
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 

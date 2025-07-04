@@ -15,6 +15,7 @@ import Code from '../components/Code';
 import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
 import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
 import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
+import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-viewport.webp';
 
 # Home
 
@@ -58,7 +59,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
     },
   ]}
   filter="brightness(1.0)"
-  maxHeight={400}
+  maxHeight={600}
   minHeight={400}
 />
 
@@ -108,42 +109,33 @@ Roughly speaking, this is the underlying problem with a human Game Master.
 
 How can we solve [the problem above](#our-problem)?
 Although easier than the [underlying problem](#underlying-problem) it is still very challenging.
-In particular, we don't have a solution but rather a strategy for solving it.
+We don't have a solution but rather a strategy for solving it.
 To understand this strategy it is best to see it in action, so let's begin.
 
-### The Viewer
+### A first look
 
-Depending on your screen size the Viewer will be either be at the bottom (small viewport) or on the right (larger viewport).
+This blog comes with a Viewer.
+It will be either be at the bottom of your screen (e.g. mobile devices) or on the right (e.g. desktop).
 
 <Carousel
   items={[
     {
       img: IdleViewerSmallWiewportWebp,
-      label: 'The Viewer in a small viewport',
+      label: 'Viewer in small viewport',
       objectPosition: '0% 50%',
     },
     {
-      img: IdleViewerSmallWiewportWebp,
-      label: 'The Viewer in a small viewport',
-      //objectPosition: '0% 100%',
-    },
-    {
-      img: IdleViewerSmallWiewportWebp,
-      label: 'The Viewer in a small viewport',
-      //objectPosition: '0% 100%',
-    },
-    {
-      img: IdleViewerSmallWiewportWebp,
-      label: 'The Viewer in a small viewport',
-      //objectPosition: '0% 100%',
+      img: IdleViewerLargeWiewportWebp,
+      label: 'Viewer in large viewport',
+      objectPosition: '50% 100%',
     },
   ]}
   filter="brightness(1.0)"
-  maxHeight={400}
+  maxHeight={600}
   minHeight={400}
   slidesToScroll={2}
 />
-
+{/* 🚧 need at least 3 items for loop */}
 
 ---
 

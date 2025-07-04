@@ -16,6 +16,7 @@ export default function Carousel(props: Props) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     // slidesToScroll: props.slidesToScroll,
+    // slidesToScroll: 'auto',
   }, []);
 
   const update = useUpdate();
@@ -51,7 +52,7 @@ export default function Carousel(props: Props) {
       .on('reInit', state.initDots)
       .on('reInit', state.onSelect)
       .on('select', state.onSelect)
-    ;
+      ;
   }, [emblaApi, props.items]);
 
   return (
@@ -59,12 +60,12 @@ export default function Carousel(props: Props) {
       className="carousel not-prose" // no tailwind typography
       css={carouselCss}
       style={{
-        ...props.maxHeight && {['--slider-max-height' as any]: `${props.maxHeight}px`},
-        ...props.minHeight && {['--slider-min-height' as any]: `${props.minHeight}px`},
-        ...typeof props.slidesToScroll === 'number' && {['--slider-slidesToScroll' as any]: props.slidesToScroll }
+        ...props.maxHeight && { ['--slider-max-height' as any]: `${props.maxHeight}px` },
+        ...props.minHeight && { ['--slider-min-height' as any]: `${props.minHeight}px` },
+        ...typeof props.slidesToScroll === 'number' && { ['--slider-slidesToScroll' as any]: props.slidesToScroll }
       }}
     >
-      
+
       <div
         className="embla__viewport"
         ref={emblaRef}
@@ -73,14 +74,16 @@ export default function Carousel(props: Props) {
         <div className="embla__container">
           {props.items.map(({ img, label, objectPosition }, index) => (
             <div className="embla__slide" key={index}>
-              <Image
-                src={img.src}
-                width={img.width}
-                height={img.height}
-                alt={label}
-                style={{ objectPosition }}
-                priority={index === state.currentSlide}
-              />
+              <div className='embla__slide-img-container'>
+                <Image
+                  src={img.src}
+                  width={img.width}
+                  height={img.height}
+                  alt={label}
+                  style={{ objectPosition }}
+                  priority={index === state.currentSlide}
+                />
+              </div>
               <div className="slide-label">
                 <div>
                   {label}
@@ -148,7 +151,7 @@ const carouselCss = css`
   --slider-min-height: unset;
   --slide-spacing: 32px;
   --slider-dot-width: 0.75rem;
-  --slider-dots-height: 48px;
+  --slider-dots-height: 64px;
   --slider-dot-gap: 16px;
   --slider-next-button-width: 32px;
   --slider-next-icon-width: 16px;
@@ -188,14 +191,22 @@ const carouselCss = css`
     flex: 0 0 calc(100% / var(--slider-slidesToScroll));
 
     margin-right: var(--slide-spacing);
-    background-color: black;
     border-radius: var(--slider-border-radius);
+    border: 1px dotted #fff4;
+
+    .embla__slide-img-container {
+      height: 100%;
+      border: 48px solid rgba(0,0,0,0);
+      border-width: 64px 32px;
+      border-bottom-width: 64px;
+    }
 
     img {
       margin: 0;
       height: 100%;
       object-fit: cover;
-      /* border-radius: var(--slider-border-radius); */
+      border: 16px solid #444;
+      border-top: none;
     }
   }
 
@@ -205,7 +216,7 @@ const carouselCss = css`
     display: flex;
     justify-content: space-between;
     width: calc(100% - 2 * var(--slider-next-button-width));
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     pointer-events: none;
   }
   .embla__button {
@@ -242,8 +253,7 @@ const carouselCss = css`
     position: absolute;
     top: 0;
     width: 100%;
-    /* height: calc(3 * var(--slider-next-button-width)); */
-    /* max-height: calc(3 * var(--slider-next-button-width)); */
+    height: 64px;
     overflow: hidden;
 
     flex: 1;
@@ -252,7 +262,6 @@ const carouselCss = css`
     align-items: center;
 
     text-align: center;
-    background-color: #444a;
     
     @media (max-width: ${mobileBreakpoint}) {
       font-size: 0.9rem;
@@ -260,16 +269,15 @@ const carouselCss = css`
     
     > div {
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      /* 🔔 padding-top can cause errors i.e. can see part of next hidden line */
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical; 
       overflow: hidden;
       user-select: text;
       
-      padding: 8px 16px;
+      padding: 0 16px;
       color: white;
-      font-weight: 500;
       letter-spacing: 1px;
-      text-shadow: 1px 1px #444, -1px -1px #444;
     }
 
     a {
@@ -289,6 +297,7 @@ const carouselCss = css`
     background-color: #3335;
     border-radius: var(--slider-border-radius);
     padding: 0 16px;
+    /* border: 1px solid #eee3; */
   }
   .embla__dot {
     cursor: pointer;
@@ -315,10 +324,10 @@ const carouselCss = css`
 
 const prevIcon = (
   <svg className="embla__button__svg" viewBox="0 0 532 532">
-  <path
-    fill="currentColor"
-    d="M355.66 11.354c13.793-13.805 36.208-13.805 50.001 0 13.785 13.804 13.785 36.238 0 50.034L201.22 266l204.442 204.61c13.785 13.805 13.785 36.239 0 50.044-13.793 13.796-36.208 13.796-50.002 0a5994246.277 5994246.277 0 0 0-229.332-229.454 35.065 35.065 0 0 1-10.326-25.126c0-9.2 3.393-18.26 10.326-25.2C172.192 194.973 332.731 34.31 355.66 11.354Z"
-  />
+    <path
+      fill="currentColor"
+      d="M355.66 11.354c13.793-13.805 36.208-13.805 50.001 0 13.785 13.804 13.785 36.238 0 50.034L201.22 266l204.442 204.61c13.785 13.805 13.785 36.239 0 50.044-13.793 13.796-36.208 13.796-50.002 0a5994246.277 5994246.277 0 0 0-229.332-229.454 35.065 35.065 0 0 1-10.326-25.126c0-9.2 3.393-18.26 10.326-25.2C172.192 194.973 332.731 34.31 355.66 11.354Z"
+    />
   </svg>
 );
 
