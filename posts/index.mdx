@@ -79,11 +79,18 @@ This already happens in very restricted settings like [Conway's Game of Life](ne
 The number of states becomes too large to effectively explore.
 How can composite behaviour be resolved if the developer has never encountered it?
 Actually, even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
-Thankfully we can solve all these problems if we _continually react to the Player_.
+Interestingly, we could solve all these problems if we _continually reacted to the Player_.
 Rather than situate them in a prefabrication,
 we could fabricate everything around them, as and when we need to.
+{/* This leads to intermediate objectives: */}
 
-This leads to intermediate objectives:
+{/* So, we want to continually observe and react to the Player to avoid large inflexible state-spaces. */}
+Fully solving the underlying problem would require an "automated director" which does just that.
+But let's not try to run before we can walk.
+Instead assume the game involves two humans: the Player and the Game Master.
+The Game Master controls the game in realtime,
+ideally such that the Player believes each NPC is directly controlled by an individual human playing a role.
+This is the problem we're concerned with.
 
 <Card id="our-problem"> 
 **Our Problem**: _Underlying problem with human Game Master_.
@@ -93,13 +100,6 @@ This leads to intermediate objectives:
   A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
 </Card>
 
-These objectives arise naturally.
-We want to avoid inflexible monolithic state-spaces by continually observing and reacting to the Player.
-Then we're going to need real-time control systems,
-and we're going to need a human (the Game Master) who observes and reacts using them.
-We can now reinterpret the underlying problem.
-We still want the NPCs to behave indistinguishably from human Players.
-However, we expect a human Game Master to control the NPCs rather than an automated director.
 
 {/* Then we have restricted the underlying problem, by permitting a human to control the NPCs rather than an "automated director". */}
 {/* Solving the underlying problem would also require an "automated director". */}
