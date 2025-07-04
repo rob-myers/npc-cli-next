@@ -278,7 +278,7 @@ const tabsContainerCss = css`
 
     @keyframes fadeIn {
       0% { opacity: 0; }
-      100% { opacity: 0.3; }
+      100% { opacity: 0.5; }
     }
     animation: fadeIn 2s forwards;
     
@@ -289,6 +289,6 @@ const tabsContainerCss = css`
     background-position: 0% 50%;
     
     border: 50px solid black;
-    filter: brightness(2);
+    filter: brightness(2) sepia(0.7) hue-rotate(120deg);
   }
 `;

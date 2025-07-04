@@ -202,7 +202,7 @@ export default function ViewerControls({ api }: Props) {
         className="top-level"
         title="maximise tabs"
         onClick={state.onMaximize}
-        >
+      >
         <FontAwesomeIcon icon={faExpandThin} size="1x" />
       </button>
 
