@@ -198,15 +198,17 @@ const carouselCss = css`
       height: 100%;
       border: 48px solid rgba(0,0,0,0);
       border-width: 64px 32px;
-      border-bottom-width: 64px;
+      
+      @media (max-width: ${mobileBreakpoint}) {
+        border-width: 64px 0;
+      }
     }
 
     img {
       margin: 0;
       height: 100%;
       object-fit: cover;
-      border: 16px solid #444;
-      border-top: none;
+      border-bottom: 16px solid #444;
     }
   }
 
