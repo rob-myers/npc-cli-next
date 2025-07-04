@@ -15,6 +15,7 @@ export default function Carousel(props: Props) {
   // 🚧 for better hmr move inwards into own component
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
+    // slidesToScroll: props.slidesToScroll,
   }, []);
 
   const update = useUpdate();
@@ -60,6 +61,7 @@ export default function Carousel(props: Props) {
       style={{
         ...props.maxHeight && {['--slider-max-height' as any]: `${props.maxHeight}px`},
         ...props.minHeight && {['--slider-min-height' as any]: `${props.minHeight}px`},
+        ...typeof props.slidesToScroll === 'number' && {['--slider-slidesToScroll' as any]: props.slidesToScroll }
       }}
     >
       
@@ -107,20 +109,21 @@ export default function Carousel(props: Props) {
           </button>
 
         </div>
+
+        <div className="embla__dots">
+          {state.snapList.map((_, index) => (
+            <button
+              type="button"
+              key={index}
+              onClick={() => state.onDotClick(index)}
+              className={cx('embla__dot', {
+                'embla__dot--selected': index === state.currentSlide,
+              })}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="embla__dots">
-        {state.snapList.map((_, index) => (
-          <button
-            type="button"
-            key={index}
-            onClick={() => state.onDotClick(index)}
-            className={cx('embla__dot', {
-              'embla__dot--selected': index === state.currentSlide,
-            })}
-          />
-        ))}
-      </div>
     </div>
   );
 }
@@ -150,6 +153,7 @@ const carouselCss = css`
   --slider-next-button-width: 32px;
   --slider-next-icon-width: 16px;
   --slider-border-radius: 16px;
+  --slider-slidesToScroll: 1;
   
   user-select: none;
   margin: 48px 0;
@@ -163,7 +167,7 @@ const carouselCss = css`
   
   border: 1px solid #aaa;
   border-radius: var(--slider-border-radius);
-  background-color: black;
+  background-color: #222;
   
   .embla__viewport {
     max-height: var(--slider-max-height);
@@ -180,8 +184,9 @@ const carouselCss = css`
     padding: 0;
   }
   .embla__slide {
-    flex: 0 0 100%;
-    min-width: 0;
+    position: relative;
+    flex: 0 0 calc(100% / var(--slider-slidesToScroll));
+
     margin-right: var(--slide-spacing);
     background-color: black;
     border-radius: var(--slider-border-radius);
@@ -190,7 +195,7 @@ const carouselCss = css`
       margin: 0;
       height: 100%;
       object-fit: cover;
-      border-radius: var(--slider-border-radius);
+      /* border-radius: var(--slider-border-radius); */
     }
   }
 
@@ -200,7 +205,7 @@ const carouselCss = css`
     display: flex;
     justify-content: space-between;
     width: calc(100% - 2 * var(--slider-next-button-width));
-    /* margin: 32px 0; */
+    margin-bottom: 8px;
     pointer-events: none;
   }
   .embla__button {
@@ -235,7 +240,7 @@ const carouselCss = css`
 
   .slide-label {
     position: absolute;
-    bottom: 0;
+    top: 0;
     width: 100%;
     /* height: calc(3 * var(--slider-next-button-width)); */
     /* max-height: calc(3 * var(--slider-next-button-width)); */
@@ -246,11 +251,8 @@ const carouselCss = css`
     justify-content: center;
     align-items: center;
 
-    padding: 0 calc(2 * var(--slider-next-button-width) + 8px);
-    color: #99a;
-    background-color: #00000077;
-    border-radius: 0 0 var(--slider-border-radius) var(--slider-border-radius);
     text-align: center;
+    background-color: #444a;
     
     @media (max-width: ${mobileBreakpoint}) {
       font-size: 0.9rem;
@@ -262,6 +264,12 @@ const carouselCss = css`
       -webkit-box-orient: vertical; 
       overflow: hidden;
       user-select: text;
+      
+      padding: 8px 16px;
+      color: white;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px #444, -1px -1px #444;
     }
 
     a {
@@ -270,12 +278,17 @@ const carouselCss = css`
   }
 
   .embla__dots {
+    position: absolute;
+    bottom: 0;
+    height: var(--slider-dots-height);
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: var(--slider-dot-gap);
-    height: var(--slider-dots-height);
+    background-color: #3335;
+    border-radius: var(--slider-border-radius);
+    padding: 0 16px;
   }
   .embla__dot {
     cursor: pointer;

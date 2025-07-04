@@ -13,9 +13,8 @@ import Image from 'next/image';
 import Code from '../components/Code';
 
 import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
-
-{/* 🚧 */}
 import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
+import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
 
 # Home
 
@@ -111,6 +110,43 @@ How can we solve [the problem above](#our-problem)?
 Although easier than the [underlying problem](#underlying-problem) it is still very challenging.
 In particular, we don't have a solution but rather a strategy for solving it.
 To understand this strategy it is best to see it in action, so let's begin.
+
+### The Viewer
+
+Depending on your screen size the Viewer will be either be at the bottom (small viewport) or on the right (larger viewport).
+
+<Carousel
+  items={[
+    {
+      img: IdleViewerSmallWiewportWebp,
+      label: 'The Viewer in a small viewport',
+      objectPosition: '0% 50%',
+    },
+    {
+      img: IdleViewerSmallWiewportWebp,
+      label: 'The Viewer in a small viewport',
+      //objectPosition: '0% 100%',
+    },
+    {
+      img: IdleViewerSmallWiewportWebp,
+      label: 'The Viewer in a small viewport',
+      //objectPosition: '0% 100%',
+    },
+    {
+      img: IdleViewerSmallWiewportWebp,
+      label: 'The Viewer in a small viewport',
+      //objectPosition: '0% 100%',
+    },
+  ]}
+  filter="brightness(1.0)"
+  maxHeight={400}
+  minHeight={400}
+  slidesToScroll={2}
+/>
+
+
+---
+
 
 
 <Code>
