@@ -86,11 +86,13 @@ interface Props {
   open?: boolean; 
   icon?: React.ReactNode;
   width?: number;
+  /** Override direction (default is 'left' or 'right') */
+  direction?: 'left' | 'right' | 'up' | 'down';
 }
 
 function open({
   bubble,
-  props: { width },
+  props: { width, direction },
   rect,
   timeoutId,
 }: OpenOpts) {
@@ -102,8 +104,10 @@ function open({
   const rootRect = root.getBoundingClientRect();
   const pixelsOnRight = rootRect.right - rect.right;
   const pixelsOnLeft = rect.x - rootRect.x;
-  bubble.classList.remove('left', 'right', 'down');
-  bubble.classList.add(pixelsOnRight < pixelsOnLeft ? 'left' : 'right');
+  bubble.classList.remove('left', 'right', 'up', 'down');
+  bubble.classList.add(
+    direction ?? (pixelsOnRight < pixelsOnLeft ? 'left' : 'right')
+  );
   
   const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
   width = maxWidthAvailable < (width ?? defaultInfoWidthPx) ? maxWidthAvailable : width;
@@ -122,7 +126,7 @@ interface OpenOpts {
 
 function close({ el, onClose }: { el: HTMLElement; onClose?(): void; }) {
   return window.setTimeout(() => {
-    el.classList.remove('open', 'left', 'right', 'down');
+    el.classList.remove('open', 'left', 'right', 'up','down');
     el.style.removeProperty('--info-width');
     onClose?.();
   }, 100);
