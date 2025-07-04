@@ -173,16 +173,16 @@ const carouselCss = css`
   user-select: none;
   margin: 48px 0;
   /* padding: 80px 48px 16px 48px; */
-  padding: 24px;
+  padding: 8px;
   @media (max-width: ${mobileBreakpoint}) {
-    padding: 24px 0;
+    padding: 4px;
     margin: 32px 0;
     --slider-border-radius: 8px;
   }
   
   border: 1px solid #aaa;
   border-radius: var(--slider-border-radius);
-  background-color: #222;
+  background-color: #ddd;
   
   .embla__viewport {
     min-height: var(--slider-min-height);
@@ -207,10 +207,11 @@ const carouselCss = css`
   .embla__slide {
     position: relative;
     flex: 0 0 calc(100% / var(--slider-slidesToScroll));
-
+    
     margin-right: var(--slide-spacing);
     border-radius: var(--slider-border-radius);
     border: 1px dotted #fff4;
+    background-color: #fff;
 
     .embla__slide-img-container {
       height: 100%;
@@ -296,7 +297,7 @@ const carouselCss = css`
       user-select: text;
       
       padding: 0 16px;
-      color: white;
+      /* color: white; */
       letter-spacing: 1px;
     }
 
@@ -314,7 +315,7 @@ const carouselCss = css`
     justify-content: center;
     align-items: center;
     gap: var(--slider-dot-gap);
-    background-color: #3335;
+    /* background-color: #3335; */
     border-radius: var(--slider-border-radius);
     padding: 0 16px;
     /* border: 1px solid #eee3; */

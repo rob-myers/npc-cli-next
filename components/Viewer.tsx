@@ -289,6 +289,6 @@ const tabsContainerCss = css`
     background-position: 0% 50%;
     
     border: 50px solid black;
-    filter: brightness(2) sepia(0.7) hue-rotate(120deg);
+    filter: brightness(1.5) sepia(0.7);
   }
 `;
