@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Card from "@/components/Card";
 import SideNote from "@/components/SideNote";
 
@@ -19,16 +20,24 @@ export default async function BlogPage(props: {
           <SideNote bubbleClassName="not-prose" {...props} />
         ),
         a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+          props.href ??= '';
           return (
-            <a
-              {...props} // new-tab:href induces new tab
-              {...props.href?.startsWith('new-tab:') && {
-                href: props.href.slice('new-tab:'.length),
-                target: "_blank",
-              }}
+            // <a
+            //   {...props} // new-tab:href induces new tab
+            //   {...props.href?.startsWith('new-tab:') && {
+            //     href: props.href.slice('new-tab:'.length),
+            //     target: "_blank",
+            //   }}
+            // >
+            //   {props.children}
+            // </a>
+            <Link
+              {...props}
+              href={props.href.startsWith('new-tab:') ? props.href.slice('new-tab:'.length) : props.href}
+              target={props.href.startsWith('new-tab:') ? "_blank" : props.target}
             >
               {props.children}
-            </a>
+            </Link>
           );
         },
       },
