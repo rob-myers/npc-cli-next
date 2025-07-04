@@ -67,7 +67,7 @@ For the underlying problem to be meaningful,
 some kind of "human behaviour" must be expressible.
 Racing games only permit physical collisions, which ain't enough wiggle room.
 Abstract puzzle games are also too constrained.
-Even games with complex environments usually only offer *aggressive* NPCs,
+Even games with complex environments often only offer *aggressive* NPCs,
 restricted by their time-limited existence.
 So let's assume our NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
@@ -93,13 +93,13 @@ This leads to intermediate objectives:
   A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
 </Card>
 
-Our objectives arise naturally from the discussion above.
-We want to avoid monolithic state-spaces by continually observing and reacting to the Player.
+These objectives arise naturally.
+We want to avoid inflexible monolithic state-spaces by continually observing and reacting to the Player.
 Then we're going to need real-time control systems,
-and we're going to need a human (the Game Master) who observes/reacts using them.
+and we're going to need a human (the Game Master) who observes and reacts using them.
 We can now reinterpret the underlying problem.
 We still want the NPCs to behave indistinguishably from human Players.
-However, we permit NPCs to be controlled by a human Game Master rather than an automated director.
+However, we expect a human Game Master to control the NPCs rather than an automated director.
 
 {/* Then we have restricted the underlying problem, by permitting a human to control the NPCs rather than an "automated director". */}
 {/* Solving the underlying problem would also require an "automated director". */}
@@ -111,6 +111,8 @@ However, we permit NPCs to be controlled by a human Game Master rather than an a
 {/* 🚧 pillars */}
 {/* 🚧 use FE dev env */}
 {/* 🚧 use site: first demo */}
+
+The best way to understand our approach
 
 <Code>
 ```sh title="test title" caption="test caption" showLineNumbers
