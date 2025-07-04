@@ -715,6 +715,7 @@ const instancedWallsShader = {
   uniform vec3 diffuse;
   uniform bool objectPick;
   uniform float opacity;
+  uniform float opacityMin;
 
   flat varying uint vInstanceId;
   varying float vOpacityScale;
@@ -743,7 +744,7 @@ const instancedWallsShader = {
       return;
     }
     
-    gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
+    gl_FragColor = vec4(diffuse, min(opacity * vOpacityScale, opacityMin));
     #include <logdepthbuf_fragment>
   }
   `,
@@ -756,6 +757,7 @@ const instancedWallsDefaultProps = {
   objectPick: false,
   objectPickRed: 0,
   opacity: 1,
+  opacityMin: 1,
   opacityCloseDivisor: 0,
 };
 

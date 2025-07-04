@@ -132,6 +132,7 @@ export default function Walls(props) {
         transparent={transparent}
         opacity={state.opacity}
         opacityCloseDivisor={20}
+        opacityMin={0.5}
       />
     </instancedMesh>
   );
