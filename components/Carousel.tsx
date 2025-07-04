@@ -267,7 +267,7 @@ const carouselCss = css`
       
       padding: 8px 16px;
       color: white;
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: 1px;
       text-shadow: 1px 1px #444, -1px -1px #444;
     }
