@@ -67,15 +67,16 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 
 For the underlying problem to be meaningful,
 some kind of "human behaviour" must be expressible.
-Racing games only permit physical collisions, which ain't enough wiggle room.
-Abstract puzzle games are also too constrained.
-Even games with complex environments often only offer *aggressive* NPCs,
+- Racing games only permit physical collisions, which ain't enough wiggle room.
+- Abstract puzzle games are also too constrained.
+- Even games with complex environments often only offer *aggressive* NPCs,
 restricted by their time-limited existence.
+
 So let's assume our NPCs can move freely through a 3D environment without time constraints.
 Under this assumption, no known game solves the underlying problem
 (or even comes close). But why?
 
-> Because freely combining behaviours yields state-space explosions.
+> Because combining behaviours freely yields state-space explosions.
 
 This already happens in very restricted settings like [Conway's Game of Life](new-tab:https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 The number of states becomes too large to effectively explore.
@@ -87,12 +88,12 @@ we could fabricate everything around them, as and when we need to.
 {/* This leads to intermediate objectives: */}
 
 {/* So, we want to continually observe and react to the Player to avoid large inflexible state-spaces. */}
-Solving the underlying problem would require an "automated director".
-But we should not try to run before we can walk.
+Solving the underlying problem in this manner would require an "automated director" which observes and reacts.
+But we shouldn't try to run before we can walk.
 Let's assume the game involves two humans: the Player and the Game Master.
 The Game Master will control the game in realtime,
 ideally such that the Player believes each NPC is controlled by an individual human "playing a role".
-Roughly speaking, this is the underlying problem with a human Game Master.
+This is the underlying problem with a human Game Master.
 
 <Card id="our-problem"> 
 **Our Problem**: _Underlying problem with human Game Master_.
