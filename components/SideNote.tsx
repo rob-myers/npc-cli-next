@@ -229,16 +229,30 @@ const speechBubbleCss = css`
       border-right: 10px solid #444;
     }
   }
+
   &.down {
     .info {
-      top: 20px;
+      top: calc(20px + 4px);
     }
     .arrow {
-      top: calc(-10px + 20px);
-      left: 0;
+      top: calc(-10px + 20px + 4px);
+      left: ${-(rootWidthPx + 2 * arrowDeltaX)}px;
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
       border-bottom: 10px solid #444;
+    }
+  }
+
+  &.up {
+    .info {
+      bottom: 4px;
+    }
+    .arrow {
+      top: calc(-4px);
+      left: ${-(rootWidthPx + 2 * arrowDeltaX)}px;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #444;
     }
   }
 `;
