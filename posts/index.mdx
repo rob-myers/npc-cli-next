@@ -11,6 +11,8 @@ export const metadata = {
 import Carousel from '../components/Carousel';
 import Image from 'next/image';
 import Code from '../components/Code';
+import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
+import InlineIcon from '../components/InlineIcon';
 
 import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
 import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
@@ -112,10 +114,9 @@ Although easier than the [underlying problem](#underlying-problem) it is still v
 We don't have a solution but rather a strategy for solving it.
 To understand this strategy it is best to see it in action, so let's begin.
 
-### A first look
-
-This blog comes with a Viewer.
-It will be either be at the bottom of your screen (e.g. mobile devices) or on the right (e.g. desktop).
+This blog comes with a Viewer:
+either at the bottom of your screen (mobile devices) or on the right (e.g. desktop).
+You can try dragging the black bar with the grip icon <InlineIcon icon={faGrip} size="1x" />, maximising it <span><InlineIcon icon={faExpandThin} size="1x" /></span> and also making it smaller <InlineIcon icon={faChevronRight} size="1x" />.
 
 <Carousel
   items={[
