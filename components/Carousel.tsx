@@ -60,9 +60,15 @@ export default function Carousel(props: Props) {
       className="carousel not-prose" // no tailwind typography
       css={carouselCss}
       style={{
-        ...props.maxHeight && { ['--slider-max-height' as any]: `${props.maxHeight}px` },
-        ...props.minHeight && { ['--slider-min-height' as any]: `${props.minHeight}px` },
-        ...typeof props.slidesToScroll === 'number' && { ['--slider-slidesToScroll' as any]: props.slidesToScroll }
+        ...props.heights && {
+          ['--slider-min-height' as any]: `${props.heights.min}px`,
+          ['--slider-max-height' as any]: `${props.heights.max}px`,
+          ['--slider-min-height-mobile' as any]: `${props.heights.minMobile ?? props.heights.min}px`,
+          ['--slider-max-height-mobile' as any]: `${props.heights.maxMobile ?? props.heights.max}px`,
+        },
+        ...typeof props.slidesToScroll === 'number' && {
+          ['--slider-slidesToScroll' as any]: props.slidesToScroll,
+        },
       }}
     >
 
@@ -142,13 +148,19 @@ interface Props extends EmblaOptionsType {
   }[];
   /** CSS `filter` e.g. `brightness(0.5)` */
   filter?: string;
-  maxHeight?: number;
-  minHeight?: number;
+  heights?: {
+    min: number;
+    max: number;
+    minMobile?: number;
+    maxMobile?: number;
+  };
 }
 
 const carouselCss = css`
   --slider-max-height: unset;
   --slider-min-height: unset;
+  --slider-max-height-mobile: unset;
+  --slider-min-height-mobile: unset;
   --slide-spacing: 32px;
   --slider-dot-width: 0.75rem;
   --slider-dots-height: 64px;
@@ -173,8 +185,14 @@ const carouselCss = css`
   background-color: #222;
   
   .embla__viewport {
-    max-height: var(--slider-max-height);
     min-height: var(--slider-min-height);
+    max-height: var(--slider-max-height);
+    
+    @media (max-width: ${mobileBreakpoint}) {
+      min-height: var(--slider-min-height-mobile);
+      max-height: var(--slider-max-height-mobile);
+    }
+
     position: relative;
     overflow: hidden;
     display: flex;

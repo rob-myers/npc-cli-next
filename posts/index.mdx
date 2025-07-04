@@ -61,8 +61,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
     },
   ]}
   filter="brightness(1.0)"
-  maxHeight={600}
-  minHeight={400}
+  heights={{ min: 400, max: 600, maxMobile: 400 }}
 />
 
 For the underlying problem to be meaningful,
@@ -133,8 +132,7 @@ You can try dragging the black bar with the grip icon <InlineIcon icon={faGrip} 
     },
   ]}
   filter="brightness(1.0)"
-  maxHeight={600}
-  minHeight={400}
+  heights={{ min: 400, max: 600, maxMobile: 400 }}
   slidesToScroll={2}
 />
 {/* 🚧 need at least 3 items for loop */}
