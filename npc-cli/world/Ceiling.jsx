@@ -122,7 +122,7 @@ export default function Ceiling(props) {
         alphaTest={0.1} opacity={state.opacity} depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
         objectPickRed={3}
-        opacityCloseDivisor={12}
+        opacityCloseDivisor={18}
       />
     </instancedMesh>
   );
