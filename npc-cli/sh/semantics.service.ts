@@ -760,7 +760,10 @@ class semanticsServiceClass {
     
     if (stmt.Background === true && stmt.meta.pgid === 0) {
       const { ttyShell, nextPid } = useSession.api.getSession(stmt.meta.sessionKey);
-      const file = wrapInFile(cloneParsed(stmt), {
+      
+      const cloned = cloneParsed(stmt);
+      cloned.Background = false; // remove "&"
+      const file = wrapInFile(cloned, {
         ppid: stmt.meta.pid,
         pgid: nextPid,
         background: true,
