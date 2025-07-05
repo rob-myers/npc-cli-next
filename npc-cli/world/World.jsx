@@ -8,7 +8,7 @@ import { GmGraphClass } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
 import { debug, isDevelopment, pause, mapValues, range, entries, hashText } from "../service/generic";
-import { getContext2d, invertCanvas, isSmallViewport } from "../service/dom";
+import { getContext2d, invertCanvas, isSmallViewport, isTouchDevice } from "../service/dom";
 import { queryCache, removeCached, setCached } from "../service/query-client";
 import { fetchGeomorphsJson, getDecorSheetUrl, getNpcSkinSheetUrl, getObstaclesSheetUrl, WORLD_QUERY_FIRST_KEY } from "../service/fetch-assets";
 import { geomorph } from "../service/geomorph";
@@ -60,6 +60,7 @@ export default function World(props) {
     gmRoomGraph: new GmRoomGraphClass(),
     hmr: /** @type {*} */ ({}),
     smallViewport: isSmallViewport(),
+    touchDevice: isTouchDevice(),
 
     // 🔔 hmr issue when initial width = height = 0
     texAux: new TexArray({ ctKey: 'aux', type: THREE.FloatType, numTextures: texAuxDepth, width: 1, height: 1 }),
@@ -455,6 +456,7 @@ export default function World(props) {
  * @property {GmRoomGraphClass} gmRoomGraph
  * @property {import('@recast-navigation/core').Crowd} crowd
  * @property {boolean} smallViewport Was viewport small when we mounted World?
+ * @property {boolean} touchDevice
  *
  * @property {() => void} onTick
  * @property {(connectorKey?: string) => boolean} isReady

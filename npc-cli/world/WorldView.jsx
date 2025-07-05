@@ -8,7 +8,7 @@ import { damp, damp3 } from "maath/easing";
 import { debug, entries, keys } from "../service/generic.js";
 import { helper } from "../service/helper";
 import { Rect, Vect } from "../geom/index.js";
-import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isTouchDevice } from "../service/dom.js";
+import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
 import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
@@ -161,7 +161,7 @@ export default function WorldView(props) {
         pointers: state.getNumPointers(),
         rmb: isRMB(event),
         screenPoint: getRelativePointer(event),
-        touch: isTouchDevice(),
+        touch: w.touchDevice,
         meta,
       };
       if (e.key === 'pointerup' && state.isPointerEventDrag(e) === false) {
@@ -613,7 +613,7 @@ export default function WorldView(props) {
       onPointerMove={state.onPointerMove}
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
-      onContextMenu={e => isTouchDevice() && e.preventDefault()}
+      onContextMenu={e => w.touchDevice === true && e.preventDefault()}
       onKeyDown={state.onKeyDown}
       tabIndex={0}
       {...{ [popUpRootDataAttribute]: true }}
