@@ -495,6 +495,9 @@ const manageCss = css`
     }
   }
   ul.create-tabs:not(.showCreate) {
+    li {
+      border: none;
+    }
     .tab-create-def, button {
       display: none;
     }
