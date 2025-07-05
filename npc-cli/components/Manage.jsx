@@ -1,14 +1,16 @@
 import React from "react";
 import { css } from "@emotion/react";
 import { shallow } from "zustand/shallow";
+import cx from "classnames";
+
 import { TABS_API_KEY } from "../service/const";
 import { testNever } from "../service/generic";
 import { helper } from "../service/helper";
 import { computeTabDef } from "../tabs/tab-util";
-// import { mapKeys } from './'; // 🔔 keep this facade
 import useStateRef from "../hooks/use-state-ref";
 import useTabs from "../tabs/tabs.store";
 import useSession from "../sh/session.store";
+import useUpdate from "../hooks/use-update";
 import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/npc-cli/components/Icon";
 import PsList from "./PsList";
 
@@ -19,6 +21,12 @@ export default function Manage(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     createTabEpoch: 0,
+    show: {
+      create: false,
+      created: false,
+      layout: false,
+    },
+
     changeTtyProfile(e) {
       const profileKey = /** @type {Key.Profile} */ (e.currentTarget.value);
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
@@ -91,7 +99,7 @@ export default function Manage(props) {
     },
     selectTab(e) {
       const tabId = /** @type {string} */ (e.currentTarget.dataset.tabId);
-      console.log('select', tabId);
+      // console.log('select', tabId);
       useTabs.api.selectTab(tabId);
     },
     setMapKey(e) {
@@ -109,12 +117,25 @@ export default function Manage(props) {
         ttyWorldKey: worldKey,
       });
     },
+    toggleShown(e) {
+      const ul = /** @type {HTMLUListElement} */ (e.currentTarget.closest('ul'));
+      const sectionKey = /** @type {keyof typeof state['show']} */ (ul.dataset.section);
+      state.show[sectionKey] = !state.show[sectionKey];
+      update();
+    },
   }));
+
+  const update = useUpdate();
 
   return (
     <div css={manageCss}>
+    
+    <div className="manage-tabs">
 
-      <ul className="created-tabs">
+      <ul
+        className={cx("created-tabs", { showCreated: state.show.created })}
+        data-section="created"
+      >
         {tabDefs.map((def, i) => {
           const tabId = def.filepath;
           const tabMeta = tabsMeta[tabId];
@@ -123,8 +144,11 @@ export default function Manage(props) {
 
           return <li key={tabId} data-tab-id={tabId}>
             {i === 0 && (
-              <span className="title-container">
-                <span className="title">Tabs</span>
+              <span
+                className="title"
+                onClick={state.toggleShown}
+              >
+                Tabs
               </span>
             )}
             <span className="tab-def">
@@ -186,11 +210,17 @@ export default function Manage(props) {
         })}
       </ul>
 
-      <ul className="create-tabs">
+      <ul
+        className={cx("create-tabs", { showCreate: state.show.create })}
+        data-section="create"
+      >
 
         <li data-tab-class={helper.toTabClassMeta.World.key}>
-          <span className="title-container">
-            <span className="title">Create</span>
+          <span
+            className="title"
+            onClick={state.toggleShown}
+          >
+            Create
           </span>
           <span className="tab-create-def">
             <span className="tab-class">
@@ -244,8 +274,16 @@ export default function Manage(props) {
         </li>
       </ul>
 
-      <ul className="layout-actions">
-        <li className="title">Layout</li>
+      <ul
+        className={cx("layout-actions", { showLayout: state.show.layout })}
+        data-section="layout"
+      >
+        <li
+          className="title"
+          onClick={state.toggleShown}
+        >
+          Layout
+        </li>
         <li>
           <a href={`#/internal/set-tabs/world-tty-default_profile`}>world + tty (default_profile)</a>
         </li>
@@ -279,8 +317,9 @@ export default function Manage(props) {
         <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}`}>change "test-world-1" tab props: mapKey=small-map-1 </a></li>
         <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li> */}
       </ul>
-
-      <PsList/>
+      
+    </div>
+    <PsList/>
     </div>
   );
 }
@@ -301,6 +340,12 @@ const manageCss = css`
   background-color: #111;
   padding: 16px;
 
+  .manage-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
   .create-tabs, .created-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -308,17 +353,7 @@ const manageCss = css`
     font-size: small;
     border: var(--separating-border);
     
-    .title-container {
-      background-color: #333;
-      align-self: stretch;
-      display: flex;
-    }
-    .title {
-      align-self: center;
-      padding: 8px;
-      color: #ddd;
-    }
-
+    
     li {
       display: flex;
       border: var(--separating-border);
@@ -337,6 +372,7 @@ const manageCss = css`
       align-items: center;
       cursor: pointer;
       padding-left: 8px;
+      padding: 8px;
     }
 
     .tab-status {
@@ -369,8 +405,9 @@ const manageCss = css`
     }
     .tab-create-def {
       display: flex;
-      padding-left: 12px;
       gap: 4px;
+      padding-left: 12px;
+      /* padding: 8px; */
     }
     .tab-class {
       display: flex;
@@ -435,22 +472,45 @@ const manageCss = css`
     flex-wrap: wrap;
     /* background-color: #222; */
     border: var(--separating-border);
-
-    .title {
-      align-self: center;
-      padding: 8px;
-      color: #fff;
-      font-size: small;
-      background-color: #333;
-    }
+    
     li {
+      display: flex;
+      align-items: center;
       padding: 4px 8px;
       border: var(--separating-border);
       background-color: #111;
+      padding: 8px;
     }
     a {
       font-size: small;
       color: #a7a7fb;
+    }
+  }
+
+  ul .title {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    color: #fff;
+    font-size: small;
+    background-color: #333;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  ul.created-tabs :not(.showCreated) {
+    .tab-def, button {
+      display: none;
+    }
+  }
+  ul.create-tabs:not(.showCreate) {
+    .tab-create-def, button {
+      display: none;
+    }
+  }
+  ul.layout-actions :not(.showLayout) {
+    li:not(.title) {
+      display: none;
     }
   }
 
@@ -484,12 +544,14 @@ const manageCss = css`
 /**
  * @typedef State
  * @property {number} createTabEpoch
+ * @property {{ create: boolean; created: boolean; layout: boolean; }} show
  * @property {OnChangeHandler} changeTtyProfile
  * @property {OnClickHandler} closeTab
  * @property {OnClickHandler} createTab
  * @property {OnClickHandler} selectTab
  * @property {OnChangeHandler} setMapKey
  * @property {OnClickHandler} syncWorldKey
+ * @property {OnClickHandler} toggleShown
  */
 
 /**

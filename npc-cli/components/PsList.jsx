@@ -196,24 +196,24 @@ export default function PsList() {
                 : p.status === ProcessStatus.Running ? 'running' : 'killed'
               )}
             >
-              <div className="pid-and-ptags">  
-                <div className="pid">
-                  {p.pid}
+              <div className="pid-ptags-controls">
+                <div className="pid-and-ptags">  
+                  <div className="pid">
+                    {p.pid}
+                  </div>
+                  {p.ptagsText && <div className="ptags">
+                    {p.ptagsText}
+                  </div>}
+                </div> 
+                <div className="process-controls">
+                  <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act={p.status === ProcessStatus.Suspended ? "resume" : "pause"} data-pid={p.pid}><FontAwesomeIcon icon={p.status === ProcessStatus.Suspended ? faPlay : faPause} title={p.status === ProcessStatus.Suspended ? "resume" : "pause"} size="xs" /></div>
+                  <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act="kill" data-pid={p.pid}><FontAwesomeIcon icon={faClose} title="kill" size="1x" /></div>
+                  {p.bootable && <div className="control" onClick={state.changeProcess} data-act="reboot" data-pid={p.pid}><FontAwesomeIcon icon={faRefreshThin} title="reboot" size="xs" /></div>}
                 </div>
-                {p.ptagsText && <div className="ptags">
-                  {p.ptagsText}
-                </div>}
-              </div> 
-              <div className="process-controls">
-                <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act={p.status === ProcessStatus.Suspended ? "resume" : "pause"} data-pid={p.pid}><FontAwesomeIcon icon={p.status === ProcessStatus.Suspended ? faPlay : faPause} title={p.status === ProcessStatus.Suspended ? "resume" : "pause"} size="xs" /></div>
-                <div className="control" onClick={p.status !== ProcessStatus.Killed ? state.changeProcess : undefined} data-act="kill" data-pid={p.pid}><FontAwesomeIcon icon={faClose} title="kill" size="1x" /></div>
-                {p.bootable && <div className="control" onClick={state.changeProcess} data-act="reboot" data-pid={p.pid}><FontAwesomeIcon icon={faRefreshThin} title="reboot" size="xs" /></div>}
               </div>
-              {p.src !== '' && (
-                <div className="src">
-                  {p.src}
-                </div>
-              )}
+              <div className="src">
+                {p.src || '[empty]'}
+              </div>
             </div>
           )}
 
@@ -280,12 +280,16 @@ const psListCss = css`
   .process-leaders {
     display: flex;
     flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
     gap: 4px;
 
     font-size: medium;
     color: #fff;
     
     .no-processes {
+      width: 100%;
       font-size: small;
       color: #ff9b;
       border: var(--separating-border);
@@ -297,15 +301,24 @@ const psListCss = css`
 
   .process-leader {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 8px;
+    max-width: 400px;
+    flex: 1;
     
     padding: 4px;
     border-radius: 4px;
     background-color: #222;
     color: #0f0;
     font-family: 'Courier New', Courier, monospace;
+
+    .pid-ptags-controls {
+      display: flex;
+      align-items: stretch;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
     
     .pid-and-ptags {
       display: flex;
@@ -349,6 +362,7 @@ const psListCss = css`
     }
 
     .src {
+      flex-grow: 1;
       padding: 4px 8px;
       background-color: black;
       border: var(--separating-border);
