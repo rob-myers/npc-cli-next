@@ -182,6 +182,21 @@ This permits us to patch `three-stdlib` inside `@react-three/drei`.
 npx patch-package @react-three/drei/three-stdlib
 ```
 
+### Screencast Android to MacBook
+
+- https://github.com/Genymobile/scrcpy/blob/master/doc/macos.md
+- https://github.com/Genymobile/scrcpy?tab=readme-ov-file
+
+```sh
+export PATH="$PATH:~/Downloads/scrcpy-macos-aarch64-v3.3.1"
+
+# plug phone into usb and permit usb debug (via settings > developer options)
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid
+
+# this command works with Quicktime Player
+# https://github.com/Genymobile/scrcpy/issues/4068#issuecomment-1581233072
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4
+```
 
 ### Bump versions in our branch of recast-navigation-js
 
