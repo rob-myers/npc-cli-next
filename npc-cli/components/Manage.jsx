@@ -168,7 +168,7 @@ export default function Manage(props) {
                   {def.filepath}
                 </button>
               </span>
-              <span className="options">
+              <span className="tab-def-options">
                 {def.type === 'terminal' && <>
                   <span
                     className="sync-world-key"
@@ -226,7 +226,7 @@ export default function Manage(props) {
             <span className="tab-class">
               World
             </span>
-            <span className="options">
+            <span className="tab-def-options">
               <select data-map-key defaultValue={helper.mapKeys[0]}>
                 {helper.mapKeys.map(mapKey =>
                   <option key={mapKey} value={mapKey}>{mapKey}</option>
@@ -242,7 +242,7 @@ export default function Manage(props) {
             <span className="tab-class">
               Tty
             </span>
-            <span className="options">
+            <span className="tab-def-options">
               <select data-profile-key defaultValue={helper.profileKeys[0]}>
                 {helper.profileKeys.map(profileKey =>
                   <option key={profileKey} value={profileKey}>{profileKey}</option>
@@ -349,19 +349,14 @@ const manageCss = css`
   .create-tabs, .created-tabs {
     display: flex;
     flex-wrap: wrap;
-    /* gap: 8px; */
     font-size: small;
     border: var(--separating-border);
-    
-    
-    li {
-      display: flex;
-      border: var(--separating-border);
-      background-color: #111;
-    }
   }
-
+  
   .create-tabs li, .created-tabs li {
+    display: flex;
+    border: var(--separating-border);
+    background-color: #111;
     justify-content: space-between;
     align-items: stretch;
     gap: 8px;
@@ -371,10 +366,8 @@ const manageCss = css`
       display: flex;
       align-items: center;
       cursor: pointer;
-      padding-left: 8px;
       padding: 8px;
     }
-
     .tab-status {
       margin-right: 8px;
       cursor: auto;
@@ -393,7 +386,6 @@ const manageCss = css`
         font-size: 0.7rem;
       }
     }
-
     .tab-def {
       display: flex;
       align-items: stretch;
@@ -419,52 +411,45 @@ const manageCss = css`
       font-weight: 500;
       color: white;
     }
-
-    select, input {
-      color: var(--select-or-input-color);
-    }
-  }
-
-  .close-tab {
-    cursor: pointer;
-    font-family: monospace;
-    font-size: large;
-    user-select: none;
-    padding: 10px;
-    border-left: var(--separating-border);
-  }
-  
-  .options {
-    display: flex;
-    gap: 8px;
-    max-width: 200px;
-    align-items: stretch;
-
-    .sync-world-key {
-      display: flex;
-      align-items: center;
-      min-width: 60px;
-      font-size: small;
+    .close-tab {
       cursor: pointer;
+      font-family: monospace;
+      font-size: large;
+      user-select: none;
+      padding: 10px;
+      border-left: var(--separating-border);
     }
-      
-    .world-key {
+    .tab-def-options {
       display: flex;
-      align-items: center;
-      font-size: small;
-      
-      input {
-        width: 20px;
+      gap: 8px;
+      max-width: 200px;
+      align-items: stretch;
+  
+      .sync-world-key {
+        display: flex;
+        align-items: center;
+        min-width: 60px;
+        font-size: small;
+        cursor: pointer;
+      }
+        
+      .world-key {
+        display: flex;
+        align-items: center;
+        font-size: small;
+        
+        input {
+          width: 20px;
+        }
       }
     }
-  }
-  
-  .open-tab {
-    border-left: var(--separating-border);
-    padding: 8px;
-    cursor: pointer;
-    user-select: none;
-    padding: 10px;
+    .open-tab {
+      border-left: var(--separating-border);
+      padding: 8px;
+      cursor: pointer;
+      user-select: none;
+      padding: 10px;
+    }
   }
 
   .layout-actions {
@@ -490,12 +475,13 @@ const manageCss = css`
   ul .title {
     display: flex;
     align-items: center;
-    padding: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 12px;
     color: #fff;
     font-size: small;
     background-color: #333;
-    cursor: pointer;
-    user-select: none;
+    border-color: rgba(0, 0, 0, 0);
   }
 
   ul.created-tabs :not(.showCreated) {
@@ -522,7 +508,7 @@ const manageCss = css`
     appearance: none;
     padding: 0 2px;
     background-color: inherit;
-    color: inherit;
+    color: var(--select-or-input-color);
     font-size: small;
     text-align: center;
     cursor: pointer;
