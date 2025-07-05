@@ -4,7 +4,11 @@
 
 ### Site
 
-- 🚧 redo images in first carousel
+- start with code
+- youtube vid for mobile and desktop
+- change writing style i.e. more intertwined with stories
+
+- ❌ redo images in first carousel
   - ℹ️ https://squoosh.app/editor | size?
     - webp quality 70
   - ✅ can spawn with various skins easily
@@ -64,6 +68,8 @@
   - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
 
 ### World
+
+- Manage: can collapse/expands Tabs, Create, Layout
 
 - ✅ PsList should not initially track on hmr
 
