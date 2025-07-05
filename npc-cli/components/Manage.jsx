@@ -473,7 +473,9 @@ const manageCss = css`
   }
 
   ul .title {
+    width: 80px;
     display: flex;
+    justify-content: center;
     align-items: center;
     cursor: pointer;
     user-select: none;
@@ -485,6 +487,9 @@ const manageCss = css`
   }
 
   ul.created-tabs :not(.showCreated) {
+    li {
+      border: none;
+    }
     .tab-def, button {
       display: none;
     }
