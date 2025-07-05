@@ -78,21 +78,24 @@ export default function Carousel(props: Props) {
         style={{ filter: props.filter }}
       >
         <div className="embla__container">
-          {props.items.map(({ img, label, objectPosition }, index) => (
+          {props.items.map((item, index) => (
             <div className="embla__slide" key={index}>
-              <div className='embla__slide-img-container'>
-                <Image
-                  src={img.src}
-                  width={img.width}
-                  height={img.height}
-                  alt={label}
-                  style={{ objectPosition }}
-                  priority={index === state.currentSlide}
-                />
+              <div className='embla__slide-inner'>
+                {'img' in item
+                  ? <Image
+                      src={item.img.src}
+                      width={item.img.width}
+                      height={item.img.height}
+                      alt={item.label}
+                      style={{ objectPosition: item.objectPosition }}
+                      priority={index === state.currentSlide}
+                    />
+                  : item.component
+                }
               </div>
               <div className="slide-label">
                 <div>
-                  {label}
+                  {item.label}
                 </div>
               </div>
             </div>
@@ -140,12 +143,19 @@ export default function Carousel(props: Props) {
 type EmblaOptionsType = NonNullable<Parameters<typeof useEmblaCarousel>[0]>;
 
 interface Props extends EmblaOptionsType {
-  items: {
-    img: StaticImageData;
+  items: ({
     label: string;
-    /** CSS `object-position` applied to `<img>` */
-    objectPosition?: string;
-  }[];
+  } & (
+    | {
+        img: StaticImageData;
+        /** CSS `object-position` applied to `<img>` */
+        objectPosition?: string;
+      }
+    | {
+        component: React.JSX.Element;
+      }
+    ))[];
+
   /** CSS `filter` e.g. `brightness(0.5)` */
   filter?: string;
   heights?: {
@@ -174,6 +184,7 @@ const carouselCss = css`
   margin: 48px 0;
   /* padding: 80px 48px 16px 48px; */
   padding: 8px;
+
   @media (max-width: ${mobileBreakpoint}) {
     padding: 4px;
     margin: 32px 0;
@@ -182,7 +193,11 @@ const carouselCss = css`
   
   border: 1px solid #aaa;
   border-radius: var(--slider-border-radius);
-  background-color: #ddd;
+  
+  background-color: #fff;
+  @media (max-width: ${mobileBreakpoint}) {
+    background-color: #ddd;
+  }
   
   .embla__viewport {
     min-height: var(--slider-min-height);
@@ -213,7 +228,7 @@ const carouselCss = css`
     border: 1px dotted #fff4;
     background-color: #fff;
 
-    .embla__slide-img-container {
+    .embla__slide-inner {
       height: 100%;
       border: 48px solid rgba(0,0,0,0);
       border-width: 64px 32px;
@@ -223,7 +238,7 @@ const carouselCss = css`
       }
     }
 
-    img {
+    .embla__slide-inner > * {
       margin: 0;
       height: 100%;
       object-fit: cover;
@@ -233,6 +248,7 @@ const carouselCss = css`
 
   .embla__buttons {
     position: absolute;
+    z-index: 1;
     bottom: 0;
     display: flex;
     justify-content: space-between;
@@ -318,7 +334,10 @@ const carouselCss = css`
     /* background-color: #3335; */
     border-radius: var(--slider-border-radius);
     padding: 0 16px;
-    /* border: 1px solid #eee3; */
+
+    /* border: 1px solid red; */
+    /* width: 100%;
+    background-color: white; */
   }
   .embla__dot {
     cursor: pointer;

@@ -4,8 +4,18 @@
 
 ### Site
 
-- start with code
-- youtube vid for mobile and desktop
+- ✅ example youtube vid for desktop
+  - upload example vid (short)
+  - ℹ️ https://studio.youtube.com/channel/UC6gBn5ta5ic5iNcQjXoeneQ/videos/short?filter=%5B%5D&sort=%7B%22columnType%22%3A%22date%22%2C%22sortOrder%22%3A%22DESCENDING%22%7D
+  - ℹ️ https://youtube.com/shorts/yDbGkW2umw4
+- ✅ example youtube vid for mobile
+  - ✅ can record via `scrcpy`
+  - ℹ️ `scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4`
+  - ✅ upload example vid
+  - ℹ️ https://youtube.com/shorts/WIIihWnOQ2E
+- ✅ show demo videos in Carousel
+- 🚧 fix Video style in Carousel
+- 🚧 start code much earlier
 - change writing style i.e. more intertwined with stories
 
 - ❌ redo images in first carousel

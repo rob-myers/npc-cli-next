@@ -13,6 +13,7 @@ import Image from 'next/image';
 import Code from '../components/Code';
 import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
 import InlineIcon from '../components/InlineIcon';
+import Video from '../components/Video';
 
 import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
 import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
@@ -45,6 +46,18 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 <Carousel
   items={[
     {
+      component: (
+        <Video videoKey='desktopDemo' />
+      ),
+      label: 'Desktop demo vid',
+    },
+    {
+      component: (
+        <Video videoKey='mobileDemo' />
+      ),
+      label: 'Mobile demo vid',
+    },
+    {
       img: DesktopEmptyWorldWebp,
       label: <>Our system <em>NPC CLI</em> is built into this site.</>,
       objectPosition: '0% 50%',
@@ -65,8 +78,8 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 />
 
 For the underlying problem to be meaningful,
-some kind of "human behaviour" must be expressible.
-- Racing games only permit physical collisions, which ain't enough wiggle room.
+"human behaviour" must be expressible.
+- Racing games only permit physical collisions.
 - Abstract puzzle games are also too constrained.
 - Even games with complex environments often only offer *aggressive* NPCs,
 restricted by their time-limited existence.
@@ -77,8 +90,8 @@ Under this assumption, no known game solves the underlying problem
 
 > Because combining behaviours freely yields state-space explosions.
 
-This already happens in very restricted settings like [Conway's Game of Life](new-tab:https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
-The number of states becomes too large to effectively explore.
+This already happens in zero player games like [Conway's Game of Life](new-tab:https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
+The number of states becomes too large to effectively explore (e.g. by encoding a Universal Turing Machine).
 How can composite behaviour be resolved if the developer has never encountered it?
 Actually, even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
 Interestingly, we could solve all these problems if we _continually reacted to the Player_.
