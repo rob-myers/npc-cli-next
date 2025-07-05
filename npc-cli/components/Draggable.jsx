@@ -74,6 +74,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
     },
     onTouchStart(e) {
       e.stopPropagation();
+      e.preventDefault();
 
       state.touchId = getTouchIdentifier(e);
       const touchObj = typeof state.touchId  === 'number' && getTouch(e, state.touchId) || null;

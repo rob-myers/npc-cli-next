@@ -366,6 +366,9 @@ export const contextMenuCss = css`
   
   /* prevent pinch-zoom on mobile */
   touch-action: none;
+  .draggable {
+    touch-action: none;
+  }
 
   > div {
     transform-origin: 0 0;
@@ -383,7 +386,6 @@ export const contextMenuCss = css`
     border: 1px solid #333;
     padding: 4px;
     font-size: small;
-
   }
   
   z-index: ${zIndexWorld.contextMenu};
