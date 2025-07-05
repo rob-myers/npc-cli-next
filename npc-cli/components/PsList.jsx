@@ -303,7 +303,7 @@ const psListCss = css`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-width: 400px;
+    /* max-width: 400px; */
     flex: 1;
     
     padding: 4px;
