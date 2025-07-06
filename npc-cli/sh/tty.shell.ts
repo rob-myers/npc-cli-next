@@ -302,6 +302,10 @@ export class ttyShellClass implements Device {
         process.localVar.PWD = parent.inheritVar.PWD ?? session.var.PWD;
         process.localVar.OLDPWD = parent.inheritVar.OLDPWD ?? session.var.OLDPWD;
       }
+
+      if (opts.by === '&') {
+        session.lastBg = process.key;
+      }
     }
 
     /**

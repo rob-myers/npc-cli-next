@@ -707,6 +707,8 @@ class semanticsServiceClass {
       yield expand(`${meta.pid}`);
     } else if (Param.Value === "?") {
       yield expand(`${useSession.api.getLastExitCode(meta)}`);
+    } else if (Param.Value === "!") {
+      yield expand(`${useSession.api.getSession(meta.sessionKey).lastBg}`);
     } else if (Param.Value === "#") {
       yield expand(`${getProcess(meta).positionals.slice(1).length}`);
     } else {

@@ -81,6 +81,7 @@ const useStore = create<State>()((set, get): State => ({
             jsFunc: {} as any,
             nextPid: 0,
             process: {},
+            lastBg: 0,
             lastExit: { fg: 0, bg: 0 },
             verbose: false,
           },
@@ -529,6 +530,7 @@ export interface Session {
     /** Foreground */ fg: number;
     /** Background */ bg: number;
   };
+  lastBg: number;
   verbose: boolean;
 }
 
