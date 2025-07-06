@@ -517,7 +517,7 @@ export default function useHandleEvents(w) {
       );
 
       if (Math.abs(deltaAng) > Math.PI/3) {
-        npc.s.turnBeforeMove = { ms: 400, towards: adjusted.src };
+        npc.s.turnBeforeMove = { ms: 400, towards: adjusted.dst };
         // 🔔 setting as Infinity freezes offMeshConnection
         const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (npc.agentAnim);
         agentAnim.set_tmid(Infinity);
