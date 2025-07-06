@@ -257,10 +257,20 @@ declare namespace NPC {
     seg: 0 | 1 | 2;
     /** Initial position of npc */
     initPos: Geom.VectJson;
-    /** Adjusted src */
+    /** Adjusted offMeshConnection src */
     src: Geom.VectJson;
-    /** Adjusted dst */
+    /** Adjusted offMeshConnection dst */
     dst: Geom.VectJson;
+    /**
+     * An offMeshConnection traversal will be initially paused if the
+     * npc's direction is not "aligned".
+     * 
+     * This is achieved via:
+     * > `agentAnim.tmid === agentAnim.tmax === Infinity`.
+     *
+     * and we record the correct values for restore later.
+     */
+    anim: { tmid: number; tmax: number; };
 
     /** Unit vector from "initial npc position" to "adjusted src" */
     initUnit: Geom.VectJson;
@@ -271,9 +281,16 @@ declare namespace NPC {
      * It can be null if these two points are too close.
      */
     nextUnit: null | Geom.VectJson;
-    /** Scale factor converting `dtAgentAnimation.t` into total distance along 2 segs */
+    /**
+     * Scale factor converting `dtAgentAnimation.t` into total distance along
+     * the two segments
+     */
     tToDist: number;
   };
+
+  type dtCrowdAgentAnimation = ReturnType<
+    import('@recast-navigation/core').Crowd['raw']['getAgentAnimation']
+  >;
 
   /** Provided after `dtAgentAnimation` has been re-configured */
   interface OverrideOffMeshResult {
@@ -282,7 +299,11 @@ declare namespace NPC {
     src: Geom.VectJson;
     /** Adjusted dst */
     dst: Geom.VectJson;
-    nextCorner: Geom.VectJson
+    nextCorner: Geom.VectJson;
+    /** Might need to restore this when turnBeforeMove */
+    animTmid: number;
+    /** Might need to restore this when turnBeforeMove */
+    animTmax: number;
   }
 
   type Obstacle = {

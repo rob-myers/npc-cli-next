@@ -1,5 +1,7 @@
 import React from "react";
 import * as THREE from "three";
+import { deltaAngle } from "maath/misc";
+
 import { Vect, Rect } from "../geom";
 import { defaultDoorCloseMs, wallHeight } from "../service/const";
 import { pause, warn, debug, testNever } from "../service/generic";
@@ -43,8 +45,8 @@ export default function useHandleEvents(w) {
       // e.g. npc without access near door
       npc.agentAnim?.set_active(false);
       npc.agentAnim?.set_tScale(1);
-      npc.s.tScale = null;
-      
+      npc.s.turnBeforeMove = null;
+
       if (npc.s.offMesh === null) {
         return;
       }
@@ -507,16 +509,35 @@ export default function useHandleEvents(w) {
       window.clearTimeout(npc.s.offMeshTimeout);
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
+
+      // turnBeforeMove when delta angle large enough
+      const deltaAng = deltaAngle(
+        npc.api.getAngle(),
+        npc.api.getLookAngle(adjusted.src),
+      );
+
+      if (Math.abs(deltaAng) > Math.PI/3) {
+        npc.s.turnBeforeMove = { ms: 400, towards: adjusted.src };
+        // 🔔 setting as Infinity freezes offMeshConnection
+        const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (npc.agentAnim);
+        agentAnim.set_tmid(Infinity);
+        agentAnim.set_tmax(Infinity);
+      }
+
       /** avoid flicker when next corner after offMeshConnection is too close */      
       const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.05;
 
       // register adjusted traversal
       npc.s.offMesh = {
         npcKey: e.npcKey,
+        orig: offMesh,
         seg: 0,
         src: adjusted.src,
         dst: adjusted.dst,
-        orig: offMesh,
+        anim: {
+          tmid: adjusted.animTmid,
+          tmax: adjusted.animTmax,
+        },
 
         initPos: adjusted.initPos,
         initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
@@ -532,8 +553,6 @@ export default function useHandleEvents(w) {
         const adj = w.gmGraph.getAdjacentRoomCtxt(door.gmId, door.doorId);
         adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
       }
-
-      w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(e.offMesh.srcGrKey) });
     },
     onEnterOffMeshConnectionMain(e, npc) {
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
@@ -551,13 +570,18 @@ export default function useHandleEvents(w) {
 
         if (// traversal same direction, other far enough ahead
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
-          && other.s.tScale === null // avoid jerk when other slows down
           && npc.api.getOtherDoorwayLead(other) >= 0.4
         ) {
           continue;
         }
 
-        return state.onBlockedDoorway(npc, tr.npcKey); // STOP
+        state.onBlockedDoorway(npc, tr.npcKey); // STOP
+
+        // 🔔 Wrap to fix bizarre TurboPack error i.e.
+        // helper not defined in final statement
+        if (true) {
+          return;
+        }
       }
 
       // if (npc.api.isNearTarget(1) && npc.agent?.raw.nneis === 0) {
@@ -578,6 +602,8 @@ export default function useHandleEvents(w) {
           }
         }
       }
+
+      w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(offMesh.orig.srcGrKey) });
     },
     onExitDoorCollider(e) {// e.type === 'nearby'
       const door = w.door.byKey[e.gdKey];
@@ -689,10 +715,14 @@ export default function useHandleEvents(w) {
       anim.set_startPos(2, newSrc.y);
       anim.set_endPos(0, newDst.x);
       anim.set_endPos(2, newDst.y);
-      anim.set_t(0);
-      anim.set_tmid(npcPoint.distanceTo(newSrc) / speed);
+
       const delta = tmpVect1.copy(newDst).sub(newSrc);
-      anim.set_tmax(anim.tmid + (delta.length / speed));
+      const tmid = npcPoint.distanceTo(newSrc) / speed;
+      const tmax = anim.tmid + (delta.length / speed);
+
+      anim.set_t(0);
+      anim.set_tmid(tmid);
+      anim.set_tmax(tmax);
       delta.normalize();
       anim.set_unitExitVel(0, delta.x);
       anim.set_unitExitVel(1, 0);
@@ -703,6 +733,8 @@ export default function useHandleEvents(w) {
         src: newSrc,
         dst: newDst,
         nextCorner,
+        animTmid: tmid,
+        animTmax: tmax,
       };
     },
     removeFromSensors(npcKey) {

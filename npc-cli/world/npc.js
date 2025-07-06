@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
-import { lerp } from "maath/misc";
 import braces from "braces";
 
 import { Vect } from '../geom';
@@ -94,7 +93,10 @@ export function createBaseNpc(def, w) {
       doMeta: /** @type {null | Meta} */ (null),
       /** Fade duration e.g. during fade spawn */
       fadeSecs: 0.3,
-      /** Text of label above npc, or null if empty */
+      /**
+       * Text of label above npc, or null if empty.
+       * This is hidden when the npc has a speech bubble.
+       */
       label: /** @type {null | string} */ (null),
       /** Height of label above npc */
       labelY: 0,
@@ -125,12 +127,7 @@ export function createBaseNpc(def, w) {
       spawns: 0,
       /** Target during move. */
       target: /** @type {null | THREE.Vector3} */ (null),
-      /**
-       * Used to change offMeshConnection exit speed via `agentAnim.tScale`.
-       * - Starts at time `0 ≤ start ≤ agentAnim.tmax`.
-       * - Approaches `dst` as we exit offMeshConnection.
-       */
-      tScale: /** @type {null | { start: number; dst: number; }} */ (null),
+      turnBeforeMove: /** @type {null | { ms: Number; towards: Geom.VectJson }} */ (null),
     },
     
     /** @type {null | NPC.CrowdAgent} */
@@ -715,12 +712,7 @@ export class NpcApi {
       }
     }
 
-    if (this.s.tScale !== null) {// approach tScale.dst as t -> tmax
-      const { start, dst } = this.s.tScale;
-      anim.tScale = lerp(1, dst, (anim.t - start) / (anim.tmax - start));
-    }
-
-    // look further aslong the path
+    // look further along the path
     // 🔔 with 0.2 saw jerk when two agents through doorway
     const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.base.position.x;
@@ -935,6 +927,8 @@ export class NpcApi {
     } finally {
       this.setSlowDown(true); // turn off continuous motion
       this.pendingTargets.length = 0;
+      this.tryStopOffMesh(); // when turnBeforeMove
+      this.s.turnBeforeMove = null; // 🚧
     }
   }
 
@@ -1127,6 +1121,11 @@ export class NpcApi {
 
     if (this.s.offMesh !== null) {
       this.handleOffMeshConnection(agent, this.s.offMesh);
+
+      if (this.s.turnBeforeMove !== null) {
+        this.onTurnBeforeMove(agent, deltaMs, this.s.turnBeforeMove);
+      }
+
       return; // Avoid stopMoving whilst offMesh
     }
 
@@ -1200,7 +1199,6 @@ export class NpcApi {
 
     if (this.w.npc.onStuckNpc === null) {
       // 🔔 fixes "cannot arrive close enough" due to nearby-ish npc
-      // 🚧 should not prevent low separation weight from dominating
       this.stopMoving({
         type: 'stop-reason',
         key: 'stuck',
@@ -1218,6 +1216,36 @@ export class NpcApi {
     this.s.lookAngleDst = this.getEulerAngle(
       geom.clockwiseFromNorth(vel.z, vel.x)
     );
+  }
+
+  /**
+   * 
+   * @param {NPC.CrowdAgent} agent 
+   * @param {number} deltaMs 
+   * @param {NonNullable<NPC.NPC['s']['turnBeforeMove']>} turnBeforeMove 
+   */
+  onTurnBeforeMove(agent, deltaMs, turnBeforeMove) {
+    const { position } = this.base;
+    const { towards } = turnBeforeMove;
+    this.s.lookAngleDst = this.getEulerAngle(
+      geom.clockwiseFromNorth(towards.y - position.z, towards.x - position.x)
+    );
+
+    const ms = (turnBeforeMove.ms -= deltaMs * 1000);
+    if (ms > 0) {
+      return;
+    }
+
+    // finished turn
+    this.s.turnBeforeMove = null;
+    agent.raw.params.set_maxSpeed(this.getMaxSpeed());
+    if (this.s.offMesh !== null) {
+      const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
+      agentAnim.set_t(0);
+      // agentAnim.set_t(this.s.offMesh.anim.tmid);
+      agentAnim.set_tmid(this.s.offMesh.anim.tmid);
+      agentAnim.set_tmax(this.s.offMesh.anim.tmax);
+    }
   }
 
   resetSkin() {
@@ -1292,37 +1320,6 @@ export class NpcApi {
     ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
 
     this.w.texNpcLabel.updateIndex(this.def.uid);
-  }
-
-  /**
-   * @param {number} exitSpeed
-   */
-  setOffMeshExitSpeed(exitSpeed) {
-    if (this.s.offMesh === null) {
-      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: s.offMesh is null`);
-    }
-    if (this.base.agentAnim === null) {
-      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: no agent`);
-    }
-    if (exitSpeed < 0.05) {
-      return warn(`${'setOffMeshExitSpeed'}: ${this.key}: exit speed too slow (${exitSpeed})`);
-    }
-
-    const maxSpeed = this.getMaxSpeed();
-    this.s.tScale = { start: this.base.agentAnim.t, dst: exitSpeed / maxSpeed };
-
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-    agent.updateParameters({ maxSpeed: exitSpeed });
-
-    if (exitSpeed >= maxSpeed) {
-      this.s.offMesh.tToDist = exitSpeed;
-    } else {// 🔔 avoid look flicker when target "before" offMesh.dst
-      this.s.offMesh.tToDist = maxSpeed;
-    }
-
-    if (this.s.anim === 'Run' && exitSpeed < this.def.runSpeed) {
-      this.startAnimation('Walk');
-    }
   }
 
   /**
@@ -1434,10 +1431,13 @@ export class NpcApi {
   tryStopOffMesh() {
     // 🔔 offMeshConnection can happen when `this.s.offMesh` null,
     // e.g. when npc without access is close to door
-    if (this.base.agentAnim === null || this.base.agentAnim?.active === false) {
+    if (this.base.agentAnim?.active !== true) {
       return false;
     }
-    if (this.base.agentAnim.t <= this.base.agentAnim.tmid) {
+    if (
+      this.base.agentAnim.t <= this.base.agentAnim.tmid
+      || this.base.agentAnim.tmax === Infinity // turnBeforeMove
+    ) {
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
     }

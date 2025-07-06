@@ -79,7 +79,20 @@
 
 ### World
 
-- Manage: can collapse/expands Tabs, Create, Layout
+- 🚧 can pause and turn before moving
+  - ℹ️ we could trigger such turns when next target is not in same room
+  - ✅ try set maxSpeed 0 before "next pending target"
+  - ℹ️ when maxSpeed 0 before offMesh seems recastnavigation `agentAnim.tmax` is Infinity
+    - this "stops" the agents whilst still increases `agentAnim.t`
+    - if we immediately override the offMesh then the agent doesn't stop
+    - if we override but set `tmid` and `tmax` as Infinity then it initially pauses
+  - ✅ only trigger on enter offMesh with large deltaAngle
+  - ✅ resume after given ms
+  - 🚧 clean
+
+- 🚧 deltaMs -> deltaSecs
+
+- ✅ Manage: can collapse/expands Tabs, Create, Layout
 
 - ✅ PsList should not initially track on hmr
 
