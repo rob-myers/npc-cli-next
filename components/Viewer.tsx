@@ -275,6 +275,7 @@ const tabsContainerCss = css`
   
   
   &.neverEnabled {
+    cursor: pointer;
 
     @keyframes fadeIn {
       0% { opacity: 0; }
@@ -282,13 +283,13 @@ const tabsContainerCss = css`
     }
     animation: fadeIn 2s forwards;
     
-    cursor: pointer;
     background-image: url(/images/desktop-empty-world__20250612.webp);
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: 0% 50%;
     
     border: 50px solid black;
-    filter: brightness(1.5) sepia(0.7);
+    border-width: 50px 0;
+    filter: grayscale();
   }
 `;
