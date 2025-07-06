@@ -1080,7 +1080,7 @@ export class NpcApi {
     }
 
     if (this.s.opacityDst !== null) {
-      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs, deltaMs, undefined, undefined, 0.02) === false) {
+      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs, deltaMs, undefined, undefined, 0.05) === false) {
         this.s.opacityDst = null;
         this.resolve.fade?.();
       }

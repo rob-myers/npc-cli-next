@@ -629,8 +629,7 @@ function NPC({ npc }) {
           npc.m.mesh = skinnedMesh; 
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);
         }}
-
-        renderOrder={0}
+        renderOrder={5}
       >
         {/* <meshBasicMaterial color="red" /> */}
       

@@ -92,6 +92,8 @@
 
 - 🚧 deltaMs -> deltaSecs
 
+- ✅ fix npc fading issue
+
 - ✅ Manage: can collapse/expands Tabs, Create, Layout
 
 - ✅ PsList should not initially track on hmr

@@ -170,7 +170,7 @@ const humanZeroShader = {
     gl_FragColor = texel * tint;
     #include <logdepthbuf_fragment>
 
-    if (gl_FragColor.a < 0.1) {
+    if (gl_FragColor.a < 0.01) {
       discard; // comment out to debug label dimensions
     }
   }
