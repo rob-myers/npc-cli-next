@@ -227,19 +227,19 @@ export default function Npcs(props) {
     setDoMeta(npcKey, doMeta) {
       const npc = w.n[npcKey];
 
+      if (npc.s.doMeta !== null) {
+        const { doPoint, y } = npc.s.doMeta;
+        delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
+      }
+
       if (doMeta === null) {
-        if (npc.s.doMeta !== null) {
-          const { doPoint, y } = npc.s.doMeta;
-          delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
-          npc.s.doMeta = null;
-        }
+        npc.s.doMeta = null;
       } else {
         const { doPoint, y } = doMeta;
         const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
         state.doToNpc[key] = npcKey;
         npc.s.doMeta = doMeta;
       }
-
     },
     setupSkins() {
       // 🔔 compute sheetAux e.g. uvMap
@@ -629,7 +629,8 @@ function NPC({ npc }) {
           npc.m.mesh = skinnedMesh; 
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);
         }}
-        renderOrder={5}
+        // renderOrder={5}
+        renderOrder={0}
       >
         {/* <meshBasicMaterial color="red" /> */}
       
