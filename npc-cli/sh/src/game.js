@@ -283,6 +283,7 @@ export async function* w(ct) {
     const func = api.generateSelector(
       api.parseFnOrStr(args[0]),
       args.slice(1).map(api.parseJsArg),
+      true,
     );
     yield await awaitOrIgnore(func(w, ct));
     return;
@@ -293,6 +294,7 @@ export async function* w(ct) {
     const func = api.generateSelector(
       api.parseFnOrStr(args[0]),
       args.slice(1).map(x => x === stdinInputChar ? datum : api.parseJsArg(x)),
+      true,
     );
     try {
       yield awaitOrIgnore(func(w, ct));

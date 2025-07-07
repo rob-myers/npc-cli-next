@@ -211,19 +211,25 @@ export function entries(record) {
  * Technically the latter selectors are dependent on the particular value of `x`.
  * But in practice we can often expect them to act uniformly like the examples above.
  * 
+ * In strict mode we throw on resolve `undefined`.
  * 
  * @param {((x: any) => any) | string | RegExp} selector
  * @param {any[]} [extraArgs]
+ * @param {boolean} [strict]
  * @returns {(x: any, ...xs: any[]) => any}
  */
-export function generateSelector(selector, extraArgs) {
+export function generateSelector(selector, extraArgs, strict = false) {
   if (typeof selector === "string") {
     /** @param {any} x @param {any[]} xs */
     return function selectByStr(x, ...xs) {
       const selected = /** @type {string} */ (selector).split(".").reduce(
         (agg, part) => (x = agg)[part], // x is parent of possible function
         /** @type {*} */ (x)
-      ); // If we selected a function, invoke it
+      );
+      if (strict === true && typeof selected === 'undefined') {
+        throw Error(`selector not found: ${selector}`);
+      }
+      // If we selected a function, invoke it
       return typeof selected === "function"
         ? selected.call(x, ...(extraArgs ?? []))
         : selected // 🔔 permits using args supplied elsewhere
