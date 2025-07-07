@@ -73,6 +73,8 @@ const humanZeroShader = {
       // move body down
       if (vType == 1) {
         transformed.y -= animHeight * (1. - opacity);
+        // transformed.x *= max(opacity, 0.2);
+        // transformed.z *= max(opacity, 0.2);
       }
 
       mvPosition = modelViewMatrix * vec4(transformed, 1.0);
@@ -196,12 +198,13 @@ const humanZeroShader = {
       discard; // comment out to debug label dimensions
     }
 
-    if (vType == 0) {// fade label
-      gl_FragColor.a *= opacity;
-    } else if (vType == 1) {
+    if (vType == 1) {
       // hide body through portal at vBaseY
       if (vY < vBaseY) discard;
       // 🔔 fade body: walls instanced mesh order issue not so apparent
+      gl_FragColor.a *= opacity;
+      // gl_FragColor *= opacity;
+    } else {// fade everything else
       gl_FragColor.a *= opacity;
     }
   }

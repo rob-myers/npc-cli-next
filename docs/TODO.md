@@ -89,9 +89,11 @@
   - ✅ only trigger on enter offMesh with large deltaAngle
   - ✅ resume after given ms
   - 🚧 clean
-    - npc shader uniform opacity -> teleportRatio
+    - 🚧 npc shader uniform opacity -> teleportRatio
 
 - ✅ release do point on move from chair to chair
+- ✅  can move and do (1st attempt)
+  - `local pts=$( click 2 ); move npcKey:rada to:$( pts/0 ) && w n.rada.api.do $( pts/1 ) )`
 - 🚧 deltaMs -> deltaSecs
 
 - 🚧 npc fading issue
