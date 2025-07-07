@@ -58,6 +58,7 @@ export function createBaseNpc(def, w) {
     rotation: tmpEulerThree,
     /** Difference between last position */
     delta: new THREE.Vector3(),
+    animHeight: 1,
   
     /**
      * Amounts to "uv re-mapping".
@@ -366,7 +367,6 @@ export class NpcApi {
     // point.meta.do
     if (point.meta.do === true) {
       if (srcNav === true) {// nav -> do point
-        // await this.onMeshDo(point, { ...opts, preferSpawn: !!point.meta.longClick });
         await this.onMeshDo(point, { ...opts, preferSpawn: false });
       } else {// off nav -> do point
         await this.offMeshDo(point);
@@ -1080,7 +1080,7 @@ export class NpcApi {
     }
 
     if (this.s.opacityDst !== null) {
-      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs, deltaMs, undefined, undefined, 0.05) === false) {
+      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs / 1.25, deltaMs, undefined, undefined, 0.005) === false) {
         this.s.opacityDst = null;
         this.resolve.fade?.();
       }
@@ -1338,7 +1338,7 @@ export class NpcApi {
   }
 
   /**
-   * @param {'opacity' | 'labelY'} name 
+   * @param {'animHeight' | 'opacity' | 'labelY'} name 
    * @param {number} value 
    */
   setUniform(name, value) {
@@ -1376,6 +1376,13 @@ export class NpcApi {
     next.reset().fadeIn(glbFadeIn[this.s.anim][input]).play();
     this.base.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
     this.s.anim = input;
+
+    // 🚧 from const
+    this.base.animHeight = this.s.anim === 'Lie'
+      ? 0.4
+      : this.s.anim === 'Sit' ? 1.6 : 2.15
+    ;
+    this.setUniform('animHeight', this.base.animHeight);
 
     this.updateLabelOffsets();
   }

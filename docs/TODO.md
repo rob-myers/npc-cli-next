@@ -89,10 +89,20 @@
   - ✅ only trigger on enter offMesh with large deltaAngle
   - ✅ resume after given ms
   - 🚧 clean
+    - npc shader uniform opacity -> teleportRatio
 
+- ✅ release do point on move from chair to chair
 - 🚧 deltaMs -> deltaSecs
 
-- ✅ fix npc fading issue
+- 🚧 npc fading issue
+  - ℹ️ MUST have npc (non-transparent) sometimes behind walls (transparent)
+  - ℹ️ BUT then fading npc appears to be behind walls when it isn't
+  - ℹ️ issue arises because walls are instanced meshes
+  - ✅ move npc into/out-of baseY (floor, seat, bed)
+  - ✅ combined with opacity instanced mesh ordering issue not apparent
+  - https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
+  - ✅ provide unscaled animHeight as uniform
+  - 🚧 clean
 
 - ✅ Manage: can collapse/expands Tabs, Create, Layout
 

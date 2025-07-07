@@ -653,6 +653,7 @@ function NPC({ npc }) {
           breathTriIds={npc.gltfAux.breathTriIds}
           labelTriIds={npc.gltfAux.labelTriIds}
           selectorTriIds={npc.gltfAux.selectorTriIds}
+          animHeight={npc.animHeight}
         />
         
       </skinnedMesh>

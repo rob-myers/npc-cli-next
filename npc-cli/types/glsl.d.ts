@@ -62,6 +62,8 @@ export interface HumanZeroMaterialProps {
   labelTriIds: number[];
   selectorTriIds: number[];
   labelUvRect4: Vector4Input;
+  /** For teleport downwards/upwards through model base  */
+  animHeight: number;
 }
 
 export interface InstancedAtlasProps {

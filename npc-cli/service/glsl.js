@@ -10,6 +10,10 @@ const humanZeroShader = {
   uniform int breathTriIds[2];
   uniform int labelTriIds[2];
   uniform int selectorTriIds[2];
+
+  uniform float opacity; // 🚧 -> teleportRatio
+  uniform float animHeight;
+
   varying float vDotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
@@ -17,6 +21,10 @@ const humanZeroShader = {
   varying float vHeightShade;
   // label=0, body=1, breath=2, selector=3
   flat varying int vType;
+
+  // constant i.e. modelMatrix[3].y
+  flat varying float vBaseY;
+  varying float vY;
 
   #include <common>
   #include <uv_pars_vertex>
@@ -49,6 +57,9 @@ const humanZeroShader = {
     #include <skinning_vertex>
     vec4 mvPosition;
 
+    // global ground y (constant)
+    vBaseY = modelMatrix[3].y;
+
     if (vType == 0) {// label quad
 
       // label quad is above head and faces camera
@@ -59,6 +70,11 @@ const humanZeroShader = {
       
     } else {// everything else
 
+      // move body down
+      if (vType == 1) {
+        transformed.y -= animHeight * (1. - opacity);
+      }
+
       mvPosition = modelViewMatrix * vec4(transformed, 1.0);
   
       // 🌞 compute dot product for flat shading
@@ -67,6 +83,8 @@ const humanZeroShader = {
       vDotProduct = dot(transformedNormal, lightDir);
     }
     
+    vY = (modelMatrix * vec4(transformed, 1.0)).y;
+
     gl_Position = projectionMatrix * mvPosition;
     #include <logdepthbuf_vertex>
   }
@@ -101,6 +119,10 @@ const humanZeroShader = {
   varying float vHeightShade;
   flat varying int vType;
 
+  // constant i.e. modelMatrix[3].y
+  flat varying float vBaseY;
+  varying float vY;
+
   #include <common>
   #include <uv_pars_fragment>
   #include <map_pars_fragment>
@@ -130,7 +152,7 @@ const humanZeroShader = {
     tint.x = 0.5 * diffuse.x + 0.5 * tint.x;
     tint.y = 0.5 * diffuse.y + 0.5 * tint.y;
     tint.z = 0.5 * diffuse.z + 0.5 * tint.z;
-    tint.a *= opacity;
+    // tint.a *= opacity;
 
     vec4 texel;
     
@@ -173,12 +195,22 @@ const humanZeroShader = {
     if (gl_FragColor.a < 0.01) {
       discard; // comment out to debug label dimensions
     }
+
+    if (vType == 0) {// fade label
+      gl_FragColor.a *= opacity;
+    } else if (vType == 1) {
+      // hide body through portal at vBaseY
+      if (vY < vBaseY) discard;
+      // 🔔 fade body: walls instanced mesh order issue not so apparent
+      gl_FragColor.a *= opacity;
+    }
   }
   `,
 };
 
 /** @type {import('@/npc-cli/types/glsl').HumanZeroMaterialProps} */
 const humanZeroMaterialDefaultProps = {
+  animHeight: 1,
   atlas: emptyDataArrayTexture,
   aux: emptyDataArrayTexture,
   globalAux: emptyDataArrayTexture,
