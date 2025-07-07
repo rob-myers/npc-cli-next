@@ -2,7 +2,7 @@ import { uid } from "uid";
 
 import { ansi, ProcessTag } from "./const";
 import type * as Sh from "./parse";
-import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags } from "../service/generic";
+import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags, warn } from "../service/generic";
 import { parseJsArg } from "../service/generic";
 import useSession, { ProcessStatus } from "./session.store";
 import {
@@ -29,6 +29,7 @@ class semanticsServiceClass {
   private async *assignVars(node: Sh.CallExpr) {
     for (const assign of node.Assigns) {
       yield* this.Assign(assign);
+      this.handleChildExitCode(assign);
     }
   }
 
@@ -53,6 +54,20 @@ class semanticsServiceClass {
       return varValue || "";
     } else {
       return jsStringify(varValue);
+    }
+  }
+
+  /**
+   * This implements `set -e` i.e.
+   * > _throw if `exitCode` is defined and non-zero._
+   */
+  private handleChildExitCode(node: Sh.ParsedSh) {
+    if (node.exitCode === undefined) {
+      // 🔔 should never happen, but better not to assume it is an error
+      return warn(`node.exitCode undefined: ${srcService.src(node)} in ${getProcess(node.meta).src}`);
+    }
+    if (node.exitCode !== 0) {// set -e
+      throw killError(node.meta, node.exitCode);
     }
   }
 
@@ -104,9 +119,7 @@ class semanticsServiceClass {
     for (const node of nodes) {
       try {
         yield* sem.Stmt(node);
-        if (node.exitCode !== 0) {// set -e
-          throw killError(node.meta, node.exitCode);
-        }
+        this.handleChildExitCode(node);
       } finally {
         parent.exitCode = node.exitCode;
         useSession.api.setLastExitCode(node.meta, node.exitCode);
@@ -137,15 +150,22 @@ class semanticsServiceClass {
     return expanded;
   }
 
-  private async *Assign({ meta, Name, Value, Naked, Append }: Sh.Assign) {
+  private async *Assign(node: Sh.Assign) {
+    const { meta, Name, Value, Naked, Append } = node;
+
+    node.exitCode = 1; // until proven innocent
+    
     if (Name === null) {
+      node.exitCode = 0;
       return; // e.g. `declare -F`
     }
     if (Naked === true || Value === null) {
       useSession.api.setVar(meta, Name.Value, '');
+      node.exitCode = 0;
       return;
     }
     if (Name.Value === 'ptags') {
+      node.exitCode = 0;
       return; // used to tag process instead
     }
 
@@ -176,6 +196,7 @@ class semanticsServiceClass {
       }
     }
 
+    node.exitCode = 0;
   }
 
   private async *BinaryCmd(node: Sh.BinaryCmd) {
@@ -437,25 +458,31 @@ class semanticsServiceClass {
       // and we delegate to cmd.service 'declare'
       const args = [] as string[];
       for (const { Name, Value } of node.Args) {
-        if (Name !== null)
+        if (Name !== null) {
           args.push(Name.Value); // myFunc in `declare -f myFunc`
-        else if (Value !== null && Value.Parts[0]?.type === 'Lit')
+        } else if (Value !== null && Value.Parts[0]?.type === 'Lit') {
           args.push(Value.Parts[0].Value); // -f in `declare -f myFunc`
+        }
       }
-
+      
       yield* cmdService.runCmd(node, 'declare', args);
-    } else {
-      // 🔔 we support assignments, so we ignore cmd.service 'local'
-      const process = getProcess(node.meta);
-      if (process.key === 0) {
+      node.exitCode = 0;
+    } else {// 🔔 we support assignments, so ignore cmd.service 'local'
+      
+      if (node.meta.pid === 0) {
         throw Error(`local: cannot be used in session leader`);
       }
+      
+      const process = getProcess(node.meta);
       for (const arg of node.Args) {
         if (arg.Name !== null) {
           process.localVar[arg.Name.Value] = undefined;
           yield* this.Assign(arg);
+          this.handleChildExitCode(arg);
         }
       }
+
+      node.exitCode = 0;
     }
 
     // if (node.Variant.Value === "declare") {
