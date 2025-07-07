@@ -351,6 +351,13 @@ export const npcClassToMeta = {
 
   "human-0": {
     groupName: 'Scene',
+    height: {
+      Idle: 2.15,
+      Lie: 0.4,
+      Run: 2.15,
+      Sit: 1.6,
+      Walk: 2.15,
+    },
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     modelAnimHeight: {// pre-scale heights

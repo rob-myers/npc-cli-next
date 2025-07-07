@@ -35,6 +35,8 @@ declare namespace NPC {
   interface ClassDef {
     /** e.g. 'Scene' */
     groupName: string;
+    /** Pre-scale animation heights */
+    height: Partial<Record<Key.Anim, number>>;
     /** e.g. 'human_0-material' */
     materialName: string; 
     /** e.g. 'human_0' */

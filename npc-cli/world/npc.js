@@ -1080,7 +1080,7 @@ export class NpcApi {
     }
 
     if (this.s.opacityDst !== null) {
-      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs / 1.25, deltaMs, undefined, undefined, 0.005) === false) {
+      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs / 1.5, deltaMs, undefined, undefined, 0.005) === false) {
         this.s.opacityDst = null;
         this.resolve.fade?.();
       }
@@ -1374,14 +1374,11 @@ export class NpcApi {
     const next = this.m.toAct[input];
     curr.fadeOut(glbFadeOut[this.s.anim][input]);
     next.reset().fadeIn(glbFadeIn[this.s.anim][input]).play();
-    this.base.mixer.timeScale = npcClassToMeta[this.def.classKey].timeScale[input] ?? 1;
-    this.s.anim = input;
 
-    // 🚧 from const
-    this.base.animHeight = this.s.anim === 'Lie'
-      ? 0.4
-      : this.s.anim === 'Sit' ? 1.6 : 2.15
-    ;
+    this.s.anim = input;
+    const meta = npcClassToMeta[this.def.classKey];
+    this.base.mixer.timeScale = meta.timeScale[input] ?? 1;
+    this.base.animHeight = meta.height[input] ?? 1;
     this.setUniform('animHeight', this.base.animHeight);
 
     this.updateLabelOffsets();
