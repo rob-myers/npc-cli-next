@@ -246,12 +246,14 @@ export default function WorldView(props) {
         return;
       }
 
+      // 🔔 does not account for npc shader translation (on teleport)
       const res = w.e.getRaycastIntersection(e, decoded);
-
+      
       if (res === null) {
         return;
       }
 
+      // 🤔 npc faceIndex could induce `Key.SkinPart` e.g. "head-front" or "body-left"
       const position = v3Precision(decoded.picked === 'npc'
         ? w.n[decoded.npcKey].position.clone()
         : res.intersection.point.clone()
