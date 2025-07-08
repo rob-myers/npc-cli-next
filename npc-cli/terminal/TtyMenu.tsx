@@ -115,12 +115,12 @@ export default function TtyMenu(props: Props) {
       </div>
       
       <div className="touch-menu">
-        {isTouchDevice() && <div
+        <div
           className={cx("icon can-type", { enabled: state.xterm.canType() })}
           title={`text input ${state.xterm.canType() ? "enabled" : "disabled"}`}
         >
           $
-        </div>}
+        </div>
         <div className="icon paste" title="or press e.g. Cmd+V">
           paste
         </div>
