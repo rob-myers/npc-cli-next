@@ -391,10 +391,14 @@ export class ttyShellClass implements Device {
 
   private storeSrcLine(srcLine: string) {
     const prev = this.history.pop();
-    prev && this.history.push(prev);
+    if (prev !== undefined) {
+      this.history.push(prev);
+    }
     if (prev !== srcLine) {
       this.history.push(srcLine);
-      while (this.history.length > this.maxLines) this.history.shift();
+      while (this.history.length > this.maxLines) {
+        this.history.shift();
+      }
       useSession.api.persistHistory(this.sessionKey);
     }
   }
@@ -413,6 +417,8 @@ export class ttyShellClass implements Device {
           const errMsg = `mvdan-sh: ${result.error.replace(/^src\.sh:/, "")}`;
           error(errMsg);
           this.io.write({ key: "error", msg: errMsg });
+          // also mvdan-sh parse errors in history
+          this.storeSrcLine(this.buffer.join('\n'));
           this.buffer.length = 0;
           this.prompt("$");
           break;
