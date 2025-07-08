@@ -99,10 +99,11 @@ export default function Floor(props) {
       drawPolygons(ct, shadowPolys, ['#101010', null]);
 
       // walls
-      // drawPolygons(ct, gm.walls, ['#000', null]);
-      const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
-      drawPolygons(ct, walls2[0], ['#000', null]);
-      drawPolygons(ct, walls2[1], ['#444', null]);
+      drawPolygons(ct, gm.walls, ['#000', null]);
+      // 🚧 drawn in front of walls seems visible when lighter
+      // const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
+      // drawPolygons(ct, walls2[0], ['#000', null]);
+      // drawPolygons(ct, walls2[1], ['#444', null]);
     },
     drawGmLight(gmKey) {
       const { ct } = w.texFloorLight;
@@ -149,18 +150,7 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    setTorchTarget(positionRef) {
-      state.torchTarget = positionRef;
-      state.syncUniforms();
-    },
-    syncUniforms() {
-      const material = state.inst.material;
-      const uniforms = /** @type {import("../types/glsl").InstancedFloorUniforms} */ (
-        material.uniforms
-      );
-      uniforms.torchData.value = state.torchData;
-      uniforms.torchTarget.value = state.torchTarget;
-    },
+
   }), { reset: { smallGrid: false, largeGrid: false, torchData: true } });
 
   w.floor = state;
@@ -169,7 +159,6 @@ export default function Floor(props) {
     state.positionInstances();
     state.addUvs();
     state.drawRadialLight();
-    if (state.inst?.material) state.syncUniforms(); // hmr
     state.draw().then(() => w.update());
   }, [w.texVs.floor]);
 
@@ -193,9 +182,6 @@ export default function Floor(props) {
 
         lightAtlas={w.texFloorLight.tex}
         showLights={w.crowd !== null && state.showLights === true}
-        torchData={state.torchData}
-        torchTarget={state.torchTarget}
-        torchTexture={state.radialTex}
       />
     </instancedMesh>
   );
@@ -223,8 +209,6 @@ export default function Floor(props) {
  * @property {(gmKey: Key.Geomorph) => void} drawGmLight
  * @property {() => void} drawRadialLight
  * @property {() => void} positionInstances
- * @property {(positionRef: THREE.Vector3) => void} setTorchTarget
- * @property {() => void} syncUniforms
  */
 
 const tmpMat1 = new Mat();

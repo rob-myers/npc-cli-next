@@ -12,7 +12,6 @@ const humanZeroShader = {
   uniform int selectorTriIds[2];
 
   uniform float opacity; // 🚧 -> teleportRatio
-  uniform float animHeight;
 
   varying float vDotProduct;
   flat varying int triangleId;
@@ -21,10 +20,6 @@ const humanZeroShader = {
   varying float vHeightShade;
   // label=0, body=1, breath=2, selector=3
   flat varying int vType;
-
-  // constant i.e. modelMatrix[3].y
-  flat varying float vBaseY;
-  varying float vY;
 
   #include <common>
   #include <uv_pars_vertex>
@@ -57,9 +52,6 @@ const humanZeroShader = {
     #include <skinning_vertex>
     vec4 mvPosition;
 
-    // global ground y (constant)
-    vBaseY = modelMatrix[3].y;
-
     if (vType == 0) {// label quad
 
       // label quad is above head and faces camera
@@ -70,11 +62,11 @@ const humanZeroShader = {
       
     } else {// everything else
 
-      // move body down
       if (vType == 1) {
-        transformed.y -= animHeight * (1. - opacity);
-        // transformed.x *= max(opacity, 0.2);
-        // transformed.z *= max(opacity, 0.2);
+        // transformed.y *= 1.0 / opacity;
+        // transformed.y *= opacity;
+        transformed.x *= opacity * opacity;
+        transformed.z *= opacity * opacity;
       }
 
       mvPosition = modelViewMatrix * vec4(transformed, 1.0);
@@ -84,8 +76,6 @@ const humanZeroShader = {
       vec3 lightDir = -normalize(mvPosition.xyz);
       vDotProduct = dot(transformedNormal, lightDir);
     }
-    
-    vY = (modelMatrix * vec4(transformed, 1.0)).y;
 
     gl_Position = projectionMatrix * mvPosition;
     #include <logdepthbuf_vertex>
@@ -120,10 +110,6 @@ const humanZeroShader = {
   varying vec2 vUv;
   varying float vHeightShade;
   flat varying int vType;
-
-  // constant i.e. modelMatrix[3].y
-  flat varying float vBaseY;
-  varying float vY;
 
   #include <common>
   #include <uv_pars_fragment>
@@ -173,7 +159,7 @@ const humanZeroShader = {
 
       if (!invert) {
         // 🌞 flat shading via vDotProduct
-        float ambientLight = 0.2;
+        float ambientLight = 0.15;
         tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
       } else {// invert, making selector more visible
         tint = vec4(vec3(vType == 3 ? 4.0 : 0.8), tint.a);
@@ -198,14 +184,10 @@ const humanZeroShader = {
       discard; // comment out to debug label dimensions
     }
 
-    if (vType == 1) {
-      // hide body through portal at vBaseY
-      if (vY < vBaseY) discard;
-      // 🔔 fade body: walls instanced mesh order issue not so apparent
+    if (vType >= 2) {// fade except label and body
       gl_FragColor.a *= opacity;
-      // gl_FragColor *= opacity;
-    } else {// fade everything else
-      gl_FragColor.a *= opacity;
+    } else if (vType == 1) {// fade and blacken body
+      gl_FragColor *= opacity;
     }
   }
   `,
@@ -213,7 +195,6 @@ const humanZeroShader = {
 
 /** @type {import('@/npc-cli/types/glsl').HumanZeroMaterialProps} */
 const humanZeroMaterialDefaultProps = {
-  animHeight: 1,
   atlas: emptyDataArrayTexture,
   aux: emptyDataArrayTexture,
   globalAux: emptyDataArrayTexture,
@@ -565,8 +546,6 @@ const instancedFloorShader = {
 
     uniform sampler2DArray lightAtlas;
     uniform bool showLights;
-    uniform vec3 torchTarget;
-    uniform sampler2D torchTexture;
 
     uniform float alphaTest;
     uniform sampler2DArray atlas;
@@ -579,8 +558,6 @@ const instancedFloorShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
-    flat varying vec3 vTorchData; // (radius, intensity, opacity)
-    varying vec2 vTorchUv;
 
     #include <common>
     #include <logdepthbuf_pars_fragment>
@@ -613,10 +590,10 @@ const instancedFloorShader = {
         float lighter = clamp(4.0 * lightTexel.w, 1.0, 3.0);
         gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
       } else {
-        gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 1.0;
+        gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 2.0;
       }
-      
       #include <logdepthbuf_fragment>
+      
     }
   
   `,
@@ -627,9 +604,6 @@ const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
   lightAtlas: emptyDataArrayTexture,
   showLights: false,
-  torchData: new THREE.Vector3(),
-  torchTarget: new THREE.Vector3(),
-  torchTexture: /** @type {*} */ (null), // THREE.CanvasTexture
 };
 
 /**
@@ -780,6 +754,7 @@ const instancedWallsShader = {
     }
     
     gl_FragColor = vec4(diffuse, min(opacity * vOpacityScale, opacityMin));
+    // gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
     #include <logdepthbuf_fragment>
   }
   `,

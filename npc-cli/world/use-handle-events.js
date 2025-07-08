@@ -723,6 +723,7 @@ export default function useHandleEvents(w) {
       anim.set_t(0);
       anim.set_tmid(tmid);
       anim.set_tmax(tmax);
+
       delta.normalize();
       anim.set_unitExitVel(0, delta.x);
       anim.set_unitExitVel(1, 0);

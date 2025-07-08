@@ -111,7 +111,7 @@ export default function Obstacles(props) {
       args={[state.quad, undefined, w.gmsData.obstaclesCount]}
       frustumCulled={false}
       position={[0, 0.001, 0]} // 🚧
-      renderOrder={-1}
+      renderOrder={0}
     >
       <instancedAtlasMaterial
         key={glsl.InstancedAtlasMaterial.key}

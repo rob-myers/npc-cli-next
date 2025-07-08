@@ -111,7 +111,7 @@ export default function Ceiling(props) {
       ref={state.ref('inst')}
       args={[w.floor.quad, undefined, w.gms.length]} // 🔔 reuse floor quad
       position={[0, wallHeight, 0]}
-      renderOrder={3}
+      renderOrder={4}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
       <instancedAtlasMaterial
@@ -119,10 +119,12 @@ export default function Ceiling(props) {
         side={THREE.DoubleSide}
         transparent
         atlas={tex}
-        alphaTest={0.1} opacity={state.opacity} depthWrite={false}
+        alphaTest={0.1}
+        opacity={state.opacity}
+        depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
         objectPickRed={3}
-        opacityCloseDivisor={18}
+        opacityCloseDivisor={20}
       />
     </instancedMesh>
   );

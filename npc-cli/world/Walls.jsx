@@ -121,12 +121,13 @@ export default function Walls(props) {
       args={[state.quad, undefined, w.gmsData.wallCount]}
       frustumCulled={false}
       // ℹ️ for transparency
-      renderOrder={transparent ? 3 : undefined}
+      renderOrder={transparent ? 2 : undefined}
     >
       {/* <meshBasicMaterial side={THREE.DoubleSide} color="#866" wireframe /> */}
       <instancedWallsMaterial
         key={InstancedWallsMaterial.key}
         alphaTest={0}
+        // side={THREE.DoubleSide}
         diffuse={[0, 0, 0]}
         depthWrite={!transparent}
         transparent={transparent}

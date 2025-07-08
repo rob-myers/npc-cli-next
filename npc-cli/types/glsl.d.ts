@@ -62,8 +62,6 @@ export interface HumanZeroMaterialProps {
   labelTriIds: number[];
   selectorTriIds: number[];
   labelUvRect4: Vector4Input;
-  /** For teleport downwards/upwards through model base  */
-  animHeight: number;
 }
 
 export interface InstancedAtlasProps {
@@ -91,10 +89,6 @@ export interface InstancedFlatProps {
 export interface InstancedFloorProps extends InstancedAtlasProps {
   lightAtlas: import('three').DataArrayTexture;
   showLights?: boolean;
-  /** (radius, intensity, opacity) */
-  torchData: import('three').Vector3;
-  torchTarget: import('three').Vector3;
-  torchTexture: import('three').CanvasTexture;
 }
 
 export type InstancedFloorKeys = keyof InstancedFloorProps;

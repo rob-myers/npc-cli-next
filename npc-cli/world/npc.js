@@ -58,7 +58,6 @@ export function createBaseNpc(def, w) {
     rotation: tmpEulerThree,
     /** Difference between last position */
     delta: new THREE.Vector3(),
-    animHeight: 1,
   
     /**
      * Amounts to "uv re-mapping".
@@ -518,7 +517,7 @@ export class NpcApi {
    */
   async fadeSpawn(at, opts = {}) {
     try {
-      await this.fade(0, 300);
+      await this.fade(0, 200);
 
       const currPoint = this.getPoint();
       const dx = at.x - currPoint.x;
@@ -534,7 +533,7 @@ export class NpcApi {
         npcKey: this.key,
       });
     } finally {
-      await this.fade(1, 300);
+      await this.fade(1, 150);
     }
   }
 
@@ -1242,7 +1241,6 @@ export class NpcApi {
     if (this.s.offMesh !== null) {
       const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
       agentAnim.set_t(0);
-      // agentAnim.set_t(this.s.offMesh.anim.tmid);
       agentAnim.set_tmid(this.s.offMesh.anim.tmid);
       agentAnim.set_tmax(this.s.offMesh.anim.tmax);
     }
@@ -1338,7 +1336,7 @@ export class NpcApi {
   }
 
   /**
-   * @param {'animHeight' | 'opacity' | 'labelY'} name 
+   * @param {'opacity' | 'labelY'} name 
    * @param {number} value 
    */
   setUniform(name, value) {
@@ -1378,8 +1376,6 @@ export class NpcApi {
     this.s.anim = input;
     const meta = npcClassToMeta[this.def.classKey];
     this.base.mixer.timeScale = meta.timeScale[input] ?? 1;
-    this.base.animHeight = meta.height[input] ?? 1;
-    this.setUniform('animHeight', this.base.animHeight);
 
     this.updateLabelOffsets();
   }
