@@ -195,7 +195,7 @@ const carouselCss = css`
   
   border: 1px solid #aaa;
   border-radius: var(--slider-border-radius);
-  background-color: #444;
+  /* background-color: #444; */
   
   @media (max-width: ${mobileBreakpoint}) {
     background-color: #ddd;
@@ -256,7 +256,7 @@ const carouselCss = css`
     bottom: 0;
     display: flex;
     justify-content: space-between;
-    width: 100%;
+    width: calc(100% - 32px);
     padding: 0 8px;
     margin-bottom: 16px;
     pointer-events: none;
