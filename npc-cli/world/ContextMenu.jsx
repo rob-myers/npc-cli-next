@@ -146,8 +146,7 @@ export function ContextMenu() {
     },
     onWheel(e) {
       e.stopPropagation();
-      e.preventDefault();
-      if (state.canScroll() === false) {
+      if (state.canScroll() === false && w.touchDevice === false) {
         // if no vertical scroll, pass scroll through to canvas (i.e. zoom)
         w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
       }
