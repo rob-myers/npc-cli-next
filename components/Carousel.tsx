@@ -195,8 +195,8 @@ const carouselCss = css`
   
   border: 1px solid #aaa;
   border-radius: var(--slider-border-radius);
+  background-color: #444;
   
-  background-color: #fff;
   @media (max-width: ${mobileBreakpoint}) {
     background-color: #ddd;
   }
@@ -221,6 +221,7 @@ const carouselCss = css`
     display: flex;
     padding: 0;
   }
+
   .embla__slide {
     position: relative;
     flex: 0 0 calc(100% / var(--slider-slidesToScroll));
@@ -228,7 +229,7 @@ const carouselCss = css`
     margin-right: var(--slide-spacing);
     border-radius: var(--slider-border-radius);
     border: 1px dotted #fff4;
-    background-color: #fff;
+    background-color: #222;
 
     display: flex;
     flex-direction: column;
@@ -255,7 +256,8 @@ const carouselCss = css`
     bottom: 0;
     display: flex;
     justify-content: space-between;
-    width: calc(100% - 2 * var(--slider-next-button-width));
+    width: 100%;
+    padding: 0 8px;
     margin-bottom: 16px;
     pointer-events: none;
   }
@@ -278,8 +280,8 @@ const carouselCss = css`
 
     pointer-events: all;
 
-    color: #fff;
-    background-color: #222;
+    color: #000;
+    background-color: #fff;
     border-radius: 50%;
     border: 1px solid #778;
   }
@@ -306,7 +308,7 @@ const carouselCss = css`
       font-size: 0.9rem;
     }
     
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: #222;
 
     > div {
       display: -webkit-box;
@@ -330,6 +332,7 @@ const carouselCss = css`
     position: absolute;
     bottom: 0;
     height: var(--slider-dots-height);
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
