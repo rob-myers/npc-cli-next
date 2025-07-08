@@ -79,7 +79,7 @@
 
 ### World
 
-- 🚧 can pause and turn before moving
+- ✅ can pause and turn before moving
   - ℹ️ we could trigger such turns when next target is not in same room
   - ✅ try set maxSpeed 0 before "next pending target"
   - ℹ️ when maxSpeed 0 before offMesh seems recastnavigation `agentAnim.tmax` is Infinity
@@ -88,15 +88,15 @@
     - if we override but set `tmid` and `tmax` as Infinity then it initially pauses
   - ✅ only trigger on enter offMesh with large deltaAngle
   - ✅ resume after given ms
-  - 🚧 clean
-    - 🚧 npc shader uniform opacity -> teleportRatio
 
 - ✅ release do point on move from chair to chair
 - ✅  can move and do (1st attempt)
   - `local pts=$( click 2 ); move npcKey:rada to:$( pts/0 ) && w n.rada.api.do $( pts/1 ) )`
-- 🚧 deltaMs -> deltaSecs
 
-- 🚧 npc fading issue
+- 🚧 deltaMs -> deltaSecs
+  - seen inside npc.js
+
+- ✅ npc fading issue
   - ℹ️ MUST have npc (non-transparent) sometimes behind walls (transparent)
   - ℹ️ BUT then fading npc appears to be behind walls when it isn't
   - ℹ️ issue arises because walls are instanced meshes
@@ -104,7 +104,7 @@
   - ✅ combined with opacity instanced mesh ordering issue not apparent
   - https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
   - ✅ provide unscaled animHeight as uniform
-  - 🚧 clean
+  - ✅ clarify that npc shader uniform opacity is "teleport ratio"
 
 - ✅ Manage: can collapse/expands Tabs, Create, Layout
 

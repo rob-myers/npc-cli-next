@@ -54,6 +54,12 @@ export interface HumanZeroMaterialProps {
   labelY: number;
   /* A default value must be provided for object-pick to work */
   objectPick?: boolean;
+  /**
+   * NPC opacity does not work well with semi-transparent instanced mesh walls.
+   * Instead, `opacity` refers to the "teleport ratio" which amounts to:
+   * - selector opacity
+   * - body scale factors (x and z)
+   */
   opacity: number;
   uid: number;
 
