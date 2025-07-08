@@ -12,9 +12,11 @@ import useUpdate from '@/npc-cli/hooks/use-update';
 
 export default function Carousel(props: Props) {
 
-  // 🚧 for better hmr move inwards into own component
+  const initSlideId = React.useRef(0);
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
+    startIndex: initSlideId.current,
     // slidesToScroll: props.slidesToScroll,
     // slidesToScroll: 'auto',
   }, []);
@@ -22,7 +24,7 @@ export default function Carousel(props: Props) {
   const update = useUpdate();
 
   const state = useStateRef(() => ({
-    currentSlide: 0,
+    currentSlide: initSlideId.current,
     snapList: [] as number[],
 
     initDots() {
@@ -52,7 +54,10 @@ export default function Carousel(props: Props) {
       .on('reInit', state.initDots)
       .on('reInit', state.onSelect)
       .on('select', state.onSelect)
-      ;
+    ;
+
+    // 🔔 fix hmr
+    return () => void (initSlideId.current = state.currentSlide);
   }, [emblaApi, props.items]);
 
   return (
@@ -80,24 +85,22 @@ export default function Carousel(props: Props) {
         <div className="embla__container">
           {props.items.map((item, index) => (
             <div className="embla__slide" key={index}>
-              <div className='embla__slide-inner'>
-                {'img' in item
-                  ? <Image
-                      src={item.img.src}
-                      width={item.img.width}
-                      height={item.img.height}
-                      alt={item.label}
-                      style={{ objectPosition: item.objectPosition }}
-                      priority={index === state.currentSlide}
-                    />
-                  : item.component
-                }
-              </div>
               <div className="slide-label">
                 <div>
                   {item.label}
                 </div>
               </div>
+              {'img' in item
+                ? <Image
+                    src={item.img.src}
+                    width={item.img.width}
+                    height={item.img.height}
+                    alt={item.label}
+                    style={{ objectPosition: item.objectPosition }}
+                    priority={index === state.currentSlide}
+                  />
+                : item.component
+              }
             </div>
           ))}
         </div>
@@ -182,7 +185,6 @@ const carouselCss = css`
   
   user-select: none;
   margin: 48px 0;
-  /* padding: 80px 48px 16px 48px; */
   padding: 8px;
 
   @media (max-width: ${mobileBreakpoint}) {
@@ -228,21 +230,14 @@ const carouselCss = css`
     border: 1px dotted #fff4;
     background-color: #fff;
 
-    .embla__slide-inner {
-      height: 100%;
-      border: 48px solid rgba(0,0,0,0);
-      border-width: 64px 32px;
-      
-      @media (max-width: ${mobileBreakpoint}) {
-        border-width: 64px 0;
-      }
-    }
+    display: flex;
+    flex-direction: column;
 
-    .embla__slide-inner > * {
+    /* slide content */
+    >:nth-child(2) {
       margin: 0;
-      height: 100%;
       object-fit: cover;
-      border-bottom: 16px solid #444;
+      border: 1px solid #5557;
     }
   }
 
@@ -287,13 +282,12 @@ const carouselCss = css`
   }
 
   .slide-label {
-    position: absolute;
     top: 0;
     width: 100%;
+    min-height: 64px;
     height: 64px;
     overflow: hidden;
 
-    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -304,6 +298,8 @@ const carouselCss = css`
       font-size: 0.9rem;
     }
     
+    background-color: rgba(0, 0, 0, 0.75);
+
     > div {
       display: -webkit-box;
       /* 🔔 padding-top can cause errors i.e. can see part of next hidden line */
@@ -312,8 +308,8 @@ const carouselCss = css`
       overflow: hidden;
       user-select: text;
       
-      padding: 0 16px;
-      /* color: white; */
+      /* padding: 0 32px; */
+      color: white;
       letter-spacing: 1px;
     }
 

@@ -37,7 +37,6 @@ const rootCss = css`
 
   margin: 0;
   border: 1px solid var(--page-border-color);
-  background-color: black;
 
   > span.anchor {
     position: absolute;
@@ -59,11 +58,16 @@ const rootCss = css`
   .spacing {
     min-height: 64px;
   }
+
+  .yt-lite {
+    background-color: unset;
+  }
 `;
 
 const videoLookup = {
   mobileDemo: { id: 'WIIihWnOQ2E', title: 'mobile demo' },
   desktopDemo: { id: 'yDbGkW2umw4', title: 'desktop demo' },
+  desktopDemo2: { id: 'w7P0FtfB4L4', title: 'desktop demo 2' },
 };
 
 /** @typedef {keyof typeof videoLookup} VideoKey */
