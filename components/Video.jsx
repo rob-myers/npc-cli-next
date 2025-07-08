@@ -50,6 +50,7 @@ const rootCss = css`
     background-repeat: no-repeat;
     
     max-height: calc(100% - 128px);
+    min-height: 100%;
     @media(max-width: 600px) {
       max-height: unset;
     }

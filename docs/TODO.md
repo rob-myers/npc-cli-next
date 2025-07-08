@@ -17,7 +17,7 @@
 - ✅ better desktop video dimensions
   - use OSX Screenshot
 - ✅ fix Video style in Carousel (part 1)
-- 🚧 fix Video style in Carousel (part 2)
+- ✅ fix Video style in Carousel (part 2)
 - 🚧 start code much earlier
 - change writing style i.e. more intertwined with stories
 

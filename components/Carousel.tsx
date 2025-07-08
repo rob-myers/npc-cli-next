@@ -236,8 +236,15 @@ const carouselCss = css`
     /* slide content */
     >:nth-child(2) {
       margin: 0;
-      object-fit: cover;
       border: 1px solid #5557;
+      height: calc(100% - 64px - 64px);
+      
+      border-radius: 0 0 8px 8px;
+      iframe {
+        border-radius: 0 0 8px 8px;
+      }
+
+      object-fit: cover;
     }
   }
 
