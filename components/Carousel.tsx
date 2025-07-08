@@ -229,7 +229,7 @@ const carouselCss = css`
     margin-right: var(--slide-spacing);
     border-radius: var(--slider-border-radius);
     border: 1px dotted #fff4;
-    background-color: #222;
+    /* background-color: #222; */
 
     display: flex;
     flex-direction: column;
@@ -309,6 +309,7 @@ const carouselCss = css`
     }
     
     background-color: #222;
+    border-radius: var(--slider-border-radius) var(--slider-border-radius) 0 0;
 
     > div {
       display: -webkit-box;
