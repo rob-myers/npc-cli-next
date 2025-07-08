@@ -98,6 +98,7 @@ export function ContextMenu() {
       }
     },
     onPointerDown(e) {
+      e.stopPropagation();
       state.downAt = { x: e.clientX, y: e.clientY };
     },
     onPointerUp(e) {
@@ -144,6 +145,8 @@ export function ContextMenu() {
       }
     },
     onWheel(e) {
+      e.stopPropagation();
+      e.preventDefault();
       if (state.canScroll() === false) {
         // if no vertical scroll, pass scroll through to canvas (i.e. zoom)
         w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
