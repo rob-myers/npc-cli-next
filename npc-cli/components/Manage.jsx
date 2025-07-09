@@ -142,71 +142,73 @@ export default function Manage(props) {
           const disabled = tabMeta?.disabled === true;
           const unmounted = tabMeta === undefined;
 
-          return <li key={tabId} data-tab-id={tabId}>
-            {i === 0 && (
-              <span
-                className="title"
-                onClick={state.toggleShown}
-              >
-                Tabs
-              </span>
-            )}
-            <span className="tab-def">
-              <span className="tab-status-and-id">
-                <span className="tab-status">
-                  {(
-                    disabled === true && <FontAwesomeIcon title="disabled" icon={faPause} size="1x" />
-                    || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlug} size="1x" />
-                    || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
+          return (
+            <li key={tabId} data-tab-id={tabId}>
+              {i === 0 && (
+                <span
+                  className="title"
+                  onClick={state.toggleShown}
+                >
+                  Tabs
+                </span>
+              )}
+              <span className="tab-def">
+                <span className="tab-status-and-id">
+                  <span className="tab-status">
+                    {(
+                      disabled === true && <FontAwesomeIcon title="disabled" icon={faPause} size="1x" />
+                      || unmounted === true && <FontAwesomeIcon title="unmounted" icon={faPlug} size="1x" />
+                      || <FontAwesomeIcon title="enabled" icon={faCheck} size="1x" />
+                    )}
+                  </span>
+                  <button
+                    className="tab-id"
+                    data-tab-id={tabId}
+                    onClick={state.selectTab}
+                  >
+                    {def.filepath}
+                  </button>
+                </span>
+                <span className="tab-def-options">
+                  {def.type === 'terminal' && <>
+                    <span
+                      className="sync-world-key"
+                      onClick={state.syncWorldKey}
+                    >
+                      {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
+                    </span>
+                    <select
+                      value={def.profileKey}
+                      onChange={state.changeTtyProfile}
+                    >
+                      {helper.profileKeys.map(profileKey =>
+                        <option key={profileKey} value={profileKey}>{profileKey}</option>
+                      )}
+                    </select>
+                  </>}
+                  {def.type === 'component' && def.class === 'World' && (
+                    <select
+                      defaultValue={def.props.mapKey}
+                      onChange={state.setMapKey}
+                    >
+                      {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
+                    </select>
                   )}
                 </span>
-                <button
-                  className="tab-id"
-                  data-tab-id={tabId}
-                  onClick={state.selectTab}
-                >
-                  {def.filepath}
-                </button>
               </span>
-              <span className="tab-def-options">
-                {def.type === 'terminal' && <>
-                  <span
-                    className="sync-world-key"
-                    onClick={state.syncWorldKey}
-                  >
-                    {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
-                  </span>
-                  <select
-                    value={def.profileKey}
-                    onChange={state.changeTtyProfile}
-                  >
-                    {helper.profileKeys.map(profileKey =>
-                      <option key={profileKey} value={profileKey}>{profileKey}</option>
-                    )}
-                  </select>
-                </>}
-                {def.type === 'component' && def.class === 'World' && (
-                  <select
-                    defaultValue={def.props.mapKey}
-                    onChange={state.setMapKey}
-                  >
-                    {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
-                  </select>
-                )}
-              </span>
-            </span>
-            <button
-              onClick={state.closeTab}
-              data-tab-id={tabId}
-            >
-              <FontAwesomeIcon
-                className="close-tab"
-                color="#f66"
-                icon={faClose}
-                size="1x"
-              />
-            </button>
-          </li>
+              <button
+                onClick={state.closeTab}
+                data-tab-id={tabId}
+              >
+                <FontAwesomeIcon
+                  className="close-tab"
+                  color="#f66"
+                  icon={faClose}
+                  size="1x"
+                />
+              </button>
+            </li>
+          );
         })}
       </ul>
 
@@ -360,7 +362,7 @@ const manageCss = css`
     justify-content: space-between;
     align-items: stretch;
     gap: 8px;
-    color: #aac;
+    color: white;
 
     .tab-status-and-id {
       display: flex;
@@ -392,7 +394,7 @@ const manageCss = css`
       gap: 8px;
     }
     .tab-id {
-      color: white;
+      color: #aac;
       text-wrap: nowrap;
     }
     .tab-create-def {
@@ -430,6 +432,7 @@ const manageCss = css`
         align-items: center;
         min-width: 60px;
         font-size: small;
+        font-style: italic;
         cursor: pointer;
       }
         
