@@ -1,7 +1,7 @@
 import { queryClient } from "./query-client";
 import { info, isDevelopment, parseJsonArg, pause, warn } from "./generic";
 
-export const DEV_ENV_PORT = 3000;
+export const DEV_ENV_PORT = process.env.DEV_ENV_PORT;
 
 export const DEV_ORIGIN = 'localhost';
 
