@@ -713,7 +713,7 @@ export class NpcApi {
 
     // look further along the path
     // 🔔 with 0.2 saw jerk when two agents through doorway
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.8);
     const dirX = lookAt.x - this.base.position.x;
     const dirY = lookAt.y - this.base.position.z;
     const radians = geom.clockwiseFromNorth(dirY, dirX);
