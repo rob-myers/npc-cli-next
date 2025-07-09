@@ -25,7 +25,7 @@ export default function Carousel(props: Props) {
       modules={[Navigation, Pagination]}
       navigation={{ enabled: true }}
       onSwiper={api => state.swiper = api}
-      pagination={{ clickable: true, dynamicBullets: false }}
+      pagination={{ clickable: true, type: 'fraction', dynamicBullets: false }}
       slidesPerView={props.slidesPerView ?? 1}
       spaceBetween={50}
       style={{
