@@ -17,7 +17,7 @@ export default function Video(props) {
 
   return (
     <figure
-      css={rootCss}
+      css={videoCss}
       className="video"
     >
       {iframeAdded === false && typeof props.label !== undefined && <label>
@@ -38,7 +38,7 @@ export default function Video(props) {
  * @property {React.ReactElement} [label]
  */
 
-const rootCss = css`
+const videoCss = css`
   position: relative;
   width: 100%;
   height: 100%;
@@ -59,6 +59,7 @@ const rootCss = css`
     background-color: #2228;
     color: white;
     border-radius: 8px;
+    border: 1px solid #7777;
   }
 
   article {
