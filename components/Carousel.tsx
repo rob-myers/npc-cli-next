@@ -47,6 +47,8 @@ interface Props extends Pick<SwiperProps, 'slidesPerView'> {
 }
 
 const carouselCss = css`
+  --pagination-height: 48px;
+
   height: var(--slider-height);
   margin: 48px 0;
   
@@ -56,7 +58,7 @@ const carouselCss = css`
   }
 
   .swiper-slide {
-    height: calc(100% - 28px);
+    height: calc(100% - var(--pagination-height));
 
     display: flex;
     justify-content: center;
@@ -71,7 +73,12 @@ const carouselCss = css`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 28px;
+    height: var(--pagination-height);
+
+    gap: 8px;
+    @media (max-width: ${mobileBreakpoint}) {
+      gap: 12px;
+    }
 
     border: 1px solid #9997;
     background-color: white;
