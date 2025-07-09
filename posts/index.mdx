@@ -8,6 +8,7 @@ export const metadata = {
   tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
 };
 
+import Carousel, { SwiperSlide } from '../components/Carousel';
 import CarouselOld from '../components/CarouselOld';
 import Image from 'next/image';
 import Code from '../components/Code';
@@ -38,10 +39,15 @@ the questions are video game interactions.
 Can the NPCs fool the Player? <SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
 
-{/* <SideNote>
-  Imagine a human hired to "play the part" of an NPC,
-  rather than another human Player.
-</SideNote> */}
+<Carousel
+  height={600}
+  heightMobile={400}
+  items={[
+    <Video videoKey='desktopDemo2' />,
+    '2',
+    '3',
+  ]}
+/>
 
 <CarouselOld
   items={[
