@@ -18,6 +18,9 @@ export default function Video(props) {
       className="video"
       style={{ height: props.height }}
     >
+      {typeof props.label !== undefined && <label>
+        {props.label}
+      </label>}
       <EmbeddedVideo id={meta.id} title={meta.title} /> 
     </figure>
   );
@@ -26,21 +29,31 @@ export default function Video(props) {
 /**
  * @typedef Props
  * @property {VideoKey} videoKey
+ * @property {React.ReactElement} [label]
  * @property {number | string} [height]
  */
 
 const rootCss = css`
   position: relative;
+  width: 100%;
+  height: 100%;
+
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  margin: 0;
+  /* margin: 0; */
   border: 1px solid var(--page-border-color);
 
-  > span.anchor {
+  label {
     position: absolute;
-    top: -48px;
+    z-index: 1;
+    top: 16px;
+    padding: 0 16px;
+    background-color: #2228;
+    color: white;
+    border-radius: 8px;
   }
 
   article {
@@ -54,15 +67,6 @@ const rootCss = css`
     @media(max-width: 600px) {
       max-height: unset;
     }
-  }
-
-  .spacing {
-    min-height: 64px;
-  }
-
-  .yt-lite {
-    background-color: unset;
-    /* background-color: black; */
   }
 `;
 

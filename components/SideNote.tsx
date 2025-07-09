@@ -177,7 +177,7 @@ const speechBubbleCss = css`
 
   .info {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
 
     visibility: hidden;
     white-space: normal;

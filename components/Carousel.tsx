@@ -1,5 +1,5 @@
 "use client";
-import { Swiper, type SwiperClass, SwiperSlide } from 'swiper/react';
+import { Swiper, type SwiperClass, type SwiperProps, SwiperSlide } from 'swiper/react';
 
 import { Navigation, Pagination } from 'swiper/modules';
 import { css } from '@emotion/react';
@@ -20,18 +20,17 @@ export default function Carousel(props: Props) {
   return (
     <Swiper
       css={carouselCss}
-      loop
+      loop={props.items.length > 2}
+      centeredSlides
       modules={[Navigation, Pagination]}
-      navigation
+      navigation={{ enabled: true }}
       onSwiper={api => state.swiper = api}
-      pagination={{ clickable: true }}
-      slidesPerView={1}
+      pagination={{ clickable: true, dynamicBullets: false }}
+      slidesPerView={props.slidesPerView ?? 1}
       spaceBetween={50}
       style={{
-        ...props.height && {
-          ['--slider-height' as any]: `${props.height}px`,
-          ['--slider-height-mobile' as any]: `${props.heightMobile ?? props.height}px`,
-        },
+        ['--slider-height' as any]: `${props.height}px`,
+        ['--slider-height-mobile' as any]: `${props.heightMobile ?? props.height}px`,
       }}
     >
       {props.items.map((child, index) =>
@@ -41,8 +40,8 @@ export default function Carousel(props: Props) {
   );
 }
 
-interface Props {
-  height?: number;
+interface Props extends Pick<SwiperProps, 'slidesPerView'> {
+  height: number;
   heightMobile?: number;
   items: React.ReactElement[];
 }
@@ -50,26 +49,32 @@ interface Props {
 const carouselCss = css`
   height: var(--slider-height);
   margin: 48px 0;
-  @media (max-width: ${mobileBreakpoint}) {
-    margin: 32px 0;
-  }
   
   @media (max-width: ${mobileBreakpoint}) {
     height: var(--slider-height-mobile);
+    margin: 32px 0;
   }
 
   .swiper-slide {
+    height: calc(100% - 28px);
+
     display: flex;
     justify-content: center;
     align-items: center;
     
-    border: 1px solid #999;
+    border: 1px solid #9997;
+  }
+  
+  .swiper-pagination {
+    bottom: 0;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
 
-    /* 🚧 temp */
-    figure {
-      width: 100%;
-      height: 100%;
-    }
+    border: 1px solid #9997;
+    background-color: white;
   }
 
 `;

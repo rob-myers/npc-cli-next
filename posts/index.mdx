@@ -8,7 +8,8 @@ export const metadata = {
   tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
 };
 
-import Carousel, { SwiperSlide } from '../components/Carousel';
+import Figure from '../components/Figure';
+import Carousel from '../components/Carousel';
 import CarouselOld from '../components/CarouselOld';
 import Image from 'next/image';
 import Code from '../components/Code';
@@ -43,9 +44,32 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   height={600}
   heightMobile={400}
   items={[
-    <Video videoKey='desktopDemo2' />,
-    '2',
-    '3',
+    <Video
+      videoKey='desktopDemo2'
+      label='Desktop demo vid 2'
+    />,
+    <Video
+      videoKey='desktopDemo'
+      label='Desktop demo vid 1'
+    />,
+    <Video
+      videoKey='mobileDemo'
+      label='Mobile demo vid'
+    />,
+    <Figure
+      data={DesktopEmptyWorldWebp}
+      label={<>Our system <em>NPC CLI</em> is built into this site.</>}
+    />,
+    <Figure
+      data={ManyRobsTestWebp}
+      label={<>Our system <em>NPC CLI</em> is built into this site.</>}
+      objectPosition='0% 75%'
+    />,
+    <Figure
+      data={DesktopEmptyWorldWebp}
+      label={<>CLI stands for <em>Command Line Interface.</em></>}
+      objectPosition='0% 70%'
+    />,
   ]}
 />
 
@@ -143,6 +167,16 @@ This blog comes with a Viewer:
 either at the bottom of your screen (mobile devices) or on the right (e.g. desktop).
 You can try dragging the black bar with the grip icon <InlineIcon icon={faGrip} size="1x" />, maximising it <span><InlineIcon icon={faExpandThin} size="1x" /></span> and also making it smaller <InlineIcon icon={faChevronRight} size="1x" />.
 
+<Carousel
+  items={[
+    <Figure data={IdleViewerSmallWiewportWebp} label='Viewer in small viewport' objectPosition='0% 50%' />,
+    <Figure data={IdleViewerLargeWiewportWebp} label='Viewer in large viewport' objectPosition='50% 100%' />,
+  ]}
+  height={600}
+  heightMobile={400}
+  slidesPerView={2}
+/>
+
 <CarouselOld
   items={[
     {
@@ -160,7 +194,7 @@ You can try dragging the black bar with the grip icon <InlineIcon icon={faGrip} 
   heights={{ min: 400, max: 600, maxMobile: 400 }}
   slidesToScroll={2}
 />
-{/* 🚧 need at least 3 items for loop */}
+
 
 ---
 
