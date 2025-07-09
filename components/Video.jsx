@@ -1,10 +1,13 @@
 "use client";
+import React from 'react';
 import { css } from '@emotion/react';
 import LiteYouTubeEmbed from 'react-lite-youtube-embed';
 import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css'
 
 /** @param {Props} props */
 export default function Video(props) {
+
+  const [iframeAdded, setIFrameAdded] = React.useState(false);
 
   const meta = videoLookup[props.videoKey]
 
@@ -16,12 +19,15 @@ export default function Video(props) {
     <figure
       css={rootCss}
       className="video"
-      style={{ height: props.height }}
     >
-      {typeof props.label !== undefined && <label>
+      {iframeAdded === false && typeof props.label !== undefined && <label>
         {props.label}
       </label>}
-      <EmbeddedVideo id={meta.id} title={meta.title} /> 
+      <EmbeddedVideo
+        id={meta.id}
+        onIframeAdded={() => setIFrameAdded(true)}
+        title={meta.title}
+      /> 
     </figure>
   );
 }
@@ -30,7 +36,6 @@ export default function Video(props) {
  * @typedef Props
  * @property {VideoKey} videoKey
  * @property {React.ReactElement} [label]
- * @property {number | string} [height]
  */
 
 const rootCss = css`
@@ -87,6 +92,7 @@ function EmbeddedVideo(props) {
       id={props.id}
       adNetwork={false}
       muted={props.muted}
+      onIframeAdded={props.onIframeAdded}
       params='rel=0' // restrict related to current channel (?)
       playlist={props.playlist}
       playlistCoverId={props.playlistCoverId}
@@ -102,6 +108,7 @@ function EmbeddedVideo(props) {
  * @property {string} id
  * @property {string} title
  * @property {boolean} [muted]
+ * @property {() => void} [onIframeAdded]
  * @property {boolean} [playlist]
  * @property {string} [playlistCoverId]
  */
