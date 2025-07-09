@@ -1,0 +1,152 @@
+export const metadata = {
+  key: 'index',
+  date: '2025-04-05',
+  info: 'Blog Home page',
+  giscusTerm: '/blog',
+  label: 'blog-home',
+  path: '/',
+  tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
+};
+
+import Figure from '../components/Figure';
+import Carousel from '../components/Carousel';
+import Image from 'next/image';
+import Code from '../components/Code';
+import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
+import InlineIcon from '../components/InlineIcon';
+import Video from '../components/Video';
+
+import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
+import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
+import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
+import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-viewport.webp';
+
+# Home
+
+## Intent
+
+This blog is driven by a fun yet challenging problem.
+
+<Card id="underlying-problem"> 
+**Underlying Problem**
+
+Create a video game whose Non-Player Characters behave just like human-controlled characters.
+</Card>
+
+The underlying problem is related to Turing's _Imitation Game_:
+the Player is the interrogator,
+the questions are video game interactions.
+Can the NPCs fool the Player? <SideNote>
+A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
+
+<Carousel
+  height={600}
+  heightMobile={400}
+  items={[
+    <Video
+      videoKey='desktopDemo2'
+      label='Desktop demo vid 2'
+    />,
+    <Video
+      videoKey='desktopDemo'
+      label='Desktop demo vid 1'
+    />,
+    <Video
+      videoKey='mobileDemo'
+      label='Mobile demo vid'
+    />,
+    <Figure
+      data={DesktopEmptyWorldWebp}
+      label={<>Our system <em>NPC CLI</em> is built into this site.</>}
+    />,
+    <Figure
+      data={ManyRobsTestWebp}
+      label={<>Our system <em>NPC CLI</em> is built into this site.</>}
+      objectPosition='0% 75%'
+    />,
+    <Figure
+      data={DesktopEmptyWorldWebp}
+      label={<>CLI stands for <em>Command Line Interface.</em></>}
+      objectPosition='0% 70%'
+    />,
+  ]}
+/>
+
+For the underlying problem to be meaningful,
+"human behaviour" must be expressible.
+- Racing games only permit physical collisions.
+- Abstract puzzle games are also too constrained.
+- Even games with complex environments often only offer *aggressive* NPCs,
+restricted by their time-limited existence.
+
+So let's assume our NPCs can move freely through a 3D environment without time constraints.
+Under this assumption, no known game solves the underlying problem
+(or even comes close). But why?
+
+> Because combining behaviours freely yields state-space explosions.
+
+This already happens in zero player games like [Conway's Game of Life](new-tab:https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
+The number of states becomes too large to effectively explore (e.g. by encoding a Universal Turing Machine).
+How can composite behaviour be resolved if the developer has never encountered it?
+Actually, even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
+Interestingly, we could solve all these problems if we _continually reacted to the Player_.
+Rather than situate them in a prefabrication,
+we could fabricate everything around them, as and when we need to.
+{/* This leads to intermediate objectives: */}
+
+{/* So, we want to continually observe and react to the Player to avoid large inflexible state-spaces. */}
+Solving the underlying problem in this manner would require an "automated director" which observes and reacts.
+But we shouldn't try to run before we can walk.
+Let's assume the game involves two humans: the Player and the Game Master.
+The Game Master will control the game in realtime,
+ideally such that the Player believes each NPC is controlled by an individual human "playing a role".
+This is the underlying problem with a human Game Master.
+
+<Card id="our-problem"> 
+**Our Problem**: _Underlying problem with human Game Master_.
+
+1. Build real-time control systems for NPCs.
+2. Enable a Game Master to act indistinguishably from many humans. <SideNote>
+  A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
+</Card>
+
+
+## Strategy
+
+{/* 🚧 pillars */}
+{/* 🚧 use FE dev env */}
+{/* 🚧 use site: first demo */}
+
+How can we solve [the problem above](#our-problem)?
+Although easier than the [underlying problem](#underlying-problem) it is still very challenging.
+We don't have a solution but rather a strategy for solving it.
+To understand this strategy it is best to see it in action, so let's begin.
+
+This blog comes with a Viewer:
+either at the bottom of your screen (mobile devices) or on the right (e.g. desktop).
+You can try dragging the black bar with the grip icon <InlineIcon icon={faGrip} size="1x" />, maximising it <span><InlineIcon icon={faExpandThin} size="1x" /></span> and also making it smaller <InlineIcon icon={faChevronRight} size="1x" />.
+
+<Carousel
+  items={[
+    <Figure data={IdleViewerSmallWiewportWebp} label='Viewer in small viewport' objectPosition='0% 50%' />,
+    <Figure data={IdleViewerLargeWiewportWebp} label='Viewer in large viewport' objectPosition='50% 100%' />,
+  ]}
+  height={600}
+  heightMobile={400}
+  slidesPerView={2}
+/>
+
+---
+
+
+
+<Code>
+```sh title="test title" caption="test caption" showLineNumbers
+# choose 4 nav points
+click 4 meta.nav &>> points
+# spawn npc with full access
+spawn npcKey:rob at:$( click 1 ) grant:.
+# take a tour
+tour npcKey:rob to:"$( points )" 
+```
+</Code>

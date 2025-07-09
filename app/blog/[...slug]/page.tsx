@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { promises as fs } from "fs";
 import Card from "@/components/Card";
 import SideNote from "@/components/SideNote";
 
@@ -55,15 +56,21 @@ export default async function BlogPage(props: {
 }
 
 export async function generateStaticParams(): Promise<Slug[]> {
-  // 🚧 generate automatically
-  // const posts = await fetch('https://.../posts').then((res) => res.json())
-  // return posts.map((post) => ({
-  //   slug: post.slug,
-  // }))
-  return [
-    { slug: ['index'] }, 
-    { slug: ['strategy-1'] },
-  ];
+  // const blogNames = await fetch(
+  //   new URL(
+  //     '/api/blog-names',
+  //     `http://localhost:${process.env.DEV_ENV_PORT}`,
+  //   )
+  // ).then((res) => res.json()) as string[];
+  // console.log(blogNames);
+
+    const dirEntries = await fs.readdir("posts", { withFileTypes: true });
+    const blogNames = dirEntries
+      .filter((x) => x.isDirectory() === false && x.name.endsWith(".mdx"))
+      .map((x) => x.name.slice(0, -'.mdx'.length))
+    ;
+
+  return blogNames.map(blogName => ({ slug: [blogName] }));
 }
 
 interface Slug {
