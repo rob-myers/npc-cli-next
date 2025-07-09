@@ -25,17 +25,13 @@ import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-view
 Let's begin by spawning an npc and moving it.
 
 <Carousel
-  breakpoints={{
-    800: { slidesPerView: 2 }
-  }}
   height={600}
   heightMobile={400}
   items={[
-    <Video videoKey='desktopDemo2' />,
-    <Video videoKey='mobileDemo' />,
-    <Video videoKey='mobileDemo' />,
+    <Video videoKey='desktopDemo2' label="Desktop demo 2" />,
+    <Video videoKey='mobileDemo' label="Mobile demo" />,
+    <Video videoKey='mobileDemo' label="Mobile demo" />,
   ]}
-  slidesPerView={1}
 />
 
 ---
