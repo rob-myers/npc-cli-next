@@ -226,7 +226,7 @@ const carouselCss = css`
     position: relative;
     flex: 0 0 calc(100% / var(--slider-slidesToScroll));
     
-    margin-right: var(--slide-spacing);
+    /* margin-right: var(--slide-spacing); */
     border-radius: var(--slider-border-radius);
     border: 1px dotted #fff4;
     /* background-color: #222; */

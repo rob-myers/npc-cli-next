@@ -62,6 +62,7 @@ const rootCss = css`
 
   .yt-lite {
     background-color: unset;
+    /* background-color: black; */
   }
 `;
 

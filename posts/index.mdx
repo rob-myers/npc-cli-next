@@ -8,7 +8,7 @@ export const metadata = {
   tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
 };
 
-import Carousel from '../components/Carousel';
+import CarouselOld from '../components/CarouselOld';
 import Image from 'next/image';
 import Code from '../components/Code';
 import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
@@ -43,7 +43,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   rather than another human Player.
 </SideNote> */}
 
-<Carousel
+<CarouselOld
   items={[
     {
       component: (
@@ -137,7 +137,7 @@ This blog comes with a Viewer:
 either at the bottom of your screen (mobile devices) or on the right (e.g. desktop).
 You can try dragging the black bar with the grip icon <InlineIcon icon={faGrip} size="1x" />, maximising it <span><InlineIcon icon={faExpandThin} size="1x" /></span> and also making it smaller <InlineIcon icon={faChevronRight} size="1x" />.
 
-<Carousel
+<CarouselOld
   items={[
     {
       img: IdleViewerSmallWiewportWebp,

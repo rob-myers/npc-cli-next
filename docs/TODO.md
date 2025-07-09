@@ -21,6 +21,10 @@
 - 🚧 start code much earlier
 - change writing style i.e. more intertwined with stories
 
+- 🚧 migrate from embla carousel to swiper js
+  - https://swiperjs.com/get-started
+  - https://swiperjs.com/demos
+
 - ❌ redo images in first carousel
   - ℹ️ https://squoosh.app/editor | size?
     - webp quality 70
