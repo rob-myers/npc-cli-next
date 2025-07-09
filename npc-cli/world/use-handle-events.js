@@ -517,7 +517,9 @@ export default function useHandleEvents(w) {
       );
 
       if (Math.abs(deltaAng) > Math.PI/3) {
-        npc.s.turnBeforeMove = { ms: 400, towards: adjusted.dst };
+        // look towards door entry, or door exit if too close
+        const towards = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src) > 0.1 ? adjusted.src : adjusted.dst;
+        npc.s.turnBeforeMove = { ms: 400, towards };
         // 🔔 setting as Infinity freezes offMeshConnection
         const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (npc.agentAnim);
         agentAnim.set_tmid(Infinity);
