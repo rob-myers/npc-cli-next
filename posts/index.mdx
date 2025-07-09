@@ -10,7 +10,6 @@ export const metadata = {
 
 import Figure from '../components/Figure';
 import Carousel from '../components/Carousel';
-import CarouselOld from '../components/CarouselOld';
 import Image from 'next/image';
 import Code from '../components/Code';
 import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
@@ -71,46 +70,6 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
       objectPosition='0% 70%'
     />,
   ]}
-/>
-
-<CarouselOld
-  items={[
-    {
-      component: (
-        <Video videoKey='desktopDemo2' />
-      ),
-      label: 'Desktop demo vid 2',
-    },
-    {
-      component: (
-        <Video videoKey='desktopDemo' />
-      ),
-      label: 'Desktop demo vid',
-    },
-    {
-      component: (
-        <Video videoKey='mobileDemo' />
-      ),
-      label: 'Mobile demo vid',
-    },
-    {
-      img: DesktopEmptyWorldWebp,
-      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
-      objectPosition: '0% 50%',
-    },
-    {
-      img: ManyRobsTestWebp,
-      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
-      objectPosition: '0% 75%',
-    },
-    {
-      img: DesktopEmptyWorldWebp, // 🚧
-      label: <>CLI stands for <em>Command Line Interface.</em></>,
-      objectPosition: '0% 70%',
-    },
-  ]}
-  filter="brightness(1.0)"
-  heights={{ min: 400, max: 600, maxMobile: 400 }}
 />
 
 For the underlying problem to be meaningful,
@@ -176,25 +135,6 @@ You can try dragging the black bar with the grip icon <InlineIcon icon={faGrip} 
   heightMobile={400}
   slidesPerView={2}
 />
-
-<CarouselOld
-  items={[
-    {
-      img: IdleViewerSmallWiewportWebp,
-      label: 'Viewer in small viewport',
-      objectPosition: '0% 50%',
-    },
-    {
-      img: IdleViewerLargeWiewportWebp,
-      label: 'Viewer in large viewport',
-      objectPosition: '50% 100%',
-    },
-  ]}
-  filter="brightness(1.0)"
-  heights={{ min: 400, max: 600, maxMobile: 400 }}
-  slidesToScroll={2}
-/>
-
 
 ---
 
