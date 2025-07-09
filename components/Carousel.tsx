@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { Swiper, type SwiperProps, SwiperSlide } from 'swiper/react';
 import type { NavigationOptions, PaginationOptions, Swiper as SwiperClass } from 'swiper/types';
 
@@ -74,7 +75,7 @@ const carouselCss = css`
     height: calc(100% - var(--pagination-height));
 
     /* SSR "fix" */
-    transition: width 1s;
+    transition: width 300ms 300ms;
 
     display: flex;
     justify-content: center;

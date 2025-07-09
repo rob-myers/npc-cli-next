@@ -21,9 +21,12 @@
 - 🚧 start code much earlier
 - change writing style i.e. more intertwined with stories
 
-- 🚧 migrate from embla carousel to swiper js
+- ✅ migrate from embla carousel to swiper js
   - https://swiperjs.com/get-started
   - https://swiperjs.com/demos
+
+- 🚧 swiper: slides with different width?
+  - instead option to switch between 1 or 2 per view
 
 - ❌ redo images in first carousel
   - ℹ️ https://squoosh.app/editor | size?
