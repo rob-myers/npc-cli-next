@@ -55,7 +55,7 @@ interface Props {
 const carouselCss = css`
   --slider-height: 100%;
   --slider-height-mobile: 100%;
-  --slider-scrollbar-height: 64px;
+  --slider-scrollbar-height: 48px;
   
   height: var(--slider-height);
   margin: 48px 0;
