@@ -43,6 +43,10 @@ export default function Viewer() {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
     }, 1000),
+    onHardReset() {
+      // revert to default layout preset, do not restore
+      useTabs.api.revertCurrentTabset(true);
+    },
     onInternalApi(internalApiPath) {
       const parsedUrl = new URL(internalApiPath, location.origin);
 
@@ -194,7 +198,7 @@ export default function Viewer() {
           ref={state.ref('tabs')}
           id="viewer-tabs"
           initEnabled={false}
-          onHardReset={useTabs.api.revertCurrentTabset}
+          onHardReset={state.onHardReset}
           onModelChange={state.onModelChange}
           onToggleTab={state.onToggleTab}
           onToggled={update}
@@ -213,6 +217,7 @@ export interface State {
   /** Tabs API */
   tabs: TabsState;
   onChangeIntersect(intersects: boolean): void;
+  onHardReset(): void;
   /** @param pathname e.g. `/internal/set-tabset/empty` */
   onInternalApi(pathname: `/internal/${string}`): void;
   onKeyDown(e: React.KeyboardEvent): void;

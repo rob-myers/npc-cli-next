@@ -158,8 +158,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       return layout;
     },
 
-    revertCurrentTabset() {
-      const layout = deepClone(get().tabset.saved);
+    revertCurrentTabset(restoreDefaultPreset = false) {
+      const layout = restoreDefaultPreset
+        ? resolveLayoutPreset('world-tty-default_profile')
+        : deepClone(get().tabset.saved)
+      ;
       const synced = deepClone(layout);
 
       set(({ tabset }) => ({ tabset: { ...tabset,
@@ -314,7 +317,7 @@ export type State = {
     rememberCurrentTabs(): void;
     /** Restore layout from localStorage or use fallback */
     restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;
-    revertCurrentTabset(): void;
+    revertCurrentTabset(restoreDefaultPreset?: boolean): void;
     selectTab(tabId: string): void;
     /** If the tabset has the same tabs it won't change, unless `overwrite` is `true` */
     setTabset(layout: Key.LayoutPreset | TabsetLayout, opts?: { overwrite?: boolean }): void;
