@@ -145,6 +145,7 @@ export default function ViewerControls({ api }: Props) {
       switch (act) {
         case 'midpoint':
           state.setViewerBase(50);
+          state.setVisibility('open');
           break;
         case 'closed':
           state.dragOffset = null;
