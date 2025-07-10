@@ -513,10 +513,10 @@ export default function useHandleEvents(w) {
       // turnBeforeMove when delta angle large enough
       const deltaAng = deltaAngle(
         npc.api.getAngle(),
-        npc.api.getLookAngle(adjusted.src),
+        npc.api.getLookAngle(adjusted.dst),
       );
 
-      if (Math.abs(deltaAng) > Math.PI/3) {
+      if (Math.abs(deltaAng) > Math.PI/2) {
         // look towards door entry, or door exit if too close
         const towards = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src) > 0.1 ? adjusted.src : adjusted.dst;
         npc.s.turnBeforeMove = { ms: 400, towards };
