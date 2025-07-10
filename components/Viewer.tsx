@@ -256,8 +256,8 @@ const viewerCss = css`
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
     transition: height 500ms ease-in-out, min-height 500ms ease-in-out;
-    height: calc( max(var(${viewerBaseCssVar}), ${view.barSize}) );
-    min-height: calc( max(var(${viewerBaseCssVar}), ${view.barSize}) );
+    height: calc( max(var(${viewerBaseCssVar}, 0px), ${view.barSize}) );
+    min-height: calc( max(var(${viewerBaseCssVar}, 0px), ${view.barSize}) );
     &.collapsed {
       height: ${view.barSize};
       min-height: ${view.barSize};

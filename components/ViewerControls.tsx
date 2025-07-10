@@ -34,7 +34,7 @@ export default function ViewerControls({ api }: Props) {
 
     getViewerBase() {
       const percentage = api.rootEl.style.getPropertyValue(viewerBaseCssVar);
-      return percentage === null ? null : parseFloat(percentage);
+      return percentage === '' ? null : parseFloat(percentage);
     },
     onClickChevron(longPress = false) {
       const percentage = state.getViewerBase();
