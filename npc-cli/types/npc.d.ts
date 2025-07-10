@@ -448,9 +448,11 @@ declare namespace NPC {
   interface MoveOpts {
     to: GroundPoint | GroundPoint[];
 
+    /** How far away may we look for a navigable point? */
+    close?: number; 
+
     /** Can overwrite state initially. */
     s?: Partial<Pick<NPC.NPC['s'], (
-      | 'arriveAnim'
       | 'arriveDist'
     )>>;
 

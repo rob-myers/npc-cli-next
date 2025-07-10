@@ -65,7 +65,7 @@ ptags+=always; click meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;
-  npc.api.move({ to: input }).catch(() => {}); // can override
+  npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
 }' &
 
 w update 'w => w.decor.showLabels = true'

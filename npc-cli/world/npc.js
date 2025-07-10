@@ -85,8 +85,6 @@ export function createBaseNpc(def, w) {
       agentState: /** @type {null | number} */ (null),
       /** Current animation key. */
       anim: /** @type {Key.Anim} */ ('Idle'),
-      /** Key of animation to play on arrive, or "none", or default (`Idle`) */
-      arriveAnim: /** @type {undefined | 'none' | Key.Anim} */ (undefined),
       /** Minimal distance at which npc is consider to have arrived */
       arriveDist: defaultNpcArriveDistance,
       /** Defined iff npc is at a "do point". */
@@ -877,12 +875,11 @@ export class NpcApi {
     this.setSlowDown(this.pendingTargets.length === 0);
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
-    const closest = this.w.npc.getClosestNavigable(toV3(to), 0.5);
+    const closest = this.w.npc.getClosestNavigable(toV3(to), Math.max(opts.close ?? 0, 0.05));
     if (closest === null) {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(to)}`);
     }
 
-    this.s.arriveAnim = opts.s?.arriveAnim; // undefined ~ Idle
     this.s.arriveDist = opts.s?.arriveDist ?? defaultNpcArriveDistance;
     this.s.lookSecs = 0.2;
 
@@ -1401,9 +1398,7 @@ export class NpcApi {
     agent.raw.params.set_radius(helper.defaults.radius);
     
     if (reason.key === 'arrived') {
-      if (this.s.arriveAnim !== 'none') {
-        this.startAnimation(this.s.arriveAnim ?? 'Idle');
-      }
+      this.startAnimation('Idle');
     } else {
       this.startAnimation('Idle');
     }

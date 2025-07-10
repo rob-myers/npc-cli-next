@@ -89,6 +89,9 @@
 
 ### World
 
+- ✅ `npc.api.move` is silently choosing a "closest point" within 0.5
+  - default behaviour should be 0.05 (cannot choose zero because of small ground height)
+ 
 - ✅ can pause and turn before moving
   - ℹ️ we could trigger such turns when next target is not in same room
   - ✅ try set maxSpeed 0 before "next pending target"
@@ -194,7 +197,7 @@
     - ✅ decor quads can have meta.nav true
     - ✅ clicks over 10 receive icon sans number
 
-- 🚧 BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
+- ✅ BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
   - try fix by removing unnecessary `this.pendingTargets.length = 0`
 
 - `ptags+=foo` -> builtin `ptags foo`
