@@ -36,14 +36,22 @@ export default function ViewerControls({ api }: Props) {
       const percentage = api.rootEl.style.getPropertyValue(viewerBaseCssVar);
       return percentage === null ? null : parseFloat(percentage);
     },
-    onLongReset() {
-      api.tabs.hardReset();
-      state.showReset = false;
-      update();
+    onClickChevron(longPress = false) {
+      const percentage = state.getViewerBase();
+      if (percentage === null) {
+        state.setVisibility('open'); // initial?
+      } else if (longPress === false && percentage > 50) {
+        state.setVisibility('midpoint');
+      } else if (percentage === 0) {
+        state.setViewerBase(longPress ? 75 : 50);
+        state.setVisibility('open');
+      } else {
+        state.setVisibility('closed');
+      }
     },
-    onMaximize() {
-      state.setViewerBase(100);
-      useSite.api.toggleView(true);
+    onClickEnabledOrPause() {
+      api.tabs.toggleEnabled();
+      update();
     },
     onDrag(e: PointerEvent) {
       if (state.dragOffset === null) {
@@ -73,9 +81,8 @@ export default function ViewerControls({ api }: Props) {
         api.rootEl.style.transition = "";
 
         const percent = parseFloat(api.rootEl.style.getPropertyValue(viewerBaseCssVar));
-        if (percent < 10) {
-          api.rootEl.style.setProperty(viewerBaseCssVar, `${50}%`);
-          state.toggleCollapsed();
+        if (percent < 10) {// almost closed anyway
+          state.setVisibility('closed');
         }
       }
     },
@@ -110,7 +117,16 @@ export default function ViewerControls({ api }: Props) {
         useSite.api.toggleView(true);
       }
     },
-    onPreReset() {
+    onLongReset() {
+      api.tabs.hardReset();
+      state.showReset = false;
+      update();
+    },
+    onClickMaximize() {
+      state.setViewerBase(100);
+      useSite.api.toggleView(true);
+    },
+    onClickReset() {// pre reset i.e. show actual reset button
       state.showReset = true;
       setTimeout(() => (state.showReset = false, update()), 3000);
       update();
@@ -125,25 +141,23 @@ export default function ViewerControls({ api }: Props) {
       api.rootEl.style.setProperty(viewerBaseCssVar, `${percentage}%`);
       tryLocalStorageSet(localStorageKey.viewerBasePercentage, `${percentage}%`);
     },
-    toggleCollapsed() {
-      const percentage = state.getViewerBase();
-      if (percentage !== null && percentage > 50) {// collapse half way
-        state.setViewerBase(50);
-      } else {// collapse or expand
-        state.dragOffset = null;
-        const willExpand = useSite.api.toggleView();
-        if (!willExpand) {// will collapse
+    setVisibility(act: 'closed' | 'midpoint' | 'open') {
+      switch (act) {
+        case 'midpoint':
+          state.setViewerBase(50);
+          break;
+        case 'closed':
+          state.dragOffset = null;
+          useSite.api.toggleView(false);
           api.tabs.toggleEnabled(false);
-        }
-        if (willExpand) {// will expand to last percentage (≤50)
+          state.setViewerBase(0);
+          break;
+        case 'open':
+          state.dragOffset = null;
+          useSite.api.toggleView(true);
           isSmallView() && useSite.api.toggleNav(false);
-        }
+          break;
       }
-
-    },
-    toggleEnabled() {
-      api.tabs.toggleEnabled();
-      update();
     },
   }));
 
@@ -151,6 +165,12 @@ export default function ViewerControls({ api }: Props) {
     onLongPress: state.onLongReset,
     onClick: state.onReset,
     ms: 1000,
+  });
+
+  const chevronHandlers = useLongPress({
+    onLongPress: state.onClickChevron.bind(state, true),
+    onClick: state.onClickChevron.bind(state, false),
+    ms: 500,
   });
 
   const update = useUpdate();
@@ -175,7 +195,7 @@ export default function ViewerControls({ api }: Props) {
 
       <button
         title={api.tabs.enabled ? "pause tabs" : "enable tabs"}
-        onClick={state.toggleEnabled}
+        onClick={state.onClickEnabledOrPause}
         className="top-level"
       >
         <FontAwesomeIcon icon={api.tabs.enabled ? faCirclePauseThin : faCirclePlay} size="1x" />
@@ -185,7 +205,7 @@ export default function ViewerControls({ api }: Props) {
         <button
           className="top-level"
           title="reset tabs"
-          onClick={state.onPreReset}
+          onClick={state.onClickReset}
           disabled={api.tabs.everEnabled === false}
         >
           <FontAwesomeIcon icon={faRefreshThin} size="1x" />
@@ -201,15 +221,15 @@ export default function ViewerControls({ api }: Props) {
       <button
         className="top-level"
         title="maximise tabs"
-        onClick={state.onMaximize}
+        onClick={state.onClickMaximize}
       >
         <FontAwesomeIcon icon={faExpandThin} size="1x" />
       </button>
 
       <button
         className="top-level"
-        title={site.viewOpen ? "hide tabs" : "show tabs"}
-        onClick={() => state.toggleCollapsed()}
+        title={site.viewOpen === true ? "hide tabs" : "show tabs"}
+        {...chevronHandlers}
       >
         <FontAwesomeIcon
           icon={faChevronRight}

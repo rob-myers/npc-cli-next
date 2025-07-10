@@ -116,7 +116,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         set({ viewOpen: !viewOpen }, undefined, "toggle-view");
         return !viewOpen;
       } else {
-        set({ viewOpen: next }, undefined, `${next ? "open" : "close"}-view`);
+        set({ viewOpen: next }, undefined, next ? "open-view" : "close-view");
         return next;
       }
     },
