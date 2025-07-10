@@ -107,18 +107,18 @@ export default function World(props) {
     onTick() {
       state.reqAnimId = requestAnimationFrame(state.onTick);
       state.timer.update();
-      const deltaMs = state.timer.getDelta();
+      const deltaSecs = state.timer.getDelta();
 
       if (state.npc === null || state.r3f === null) {
         return; // wait for <NPCs>
       }
 
-      state.crowd.update(deltaMs);
-      state.npc.onTick(deltaMs);
-      state.door.onTick(deltaMs);
+      state.crowd.update(deltaSecs);
+      state.npc.onTick(deltaSecs);
+      state.door.onTick(deltaSecs);
       // console.info(state.r3f.gl.info.render);
 
-      state.view.onTick(deltaMs);
+      state.view.onTick(deltaSecs);
     },
     stopTick() {
       cancelAnimationFrame(state.reqAnimId);

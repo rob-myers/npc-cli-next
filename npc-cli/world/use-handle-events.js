@@ -383,7 +383,6 @@ export default function useHandleEvents(w) {
             );
           }
 
-          w.cm.refreshOptsPopUp();
           w.bubble.delete(e.npcKey);
 
           if (w.disabled === true) {
@@ -392,16 +391,14 @@ export default function useHandleEvents(w) {
           break;
         }
         case "spawned": {
-          if (npc.s.spawns === 1) {
-            // 1st spawn
+          if (npc.s.spawns === 1) {// 1st spawn
             const { x, y, z } = npc.position;
             w.physics.worker.postMessage({
               type: 'add-npcs',
               npcs: [{ npcKey: e.npcKey, position: { x, y, z } }],
             });
             npc.api.setLabel(e.npcKey);
-          } else {
-            // Respawn
+          } else {// Respawn
             const prevGrId = state.npcToRoom.get(npc.key);
             if (prevGrId !== undefined) {
               state.roomToNpcs[prevGrId.gmId][prevGrId.roomId]?.delete(npc.key);
@@ -411,11 +408,9 @@ export default function useHandleEvents(w) {
           state.npcToRoom.set(npc.key, {...e.gmRoomId});
           (state.roomToNpcs[e.gmRoomId.gmId][e.gmRoomId.roomId] ??= new Set()).add(e.npcKey);
 
-          w.cm.refreshOptsPopUp(); // update npcKey select
-
           if (w.disabled === true) {
             // 🔔 must tick to change initial pose e.g. when spawn lie
-            w.npc.tickOnceDebounced();
+            w.npc.tickOnceSpawn();
           }
           break;
         }

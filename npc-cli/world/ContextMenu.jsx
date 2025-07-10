@@ -40,7 +40,6 @@ export function ContextMenu() {
     links: [],
     match: {},
     meta: {},
-    selectNpcKeys: [],
 
     canScroll() {
       return state.innerRoot !== null && state.innerRoot.clientHeight !== state.innerRoot.scrollHeight;
@@ -139,11 +138,6 @@ export function ContextMenu() {
 
       state.persist();
     },
-    onToggleOptsPopup(willOpen) {
-      if (willOpen) {
-        state.refreshOptsPopUp();
-      }
-    },
     onWheel(e) {
       e.stopPropagation();
       if (state.canScroll() === false && w.touchDevice === false) {
@@ -154,10 +148,6 @@ export function ContextMenu() {
     persist() {
       tryLocalStorageSet(`context-menu:pinned@${w.key}`, JSON.stringify(state.pinned));
     },
-    refreshOptsPopUp: debounce(() => {
-      state.selectNpcKeys = Object.keys(w.n);
-      update();
-    }, 30, { immediate: true }),
     /**
      * Context is world position and meta concerning said position
      */
@@ -481,7 +471,6 @@ export const contextMenuCss = css`
  * @property {undefined | { npcKey: string } & import('../components/Html3d').TrackedObject3D} tracked
  * @property {boolean} pinned
  * @property {boolean} scaled
- * @property {string[]} selectNpcKeys
  * @property {boolean} showKvs
  * @property {() => boolean} canScroll
  * @property {(meta: Meta) => void} computeKvsFromMeta
@@ -492,10 +481,8 @@ export const contextMenuCss = css`
  * @property {(e: React.PointerEvent) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
- * @property {(willOpen: boolean) => void} onToggleOptsPopup
  * @property {(e: React.WheelEvent) => void} onWheel
  * @property {() => void} persist
- * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext
  * @property {(opacity: number) => void} setNonDockedOpacity
  * @property {(npcKey?: string) => void} setTracked

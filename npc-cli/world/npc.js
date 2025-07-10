@@ -1061,22 +1061,22 @@ export class NpcApi {
   }
 
   /**
-   * @param {number} deltaMs
+   * @param {number} deltaSecs
    * @param {number[]} positions
    * Format `[..., bodyUid_i, x_i, y_i, z_i, ...]` for physics.worker
    */
-  onTick(deltaMs, positions) {
-    this.base.mixer.update(deltaMs);
+  onTick(deltaSecs, positions) {
+    this.base.mixer.update(deltaSecs);
 
     if (this.s.lookAngleDst !== null) {
-      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaMs, 20, undefined, 0.01) === false) {
+      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaSecs, 20, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
       }
     }
 
     if (this.s.opacityDst !== null) {
-      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs / 1.5, deltaMs, undefined, undefined, 0.005) === false) {
+      if (damp(this.s, 'opacity', this.s.opacityDst, this.s.fadeSecs / 1.5, deltaSecs, undefined, undefined, 0.005) === false) {
         this.s.opacityDst = null;
         this.resolve.fade?.();
       }
@@ -1087,7 +1087,7 @@ export class NpcApi {
       return;
     }
 
-    this.onTickAgent(deltaMs, this.base.agent);
+    this.onTickAgent(deltaSecs, this.base.agent);
 
     if (this.base.agent.raw.dvel !== 0 || this.s.offMesh !== null) {
       const { x, y, z } = this.base.position;

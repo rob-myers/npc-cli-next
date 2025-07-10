@@ -152,8 +152,8 @@ export default function Npcs(props) {
       return success === true && Math.abs(point.x - v3.x) < smallHalfExtent && Math.abs(point.z - v3.z) < smallHalfExtent;
     },
     onStuckNpc: null,
-    onTick(deltaMs) {
-      Object.values(state.npc).forEach(npc => npc.api.onTick(deltaMs, state.physicsPositions));
+    onTick(deltaSecs) {
+      Object.values(state.npc).forEach(npc => npc.api.onTick(deltaSecs, state.physicsPositions));
       // 🔔 Float32Array caused issues i.e. decode failed
       const positions = new Float64Array(state.physicsPositions);
       w.physics.worker.postMessage({ type: 'send-npc-positions', positions}, [positions.buffer]);
@@ -436,15 +436,16 @@ export default function Npcs(props) {
 
       return npc;
     },
-    tickOnceDebounced: debounce(() => {
-      w.crowd.update(w.timer.getFixedDelta()); // agent may no longer exist
-      state.onTick(1000 / 60);
+    // Paused spawn is debounced
+    tickOnceSpawn: debounce(() => {
+      // re-spawn outside nav removes agent, so must update crowd
+      w.crowd.update(w.timer.getFixedDelta());
+      state.onTick(1 / 60);
       w.r3f.advance(Date.now()); // so they move
     }, 30, { immediate: true }),
     async tickOnceDebug() {
-      state.onTick(1000 / 60);
-      // delay render e.g. for paused npc selection
-      await pause(100);
+      state.onTick(1 / 60);
+      await pause(100); // delay render e.g. for paused npc selection
       w.r3f.advance(Date.now());
     },
     update,
@@ -569,7 +570,7 @@ export default function Npcs(props) {
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckNpc
- * @property {(deltaMs: number) => void} onTick
+ * @property {(deltaSecs: number) => void} onTick
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onTickIdleTurn
  * Handle turning of idle npcs e.g. turn towards nearby npcs.
  * @property {(npcKey: string) => void} remove
@@ -587,7 +588,7 @@ export default function Npcs(props) {
  * spawn({ npcKey: "rob", skin: "soldier-0", x, y, z, meta })
  * spawn({ npcKey: "rob", classKey: "human-0", x, y, z, meta })
  * ```
- * @property {() => void} tickOnceDebounced
+ * @property {() => void} tickOnceSpawn
  * @property {() => Promise<void>} tickOnceDebug
  * @property {() => void} update
  * - Ensures incomingLabels i.e. does not replace.
