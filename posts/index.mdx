@@ -38,12 +38,20 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 ---
 
 <Code>
-```sh title="test title" caption="test caption" showLineNumbers
-# choose 4 nav points
-click 4 meta.nav &>> points
-# spawn npc with full access
+```sh title="" caption="Spawning, moving and dying" showLineNumbers
+# spawn npc
+spawn npcKey:rob at:$( click 1 )
+
+# move
+move npcKey:rob to:$( click 1 )
+
+# respawn with full access
 spawn npcKey:rob at:$( click 1 ) grant:.
-# take a tour
-tour npcKey:rob to:"$( points )" 
+
+# move via
+move npcKey:rob to:$( click 2 )
+
+# dust to dust
+w npc.remove rob
 ```
 </Code>
