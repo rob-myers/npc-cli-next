@@ -364,8 +364,8 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
       if (!helper.isStopReason(e)) {
         throw e; // e.g. reboot
       }
-      if ('remainingPath' in e) {
-        opts.to.unshift(e.remainingPath);
+      if ('rest' in e) {
+        opts.to.unshift(e.rest);
       } else {
         throw e; // respawn or remove
       }

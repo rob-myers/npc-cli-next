@@ -4,10 +4,10 @@ import { damp, dampAngle } from "maath/easing";
 import braces from "braces";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance, precision } from '../service/const';
 import { error, info, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
-import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3 } from '../service/three';
+import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, v3Precision } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 
@@ -477,7 +477,7 @@ export class NpcApi {
 
   /** @param {NPC.GroundPoint[]} pendingTargets  */
   extendMove(pendingTargets) {
-    this.pendingTargets.push(...pendingTargets.map(toV3));
+    this.pendingTargets.push(...pendingTargets.map(x => toV3(x, precision)));
   }
 
   /**
@@ -765,7 +765,7 @@ export class NpcApi {
         type: 'stop-reason',
         key: 'collided',
         otherNpcKey: other.key,
-        remainingPath: this.getRemainingPath(),
+        rest: this.getRemainingPath(),
       });
       return;
     }
@@ -863,7 +863,7 @@ export class NpcApi {
     this.s.target !== null && this.rejectMove({
       type: 'stop-reason',
       key: 'move-again',// turn off continuous motion
-      remainingPath: this.getRemainingPath(),
+      rest: this.getRemainingPath(),
     });
 
     if (points.length === 0) {
@@ -871,7 +871,7 @@ export class NpcApi {
     }
     
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
-    this.pendingTargets.push(...points.map(toV3));
+    this.pendingTargets.push(...points.map(x => toV3(x, precision)));
     this.setSlowDown(this.pendingTargets.length === 0);
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
@@ -880,6 +880,7 @@ export class NpcApi {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(to)}`);
     }
 
+    v3Precision(closest);
     this.s.arriveDist = opts.s?.arriveDist ?? defaultNpcArriveDistance;
     this.s.lookSecs = 0.2;
 
@@ -1199,7 +1200,7 @@ export class NpcApi {
         type: 'stop-reason',
         key: 'stuck',
         nearTarget: this.isNearTarget(),
-        remainingPath: this.getRemainingPath(),
+        rest: this.getRemainingPath(),
       });
     } else {
       this.w.npc.onStuckNpc?.(this.base, agent);
@@ -1378,7 +1379,7 @@ export class NpcApi {
   }
 
   /** @param {NPC.StopReason} reason */
-  stopMoving(reason = { type: 'stop-reason', key: 'stopped', remainingPath: this.getRemainingPath() }) {
+  stopMoving(reason = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() }) {
     const agent = this.base.agent;
 
     if (agent === null || this.s.target === null) {

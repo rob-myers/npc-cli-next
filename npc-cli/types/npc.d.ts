@@ -464,14 +464,16 @@ declare namespace NPC {
 
   type StopReason = { type: 'stop-reason'; } & (
     | { key: 'arrived'; }
-    | { key: 'blocked-doorway'; otherNpcKey: string; remainingPath: Geom.VectJson[]; }
-    | { key: 'collided'; otherNpcKey: string; remainingPath: Geom.VectJson[]; }
-    | { key: 'locked-door'; remainingPath: Geom.VectJson[]; }
-    | { key: 'move-again'; remainingPath: Geom.VectJson[]; }
+    | { rest: Geom.VectJson[]; } & (
+      | { key: 'blocked-doorway'; otherNpcKey: string; }
+      | { key: 'collided'; otherNpcKey: string; }
+      | { key: 'locked-door'; }
+      | { key: 'move-again'; }
+      | { key: 'stopped'; }
+      | { key: 'stuck'; nearTarget: boolean; }
+    )
     | { key: 'removed'; }
     | { key: 'respawned'; }
-    | { key: 'stopped'; remainingPath: Geom.VectJson[]; }
-    | { key: 'stuck'; nearTarget: boolean; remainingPath: Geom.VectJson[]; }
   );
 
   //#region sh js
