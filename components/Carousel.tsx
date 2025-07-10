@@ -3,7 +3,7 @@ import React from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 
-import { Scrollbar, EffectCube } from 'swiper/modules';
+import { Scrollbar } from 'swiper/modules';
 import { css } from '@emotion/react';
 
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
@@ -12,7 +12,6 @@ import { mobileBreakpoint } from './const';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
-import 'swiper/css/effect-cube';
 
 export default function Carousel(props: Props) {
 
@@ -26,9 +25,8 @@ export default function Carousel(props: Props) {
     <Swiper
       // centeredSlides={props.items.length <= 2}
       css={carouselCss}
-      effect="cube"
       loop={false}
-      modules={[Scrollbar, EffectCube]}
+      modules={[Scrollbar]}
       onSwiper={state.onSwiper}
       scrollbar={{ draggable: true }}
       slidesPerView={1}
