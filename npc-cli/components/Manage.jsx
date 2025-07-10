@@ -350,9 +350,14 @@ const manageCss = css`
 
   .create-tabs, .created-tabs {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    /* flex-wrap: wrap; */
     font-size: small;
     border: var(--separating-border);
+
+    li:first-child {
+      flex: 1;
+    }
   }
   
   .create-tabs li, .created-tabs li {
