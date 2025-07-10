@@ -3,7 +3,7 @@ import React from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { NavigationOptions, Swiper as SwiperClass } from 'swiper/types';
 
-import { Navigation, Pagination, Scrollbar } from 'swiper/modules';
+import { Scrollbar } from 'swiper/modules';
 import { css } from '@emotion/react';
 
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
@@ -17,20 +17,18 @@ export default function Carousel(props: Props) {
 
   const state = useStateRef(() => ({
     maximized: null as null | { slide: HTMLElement; baseWidth: number; },
-    navigationOpts: { enabled: true } as NavigationOptions,
     swiper: {} as SwiperClass,
     onSwiper: (api: SwiperClass) => state.swiper = api,
-  }), { reset: { navigationOpts: true } });
+  }));
 
   return (
     <Swiper
       // centeredSlides={props.items.length <= 2}
       css={carouselCss}
       loop={false}
-      modules={[Navigation, Pagination, Scrollbar]}
-      navigation={state.navigationOpts}
+      modules={[Scrollbar]}
       onSwiper={state.onSwiper}
-      scrollbar={{ draggable: true,  }}
+      scrollbar={{ draggable: true }}
       slidesPerView={1}
       spaceBetween={50}
       style={{
@@ -55,41 +53,39 @@ interface Props {
 
 
 const carouselCss = css`
-  --pagination-height: 64px;
   --slider-height: 100%;
   --slider-height-mobile: 100%;
-
+  --slider-scrollbar-height: 64px;
+  
   height: var(--slider-height);
   margin: 48px 0;
   background-color: #fff;
   
   @media (max-width: ${mobileBreakpoint}) {
+    --slider-scrollbar-height: 40px;
     height: var(--slider-height-mobile);
     margin: 32px 0;
   }
 
   .swiper-slide {
-    height: calc(100% - var(--pagination-height));
-
+    height: calc(100% - var(--slider-scrollbar-height) - 4px);
     display: flex;
     justify-content: center;
     align-items: center;
-    
-    border: 1px solid #9997;
-    border-bottom: none;
-  }
-
-  .swiper-button-prev, .swiper-button-next {
-    padding: 0 32px;
   }
   
   .swiper-scrollbar {
-    height: 40px;
+    height: var(--slider-scrollbar-height);
     transform: scaleX(102%);
-
+    display: flex;
+    align-items: end;
+    border-radius: 0;
+    background-color: #000;
+    
     div {
-      background-color: white;
-      border: 1px solid #777a;
+      height: 50%;
+      border-radius: 0;
+      background-color: #444;
     }
   }
 
