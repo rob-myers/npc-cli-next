@@ -179,7 +179,7 @@ export default function Doors(props) {
     isOpen(gmId, doorId) {
       return this.byGmId[gmId][doorId].open;
     },
-    onTick(deltaMs) {
+    onTick(deltaSecs) {
       if (state.movingDoors.size === 0) {
         return;
       }
@@ -188,7 +188,7 @@ export default function Doors(props) {
       const { instanceMatrix } = state.inst;
       for (const [instanceId, door] of state.movingDoors.entries()) {
         const dstRatio = door.open ? 0 : 1;
-        damp(door, 'ratio', dstRatio, 0.1, deltaMs);
+        damp(door, 'ratio', dstRatio, 0.1, deltaSecs);
         const length = door.ratio * door.segLength;
         // set e1 (x,,z)
         instanceMatrix.array[instanceId * 16 + 0] = door.dir.x * length;
@@ -374,7 +374,7 @@ export default function Doors(props) {
  * Returns `true` iff successful.
  * @property {(door: Geomorph.DoorState, opts?: Geomorph.ToggleLockOpts) => boolean} toggleLockRaw
  * Returns `true` iff successful.
- * @property {(deltaMs: number) => void} onTick
+ * @property {(deltaSecs: number) => void} onTick
  * @property {() => void} positionInstances
  */
 

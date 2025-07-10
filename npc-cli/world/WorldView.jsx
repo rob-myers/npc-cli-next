@@ -382,7 +382,7 @@ export default function WorldView(props) {
       state.onPointerLeave(e);
       state.justLongDown = false;
     },
-    onTick(deltaMs) {
+    onTick(deltaSecs) {
       if (state.dst.azimuthal !== undefined) {// azimuthal angle
         if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
           delete state.dst.azimuthal;
@@ -406,7 +406,7 @@ export default function WorldView(props) {
       if (state.dst.fov !== undefined) {// change fov
         camera.fov = state.fov;
         camera.updateProjectionMatrix();
-        if (damp(state, 'fov', state.dst.fov, 0.4, deltaMs, undefined, undefined, 0.1) === false) {
+        if (damp(state, 'fov', state.dst.fov, 0.4, deltaSecs, undefined, undefined, 0.1) === false) {
           delete state.dst.fov;
           state.resolve.fov?.();
         }
@@ -414,7 +414,7 @@ export default function WorldView(props) {
 
       if (state.dst.look !== undefined && state.down === null) {// look or follow
         const { look: target, lookOpts = {} } = state.dst;
-        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaMs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
+        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
           state.resolve.look?.();
         }
         //@ts-ignore see patch i.e. fix azimuth angle
@@ -425,7 +425,7 @@ export default function WorldView(props) {
         const { minDistance, maxDistance, target } = state.controls;
         const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.dst.distance));
         const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
-        if (damp3(camera.position, targetCamPos, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
+        if (damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.01) === false) {
           delete state.dst.distance;
           state.resolve.distance?.();
         }
@@ -736,7 +736,7 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent) => void} onPointerLeave
  * @property {(e: React.PointerEvent) => void} onPointerMove
  * @property {(e: React.PointerEvent<HTMLElement>) => void} onPointerUp
- * @property {(deltaMs: number) => void} onTick
+ * @property {(deltaSecs: number) => void} onTick
  * @property {(type?: string, quality?: any) => void} openSnapshot
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem

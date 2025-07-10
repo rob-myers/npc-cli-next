@@ -1096,10 +1096,10 @@ export class NpcApi {
   }
 
   /**
-   * @param {number} deltaMs
+   * @param {number} deltaSecs
    * @param {import('@recast-navigation/core').CrowdAgent} agent
    */
-  onTickAgent(deltaMs, agent) {
+  onTickAgent(deltaSecs, agent) {
     const position = agent.position();
     const state = agent.state();
 
@@ -1112,14 +1112,14 @@ export class NpcApi {
     }
 
     if (this.s.separation !== null) {
-      this.onTickSeparation(deltaMs, agent, this.s.separation);
+      this.onTickSeparation(deltaSecs, agent, this.s.separation);
     }
 
     if (this.s.offMesh !== null) {
       this.handleOffMeshConnection(agent, this.s.offMesh);
 
       if (this.s.turnBeforeMove !== null) {
-        this.onTurnBeforeMove(agent, deltaMs, this.s.turnBeforeMove);
+        this.onTurnBeforeMove(agent, deltaSecs, this.s.turnBeforeMove);
       }
 
       return; // Avoid stopMoving whilst offMesh
@@ -1156,17 +1156,17 @@ export class NpcApi {
       this.s.lookSecs = 0.5;
     }
 
-    this.onTickDetectStuck(deltaMs, agent);
+    this.onTickDetectStuck(deltaSecs, agent);
   }
 
   /**
-   * @param {number} deltaMs
+   * @param {number} deltaSecs
    * @param {NPC.CrowdAgent} agent
    * @param {NonNullable<this['s']['separation']>} separation
    */
-  onTickSeparation(deltaMs, agent, separation) {
+  onTickSeparation(deltaSecs, agent, separation) {
     const { current, dst, smoothTime = 0.4 } = separation;
-    if (damp(separation, 'current', dst, smoothTime, deltaMs, undefined, undefined, 0.02) === false) {
+    if (damp(separation, 'current', dst, smoothTime, deltaSecs, undefined, undefined, 0.02) === false) {
       this.s.separation = null;
       agent.raw.params.set_separationWeight(dst);
       this.resolve.separate?.();
@@ -1177,11 +1177,11 @@ export class NpcApi {
 
   /**
    * 🚧 hard-coding: small distance, long enough time
-   * @param {number} deltaMs 
+   * @param {number} deltaSecs 
    * @param {NPC.CrowdAgent} agent 
    */
-  onTickDetectStuck(deltaMs, agent) {
-    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaMs;
+  onTickDetectStuck(deltaSecs, agent) {
+    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
 
     if (Math.abs(this.delta.x) > smallDist || Math.abs(this.delta.z) > smallDist) {
       return this.s.slowBegin = null; // reset tracking
@@ -1217,17 +1217,17 @@ export class NpcApi {
   /**
    * 
    * @param {NPC.CrowdAgent} agent 
-   * @param {number} deltaMs 
+   * @param {number} deltaSecs 
    * @param {NonNullable<NPC.NPC['s']['turnBeforeMove']>} turnBeforeMove 
    */
-  onTurnBeforeMove(agent, deltaMs, turnBeforeMove) {
+  onTurnBeforeMove(agent, deltaSecs, turnBeforeMove) {
     const { position } = this.base;
     const { towards } = turnBeforeMove;
     this.s.lookAngleDst = this.getEulerAngle(
       geom.clockwiseFromNorth(towards.y - position.z, towards.x - position.x)
     );
 
-    const ms = (turnBeforeMove.ms -= deltaMs * 1000);
+    const ms = (turnBeforeMove.ms -= deltaSecs * 1000);
     if (ms > 0) {
       return;
     }

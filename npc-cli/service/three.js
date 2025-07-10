@@ -468,20 +468,20 @@ let resX = false, resY = false, resZ = false, dx = 0, dz = 0, dMax = 0;
  * @param {THREE.Vector3} current 
  * @param {THREE.Vector3} target 
  * @param {number} [smoothTime] 
- * @param {number} [deltaMs] 
+ * @param {number} [deltaSecs] 
  * @param {number} [maxSpeed] 
  * @param {number} [y] override target.y (originally `easing`)
  * @param {number} [eps]
  * @returns 
  */
-export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity, y, eps = 0.001) {
+export function dampXZ(current, target, smoothTime, deltaSecs, maxSpeed = Infinity, y, eps = 0.001) {
   v3d.copy(target);
   dx = Math.abs(current.x - target.x);
   dz = Math.abs(current.z - target.z);
   dMax = Math.max(dx, dz);
-  resX = dMax < eps ? false : damp(current, "x", v3d.x, smoothTime, deltaMs, maxSpeed * (dx / dMax), undefined, eps);
-  resY = y === undefined ? false : damp(current, "y", y, smoothTime, deltaMs, maxSpeed, undefined, eps);
-  resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaMs, maxSpeed * (dz / dMax), undefined, eps);
+  resX = dMax < eps ? false : damp(current, "x", v3d.x, smoothTime, deltaSecs, maxSpeed * (dx / dMax), undefined, eps);
+  resY = y === undefined ? false : damp(current, "y", y, smoothTime, deltaSecs, maxSpeed, undefined, eps);
+  resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaSecs, maxSpeed * (dz / dMax), undefined, eps);
   return resX || resY || resZ;
 }
 

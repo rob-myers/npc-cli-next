@@ -106,7 +106,7 @@
 - ✅  can move and do (1st attempt)
   - `local pts=$( click 2 ); move npcKey:rada to:$( pts/0 ) && w n.rada.api.do $( pts/1 ) )`
 
-- 🚧 deltaMs -> deltaSecs
+- ✅ deltaMs -> deltaSecs
   - seen inside npc.js
 
 - ✅ npc fading issue
