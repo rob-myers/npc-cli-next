@@ -176,6 +176,10 @@ const codeContainerCss = css`
     background-color: rgb(130, 130, 130, 0.5);
   }
 
+  div[data-rehype-pretty-code-title] {
+    margin-bottom: 4px;
+  }
+
   figcaption[data-rehype-pretty-code-caption] {
     text-align: center;
   }
