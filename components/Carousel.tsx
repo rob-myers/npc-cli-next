@@ -82,10 +82,16 @@ const carouselCss = css`
     border-radius: 0;
     background-color: #000;
     
+    @keyframes fadeScrollBarIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    
     div {
       height: 50%;
       border-radius: 0;
       background-color: #444;
+      animation: fadeIn 1s forwards;
     }
   }
 
