@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import type { NavigationOptions, PaginationOptions, Swiper as SwiperClass } from 'swiper/types';
+import type { NavigationOptions, Swiper as SwiperClass } from 'swiper/types';
 
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation, Pagination, Scrollbar } from 'swiper/modules';
 import { css } from '@emotion/react';
 
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
@@ -11,27 +11,26 @@ import { mobileBreakpoint } from './const';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 
 export default function Carousel(props: Props) {
 
   const state = useStateRef(() => ({
     maximized: null as null | { slide: HTMLElement; baseWidth: number; },
     navigationOpts: { enabled: true } as NavigationOptions,
-    paginationOpts: { clickable: true, type: 'fraction', dynamicBullets: false } as PaginationOptions,
     swiper: {} as SwiperClass,
     onSwiper: (api: SwiperClass) => state.swiper = api,
-  }), { reset: { navigationOpts: true, paginationOpts: true } });
+  }), { reset: { navigationOpts: true } });
 
   return (
     <Swiper
       // centeredSlides={props.items.length <= 2}
       css={carouselCss}
-      loop={props.items.length > 2}
-      modules={[Navigation, Pagination]}
+      loop={false}
+      modules={[Navigation, Pagination, Scrollbar]}
       navigation={state.navigationOpts}
       onSwiper={state.onSwiper}
-      pagination={state.paginationOpts}
+      scrollbar={{ draggable: true,  }}
       slidesPerView={1}
       spaceBetween={50}
       style={{
@@ -56,7 +55,7 @@ interface Props {
 
 
 const carouselCss = css`
-  --pagination-height: 48px;
+  --pagination-height: 64px;
   --slider-height: 100%;
   --slider-height-mobile: 100%;
 
@@ -79,20 +78,19 @@ const carouselCss = css`
     border: 1px solid #9997;
     border-bottom: none;
   }
+
+  .swiper-button-prev, .swiper-button-next {
+    padding: 0 32px;
+  }
   
-  .swiper-pagination {
-    bottom: 0;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    
-    height: var(--pagination-height);
-    
-    pointer-events: none;
-    border: 1px solid #9997;
-    background-color: white;
+  .swiper-scrollbar {
+    height: 40px;
+    transform: scaleX(102%);
+
+    div {
+      background-color: white;
+      border: 1px solid #777a;
+    }
   }
 
 `;
