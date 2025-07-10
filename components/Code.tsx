@@ -110,26 +110,25 @@ const codeContainerCss = css`
   
   > .copy-all {
     position: absolute;
-    top: calc( 32px - 4px );
+    top: 0;
     right: 0;
-    height: 32px;
-    cursor: pointer;
     color: #ccc;
     font-size: large;
+    cursor: pointer;
     
     &:hover, &:active {
       color: #fff;
     }
-
+    
     .copy-all-side-note {
       display: inline-flex;
       width: 50px;
-      height: 40px;
+      height: 50px;
       justify-content: center;
       align-items: center;
       border-width: 0;
       border-radius: 0;
-      background-color: unset;
+      background-color: rgba(255, 255, 255, 0.075);
       color: wheat;
     }
     .copy-all-bubble {
