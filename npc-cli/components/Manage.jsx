@@ -355,7 +355,7 @@ const manageCss = css`
     font-size: small;
     border: var(--separating-border);
 
-    li:first-child {
+    li:first-of-type {
       flex: 1;
     }
   }
@@ -394,7 +394,9 @@ const manageCss = css`
       }
     }
     .tab-def {
+      flex: 1;
       display: flex;
+      justify-content: center;
       align-items: stretch;
       gap: 8px;
     }
@@ -403,7 +405,9 @@ const manageCss = css`
       text-wrap: nowrap;
     }
     .tab-create-def {
+      flex: 1;
       display: flex;
+      justify-content: center;
       gap: 4px;
       padding-left: 12px;
       /* padding: 8px; */
