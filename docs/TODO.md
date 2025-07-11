@@ -18,15 +18,21 @@
   - use OSX Screenshot
 - ✅ fix Video style in Carousel (part 1)
 - ✅ fix Video style in Carousel (part 2)
+
+- 🚧 start with videos
+  - ℹ️ points in doorways considered not navigable
+  - desktop: spawn, move, remove
+  - mobile: spawn, move, remove
 - 🚧 start code much earlier
-- change writing style i.e. more intertwined with stories
+- change writing style
+  - more intertwined with stories
 
 - ✅ migrate from embla carousel to swiper js
   - https://swiperjs.com/get-started
   - https://swiperjs.com/demos
 
-- 🚧 swiper: slides with different width?
-  - instead option to switch between 1 or 2 per view
+- ❌ swiper: slides with different width?
+  - ❌ instead option to switch between 1 or 2 per view
 
 - ❌ redo images in first carousel
   - ℹ️ https://squoosh.app/editor | size?
