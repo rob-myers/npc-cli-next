@@ -44,6 +44,8 @@ export default function Main(props: React.PropsWithChildren) {
 }
 
 const mainCss = css`
+  --main-min-width-desktop: calc(600px + 2 * 2rem);
+
   width: 100%;
   overflow: scroll;
   &.draggingView {
@@ -86,7 +88,7 @@ const mainHeaderCss = css`
   letter-spacing: 1.5rem;
 
   @media (min-width: ${afterBreakpoint}) {
-    min-width: calc(400px + 2 * 2rem);
+    min-width: var(--main-min-width-desktop);
 
     margin-top: 0rem;
     margin-right: 1rem;
@@ -106,7 +108,7 @@ const mainMainCss = css`
 
   @media (min-width: ${afterBreakpoint}) {
     flex: 1;
-    min-width: calc(600px + 2 * 2rem);
+    min-width: var(--main-min-width-desktop);
     margin: 0 1rem;
     padding: 2rem 4rem 6rem 4rem;
   }
