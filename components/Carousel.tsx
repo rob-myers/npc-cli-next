@@ -23,7 +23,6 @@ export default function Carousel(props: Props) {
 
   return (
     <Swiper
-      // centeredSlides={props.items.length <= 2}
       css={carouselCss}
       loop={false}
       modules={[Scrollbar]}
