@@ -106,7 +106,7 @@ const mainMainCss = css`
 
   @media (min-width: ${afterBreakpoint}) {
     flex: 1;
-    min-width: calc(400px + 2 * 2rem);
+    min-width: calc(600px + 2 * 2rem);
     margin: 0 1rem;
     padding: 2rem 4rem 6rem 4rem;
   }
