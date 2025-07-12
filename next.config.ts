@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
   transpilePackages: ['next-mdx-remote'],
   // 🔔 dev only, where turbo runs via `next dev --turbopack`
   experimental: {
-    scrollRestoration: true,
     turbo: {
       rules: {
         "**/sh/src/*.sh": {
@@ -43,7 +42,11 @@ const nextConfig: NextConfig = {
 const withMDX = createMDX({
   options: {
     remarkPlugins: [],
-    rehypePlugins: [['rehype-pretty-code' as any, { theme: 'dark-plus' }]],
+    rehypePlugins: [
+      // https://shiki.style/themes#themes
+      ['rehype-pretty-code' as any, { theme: 'dark-plus' }]
+      // ['rehype-pretty-code' as any, { theme: 'github-light-default' }]
+    ],
   },
 });
 

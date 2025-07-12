@@ -107,6 +107,10 @@ interface Props {
 
 const codeContainerCss = css`
   position: relative;
+
+  /* pre {
+    border: 1px solid #7775;
+  } */
   
   > .copy-all {
     position: absolute;
@@ -128,7 +132,7 @@ const codeContainerCss = css`
       align-items: center;
       border-width: 0;
       border-radius: 0;
-      background-color: rgba(255, 255, 255, 0.075);
+      background-color: rgba(60, 60, 60, 1);
       color: wheat;
     }
     .copy-all-bubble {
@@ -167,6 +171,8 @@ const codeContainerCss = css`
     }
     &:hover::before, &:focus::before {
       color: white;
+      /* color: black; */
+      font-weight: 700;
     }
   }
 
