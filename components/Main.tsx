@@ -4,18 +4,23 @@ import cx from "classnames";
 import { shallow } from "zustand/shallow";
 
 import { afterBreakpoint, breakpoint, zIndexSite, sideNoteRootDataAttribute } from "./const";
-import useSite from "./site.store";
 import { isSmallView } from "./layout";
+import useSite from "./site.store";
+import useRefreshScrollRestoration from "./use-refresh-scroll-restore";
 
 export default function Main(props: React.PropsWithChildren) {
   const site = useSite(({ navOpen, draggingView }) => ({ navOpen, draggingView }), shallow);
+  const rootRef = React.useRef<HTMLDivElement>(null);
 
   const overlayOpen = site.draggingView || (site.navOpen && isSmallView());
+
+  useRefreshScrollRestoration(rootRef.current);
 
   return (
     <div
       css={mainCss}
       className={cx("scroll-container", { draggingView: site.draggingView })}
+      ref={rootRef}
     >
       <section
         className="prose max-w-screen-lg prose-headings:font-light dark:prose-invert"
