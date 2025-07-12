@@ -21,8 +21,19 @@
 
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable
+  - ✅ buy presentify
+  - 🚧 test desktop video annotated with presentify
+    - ℹ️ font-size: touchpad scroll
+    - ℹ️ live text a bit shit e.g. can see preview "Text"
+    - video could follow "shell script comments"
+    - video could follow text typed into terminal e.g. `# foo`
+    - presentify interactive mode
   - desktop: spawn, move, remove
   - mobile: spawn, move, remove
+- ✅ fix mic issue: could not turn off voice isolation
+  - System Settings > Sound > select Input
+  - exit Jabra software in taskbar
+  - Change setting to "Standard" in Microphone in taskbar
 - 🚧 start code much earlier
 - change writing style
   - more intertwined with stories
