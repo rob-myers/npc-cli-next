@@ -34,6 +34,14 @@
   - System Settings > Sound > select Input
   - exit Jabra software in taskbar
   - Change setting to "Standard" in Microphone in taskbar
+- ✅ fix mic issue part 2
+  - took out dongle, put it back, could see mic visualisation in Sound
+- ✅ fix mic too quiet
+  - OBS (Privacy microphone allowed)
+  - Use Razer Bluetooth
+  - Audio input capture: monitor and output
+  - use filter compressor gain instead?
+  - https://obsproject.com/forum/threads/microphone-is-either-loud-and-crackles-or-does-not-crackle-but-is-too-quiet.170668/post-628437
 - 🚧 start code much earlier
 - change writing style
   - more intertwined with stories
