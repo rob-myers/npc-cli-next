@@ -557,13 +557,13 @@ class cmdServiceClass {
         });
 
         try {
-          if (!operands.length) {// Say lines from stdin
+          if (operands.length > 0) {// Say operands
+            yield { voice: opts.v, text: operands.join(" ") };
+          } else if (isTtyAt(node.meta, 0) === false) {// Say lines from stdin
             let datum: string | VoiceCommand | null;
             while ((datum = await read(meta)) !== EOF) {
               yield { voice: opts.v, text: `${datum}` };
             }
-          } else {// Say operands
-            yield { voice: opts.v, text: operands.join(" ") };
           }
         } finally {
           handlers.dispose();
