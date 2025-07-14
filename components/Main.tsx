@@ -4,14 +4,12 @@ import cx from "classnames";
 import { shallow } from "zustand/shallow";
 
 import { afterBreakpoint, breakpoint, zIndexSite, sideNoteRootDataAttribute } from "./const";
-import { isSmallView } from "./layout";
 import useSite from "./site.store";
 import useRefreshScrollRestoration from "./use-refresh-scroll-restore";
 
 export default function Main(props: React.PropsWithChildren) {
   const site = useSite(({ navOpen, draggingView }) => ({ navOpen, draggingView }), shallow);
   const rootRef = React.useRef<HTMLDivElement>(null);
-  const overlayOpen = site.draggingView;
 
   useRefreshScrollRestoration(rootRef.current);
 
@@ -39,7 +37,7 @@ export default function Main(props: React.PropsWithChildren) {
 
         <div
           css={overlayCss}
-          className={cx({ overlayOpen, navOpen: site.navOpen })}
+          className={cx({ draggingView: site.draggingView, navOpen: site.navOpen })}
           onClick={() => useSite.api.toggleNav()}
         />
       </section>
@@ -132,13 +130,14 @@ const overlayCss = css`
   transition: opacity 300ms;
   opacity: 0;
 
-  &.overlayOpen {
+  &.draggingView {
     cursor: pointer;
     opacity: 1;
   }
-  
-  /* fix Safari i.e. Viewer scroll was jerky when pointer-events: all */
-  &.overlayOpen.navOpen {
-    pointer-events: all;
+  @media (max-width: ${breakpoint}) {
+    &.navOpen {
+      cursor: pointer;
+      opacity: 1;
+    }
   }
 `;
