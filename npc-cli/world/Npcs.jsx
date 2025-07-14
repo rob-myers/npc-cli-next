@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
-import { entries, isDevelopment, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { debug, entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
@@ -322,7 +322,7 @@ export default function Npcs(props) {
       const agent = dstNav;
 
       if (dstNav === false && meta.do !== true) {
-        throw Error(`must spawn on navPoly or do point: ${JSON.stringify(at)}`);
+        throw Error(`must be navigable or doable: ${jsStringify(point)}${ 'z' in at ? ` (height ${at.y})` : ''}`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
@@ -596,6 +596,7 @@ export default function Npcs(props) {
  * - Every npc label may need updating,
      avoidable by precomputing labels 
  * @property {(doMeta: null | Meta) => void} validateDoMeta
+ * Throws if `doMeta` lacks `doPoint` or is in use.
  */
 
 /**

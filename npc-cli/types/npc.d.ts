@@ -85,6 +85,10 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
+    /**
+     * - Navigable points always on ground
+     * - Doable points may be above ground via `meta.y`.
+     */
     at: MaybeMeta<NPC.GroundPoint>;
     /** Position to look towards (overrides `angle`) */
     look?: NPC.GroundPoint;
