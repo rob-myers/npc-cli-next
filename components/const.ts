@@ -55,7 +55,7 @@ export const allArticlesMeta: Record<ArticleKey, ArticleMeta> = {
 export const zIndexSite = /** @type {const} */ ({
   mainHeader: 40,
   mainOverlay: 50,
-  nav: 60,
+  nav: 120,
 
   aboveMainFadeOverlay: 100,
 });
