@@ -326,7 +326,11 @@ export function jsStringify(input, pretty = false, suppressFunctions = false) {
       return '{ /* Promise */ }';
     }
     if (suppressFunctions === true && typeof value === 'function') {
-      return `function () { /* Function ${value.name} */ }`;
+      //return `function () { /* Function ${value.name} */ }`;
+      return `function ${(value.name + 'Mock').replace(/\./g, '_')}() {}`;
+    }
+    if (typeof value?._internalRoot === 'object') {
+      return undefined;
     }
     return stringify(value);
   }, pretty === true ? 2 : undefined) ?? '';
