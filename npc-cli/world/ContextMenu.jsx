@@ -83,8 +83,8 @@ export function ContextMenu() {
         return object.position.clone().add(offset);
       }
     },
-    hide(force) {
-      if (state.pinned === true && force !== true) {
+    hide(unlessPinned = false) {
+      if (state.pinned === true && unlessPinned === true) {
         return;
       }
       state.open = false;
@@ -128,7 +128,7 @@ export function ContextMenu() {
 
       switch (linkKey) {
         // case 'delete': w.c.delete(e.cmKey); break;
-        case 'hide': state.hide(true); break;
+        case 'hide': state.hide(); break;
         case 'toggle-docked': state.toggleDocked(); break;
         case 'toggle-kvs': state.toggleKvs(); break;
         case 'toggle-open': state.toggleOpen(); break;
@@ -476,7 +476,7 @@ export const contextMenuCss = css`
  * @property {(meta: Meta) => void} computeKvsFromMeta
  * @property {() => void} computeLinks
  * @property {() => THREE.Vector3} getPosition Get actual position e.g. if tracked.
- * @property {(force?: boolean | undefined) => void} hide
+ * @property {(unlessPinned?: boolean) => void} hide
  * @property {(e: React.KeyboardEvent<HTMLButtonElement>) => void} onKeyDownButton
  * @property {(e: React.PointerEvent) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerUp

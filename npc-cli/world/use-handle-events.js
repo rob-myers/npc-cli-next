@@ -250,7 +250,7 @@ export default function useHandleEvents(w) {
           break;
         }
         case "pointerdown":
-          w.cm.hide();
+          w.cm.hide(true); // unless pinned
           break;
         case "pointerup":
           !e.touch && state.onPointerUpMenuDesktop(e);
