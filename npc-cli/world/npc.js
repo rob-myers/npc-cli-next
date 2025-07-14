@@ -852,7 +852,7 @@ export class NpcApi {
     const { agent } = this.base;
 
     if (agent === null) {
-      throw new Error(`${this.key}: npc lacks agent`);
+      throw new Error(`npc lacks agent: ${this.key}`);
     }
 
     const points = Array.isArray(opts.to) ? opts.to : [opts.to];
