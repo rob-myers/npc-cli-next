@@ -275,9 +275,8 @@ const useStore = create<State>()((set, get): State => ({
 
       tryLocalStorageSet(
         `var@session-${sessionKey}`,
-        jsStringify(persistedVarLookup),
+        jsStringify(persistedVarLookup, false, true),
       );
-      // console.log({persistedVarLookup})
     },
 
     reboot(sessionKey, pid, group = true) {

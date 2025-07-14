@@ -316,7 +316,7 @@ export function isStringInt(input) {
  * @param {*} input 
  * @returns {string}
  */
-export function jsStringify(input, pretty = false) {
+export function jsStringify(input, pretty = false, suppressFunctions = false) {
   return javascriptStringify(input, function (value, indent, stringify) {
     // use double-quotes instead of single-quotes
     if (typeof value === "string") {
@@ -324,6 +324,9 @@ export function jsStringify(input, pretty = false) {
     }
     if (value instanceof Promise) {
       return '{ /* Promise */ }';
+    }
+    if (suppressFunctions === true && typeof value === 'function') {
+      return `function () { /* Function ${value.name} */ }`;
     }
     return stringify(value);
   }, pretty === true ? 2 : undefined) ?? '';
@@ -644,11 +647,11 @@ export function tryLocalStorageRemove(key, logErr = true) {
  * @param {string} key
  * @param {string} value
  */
-export function tryLocalStorageSet(key, value, logErr = true) {
+export function tryLocalStorageSet(key, value) {
   try {
     localStorage.setItem(key, value);
   } catch (e) {
-    logErr && console.error(e);
+    debug(e);
   }
 }
 
