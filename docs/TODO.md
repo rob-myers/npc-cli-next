@@ -22,7 +22,7 @@
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable
   - ✅ buy presentify
-  - 🚧 test desktop video annotated with presentify
+  - ✅ test desktop video annotated with presentify
     - ℹ️ font-size: touchpad scroll
     - ℹ️ live text a bit shit e.g. can see preview "Text"
     - video could follow "shell script comments"

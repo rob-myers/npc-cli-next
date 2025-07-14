@@ -322,7 +322,7 @@ export default function Npcs(props) {
       const agent = dstNav;
 
       if (dstNav === false && meta.do !== true) {
-        throw Error(`must be navigable or doable: ${jsStringify(point)}${ 'z' in at ? ` (height ${at.y})` : ''}`);
+        throw Error(`non navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
@@ -455,13 +455,13 @@ export default function Npcs(props) {
       }
 
       if (!helper.isVectJson(doMeta.doPoint)) {
-        throw Error(`doMeta.doPoint must exist: ${JSON.stringify(doMeta)}`);
+        throw Error(`doMeta.doPoint must exist: ${jsStringify(doMeta)}`);
       }
 
       const { doPoint, y } = doMeta;
       const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
       if (key in state.doToNpc) {
-        throw Error(`doMeta already in use: ${state.doToNpc[key]}: ${JSON.stringify(doMeta)}`);
+        throw Error(`doable used by ${state.doToNpc[key]}: ${jsStringify(doMeta.doPoint)} (height ${y})`);
       }
     },
   }), { reset: { showLastNavPath: true } });
