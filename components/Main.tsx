@@ -11,8 +11,7 @@ import useRefreshScrollRestoration from "./use-refresh-scroll-restore";
 export default function Main(props: React.PropsWithChildren) {
   const site = useSite(({ navOpen, draggingView }) => ({ navOpen, draggingView }), shallow);
   const rootRef = React.useRef<HTMLDivElement>(null);
-
-  const overlayOpen = site.draggingView || (site.navOpen && isSmallView());
+  const overlayOpen = site.draggingView;
 
   useRefreshScrollRestoration(rootRef.current);
 
