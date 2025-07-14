@@ -57,7 +57,7 @@ export const zIndexSite = /** @type {const} */ ({
   mainOverlay: 50,
   nav: 60,
 
-  aboveViewerFocusOutline: 1,
+  aboveMainFadeOverlay: 100,
 });
 
 export const sideNoteRootDataAttribute = 'data-side-note-root';

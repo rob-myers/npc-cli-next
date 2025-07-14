@@ -248,7 +248,7 @@ interface Props {
 }
 
 const buttonsCss = css`
-  z-index: ${zIndexSite.aboveViewerFocusOutline};
+  z-index: ${zIndexSite.aboveMainFadeOverlay};
 
   display: flex;
   justify-content: right;
