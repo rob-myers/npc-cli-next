@@ -41,13 +41,14 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 ```sh title="" caption="Birth, action and death" showLineNumbers
 # spawn npc
 spawn npcKey:rob at:$( click 1 )
-# within nav mesh or unused "do points"
+# but only navigable or doable
 
 # move
 move npcKey:rob to:$( click 1 )
+# but not whilst doing
 # but not through locked doors
 
-# respawn with full access
+# respawn with skeleton key
 spawn npcKey:rob at:$( click 1 ) grant:.
 
 # move via
