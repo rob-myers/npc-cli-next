@@ -545,7 +545,8 @@ export class NpcApi {
    *   180° offset to get "direction npc is facing"
    */
   getAngle() {
-    return geom.radRange(Math.PI - this.base.rotation.y);
+    /* return geom.radRange(Math.PI - this.base.rotation.y); */
+    return Math.PI - this.base.rotation.y;
   }
 
   /**
@@ -1084,13 +1085,15 @@ export class NpcApi {
       this.setUniform('opacity', this.s.opacity);
     }
 
-    if (this.base.agent === null) {
+    const { agent } = this.base;
+
+    if (agent === null) {
       return;
     }
 
-    this.onTickAgent(deltaSecs, this.base.agent);
+    this.onTickAgent(deltaSecs, agent);
 
-    if (this.base.agent.raw.dvel !== 0 || this.s.offMesh !== null) {
+    if (agent.raw.dvel !== 0 || this.s.offMesh !== null) {
       const { x, y, z } = this.base.position;
       positions.push(this.base.bodyUid, x, y, z);
     }
@@ -1147,14 +1150,12 @@ export class NpcApi {
         this.setSlowDown(this.pendingTargets.length === 0); // update per pendingTarget
         this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
       }
-
       return;
     }
     
     if (this.pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
       // avoid fast final turn
-      // 🚧 do not continually assign
-      this.s.lookSecs = 0.5;
+      this.s.lookSecs = 0.5; // 🚧 do not continually assign
     }
 
     this.onTickDetectStuck(deltaSecs, agent);
@@ -1190,7 +1191,7 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < 0.3) {
+    if (elapsedTime - this.s.slowBegin < 0.5) {
       return; // too short
     }
 
@@ -1470,7 +1471,8 @@ export class NpcApi {
 }
 
 const lookSecsNoTarget = 0.75;
-const defaultMaxAcceleration = 10;
+// 🔔 tuned so that sharp turns (e.g. 180°) are smooth
+const defaultMaxAcceleration = 7;
 
 // const staticSeparationWeight = 0.25;
 // const movingSeparationWeight = 0.5;
