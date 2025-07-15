@@ -322,7 +322,7 @@ export default function Npcs(props) {
       const agent = dstNav;
 
       if (dstNav === false && meta.do !== true) {
-        throw Error(`non navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
+        throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
