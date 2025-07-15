@@ -27,7 +27,6 @@ export default function WorldMenu(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
 
     brightness: 12, // [1..20] inducing percentage `100 + 10 * (b - 10)`
-    disconnected: true,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
@@ -99,8 +98,6 @@ export default function WorldMenu(props) {
       }
     },
     onConnect(connectorKey) {
-      state.disconnected === true && setTimeout(update);
-      state.disconnected = false;
       state.logger.xterm.writeln(`[${ansi.Blue}${connectorKey}${ansi.Reset}] connected`);
     },
     onOverlayPointerUp() {
@@ -236,14 +233,6 @@ export default function WorldMenu(props) {
     <TouchIndicator/>
 
     {w.crowd === null && <CentredSpinner size={32} style={{ position: 'absolute', top: 0 }} />}
-
-    <div
-      css={cssTtyDisconnectedMessage}
-      className={cx({ hidden: state.disconnected === false })}
-    >
-      <h3>[disconnected]</h3>
-      click or show a tty tab
-    </div>
 
   </>;
 }
@@ -392,40 +381,6 @@ const popUpCss = css`
   }
 `;
 
-const cssTtyDisconnectedMessage = css`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: ${zIndexWorld.disconnectedMessage};
-  
-  user-select: none;
-  pointer-events: none;
-  padding: 16px;
-  margin: 0 16px 16px 0;
-  @media (max-width: 700px) {
-    margin: 0;
-  }
-
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 0.9rem;
-  
-  color: #aaa;
-
-  h3 {
-    font-family: 'Courier New', Courier, monospace;
-    color: #8f8;
-  }
-
-  transition: opacity 600ms;
-  opacity: 100;
-  &.hidden {
-    opacity: 0;
-    /** override commons.css */
-    display: initial;
-  }
-`;
-
 const pausedControlsCss = css`
   position: absolute;
   right: 0;
@@ -468,7 +423,6 @@ const pausedControlsCss = css`
  * @property {number} brightness
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
- * @property {boolean} disconnected
  * @property {{ [durKey: string]: number }} durationKeys
  * @property {boolean} invertColor
  * @property {import('../terminal/Logger').State} logger
