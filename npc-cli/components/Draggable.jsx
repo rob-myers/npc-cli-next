@@ -248,7 +248,7 @@ const cornerCss = css`
   right: 0;
   bottom: 0;
   border-left: 20px solid transparent;
-  border-bottom: 20px solid #444;
-  cursor: pointer;
+  border-bottom: 20px solid #666;
+  cursor: nwse-resize;
   pointer-events: all;
 `;
