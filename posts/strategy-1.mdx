@@ -24,7 +24,7 @@ tour npcKey:rob to:"$( points )"
 export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'array' })) {
   for (const to of opts.to) {
     yield* ct.lib.move(ct, { npcKey: opts.npcKey, to });
-    await ct.api.sleep(opts.pauseMs ?? 0.8);
+    await ct.api.sleep(opts.pause ?? 0.8);
   }
 }
 ```

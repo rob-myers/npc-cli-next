@@ -348,15 +348,18 @@ export const testAddDecor = (ct) => {
  * tour npcKey:rob to:"$( click 5 | sponge )"
  * tour npcKey:rob to:"$( points )"
  * 
- * tour npcKey:rob to:"$( array $( points ) )"
- * nestedPoints=$( array $( click 1 ) $( click 2 ) $( click 1 ) )
+ * tour npcKey:rob to:"$( [] $( points ) )"
+ * nestedPoints=$( [] $( click 1 ) $( click 2 ) $( click 1 ) )
  * tour npcKey:rob to:$( nestedPoints )
  * ```
+ * 
+ * - `opts.pause` in seconds, default `0.8`
  * @param {NPC.RunArg} ct
- * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pauseMs?: number }} [opts]
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pause?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
   let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
+  opts.pause ??= 0.8;
   while (to = opts.to.shift()) {
     try {
       await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
@@ -376,7 +379,7 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
       await pause(ct);
       continue;
     }
-    await ct.api.sleep(opts.pauseMs ?? 0.8);
+    await ct.api.sleep(opts.pause);
   }
 }
 
