@@ -581,10 +581,6 @@ export default function useHandleEvents(w) {
         }
       }
 
-      // if (npc.api.isNearTarget(1) && npc.agent?.raw.nneis === 0) {
-      //   // slow down through doorway when no neighbours
-      //   npc.api.setOffMeshExitSpeed(npc.api.getMaxSpeed() * 0.5);
-      // }
 
       if (offMesh.orig.dstRoomMeta.small === true) {// small room
         const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);

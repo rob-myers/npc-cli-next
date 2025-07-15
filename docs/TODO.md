@@ -273,6 +273,9 @@
   - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
   - 🚧 check iPad
 
+- example-commands collection
+  - `tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )`
+
 - investigate efficient Decor add/remove
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
