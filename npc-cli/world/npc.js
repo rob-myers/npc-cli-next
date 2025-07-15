@@ -1138,7 +1138,9 @@ export class NpcApi {
 
     const distance = this.s.target.distanceTo(position);
 
-    if (distance <= this.s.arriveDist) {// Reached target
+    // 🔔 arriving earlier avoids small loops
+    const arriveDist = this.s.arriveDist * (this.pendingTargets.length === 0 ? 1 : 5);
+    if (distance <= arriveDist) {// Reached target
       const pendingTarget = this.pendingTargets.shift();
       
       if (pendingTarget === undefined) {
@@ -1153,8 +1155,8 @@ export class NpcApi {
       return;
     }
     
+    // avoid fast final turn
     if (this.pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
-      // avoid fast final turn
       this.s.lookSecs = 0.5; // 🚧 do not continually assign
     }
 
