@@ -1,6 +1,6 @@
-import { pause } from '@/npc-cli/service/generic';
 import React from 'react';
 import { throttle } from 'throttle-debounce';
+import { pause } from '@/npc-cli/service/generic';
 
 // https://github.com/vercel/next.js/discussions/33777#discussioncomment-2148021
 export default function useRefreshScrollRestoration(scrollEl: HTMLElement | null) {
@@ -20,9 +20,10 @@ export default function useRefreshScrollRestoration(scrollEl: HTMLElement | null
     if (pageAccessedByReload === true) {
       const scrollPosition = Number.parseInt(sessionStorage.getItem(scrollStorageKey) ?? '0', 10);
       if (typeof scrollPosition === 'number') {
-        // delay needed on some pages
         // 🚧 await content loaded
-        pause(500).then(() => scrollEl.scrollTo({ top: scrollPosition, behavior: 'smooth' }));
+        pause(500).then(() => {// ignore if already scrolled
+          if (scrollEl.scrollTop === 0) scrollEl.scrollTo({ top: scrollPosition, behavior: 'smooth' })
+        });
       }
     }
 
