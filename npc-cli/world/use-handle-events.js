@@ -618,11 +618,13 @@ export default function useHandleEvents(w) {
     onExitOffMeshConnection(e, npc) {
       state.clearOffMesh(npc);
       
-      if (npc.agent === null) {
-        return; // e.g. npc without access near door
+      if (npc.agent === null || npc.s.target === null) {
+        // e.g. npc without access near door
+        // e.g. npc collided near door
+        return; 
       }
 
-      if (e.offMesh.dstRoomMeta.small !== true) { 
+      if (e.offMesh.dstRoomMeta.small !== true) {
         // resume speed
         const maxSpeed = npc.api.getMaxSpeed();
         if (npc.agent.maxSpeed !== maxSpeed) {

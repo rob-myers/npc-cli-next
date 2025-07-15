@@ -280,7 +280,7 @@
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 
-- BUG: collide whilst running does not enter Idle
+- ✅ BUG: collide whilst running does not enter Idle
 
 - BUG: sometimes tty-0 fails to persist /home?
 
