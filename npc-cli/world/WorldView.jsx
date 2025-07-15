@@ -66,6 +66,7 @@ export default function WorldView(props) {
     },
     pickingScene: new THREE.Scene(),
     raycaster: new THREE.Raycaster(),
+    resizeOpts: { debounce: w.touchDevice === true ? 30 : 0 },
     resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
@@ -608,7 +609,7 @@ export default function WorldView(props) {
       ref={state.canvasRef}
       css={rootCss}
       frameloop={state.syncRenderMode()}
-      resize={{ debounce: 30 }}
+      resize={state.resizeOpts}
       gl={state.glOpts}
       onCreated={state.onCreated}
       onPointerDown={w.r3f === null ? undefined : state.onPointerDown}
@@ -708,6 +709,7 @@ export default function WorldView(props) {
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
  * @property {THREE.Scene} pickingScene Empty scene for picking.
  * @property {THREE.Raycaster} raycaster
+ * @property {import('react-use-measure').Options} resizeOpts
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((value?: any) => void)>} resolve
  * - follow has `resolve.look` undefined i.e. never resolves
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((error?: any) => void)>} reject

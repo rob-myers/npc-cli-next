@@ -123,7 +123,7 @@ export const Html3d = React.forwardRef(({
         state.rootDiv.className = cx({ docked }, className);
         const { style } = state.rootDiv;
         style.visibility = visible ? 'visible' : 'hidden';
-        style.transition = docked ? '' : 'opacity ease-out 200ms';
+        style.transition = docked ? '' : 'opacity ease-out 100ms';
         style.opacity = docked ? '' : `var(${html3DOpacityCssVar})`;
       }
     }, [state.rootDiv, state.innerDiv, className, docked, visible]);
