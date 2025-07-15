@@ -88,7 +88,6 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
     : 'icon--white-circle'
   ;
 
-
   ct.w.decor.create({
     type: 'point',
     key: decorKey,
@@ -96,7 +95,7 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
     y: at.y,
     img,
     meta: opts.meta,
-    y3d: opts.y ?? 0.001, // below npc selector
+    y3d: (opts.y ?? 0) + 0.001, // below npc selector
   });
 }
 

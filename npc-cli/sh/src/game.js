@@ -32,6 +32,8 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
  * click meta.nav
  * click meta.nav 2
  * ```
+ * 
+ * - Shows number of clicks in decor
  * @param {NPC.RunArg} ct
  */
 export async function* click(ct) {
@@ -76,14 +78,14 @@ export async function* click(ct) {
   // suspend/resume handled by `api.isRunning()` below
   const handlers = api.handleStatus({
     cleanups() {
-      blocking && removeFirst(w.view.clickIds, clickId);
+      blocking === true && removeFirst(w.view.clickIds, clickId);
       eventsSub?.unsubscribe();
     },
   });
 
   try {
     while (numClicks > 0) {
-      blocking && w.view.clickIds.push(clickId);
+      blocking === true && w.view.clickIds.push(clickId);
       
       const e = await /** @type {Promise<NPC.PointerUpEvent>} */ (new Promise((resolve, reject) => {
         eventsSub = w.events.subscribe({ next(e) {
@@ -130,7 +132,7 @@ export async function* click(ct) {
           const number = totalClicks - numClicks; // 1, 2, ...
           const decorKey = `click-#${number}`;
           // 🔔 meta.floor induces meta.nav
-          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true } });
+          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true }, y: e.position.y });
           w.decor.rememberInGroup('click', decorKey);
         }
       }
