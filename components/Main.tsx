@@ -137,6 +137,7 @@ const overlayCss = css`
   @media (max-width: ${breakpoint}) {
     &.navOpen {
       cursor: pointer;
+      pointer-events: all;
       opacity: 1;
     }
   }
