@@ -372,7 +372,6 @@ const manageCss = css`
     .tab-status-and-id {
       display: flex;
       align-items: center;
-      cursor: pointer;
       padding: 8px;
     }
     .tab-status {
