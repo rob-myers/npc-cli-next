@@ -202,17 +202,18 @@ export default function ViewerControls({ api }: Props) {
         <FontAwesomeIcon icon={api.tabs.enabled ? faCirclePauseThin : faCirclePlay} size="1x" />
       </button>
 
-      <div className="reset-container">
+      <div className={cx("reset-container", { showReset: state.showReset })}>
         <button
           className="top-level"
           title="reset tabs"
           onClick={state.onClickReset}
-          disabled={api.tabs.everEnabled === false}
+          /* disabled={api.tabs.everEnabled === false} */
         >
           <FontAwesomeIcon icon={faRefreshThin} size="1x" />
         </button>
         <button
-          className={cx("confirm-reset", { show: state.showReset })}
+          className="confirm-reset"
+          title="hold for hard reset"
           {...resetHandlers}
         >
           reset
@@ -351,35 +352,40 @@ const buttonsCss = css`
   
   .reset-container {
     position: relative;
-  }
 
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  @keyframes fadeOut {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  .confirm-reset {
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    width: calc(100% - 2px);
-    height: calc(100% - 2px);
-    font-size: small;
-    color: rgba(255, 150, 150, 1);
-    background-color: rgba(0, 0, 0, 1);
-    user-select: none;
-
-    transition: opacity 300ms;
-    opacity: 0;
-    pointer-events: none;
-    
-    &.show {
+    .top-level {
+      transition: opacity 300ms;
       opacity: 1;
-      pointer-events: all;
     }
+
+    .confirm-reset {
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      font-size: small;
+      color: rgba(255, 150, 150, 1);
+      user-select: none;
+  
+      transition: opacity 300ms, transform 1s;
+      opacity: 0;
+      pointer-events: none;
+      &:active {
+        transform: scale(1.4);
+      }
+    }
+
+    &.showReset {
+      .top-level {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .confirm-reset {
+        opacity: 1;
+        pointer-events: all;
+      }
+    }
+
   }
 `;
