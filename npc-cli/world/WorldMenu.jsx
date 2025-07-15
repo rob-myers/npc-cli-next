@@ -2,9 +2,10 @@ import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
 import { createPortal } from "react-dom";
+import debounce from "debounce";
 
 import { debug, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
-import { zIndexTabs, zIndexWorld } from "../service/const";
+import { html3DOpacityCssVar, zIndexTabs, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -134,6 +135,19 @@ export default function WorldMenu(props) {
   React.useEffect(() => {
     w.crowd && state.applyControlsInitValues();
   }, [w.crowd]);
+
+  React.useLayoutEffect(() => {
+    const showHtml3dsAfter300ms = debounce(() => 
+      w.view.rootEl.style.setProperty(html3DOpacityCssVar, '1')
+    , 300);
+    const obs = new ResizeObserver(([_entry]) => {
+      w.view.rootEl.style.setProperty(html3DOpacityCssVar, '0');
+      showHtml3dsAfter300ms();
+    });
+    obs.observe(w.view.rootEl);
+    return () => obs.disconnect();
+  }, []);
+
 
   return <>
 

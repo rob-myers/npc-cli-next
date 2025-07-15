@@ -482,3 +482,5 @@ export const texAuxDepth = 256;
 
 /** Literal react query key */
 export const TABS_API_KEY = 'TABS_API_KEY';
+
+export const html3DOpacityCssVar = '--html-3d-opacity';
