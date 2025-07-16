@@ -383,7 +383,7 @@ export const npcClassKeys = /** @type {Key.NpcClass[]} */ (
  * Relates to `npc.def.uid` which is used for object-picking.
  * Technically we can choose any `maxNumberOfNpcs ≤ 2^16 = 65536`.
  */
-export const maxNumberOfNpcs = 256;
+export const maxNumberOfNpcs = 200;
 
 export const npcNearUiDist = 1.2;
 

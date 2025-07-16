@@ -304,14 +304,17 @@ export default function Npcs(props) {
         throw Error(`opts.npcKey must have length ≤ 10`);
       }
 
+      if (state.freeId.size === 0) {
+        throw Error(`max npcs reached: ${maxNumberOfNpcs}`);
+      }
+      
       if (helper.isVectJson(opts.look) === true) {
         opts.look = helper.toXZ(opts.look);
         opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
       }
 
       const dstNav = meta.nav === true || state.isPointInNavmesh(point);
-      /** Attach agent iff dst navigable */
-      const agent = dstNav;
+      const attachAgent = dstNav;
 
       if (dstNav === false && meta.do !== true) {
         throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
@@ -403,7 +406,7 @@ export default function Npcs(props) {
       npc.api.startAnimation(meta); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
-        if (agent === true) {
+        if (attachAgent === true) {
           const agent = state.attachAgent(npc);
           // 🔔 pin to current position
           agent.requestMoveTarget(position);
@@ -412,7 +415,7 @@ export default function Npcs(props) {
           state.byAgId[agent.agentIndex] = npc;
         }
       } else {
-        if (dstNav === false || agent === false) {
+        if (dstNav === false || attachAgent === false) {
           state.removeAgent(npc);
           // must tell physics.worker because not moving
           state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
@@ -434,7 +437,7 @@ export default function Npcs(props) {
       w.crowd.update(w.timer.getFixedDelta());
       state.onTick(1 / 60);
       w.r3f.advance(Date.now()); // so they move
-    }, 30, { immediate: true }),
+    }, 300, { immediate: true }),
     async tickOnceDebug() {
       state.onTick(1 / 60);
       await pause(100); // delay render e.g. for paused npc selection

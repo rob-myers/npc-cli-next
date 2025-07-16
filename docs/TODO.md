@@ -276,7 +276,7 @@
 - 🚧 new example-commands.md
   - `tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )`
 
-- 🚧 spawn more than 200 npcs should throw error
+- ✅ spawn more than 200 npcs should throw error
   - current just sets npc position to (0,0,0)
 
 - investigate efficient Decor add/remove

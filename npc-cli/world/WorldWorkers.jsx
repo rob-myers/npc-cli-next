@@ -2,6 +2,7 @@ import React from 'react';
 import { init as initRecastNav, importTileCache, Crowd } from "@recast-navigation/core";
 
 import { isDevelopment, warn, debug, testNever, info } from '../service/generic';
+import { maxNumberOfNpcs } from '../service/const';
 import { parsePhysicsBodyKey } from '../service/rapier';
 import { computeOffMeshConnectionsParams, disposeCrowd, getTileCacheMeshProcess } from '../service/recast-detour';
 import { helper } from '../service/helper';
@@ -125,7 +126,7 @@ export default function WorldWorkers() {
       }
 
       w.crowd = new Crowd(w.nav.navMesh, {
-        maxAgents: 200,
+        maxAgents: maxNumberOfNpcs,
         // 🔔 maxAgentRadius influences m_agentPlacementHalfExtents
         // 🔔 maxAgentRadius influences proximity grid
         // https://github.com/recastnavigation/recastnavigation/blob/77f7e54bc8cf5a816f9f087a3e0ac391d2043be3/DetourCrowd/Source/DetourCrowd.cpp#L394
