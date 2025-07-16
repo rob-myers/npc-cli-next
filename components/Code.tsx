@@ -20,6 +20,8 @@ export default function Code({ children }: React.PropsWithChildren) {
   const state = useStateRef(() => ({
     container: null as null | HTMLDivElement,
     copyIndicatorText: copyIndication.preCopyAll,
+    /** Text was selected on last pointer down */
+    hadSelection: false,
     lines: [] as string[],
     openCopyText: undefined as undefined | boolean,
 
@@ -54,11 +56,14 @@ export default function Code({ children }: React.PropsWithChildren) {
     async onClick(e: React.PointerEvent<HTMLDivElement> & { target: HTMLElement }) {
       const lineEl = e.target.closest('[data-line]');
 
-      if (lineEl !== null && !documentHasSelection()) {// copy current line
+      if (lineEl !== null && state.hadSelection === false) {// copy current line
         const index = Array.from(lineEl.parentElement?.children ?? []).indexOf(lineEl);
         const line = state.lines[index];
         await state.copySingleLine(line);
       }
+    },
+    onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+      state.hadSelection = documentHasSelection();
     },
     resetCopyText() {
       state.copyIndicatorText = copyIndication.preCopyAll;
@@ -78,6 +83,7 @@ export default function Code({ children }: React.PropsWithChildren) {
       ref={state.ref('container')}
       css={codeContainerCss}
       onClick={state.onClick}
+      onPointerDown={state.onPointerDown}
       {...{ [sideNoteRootDataAttribute]: true }}
     >
       <div
