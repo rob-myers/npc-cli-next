@@ -15,7 +15,7 @@ import { documentHasSelection } from '@/npc-cli/service/dom';
  * Usage: directly provide mdx code block as child,
  * in order for rehype to parse it.
  */
-export default function Code({ children }: React.PropsWithChildren<Props>) {
+export default function Code({ children }: React.PropsWithChildren) {
   
   const state = useStateRef(() => ({
     container: null as null | HTMLDivElement,
@@ -101,16 +101,8 @@ export default function Code({ children }: React.PropsWithChildren<Props>) {
   );
 }
 
-interface Props {
-  // 🚧
-}
-
 const codeContainerCss = css`
   position: relative;
-
-  /* pre {
-    border: 1px solid #7775;
-  } */
   
   > .copy-all {
     position: absolute;
@@ -132,7 +124,7 @@ const codeContainerCss = css`
       align-items: center;
       border-width: 0;
       border-radius: 0;
-      background-color: rgba(60, 60, 60, 1);
+      background-color: rgba(0, 0, 0, 1);
       color: wheat;
     }
     .copy-all-bubble {
@@ -150,6 +142,7 @@ const codeContainerCss = css`
   code[data-line-numbers] {
     counter-reset: line;
   }
+
   code[data-line-numbers] > [data-line]::before {
     counter-increment: line;
     content: counter(line);
@@ -163,8 +156,8 @@ const codeContainerCss = css`
     @media (max-width: 500px) {
       font-size: medium;
     }
-
   }
+
   code[data-line-numbers] > span[data-line] {
     &::before {
       cursor: pointer;
@@ -174,6 +167,10 @@ const codeContainerCss = css`
       /* color: black; */
       font-weight: 700;
     }
+  }
+
+  code::selection {
+    background-color: rgba(180, 180, 255, 0.15);
   }
 
   // selected line
