@@ -290,6 +290,11 @@ export default function Npcs(props) {
     },
     async spawn(opts) {
       const { at } = opts;
+
+      if (!(typeof at?.x === 'number' && typeof at.y === 'number')) {
+        throw Error(`opts.at must be {x,y} or {x,y,z}`);
+      }
+
       const point = helper.toXZ(at);
       const meta = opts.meta ?? at.meta ?? {};
 
@@ -297,8 +302,6 @@ export default function Npcs(props) {
         throw Error(`opts.npcKey must match /^[a-z0-9-_]+$/i`);
       } else if (opts.npcKey.length > 10) {
         throw Error(`opts.npcKey must have length ≤ 10`);
-      } else if (!(typeof point?.x === 'number' && typeof point.y === 'number')) {
-        throw Error(`opts.at must be a valid point`);
       }
 
       if (helper.isVectJson(opts.look) === true) {
