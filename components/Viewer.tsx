@@ -295,8 +295,6 @@ const tabsContainerCss = css`
     background-repeat: no-repeat;
     background-position: 0% 50%;
     
-    border: 50px solid black;
-    border-width: 50px 0;
     filter: grayscale();
   }
 `;
