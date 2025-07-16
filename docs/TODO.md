@@ -273,8 +273,11 @@
   - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
   - ✅ check iPad
 
-- example-commands collection
+- 🚧 new example-commands.md
   - `tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )`
+
+- 🚧 spawn more than 200 npcs should throw error
+  - current just sets npc position to (0,0,0)
 
 - investigate efficient Decor add/remove
 
