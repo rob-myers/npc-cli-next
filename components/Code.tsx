@@ -110,6 +110,10 @@ export default function Code({ children }: React.PropsWithChildren) {
 const codeContainerCss = css`
   position: relative;
   
+  pre {// github-light-default
+    border: 1px solid #7775;
+  }
+
   > .copy-all {
     position: absolute;
     top: 0;
@@ -128,15 +132,18 @@ const codeContainerCss = css`
       height: 50px;
       justify-content: center;
       align-items: center;
-      border-width: 0;
+
+      border: 1px solid #7775;
       border-radius: 0;
-      background-color: rgba(0, 0, 0, 1);
-      color: wheat;
+      background-color: white;
+      color: black;
     }
+
     .copy-all-bubble {
       transform: translate(-24px, -4px);
       .info {
         padding: 4px 8px;
+        border: none;
       }
     }
   }
@@ -169,15 +176,15 @@ const codeContainerCss = css`
       cursor: pointer;
     }
     &:hover::before, &:focus::before {
-      color: white;
-      /* color: black; */
+      /* color: white; */
+      color: black;
       font-weight: 700;
     }
   }
 
-  code::selection {
+  /* code::selection {
     background-color: rgba(180, 180, 255, 0.15);
-  }
+  } */
 
   // selected line
   code > span[data-highlighted-line] {

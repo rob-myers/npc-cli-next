@@ -45,8 +45,9 @@ const withMDX = createMDX({
     remarkPlugins: [],
     rehypePlugins: [
       // https://shiki.style/themes#themes
-      ['rehype-pretty-code' as any, { theme: 'dark-plus' }]
-      // ['rehype-pretty-code' as any, { theme: 'github-light-default' }]
+      // ['rehype-pretty-code' as any, { theme: 'dark-plus' }]
+      // 🔔 safari/iOS lack ::selection support
+      ['rehype-pretty-code' as any, { theme: 'github-light-default' }]
     ],
   },
 });
