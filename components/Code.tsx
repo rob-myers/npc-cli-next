@@ -59,7 +59,9 @@ export default function Code({ children }: React.PropsWithChildren) {
       if (lineEl !== null && state.hadSelection === false) {// copy current line
         const index = Array.from(lineEl.parentElement?.children ?? []).indexOf(lineEl);
         const line = state.lines[index];
-        await state.copySingleLine(line);
+        if (line.trim().length > 0) {
+          await state.copySingleLine(line);
+        }
       }
     },
     onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
