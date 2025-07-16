@@ -225,7 +225,7 @@
 - ✅ BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
   - try fix by removing unnecessary `this.pendingTargets.length = 0`
 
-- `ptags+=foo` -> builtin `ptags foo`
+- ❌ `ptags+=foo` -> builtin `ptags foo`
 
 - 🚧 sh: fail early semantics i.e. `set -e`
   - ℹ️ profile seems "ok": we paste each line, regardless of exitCode
@@ -242,7 +242,7 @@
   - ℹ️ works on google gboard, but not microsoft swiftkey
   - can turn "quick prediction insert" and "quick punctuation" off
 
-- PsList: pause/resume while Tabs paused broke?
+- ❌ PsList: pause/resume while Tabs paused broke?
   - no repro yet
 
 - ✅ move arrival is still delicate
@@ -265,13 +265,13 @@
   - breathTriIds (one per classKey)
   - ...
 
-- 🚧 iOS 18.5 not working, probably when recast (WASM) is loaded
+- ✅ iOS 18.5 not working, probably when recast (WASM) is loaded
   - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
   - https://bugs.webkit.org/show_bug.cgi?id=291677
   - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
   - ℹ️ `small-map-1` works, so could restrict in case of iOS
   - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
-  - 🚧 check iPad
+  - ✅ check iPad
 
 - example-commands collection
   - `tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )`
