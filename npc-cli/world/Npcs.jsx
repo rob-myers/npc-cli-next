@@ -82,21 +82,10 @@ export default function Npcs(props) {
       warn(`${'getClosestNavigable'} failed: ${JSON.stringify(p)}`);
       return null;
     },
-    getNpc(npcKey, processApi) {
-      const npc = processApi === undefined
-        ? state.npc[npcKey]
-        : undefined // 🚧 state.connectNpcToProcess(processApi, npcKey);
-      ;
-      if (npc === undefined) {
-        throw Error(`npc "${npcKey}" does not exist`);
-      } else {
-        return npc;
-      }
-    },
-    getOrThrow(npcKey) {
+    getNpc(npcKey) {
       const npc = state.npc[npcKey];
       if (npc === undefined) {
-        throw Error(`npcKey invalid: ${npcKey}`)
+        throw Error(`npc "${npcKey}" does not exist`);
       } else {
         return npc;
       }
@@ -563,8 +552,7 @@ export default function Npcs(props) {
  * @property {() => void} setupSkins
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
- * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
- * @property {(npcKey: string) => NPC.NPC} getOrThrow
+ * @property {(npcKey: string) => NPC.NPC} getNpc
  * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
