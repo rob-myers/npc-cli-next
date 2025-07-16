@@ -74,7 +74,7 @@ export function connectDevEventsWebsocket() {
     console.error('connectDevEventsWebsocket', e);
     eventSource.close();
     
-    if (++devEventsFailures > 5) {// stop trying
+    if (++devEventsFailures > 10) {// stop trying
       devEventsFailures = 0;
       return;
     }
