@@ -101,6 +101,12 @@ declare namespace NPC {
     skin?: string | Record<string, SkinReMapValue>;
   }
 
+  interface SpawnManyOpts {
+    baseKey?: string;
+    keys?: string[];
+    points: MaybeMeta<NPC.GroundPoint>[];
+  }
+
   type Event = (
     | PointerUpEvent
     | PointerDownEvent

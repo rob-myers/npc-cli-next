@@ -279,6 +279,10 @@
 - ✅ spawn more than 200 npcs should throw error
   - current just sets npc position to (0,0,0)
 
+- 🚧 support multi-spawn with simplified opts
+  - ✅ mounts "all at once"
+  - 🚧 attach/detach agents
+
 - investigate efficient Decor add/remove
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?

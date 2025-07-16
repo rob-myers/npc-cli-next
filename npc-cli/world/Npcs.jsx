@@ -394,9 +394,8 @@ export default function Npcs(props) {
         });
       }
       
-      // 🔔 input `p` can be Vect (x, y) or Vector3Like (x, y, z)
       const position = toV3(at);
-      // 🔔 non-zero height must be set via `p.meta`
+      // 🔔 non-zero height must be set via `meta.y`
       position.y = typeof meta.y === 'number' ? meta.y : 0;
 
       npc.position.copy(position);
@@ -430,6 +429,77 @@ export default function Npcs(props) {
       w.events.next({ key: 'spawned', npcKey: npc.key, gmRoomId });
 
       return npc;
+    },
+    async spawnMany(opts) {// 🔔 no validation
+      const baseKey = opts.baseKey ?? 'npc';
+      
+      const numPermitted = maxNumberOfNpcs - state.idToKey.size;
+      const points = opts.points.slice(0, numPermitted);
+      const npcKeys = (opts?.keys ?? []).slice(0, numPermitted);
+
+      const npcs = /** @type {NPC.NPC[]} */ ([]);
+      for (const [i, point] of points.entries()) {
+        const npcKey = npcKeys[i] ?? `${baseKey}-${i}`;
+        let npc = state.npc[npcKey];
+
+        if (npc === undefined) {// spawn
+          
+          npc = state.npc[npcKey] = createNpc({
+            key: npcKey,
+            uid: takeFirst(state.freeId),
+            angle: Math.PI/2, // default face along x axis
+            classKey: defaultClassKey,
+            runSpeed: helper.defaults.runSpeed,
+            walkSpeed: helper.defaults.walkSpeed,
+          }, w);
+
+          state.idToKey.set(npc.def.uid, npcKey);
+  
+          npc.api.initialize(state.gltf[npc.def.classKey]);
+
+        } else {// respawn
+
+          npc.api.cancel('respawned');
+          npc.epochMs = Date.now();
+          npc.s.lookAngleDst = null;
+  
+          npc.def = {
+            key: npcKey,
+            uid: npc.def.uid,
+            angle: npc.api.getAngle(), // prev angle fallback
+            classKey: npc.def.classKey,
+            runSpeed: helper.defaults.runSpeed,
+            walkSpeed: helper.defaults.walkSpeed,
+          };
+  
+          /* // Reorder keys
+          delete state.npc[npcKey];
+          state.npc[npcKey] = npc; */
+        }
+
+        if (point.meta?.do === true) {
+          state.setDoMeta(npcKey, point.meta);
+        }
+
+        npcs.push(npc);
+      }
+
+      pause().then(update);
+      await Promise.all(npcs.map(npc => new Promise(resolve => npc.resolve.spawn = resolve)));
+
+      for (const [i, point] of points.entries()) {
+        const position = toV3(point);
+        position.y = typeof point.meta?.y === 'number' ? point.meta.y : 0;
+        
+        const npc = npcs[i];
+        npc.position.copy(position);
+        npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
+        npc.lastTarget.copy(position);
+        npc.api.startAnimation(point.meta ?? {});
+
+        // 🚧 attach/detach agents
+      }
+
     },
     // Paused spawn is debounced
     tickOnceSpawn: debounce(() => {
@@ -582,6 +652,7 @@ export default function Npcs(props) {
  * spawn({ npcKey: "rob", skin: "soldier-0", x, y, z, meta })
  * spawn({ npcKey: "rob", classKey: "human-0", x, y, z, meta })
  * ```
+ * @property {(opts: NPC.SpawnManyOpts) => Promise<void>} spawnMany
  * @property {() => void} tickOnceSpawn
  * @property {() => Promise<void>} tickOnceDebug
  * @property {() => void} update
