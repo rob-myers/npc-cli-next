@@ -285,7 +285,19 @@
   - ✅ fix labels
   - ✅ attach/detach agents
 
-- investigate efficient Decor add/remove
+- 🚧 increasing intermediate pendingTarget arrival distance has bad side-effects
+  - ℹ️ means we don't get close enough to intermediate points
+  - `w crowd.navMeshQuery | log`
+  - ✅ expose navMeshQuery methods so we can "look ahead"
+    - initSlicedFindPath 
+    - updateSlicedFindPath
+    - finalizeSlicedFindPath
+    - finalizeSlicedFindPathPartial
+  - ✅ expose finalizeSlicedFindPath too
+  - ✅ try running locally `yarn dev-webpack` with tsconfig paths uncommented
+  - ✅ publish to our recast-navigation-js npm modules
+  - consider detecting "turn into intermediate target" and use slowDownRadius in that case
+
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 
