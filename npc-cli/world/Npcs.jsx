@@ -433,31 +433,42 @@ export default function Npcs(props) {
       const baseKey = opts.baseKey ?? 'npc';
       
       const numPermitted = maxNumberOfNpcs - state.idToKey.size;
-      const points = opts.points.slice(0, numPermitted);
-      const npcKeys = points.map((_, i) => opts.keys?.[i] ?? `${baseKey}_${i}`);
+      /** {x,y} or {x,y,z} possibly with meta  */
+      const groundPoints = opts.points.slice(0, numPermitted);
+      const npcKeys = groundPoints.map((_, i) => opts.keys?.[i] ?? `${baseKey}_${i}`);
+      /** Ground point either has do meta or we assume it is navigable */
+      const doMetas = groundPoints.map(p => p.meta?.do === true && helper.isVectJson(p.meta.doPoint) ? p.meta : null);
+      
+      const angles = groundPoints.map((p, i) => {
+        if (typeof p.meta?.orient === 'number') {
+          return p.meta.orient * (Math.PI / 180);
+        } else {
+          const look = helper.isVectJson(opts.looks?.[i]) ? helper.toXZ(opts.looks[i]) : opts.looks?.[i];
+          const { x, y} = helper.toXZ(p);
+          return helper.isVectJson(look) ? geom.clockwiseFromNorth(look.y - y, look.x - x) : Math.PI/2;
+        }
+      });
       
       const npcs = /** @type {NPC.NPC[]} */ ([]);
-      for (const [i, point] of points.entries()) {
-        const npcKey = npcKeys[i];
+
+      // initialize all
+      for (const [i, npcKey] of npcKeys.entries()) {
+        const doMeta = doMetas[i];
         let npc = state.npc[npcKey];
 
         if (npc === undefined) {// spawn
-          
           npc = state.npc[npcKey] = createNpc({
             key: npcKey,
             uid: takeFirst(state.freeId),
-            angle: Math.PI/2, // default face along x axis
+            angle: angles[i],
             classKey: defaultClassKey,
             runSpeed: helper.defaults.runSpeed,
             walkSpeed: helper.defaults.walkSpeed,
           }, w);
 
           state.idToKey.set(npc.def.uid, npcKey);
-  
           npc.api.initialize(state.gltf[npc.def.classKey]);
-
         } else {// respawn
-
           npc.api.cancel('respawned');
           npc.epochMs = Date.now();
           npc.s.lookAngleDst = null;
@@ -470,23 +481,20 @@ export default function Npcs(props) {
             runSpeed: helper.defaults.runSpeed,
             walkSpeed: helper.defaults.walkSpeed,
           };
-  
-          /* // Reorder keys
-          delete state.npc[npcKey];
-          state.npc[npcKey] = npc; */
         }
 
-        if (point.meta?.do === true) {
-          state.setDoMeta(npcKey, point.meta);
+        if (doMeta !== null) {
+          state.setDoMeta(npcKey, doMeta);
         }
-
         npcs.push(npc);
       }
 
+      // mount all
       pause().then(update);
       await Promise.all(npcs.map(npc => new Promise(resolve => npc.resolve.spawn = resolve)));
 
-      for (const [i, point] of points.entries()) {
+      // finish setup all
+      for (const [i, point] of groundPoints.entries()) {
         const position = toV3(point);
         position.y = typeof point.meta?.y === 'number' ? point.meta.y : 0;
         
@@ -496,8 +504,24 @@ export default function Npcs(props) {
         npc.lastTarget.copy(position);
         npc.api.startAnimation(point.meta ?? {});
 
-        // 🚧 attach/detach agents
-        // ...
+        // attach/detach agents
+        const doMeta = doMetas[i];
+        const attachAgent = doMeta === null;
+        if (npc.agent === null) {
+          if (attachAgent === true) {
+            const agent = state.attachAgent(npc);
+            agent.requestMoveTarget(position);
+            state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
+            state.byAgId[agent.agentIndex] = npc;
+          }
+        } else {
+          if (attachAgent === false) {
+            state.removeAgent(npc);
+            state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
+          } else {
+            npc.agent.teleport(position);
+          }
+        }
 
         npc.s.spawns++;
         npc.s.offMesh = null;

@@ -104,6 +104,12 @@ declare namespace NPC {
   interface SpawnManyOpts {
     baseKey?: string;
     keys?: string[];
+    /**
+     * Each entry is either:
+     * - Radians, cw from north viewed from above, or
+     * - an `NPC.GroundPoint`
+     */
+    looks?: (number | NPC.GroundPoint)[];
     points: MaybeMeta<NPC.GroundPoint>[];
   }
 
