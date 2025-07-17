@@ -163,7 +163,11 @@ export default function PsList() {
     <div css={psListCss}>
 
       <div className="header">
-        <h2>Processes</h2>
+        <h2>
+          Processes
+          {!sessionsExist && <div className="no-sessions">{`[No sessions]`}</div>}
+        </h2>
+
         {sessionsExist && (
           <div className="session-controls">
             <select
@@ -180,8 +184,6 @@ export default function PsList() {
               <FontAwesomeIcon title="refresh" icon={faRefresh} size="xs" />
             </button>
           </div>
-        ) || (
-          <div className="no-sessions">{`[No sessions found]`}</div>
         )}
       </div>
       
@@ -243,15 +245,18 @@ const psListCss = css`
     align-items: stretch;
 
     h2 {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+
       color: #ccc;
       align-self: end;
       font-family: 'Courier New', Courier, monospace;
-      font-size: 0.9rem;
+      font-size: 1rem;
       padding-bottom: 2px;
     }
 
     .no-sessions {
-      font-size: small;
       color: #999;
     }
 
@@ -264,7 +269,7 @@ const psListCss = css`
         padding: 2px 0;
         /* 🔔 fixes safari */
         text-align-last: center;
-        font-size: small;
+        font-size: 0.9rem;
         font-family: 'Courier New', Courier, monospace;
         background: #333;
       }
@@ -279,7 +284,6 @@ const psListCss = css`
 
   .process-leaders {
     display: flex;
-    flex-direction: column;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: stretch;
