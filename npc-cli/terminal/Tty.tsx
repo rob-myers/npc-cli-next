@@ -183,9 +183,12 @@ export default function Tty(props: Props) {
       const { xterm: { xterm }, session } = state.base;
       
       xterm.attachCustomKeyEventHandler((e) => {
-        // also send "Shift + Enter" so can resume Tabs from Tty
-        e.type === 'keyup' && props.onKey?.(e);
-        if (e.key === 'Enter' && e.shiftKey === true) {
+        // xterm.js should not handle shift/ctrl + enter,
+        // so we can unpause Tabs from Tty
+        if (e.type === 'keyup') {
+          props.onKey?.(e); // handle shift/ctrl + enter
+        }
+        if (e.key === 'Enter' && (e.shiftKey === true || e.ctrlKey === true)) {
           return false;
         } else {
           return true;

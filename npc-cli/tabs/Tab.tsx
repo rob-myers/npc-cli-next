@@ -13,13 +13,14 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
     component: null as Awaited<ReturnType<typeof getComponent>> | null,
     onTerminalKey(e: KeyboardEvent) {
       if (tabs.enabled === true) {
-        if (e.key === 'Escape') tabs.toggleEnabled(false);
+        if (e.key === 'Escape') {
+          tabs.toggleEnabled(false);
+        }
       } else {
-        // 🔔 assume "Shift + Enter" prevented from propagating to tty
-        if (e.shiftKey && e.key === 'Enter') tabs.toggleEnabled(true);
+        if (e.key === 'Enter' && (e.shiftKey === true || e.ctrlKey === true)) {
+          tabs.toggleEnabled(true);
+        }
       }
-      // 🔔 cannot enable Tabs on 'Enter' because we permit
-      // using the terminal whilst !api.enabled (debug mode)
     },
     setTabsEnabled(next: boolean) {
       tabs.toggleEnabled(next);

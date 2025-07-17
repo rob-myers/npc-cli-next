@@ -230,14 +230,6 @@ export function isIOS() {
 }
 
 /**
- * Is Ctrl/Shift/Cmd down?
- * @param {MouseEvent} e 
- */
-export function isModifierKey(e) {
-  return e.shiftKey || e.ctrlKey || e.metaKey;
-}
-
-/**
  * Get array of modifier keys that are currently pressed.
  * @param {MouseEvent} e 
  */

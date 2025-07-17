@@ -316,11 +316,11 @@ export default function WorldView(props) {
         return; // ignore ContextMenu clicks
       }
 
-      const cameraKey = e.metaKey || e.ctrlKey || e.shiftKey;
+      const mapControlsKey = e.metaKey === true || e.ctrlKey === true || e.shiftKey === true;
 
       state.down = {
         screenPoint: state.lastScreenPoint.clone(),
-        longTimeoutId: state.down || cameraKey ? 0 : window.setTimeout(() => {
+        longTimeoutId: state.down || mapControlsKey ? 0 : window.setTimeout(() => {
           state.justLongDown = true;
           if (state.lastDown === undefined) {
             return;
