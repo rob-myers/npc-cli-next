@@ -435,7 +435,7 @@ export default function Npcs(props) {
       const numPermitted = maxNumberOfNpcs - state.idToKey.size;
       /** {x,y} or {x,y,z} possibly with meta  */
       const groundPoints = opts.points.slice(0, numPermitted);
-      const npcKeys = groundPoints.map((_, i) => opts.keys?.[i] ?? `${baseKey}_${i}`);
+      const preNpcKeys = groundPoints.map((_, i) => opts.keys?.[i]);
       /** Ground point either has do meta or we assume it is navigable */
       const doMetas = groundPoints.map(p => p.meta?.do === true && helper.isVectJson(p.meta.doPoint) ? p.meta : null);
       
@@ -452,14 +452,17 @@ export default function Npcs(props) {
       const npcs = /** @type {NPC.NPC[]} */ ([]);
 
       // initialize all
-      for (const [i, npcKey] of npcKeys.entries()) {
+      for (const [i, preNpcKey] of preNpcKeys.entries()) {
         const doMeta = doMetas[i];
+        // fallback npcKey uses 1st freeId
+        const freeId = takeFirst(state.freeId);
+        const npcKey = preNpcKey ?? `${baseKey}_${freeId}`;
         let npc = state.npc[npcKey];
-
+        
         if (npc === undefined) {// spawn
           npc = state.npc[npcKey] = createNpc({
             key: npcKey,
-            uid: takeFirst(state.freeId),
+            uid: freeId,
             angle: angles[i],
             classKey: defaultClassKey,
             runSpeed: helper.defaults.runSpeed,
@@ -469,6 +472,7 @@ export default function Npcs(props) {
           state.idToKey.set(npc.def.uid, npcKey);
           npc.api.initialize(state.gltf[npc.def.classKey]);
         } else {// respawn
+          state.freeId.add(freeId); // put it back
           npc.api.cancel('respawned');
           npc.epochMs = Date.now();
           npc.s.lookAngleDst = null;
@@ -481,6 +485,10 @@ export default function Npcs(props) {
             runSpeed: helper.defaults.runSpeed,
             walkSpeed: helper.defaults.walkSpeed,
           };
+
+          // Reorder keys
+          delete state.npc[npcKey];
+          state.npc[npcKey] = npc;
         }
 
         if (doMeta !== null) {
@@ -527,7 +535,7 @@ export default function Npcs(props) {
         npc.s.offMesh = null;
       }
 
-      w.events.next({ key: 'spawned-many', npcKeys });
+      w.events.next({ key: 'spawned-many', npcKeys: npcs.map(npc => npc.key) });
     },
     // Paused spawn is debounced
     tickOnceSpawn: debounce(() => {
