@@ -298,6 +298,19 @@ export default function useHandleEvents(w) {
           state.doorToOffMesh = {};
           state.npcToDoors = {};
           break;
+        case "spawned-many": {
+          // 🚧 compute gmRoomIds
+          const workerNpcs = /** @type {WW.NpcDef[]} */ ([]);
+          for (const npcKey of e.npcKeys) {
+            const npc = w.n[npcKey];
+            if (npc.s.spawns === 1) {// 1st spawn
+              const { x, y, z } = npc.position;
+              workerNpcs.push({ npcKey, position: { x, y, z } });
+              npc.api.setLabel(npcKey);
+            }
+          }
+          break;
+        }
         case "try-close-door":
           state.tryCloseDoor(e.gmId, e.doorId, e.meta);
           break;

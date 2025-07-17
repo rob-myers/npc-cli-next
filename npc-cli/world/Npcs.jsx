@@ -424,7 +424,6 @@ export default function Npcs(props) {
       }
       
       npc.s.spawns++;
-
       npc.s.offMesh = null;
       w.events.next({ key: 'spawned', npcKey: npc.key, gmRoomId });
 
@@ -435,11 +434,11 @@ export default function Npcs(props) {
       
       const numPermitted = maxNumberOfNpcs - state.idToKey.size;
       const points = opts.points.slice(0, numPermitted);
-      const npcKeys = (opts?.keys ?? []).slice(0, numPermitted);
-
+      const npcKeys = points.map((_, i) => opts.keys?.[i] ?? `${baseKey}_${i}`);
+      
       const npcs = /** @type {NPC.NPC[]} */ ([]);
       for (const [i, point] of points.entries()) {
-        const npcKey = npcKeys[i] ?? `${baseKey}-${i}`;
+        const npcKey = npcKeys[i];
         let npc = state.npc[npcKey];
 
         if (npc === undefined) {// spawn
@@ -498,8 +497,13 @@ export default function Npcs(props) {
         npc.api.startAnimation(point.meta ?? {});
 
         // 🚧 attach/detach agents
+        // ...
+
+        npc.s.spawns++;
+        npc.s.offMesh = null;
       }
 
+      w.events.next({ key: 'spawned-many', npcKeys });
     },
     // Paused spawn is debounced
     tickOnceSpawn: debounce(() => {

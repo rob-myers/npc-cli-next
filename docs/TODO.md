@@ -280,7 +280,9 @@
   - current just sets npc position to (0,0,0)
 
 - 🚧 support multi-spawn with simplified opts
+  - ℹ️ `w.npc.spawnMany`
   - ✅ mounts "all at once"
+  - ✅ fix labels
   - 🚧 attach/detach agents
 
 - investigate efficient Decor add/remove
