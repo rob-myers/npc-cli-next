@@ -74,13 +74,13 @@ export default function Ceiling(props) {
       ct.strokeStyle = wallsColor;
       
       // Stroke a square at each corner to avoid z-fighting
-      const hullRect = layout.hullPoly[0].rect;
+      /* const hullRect = layout.hullPoly[0].rect;
       const cornerDim = 8 * sguToWorldScale;
       ct.lineWidth = 0.02;
       ct.strokeRect(hullRect.x, hullRect.y, cornerDim, cornerDim);
       ct.strokeRect(hullRect.right - cornerDim, hullRect.y, cornerDim, cornerDim);
       ct.strokeRect(hullRect.x, hullRect.bottom - cornerDim, cornerDim, cornerDim);
-      ct.strokeRect(hullRect.right - cornerDim, hullRect.bottom - cornerDim, cornerDim, cornerDim);
+      ct.strokeRect(hullRect.right - cornerDim, hullRect.bottom - cornerDim, cornerDim, cornerDim); */
 
     },
     positionInstances() {
