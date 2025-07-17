@@ -303,10 +303,6 @@ export default function Npcs(props) {
       } else if (opts.npcKey.length > 10) {
         throw Error(`opts.npcKey must have length ≤ 10`);
       }
-
-      if (state.freeId.size === 0) {
-        throw Error(`max npcs reached: ${maxNumberOfNpcs}`);
-      }
       
       if (helper.isVectJson(opts.look) === true) {
         opts.look = helper.toXZ(opts.look);
@@ -330,6 +326,10 @@ export default function Npcs(props) {
       state.validateDoMeta(meta.do === true ? meta : null);
       
       let npc = state.npc[opts.npcKey];
+
+      if (npc === undefined && state.freeId.size === 0) {
+        throw Error(`max npcs reached: ${maxNumberOfNpcs}`);
+      }
 
       // prevent look e.g. if will Lie
       const nextAnimKey = helper.getAnimKeyFromMeta(meta);
