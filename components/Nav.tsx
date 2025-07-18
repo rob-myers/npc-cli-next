@@ -67,7 +67,7 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <SubMenu icon={icon.devBlog} label="Dev">
+        <SubMenu icon={icon.devBlog} label="Dev blog">
           <MenuItem>Tech</MenuItem>
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
