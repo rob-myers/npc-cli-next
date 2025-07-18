@@ -56,15 +56,17 @@ export default function Code({ children }: React.PropsWithChildren) {
     async onClick(e: React.PointerEvent<HTMLDivElement> & { target: HTMLElement }) {
       const lineEl = e.target.closest('[data-line]');
 
-      if (lineEl !== null && state.hadSelection === false) {// copy current line
-        const index = Array.from(lineEl.parentElement?.children ?? []).indexOf(lineEl);
-        const line = state.lines[index];
-        if (line.trim().length > 0) {
-          await state.copySingleLine(line);
-        }
+      if (lineEl === null || documentHasSelection() || state.hadSelection === true) {
+        return;
+      }
+
+      const index = Array.from(lineEl.parentElement?.children ?? []).indexOf(lineEl);
+      const line = state.lines[index];
+      if (line.trim().length > 0) {
+        await state.copySingleLine(line);
       }
     },
-    onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    async onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
       state.hadSelection = documentHasSelection();
     },
     resetCopyText() {
