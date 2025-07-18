@@ -594,7 +594,6 @@ export default function useHandleEvents(w) {
         }
       }
 
-
       if (offMesh.orig.dstRoomMeta.small === true) {// small room
         const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);
 

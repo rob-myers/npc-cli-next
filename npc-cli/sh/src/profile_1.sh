@@ -7,7 +7,7 @@ awaitWorld
 
 spawn npcKey:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }'
 spawn npcKey:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }'
-spawn npcKey:kate skin:medic-0 at:'{ x: 5 * 1.5, y: 7 * 1.5 }'
+spawn npcKey:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }'
 spawn npcKey:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }'
 
 spawn npcKey:rada angle:Math.PI skin:'{

@@ -215,6 +215,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
     while (true) {
       try {
         await npc.api.move(opts);
+        //await api.sleep(0.3);
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {
