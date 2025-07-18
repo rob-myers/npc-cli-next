@@ -20,7 +20,6 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     everEnabled: false,
     hash: "",
     model: {} as Model,
-    prevFocused: null,
     resets: 0,
     rootEl: null as any,
     tabsState: {},
@@ -131,16 +130,6 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       }
 
       state.enabled = nextEnabled;
-
-      if (nextEnabled === true) {
-        const prevFocused = state.prevFocused;
-        state.prevFocused = null;
-        // setTimeout prevents enter propagating to Terminal
-        setTimeout(() => (prevFocused || state.rootEl).focus());
-      } else {
-        state.prevFocused = document.activeElement as HTMLElement | null;
-        state.rootEl.focus();
-      }
 
       // Toggle all tabs
       state.toggleTabsDisabled(!nextEnabled);
@@ -288,7 +277,6 @@ export interface State {
   enabled: boolean;
   everEnabled: boolean;
   hash: string;
-  prevFocused: null | HTMLElement;
   /** A reset involves remounting */
   resets: number;
   rootEl: HTMLElement;
