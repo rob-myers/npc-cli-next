@@ -137,6 +137,8 @@ export function createBaseNpc(def, w) {
     lastStart: new THREE.Vector3(),
     /** Current target (if moving), last set one (if not) */
     lastTarget: new THREE.Vector3(),
+    /** Number of corners left whilst moving */
+    numCorners: 0,
   
     /** ContextMenu has different position when `this.s.act` is `Lie` */
     offsetMenu: new THREE.Vector3(),
@@ -751,7 +753,7 @@ export class NpcApi {
           point,
           offMesh.src,
           other.api.getPoint(),
-          0.3,
+          0.35, // noticeable flicker at 0.3
         ) === false
       ) || (
         other.s.offMesh !== null
@@ -927,6 +929,7 @@ export class NpcApi {
       this.pendingTargets.length = 0;
       this.tryStopOffMesh(); // when turnBeforeMove
       this.s.turnBeforeMove = null; // 🚧
+      this.base.numCorners = 0;
     }
   }
 
@@ -993,6 +996,22 @@ export class NpcApi {
         // warn(`${this.key}: exited offMeshConnection but this.s.offMesh already null`);
       }
       return;
+    }
+  }
+
+  /**
+   * @param {NPC.CrowdAgent} agent
+   * @param {number} numCorners
+   */
+  onChangeNumCorners(agent, numCorners) {
+    this.base.numCorners = numCorners;
+    if (this.s.offMesh !== null) {
+      return;
+    }
+    if (numCorners === 1) {
+      //console.log('APPROACH');
+    } else if (numCorners === 2) {
+      //console.log('JUST_AROUND_CORNER');
     }
   }
 
@@ -1138,8 +1157,13 @@ export class NpcApi {
 
     const distance = this.s.target.distanceTo(position);
 
+    const numCorners = agent.raw.get_ncorners();
+    if (numCorners !== this.base.numCorners) {
+      this.onChangeNumCorners(agent, numCorners);
+    }
+
     // 🔔 arriving earlier avoids small loops
-    const arriveDist = this.s.arriveDist * (this.pendingTargets.length === 0 ? 1 : 5);
+    const arriveDist = this.s.arriveDist * (this.pendingTargets.length === 0 ? 1 : 1.5);
     if (distance <= arriveDist) {// Reached target
       const pendingTarget = this.pendingTargets.shift();
       
@@ -1148,6 +1172,7 @@ export class NpcApi {
       } else {
         this.base.lastStart.copy(this.base.position);
         this.s.target = this.base.lastTarget.copy(pendingTarget);
+        this.base.numCorners = 0;
         agent.requestMoveTarget(this.s.target);
         this.setSlowDown(this.pendingTargets.length === 0); // update per pendingTarget
         this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
@@ -1157,7 +1182,7 @@ export class NpcApi {
     
     // avoid fast final turn
     if (this.pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
-      this.s.lookSecs = 0.5; // 🚧 do not continually assign
+      this.s.lookSecs = 0.5;
     }
 
     this.onTickDetectStuck(deltaSecs, agent);
@@ -1401,11 +1426,7 @@ export class NpcApi {
     agent.raw.params.set_separationWeight(defaultIdleSeparationWeight);
     agent.raw.params.set_radius(helper.defaults.radius);
     
-    if (reason.key === 'arrived') {
-      this.startAnimation('Idle');
-    } else {
-      this.startAnimation('Idle');
-    }
+    this.startAnimation('Idle');
 
     const pos = agent.position(); // reset small motions:
     const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;
