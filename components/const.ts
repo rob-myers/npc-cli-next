@@ -10,7 +10,7 @@ export const nav = {
   collapsedRem: 4,
   collapsedWidth: `${4}rem`,
   expandedRem: 15,
-  expandedWidth: `${15}rem`,
+  expandedWidth: `${13}rem`,
   menuItemRem: 3.5,
   menuItem: `${3.5}rem`,
   titleMarginTop: `${0.5}rem`,

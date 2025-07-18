@@ -67,7 +67,7 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <SubMenu icon={icon.devBlog} label="Dev blog">
+        <SubMenu icon={icon.devBlog} label="Dev">
           <MenuItem>Tech</MenuItem>
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
@@ -91,10 +91,11 @@ const navCss = css`
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 
-  color: white;
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
-
+  color: #ddd;
+  font-size: 0.9rem;
+  letter-spacing: 0.1rem;
 
   // root item height and hover
   a.${menuClasses.button}, span.${menuClasses.button} {
@@ -113,6 +114,12 @@ const navCss = css`
     margin-right: 24px;
     margin-left: 12px;
     transition: margin-left 300ms;
+    svg {
+      color: #fff;
+      padding: 6px;
+      background:#aaa4;
+      border-radius: 50%;
+    }
   }
 
   // sub-menu
@@ -139,6 +146,7 @@ const navCss = css`
     opacity: 1;
     transition: opacity 500ms;
     margin-left: 0.75rem;
+    font-family: 'Courier New', Courier, monospace;
 
     .${menuClasses.button} {
       pointer-events: none; // ignore clicks outside <a>
@@ -147,21 +155,15 @@ const navCss = css`
     
     .${menuClasses.label} {
       text-transform: capitalize;
-      letter-spacing: 0.5rem;
+      letter-spacing: 0.4rem;
       a {
         pointer-events: all;
         color: #ddd;
       }
-      @media (max-width: ${breakpoint}) {
-        font-weight: 500;
-        font-size: 1.1rem;
-      }
-      @media (min-width: ${afterBreakpoint}) {
-        font-weight: 200;
-        font-size: 1.3rem;
-      }
+      font-size: 1.1rem;
     }
   }
+
   &.${sidebarClasses.collapsed} .${menuClasses.menuItemRoot}.title {
     opacity: 0;
   }
