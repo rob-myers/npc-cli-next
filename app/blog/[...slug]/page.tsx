@@ -24,8 +24,8 @@ export default async function BlogPage(props: {
             <Link
               {...props}
               href={props.href}
-              target={props.title === '@new-tab' ? "_blank" : props.target}
-              title={props.title === '@new-tab' ? undefined : props.title}
+              target={props.title?.startsWith('@') ? props.target : '_blank'}
+              title={props.title?.startsWith('@') ? props.title.slice(1) : props.title}
             >
               {props.children}
             </Link>
