@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import cx from 'classnames';
 import { css } from '@emotion/react';
 import LiteYouTubeEmbed from 'react-lite-youtube-embed';
 import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css'
@@ -18,7 +19,7 @@ export default function Video(props) {
   return (
     <figure
       css={videoCss}
-      className="video"
+      className={cx("video", { noBg: props.noBg })}
     >
       {iframeAdded === false && typeof props.label !== undefined && <label>
         {props.label}
@@ -36,6 +37,7 @@ export default function Video(props) {
  * @typedef Props
  * @property {VideoKey} videoKey
  * @property {React.ReactElement} [label]
+ * @property {boolean} [noBg]
  */
 
 const videoCss = css`
@@ -73,6 +75,10 @@ const videoCss = css`
     @media(max-width: 600px) {
       max-height: unset;
     }
+  }
+
+  &.noBg article {
+    background: #444 !important;
   }
 `;
 
