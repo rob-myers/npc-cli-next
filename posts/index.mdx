@@ -29,7 +29,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   height={500}
   heightMobile={400}
   items={[
-    <Video videoKey='desktopDemo2' label="Desktop demo 2" />,
+    <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />,
     <Video videoKey='mobileDemo' label="Mobile demo" />,
     <Video videoKey='mobileDemo' label="Mobile demo" />,
   ]}
@@ -38,20 +38,20 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 ---
 
 <Code>
-```sh title="" caption="Birth, action and death" showLineNumbers
-# spawn npc
+```sh title="" caption="Spawn, move and remove" showLineNumbers
+# spawn npc rob at click
 spawn npcKey:rob at:$( click 1 )
-# but only navigable or doable
+# must be navigable or doable
 
-# move
+# move rob to click
 move npcKey:rob to:$( click 1 )
-# but not whilst doing
-# but not through locked doors
+# must be on nav mesh
+# must have access to doors
 
 # respawn with skeleton key
 spawn npcKey:rob at:$( click 1 ) grant:.
 
-# move via
+# move via a waypoint
 move npcKey:rob to:$( click 2 )
 
 # dust to dust
