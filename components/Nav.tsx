@@ -74,7 +74,9 @@ export default function Nav() {
         </SubMenu>
         {/* <MenuItem icon={icon.research}>Research</MenuItem> */}
         <MenuItem icon={icon.help}>Help</MenuItem>
-        <MenuItem icon={icon.about}>About</MenuItem>
+        <MenuItem icon={icon.about} href="/blog/about">
+          About
+        </MenuItem>
       </Menu>
     </Sidebar>
   );

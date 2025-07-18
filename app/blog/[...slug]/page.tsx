@@ -23,19 +23,11 @@ export default async function BlogPage(props: {
         a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
           props.href ??= '';
           return (
-            // <a
-            //   {...props} // new-tab:href induces new tab
-            //   {...props.href?.startsWith('new-tab:') && {
-            //     href: props.href.slice('new-tab:'.length),
-            //     target: "_blank",
-            //   }}
-            // >
-            //   {props.children}
-            // </a>
             <Link
               {...props}
-              href={props.href.startsWith('new-tab:') ? props.href.slice('new-tab:'.length) : props.href}
-              target={props.href.startsWith('new-tab:') ? "_blank" : props.target}
+              href={props.href}
+              target={props.title === '@new-tab' ? "_blank" : props.target}
+              title={props.title === '@new-tab' ? undefined : props.title}
             >
               {props.children}
             </Link>
@@ -47,29 +39,22 @@ export default async function BlogPage(props: {
     <script
       id="page-metadata-json"
       // stringify twice avoids "SyntaxError: Unexpected token ':' (at blog/:1:16614)"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(
-        imported.metadata ?? { key: 'fallback-metadata' }
-      )) }}
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(JSON.stringify(
+          imported.metadata ?? { key: 'fallback-metadata' }
+        ))
+      }}
     />
 
   </>;
 }
 
 export async function generateStaticParams(): Promise<Slug[]> {
-  // const blogNames = await fetch(
-  //   new URL(
-  //     '/api/blog-names',
-  //     `http://localhost:${process.env.DEV_ENV_PORT}`,
-  //   )
-  // ).then((res) => res.json()) as string[];
-  // console.log(blogNames);
-
-    const dirEntries = await fs.readdir("posts", { withFileTypes: true });
-    const blogNames = dirEntries
-      .filter((x) => x.isDirectory() === false && x.name.endsWith(".mdx"))
-      .map((x) => x.name.slice(0, -'.mdx'.length))
-    ;
-
+  const dirEntries = await fs.readdir("posts", { withFileTypes: true });
+  const blogNames = dirEntries
+    .filter((x) => x.isDirectory() === false && x.name.endsWith(".mdx"))
+    .map((x) => x.name.slice(0, -'.mdx'.length))
+  ;
   return blogNames.map(blogName => ({ slug: [blogName] }));
 }
 
