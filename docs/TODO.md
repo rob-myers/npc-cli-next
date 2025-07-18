@@ -25,10 +25,15 @@
   - ✅ test desktop video annotated with presentify
     - ℹ️ font-size: touchpad scroll
     - ℹ️ live text a bit shit e.g. can see preview "Text"
-    - video could follow "shell script comments"
-    - video could follow text typed into terminal e.g. `# foo`
-    - presentify interactive mode
-  - desktop: spawn, move, remove
+    - ✅ video could follow "shell script comments"
+    - ❌ video could follow text typed into terminal e.g. `# foo`
+  - ❌ presentify interactive mode
+    - not yet anyway...
+  - ✅ keystro: mouse + keys
+  - 🔔 OBS shortcuts
+    - start/stop recording: CMD + ;
+  - 🚧 desktop: spawn, move, remove
+    - 2nd attempt ~ 150mb, 7m20
   - mobile: spawn, move, remove
 - ✅ fix mic issue: could not turn off voice isolation
   - System Settings > Sound > select Input
@@ -285,7 +290,7 @@
   - ✅ fix labels
   - ✅ attach/detach agents
 
-- 🚧 increasing intermediate pendingTarget arrival distance has bad side-effects
+- ✅ increasing intermediate pendingTarget arrival distance has bad side-effects
   - ℹ️ means we don't get close enough to intermediate points
   - `w crowd.navMeshQuery | log`
   - ✅ expose navMeshQuery methods so we can "look ahead"
@@ -296,7 +301,9 @@
   - ✅ expose finalizeSlicedFindPath too
   - ✅ try running locally `yarn dev-webpack` with tsconfig paths uncommented
   - ✅ publish to our recast-navigation-js npm modules
-  - consider detecting "turn into intermediate target" and use slowDownRadius in that case
+  - ❌ consider detecting "turn into intermediate target" and use slowDownRadius in that case
+  - ℹ️ points weren't on nav mesh
+  - ℹ️ we decreased to `1.5 * arriveDist`
 
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?

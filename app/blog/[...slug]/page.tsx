@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { promises as fs } from "fs";
-import Card from "@/components/Card";
 import SideNote from "@/components/SideNote";
 
 export default async function BlogPage(props: {
@@ -16,7 +15,6 @@ export default async function BlogPage(props: {
 
     {React.createElement(imported.default, {
       components: {
-        Card,
         SideNote: (props: React.ComponentProps<typeof SideNote>) => (
           <SideNote bubbleClassName="not-prose" {...props} />
         ),

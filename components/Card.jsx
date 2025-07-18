@@ -2,13 +2,15 @@
 
 import { css } from '@emotion/react';
 import React from 'react';
-
 import { breakpoint } from './const';
 
-/** @param {Props} props */
+/** @param {React.PropsWithChildren<Props>} props */
 export default function Card(props) {
   return (
-    <div css={rootCss}>
+    <div
+      css={rootCss}
+      style={typeof props.background === 'string' ? { background: props.background } : undefined}
+    >
       {props.id && <div id={props.id} className="card-anchor" />}
       {props.children}
     </div>
@@ -17,12 +19,12 @@ export default function Card(props) {
 
 const rootCss = css`
   margin: 32px 0;
-  padding: 0px 48px;
+  padding: 8px 48px;
   border-left: 4px solid #dde;
   position: relative;
 
   @media(max-width: ${breakpoint}) {
-    padding: 0px 32px;
+    padding: 8px 32px;
   }
 
   > .card-anchor {
@@ -32,5 +34,7 @@ const rootCss = css`
 `;
 
 /**
- * @typedef {React.PropsWithChildren<{ id?: string }>} Props
+ * @typedef Props
+ * @property {string} [id]
+ * @property {string} [background]
  */
