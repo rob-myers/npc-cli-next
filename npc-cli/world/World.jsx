@@ -351,11 +351,7 @@ export default function World(props) {
               {state.crowd !== null && <>
                 <Decor />
                 <Npcs />
-                <Debug
-                  // showNavMesh
-                  // showOrigNavPoly
-                  // showStaticColliders
-                />
+                <Debug />
               </>}
             </React.Suspense>
             <Floor />

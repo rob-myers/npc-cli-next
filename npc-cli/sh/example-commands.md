@@ -23,6 +23,11 @@ seq 5 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint'
 seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>> pts
 ```
 
+```sh
+w debug.show '{navMesh: true}'
+w debug.show
+```
+
 # Npcs
 
 ```sh
