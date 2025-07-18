@@ -89,6 +89,7 @@ const carouselCss = css`
     div {
       height: 50%;
       border-radius: 0;
+      border: 1px solid white;
       background-color: #777;
       animation: fadeIn 1s forwards;
     }
