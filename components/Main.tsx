@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
@@ -28,7 +29,7 @@ export default function Main(props: React.PropsWithChildren) {
           css={mainHeaderCss}
           data-testid="main-title"
         >
-          NPC CLI
+          <Link href="/blog/index">NPC CLI</Link>
         </header>
 
         <main css={mainMainCss}>
@@ -88,6 +89,11 @@ const mainHeaderCss = css`
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
 
   @media (min-width: ${afterBreakpoint}) {
     min-width: var(--main-min-width-desktop);
