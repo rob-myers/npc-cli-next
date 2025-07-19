@@ -178,9 +178,9 @@ export default function Npcs(props) {
           delete state.npc[npcKey];
           state.freeId.add(npc.def.uid);
           state.idToKey.delete(npc.def.uid);
-          if (npc.s.doMeta !== null) {
-            const { doPoint, y } = npc.s.doMeta;
-            delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
+          if (npc.s.actMeta !== null) {
+            const { actPoint, y } = npc.s.actMeta;
+            delete state.doToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
           }
 
           w.events.next({ key: 'removed-npc', npcKey });
@@ -213,21 +213,21 @@ export default function Npcs(props) {
         ...bodyOverlay !== '-' && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay || 'base' } },
       };
     },
-    setDoMeta(npcKey, doMeta) {
+    setActMeta(npcKey, actMeta) {
       const npc = w.n[npcKey];
 
-      if (npc.s.doMeta !== null) {
-        const { doPoint, y } = npc.s.doMeta;
-        delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
+      if (npc.s.actMeta !== null) {
+        const { actPoint, y } = npc.s.actMeta;
+        delete state.doToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
       }
 
-      if (doMeta === null) {
-        npc.s.doMeta = null;
+      if (actMeta === null) {
+        npc.s.actMeta = null;
       } else {
-        const { doPoint, y } = doMeta;
-        const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+        const { actPoint, y } = actMeta;
+        const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
         state.doToNpc[key] = npcKey;
-        npc.s.doMeta = doMeta;
+        npc.s.actMeta = actMeta;
       }
     },
     setupSkins() {
@@ -312,7 +312,7 @@ export default function Npcs(props) {
       const dstNav = meta.nav === true || state.isPointInNavmesh(point);
       const attachAgent = dstNav;
 
-      if (dstNav === false && meta.do !== true) {
+      if (dstNav === false && meta.act !== true) {
         throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
@@ -323,7 +323,7 @@ export default function Npcs(props) {
         throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }
 
-      state.validateDoMeta(meta.do === true ? meta : null);
+      state.validateActMeta(meta.act === true ? meta : null);
       
       let npc = state.npc[opts.npcKey];
 
@@ -375,7 +375,7 @@ export default function Npcs(props) {
         npc.api.initialize(state.gltf[npc.def.classKey]);
       }
 
-      state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
+      state.setActMeta(opts.npcKey, meta.act === true ? meta : null);
 
       if (typeof opts.skin === 'string') {
         opts.skin = state.resolveSkin(opts.skin);
@@ -436,8 +436,8 @@ export default function Npcs(props) {
       /** {x,y} or {x,y,z} possibly with meta  */
       const groundPoints = opts.points.slice(0, numPermitted);
       const preNpcKeys = groundPoints.map((_, i) => opts.keys?.[i]);
-      /** Ground point either has do meta or we assume it is navigable */
-      const doMetas = groundPoints.map(p => p.meta?.do === true && helper.isVectJson(p.meta.doPoint) ? p.meta : null);
+      /** Ground point either has act meta or we assume it is navigable */
+      const actMetas = groundPoints.map(p => p.meta?.act === true && helper.isVectJson(p.meta.actPoint) ? p.meta : null);
       
       const angles = groundPoints.map((p, i) => {
         if (typeof p.meta?.orient === 'number') {
@@ -453,7 +453,7 @@ export default function Npcs(props) {
 
       // initialize all
       for (const [i, preNpcKey] of preNpcKeys.entries()) {
-        const doMeta = doMetas[i];
+        const actMeta = actMetas[i];
         // fallback npcKey uses 1st freeId
         const freeId = takeFirst(state.freeId);
         const npcKey = preNpcKey ?? `${baseKey}_${freeId}`;
@@ -491,8 +491,8 @@ export default function Npcs(props) {
           state.npc[npcKey] = npc;
         }
 
-        if (doMeta !== null) {
-          state.setDoMeta(npcKey, doMeta);
+        if (actMeta !== null) {
+          state.setActMeta(npcKey, actMeta);
         }
         npcs.push(npc);
       }
@@ -513,8 +513,8 @@ export default function Npcs(props) {
         npc.api.startAnimation(point.meta ?? {});
 
         // attach/detach agents
-        const doMeta = doMetas[i];
-        const attachAgent = doMeta === null;
+        const actMeta = actMetas[i];
+        const attachAgent = actMeta === null;
         if (npc.agent === null) {
           if (attachAgent === true) {
             const agent = state.attachAgent(npc);
@@ -550,19 +550,19 @@ export default function Npcs(props) {
       w.r3f.advance(Date.now());
     },
     update,
-    validateDoMeta(doMeta) {
-      if (doMeta === null) {
+    validateActMeta(actMeta) {
+      if (actMeta === null) {
         return;
       }
 
-      if (!helper.isVectJson(doMeta.doPoint)) {
-        throw Error(`doMeta.doPoint must exist: ${jsStringify(doMeta)}`);
+      if (!helper.isVectJson(actMeta.actPoint)) {
+        throw Error(`actMeta.actPoint must exist: ${jsStringify(actMeta)}`);
       }
 
-      const { doPoint, y } = doMeta;
-      const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+      const { actPoint, y } = actMeta;
+      const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
       if (key in state.doToNpc) {
-        throw Error(`doable used by ${state.doToNpc[key]}: ${jsStringify(doMeta.doPoint)} (height ${y})`);
+        throw Error(`doable used by ${state.doToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
       }
     },
   }), { reset: { showLastNavPath: true } });
@@ -680,7 +680,7 @@ export default function Npcs(props) {
  * - `"soldier-0"`
  * - `"soldier-0//soldier-0/scientist-0"`
  * - `"soldier-0/-/-/-"`
- * @property {(npcKey: string, doMeta: null | Meta) => void} setDoMeta
+ * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
  * ```js
@@ -696,8 +696,8 @@ export default function Npcs(props) {
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
      avoidable by precomputing labels 
- * @property {(doMeta: null | Meta) => void} validateDoMeta
- * Throws if `doMeta` lacks `doPoint` or is in use.
+ * @property {(actMeta: null | Meta) => void} validateActMeta
+ * Throws if `actMeta` lacks `actPoint` or is in use.
  */
 
 /**

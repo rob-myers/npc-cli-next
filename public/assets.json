@@ -13,12 +13,12 @@
     },
     "bed--004--0.8x1.4": {"outputHash": -787864450, "pngHash": 1609319516},
     "bed--005--0.6x1.2": {
-      "outputHash": 523416636,
+      "outputHash": -1975240059,
       "pngHash": -1220380793,
       "obsHashes": [895128349]
     },
     "bridge--042--8x9": {
-      "outputHash": 1944453300,
+      "outputHash": -1047399434,
       "pngHash": 628461375,
       "obsHashes": [
         -1257084114,
@@ -35,7 +35,7 @@
       "obsHashes": [-1222003751]
     },
     "cargo--010--2x4": {
-      "outputHash": -477665571,
+      "outputHash": 1474424862,
       "pngHash": 1452584011,
       "obsHashes": [
         980890569,
@@ -79,17 +79,17 @@
       "obsHashes": [-1128567231]
     },
     "console--033--0.4x0.6": {
-      "outputHash": 150482217,
+      "outputHash": 405010536,
       "pngHash": -1765557674,
       "obsHashes": [-446494730]
     },
     "console--051--0.4x0.6": {
-      "outputHash": 1517330641,
+      "outputHash": -1540548642,
       "pngHash": -282089648,
       "obsHashes": [-1250375694]
     },
     "couch-and-chairs--006--0.4x2": {
-      "outputHash": 1515188946,
+      "outputHash": -467048009,
       "pngHash": 1327581609,
       "obsHashes": [-1830334337, -456036686, -122718859]
     },
@@ -108,12 +108,12 @@
       "obsHashes": [-532072178]
     },
     "counter--009--0.4x0.4": {
-      "outputHash": -631315576,
+      "outputHash": 1080626175,
       "pngHash": 1463076709,
       "obsHashes": [937252768]
     },
     "counter--010--0.4x0.4": {
-      "outputHash": 367217461,
+      "outputHash": -586330002,
       "pngHash": 768005647,
       "obsHashes": [1067031813]
     },
@@ -126,17 +126,17 @@
     "engineering--045--6x4": {"outputHash": 1655107836, "pngHash": -1132388510},
     "engineering--047--4x7": {"outputHash": -1000865445, "pngHash": 541808283},
     "extra--001--fresher--0.5x0.5": {
-      "outputHash": 1527201333,
+      "outputHash": 1698517366,
       "pngHash": 1247120224,
       "obsHashes": [-1912350195]
     },
     "extra--002--fresher--0.5x0.5": {
-      "outputHash": 1662607177,
+      "outputHash": 1550085430,
       "pngHash": 482008010,
       "obsHashes": [1665074508]
     },
     "extra--003--chair--0.25x0.25": {
-      "outputHash": -1896320059,
+      "outputHash": 1169946634,
       "pngHash": -1668511435,
       "obsHashes": [-1328450793]
     },
@@ -146,7 +146,7 @@
       "obsHashes": [-809686854]
     },
     "extra--005--chair-0.25x0.25": {
-      "outputHash": -105043321,
+      "outputHash": 1025337468,
       "pngHash": -372042423,
       "obsHashes": [623506074]
     },
@@ -226,7 +226,7 @@
       "obsHashes": [-877033108]
     },
     "fresher--002--0.4x0.6": {
-      "outputHash": 1400761609,
+      "outputHash": 953613848,
       "pngHash": -1792259774,
       "obsHashes": [-1947846482]
     },
@@ -299,7 +299,7 @@
     "medical--007--3x2": {"outputHash": -1294939436, "pngHash": -74184864},
     "medical--008--3x2": {"outputHash": -1483428566, "pngHash": -1263266565},
     "medical-bed--005--0.6x1.2": {
-      "outputHash": -352366401,
+      "outputHash": 169215894,
       "pngHash": -172295595,
       "obsHashes": [-448200094]
     },
@@ -379,7 +379,7 @@
     "stateroom--019--2x3": {"outputHash": -529139179, "pngHash": 464993285},
     "stateroom--020--2x3": {"outputHash": 1946496398, "pngHash": 987326316},
     "stateroom--035--2x3": {"outputHash": -377432395, "pngHash": -866865591},
-    "stateroom--036--2x4": {"outputHash": 1208854120, "pngHash": 1301313076},
+    "stateroom--036--2x4": {"outputHash": 1581066141, "pngHash": 1301313076},
     "table--004--1.2x2.4": {
       "outputHash": -1436806979,
       "pngHash": 1027833859,
@@ -9405,7 +9405,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "lie": true,
             "bed": true,
             "y": 0.01,
@@ -9956,7 +9956,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "stand": true,
             "point": true,
             "direction": {"x": 1, "y": 0}
@@ -9969,7 +9969,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "stand": true,
             "point": true,
             "direction": {"x": -1, "y": 0}
@@ -10719,7 +10719,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "obscured": true,
             "point": true,
@@ -11320,7 +11320,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "chair": true,
             "y": 0.01,
@@ -11385,7 +11385,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "chair": true,
             "y": 0.01,
@@ -11457,7 +11457,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "sofa": true,
             "point": true,
@@ -11471,7 +11471,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "sofa": true,
             "point": true,
@@ -11485,7 +11485,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "sofa": true,
             "point": true,
@@ -11647,7 +11647,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "stand": true,
             "y": 0,
             "point": true,
@@ -11701,7 +11701,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "stand": true,
             "y": 0,
             "point": true,
@@ -12898,7 +12898,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "stand": true,
             "y": 0,
             "point": true,
@@ -12953,7 +12953,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "toilet": true,
             "y": 0.01,
@@ -13017,7 +13017,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "chair": true,
             "y": 0.01,
@@ -13108,7 +13108,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "chair": true,
             "y": 0.01,
@@ -13786,7 +13786,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "sit": true,
             "toilet": true,
             "y": 0.1,
@@ -16210,7 +16210,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "lie": true,
             "pod": true,
             "medical": true,
@@ -20052,7 +20052,7 @@
           ],
           "meta": {
             "decor": true,
-            "do": true,
+            "act": true,
             "stand": true,
             "point": true,
             "direction": {"x": 0, "y": -1}

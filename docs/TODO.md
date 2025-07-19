@@ -312,12 +312,10 @@
 
 - 🚧 rename meta.do -> meta.act
   - ℹ️ because `do` is reserved word (loop construct)
-  - svg: decor do -> decor act
-  - meta.doPoints -> meta.actPoints
-  - js changes
-  - api.do -> api.act
-  - cli changes
-
+  - ✅ svg: decor do -> decor act
+  - ✅ meta.doPoint -> meta.actPoint
+  - ✅ js changes e.g. api.do -> api.act
+  - ✅ cli changes
 - `act npcKey:rob at:$( click 1 )`
 
 

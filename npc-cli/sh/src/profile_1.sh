@@ -50,14 +50,14 @@ ptags+=always; click meta.npcKey | map --forever '({ meta, keys }, { home, w }) 
 click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)' &
 
 w | map '(w, { home }) => w.e.pressMenuFilters.push(
-  (meta) => home.selectedNpcKey in w.n && (meta.do === true || meta.floor === true)
+  (meta) => home.selectedNpcKey in w.n && (meta.act === true || meta.floor === true)
 )'
 
 click --long | map --forever 'async (input, {home, w}) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
-  if (input.meta.floor === true && !npc.s.doMeta) npc.api.look(input);
-  else await npc.api.do(input);
+  if (input.meta.floor === true && !npc.s.actMeta) npc.api.look(input);
+  else await npc.api.act(input);
 }' &
 
 # click navmesh to move selectedNpcKey

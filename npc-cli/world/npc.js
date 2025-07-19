@@ -87,8 +87,8 @@ export function createBaseNpc(def, w) {
       anim: /** @type {Key.Anim} */ ('Idle'),
       /** Minimal distance at which npc is consider to have arrived */
       arriveDist: defaultNpcArriveDistance,
-      /** Defined iff npc is at a "do point". */
-      doMeta: /** @type {null | Meta} */ (null),
+      /** Defined iff npc is at an "act point". */
+      actMeta: /** @type {null | Meta} */ (null),
       /** Fade duration e.g. during fade spawn */
       fadeSecs: 0.3,
       /**
@@ -341,17 +341,17 @@ export class NpcApi {
 
   /**
    * Possible cases:
-   * - p is a "do point"
-   *   > `p.meta.do === true` 
-   * - npc is at a "do point" (e.g. off-mesh) and p is navigable 
-   *   > `p.meta.nav` and `npc.doMeta`
+   * - p is a "act point"
+   *   > `p.meta.act === true` 
+   * - npc is at a "act point" (e.g. off-mesh) and p is navigable 
+   *   > `p.meta.nav` and `npc.actMeta`
    * - `npc` is off-mesh and `p` is nearly navigable
    * 
    * @param {Meta<Geom.VectJson | THREE.Vector3Like>} p 
    * @param {object} opts
    * @param {any[]} [opts.extraParams] // 🚧 clarify
    */
-  async do(p, opts = {}) {
+  async act(p, opts = {}) {
     if (helper.isVectJson(p) === false) {
       throw Error('point expected');
     } else if (p.meta == null) {
@@ -363,20 +363,20 @@ export class NpcApi {
     const w = this.w;
     const srcNav = w.npc.isPointInNavmesh(this.base.position);
     
-    // point.meta.do
-    if (point.meta.do === true) {
-      if (srcNav === true) {// nav -> do point
-        await this.onMeshDo(point, { ...opts, preferSpawn: false });
-      } else {// off nav -> do point
-        await this.offMeshDo(point);
+    // point.meta.act
+    if (point.meta.act === true) {
+      if (srcNav === true) {// nav -> act point
+        await this.onMeshAct(point, { ...opts, preferSpawn: false });
+      } else {// off nav -> act point
+        await this.offMeshAct(point);
       }
       return;
     }
 
-    // point.meta.nav && npc.doMeta
-    if (point.meta.nav === true && this.s.doMeta !== null) {
+    // point.meta.nav && npc.actMeta
+    if (point.meta.nav === true && this.s.actMeta !== null) {
       if (srcNav === true) {
-        w.npc.setDoMeta(this.key, null);
+        w.npc.setActMeta(this.key, null);
         await this.move({ to: point });
       // } else if (w.npc.canSee(this.getPosition(), point, this.getInteractRadius())) {
       // } else if (true) {
@@ -395,7 +395,7 @@ export class NpcApi {
     // handle offMesh and click near nav
     if (srcNav === false && point.meta.nav === false) {
       const closest = w.npc.getClosestNavigable(toV3(p));
-      if (closest !== null) await this.offMeshDo({...helper.toXZ(closest), meta: { nav: true }});
+      if (closest !== null) await this.offMeshAct({...helper.toXZ(closest), meta: { nav: true }});
     }
   }
 
@@ -507,7 +507,7 @@ export class NpcApi {
 
   /**
    * Fade out, spawn, then fade in.
-   * - `spawn` sets `npc.doMeta` when `meta.do === true`
+   * - `spawn` sets `npc.actMeta` when `meta.act === true`
    * @param {MaybeMeta<Geom.VectJson>} at 
    * @param {object} opts
    * @param {Meta} [opts.meta]
@@ -936,7 +936,7 @@ export class NpcApi {
   /**
    * @param {MaybeMeta<Geom.VectJson>} point 
    */
-  async offMeshDo(point) {
+  async offMeshAct(point) {
     const src = Vect.from(this.getPoint());
     const meta = point.meta ?? {};
 
@@ -949,9 +949,9 @@ export class NpcApi {
     }
 
     await this.fadeSpawn(
-      {...meta.doPoint ?? point}, // 🚧 do points should have meta.doPoint
+      {...meta.actPoint ?? point}, // 🚧 act points should have meta.actPoint
       {
-        angle: meta.nav === true && meta.do !== true
+        angle: meta.nav === true && meta.act !== true
           // use direction src --> point if entering navmesh
           ? src.equals(point)
             ? undefined
@@ -1020,17 +1020,17 @@ export class NpcApi {
    * @param {object} opts
    * @param {boolean} [opts.preferSpawn]
    */
-  async onMeshDo(point, opts = {}) {
+  async onMeshAct(point, opts = {}) {
     const src = this.getPoint();
     const meta = point.meta ?? {};
 
     /** Actual "do point" usually differs from clicked point */
-    const doPoint = /** @type {Geom.VectJson} */ (meta.doPoint) ?? point;
+    const actPoint = /** @type {Geom.VectJson} */ (meta.actPoint) ?? point;
 
-    if (meta.do !== true) {
+    if (meta.act !== true) {
       throw Error('not doable');
     }
-    if (!this.w.gmGraph.inSameRoom(src, doPoint)) {
+    if (!this.w.gmGraph.inSameRoom(src, actPoint)) {
       throw Error('too far away');
     }
 
@@ -1041,19 +1041,19 @@ export class NpcApi {
     ;
     
     // 🤔 could do visibility check (raycast)
-    if (!opts.preferSpawn && this.w.npc.isPointInNavmesh(doPoint) === true) {
+    if (!opts.preferSpawn && this.w.npc.isPointInNavmesh(actPoint) === true) {
       /**
        * Walk, [Turn], Do
        */
-      await this.move({ to: doPoint });
+      await this.move({ to: actPoint });
       if (typeof dstRadians === 'number') {
         await this.look(dstRadians, 500 * geom.compareAngles(this.getAngle(), dstRadians));
       }
-      this.w.npc.setDoMeta(this.key, meta);
+      this.w.npc.setActMeta(this.key, meta);
       this.startAnimation(meta);
     } else {
-      // sets `this.s.doMeta` because `meta.do === true`
-      await this.fadeSpawn(doPoint, {
+      // sets `this.s.actMeta` because `meta.act === true`
+      await this.fadeSpawn(actPoint, {
         angle: dstRadians,
         requireNav: false,
         meta,

@@ -92,7 +92,7 @@ declare namespace NPC {
     at: MaybeMeta<NPC.GroundPoint>;
     /** Position to look towards (overrides `angle`) */
     look?: NPC.GroundPoint;
-    /** Overrides `at?.meta` e.g. because `meta.doPoint.meta` is not serializable */
+    /** Overrides `at?.meta` e.g. because `meta.actPoint.meta` is not serializable */
     meta?: Meta;
     /**
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
