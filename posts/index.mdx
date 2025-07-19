@@ -38,7 +38,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   ]}
 />
 
-The videos above show NPC CLI in wide viewports (e.g. laptop full screen) and narrow ones (e.g. mobile phones).
+The videos above show NPC CLI in a wide viewport (e.g. laptop full screen) and a narrow one (e.g. mobile phones).
 They step through the code below using the _Viewer_, which is either on the right or at the bottom of this page.
 
 <Code>
@@ -63,21 +63,32 @@ w npc.remove rob
 ```
 </Code>
 
-Let's finish this quickstart with our motivation.
+{/* 🚧 add hrefs */}
 
-🚧
+We finish this quickstart with our motivations:
+
+- _Create a video game whose Non-Player Characters behave just like human-controlled characters._
+  This is related to Turing's Imitation Game:
+  the Player is the interrogator, the questions are video game interactions. Can the NPCs fool the Player?
+
+- _As above with a human Game Master rather than an automated director._ Allowing another human to control the NPCs makes the problem more tractable. It also explains our interest in realtime control systems for NPCs.
+
+- _Provide a deep explanation of Recast-Detour._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll be diving deep into the underlying C++ driving our fabrications.
+
+- _Provide a generic scripting system for [three.js]() applications._ We integrate xterm.js terminals, interpreting [mvdan-sh]() syntax trees as JavaScript. In production one can run commands in the terminals. In development the shell functions and processes are synced with JavaScript modules.<SideNote>This approach is independent of three.js, although the latter remains our intended target.</SideNote>
+
 
 ## What's next
 
 There are two blogs: `main` and `dev`.
-The main blog is about NPC behaviours,
-whereas the dev blog describes and refines the underlying software.
-They're separated to avoid technical details overwhelming the main blog.
+The main blog is about NPC behaviours: creating, combining and controlling them in realtime.
+The dev blog is concerned with the underlying software powering NPC CLI.
+They're separated to avoid technical details polluting our central message.
 
 ### `main`
 
-🚧
+🚧 a tale of two NPCs
 
 ### `dev`
 
-🚧
+🚧 introducing the `World`
