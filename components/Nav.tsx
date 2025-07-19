@@ -1,33 +1,40 @@
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { css } from "@emotion/react";
 import React from "react";
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "react-pro-sidebar";
 
-import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
+import { breakpoint, nav, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useStateRef from "../npc-cli/hooks/use-state-ref";
 import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight } from "../npc-cli/components/Icon";
 
 export default function Nav() {
   const collapsed = useSite(({ navOpen }) => !navOpen);
+  const router = useRouter();
 
   const state = useStateRef(() => ({
     onClickMenu(e: React.MouseEvent) {
       const li = (e.target as HTMLElement).closest('li');
-      if (li && li.previousSibling !== null) {
-        e.stopPropagation();
+      if (li === null)  {
+        return; // let toggleCollapsed handle it
       }
-    },
-    onClickToggle(e: React.MouseEvent) {
-      state.toggleCollapsed();
+
+      // do not toggleCollapsed
       e.stopPropagation();
+
+      // support icon clicks
+      const icon = (e.target as HTMLElement).closest(`.${menuClasses.icon}`);
+      if (icon === null) {
+        return;
+      }
+      const a = li.querySelector('a')!;
+      router.push(a.href);
     },
     toggleCollapsed() {
       useSite.api.toggleNav();
     },
-  }), {
-    deps: [collapsed],
-  });
+  }), { deps: [collapsed, router] });
 
   return (
     <Sidebar
@@ -40,7 +47,6 @@ export default function Nav() {
       width={nav.expandedWidth}
     >
       <button
-        onClick={state.onClickToggle}
         css={toggleCss}
         className="toggle"
         style={{ zIndex: 10 }}
