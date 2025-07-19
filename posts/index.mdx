@@ -38,8 +38,8 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   ]}
 />
 
-The videos above show NPC CLI in a wide viewport (e.g. laptop full screen) and a narrow one (e.g. mobile phones).
-They step through the code below using the _Viewer_, which is either on the right or at the bottom of this page.
+These videos show NPC CLI in a wide viewport (laptop full screen) and a narrow one (mobile phone).
+They step through the code directly below using the _Viewer_, which is either on the right or at the bottom of this page.
 
 <Code>
 ```sh title="" caption="Spawn, move and remove" showLineNumbers
@@ -73,7 +73,7 @@ We finish this quickstart with our motivations:
 
 - _As above with a human Game Master rather than an automated director._ Allowing another human to control the NPCs makes the problem more tractable. It also motivates realtime control systems for NPCs.
 
-- _Provide a deep explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation)._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll be diving deep into the underlying C++ driving our fabrications.
+- _Provide an in-depth explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation)._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll be diving deep into the underlying C++ driving our fabrications.
 
 - _Provide a generic scripting system for [three.js](https://www.npmjs.com/package/three)._ Our xterm.js terminals interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript. In production one run commands. In development, shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
 
