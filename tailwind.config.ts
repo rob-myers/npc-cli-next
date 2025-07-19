@@ -18,6 +18,14 @@ export default {
             a: {
               color: "#55d"
             },
+            code: {
+              '&::before': {
+                content: '"" !important',
+              },
+              '&::after': {
+                content: '"" !important',
+              },
+            }
           },
         }
       },
