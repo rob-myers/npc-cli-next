@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { promises as fs } from "fs";
 import SideNote from "@/components/SideNote";
-import styles from './blog.module.css';
+import InlineCode from '@/components/InlineCode';
 
 export default async function BlogPage(props: {
   params: Promise<Slug>;
@@ -32,8 +32,8 @@ export default async function BlogPage(props: {
             </Link>
           );
         },
+        code: InlineCode,
       },
-      className: styles,
     })}
 
     <script
