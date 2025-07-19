@@ -6,11 +6,12 @@ import { breakpoint } from './const';
 
 /** @param {React.PropsWithChildren<Props>} props */
 export default function Card(props) {
+
+  /** @type {React.CSSProperties | undefined} */
+  const styles = typeof props.background === 'string' ? { background: props.background, paddingTop: 8, paddingBottom: 8 } : undefined;
+
   return (
-    <div
-      css={rootCss}
-      style={typeof props.background === 'string' ? { background: props.background } : undefined}
-    >
+    <div css={rootCss} style={styles}>
       {props.id && <div id={props.id} className="card-anchor" />}
       {props.children}
     </div>
@@ -19,12 +20,12 @@ export default function Card(props) {
 
 const rootCss = css`
   margin: 32px 0;
-  padding: 8px 48px;
+  padding: 0 48px;
   border-left: 4px solid #dde;
   position: relative;
 
   @media(max-width: ${breakpoint}) {
-    padding: 8px 32px;
+    padding: 0 32px;
   }
 
   > .card-anchor {
