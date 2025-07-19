@@ -196,6 +196,9 @@ scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhi
 # this command works with Quicktime Player
 # https://github.com/Genymobile/scrcpy/issues/4068#issuecomment-1581233072
 scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4
+
+# 🔔 no need for record because we'll use OBS
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder'
 ```
 
 ### Bump versions in our branch of recast-navigation-js

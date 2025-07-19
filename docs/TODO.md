@@ -30,11 +30,16 @@
   - ❌ presentify interactive mode
     - not yet anyway...
   - ✅ keystro: mouse + keys
-  - 🔔 OBS shortcuts
+  - 🔔 OBS shortcuts we defined:
     - start/stop recording: CMD + ;
   - 🚧 desktop: spawn, move, remove
     - 2nd attempt ~ 150mb, 7m20
-  - mobile: spawn, move, remove
+    - 4th attempt ~ 136mb, 5m17
+  - 🚧 mobile: spawn, move, remove
+    - ✅ New Profile with "Mobile Scene" use Window capture
+    - ℹ️ keep prompt disabled
+    - ✅ show touch points
+      - developer options > input > Show taps
 - ✅ fix mic issue: could not turn off voice isolation
   - System Settings > Sound > select Input
   - exit Jabra software in taskbar
@@ -304,6 +309,16 @@
   - ❌ consider detecting "turn into intermediate target" and use slowDownRadius in that case
   - ℹ️ points weren't on nav mesh
   - ℹ️ we decreased to `1.5 * arriveDist`
+
+- 🚧 rename meta.do -> meta.act
+  - ℹ️ because `do` is reserved word (loop construct)
+  - svg: decor do -> decor act
+  - meta.doPoints -> meta.actPoints
+  - js changes
+  - api.do -> api.act
+  - cli changes
+
+- `act npcKey:rob at:$( click 1 )`
 
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
