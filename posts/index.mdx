@@ -67,11 +67,11 @@ w npc.remove rob
 
 We finish this quickstart with our motivations:
 
-- _Create a video game whose Non-Player Characters behave just like human-controlled characters._
+- _Create a video game whose NPCs behave just like human-controlled characters._
   This is related to Turing's Imitation Game:
   the Player is the interrogator, the questions are video game interactions. Can the NPCs fool the Player?
 
-- _As above with a human Game Master rather than an automated director._ Allowing another human to control the NPCs makes the problem more tractable. It also explains our interest in realtime control systems for NPCs.
+- _As above with a human Game Master rather than an automated director._ Allowing another human to control the NPCs makes the problem more tractable. It also motivates realtime control systems for NPCs.
 
 - _Provide a deep explanation of Recast-Detour._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll be diving deep into the underlying C++ driving our fabrications.
 
@@ -83,7 +83,7 @@ We finish this quickstart with our motivations:
 There are two blogs: `main` and `dev`.
 The main blog is about NPC behaviours: creating, combining and controlling them in realtime.
 The dev blog is concerned with the underlying software powering NPC CLI.
-They're separated to avoid technical details polluting our central message.
+They're separated so we can abstract the technical details and focus on NPC behaviour.
 
 ### `main`
 
