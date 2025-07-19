@@ -23,13 +23,9 @@ export default function Nav() {
       // do not toggleCollapsed
       e.stopPropagation();
 
-      // support icon clicks
-      const icon = (e.target as HTMLElement).closest(`.${menuClasses.icon}`);
-      if (icon === null) {
-        return;
-      }
-      const a = li.querySelector('a')!;
-      router.push(a.href);
+      // can click anywhere in li
+      const as = li.querySelectorAll('a');
+      if (as.length === 1) router.push(as[0].href);
     },
     toggleCollapsed() {
       useSite.api.toggleNav();
