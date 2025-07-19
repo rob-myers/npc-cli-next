@@ -53,11 +53,11 @@ export const allArticlesMeta: Record<ArticleKey, ArticleMeta> = {
 };
 
 export const zIndexSite = /** @type {const} */ ({
+  aboveMainFadeOverlay: 55,
+  belowMainFadeOverlay: 45,
   mainHeader: 40,
   mainOverlay: 50,
-  nav: 120,
-
-  aboveMainFadeOverlay: 100,
+  nav: 60,
 });
 
 export const sideNoteRootDataAttribute = 'data-side-note-root';

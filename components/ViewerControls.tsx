@@ -26,7 +26,7 @@ import {
 } from "../npc-cli/components/Icon";
 
 export default function ViewerControls({ api }: Props) {
-  const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
+  const site = useSite(({ navOpen, viewOpen }) => ({ navOpen, viewOpen }), shallow);
 
   const state = useStateRef(() => ({
     dragOffset: null as null | number,
@@ -178,9 +178,12 @@ export default function ViewerControls({ api }: Props) {
 
   return (
     <div
-      css={buttonsCss}
+      css={viewerControlsCss}
       className="viewer-buttons"
       onPointerDown={state.onDragStart}
+      style={{
+        zIndex: site.navOpen ? zIndexSite.belowMainFadeOverlay : zIndexSite.aboveMainFadeOverlay,
+      }}
     >
       <div className="left-or-bottom-group">
         <div className="drag-indicator">
@@ -248,9 +251,7 @@ interface Props {
   api: State;
 }
 
-const buttonsCss = css`
-  z-index: ${zIndexSite.aboveMainFadeOverlay};
-
+const viewerControlsCss = css`
   display: flex;
   justify-content: right;
   align-items: center;
