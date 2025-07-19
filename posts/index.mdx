@@ -73,17 +73,17 @@ We finish this quickstart with our motivations:
 
 - _As above with a human Game Master rather than an automated director._ Allowing another human to control the NPCs makes the problem more tractable. It also motivates realtime control systems for NPCs.
 
-- _Provide a deep explanation of Recast-Detour._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll be diving deep into the underlying C++ driving our fabrications.
+- _Provide a deep explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation)._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll be diving deep into the underlying C++ driving our fabrications.
 
-- _Provide a generic scripting system for [three.js]()._ Our xterm.js terminals interpret [mvdan-sh]() syntax trees as JavaScript. In production one run commands. In development the shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
+- _Provide a generic scripting system for [three.js](https://www.npmjs.com/package/three)._ Our xterm.js terminals interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript. In production one run commands. In development, shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
 
 
 ## What's next
 
-There are two blogs.
-The main blog is about creating, combining and controlling NPC behaviour in realtime.
-The dev blog is concerned with the underlying software (internal and external).
-They're separated so we can abstract technical details and focus on NPC behaviour.
+We provide two blogs.
+The _main_ blog is about creating, combining and controlling NPC behaviour in realtime.
+The _dev_ blog is concerned with the underlying software (internal and external).
+They're separated so we can abstract technical details and focus on NPC behaviour instead.
 
 ### `main`
 
