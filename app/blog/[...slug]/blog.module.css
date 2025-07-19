@@ -1,0 +1,8 @@
+
+/* Remove backticks from inline code */
+code::before {
+    content: "" !important;
+}
+code::after {
+    content: "" !important;
+}

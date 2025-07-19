@@ -57,7 +57,7 @@ export default function Nav() {
         <MenuItem className="title" component="span" tabIndex={-1}>
           <Link href="/blog/index" tabIndex={-1}>NPC CLI</Link>
         </MenuItem>
-        <SubMenu icon={icon.blog} label="Blog">
+        <SubMenu icon={icon.blog} label="Main">
           <MenuItem component="span">
             <Link href="/blog/intent">Intent</Link>
           </MenuItem>
@@ -73,7 +73,9 @@ export default function Nav() {
           <MenuItem>Two</MenuItem>
         </SubMenu>
         {/* <MenuItem icon={icon.research}>Research</MenuItem> */}
-        <MenuItem icon={icon.help}>Help</MenuItem>
+        <MenuItem icon={icon.help} component="span">
+          <Link href="/blog/help">Help</Link>
+        </MenuItem>
         <MenuItem icon={icon.about} component="span">
           <Link href="/blog/about">About</Link>
         </MenuItem>
