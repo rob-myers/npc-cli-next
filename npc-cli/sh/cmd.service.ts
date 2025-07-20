@@ -683,6 +683,14 @@ class cmdServiceClass {
     exposeReject?: (reject: (reason?: any) => void) => void,
   ) {
     let handlers: HandleStatusReturns;
+
+    const { status } = getProcess(meta);
+    if (status === ProcessStatus.Running) {
+      return;
+    } else if (status === ProcessStatus.Killed) {
+      throw killError(meta);
+    }
+
     try {
       await new Promise<void>((resolve, reject) => {
         handlers = cmdService.handleStatus(meta, {
