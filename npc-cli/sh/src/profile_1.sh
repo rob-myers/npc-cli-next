@@ -57,7 +57,7 @@ click --long | map --forever 'async (input, {home, w}) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   if (input.meta.floor === true && !npc.s.actMeta) npc.api.look(input);
-  else await npc.api.act(input);
+  else await npc.api.act({ at: input });
 }' &
 
 # click navmesh to move selectedNpcKey

@@ -341,17 +341,16 @@ export class NpcApi {
 
   /**
    * Possible cases:
-   * - p is an "act point"
-   *   > `p.meta.act === true` 
-   * - npc is at an "act point" (e.g. off-mesh) and p is navigable 
-   *   > `p.meta.nav` and `npc.actMeta`
-   * - `npc` is off-mesh and `p` is nearly navigable
+   * - opts.at is an "act point"
+   *   i.e. `opts.at.meta.act === true` 
+   * - npc is at an "act point" (e.g. off-mesh) and opts.at is navigable 
+   *   i.e. `opts.at.meta.nav` and `npc.actMeta !== null`
+   * - `npc` is off-mesh and `opts.at` is nearly navigable
    * 
-   * @param {Meta<Geom.VectJson | THREE.Vector3Like>} p 
-   * @param {object} opts
-   * @param {any[]} [opts.extraParams] // 🚧 clarify
+   * @param {NPC.ActOpts} opts 
    */
-  async act(p, opts = {}) {
+  async act(opts) {
+    const p = opts.at;
     if (helper.isVectJson(p) === false) {
       throw Error('point expected');
     } else if (p.meta == null) {

@@ -2,6 +2,18 @@ import { isStringInt, removeFirst } from '../../service/generic';
 import { createDecorNumber } from './game_1';
 
 /**
+ * Supports manual process suspend/resume
+ * ```sh
+ * act npcKey:rob at:$( click 1 )
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string } & NPC.ActOpts} [opts]
+ */
+export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
+  // 🚧
+}
+
+/**
  * @param {NPC.RunArg} ctxt
  */
 export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
@@ -199,7 +211,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 /**
  * Supports manual process suspend/resume
  * ```sh
- * move npcKey:rob to:$( click 1 ) arriveAnim:none
+ * move npcKey:rob to:$( click 1 )
  * ```
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
