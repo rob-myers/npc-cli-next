@@ -318,6 +318,7 @@
   - ✅ cli changes
 - `act npcKey:rob at:$( click 1 )`
 
+- ✅ can force while loop to continue via `|| true`
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 

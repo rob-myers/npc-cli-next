@@ -58,8 +58,9 @@ class semanticsServiceClass {
   }
 
   /**
-   * This implements `set -e` i.e.
-   * > _throw if `exitCode` is defined and non-zero._
+   * This implements `set -e`.
+   * - throw if `exitCode` is defined and non-zero.
+   * - use exitCode `130 + non-zero exitCode` so can ignore in `||`
    */
   private handleChildExitCode(node: Sh.ParsedSh) {
     if (node.exitCode === undefined) {
@@ -67,7 +68,7 @@ class semanticsServiceClass {
       return warn(`node.exitCode undefined: ${srcService.src(node)} in ${getProcess(node.meta).src}`);
     }
     if (node.exitCode !== 0) {// set -e
-      throw killError(node.meta, node.exitCode);
+      throw killError(node.meta, 130 + node.exitCode);
     }
   }
 
@@ -215,9 +216,22 @@ class semanticsServiceClass {
         break;
       }
       case "||": {
+        const stackIndex = node.meta.stack.length;
         for (const stmt of stmts) {
-          yield* sem.Stmt(stmt);
-          if (!(node.exitCode = stmt.exitCode)) break;
+          try {
+            yield* sem.Stmt(stmt);
+          } catch (e) {
+            if (e instanceof ProcessError && e.exitCode! >= 131) {
+              // 🔔 ignore kill errors due to `set -e`
+              // we reset stack to avoid huge error messages
+              stmt.meta.stack.splice(stackIndex, stmt.meta.stack.length - stackIndex);
+            } else {
+              throw e;
+            }
+          }
+          if (!(node.exitCode = stmt.exitCode)) {
+            break;
+          }
         }
         break;
       }
