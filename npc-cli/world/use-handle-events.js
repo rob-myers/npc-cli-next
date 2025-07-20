@@ -509,7 +509,7 @@ export default function useHandleEvents(w) {
       ) {
         const nextCorner = npc.api.getNextCorner();
         npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.api.getRemainingPath() });
-        npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(nextCorner));
+        npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(offMesh.dst));
         return;
       }
       
