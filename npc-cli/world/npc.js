@@ -161,7 +161,6 @@ export function createBaseNpc(def, w) {
   
     reject: {// 🚧 support multiple rejects in each case
       fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
-      // 🚧 `reject.move` and `onRejects.move`
       move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
       separate: /** @type {undefined | ((error: any) => void)} */ (undefined),
       // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
@@ -170,6 +169,7 @@ export function createBaseNpc(def, w) {
 
     /** Additional callbacks to be executed on reject */
     onRejects: {
+      fade: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
       move: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
     },
 
@@ -395,7 +395,7 @@ export class NpcApi {
   cancel(reason) {
     info(`${'cancel'}: cancelling ${this.key}`);
 
-    this.reject.fade?.(`${'cancel'}: cancelled fade`);
+    this.rejectFade(Error(`${'cancel'}: cancelled fade`));
     this.rejectMove({ type: 'stop-reason', key: reason });
     this.reject.turn?.(`${'cancel'}: cancelled turn`);
 
@@ -1297,6 +1297,20 @@ export class NpcApi {
     }
   }
 
+  /** @param {Error} [error] */
+  rejectFade(error = Error('cancelled')) {
+    this.reject.fade?.(error);
+    this.base.onRejects.fade.forEach(reject => reject(error));
+    this.base.onRejects.fade.length = 0;
+  }
+
+  /** @param {NPC.StopReason | Error} [error] */
+  rejectMove(error = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() }) {
+    this.reject.move?.(error);
+    this.base.onRejects.move.forEach(reject => reject(error));
+    this.base.onRejects.move.length = 0;
+  }
+
   resetSkin() {
     this.base.skin = {};
     this.applySkin();
@@ -1378,13 +1392,6 @@ export class NpcApi {
     const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
-  }
-
-  /** @param {NPC.StopReason | Error} [error] */
-  rejectMove(error = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() }) {
-    this.reject.move?.(error);
-    this.base.onRejects.move.forEach(reject => reject(error));
-    this.base.onRejects.move.length = 0;
   }
 
   /**

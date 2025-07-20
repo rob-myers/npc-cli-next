@@ -2,7 +2,6 @@ import { isStringInt, removeFirst } from '../../service/generic';
 import { createDecorNumber } from './game_1';
 
 /**
- * Supports manual process suspend/resume
  * ```sh
  * act npcKey:rob at:$( click 1 )
  * ```
@@ -10,7 +9,43 @@ import { createDecorNumber } from './game_1';
  * @param {{ npcKey: string } & NPC.ActOpts} [opts]
  */
 export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
-  // 🚧
+  const npc = w.npc.getNpc(opts.npcKey);
+  const { meta } = opts.at
+
+  const handlers = api.handleStatus({
+    cleanups() {
+      if (npc.s.actMeta !== meta) {
+        npc.api.rejectMove(Error('cancelled'));
+        npc.api.rejectFade(Error('cancelled'));
+      }
+    },
+    onSuspends(byPtags) {
+      if (!byPtags && npc.s.actMeta !== meta) {
+        npc.api.rejectMove(Error('manual-pause'));
+        npc.api.rejectFade(Error('manual-pause'));
+        return true;
+      }
+    },
+  });
+
+  try {
+    while (true) {
+      try {
+        await npc.api.act(opts);
+        break;
+      } catch (e) {
+        if (!(e instanceof Error && e.message === 'manual-pause')) {
+          throw e;
+        }
+        await api.awaitResume(reject => {
+          npc.onRejects.move.push(reject);
+          npc.onRejects.fade.push(reject);
+        });
+      }
+    }
+  } finally {
+    handlers.dispose();
+  }
 }
 
 /**
@@ -219,7 +254,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getNpc(opts.npcKey);
   const handlers = api.handleStatus({
-    cleanups() { npc.api.rejectMove(api.getKillError()); },
+    cleanups() { npc.api.rejectMove(Error('cancelled')); },
     onSuspends(byPtags) { if (!byPtags) { npc.api.rejectMove(Error('manual-pause')); return true; } },
   });
 
@@ -233,7 +268,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
         if (!(e instanceof Error && e.message === 'manual-pause')) {
           throw e;
         }
-        await api.awaitResume(reject => npc.reject.moves.push(reject));
+        await api.awaitResume(reject => npc.onRejects.move.push(reject));
       }
     }
   } finally {
