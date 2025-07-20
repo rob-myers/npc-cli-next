@@ -58,7 +58,7 @@ const commandKeys = {
   /** Run a javascript generator */
   run: true,
   /** Speech synthesis */
-  say: true,
+  speak: true,
   /** Echo session key */
   session: true,
   /** Set something */
@@ -538,7 +538,7 @@ class cmdServiceClass {
         }
         break;
       }
-      case "say": {
+      case "speak": {
         const { opts, operands } = getOpts(args, {
           string: ["v"],
         });

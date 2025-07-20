@@ -469,7 +469,7 @@ export class VoiceDevice implements Device {
   /**
    * Writing takes a long time, due to speech.
    * Moreover we write every line before returning.
-   * - `VoiceCommand` from e.g. `say foo{1..5}`
+   * - `VoiceCommand` from e.g. `speak foo{1..5}`
    * - `string` from e.g. `echo foo{1..5} >/dev/voice`
    */
   async writeData(input: VoiceCommand | string) {
