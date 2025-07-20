@@ -858,6 +858,9 @@ export class NpcApi {
     if (agent === null) {
       throw new Error(`npc ${this.key} lacks agent`);
     }
+    if (this.s.actMeta !== null) {// must be on-mesh act point
+      this.w.npc.setActMeta(this.key, null);
+    }
 
     const points = Array.isArray(opts.to) ? opts.to : [opts.to];
     if (!(points.every(helper.isVectJson))) {
