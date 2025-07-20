@@ -212,6 +212,67 @@ export class NpcApi {
   }
 
   /**
+   * Possible cases:
+   * - opts.at is an "act point"
+   *   i.e. `opts.at.meta.act === true` 
+   * - npc is at an "act point" (e.g. off-mesh) and opts.at is navigable 
+   *   i.e. `opts.at.meta.nav` and `npc.actMeta !== null`
+   * - `npc` is off-mesh and `opts.at` is nearly navigable
+   * 
+   * @param {NPC.ActOpts} opts 
+   */
+  async act(opts) {
+    const p = opts.at;
+    if (helper.isVectJson(p) === false) {
+      throw Error('opts.at must be {x,y} or {x,y,z}');
+    } else if (p.meta == null) {
+      throw Error('opts.at.meta expected');
+    }
+    const point = /** @type {Meta<Geom.VectJson>} */ (helper.toXZ(p));
+    point.meta = p.meta;
+
+    const w = this.w;
+    const srcNav = w.npc.isPointInNavmesh(this.base.position);
+    
+    // point.meta.act
+    if (point.meta.act === true) {
+      if (srcNav === true) {// nav -> act point
+        await this.onMeshAct(point, { ...opts, preferSpawn: false });
+      } else {// off nav -> act point
+        await this.offMeshAct(point);
+      }
+      return;
+    }
+
+    // point.meta.nav && npc.actMeta
+    if (point.meta.nav === true && this.s.actMeta !== null) {
+      if (srcNav === true) {
+        w.npc.setActMeta(this.key, null);
+        await this.move({ to: point });
+      // } else if (w.npc.canSee(this.getPosition(), point, this.getInteractRadius())) {
+      // } else if (true) {
+      } else if (
+        typeof point.meta.grKey === 'string'
+          ? point.meta.grKey === w.e.npcToRoom.get(this.key)?.grKey
+          : false
+      ) {
+        await this.fadeSpawn(point);
+      } else {
+        throw Error('cannot reach navigable point')
+      }
+      return;
+    }
+
+    // handle offMesh and click near nav
+    if (srcNav === false && point.meta.nav === false) {
+      const closest = w.npc.getClosestNavigable(toV3(p));
+      if (closest !== null) {
+        await this.offMeshAct({...helper.toXZ(closest), meta: { nav: true }});
+      }
+    }
+  }
+
+  /**
    * Apply uv re-mapping @see {Npc.skin}
    * - 1st row of pixels
    * - one pixel per triangle
@@ -337,67 +398,6 @@ export class NpcApi {
     this.m.mesh = emptySkinnedMesh;
     Object.values(this.m.toAct).forEach(act => act.stop());
     this.m.toAct = /** @type {*} */ ({});
-  }
-
-  /**
-   * Possible cases:
-   * - opts.at is an "act point"
-   *   i.e. `opts.at.meta.act === true` 
-   * - npc is at an "act point" (e.g. off-mesh) and opts.at is navigable 
-   *   i.e. `opts.at.meta.nav` and `npc.actMeta !== null`
-   * - `npc` is off-mesh and `opts.at` is nearly navigable
-   * 
-   * @param {NPC.ActOpts} opts 
-   */
-  async act(opts) {
-    const p = opts.at;
-    if (helper.isVectJson(p) === false) {
-      throw Error('point expected');
-    } else if (p.meta == null) {
-      throw Error('point.meta expected');
-    }
-    const point = /** @type {Meta<Geom.VectJson>} */ (helper.toXZ(p));
-    point.meta = p.meta;
-
-    const w = this.w;
-    const srcNav = w.npc.isPointInNavmesh(this.base.position);
-    
-    // point.meta.act
-    if (point.meta.act === true) {
-      if (srcNav === true) {// nav -> act point
-        await this.onMeshAct(point, { ...opts, preferSpawn: false });
-      } else {// off nav -> act point
-        await this.offMeshAct(point);
-      }
-      return;
-    }
-
-    // point.meta.nav && npc.actMeta
-    if (point.meta.nav === true && this.s.actMeta !== null) {
-      if (srcNav === true) {
-        w.npc.setActMeta(this.key, null);
-        await this.move({ to: point });
-      // } else if (w.npc.canSee(this.getPosition(), point, this.getInteractRadius())) {
-      // } else if (true) {
-      } else if (
-        typeof point.meta.grKey === 'string'
-          ? point.meta.grKey === w.e.npcToRoom.get(this.key)?.grKey
-          : false
-      ) {
-        await this.fadeSpawn(point);
-      } else {
-        throw Error('cannot reach navigable point')
-      }
-      return;
-    }
-
-    // handle offMesh and click near nav
-    if (srcNav === false && point.meta.nav === false) {
-      const closest = w.npc.getClosestNavigable(toV3(p));
-      if (closest !== null) {
-        await this.offMeshAct({...helper.toXZ(closest), meta: { nav: true }});
-      }
-    }
   }
 
   ensureAnimationMixer() {
