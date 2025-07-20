@@ -24,7 +24,7 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
-    doToNpc: {},
+    actToNpc: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
     gltfAux: /** @type {*} */ ({}),
@@ -180,7 +180,7 @@ export default function Npcs(props) {
           state.idToKey.delete(npc.def.uid);
           if (npc.s.actMeta !== null) {
             const { actPoint, y } = npc.s.actMeta;
-            delete state.doToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
+            delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
           }
 
           w.events.next({ key: 'removed-npc', npcKey });
@@ -218,7 +218,7 @@ export default function Npcs(props) {
 
       if (npc.s.actMeta !== null) {
         const { actPoint, y } = npc.s.actMeta;
-        delete state.doToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
+        delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
       }
 
       if (actMeta === null) {
@@ -226,7 +226,7 @@ export default function Npcs(props) {
       } else {
         const { actPoint, y } = actMeta;
         const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
-        state.doToNpc[key] = npcKey;
+        state.actToNpc[key] = npcKey;
         npc.s.actMeta = actMeta;
       }
     },
@@ -561,8 +561,8 @@ export default function Npcs(props) {
 
       const { actPoint, y } = actMeta;
       const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
-      if (key in state.doToNpc) {
-        throw Error(`actable used by ${state.doToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
+      if (key in state.actToNpc) {
+        throw Error(`actable used by ${state.actToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
       }
     },
   }), { reset: { showLastNavPath: true } });
@@ -627,8 +627,10 @@ export default function Npcs(props) {
 
 /**
  * @typedef State
+ * @property {Record<`${number},${number},${number}`, string>} actToNpc
+ * Act point to current npc or undefined.
+ * - `${x},${y},${z}` -> npcKey
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
- * @property {Record<`${number},${number},${number}`, string>} doToNpc `${x},${y},${z}` -> npcKey
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
