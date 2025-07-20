@@ -762,7 +762,7 @@ export class NpcApi {
           point,
           offMesh.src,
           other.api.getPoint(),
-          0.35, // noticeable flicker at 0.3
+          0.3, // sometimes small flicker when idle
         ) === false
       ) || (
         other.s.offMesh !== null
