@@ -9,27 +9,31 @@ export default function useRefreshScrollRestoration(scrollEl: HTMLElement | null
       return;
     }
 
-    const pageAccessedByReload = window.performance
+    const navigationEntry = window.performance
       .getEntriesByType('navigation')
-      .map((nav) => (nav as any).type)
-      .includes('reload')
+      .find((nav) => (nav as any).type === 'reload')
     ;
 
+    const pageAccessedByReload = navigationEntry !== undefined;
+    /* const pageAccessedByReload = navigationEntry?.name === window.location.href; */
+    
     const scrollStorageKey = `scrollTop:${window.location.pathname}`;
+    let userScrolled = false;
 
     if (pageAccessedByReload === true) {
       const scrollPosition = Number.parseInt(sessionStorage.getItem(scrollStorageKey) ?? '0', 10);
       if (typeof scrollPosition === 'number') {
         // 🚧 await content loaded
         pause(500).then(() => {// ignore if already scrolled
-          if (scrollEl.scrollTop === 0) scrollEl.scrollTo({ top: scrollPosition, behavior: 'smooth' })
+          if (userScrolled === false) scrollEl.scrollTo({ top: scrollPosition, behavior: 'smooth' })
         });
       }
     }
 
-    const handleScroll = throttle(500, () =>
-      sessionStorage.setItem(scrollStorageKey, String(scrollEl.scrollTop))
-    );
+    const handleScroll = throttle(500, () => {
+      sessionStorage.setItem(scrollStorageKey, String(scrollEl.scrollTop));
+      userScrolled = true;
+    });
 
     scrollEl.addEventListener('scroll', handleScroll);
     return () => {
