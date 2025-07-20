@@ -272,7 +272,7 @@ export async function* w(ct) {
   
   let reject = /** @param {*} e */ (e) => {};
   const handlers = api.handleStatus({
-    cleanups() { reject("potential ongoing computation") },
+    cleanups() { reject(new Error("potential ongoing computation")) },
   });
   /** @param {any} value */
   async function awaitOrIgnore(value) {// handle non-promise or promise

@@ -341,9 +341,9 @@ export class NpcApi {
 
   /**
    * Possible cases:
-   * - p is a "act point"
+   * - p is an "act point"
    *   > `p.meta.act === true` 
-   * - npc is at a "act point" (e.g. off-mesh) and p is navigable 
+   * - npc is at an "act point" (e.g. off-mesh) and p is navigable 
    *   > `p.meta.nav` and `npc.actMeta`
    * - `npc` is off-mesh and `p` is nearly navigable
    * 
@@ -395,7 +395,9 @@ export class NpcApi {
     // handle offMesh and click near nav
     if (srcNav === false && point.meta.nav === false) {
       const closest = w.npc.getClosestNavigable(toV3(p));
-      if (closest !== null) await this.offMeshAct({...helper.toXZ(closest), meta: { nav: true }});
+      if (closest !== null) {
+        await this.offMeshAct({...helper.toXZ(closest), meta: { nav: true }});
+      }
     }
   }
 
@@ -1028,7 +1030,7 @@ export class NpcApi {
     const actPoint = /** @type {Geom.VectJson} */ (meta.actPoint) ?? point;
 
     if (meta.act !== true) {
-      throw Error('not doable');
+      throw Error('not actable');
     }
     if (!this.w.gmGraph.inSameRoom(src, actPoint)) {
       throw Error('too far away');

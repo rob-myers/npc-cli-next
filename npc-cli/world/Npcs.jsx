@@ -313,7 +313,7 @@ export default function Npcs(props) {
       const attachAgent = dstNav;
 
       if (dstNav === false && meta.act !== true) {
-        throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
+        throw Error(`not navigable nor actable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
@@ -562,7 +562,7 @@ export default function Npcs(props) {
       const { actPoint, y } = actMeta;
       const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
       if (key in state.doToNpc) {
-        throw Error(`doable used by ${state.doToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
+        throw Error(`actable used by ${state.doToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
       }
     },
   }), { reset: { showLastNavPath: true } });
