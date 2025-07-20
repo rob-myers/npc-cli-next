@@ -324,6 +324,9 @@
 
 - ✅ BUG: collide whilst running does not enter Idle
 
+- ✅ reorg npc.reject.moves
+  - `npc.reject.move` (single) and `npc.onRejects.move` (multiple)
+
 - BUG: sometimes tty-0 fails to persist /home?
 
 - BUG: sh: multi-line history with repro

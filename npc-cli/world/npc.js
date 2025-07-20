@@ -161,10 +161,16 @@ export function createBaseNpc(def, w) {
   
     reject: {// 🚧 support multiple rejects in each case
       fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
-      moves: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
+      // 🚧 `reject.move` and `onRejects.move`
+      move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
       separate: /** @type {undefined | ((error: any) => void)} */ (undefined),
       // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
       turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
+    },
+
+    /** Additional callbacks to be executed on reject */
+    onRejects: {
+      move: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
     },
 
     w,
@@ -884,7 +890,7 @@ export class NpcApi {
     
     this.s.target !== null && this.rejectMove({
       type: 'stop-reason',
-      key: 'move-again',// turn off continuous motion
+      key: 'move-again',
       rest: this.getRemainingPath(),
     });
 
@@ -944,10 +950,10 @@ export class NpcApi {
       }
       throw e;
     } finally {
-      this.setSlowDown(true); // turn off continuous motion
       this.pendingTargets.length = 0;
+      this.setSlowDown(true); // turn off continuous motion
       this.tryStopOffMesh(); // when turnBeforeMove
-      this.s.turnBeforeMove = null; // 🚧
+      this.s.turnBeforeMove = null;
       this.base.numCorners = 0;
     }
   }
@@ -1374,10 +1380,11 @@ export class NpcApi {
     agent.raw.params.set_slowDownRadius(slowDownRadius);
   }
 
-  /** @param {NPC.StopReason | Error} error */
-  rejectMove(error) {
-    this.reject.moves.forEach(reject => reject(error));
-    this.reject.moves.length = 0;
+  /** @param {NPC.StopReason | Error} [error] */
+  rejectMove(error = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() }) {
+    this.reject.move?.(error);
+    this.base.onRejects.move.forEach(reject => reject(error));
+    this.base.onRejects.move.length = 0;
   }
 
   /**
@@ -1506,7 +1513,7 @@ export class NpcApi {
   async waitUntilStopped() {
     await new Promise((resolve, reject) => {
       this.resolve.move = resolve; // see "stopped-moving"
-      this.reject.moves.push(reject); // see w.npc.remove
+      this.reject.move = reject; // see w.npc.remove
     });
   }
 
