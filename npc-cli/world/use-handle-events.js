@@ -4,7 +4,7 @@ import { deltaAngle } from "maath/misc";
 
 import { Vect, Rect } from "../geom";
 import { defaultDoorCloseMs, wallHeight } from "../service/const";
-import { pause, warn, debug, testNever } from "../service/generic";
+import { pause, warn, testNever } from "../service/generic";
 import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
@@ -52,17 +52,10 @@ export default function useHandleEvents(w) {
       }
 
       const { gdKey } = npc.s.offMesh.orig;
+      npc.s.offMesh = null;
 
-      if (npc.s.offMesh.seg === 0) {
-        /**
-         * We preserve `npc.s.offMesh` for a bit longer
-         * - prevents npc passing through another on continual move
-         * - cancelled on enter-off-mesh
-         */
-        npc.s.offMeshTimeout = window.setTimeout(() => npc.s.offMesh = null, 30);
-      } else {
-        npc.s.offMesh = null;
-      }
+      // 🔔 throttle `this.move` to fix repeated offMesh attempts
+      npc.s.offMeshCoolDown = Date.now() + 300;
       
       state.doorToOffMesh[gdKey] = state.doorToOffMesh[gdKey].filter(x => x.npcKey !== npc.key);
       (state.npcToDoors[npc.key] ??= { inside: null, nearby: new Set() }).inside = null;
@@ -514,7 +507,6 @@ export default function useHandleEvents(w) {
       }
       
       npc.s.lookSecs = 0.2;
-      window.clearTimeout(npc.s.offMeshTimeout);
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
 

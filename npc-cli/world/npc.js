@@ -105,7 +105,8 @@ export function createBaseNpc(def, w) {
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
       /** For delayed `npc.s.offMesh` `null`ing during initial seg */
-      offMeshTimeout: 0,
+      /** Prevent `move` until after this, otherwise repeated offMesh can force its way through  */
+      offMeshCoolDown: 0,
       /** Opacity e.g. during fade */
       opacity: 1,
       /** Desired opacity */
@@ -766,7 +767,10 @@ export class NpcApi {
         ) === false
       ) || (
         other.s.offMesh !== null
-        && this.getOtherDoorwayLead(other) >= 0.25
+        && (
+          this.getOtherDoorwayLead(other) >= 0.3
+          || this.getOtherDoorwayLead(other) <= 0
+        )
       )) {
         // 🔔 other idle and "not in the way", or
         // 🔔 other traversing with enough lead
@@ -865,6 +869,9 @@ export class NpcApi {
 
     if (agent === null) {
       throw new Error(`npc ${this.key} lacks agent`);
+    }
+    if (Date.now() < this.s.offMeshCoolDown) {
+      throw Error('too soon after offMesh');
     }
     if (this.s.actMeta !== null) {// must be on-mesh act point
       this.w.npc.setActMeta(this.key, null);
@@ -1015,7 +1022,7 @@ export class NpcApi {
    * @param {NPC.CrowdAgent} agent
    * @param {number} numCorners
    */
-  onChangeNumCorners(agent, numCorners) {
+  onChangeNumCorners(agent, numCorners) {// 🚧 unused
     this.base.numCorners = numCorners;
     if (this.s.offMesh !== null) {
       return;
