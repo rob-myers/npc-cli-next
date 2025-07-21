@@ -38,8 +38,8 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   ]}
 />
 
-The videos show NPC CLI on a laptop and a mobile phone.
-Feel free to step through the code below using the _Viewer_ (right/bottom of this page).
+The videos show NPC CLI on a laptop and a mobile phone.<SideNote>CLI stands for _Command Line Interface_.</SideNote>
+You can step through the code below using the _Viewer_ (right/bottom of this page).
 
 <Code>
 ```sh title="" caption="Spawn, move and remove" showLineNumbers
@@ -63,18 +63,18 @@ w npc.remove rob
 ```
 </Code>
 
-Having seen the system in action,
+Having seen things in action,
 it is worth listing our underlying motivations.
 
 - __Create a video game whose NPCs behave just like human-controlled characters.__
   Think of Turing's Imitation Game:
   the Player interrogates and the questions are video game actions... can the NPCs fool the Player?
 
-- ___As above but with a human Game Master.___ With another human controlling the NPCs the problem becomes more tractable. It also motivates NPC realtime control systems.
+- __As above but with a human Game Master.__ With another human controlling the NPCs the problem becomes more tractable. It also motivates NPC realtime control systems.
 
-- ___Provide an in-depth explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation).___ Our NPCs are controlled by Recast-Detour running as WASM in a web worker, so we'll analyse the C++ driving our fabrications.
+- __Provide an in-depth explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation).__ Our NPCs are controlled by Recast-Detour running as WASM in a web worker, so we'll analyse the C++ driving our fabrications.
 
-- ___Provide a generic scripting system for [three.js](https://www.npmjs.com/package/three).___ Our [xterm.js](https://github.com/xtermjs/xterm.js/) terminals interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript. In production one can run commands. In development shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
+- __Provide a generic scripting system for [three.js](https://www.npmjs.com/package/three).__ Our [xterm.js](https://github.com/xtermjs/xterm.js/) terminals interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript. In production one can run commands. In development shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
 
 
 ## What's next
