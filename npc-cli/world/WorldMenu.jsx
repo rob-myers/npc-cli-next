@@ -2,9 +2,10 @@ import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
 import { createPortal } from "react-dom";
+import debounce from "debounce";
 
-import { tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
-import { zIndexTabs, zIndexWorld } from "../service/const";
+import { debug, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
+import { html3DOpacityCssVar, zIndexTabs, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -27,12 +28,12 @@ export default function WorldMenu(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
 
     brightness: 12, // [1..20] inducing percentage `100 + 10 * (b - 10)`
-    disconnected: true,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
     invertColor: false,
     logger: /** @type {*} */ (null),
+    // 🚧 set before unload
     loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? (defaultLoggerHeightPx) / loggerHeightDelta,
     loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? (defaultLoggerWidthPx) / defaultLoggerWidthDelta,
     loggerWidthDelta: defaultLoggerWidthDelta,
@@ -47,8 +48,6 @@ export default function WorldMenu(props) {
       state.onChangeXRay(toEvent(state.xRayOpacity));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
       state.onChangeInvertColor(toEvent(state.invertColor));
-      state.onResizeLoggerHeight(toEvent(state.loggerHeight));
-      state.onResizeLoggerWidth(toEvent(state.loggerWidth));
     },
     measure(msg) {
       if (state.showDebug === false) {
@@ -56,9 +55,11 @@ export default function WorldMenu(props) {
       } else if (msg in state.durationKeys) {
         const durationMs = (performance.now() - state.durationKeys[msg]).toFixed(1);
         state.logger?.xterm.writeln(`${msg} ${ansi.BrightYellow}${durationMs}${ansi.Reset}`);
+        debug(`measure: ${msg} (${durationMs}ms)`);
         delete state.durationKeys[msg];
       } else {
         state.durationKeys[msg] = performance.now();
+        debug(`measure: ${msg} (${'started'})`);
       }
     },
     onChangeBrightness(e) {
@@ -98,26 +99,10 @@ export default function WorldMenu(props) {
       }
     },
     onConnect(connectorKey) {
-      state.disconnected === true && setTimeout(update);
-      state.disconnected = false;
       state.logger.xterm.writeln(`[${ansi.Blue}${connectorKey}${ansi.Reset}] connected`);
     },
     onOverlayPointerUp() {
       props.setTabsEnabled(true);
-    },
-    onResizeLoggerHeight(e) {
-      state.loggerHeight = Number(e.currentTarget.value); // e.g. 2, ..., 10
-      state.logger.container.style.height = `${state.loggerHeight * loggerHeightDelta}px`;
-      tryLocalStorageSet(`logger:height@${w.key}`, `${state.loggerHeight}`);
-      state.draggable.updatePos();
-    },
-    onResizeLoggerWidth(e) {
-      if (e !== undefined) {
-        state.loggerWidth = Number(e.currentTarget.value);
-      }
-      state.logger.container.style.width = `${state.loggerWidth * state.loggerWidthDelta}px`;
-      tryLocalStorageSet(`logger:width@${w.key}`, `${state.loggerWidth}`);
-      state.draggable.updatePos();
     },
     say(npcKey, ...parts) {
       const line = parts.join(' ');
@@ -147,18 +132,22 @@ export default function WorldMenu(props) {
 
   w.menu = state;
 
+  React.useEffect(() => {
+    w.crowd && state.applyControlsInitValues();
+  }, [w.crowd]);
+
   React.useLayoutEffect(() => {
+    const showHtml3dsAfter300ms = debounce(() => 
+      w.view.rootEl.style.setProperty(html3DOpacityCssVar, '1')
+    , 300);
     const obs = new ResizeObserver(([_entry]) => {
-      state.loggerWidthDelta = Math.min(Math.floor(w.view.rootEl.clientWidth / 10), 1.8 * defaultLoggerWidthDelta);
-      state.logger?.container && state.onResizeLoggerWidth();
+      w.view.rootEl.style.setProperty(html3DOpacityCssVar, '0');
+      showHtml3dsAfter300ms();
     });
     obs.observe(w.view.rootEl);
     return () => obs.disconnect();
   }, []);
-  
-  React.useEffect(() => {
-    w.crowd && state.applyControlsInitValues();
-  }, [w.crowd]);
+
 
   return <>
 
@@ -182,36 +171,14 @@ export default function WorldMenu(props) {
         dragClassName={state.dragClassName}
         initPos={{ x: 0, y: 0 }}
         localStorageKey={`logger:drag-pos@${w.key}`}
+        defaultWidth={400}
+        defaultHeight={100}
       >
         <PopUp
           label="⋯"
           css={popUpCss}
-          width={350}
+          width={300}
         >
-          <div className="ranges">
-            <label>
-              <input
-                type="range"
-                className="change-logger-width"
-                min={4}
-                max={10}
-                defaultValue={state.loggerWidth}
-                onChange={state.onResizeLoggerWidth}
-              />
-              <div>w</div>
-            </label>
-            <label>
-              <input
-                type="range"
-                className="change-logger-height"
-                min={2}
-                max={10}
-                defaultValue={state.loggerHeight}
-                onChange={state.onResizeLoggerHeight}
-              />
-              <div>h</div>
-            </label>
-          </div>
           <div className="ranges">
             <label>
               <input
@@ -281,14 +248,6 @@ export default function WorldMenu(props) {
 
     {w.crowd === null && <CentredSpinner size={32} style={{ position: 'absolute', top: 0 }} />}
 
-    <div
-      css={cssTtyDisconnectedMessage}
-      className={cx({ hidden: state.disconnected === false })}
-    >
-      <h3>[disconnected]</h3>
-      click or show a tty tab
-    </div>
-
   </>;
 }
 
@@ -306,10 +265,8 @@ const loggerAndPopUpCss = css`
   z-index: ${zIndexWorld.logger};
   
   > div:nth-of-type(2) {
-    /* height: ${defaultLoggerHeightPx}px; */
-    /* width: ${defaultLoggerWidthPx}px; */
-    width: 0px;
-    max-width: 100%;
+    /* width: 0px;
+    max-width: 100%; */
     padding: 8px 0 0 12px;
   }
   
@@ -344,9 +301,6 @@ const popUpCss = css`
     .${popUpButtonClassName} {
       padding: 0 8px 8px 8px;
     }
-    /* .${popUpBubbleClassName} {
-      transform: scale(.9);
-    } */
   }
 
   @media(max-width: 700px) {
@@ -380,7 +334,6 @@ const popUpCss = css`
       label div {
         display: flex;
         justify-content: center;
-        /* background-color: red; */
         width: 16px;
       }
       input {
@@ -389,9 +342,14 @@ const popUpCss = css`
     }
 
     .checkboxes {
+      width: 150px;
+      
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
+      flex-wrap: wrap;
+      justify-content: center;
+      label {
+        margin-right: 8px;
+      }
     }
 
     label {
@@ -437,40 +395,6 @@ const popUpCss = css`
   }
 `;
 
-const cssTtyDisconnectedMessage = css`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: ${zIndexWorld.disconnectedMessage};
-  
-  user-select: none;
-  pointer-events: none;
-  padding: 16px;
-  margin: 0 16px 16px 0;
-  @media (max-width: 700px) {
-    margin: 0;
-  }
-
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 0.9rem;
-  
-  color: #aaa;
-
-  h3 {
-    font-family: 'Courier New', Courier, monospace;
-    color: #8f8;
-  }
-
-  transition: opacity 600ms;
-  opacity: 100;
-  &.hidden {
-    opacity: 0;
-    /** override commons.css */
-    display: initial;
-  }
-`;
-
 const pausedControlsCss = css`
   position: absolute;
   right: 0;
@@ -513,7 +437,6 @@ const pausedControlsCss = css`
  * @property {number} brightness
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
- * @property {boolean} disconnected
  * @property {{ [durKey: string]: number }} durationKeys
  * @property {boolean} invertColor
  * @property {import('../terminal/Logger').State} logger
@@ -535,8 +458,6 @@ const pausedControlsCss = css`
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
  * @property {() => void} onOverlayPointerUp
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerHeight
- * @property {(e?: React.ChangeEvent<HTMLInputElement>) => void} onResizeLoggerWidth
  * @property {(npcKey: string, line: string) => void} say
  * @property {(shouldPrevent: boolean) => void} setPreventDraggable
  * @property {() => void} toggleXRay

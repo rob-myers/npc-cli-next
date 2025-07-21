@@ -1,8 +1,8 @@
 import { uid } from "uid";
 
-import { ansi } from "./const";
+import { ansi, ProcessTag } from "./const";
 import type * as Sh from "./parse";
-import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags } from "../service/generic";
+import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags, warn } from "../service/generic";
 import { parseJsArg } from "../service/generic";
 import useSession, { ProcessStatus } from "./session.store";
 import {
@@ -18,16 +18,18 @@ import {
   killProcess,
   handleProcessError,
   ttyError,
+  formatMessage,
 } from "./util";
-import { cmdService, isTtyAt, sleep } from "./cmd.service";
+import { cmdService, isTtyAt, getProcess, preProcessWrite } from "./cmd.service";
 import { srcService } from "./parse";
-import { preProcessWrite, redirectNode } from "./io";
+import { redirectNode } from "./io";
 import { cloneParsed, collectIfClauses, reconstructReplParamExp, wrapInFile } from "./parse";
 
 class semanticsServiceClass {
   private async *assignVars(node: Sh.CallExpr) {
     for (const assign of node.Assigns) {
       yield* this.Assign(assign);
+      this.handleChildExitCode(assign);
     }
   }
 
@@ -52,6 +54,21 @@ class semanticsServiceClass {
       return varValue || "";
     } else {
       return jsStringify(varValue);
+    }
+  }
+
+  /**
+   * This implements `set -e`.
+   * - throw if `exitCode` is defined and non-zero.
+   * - use exitCode `130 + non-zero exitCode` so can ignore in `||`
+   */
+  private handleChildExitCode(node: Sh.ParsedSh) {
+    if (node.exitCode === undefined) {
+      // 🔔 should never happen, but better not to assume it is an error
+      return warn(`node.exitCode undefined: ${srcService.src(node)} in ${getProcess(node.meta).src}`);
+    }
+    if (node.exitCode !== 0) {// set -e
+      throw killError(node.meta, 130 + node.exitCode);
     }
   }
 
@@ -83,8 +100,10 @@ class semanticsServiceClass {
   }
 
   handleTopLevelProcessError(e: ProcessError) {
-    if (useSession.api.getSession(e.sessionKey) !== undefined) {
-      cmdService.killProcesses(e.sessionKey, [e.pid], { group: true, SIGINT: true });
+    const session = useSession.api.getSession(e.sessionKey);
+    if (session !== undefined) {
+      useSession.api.kill(e.sessionKey, [e.pid], { GROUP: true, SIGINT: true });
+      session.lastExit.fg = e.exitCode ?? 1;
     } else {
       return ttyError(`session not found: ${e.sessionKey}`);
     }
@@ -101,6 +120,7 @@ class semanticsServiceClass {
     for (const node of nodes) {
       try {
         yield* sem.Stmt(node);
+        this.handleChildExitCode(node);
       } finally {
         parent.exitCode = node.exitCode;
         useSession.api.setLastExitCode(node.meta, node.exitCode);
@@ -131,15 +151,22 @@ class semanticsServiceClass {
     return expanded;
   }
 
-  private async *Assign({ meta, Name, Value, Naked, Append }: Sh.Assign) {
+  private async *Assign(node: Sh.Assign) {
+    const { meta, Name, Value, Naked, Append } = node;
+
+    node.exitCode = 1; // until proven innocent
+    
     if (Name === null) {
+      node.exitCode = 0;
       return; // e.g. `declare -F`
     }
     if (Naked === true || Value === null) {
       useSession.api.setVar(meta, Name.Value, '');
+      node.exitCode = 0;
       return;
     }
     if (Name.Value === 'ptags') {
+      node.exitCode = 0;
       return; // used to tag process instead
     }
 
@@ -152,8 +179,8 @@ class semanticsServiceClass {
 
     if (Append === true) {
       // Append `true` corresponds to `foo+=bar`, e.g.
-      // - ℹ️ x+=1 where x is `1` is `2`
-      // - ℹ️ x+='{baz:"qux"}' where x is `{foo:"bar"}` is `{foo:"bar",baz:"qux"}`
+      // - if x is `1` then after x+=1 it is `2`
+      // - if x is `{foo:"bar"}` then after x+='{baz:"qux"}' it is `{foo:"bar",baz:"qux"}`
       const leftArg = useSession.api.getVar(meta, Name.Value) ?? 0;
       if (typeof firstValue !== 'string') {
         // e.g. forward non-string value from command substitution `foo=$( bar )`
@@ -170,6 +197,7 @@ class semanticsServiceClass {
       }
     }
 
+    node.exitCode = 0;
   }
 
   private async *BinaryCmd(node: Sh.BinaryCmd) {
@@ -188,9 +216,22 @@ class semanticsServiceClass {
         break;
       }
       case "||": {
+        const stackIndex = node.meta.stack.length;
         for (const stmt of stmts) {
-          yield* sem.Stmt(stmt);
-          if (!(node.exitCode = stmt.exitCode)) break;
+          try {
+            yield* sem.Stmt(stmt);
+          } catch (e) {
+            if (e instanceof ProcessError && e.exitCode! >= 131) {
+              // 🔔 ignore kill errors due to `set -e`
+              // we reset stack to avoid huge error messages
+              stmt.meta.stack.splice(stackIndex, stmt.meta.stack.length - stackIndex);
+            } else {
+              throw e;
+            }
+          }
+          if (!(node.exitCode = stmt.exitCode)) {
+            break;
+          }
         }
         break;
       }
@@ -199,22 +240,23 @@ class semanticsServiceClass {
         const pgid = ppid; // 🔔 `node.meta.pgid` breaks pgid 0, and nested pipelines
         const { ttyShell } = useSession.api.getSession(sessionKey);
 
-        const process = useSession.api.getProcess(node.meta);
         function killPipeChildren(SIGINT?: boolean) {
           useSession.api
-            .getProcesses(process.sessionKey, pgid)
-            // 🚧 safety while debug nested-pipeline-issue
+            .getProcesses(sessionKey, pgid)
+            // nested-pipeline issue?
             .filter((x) => x.key !== ppid && x.status !== ProcessStatus.Killed)
             .reverse()
             .forEach((x) => killProcess(x, SIGINT));
         }
-        process.cleanups.push(killPipeChildren); // Handle Ctrl-C
+        const statusHandlers = cmdService.handleStatus(node.meta, {
+          cleanups: killPipeChildren,
+        });
 
-        // const stdIn = useSession.api.resolve(0, stmts[0].meta);
         const fifos = stmts.slice(0, -1).map(({ meta }, i) =>
           useSession.api.createFifo(`/dev/fifo-${sessionKey}-${meta.pid}-${i}`)
         );
         const stdOut = useSession.api.resolve(1, stmts.at(-1)!.meta);
+        const process = getProcess(node.meta);
 
         try {
           // Clone, connecting stdout to stdin of subsequent process
@@ -229,11 +271,11 @@ class semanticsServiceClass {
             new Promise<void>(async (resolve, reject) => {
               try {
                 await ttyShell.spawn(file, {
+                  by: '|',
                   localVar: true,
-                  cleanups: // for e.g. `take 3 | true`
-                    i === 0 && isTtyAt(file.meta, 0)
-                      ? [() => ttyShell.finishedReading()]
-                      : [],
+                  // e.g. `take 3 | true`:
+                  cleanups: i === 0 && isTtyAt(file.meta, 0) ? [() => ttyShell.finishedReading()] : undefined,
+                  // 🔔 despite new process group we do not delete ptags.interactive
                 });
                 resolve();
               } catch (e) {
@@ -256,7 +298,7 @@ class semanticsServiceClass {
             })
           ));
           // 🔔 Avoid above `killPipeChildren` killing children of next pipeline
-          // e.g. call '() => { throw "❌" }' | true; true | { sleep 1; echo 🔔; }
+          // e.g. call '() => { throw "☹️" }' | true; true | { sleep 1; echo 🔔; }
           await pause(cleanupSetupMs);
 
           if (
@@ -274,6 +316,7 @@ class semanticsServiceClass {
             fifo.finishedWriting();
             useSession.api.removeDevice(fifo.key);
           });
+          statusHandlers.dispose();
         }
         break;
       }
@@ -287,23 +330,21 @@ class semanticsServiceClass {
   }
 
   /**
-   * We support process tagging like:
-   * - `ptags='foo bar=baz' sleep 10 &`
-   * - `{ ptags=always; sleep 10; } &`
-   * - `ptags=always; foo | bar &` (via inheritance)
+   * - We support process tagging like `ptags+=always; foo | bar &`
+   * - We modify `process.ptagsDelta` and apply in __next spawn only__.
    */
   private async supportPTags(node: Sh.CallExpr) {
-    const assign = node.Assigns.find(x => x.Name?.Value === 'ptags');
-    if (assign?.Value != null) {
-      const expanded = await this.lastExpanded(sem.Expand(assign.Value));
+    const assigns = node.Assigns.filter(x => x.Name?.Value === 'ptags' && x.Append === true && x.Value !== null);
+    const process = getProcess(node.meta);
+    for (const assign of assigns) {
+      const expanded = await this.lastExpanded(sem.Expand(assign.Value!));
       const ptags = tagsToMeta(textToTags(expanded.value));
-      useSession.api.getProcess(node.meta).ptags = ptags;
-      // console.log({ptags});
+      Object.assign(process.ptagsDelta, ptags);
     }
   }
 
   private async *CallExpr(node: Sh.CallExpr) {
-    node.exitCode = 0; // 🚧 justify
+    node.exitCode = 0;
     const args = await sem.performShellExpansion(node.Args);
     const [command, ...cmdArgs] = args;
     node.meta.verbose === true && console.log("simple command", args);
@@ -342,6 +383,8 @@ class semanticsServiceClass {
 
   /** Construct a simple command or a compound command. */
   private async *Command(node: Sh.Command, Redirs: Sh.Redirect[]) {
+    const cmdStackIndex = node.meta.stack.length;
+    
     try {
       await sem.applyRedirects(node, Redirs);
 
@@ -379,7 +422,7 @@ class semanticsServiceClass {
             throw new ShError("not implemented", 2);
         }
       }
-      const process = useSession.api.getProcess(node.meta);
+      const process = getProcess(node.meta);
       let stdoutFd = node.meta.fd[1];
       let device = useSession.api.resolve(1, node.meta);
       if (device === undefined) {// Pipeline already failed
@@ -388,24 +431,30 @@ class semanticsServiceClass {
 
       // 🔔 Actually run the code
       for await (const item of generator) {
-        await preProcessWrite(process, device);
-        if (node.meta.fd[1] !== stdoutFd) {
-          // e.g. `say` redirects stdout to /dev/voice
-          stdoutFd = node.meta.fd[1];
-          device = useSession.api.resolve(1, node.meta);
+        try {
+          await preProcessWrite(process, device);
+
+          if (node.meta.fd[1] !== stdoutFd) {
+            // e.g. `say` redirects stdout to /dev/voice
+            stdoutFd = node.meta.fd[1];
+            device = useSession.api.resolve(1, node.meta);
+          }
+
+          await device.writeData(item);
+        } catch (e) {// reachable e.g. on twice reboot `poll` while paused
+          await generator.throw(e);
         }
-        await device.writeData(item);
       }
     } catch (e) {
-      // e.g. CallExpr `foo=bar` has no command
-      const command = node.type === "CallExpr" ? node.Args[0]?.string : node.type;
+      // now know CallExpr command (1st arg), although `foo=bar` has no command
+      const command = node.type === 'CallExpr' ? node.Args[0]?.string ?? 'CallExpr' : node.type;
+      node.meta.stack.splice(cmdStackIndex, 0, command);
+
       const error = e instanceof ShError ? e : new ShError("", 1, e as Error);
-      error.message = `${node.meta.stack.concat(command ?? []).join(": ")}: ${
-        (e as Error).message || e
-      }`;
-      if (command === "run" && node.meta.stack.length === 0) {
-        // When directly using `run`, append helpful error message
-        error.message += `\n\rformat \`run {async_generator}\` e.g. run \'({ api:{read} }) { yield "foo"; yield await read(); }\'`;
+      error.message = `${node.meta.stack.join(": ")}: ${(e as Error).message || e}`;
+      if (command === "run" && node.meta.stack.length === 1) {
+        // When directly using `run` append helpful format message
+        error.message += '\n\r' + formatMessage(`format: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
       }
       sem.handleShError(node, e);
     }
@@ -423,25 +472,31 @@ class semanticsServiceClass {
       // and we delegate to cmd.service 'declare'
       const args = [] as string[];
       for (const { Name, Value } of node.Args) {
-        if (Name !== null)
+        if (Name !== null) {
           args.push(Name.Value); // myFunc in `declare -f myFunc`
-        else if (Value !== null && Value.Parts[0]?.type === 'Lit')
+        } else if (Value !== null && Value.Parts[0]?.type === 'Lit') {
           args.push(Value.Parts[0].Value); // -f in `declare -f myFunc`
+        }
       }
-
+      
       yield* cmdService.runCmd(node, 'declare', args);
-    } else {
-      // 🔔 we support assignments, so we ignore cmd.service 'local'
-      const process = useSession.api.getProcess(node.meta);
-      if (process.key === 0) {
+      node.exitCode = 0;
+    } else {// 🔔 we support assignments, so ignore cmd.service 'local'
+      
+      if (node.meta.pid === 0) {
         throw Error(`local: cannot be used in session leader`);
       }
+      
+      const process = getProcess(node.meta);
       for (const arg of node.Args) {
         if (arg.Name !== null) {
           process.localVar[arg.Name.Value] = undefined;
           yield* this.Assign(arg);
+          this.handleChildExitCode(arg);
         }
       }
+
+      node.exitCode = 0;
     }
 
     // if (node.Variant.Value === "declare") {
@@ -454,7 +509,7 @@ class semanticsServiceClass {
     //   }
     // } else if (node.Variant.Value === "local") {
     //   for (const arg of node.Args) {
-    //     const process = useSession.api.getProcess(node.meta);
+    //     const process = getProcess(node.meta);
     //     if (process.key > 0) {
     //       // Can only set local variable outside session leader,
     //       // where variables are e.g. /home/foo
@@ -472,8 +527,12 @@ class semanticsServiceClass {
    */
   private async *Expand(node: Sh.Word) {
     if (node.Parts.length > 1) {
-      for (const wordPart of node.Parts) {
-        wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
+      for (const [index, wordPart] of node.Parts.entries()) {
+        if (wordPart.type === 'Lit' && wordPart.Value === '...' && node.Parts[index + 1]?.type === 'CmdSubst') {
+          wordPart.string = ''; // ignore spread
+        } else {
+          wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
+        }
       }
       /** Is last value a parameter/command-expansion AND has trailing whitespace? */
       let lastTrailing = false;
@@ -537,14 +596,15 @@ class semanticsServiceClass {
     switch (node.type) {
       case "DblQuoted": {
         const output = [] as string[];
-        for (const part of node.Parts) {
+        for (const [index, part] of node.Parts.entries()) {
           const result = await this.lastExpanded(sem.ExpandPart(part));
           if (part.type === "ParamExp" && part.Param.Value === "@") {
-            output.push(
-              ...(node.Parts.length === 1
-                ? result.values // "$@" empty if `result.values` is
-                : [`${output.pop() || ""}${result.values[0] || ""}`, ...result.values.slice(1)])
+            output.push(...(node.Parts.length === 1
+              ? result.values // "$@" empty if `result.values` is
+              : [`${output.pop() || ""}${result.values[0] || ""}`, ...result.values.slice(1)])
             );
+          } else if (part.type === "Lit" && part.Value === '...' && node.Parts[index + 1]?.type === "CmdSubst") {
+            // ignore spread
           } else {
             output.push(`${output.pop() || ""}${result.value || ""}`);
           }
@@ -568,21 +628,36 @@ class semanticsServiceClass {
         const device = useSession.api.createFifo(fifoKey);
         const cloned = wrapInFile(cloneParsed(node));
         cloned.meta.fd[1] = device.key;
+        cloned.meta.ppid = cloned.meta.pid;
 
         const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
-        await ttyShell.spawn(cloned, { localVar: true });
+        await ttyShell.spawn(cloned, {
+          by: '$()',
+          localVar: true,
+        });
 
         try {
           const values = device.readAll();
-          if (node.parent?.type === 'Word' && node.parent.Parts.length === 1 && node.parent.parent?.type === 'Assign') {
-            // In case `foo=$( bar )` we forward non-string values
-            yield expand(values);
-          } else {
+          const wordParts = node.parent?.type === 'Word' || node.parent?.type === 'DblQuoted'  ? node.parent.Parts : [];
+          const prevWord = wordParts[wordParts.indexOf(node) - 1];
+          const spread = prevWord?.type === 'Lit' && prevWord.Value === '...';
+
+          if (wordParts.length === 1 && node.parent!.parent?.type === 'Assign') {
+            yield expand(values); // When `foo=$( bar )` forward non-string values
+          } else if (spread === true) {
             yield expand(values
-              .map((x: any) => (typeof x === "string" ? x : jsStringify(x)))
+              .map(x => typeof x === "string" ? x : jsStringify(x))
               .join("\n")
               .replace(/\n*$/, "") // remove trailing newlines
             );
+          } else {
+             if (values.length > 1) {// expand jsStringified array when multiple values
+              yield expand(jsStringify(values));
+            } else if (typeof values[0] === 'string') {
+              yield expand(values[0].replace(/\n*$/, ""));
+            } else {
+              yield expand(jsStringify(values[0]));
+            }
           }
         } finally {
           useSession.api.removeDevice(device.key);
@@ -664,13 +739,19 @@ class semanticsServiceClass {
           throw new ShError(`ParamExp: ${Param.Value}: unsupported operation`, 2);
       }
     } else if (Param.Value === "@") {
-      yield expand(useSession.api.getProcess(meta).positionals.slice(1));
+      yield expand(getProcess(meta).positionals.slice(1));
+    } else if (Param.Value === "$") {
+      yield expand(`${getProcess(meta).key}`);
+    } else if (Param.Value === "*") {
+      yield expand(getProcess(meta).positionals.slice(1).join(' '));
     } else if (Param.Value === "$") {
       yield expand(`${meta.pid}`);
     } else if (Param.Value === "?") {
       yield expand(`${useSession.api.getLastExitCode(meta)}`);
+    } else if (Param.Value === "!") {
+      yield expand(`${useSession.api.getSession(meta.sessionKey).lastBg}`);
     } else if (Param.Value === "#") {
-      yield expand(`${useSession.api.getProcess(meta).positionals.slice(1).length}`);
+      yield expand(`${getProcess(meta).positionals.slice(1).length}`);
     } else {
       yield expand(this.expandParameter(meta, Param.Value));
     }
@@ -716,41 +797,56 @@ class semanticsServiceClass {
   }
 
   private async *Stmt(stmt: Sh.Stmt) {
-    if (!stmt.Cmd) {
-      throw new ShError("pure redirects are unsupported", 2);
-    } else if (stmt.Background && stmt.meta.pgid === 0) {
-      /**
-       * Run a background process without awaiting.
-       */
+    if (stmt.Cmd === null) {
+      throw new ShError("pure redirects unsupported", 2);
+    }
+    
+    if (stmt.Background === true && stmt.meta.pgid === 0) {
       const { ttyShell, nextPid } = useSession.api.getSession(stmt.meta.sessionKey);
-      const file = wrapInFile(cloneParsed(stmt), {
+      
+      const cloned = cloneParsed(stmt);
+      cloned.Background = false; // remove "&"
+      const file = wrapInFile(cloned, {
         ppid: stmt.meta.pid,
         pgid: nextPid,
         background: true,
       });
-      ttyShell.spawn(file, { localVar: true }).catch((e) => {
+      
+      // Run a background process without awaiting
+      ttyShell.spawn(file, {
+        by: '&',
+        localVar: true,
+        ptags: { [ProcessTag.interactive]: undefined }, // delete process tag
+      }).catch((e) => {
         if (e instanceof ProcessError) {
           this.handleTopLevelProcessError(e);
         } else {
           ttyError("background process error", e);
         }
       });
-      stmt.exitCode = stmt.Negated ? 1 : 0;
-    } else {
-      try {
-        // Run a simple or compound command
-        yield* sem.Command(stmt.Cmd, stmt.Redirs);
-      } finally {
-        stmt.exitCode = stmt.Cmd.exitCode;
-        stmt.Negated && (stmt.exitCode = 1 - Number(!!stmt.Cmd.exitCode));
-      }
+      
+      // e.g. `! { sleep 10 & }` has immediate exit code 1
+      stmt.exitCode = stmt.Negated === true ? 1 : 0;
+      return;
+    }
+  
+    try {// Run a simple or compound command
+      yield* sem.Command(stmt.Cmd, stmt.Redirs);
+    } finally {
+      stmt.exitCode = stmt.Cmd.exitCode;
+      stmt.Negated === true && (stmt.exitCode = 1 - Number(!!stmt.Cmd.exitCode));
     }
   }
 
   private async *Subshell(node: Sh.Subshell) {
     const cloned = wrapInFile(cloneParsed(node));
+    cloned.meta.ppid = cloned.meta.pid;
+
     const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
-    await ttyShell.spawn(cloned, { localVar: true });
+    await ttyShell.spawn(cloned, {
+      by: '()',
+      localVar: true,
+    });
   }
 
   /** Bash language variant only? */
@@ -764,16 +860,13 @@ class semanticsServiceClass {
 
   private async *WhileClause(node: Sh.WhileClause) {
     const { Cond, Do, Until } = node;
-    const process = useSession.api.getProcess(node.meta);
     let itStartMs = -1, itLengthMs = 0;
 
     while (true) {
-      if (process.status === ProcessStatus.Killed) {
-        throw killError(node.meta);
-      }
-      /** Force iteration to take at least @see {itMinLengthMs} milliseconds */
+      // Force iteration to take at least @see {itMinLengthMs} milliseconds
+      // Also throws if process killed
       if ((itLengthMs = Date.now() - itStartMs) < itMinLengthMs) {
-        await sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
+        await cmdService.sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
       }
       itStartMs = Date.now();
 

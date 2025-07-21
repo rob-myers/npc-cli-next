@@ -5,17 +5,16 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 import { useBeforeunload } from "react-beforeunload";
 
-import DesktopEmptyWorld from '../public/images/desktop-empty-world__27-05-2025.webp';
-
 import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
-import useSite from "./site.store";
 
-import { parseJsArg, tryLocalStorageGet } from "@/npc-cli/service/generic";
+import { parseJsArg, pause, tryLocalStorageGet } from "@/npc-cli/service/generic";
 import { localStorageKey } from "@/npc-cli/service/const";
 import { helper } from "@/npc-cli/service/helper";
 import { computeTabDef } from "@/npc-cli/tabs/tab-util";
 
+import useSite from "./site.store";
+import useTabs from "@/npc-cli/tabs/tabs.store";
 import useIntersection from "@/npc-cli/hooks/use-intersection";
 import useStateRef from "@/npc-cli/hooks/use-state-ref";
 import useUpdate from "@/npc-cli/hooks/use-update";
@@ -25,10 +24,13 @@ import { Tabs, type State as TabsState, type TabState } from "@/npc-cli/tabs/Tab
 
 export default function Viewer() {
 
-  const site = useSite(({ tabset, viewOpen }) => ({
+  const site = useSite(({ viewOpen }) => ({
+    viewOpen,
+  }), shallow);
+  
+  const tabs = useTabs(({ tabset }) => ({
     tabset: tabset.started,
     tabsetVersion: tabset.version,
-    viewOpen,
   }), shallow);
 
   const update = useUpdate();
@@ -41,6 +43,10 @@ export default function Viewer() {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
     }, 1000),
+    onHardReset() {
+      // revert to default layout preset, do not restore
+      useTabs.api.revertCurrentTabset(true);
+    },
     onInternalApi(internalApiPath) {
       const parsedUrl = new URL(internalApiPath, location.origin);
 
@@ -58,18 +64,17 @@ export default function Viewer() {
        * `['foo', 'bar']`
        */
       const parts = parsedUrl.pathname.split('/').slice(2);
-      
-      console.log({ internalApiPath, parts, opts });
+      // console.log({ internalApiPath, parts, opts });
 
       switch (parts[0]) {
         case 'change-tab': {// props only, not tty env (useSession instead)
           const tabId = parts[1];
-          useSite.api.changeTabProps(tabId, opts.props);
+          useTabs.api.changeTabProps(tabId, opts.props);
           break;
         }
         case 'close-tab': {
           const tabId = parts[1];
-          useSite.api.closeTab(tabId);
+          useTabs.api.closeTab(tabId as Key.TabId);
           break;
         }
         case 'open-tab': {// 🔔 open tab via classKey, opts
@@ -80,22 +85,22 @@ export default function Viewer() {
           const tabDef = computeTabDef({
             ...opts,
             classKey,
-            suffix: opts.suffix,
+            id: opts.id,
           });
-          useSite.api.openTab(tabDef);
+          useTabs.api.openTab(tabDef);
           break;
         }
         case 'remember-tabs':
-          useSite.api.rememberCurrentTabs();
+          useTabs.api.rememberCurrentTabs();
           break;
         case 'reset-tabs':
-          useSite.api.revertCurrentTabset();
+          useTabs.api.revertCurrentTabset();
           // setTimeout(update);
           break;
         case 'set-tabs': {// 🔔 set layout via layoutPresetKey
           const layoutPresetKey = parts[1];
           if (helper.isLayoutPresetKey(layoutPresetKey)) {
-            useSite.api.setTabset(layoutPresetKey);
+            useTabs.api.setTabset(layoutPresetKey);
           } else {
             throw Error(`${'onInternalApi'} set-tabs: invalid layoutPresetKey "${layoutPresetKey}"`);
           }
@@ -103,7 +108,7 @@ export default function Viewer() {
           break;
         }
         case 'test-mutate-tabs':
-          useSite.api.testMutateLayout();
+          useTabs.api.testMutateLayout();
           // setTimeout(update);
           break;
         case 'noop':
@@ -114,25 +119,30 @@ export default function Viewer() {
       window.location.hash = '/internal/noop';
     },
     onKeyDown(e) {
-      if (e.key === "Escape" && state.tabs.enabled) {
+      if (e.key === "Escape" && state.tabs.enabled === true) {
         state.tabs.toggleEnabled(false);
       }
-      if (e.key === "Enter" && !state.tabs.enabled) {
+      if (e.key === "Enter" && state.tabs.enabled === false) {
         state.tabs.toggleEnabled(true);
       }
     },
     onModelChange(syncCurrent) {
-      useSite.api.storeCurrentLayout(state.tabs.model);
+      useTabs.api.storeCurrentLayout(state.tabs.model);
 
       if (syncCurrent) {// sync avoids resetting to "initial layout"
-        useSite.api.syncCurrentTabset(state.tabs.model);
+        useTabs.api.syncCurrentTabset(state.tabs.model);
       }
     },
     onTabsReset() {
-      useSite.api.clearTabMeta();
+      useTabs.api.clearTabMeta();
     },
-    onToggleTab(tabState) {
-      useSite.api.setTabMeta(tabState);
+    async onToggleTab(tabState) {
+      // 🚧 site.store.ts:254 Cannot update a component (`Viewer`) while rendering a different component (`Layout`).
+      await pause();
+      useTabs.api.updateTabMeta({
+        key: tabState.key,
+        disabled: tabState.disabled,
+      });
     },
     update,
   }));
@@ -149,7 +159,7 @@ export default function Viewer() {
     percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
 
     // ensure layout if localStorage empty
-    useSite.api.restoreLayoutWithFallback("layout-preset-0", { preserveRestore: false });
+    useTabs.api.restoreLayoutWithFallback("world-tty-default_profile", { preserveRestore: false });
 
     // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {
@@ -163,7 +173,7 @@ export default function Viewer() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  useBeforeunload(() => useSite.api.storeCurrentLayout(state.tabs.model));
+  useBeforeunload(() => useTabs.api.storeCurrentLayout(state.tabs.model));
 
   const collapsed = !site.viewOpen;
   const neverEnabled = !state.tabs.everEnabled;
@@ -181,22 +191,22 @@ export default function Viewer() {
 
       <div
         css={tabsContainerCss}
-        className={cx({ collapsed, neverEnabled })}
-        {...neverEnabled && { onPointerUp: () => state.tabs.toggleEnabled(true) }}
+        className={cx('tabs-container', { collapsed, neverEnabled })}
+        {...neverEnabled && { onClick: () => state.tabs.toggleEnabled(true) }}
       >
         <Tabs
           ref={state.ref('tabs')}
           id="viewer-tabs"
           initEnabled={false}
-          onHardReset={useSite.api.revertCurrentTabset}
+          onHardReset={state.onHardReset}
           onModelChange={state.onModelChange}
           onToggleTab={state.onToggleTab}
           onToggled={update}
           onReset={state.onTabsReset}
           persistLayout
-          updates={site.tabsetVersion}
+          updates={tabs.tabsetVersion}
           rootOrientationVertical
-          tabset={site.tabset}
+          tabset={tabs.tabset}
         />
       </div>
     </aside>
@@ -207,6 +217,7 @@ export interface State {
   /** Tabs API */
   tabs: TabsState;
   onChangeIntersect(intersects: boolean): void;
+  onHardReset(): void;
   /** @param pathname e.g. `/internal/set-tabset/empty` */
   onInternalApi(pathname: `/internal/${string}`): void;
   onKeyDown(e: React.KeyboardEvent): void;
@@ -244,9 +255,11 @@ const viewerCss = css`
 
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
-    transition: min-height 500ms ease-in-out;
-    min-height: calc( max(var(${viewerBaseCssVar}), ${view.barSize}) );
+    transition: height 500ms ease-in-out, min-height 500ms ease-in-out;
+    height: calc( max(var(${viewerBaseCssVar}, 0px), ${view.barSize}) );
+    min-height: calc( max(var(${viewerBaseCssVar}, 0px), ${view.barSize}) );
     &.collapsed {
+      height: ${view.barSize};
       min-height: ${view.barSize};
     }
   }
@@ -269,17 +282,19 @@ const tabsContainerCss = css`
   
   
   &.neverEnabled {
+    cursor: pointer;
+
     @keyframes fadeIn {
       0% { opacity: 0; }
-      100% { opacity: 0.25; }
+      100% { opacity: 0.5; }
     }
     animation: fadeIn 2s forwards;
     
-    cursor: pointer;
-    background-image: url(${DesktopEmptyWorld.src});
+    background-image: url(/images/desktop-empty-world__20250612.webp);
     background-size: 100%;
     background-repeat: no-repeat;
-    background-position: 0% 100%;
-    filter: brightness(2);
+    background-position: 0% 50%;
+    
+    filter: grayscale();
   }
 `;

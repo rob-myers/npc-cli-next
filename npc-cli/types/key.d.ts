@@ -9,8 +9,10 @@ namespace Key {
   );
 
   type ComponentClass = import('../tabs/tab-factory').ComponentClassKey;
-  
+
   type TabClass = ComponentClass | 'Tty';
+  type TabClassPrefix = CamelToKebab<TabClass>;
+  type TabId = `${Key.TabClassPrefix}-${number}`;
 
   type DecorImg = import('../service/const.js').DecorImgKey;
 
@@ -34,7 +36,8 @@ namespace Key {
 
   type LayoutPreset = (
     | 'empty-layout'
-    | 'layout-preset-0'
+    | 'world-tty-default_profile'
+    | 'world-tty-profile_1'
   );
 
   type Map = import('../world/World.jsx').MapKey;
@@ -59,7 +62,7 @@ namespace Key {
   );
 
   
-  type Profile = import('../sh/src').ProfileKey
+  type Profile = import('../sh/src/profiles').ProfileKey
 
   type SkinPart = keyof import('../service/helper').Helper['fromSkinPart'];
 

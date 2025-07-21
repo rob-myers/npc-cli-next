@@ -1,10 +1,69 @@
 # TODO
 
-## Branch `light-and-blog`
+## Branch `get-blog-ready`
 
 ### Site
 
-- 🚧 redo images in first carousel
+- ✅ example youtube vid for desktop
+  - upload example vid (short)
+  - ℹ️ https://studio.youtube.com/channel/UC6gBn5ta5ic5iNcQjXoeneQ/videos/short?filter=%5B%5D&sort=%7B%22columnType%22%3A%22date%22%2C%22sortOrder%22%3A%22DESCENDING%22%7D
+  - ℹ️ https://youtube.com/shorts/yDbGkW2umw4
+- ✅ example youtube vid for mobile
+  - ✅ can record via `scrcpy`
+  - ℹ️ `scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4`
+  - ✅ upload example vid
+  - ℹ️ https://youtube.com/shorts/WIIihWnOQ2E
+- ✅ show demo videos in Carousel
+- ✅ better desktop video dimensions
+  - use OSX Screenshot
+- ✅ fix Video style in Carousel (part 1)
+- ✅ fix Video style in Carousel (part 2)
+
+- 🚧 start with videos
+  - ℹ️ points in doorways considered not navigable
+  - ✅ buy presentify
+  - ✅ test desktop video annotated with presentify
+    - ℹ️ font-size: touchpad scroll
+    - ℹ️ live text a bit shit e.g. can see preview "Text"
+    - ✅ video could follow "shell script comments"
+    - ❌ video could follow text typed into terminal e.g. `# foo`
+  - ❌ presentify interactive mode
+    - not yet anyway...
+  - ✅ keystro: mouse + keys
+  - 🔔 OBS shortcuts we defined:
+    - start/stop recording: CMD + ;
+  - 🚧 desktop: spawn, move, remove
+    - 2nd attempt ~ 150mb, 7m20
+    - 4th attempt ~ 136mb, 5m17
+  - 🚧 mobile: spawn, move, remove
+    - ✅ New Profile with "Mobile Scene" use Window capture
+    - ℹ️ keep prompt disabled
+    - ✅ show touch points
+      - developer options > input > Show taps
+- ✅ fix mic issue: could not turn off voice isolation
+  - System Settings > Sound > select Input
+  - exit Jabra software in taskbar
+  - Change setting to "Standard" in Microphone in taskbar
+- ✅ fix mic issue part 2
+  - took out dongle, put it back, could see mic visualisation in Sound
+- ✅ fix mic too quiet
+  - OBS (Privacy microphone allowed)
+  - Use Razer Bluetooth
+  - Audio input capture: monitor and output
+  - use filter compressor gain instead?
+  - https://obsproject.com/forum/threads/microphone-is-either-loud-and-crackles-or-does-not-crackle-but-is-too-quiet.170668/post-628437
+- 🚧 start code much earlier
+- change writing style
+  - more intertwined with stories
+
+- ✅ migrate from embla carousel to swiper js
+  - https://swiperjs.com/get-started
+  - https://swiperjs.com/demos
+
+- ❌ swiper: slides with different width?
+  - ❌ instead option to switch between 1 or 2 per view
+
+- ❌ redo images in first carousel
   - ℹ️ https://squoosh.app/editor | size?
     - webp quality 70
   - ✅ can spawn with various skins easily
@@ -16,22 +75,34 @@
       - ℹ️ `decor quad tilt` tilts around center
     - ✅ try use nodeCanvas for decor svg detail
   - 🚧 three images
-    - 1st ✅ 2nd 3rd
+    - ℹ️ screenshot of node `.tabs-container`
+    - 🚧 1st ✅ 2nd 🚧 3rd 🚧
+    - desktop and mobile (?)
 
 - ❌ refine chosen carousel embla-carousel
   - ✅ carousel has labels
   - ❌ clean carousel css e.g. more css variables
   - ❌ auto png to webp in public/images
 
-- lead into "basic behaviour list"
-  - need `<Code>`
-    - can copy line-by-line
-    - can copy all
-    - can send directly into tty?
-  - clarify initial PROFILE
-  - step through spawning and removing an npc
-  - step through making an npc walk back-and-forth
-  - next time we'll implement "selection"
+- ✅ support multiple slides in carousel e.g. for small viewport images
+  - ✅ clean up approach
+
+- 🚧 strategy subsection
+  - ✅ need `<Code>`
+    - ✅ can copy line-by-line
+    - ✅ can copy all
+  - ✅ mobile tty has textarea disabled option
+  - ✅ default profile is `default-profile`
+    - includes standard imports: `util.{,js.}sh` `game.{,js.}sh`
+    - `awaitWorld`
+  - load default_profile
+  - spawn npc
+  - move npc
+  - load profile_1
+  - select npc, move it
+  - select some points
+  - go on a tour
+  - move another npc into the way
 
 - mention Starship Geomorphs early
 - mention recent improvements in AI
@@ -48,246 +119,252 @@
   - defunct if we remove debug i.e. always paused when paused
 - start adding cypress
 
+- navigate to `#foo` then back should preserve scroll
+  - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
+
 ### World
 
-- ✅ look/follow npc at their height i.e. controls.target.y > 0
-  - ℹ️ controls.minDistance measured from controls.target
+- ✅ `npc.api.move` is silently choosing a "closest point" within 0.5
+  - default behaviour should be 0.05 (cannot choose zero because of small ground height)
+ 
+- ✅ can pause and turn before moving
+  - ℹ️ we could trigger such turns when next target is not in same room
+  - ✅ try set maxSpeed 0 before "next pending target"
+  - ℹ️ when maxSpeed 0 before offMesh seems recastnavigation `agentAnim.tmax` is Infinity
+    - this "stops" the agents whilst still increases `agentAnim.t`
+    - if we immediately override the offMesh then the agent doesn't stop
+    - if we override but set `tmid` and `tmax` as Infinity then it initially pauses
+  - ✅ only trigger on enter offMesh with large deltaAngle
+  - ✅ resume after given ms
 
-- ✅ top-skin-only -> plain-0
-- ✅ skin shortcuts
-  - ℹ️ e.g. `spawn '{ npcKey: "rob", skin: "soldier-0" }' $( click 1 )`
-    - `"soldier-0"`
-    - `"soldier-0/scientist-0/plain-0/police-0"` ->
-      - head `soldier-0`
-      - body `scientist-0`
-      - head-overlay `plain-0`
-      - body-overlay `police-0`
-    - `"soldier-0/-/-/-"` only changes head
-- ✅ what about skin prefix `scientist-0` lacking `body`?
-  - ℹ️ or `scientist-1` only having `body`
-  - ✅ in expandSkin could check against
-    - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
-  - ❌ could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
-- ✅ can `spawn foo@soldier-0 $( click 1)`
+- ✅ release do point on move from chair to chair
+- ✅  can move and do (1st attempt)
+  - `local pts=$( click 2 ); move npcKey:rada to:$( pts/0 ) && w n.rada.api.do $( pts/1 ) )`
+
+- ✅ deltaMs -> deltaSecs
+  - seen inside npc.js
+
+- ✅ npc fading issue
+  - ℹ️ MUST have npc (non-transparent) sometimes behind walls (transparent)
+  - ℹ️ BUT then fading npc appears to be behind walls when it isn't
+  - ℹ️ issue arises because walls are instanced meshes
+  - ✅ move npc into/out-of baseY (floor, seat, bed)
+  - ✅ combined with opacity instanced mesh ordering issue not apparent
+  - https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
+  - ✅ provide unscaled animHeight as uniform
+  - ✅ clarify that npc shader uniform opacity is "teleport ratio"
+
+- ✅ Manage: can collapse/expands Tabs, Create, Layout
+
+- ✅ PsList should not initially track on hmr
+
+- ✅ `tour`: once blocked then `pause` and wait for help and resume
+  - ℹ️ there is no good general solution otherwise
+    ```sh
+    while true; do
+      tour npcKey:rob to:$( points )
+    done
+    ```
+
+- ✅ get variant of `tour` working with continuous traversal of multiple points
+  - ✅ basic version `ctsTour`
+  - ✅ `ctsTour` restores on finish/kill
+  - ✅ `ctsTour` restores/reverts on pause/resume
+  - ✅ remove change slowDownRadius onenter small room
+  - ✅ `ctsTour` jerks when stuck via other
+    - we'll pause and await GM input
+  - ✅ merge `ctsTour` into `tour`
+    - ✅ `move` cleans its own callbacks
+    - ✅ slowDownRadius change only used for continuous movement
+  - ✅ reboot needs to be handled differently in try catch?
+    - maybe fixed by re-throw non "stopped-reason"
+  - ✅ remove `ctsTour`
+
+- ✅ avoid "continuous true issues" in general via `npc.pendingTargets`
+  - ✅ finally reset `slowDownRadius`
+  - ✅ on reject what happens to unreached e.g. how can we resume?
+    - ✅ do not clear pending targets
+    - ✅ next `move` without points resumes, otherwise clears
+  - ✅ remove `npc.s.continuous`
+  - ✅ can `npc.api.move`
+    - `w n.rob.api.move "{ to: $( click 1 ) }"`
+    - `w n.rob.api.move "{ to: $( click 2 ) }"`
+  - ✅ can `move`
+    - `move npcKey:rob to:$( click 2 )`
+    - can pause/resume
+    - can interrupt
+  - ✅ try clean `move`
+    - ✅ support multiple move rejects
+    - ✅ awaitResume has optional `exposeReject`
+  - ✅ emit event `continued-moving` on continue to pendingTargets
+  - ✅ update slowDownRadius per pendingTargets
+  - ✅ can extend pendingTargets
+  - ✅ can `tour`
+  - ✅ `tour` seems "freely combinable" with `move` interruptions
+  - ✅ `tour` nested arrays
+    - `tour npcKey:rob to:$( array $( click 2 ) )` continuous
+    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) )` stop, then cts
+    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) $( click 1 ) )`
+    ```sh
+    nestedPoints=$( array $( click 1 ) $( click 2 ) $( click 1 ) )
+    tour npcKey:rob to:$( nestedPoints )
+    ```
+
+- ✅ api to indicate points using decor points/quads
+  - ✅ add `decor/icon--#{1,2,3}.svg` and extend `fromDecorImgKey`
+  - ✅ run `yarn assets-bun` (seems not auto-picked-up)
+  - ✅ create decor circle via a command
+  - ✅ refactor decor creation
+    - ℹ️ do not use script-only `geomorph.createLayoutDecorFromPoly`
+    - ✅ `Geomorph.DecorDef`
+    - ✅ `w.decor.create(def)`
+  - ✅ create decor quad with texture via command `testAddDecor`
+  - ✅ can create monochromatic line
+    - ✅ translation + scale
+    - ✅ rotation
+  - ✅ `click` can create monochromatic points
+    - ✅ `createDecorLine` creates line
+    - ✅ on re-add decor it should update
+      - `createDecorLine decorKey:foo from:$( click 1 ) to:$( click 1 )`
+    - ✅ hook up to `click`
+    - ✅ avoid z-fighting via monochrome white
+    - ❌ clicks too close to previous?
+    - ✅ decor quads can have meta.nav true
+    - ✅ clicks over 10 receive icon sans number
+
+- ✅ BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
+  - try fix by removing unnecessary `this.pendingTargets.length = 0`
+
+- ❌ `ptags+=foo` -> builtin `ptags foo`
+
+- 🚧 sh: fail early semantics i.e. `set -e`
+  - ℹ️ profile seems "ok": we paste each line, regardless of exitCode
+  - ✅ stmts fails as soon as one does
+  - ✅ while fails if body does
+
+- ℹ️ example commands
+  - `points/reverse'()'`
+  - `points/at'(-1)'`
+  - `testAddDecor`
+  - `w decor.remove test-decor-{circle,point,quad}`
+
+- ✅ tty: fix mobile closed bracket
+  - ℹ️ works on google gboard, but not microsoft swiftkey
+  - can turn "quick prediction insert" and "quick punctuation" off
+
+- ❌ PsList: pause/resume while Tabs paused broke?
+  - no repro yet
+
+- ✅ move arrival is still delicate
+  - arriveDist:0.1 does not always work
+  - tweak: idle separationWeight 0.25, moving separationWeight 0.1
+
+- ✅ fix spawn onto do point
+  ```sh
+  c=-1; while c+=1; do
+    spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
+  done
+  ```
+
+- profile_1: move inline-functions into js modules
+  - not needed in all cases e.g. reboot still works for `map`
 
 - 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
   - ✅ invert npc (when WorldMenu invert on)
-  - torch radius/opacity
+  - ❌ torch radius/opacity
   - breathTriIds (one per classKey)
   - ...
 
-- ✅ plain-0-body <-> base-0-body
+- ✅ iOS 18.5 not working, probably when recast (WASM) is loaded
+  - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
+  - https://bugs.webkit.org/show_bug.cgi?id=291677
+  - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
+  - ℹ️ `small-map-1` works, so could restrict in case of iOS
+  - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
+  - ✅ check iPad
 
-- ✅ improve base skin yet again: base-body too basic
+- 🚧 new example-commands.md
+  - `tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )`
 
-- ✅ consider having WASD for e.g.
-  - `w view.tween '{ azimuthal: Math.PI/2 }`
+- ✅ spawn more than 200 npcs should throw error
+  - current just sets npc position to (0,0,0)
 
-- ✅ blender: head-overlay-bottom uvs flipped vertically
-  - fix beard on base skin
+- ✅ support multi-spawn with simplified opts
+  - ℹ️ `w.npc.spawnMany`
+  - ✅ mounts "all at once"
+  - ✅ fix labels
+  - ✅ attach/detach agents
 
-- ✅ bug: tty: `echo --` is empty
-  - probably related to `getopts`
+- ✅ increasing intermediate pendingTarget arrival distance has bad side-effects
+  - ℹ️ means we don't get close enough to intermediate points
+  - `w crowd.navMeshQuery | log`
+  - ✅ expose navMeshQuery methods so we can "look ahead"
+    - initSlicedFindPath 
+    - updateSlicedFindPath
+    - finalizeSlicedFindPath
+    - finalizeSlicedFindPathPartial
+  - ✅ expose finalizeSlicedFindPath too
+  - ✅ try running locally `yarn dev-webpack` with tsconfig paths uncommented
+  - ✅ publish to our recast-navigation-js npm modules
+  - ❌ consider detecting "turn into intermediate target" and use slowDownRadius in that case
+  - ℹ️ points weren't on nav mesh
+  - ℹ️ we decreased to `1.5 * arriveDist`
 
-- ✅ sh: generic args approach for `spawn`
-  - e.g. `spawn npcKey:foo skin:scientist-0 at:"$( click 1 )" look:"$( click 1 )"`
-  - ℹ️ more generally, avoid "args order dependency" in game shell functions
+- ✅ rename meta.do -> meta.act
+  - ℹ️ because `do` is reserved word (loop construct)
+  - ✅ svg: decor do -> decor act
+  - ✅ meta.doPoint -> meta.actPoint
+  - ✅ js changes e.g. api.do -> api.act
+  - ✅ cli changes
+- `act npcKey:rob at:$( click 1 )`
 
-- ✅ can spawn-and-look
-  - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
+- ✅ can force while loop to continue via `|| true`
 
-- ✅ bug: sh: cannot type hash: #
+- 🚧 some offMesh traversals seem slow
+  - 🚧 might have fixed computation of tmax
 
-- ✅ sh: `move` command?
-  - ✅ npc.move has single arg
-  - ✅ cleanUp will move.reject
-  - ✅ Ctrl-C working for single move
-    - `move npcKey:rob arriveAnim:none to:$( click 1 )`
-  - ✅ Ctrl-C working for while
-    - `move` needs non-zero exit code on Ctrl-C
-  - ✅ onSleep will pin to current position (default behaviour after)
-  - ✅ onResume will replan
-  - ✅ cleanUp also stops whilst paused
+- BUG: idle npcs are sometimes not staying in place on nav reload?
 
-- ✅ split game-generators.js into 2 files
-  - game-generators.js
-  - game-generators-wip.js
+- ✅ BUG: collide whilst running does not enter Idle
 
-- ✅ could pause/resume move via maxSpeed
-  - `w n.rob.agent.raw.params.set_maxSpeed 0`
-  - `w n.rob.agent.raw.params.set_maxSpeed 1.5`
-  - ℹ️ while World paused also need to `w crowd.update`
-  - ℹ️ not actually using this as yet
+- ✅ reorg npc.reject.moves
+  - `npc.reject.move` (single) and `npc.onRejects.move` (multiple)
 
-- ✅ sh: support initially-overwriting-append e.g. `click 2 &>> foo`
+- BUG: sometimes tty-0 fails to persist /home?
 
-- ✅ sh: `echo foo >&2` goes to stderr
-  - ℹ️ e.g. `{ echo foo >&2 ; echo bar; } >baz`
-  - ℹ️ permits debug messaging
+- BUG: sh: multi-line history with repro
+```sh
+# 2nd line has "exactly one space and log"
+# happens when we go forwards and arrive at this line
+expr window.document.querySelector'("section")' | log
+```
 
-- ✅ can invoke `move` generator from another generator e.g. `moveCycle`
-  - ✅ pass generators into session.lib
-  - ✅ create `moveCycle` and invoke `move`
-  - ✅ implement `moveCycle`
-  - ✅ `move` should work onchange `npc.js`
-    - breaks if pause Tabs then change `npc.js`
+- BUG: ContextMenu: sometimes on 3d -> docked it disappears but reappears on resize window
 
-- ✅ refine `moveCycle` aka `tour`
-  - ❌ keeps trying by default?
-  - ✅ avoid send args to `move`
-  - ✅ `moveCycle` -> `tour`
-  - ✅ simplify: no loop, but can:
-  - ✅ clean i.e. add to basic behaviour list
+- BUG (?) spread of command subst
+  - on `x=$( echo foo; echo bar )` then `x` should be `['foo', 'bar]`
+  - on `x=...$( echo foo; echo bar)` then `x` should be `foo bar`
+  - `echo ...$( expr [1,2,3] )` should output `1 2 3`
 
-- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
+- tidy example commands
+  - includes "quoting gotchas" e.g. `w e.say kate Well, this is awkward...`
 
-- ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
+- can `w e.say` at different heights, to avoid collisions
+  - e.g. when sitting next to each other
 
-- ✅ only mutate `npc` i.e. do not re-instantiate on hmr
-  - ℹ️ idea: npc.api is a class instance which we replace on hmr
-  - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
-  - ✅ new hmr strategy
-    - ✅ detect change of function `createBaseNpc`
-    - ✅ detect change of class `NpcApi`
-    - ✅ simplify strategy: even if function didn't change, its make contain stale refs
-    - ✅ baseNpc: copy in new, delete old, also for `s`
-    - ✅ NpcApi: replace it
-  - ✅ try replace `Npc`
-  - ✅ tidy
+- ✅ try avoid `move` failing with key "stuck" when near others?
+  - idle has larger separationWeight
+  - larger arriveDist i.e. 0.1
 
-- ✅ improve ctrl-c error log for `move`
-  - works when Tabs not paused
-  - issue happens whilst paused i.e. error is `true`
-
-- ✅ locked doors should not open on accessible npc enter collider
-
-- ✅ BUG: sh: can redirect error messages to /dev/null 
-  - `call '() => { throw "oh no!"; }' 2>/dev/null`
-
-- ✅ do not rely on stuck detection to fix "cannot get close enough to arrive"
-  - ℹ️ can repro when another npc nearby-ish (`separationWeight`)
-  - ✅ add slow down radius param to recastnavigation repo
-  - ✅ expose slow down radius in recast-navigation-js repo
-    - expose wasm interface
-  - ✅ can see in npc-cli-next while connected by tsconfig paths
-  - ✅ can change in npc-cli-next and see difference
-    - 0.05 fixes issue
-  - ✅ try slower transition Walk -> Idle
-  - ✅ publish and bump
-  - ℹ️ related to separation weight of idle vs moving
-  - ✅ onSlowNpcCustom has a default
-
-- ❌ moveCycle: what if npc keeps getting blocked from leaving room
-  - ❌ e.g. npc near door has higher weight (more accommodating)
-  - ❌ e.g. blocking npc tweens separationWeight
-  - ℹ️ won't solve yet
-
-- ❌ better approach to js to shell function naming?
-  - ℹ️ want to permit mutually inconsistent files (only source one)
-  - ℹ️ want to optionally exclude certain files
-  - ℹ️ want to avoid special names to avoid collisions
-  - ✅ extendable approach
-  - ❌ can specify functions to auto-source
-    - maybe auto track after `source /etc/foo`
-    - better names i.e. not game-generators-wip
-    - maybe can specify initially sourced via prop
-  - ❌ session.jsFuncs should only contain respective functions too
-    - provide keyed lookup `jsFunctions`
-    - but how to fix types? need to separate to avoid collisions
-  - ℹ️ seems too complicated
-
-- ✅ avoid Tabs reload on edit service/const
-  - ✅ fix Viewer, ViewerControls
-
-- ✅ replace soldier-0 head, head-overlay
-  - https://namemc.com/skin/5556dc93d001adea
-
-- ✅ replace police-0 -> robot-0
-  - ✅ replace head, head-overlay
-  - ✅ replace body
-  - ✅ replace body-overlay
-    - put in second sheet (overwrite bare-0)
-  - ✅ rename police-0 -> robot-0
-
-  - ✅ rename astronaut-0 -> robot-1
-  - ✅ soldier-0 should be lighter
-
-- ✅ on collide look towards neighbour should be optional callback
-  - ✅ optional callback `w.npc.onTickIdleTurn`
-  - ✅ provide example
-    - `setupOnTickIdleTurn`
-
-- ❌ can only close tab after hover for a while
-  - to avoid accidental closure
-  - ℹ️ Tabs will have "manage" tab instead
-
-- ✅ Tabs has manage tab
-  - ✅ cannot close tabs directly 
-  - ✅ manage tab component exists
-  - ✅ ensure manage tab in all layouts
-  - ✅ move links into manage tab
-    - use `#/internal` link
-    - remove `/internal/...` -> `#/internal/...` transformer in markdown
-  - ✅ manage tab has ui
-
-- 🚧 manage tabs
-  - ✅ can close tab
-  - ✅ can open new tab
-  - ✅ create tab needn't select it
-  - ✅ close tab needn't select it
-  - ✅ can specify props when open new tab
-    - ✅ get all mapKeys somehow
-    - ✅ directly import deserialized geomorphs
-    - ✅ world: can specify mapKey
-    - ✅ tty: can specify
-      - ✅ profileKey
-      - ✅ worldKey
-  - ✅ fix select on remove i.e. should not switch away from manage
-  - ✅ tab grey if disabled (e.g. never mounted)
-    - ℹ️ TTY tabs not disabled in background, others are
-    - ✅ should not set background tab enabled when Tabs enabled
-    - ✅ site.store has tabset.tabs derived from tabset.synced
-    - ✅ ensure keys are removed from Tabs.tabsState
-    - ✅ expose Viewer tabs disabled
-    - ✅ style when disabled
-    - ✅ style when unmounted
-  - 🚧 select tab on click
-  - 🚧 ongoing restyle
-    - ✅ clean
-    - ✅ paused represented via icon
-    - ✅ unmounted represented via icon
-  - can change world mapKey
-  - can change tty worldKey
-  - tty worldKey reflects home.WORLD_KEY
-
-- ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
-  - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
-    wrap around "nav-deformed" corner
-  - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
-
-- ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
-  - e.g. via larger `npc.s.lookSecs` when nearly arrived
-
-- ✅ soldier-0 needs more hair
-- ✅ change robot-0
-  - mixture of two skins
-- ✅ change robot-1
-
-- ✅ sh: should yield to stdout or stderr rather than `writeMsgCleanly`
-  - ✅ `choice` yields
-  - ✅ eliminate other usages except for `ps` replace line when scrolled back
-
-- remove torch
-
-- rehype: example of dynamic ansi highlighting 
-  - https://rehype-pretty.pages.dev/#ansi-highlighting
-  - would like to highlight shell functions
+- ✅ manage: can select tty profileKey which remounts Tty
 
 - wasd camera controls does not work with follow
-  - ℹ️ need to start porting to our own camera controller
-  - related to w.view.controls.update(true);
-- bug: sh: support $@ deeply inside double quotes (?)
+  - ℹ️ related to w.view.controls.update(true);
+  - 🔔 start porting to our own camera controller
+
 - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
+
+- doors can be further secured by "full match" e.g. `.*` vs `.`
 
 - can show navMesh via cli
 
@@ -300,6 +377,9 @@
 
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
 
+- can scroll ContextMenu on mobile
+  - on hold i.e. user can resize instead
+
 - fix run through doorway
 
 - clarify staticSeparationWeight = movingSeparationWeight = 0.5
@@ -308,6 +388,10 @@
 
 - try "turn around before moving" via small acceleration initially
   - could also "pause before moving"
+
+- Tty: could debounce/cancel CONT/STOP
+
+- tty: command-by-command mode by setting leading process `ProcessStatus.Suspended` after each run
 
 - ✅ support decor cuboid meta `max-height` e.g. cuboid under obstacle
 
@@ -352,10 +436,6 @@
 
 ### Dev Env
 
-- ✅ avoid re-request navmesh onchange skin
-- ✅ avoid re-request navmesh onchange lights
-  - maybe because assets.json is changing due to hash change?
-
 - 🚧 BUG: on add decor image i.e. decor spritesheet out-of-sync
   - w.geomorphs.sheet.decor is synced
   - `<Decor>` was not but fixed by editing its query
@@ -363,12 +443,13 @@
 - 🚧 Boxy SVG: sporadic slow save (or at least, triggering of our file mon)
   - https://boxy-svg.com/bugs/370/intermittent-slow-saving
 
-- node-canvas: is it still nondeterministic onchange decor pngs?
+- seeing `/etc/util.sh: failed to run (see console)` during hmr
+  - maybe on pause profile we're pausing the respective `spawn`
 
 - BUG: why did adding a decor cuboid in fuel break Decor
   - also would like to use a cuboid instead of wall for fuel
 
-- BUG: hmr offMeshConnectionHalfDepth does not update navmesh
+- ❌ BUG: hmr offMeshConnectionHalfDepth does not update navmesh
 
 - 🚧 improve assets script
   - ✅ more measurements in assets script
@@ -1355,3 +1436,604 @@
   - ❌ try many fixed lights e.g. via DataTexture or DataArrayTexture
   - ❌ could try "light image" again where distinct light's rect's don't overlap
   - ❌ npcs are lighter within light circle
+
+
+- ✅ look/follow npc at their height i.e. controls.target.y > 0
+  - ℹ️ controls.minDistance measured from controls.target
+
+- ✅ top-skin-only -> plain-0
+- ✅ skin shortcuts
+  - ℹ️ e.g. `spawn '{ npcKey: "rob", skin: "soldier-0" }' $( click 1 )`
+    - `"soldier-0"`
+    - `"soldier-0/scientist-0/plain-0/police-0"` ->
+      - head `soldier-0`
+      - body `scientist-0`
+      - head-overlay `plain-0`
+      - body-overlay `police-0`
+    - `"soldier-0/-/-/-"` only changes head
+- ✅ what about skin prefix `scientist-0` lacking `body`?
+  - ℹ️ or `scientist-1` only having `body`
+  - ✅ in expandSkin could check against
+    - `w.npc.sheetAux[w.n.rob.def.classKey].uvMap`
+  - ❌ could precompute skinShortcut -> { head, body, headOverlay, bodyOverlay }
+- ✅ can `spawn foo@soldier-0 $( click 1)`
+
+- ✅ plain-0-body <-> base-0-body
+
+- ✅ improve base skin yet again: base-body too basic
+
+- ✅ consider having WASD for e.g.
+  - `w view.tween '{ azimuthal: Math.PI/2 }`
+
+- ✅ blender: head-overlay-bottom uvs flipped vertically
+  - fix beard on base skin
+
+- ✅ bug: tty: `echo --` is empty
+  - probably related to `getopts`
+
+- ✅ sh: generic args approach for `spawn`
+  - e.g. `spawn npcKey:foo skin:scientist-0 at:"$( click 1 )" look:"$( click 1 )"`
+  - ℹ️ more generally, avoid "args order dependency" in game shell functions
+
+- ✅ can spawn-and-look
+  - `spawn npcKey:rob at:$( click 1 ) look:$( click 1 )`
+
+- ✅ bug: sh: cannot type hash: #
+
+- ✅ sh: `move` command?
+  - ✅ npc.move has single arg
+  - ✅ cleanUp will move.reject
+  - ✅ Ctrl-C working for single move
+    - `move npcKey:rob arriveAnim:none to:$( click 1 )`
+  - ✅ Ctrl-C working for while
+    - `move` needs non-zero exit code on Ctrl-C
+  - ✅ onSleep will pin to current position (default behaviour after)
+  - ✅ onResume will replan
+  - ✅ cleanUp also stops whilst paused
+
+- ✅ split game-generators.js into 2 files
+  - game-generators.js
+  - game-generators-wip.js
+
+- ✅ could pause/resume move via maxSpeed
+  - `w n.rob.agent.raw.params.set_maxSpeed 0`
+  - `w n.rob.agent.raw.params.set_maxSpeed 1.5`
+  - ℹ️ while World paused also need to `w crowd.update`
+  - ℹ️ not actually using this as yet
+
+- ✅ sh: support initially-overwriting-append e.g. `click 2 &>> foo`
+
+- ✅ sh: `echo foo >&2` goes to stderr
+  - ℹ️ e.g. `{ echo foo >&2 ; echo bar; } >baz`
+  - ℹ️ permits debug messaging
+
+- ✅ can invoke `move` generator from another generator e.g. `moveCycle`
+  - ✅ pass generators into session.lib
+  - ✅ create `moveCycle` and invoke `move`
+  - ✅ implement `moveCycle`
+  - ✅ `move` should work onchange `npc.js`
+    - breaks if pause Tabs then change `npc.js`
+
+- ✅ refine `moveCycle` aka `tour`
+  - ❌ keeps trying by default?
+  - ✅ avoid send args to `move`
+  - ✅ `moveCycle` -> `tour`
+  - ✅ simplify: no loop, but can:
+  - ✅ clean i.e. add to basic behaviour list
+
+- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
+
+- ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
+
+- ✅ only mutate `npc` i.e. do not re-instantiate on hmr
+  - ℹ️ idea: npc.api is a class instance which we replace on hmr
+  - ✅ implement `createNpc` function with hot-replaceable api (not connected yet)
+  - ✅ new hmr strategy
+    - ✅ detect change of function `createBaseNpc`
+    - ✅ detect change of class `NpcApi`
+    - ✅ simplify strategy: even if function didn't change, its make contain stale refs
+    - ✅ baseNpc: copy in new, delete old, also for `s`
+    - ✅ NpcApi: replace it
+  - ✅ try replace `Npc`
+  - ✅ tidy
+
+- ✅ improve ctrl-c error log for `move`
+  - works when Tabs not paused
+  - issue happens whilst paused i.e. error is `true`
+
+- ✅ locked doors should not open on accessible npc enter collider
+
+- ✅ BUG: sh: can redirect error messages to /dev/null 
+  - `call '() => { throw "oh no!"; }' 2>/dev/null`
+
+- ✅ do not rely on stuck detection to fix "cannot get close enough to arrive"
+  - ℹ️ can repro when another npc nearby-ish (`separationWeight`)
+  - ✅ add slow down radius param to recastnavigation repo
+  - ✅ expose slow down radius in recast-navigation-js repo
+    - expose wasm interface
+  - ✅ can see in npc-cli-next while connected by tsconfig paths
+  - ✅ can change in npc-cli-next and see difference
+    - 0.05 fixes issue
+  - ✅ try slower transition Walk -> Idle
+  - ✅ publish and bump
+  - ℹ️ related to separation weight of idle vs moving
+  - ✅ onSlowNpcCustom has a default
+
+- ❌ moveCycle: what if npc keeps getting blocked from leaving room
+  - ❌ e.g. npc near door has higher weight (more accommodating)
+  - ❌ e.g. blocking npc tweens separationWeight
+  - ℹ️ won't solve yet
+
+- ❌ better approach to js to shell function naming?
+  - ℹ️ want to permit mutually inconsistent files (only source one)
+  - ℹ️ want to optionally exclude certain files
+  - ℹ️ want to avoid special names to avoid collisions
+  - ✅ extendable approach
+  - ❌ can specify functions to auto-source
+    - maybe auto track after `source /etc/foo`
+    - better names i.e. not game-generators-wip
+    - maybe can specify initially sourced via prop
+  - ❌ session.jsFuncs should only contain respective functions too
+    - provide keyed lookup `jsFunctions`
+    - but how to fix types? need to separate to avoid collisions
+  - ℹ️ seems too complicated
+
+- ✅ avoid Tabs reload on edit service/const
+  - ✅ fix Viewer, ViewerControls
+
+- ✅ replace soldier-0 head, head-overlay
+  - https://namemc.com/skin/5556dc93d001adea
+
+- ✅ replace police-0 -> robot-0
+  - ✅ replace head, head-overlay
+  - ✅ replace body
+  - ✅ replace body-overlay
+    - put in second sheet (overwrite bare-0)
+  - ✅ rename police-0 -> robot-0
+
+  - ✅ rename astronaut-0 -> robot-1
+  - ✅ soldier-0 should be lighter
+
+- ✅ on collide look towards neighbour should be optional callback
+  - ✅ optional callback `w.npc.onTickIdleTurn`
+  - ✅ provide example
+    - `setupOnTickIdleTurn`
+
+- ❌ can only close tab after hover for a while
+  - to avoid accidental closure
+  - ℹ️ Tabs will have "manage" tab instead
+
+- ✅ Tabs has manage tab
+  - ✅ cannot close tabs directly 
+  - ✅ manage tab component exists
+  - ✅ ensure manage tab in all layouts
+  - ✅ move links into manage tab
+    - use `#/internal` link
+    - remove `/internal/...` -> `#/internal/...` transformer in markdown
+  - ✅ manage tab has ui
+
+- ✅ avoid "final quick turn around" when move npc to "small gap between boxes"
+  - e.g. via larger `npc.s.lookSecs` when nearly arrived
+
+- ✅ soldier-0 needs more hair
+- ✅ change robot-0
+  - mixture of two skins
+- ✅ change robot-1
+
+- ✅ sh: should yield to stdout or stderr rather than `writeMsgCleanly`
+  - ✅ `choice` yields
+  - ✅ eliminate other usages except for `ps` replace line when scrolled back
+
+- ✅ remove torch
+
+- ✅ `<Code>` improvements
+  - ✅ supports copy all
+  - ✅ copy all has visual feedback
+  - ✅ supports copy line
+  - ✅ copy line has visual feedback
+
+- ✅ cannot enter small room if other npc is nearby offMesh.dst
+  - ℹ️ this would avoid jerkiness due to lack of leeway for other
+- ✅ stopped-moving reason has otherNpcKey
+  - ✅ blocked-doorway
+  - ✅ collided
+
+- ❌ rehype: example of dynamic ansi-output highlighting 
+  - https://rehype-pretty.pages.dev/#ansi-highlighting
+  - would like to highlight shell functions
+
+### Dev Env
+
+- ✅ avoid re-request navmesh onchange skin
+- ✅ avoid re-request navmesh onchange lights
+  - maybe because assets.json is changing due to hash change?
+
+## Branch `get-blog-ready`
+
+### World
+
+- ✅ ptags.preview used by `ps` and `PsList`
+
+- ✅ manage tabs
+  - ✅ can close tab
+  - ✅ can open new tab
+  - ✅ create tab needn't select it
+  - ✅ close tab needn't select it
+  - ✅ can specify props when open new tab
+    - ✅ get all mapKeys somehow
+    - ✅ directly import deserialized geomorphs
+    - ✅ world: can specify mapKey
+    - ✅ tty: can specify
+      - ✅ profileKey
+      - ✅ worldKey
+  - ✅ fix select on remove i.e. should not switch away from manage
+  - ✅ tab grey if disabled (e.g. never mounted)
+    - ℹ️ TTY tabs not disabled in background, others are
+    - ✅ should not set background tab enabled when Tabs enabled
+    - ✅ site.store has tabset.tabs derived from tabset.synced
+    - ✅ ensure keys are removed from Tabs.tabsState
+    - ✅ expose Viewer tabs disabled
+    - ✅ style when disabled
+    - ✅ style when unmounted
+  - ✅ select tab on click
+  - ✅ ongoing restyle
+    - ✅ clean
+    - ✅ paused represented via icon
+    - ✅ unmounted represented via icon
+    - ✅ use many onClick rather than "one for many"
+  - ❌ "create tab" labelled with next id
+    - might be confusing
+  - ✅ enforce tab id format i.e. `${Key.TabClassPrefix}-${number}`
+  - ✅ can change world mapKey
+    - ✅ works when World tab in foreground
+    - ✅ fix background tab
+      - ℹ️ `door[useEffect]` not invoked while bg because `useEffect`
+      - nav.worker should be re-triggered in background
+  - ✅ create tty worldKey is numeric
+    - if invalid, env.WORLD_KEY won't be defined
+  - ❌ can change tty worldKey (numeric)
+    - must use tty
+  - ✅ tty worldKey reflects home.WORLD_KEY onclick
+  - ✅ "open tab" long-press should select it
+
+- ✅ fix overrideOffMeshConnectionAngle when agent starts/ends after/before endpoints
+  - ℹ️ previously we made offMeshConnection half depths larger to avoid bad nextCorner when
+    wrap around "nav-deformed" corner
+  - ✅ Connector entrances have smaller half-depth then offMeshConnection half-length
+
+- ✅ Draggable: towards resizable via corner
+  - ✅ remove controls from PopUp
+  - ✅ can resize
+  - ✅ ContextMenu and Logger work
+  - ✅ ContextMenu: only forward scroll even not scrollable
+    - test `innerRoot.scrollHeight` vs `innerRoot.clientHeight` (we don't show horizontal scroll)
+
+- ✅ selectively `source /etc/foo` with HMR tracking
+  - ℹ️ currently every js-induced-file is auto-sourced and tracked
+  - ℹ️ instead, profiles will start with e.g. `source /etc/game-generators.sh`
+  - ✅ RunArg -> NPC.RunArg
+  - ✅ sh/src/index.js -> sh/src/profiles.js
+  - ✅ shorter names for src/sh/*.{js,sh}
+    - js generators -> sh with extension `jsh` (avoid collision)
+  - ✅ separate jsFunctions by filename key (e.g. `game`, `gameWip`)
+  - ✅ mechanism for communication between `source` and hmr-sourcing
+    - ✅ send test message from `source`
+  - ✅ "external" message triggers auto-HMR
+    - ✅ mutate lookup in `<Tty>` and adjust useEffect
+
+- ❌ jsArg: `["to:{x1,y1}", "{x2,y2}"]` -> [`to:{x1,y1} {x2,y2}`]
+  - wanted to fix `tour npcKey:rob to:$( click 2 )` i.e. when missing double-quotes
+  - these non-quoted versions work:
+    - `tour npcKey:rob to:$( click 2 | sponge )`
+    - `points=$( click 2 ); tour npcKey:rob to:$( points )`
+
+- ✅ can `tour npcKey:rob to:$( click 2 )`
+  - ✅ command substitution outputs (jsStringified) js array if multiple values
+  - 🔔 `fnFoo $( click 2 )` won't have $1 and $2 but only $1 i.e. `[...]`
+
+- ✅ BUG: pausing whilst PROFILE running was not working
+  - ℹ️ `spawn` was setting `process.status` `ProcessStatus.Running` for leading process
+  - ❌ spawned process should inherit status?
+    - a paused/dead process should never spawn another
+  - ✅ process pauses before `spawn` if paused
+    - currently we only suspend/resume process on read/write to device
+  - ✅ distinguish: auto-pasted lines from PROFILE, interactively specified command
+
+- ❌ BUG: cannot pause `w foo`
+- ✅ BUG: ctrl-c profile works with exitCode `130`
+
+- ✅ manage: change map while paused sometimes doesn't work 
+  - hide World behind other tab, then select it via manage, then change
+  - presumably thinks its "in background"
+
+- ✅ BUG: CONT is showing when it should not
+
+- ✅ manage: open tty tab while paused is now enabled (so can see actual terminal)
+
+- ✅ `<Tty>` should receive disabled like other tabs, but handles differently
+  - ✅ can boot while disabled
+  - ✅ on open tty tab while paused, tty profile should not pause initially
+    - can test `nextPid > 1`
+  - ✅ if `<Tabs>` disabled then background processes without `'always' in ptags` start suspended (in sync)
+    - ℹ️ ttyShell.bgSuspendUnless := 'always'
+  - ✅ `<Tty>` resumeRunningProcesses resumes all suspended processes sans tag `always`
+  - ✅ CONT not shown during profile
+
+- ✅ CONT/STOP ui new approach:
+  - ✅ CONT visible whenever interactive process suspended
+  - ✅ STOP visible whenever interactive process running
+  - ✅ while Tab paused only one click needed:
+    - ✅ `ptags=always; move npcKey:rob to:$( click 1 ) &`
+    - ✅ `ptags=always; echo $( click 1 ) &`
+  - ✅ STOP continues, showing CONT
+    - `interactive-paused`
+    - `interactive-resumed`
+  - ✅ CONT continues, showing STOP
+
+- ✅ re-source /etc/foo cannot be put to sleep during profile run
+
+- ✅ tty: mobile textarea disabled by default
+  - clarify enable/disable prompt button
+
+- ✅ add `game.look` so can remove `initCamAndLights`
+
+- ❌ `expr` is receiving duplicated args?
+```sh
+# this works
+expr '[{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]'
+# this does not: " and {} have different meanings!
+expr [{x:3.928,y:0,z:7.127,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:3.928,y:7.127}},{x:3.595,y:0,z:4.125,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.595,y:4.125}}]
+```
+
+- ✅ get stuck starting near neighbour on other side of wall
+  - repro:
+    ```sh
+    points=$( expr '[{x:3.467,y:0,z:4.55,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:8,grKey:"g0r8",nav:true},xz:{x:3.467,y:4.55}},{x:5.099,y:0,z:6.901,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:2,grKey:"g0r2",nav:true},xz:{x:5.099,y:6.901}}]' )
+
+    while true; do tour npcKey:rob to:$( points ); sleep 1; done
+    ```
+  - ℹ️ npc fails to reach target (stuck), then restarts from same failed target (infinite loop)
+  - ✅ stop-reason stuck has boolean `nearTarget` using `nearTargetDistance`
+  - ✅ npc.s.arriveDistance
+  - ✅ relax npc arriveDistance inside `tour`
+
+- ✅ tty links have optional `refresh` callback
+  - ℹ️ if we don't track lineNumber of link (hard), only traverse all tty lines once
+  - ℹ️ assume all instances of the line with the link should be updated
+    - works for e.g. process-info-line
+  - ✅ `ps` provides `refresh(lineNumber)` callback per link which updates status of link
+  - ✅ useSession.api.refreshTtyLinks(sessionKey)
+- ✅ on `<Tty>` pause/resume we invoke these callbacks
+- ❌ remove stale links and cross them out
+  - 🔔 otherwise they'll be `ps` further up which are out-of-sync
+    - cannot edit buffer above current scroll
+  - ❌ xterm.onScroll
+  - ℹ️ decided against e.g. small scroll area
+
+- ✅ `PsList`: pause/resume/killable process list
+  - ✅ rename `Debug` -> `PsList`
+  - ✅ `Manage` shows `PsList`
+  - ✅ lists process leaders
+  - ✅ can manually refresh via button
+  - ✅ UI for pause, resume, kill
+  - ✅ pause, resume, kill buttons work
+  - ✅ external message `process-leader` provides status
+  - ✅ remove external message `interactive`
+  - ✅ process controls indicate if killed
+    - ✅ fix dup external `leading-process` e.g. (1) initial after parse, (2) inside builtin `source`
+  - ✅ fix unhandled kill in console
+  - ✅ process controls indicate if paused
+
+- ✅ BUG: `kill {pid}` 
+  - pass opts.SIGNT true by default if not stopping or resuming
+
+- ✅ remove on/no/x buttons from `ps`
+  - ℹ️ instead we'll manage processes using `PsList` inside `Manage`
+  - ℹ️ maybe keep "replace line" code for future use cases
+  - ✅ show "on/no" but cannot be changed
+  - ✅ remove kill button
+  - ❌ maybe include button linking to PsList
+  - ✅ paused gray more visible
+  - ✅ ptags.interactive is `true` or does not exist
+  - ✅ ptags.always is `true` or does not exist
+  - ✅ `ptags=always` auto has preview
+  - ✅ `ps` uses these values
+
+- ✅ move ptags.always into sh/* i.e. not from `<Tty>`
+  - ✅ use `ProcessTag.always`
+  - ✅ use `ProcessTag.interactive`
+  - ✅ `ttyShell.bgSuspendUnless` -> `ttyShell.suspendNonInteractive`
+  - ✅ `useSession.api.kill` supports boolean `opts.byPtags`
+    - ℹ️ currently we just pass it through
+    - ✅ additionally select the processes
+    - ✅ cleanup `<Tty>`
+
+- ✅ can resume profile after pause `<Tty>`
+
+- ✅ `PsList` sort processes by tags and src (not pid, except when pid `0`)
+  - ✅ show tag keys
+
+- ✅ HMR strategy for running processes
+  - ❌ `PsList` supports "restart" option for each leading process
+    - doesn't fit into "shell interface"
+  - ✅ `PsList` can copy process src
+    - very manual approach to restarting a process
+  - `Tty` can send HMR-delta message (which modules got reloaded)
+  - ✅ can process.reboot.apply() `run` without respawning processes
+    - ℹ️ might work because `run` refers to `ct.lib`
+    - ✅ fix hang
+      - `call '({ api }) => api.getProcess())'`
+      - `call 'x => api.getProcess()'`
+    - `call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 0 })'`
+  - ✅ can reboot using button in `PsList`
+  - ✅ careful about reboot of process in pipe (do not finish reading/writing)
+    - ✅ works interactively: `poll 2 | map 'x => [x, x]'`
+  - ✅ BUG resume `poll 2`
+    - ℹ️ this is pause/resumable `c=0; while true; do c+=1; echo $c; done`
+  - ✅ BUG rebooted paused `poll` exits
+    - both interactive and background
+  - ✅ BUG twice-rebooted paused `poll` exits
+    - fixed by generator.throw in `for await of`
+
+- ✅ BUG: `sleep 5 &` while `<Tty>` paused is not paused
+  - `sleep` not initially triggered if starts paused
+
+- ✅ BUG: stop `tour` via TtyMenu then ctrl-c
+  - need to ctrl-c twice to stop pid 0
+  - awaitResume needed to send killError in cleanup
+
+- ✅ "byPtags pause" (global pause) should not influence "manual-pause" in `move`
+  - ✅ likewise for `ctsTour`
+
+- ✅ ptags.iPipe -> ptags.interactive and fix nested interactive pipelines
+  - `foo() { echo foo | { map 'x => [x, x]' | map length; } }; foo`
+
+- ✅ can run `seq 5` while paused
+  - ℹ️ `range 5` works
+  - ℹ️ `range 5 | split` works
+  - ℹ️ `ptags=always; seq 5` works
+  - ✅ ptags.iPipe (interactive pipe)
+
+- ❌ fix resume `seq 5 &` via `ps`
+  - happens because two process groups (`ps -a`)
+
+- ✅ fix bad exit code: `foo () { echo foo; echo bar; return; }; foo`
+
+- ✅ yielding or awaiting functions should not keep adding onResumes, onSleeps, cleanups
+  - ✅ `sleep` tidies its callbacks
+  - ✅ `move` tidies its callbacks
+  - ✅ `awaitResume` tidies its callbacks
+  - ✅ `look` tidies its callbacks
+  - ✅ `zoom` tidies its callbacks
+  - ✅ `click`
+  - ✅ `events`
+  - ✅ `w`
+  - ✅ cmd.service
+  - ✅ semantics.service
+  - ✅ io
+
+- ✅ `game.move` programmatically interruptible by JavaScript
+  - ℹ️ as opposed to via CLI e.g. `kill {pid} --SIGINT`
+  - could count cleanups before and e.g. `api.killPartial(count)`
+  - could `npc.api.stopMoving()` and catch error
+
+- ✅ manually paused interactive process should not be resumed on `<Tty>` pause/resume
+  - add ptags.always on `<TtyMenu>` STOP
+
+- ✅ fix code-linking e.g. starting from `game.move` doesn't work
+  - try importing instead
+  - ✅ remove `w.lib` i.e. always import instead
+
+- ✅ BUG: Logger: fix links
+  - put patch back
+
+- ✅ BUG: on `kill --all` then `source PROFILE` saw unexpected processes with `ptags.always`
+  - ℹ️ due to `ptags=always; ...` occurring in "big term induced by PROFILE"
+  - ℹ️ must set ptags BEFORE spawn, so know to initially suspend if suspendNonInteractive
+  - ✅ `ptags+='foo bar'` mutates `process.ptagsDelta`
+  - ✅ on spawn we inherit `process.ptags` modified by `process.ptagsDelta` and `opts.ptags`
+  - ✅ after spawn we reset `process.ptagsDelta` to `{}`.
+
+- ✅ BUG: why does this work yet throws error early?
+  - ✅ `run game move npcKey:rob to:'{ x: 3, y: 2 }'`
+    - ℹ️ these work fine:
+      - `move npcKey:rob to:$( click 1 )`
+      - `move npcKey:rob to:'{x:3,y:2}'`
+    - ℹ️ this originally worked `call game npcKey:rob to:'{ x: 3, y: 2 }'`
+    - ✅ fixed by detecting Function or AsyncFunction in `run`
+  - ✅ TtyFunctions: `call` -> `run`
+  - ❌ TtyFunctions: `map` -> `run`
+    - no need because `map` is run by `run`
+
+- ✅ BUG: paused click sometimes not selecting
+
+- ✅ whilst paused, should background processes sans ptags.always start paused?
+
+- 🚧 `tour`: simply-looped issues
+  - `while true; do tour npcKey:rob to:$( points ); sleep 1; done`
+  - ℹ️ other npc blocks route to 1st point (keeps trying to get there)
+    - many non-trivial ways of being blocked e.g. cannot rely on pushing other out of way
+  - ℹ️ other npc is too close to 1st point (previously handled nearish npc via npc.s.arriveDist)
+  - ℹ️ movement in corridor harder to block
+    - can be blocked at corners tho
+  - ✅ can tween to different separation weight
+    - `w n.rob.api.separate 0.1`
+  - ✅ all npcs have default separation weight 1
+  - ✅ avoid changing separation weight on move/stop
+  - ❌ stuck-detection should not prevent low separation weight from dominating (?)
+  - ℹ️ avoid too much abstraction e.g. why are they trying to walk in a loop?
+
+- ✅ BUG: cannot goto "do point" used by other
+  - ✅ set/null do-point should be recorded in `w.npc`
+  - ✅ connect it up
+  - ✅ clean it on remove npc
+  - ✅ fix mutated doMeta (another issue)
+
+- ✅ BUG: hmr not working in game.js
+
+- ✅ BUG: if click/goto adjacent room and click/goto again just before enter, npc turns incorrectly
+  - ℹ️ due to our attempt to "cool down" offMeshTraversal attempts via
+    > `pause(30).then(() => npc.s.offMesh = null)` in clearOffMesh
+  - ✅ seems timeout is clearing `offMesh` after it has been set by `enter-off-mesh`
+  - ✅ cancel timeout on successful enter
+
+- ✅ new store "tabs.store" contains tabs related stuff from site.store
+  - ✅ migrate useSite -> useTabs
+  - ✅ tabs.store only contains state related to npc-cli/*
+  - ✅ useTabs.api available in shell via CACHE_SHORTCUTS.tabs
+
+- ✅ BUG: on remove world-0 and then re-add world-0, tty background processes stop working
+  - ✅ `click` no longer works
+  - ℹ️ anything referring to old `w` won't work...
+  - ✅ remove entries from tabsMeta on remove tabs via Manage
+  - ✅ `awaitWorld` sets tabsMeta[sessionKey].ttyWorldKey
+  - ✅ on close world using Manage, also close Tty indicated by tabs.store
+  - ℹ️ multiple worlds in a single terminal are possible by avoiding `awaitWorld` or clearing tabs.store.
+
+- ✅ BUG ctrl-c of `while true; do tour npcKey:rob to:$( points ); sleep 1; done` waits for a second
+
+- ✅ manage: clean and clarify actions
+
+- ✅ if pause while interactive process still running, show CONT UI
+  - ✅ also hide on Ctrl-C
+
+- ✅ BUG: fix `echo "...$( echo foo; echo bar; echo baz )"`
+  - parent of CmdSubst can be Word or DblQuoted
+
+- ✅ terminal: shift-enter
+
+- ✅ BUG where rob passed through other
+  - ℹ️ improved behaviour when `sleep 1` in while (handles case where `move` throws)
+  - seems `npc.s.offMesh` is `null` despite offMeshConnection existing
+  - we async null it when `npc.s.offMesh.seg` is `0`.
+```sh
+points=[{x:5.322,y:0,z:9.746,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:9,grKey:"g0r9",nav:true},xz:{x:5.322,y:9.746}},{x:2.436,y:0,z:10.02,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:3,grKey:"g0r3",nav:true},xz:{x:2.436,y:10.02}}]
+while true; do
+  tour npcKey:rob to:$( points )
+  sleep 1
+done
+```
+
+- ✅ for debugging, it would be better if we directly yielded e.g. `ct.lib.game_1.tour`
+  - ℹ️ want to set a breakpoint in e.g. `game-wip.js`
+  - ℹ️ currently, could write `debugger;`
+  - ✅ `run` can directly invoke `ct.lib.foo.bar`
+    - e.g. `run game move npcKey:rob to:$( click 1 )`
+  - ✅ `call` can directly invoke `ct.lib.foo.bar`
+  - ✅ `map` can directly invoke `ct.lib.foo.bar`
+  - ✅ TtyWithFunctions uses above args
+
+- ✅ BUG: Tabs: fix maximize
+
+- ❌ bug: sh: support $@ deeply inside double quotes
+  - not a bug: e.g. `foo() { echo "foo bar $( bar ${@} )"; }` behaves like bash
+
+
+### Dev Env
+
+- ✅ node-canvas: is it still nondeterministic onchange decor pngs?
+  - seems ok
+
+- ✅ hmr: Viewer should not reset onchange image import
+  - do not import image, instead directly `url(/images/foo.webp)`
+  - https://nextjs.org/docs/pages/api-reference/components/image

@@ -131,7 +131,7 @@ export const glbFadeOut = {
     Lie: { Idle: 0, Run: 0, Walk: 0, Sit: 0, Lie: 0 },
     Run: { Idle: 0.15, Run: 0, Walk: 0.1, Sit: 0.2, Lie: 0 },
     Sit: { Idle: 0.1, Run: 0.1, Walk: 0.1, Sit: 0, Lie: 0 },
-    Walk: { Idle: 0.15, Run: 0.1, Walk: 0, Sit: 0.2, Lie: 0.2 },
+    Walk: { Idle: 0.1, Run: 0.1, Walk: 0, Sit: 0.2, Lie: 0.2 },
 };
 
 export const defaultNpcInteractRadius = geomorphGridMeters;
@@ -189,18 +189,31 @@ export const doorSwitchDecorImgKey = /** @type {const} */ ('icon--square');
 
 /** Aligned to media/decor/{key}.svg */
 export const fromDecorImgKey = /** @type {const} */ ({// 🔔 must extend when adding new decor
-  'door--standard': true,
+  'colour--white': true,
   'door--hull': true,
-  'icon--info': true,
+  'door--standard': true,
+  'icon--#0': true,
+  'icon--#1': true,
+  'icon--#2': true,
+  'icon--#3': true,
+  'icon--#4': true,
+  'icon--#5': true,
+  'icon--#6': true,
+  'icon--#7': true,
+  'icon--#8': true,
+  'icon--#9': true,
+  'icon--#10': true,
   'icon--doc': true,
   'icon--door-closed': true,
   'icon--door-locked': true,
   'icon--door-open': true,
   'icon--door-unlocked': true,
+  'icon--info': true,
   'icon--key-card': true,
   'icon--robot': true,
   'icon--square': true,
   'icon--warn': true,
+  'icon--white-circle': true,
   'screen--1x1': true,
 });
 
@@ -338,6 +351,13 @@ export const npcClassToMeta = {
 
   "human-0": {
     groupName: 'Scene',
+    height: {
+      Idle: 2.15,
+      Lie: 0.4,
+      Run: 2.15,
+      Sit: 1.6,
+      Walk: 2.15,
+    },
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     modelAnimHeight: {// pre-scale heights
@@ -349,7 +369,7 @@ export const npcClassToMeta = {
     modelHeight: 2.2, // 🚧 measure in Blender
     modelRadius: 0.5,
     runSpeed: 4,
-    scale: 0.7,
+    scale: 0.65,
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
     walkSpeed: 2.5,
   },
@@ -363,7 +383,7 @@ export const npcClassKeys = /** @type {Key.NpcClass[]} */ (
  * Relates to `npc.def.uid` which is used for object-picking.
  * Technically we can choose any `maxNumberOfNpcs ≤ 2^16 = 65536`.
  */
-export const maxNumberOfNpcs = 256;
+export const maxNumberOfNpcs = 200;
 
 export const npcNearUiDist = 1.2;
 
@@ -453,6 +473,14 @@ export const skinsLabelsTextureHeight = 200 / 4;
  */
 export const npcLabelMaxChars = 12;
 
-export const npcTargetArriveDistance = 0.05;
+export const defaultNpcArriveDistance = 0.08;
+
+/** Should be less than closest points in two distinct rooms */
+export const nearTargetDistance = 0.5;
 
 export const texAuxDepth = 256;
+
+/** Literal react query key */
+export const TABS_API_KEY = 'TABS_API_KEY';
+
+export const html3DOpacityCssVar = '--html-3d-opacity';

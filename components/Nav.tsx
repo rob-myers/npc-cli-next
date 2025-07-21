@@ -1,33 +1,36 @@
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { css } from "@emotion/react";
 import React from "react";
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "react-pro-sidebar";
 
-import { afterBreakpoint, breakpoint, nav, view, zIndexSite } from "./const";
+import { breakpoint, nav, view, zIndexSite } from "./const";
 import useSite from "./site.store";
 import useStateRef from "../npc-cli/hooks/use-state-ref";
-import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight, faCodeBranch } from "./Icon";
+import { FontAwesomeIcon, faRobot, faCode, faCircleQuestion, faCircleInfo, faChevronRight } from "../npc-cli/components/Icon";
 
 export default function Nav() {
   const collapsed = useSite(({ navOpen }) => !navOpen);
+  const router = useRouter();
 
   const state = useStateRef(() => ({
     onClickMenu(e: React.MouseEvent) {
       const li = (e.target as HTMLElement).closest('li');
-      if (li && li.previousSibling !== null) {
-        e.stopPropagation();
+      if (li === null)  {
+        return; // let toggleCollapsed handle it
       }
-    },
-    onClickToggle(e: React.MouseEvent) {
-      state.toggleCollapsed();
+
+      // do not toggleCollapsed
       e.stopPropagation();
+
+      // can click anywhere in li
+      const as = li.querySelectorAll('a');
+      if (as.length === 1) router.push(as[0].href);
     },
     toggleCollapsed() {
       useSite.api.toggleNav();
     },
-  }), {
-    deps: [collapsed],
-  });
+  }), { deps: [collapsed, router] });
 
   return (
     <Sidebar
@@ -40,7 +43,6 @@ export default function Nav() {
       width={nav.expandedWidth}
     >
       <button
-        onClick={state.onClickToggle}
         css={toggleCss}
         className="toggle"
         style={{ zIndex: 10 }}
@@ -57,7 +59,7 @@ export default function Nav() {
         <MenuItem className="title" component="span" tabIndex={-1}>
           <Link href="/blog/index" tabIndex={-1}>NPC CLI</Link>
         </MenuItem>
-        <SubMenu icon={icon.blog} label="Blog">
+        <SubMenu icon={icon.blog} label="Main">
           <MenuItem component="span">
             <Link href="/blog/intent">Intent</Link>
           </MenuItem>
@@ -67,14 +69,18 @@ export default function Nav() {
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <SubMenu icon={icon.devBlog} label="Dev Blog">
+        <SubMenu icon={icon.devBlog} label="Dev">
           <MenuItem>Tech</MenuItem>
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
-        <MenuItem icon={icon.research}>Research</MenuItem>
-        <MenuItem icon={icon.help}>Help</MenuItem>
-        <MenuItem icon={icon.about}>About</MenuItem>
+        {/* <MenuItem icon={icon.research}>Research</MenuItem> */}
+        <MenuItem icon={icon.help} component="span">
+          <Link href="/blog/help">Help</Link>
+        </MenuItem>
+        <MenuItem icon={icon.about} component="span">
+          <Link href="/blog/about">About</Link>
+        </MenuItem>
       </Menu>
     </Sidebar>
   );
@@ -89,10 +95,11 @@ const navCss = css`
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 
-  color: white;
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
-
+  color: #ddd;
+  font-size: 0.9rem;
+  letter-spacing: 0.1rem;
 
   // root item height and hover
   a.${menuClasses.button}, span.${menuClasses.button} {
@@ -111,6 +118,12 @@ const navCss = css`
     margin-right: 24px;
     margin-left: 12px;
     transition: margin-left 300ms;
+    svg {
+      color: #fff;
+      padding: 6px;
+      background:#aaa4;
+      border-radius: 50%;
+    }
   }
 
   // sub-menu
@@ -137,6 +150,7 @@ const navCss = css`
     opacity: 1;
     transition: opacity 500ms;
     margin-left: 0.75rem;
+    font-family: 'Courier New', Courier, monospace;
 
     .${menuClasses.button} {
       pointer-events: none; // ignore clicks outside <a>
@@ -145,21 +159,15 @@ const navCss = css`
     
     .${menuClasses.label} {
       text-transform: capitalize;
-      letter-spacing: 0.5rem;
+      letter-spacing: 0.4rem;
       a {
         pointer-events: all;
         color: #ddd;
       }
-      @media (max-width: ${breakpoint}) {
-        font-weight: 500;
-        font-size: 1.1rem;
-      }
-      @media (min-width: ${afterBreakpoint}) {
-        font-weight: 200;
-        font-size: 1.3rem;
-      }
+      font-size: 1.1rem;
     }
   }
+
   &.${sidebarClasses.collapsed} .${menuClasses.menuItemRoot}.title {
     opacity: 0;
   }
@@ -196,7 +204,7 @@ const icon = {
   devBlog: <FontAwesomeIcon icon={faCode} color="white" size="1x" />,
   help: <FontAwesomeIcon icon={faCircleQuestion} color="white" size="1x" />,
   about: <FontAwesomeIcon icon={faCircleInfo} color="white" size="1x" />,
-  research: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
+  // research: <FontAwesomeIcon icon={faCodeBranch} color="white" size="1x" />,
 };
 
 const toggleCss = css`

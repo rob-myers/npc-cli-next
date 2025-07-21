@@ -3,6 +3,9 @@
 import { client } from "../sse-clients";
 
 export async function GET(request: Request) {
+  // const { searchParams } = new URL(request.url);
+  // const kvs = Array.from(searchParams.entries());
+
   if (process.env.NODE_ENV === 'development') {
     const responseStream = new TransformStream();
     const writer = responseStream.writable.getWriter();

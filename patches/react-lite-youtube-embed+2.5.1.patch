@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-lite-youtube-embed/dist/index.es.js b/node_modules/react-lite-youtube-embed/dist/index.es.js
+index 6fd96ad..e2694ca 100644
+--- a/node_modules/react-lite-youtube-embed/dist/index.es.js
++++ b/node_modules/react-lite-youtube-embed/dist/index.es.js
+@@ -48,7 +48,7 @@ function LiteYouTubeEmbedComponent(props, ref) {
+     var posterImp = props.poster || "hqdefault";
+     var announceWatch = props.announce || "Watch";
+     // Iframe Parameters
+-    var iframeParams = new URLSearchParams(__assign(__assign(__assign(__assign({}, (props.muted ? { mute: "1" } : {})), (props.alwaysLoadIframe ? {} : { autoplay: "1", state: "1" })), (props.enableJsApi ? { enablejsapi: "1" } : {})), (props.playlist ? { list: videoId } : {})));
++    var iframeParams = new URLSearchParams(__assign(__assign(__assign(__assign({}, (props.muted ? { mute: "1" } : {})), (props.alwaysLoadIframe ? {} : { autoplay: "1", state: "1", rel: "0" })), (props.enableJsApi ? { enablejsapi: "1" } : {})), (props.playlist ? { list: videoId } : {}) ));
+     var ytUrl = props.noCookie
+         ? "https://www.youtube-nocookie.com"
+         : "https://www.youtube.com";

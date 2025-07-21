@@ -53,8 +53,8 @@ export default function Ceiling(props) {
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      // drawPolygons(ct, tops.nonHull, ['#001', wallsHighlight, thickLineWidth]);
-      drawPolygons(ct, tops.nonHull, [wallsHighlight, '#001', thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, ['#001', wallsHighlight, thickLineWidth]);
+      /* drawPolygons(ct, tops.nonHull, [wallsHighlight, '#001', thickLineWidth]); */
       drawPolygons(ct, tops.window, [black, wallsHighlight, thickLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
@@ -74,13 +74,13 @@ export default function Ceiling(props) {
       ct.strokeStyle = wallsColor;
       
       // Stroke a square at each corner to avoid z-fighting
-      const hullRect = layout.hullPoly[0].rect;
+      /* const hullRect = layout.hullPoly[0].rect;
       const cornerDim = 8 * sguToWorldScale;
       ct.lineWidth = 0.02;
       ct.strokeRect(hullRect.x, hullRect.y, cornerDim, cornerDim);
       ct.strokeRect(hullRect.right - cornerDim, hullRect.y, cornerDim, cornerDim);
       ct.strokeRect(hullRect.x, hullRect.bottom - cornerDim, cornerDim, cornerDim);
-      ct.strokeRect(hullRect.right - cornerDim, hullRect.bottom - cornerDim, cornerDim, cornerDim);
+      ct.strokeRect(hullRect.right - cornerDim, hullRect.bottom - cornerDim, cornerDim, cornerDim); */
 
     },
     positionInstances() {
@@ -111,7 +111,7 @@ export default function Ceiling(props) {
       ref={state.ref('inst')}
       args={[w.floor.quad, undefined, w.gms.length]} // 🔔 reuse floor quad
       position={[0, wallHeight, 0]}
-      renderOrder={3}
+      renderOrder={4}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
       <instancedAtlasMaterial
@@ -119,10 +119,12 @@ export default function Ceiling(props) {
         side={THREE.DoubleSide}
         transparent
         atlas={tex}
-        alphaTest={0.1} opacity={state.opacity} depthWrite={false}
+        alphaTest={0.1}
+        opacity={state.opacity}
+        depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
         objectPickRed={3}
-        opacityCloseDivisor={18}
+        opacityCloseDivisor={20}
       />
     </instancedMesh>
   );

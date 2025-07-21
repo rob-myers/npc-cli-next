@@ -10,6 +10,9 @@ const humanZeroShader = {
   uniform int breathTriIds[2];
   uniform int labelTriIds[2];
   uniform int selectorTriIds[2];
+
+  uniform float opacity; // 🚧 -> teleportRatio
+
   varying float vDotProduct;
   flat varying int triangleId;
   varying vec2 vUv;
@@ -59,6 +62,13 @@ const humanZeroShader = {
       
     } else {// everything else
 
+      if (vType == 1) {
+        // transformed.y *= 1.0 / opacity;
+        // transformed.y *= opacity;
+        transformed.x *= opacity * opacity;
+        transformed.z *= opacity * opacity;
+      }
+
       mvPosition = modelViewMatrix * vec4(transformed, 1.0);
   
       // 🌞 compute dot product for flat shading
@@ -66,7 +76,7 @@ const humanZeroShader = {
       vec3 lightDir = -normalize(mvPosition.xyz);
       vDotProduct = dot(transformedNormal, lightDir);
     }
-    
+
     gl_Position = projectionMatrix * mvPosition;
     #include <logdepthbuf_vertex>
   }
@@ -130,7 +140,7 @@ const humanZeroShader = {
     tint.x = 0.5 * diffuse.x + 0.5 * tint.x;
     tint.y = 0.5 * diffuse.y + 0.5 * tint.y;
     tint.z = 0.5 * diffuse.z + 0.5 * tint.z;
-    tint.a *= opacity;
+    // tint.a *= opacity;
 
     vec4 texel;
     
@@ -149,7 +159,7 @@ const humanZeroShader = {
 
       if (!invert) {
         // 🌞 flat shading via vDotProduct
-        float ambientLight = 0.2;
+        float ambientLight = 0.15;
         tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
       } else {// invert, making selector more visible
         tint = vec4(vec3(vType == 3 ? 4.0 : 0.8), tint.a);
@@ -170,8 +180,14 @@ const humanZeroShader = {
     gl_FragColor = texel * tint;
     #include <logdepthbuf_fragment>
 
-    if (gl_FragColor.a < 0.1) {
+    if (gl_FragColor.a < 0.01) {
       discard; // comment out to debug label dimensions
+    }
+
+    if (vType >= 2) {// fade except label and body
+      gl_FragColor.a *= opacity;
+    } else if (vType == 1) {// fade and blacken body
+      gl_FragColor *= opacity;
     }
   }
   `,
@@ -484,7 +500,6 @@ export const InstancedFlatMaterial = shaderMaterial(
 const instancedFloorShader = {
   Vert: /* glsl */`
 
-    uniform bool showTorch;
     uniform vec3 torchData;
     uniform vec3 torchTarget;
 
@@ -513,20 +528,6 @@ const instancedFloorShader = {
       vTextureId = uvTextureIds;
       vInstanceId = instanceIds;
       
-      if (showTorch == true) {
-        // instanceMatrix takes unit quad to e.g. "geomorph floor quad"
-        // 🚧 provide inverse matrices in uniform
-        mat4 invertInstanceMatrix = inverse(instanceMatrix);
-
-        // (radius, intensity, opacity)
-        vTorchData = vec3(torchData.x * invertInstanceMatrix[0].x, torchData.y, torchData.z);
-        // torch uvs relative to "atlas"
-        vec4 transformedCenter = invertInstanceMatrix * vec4(vec3(torchTarget), 1.0);
-        vec2 torchUvOrigin = vec2(transformedCenter.x * uvDimensions.x, transformedCenter.z * uvDimensions.y);
-        // torch uvs relative to torchTexture
-        vTorchUv = ((vUv - torchUvOrigin) / vTorchData.x) + vec2(0.5);
-      }
-
       vec4 modelViewPosition = vec4(position, 1.0);
       modelViewPosition = instanceMatrix * modelViewPosition;
       modelViewPosition = modelViewMatrix * modelViewPosition;
@@ -545,9 +546,6 @@ const instancedFloorShader = {
 
     uniform sampler2DArray lightAtlas;
     uniform bool showLights;
-    uniform bool showTorch;
-    uniform vec3 torchTarget;
-    uniform sampler2D torchTexture;
 
     uniform float alphaTest;
     uniform sampler2DArray atlas;
@@ -560,8 +558,6 @@ const instancedFloorShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
-    flat varying vec3 vTorchData; // (radius, intensity, opacity)
-    varying vec2 vTorchUv;
 
     #include <common>
     #include <logdepthbuf_pars_fragment>
@@ -589,34 +585,15 @@ const instancedFloorShader = {
 
       if (texel.a * opacity < alphaTest) discard;
       
-      float lighter = 1.0;
-
-      if (showTorch == true && showLights == true) {
-
-        vec4 torchTexel = texture(torchTexture, vTorchUv);
+      if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= (clamp(6.0 * torchTexel.w, 1.0, 3.0) + clamp(4.0 * lightTexel.w, 1.0, 3.0) - 1.0);
-        lighter = clamp(lighter, 1.0, 3.0);
-
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
-
-      } else if (showTorch == true) {// uvs within "torch" are lighter
-
-        vec4 torchTexel = texture(torchTexture, vTorchUv);
-        lighter *= clamp(8.0 * torchTexel.w, 1.0, 3.0);
-
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity);
-
-      } else if (showLights == true) {
-        vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        lighter *= clamp(4.0 * lightTexel.w, 1.0, 3.0);
-
+        float lighter = clamp(4.0 * lightTexel.w, 1.0, 3.0);
         gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
       } else {
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 1.0;
+        gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 2.0;
       }
-      
       #include <logdepthbuf_fragment>
+      
     }
   
   `,
@@ -626,11 +603,7 @@ const instancedFloorShader = {
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
   lightAtlas: emptyDataArrayTexture,
-  showTorch: false,
   showLights: false,
-  torchData: new THREE.Vector3(),
-  torchTarget: new THREE.Vector3(),
-  torchTexture: /** @type {*} */ (null), // THREE.CanvasTexture
 };
 
 /**
@@ -751,6 +724,7 @@ const instancedWallsShader = {
   uniform vec3 diffuse;
   uniform bool objectPick;
   uniform float opacity;
+  uniform float opacityMin;
 
   flat varying uint vInstanceId;
   varying float vOpacityScale;
@@ -779,7 +753,8 @@ const instancedWallsShader = {
       return;
     }
     
-    gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
+    gl_FragColor = vec4(diffuse, min(opacity * vOpacityScale, opacityMin));
+    // gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
     #include <logdepthbuf_fragment>
   }
   `,
@@ -792,6 +767,7 @@ const instancedWallsDefaultProps = {
   objectPick: false,
   objectPickRed: 0,
   opacity: 1,
+  opacityMin: 1,
   opacityCloseDivisor: 0,
 };
 

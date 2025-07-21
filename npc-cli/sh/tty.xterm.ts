@@ -12,7 +12,6 @@ import {
   isProxy,
 } from "./io";
 import { jsStringify, testNever, warn } from "../service/generic";
-import useSession from "./session.store";
 
 /**
  * Wraps xtermjs `Terminal`.
@@ -56,8 +55,6 @@ export class ttyXtermClass {
   historyEnabled = true;
   cleanups = [] as (() => void)[];
   maxStringifyLength = 2 * scrollback * 100;
-  /** Paste echo controlled via prefix `NOECHO=1 ` */
-  shouldEcho = true;
 
   get active() {
     return this.xterm.buffer.active;
@@ -108,7 +105,10 @@ export class ttyXtermClass {
   initialise() {
     const xtermDisposable = this.xterm.onData(this.handleXtermInput.bind(this));
     const unregisterWriters = this.session.io.handleWriters(this.onMessage.bind(this));
-    this.cleanups.push(() => xtermDisposable.dispose(), unregisterWriters);
+    this.cleanups.push(() => {
+      xtermDisposable.dispose();
+      unregisterWriters();
+    });
     // user indication after xterm has loaded but session hasn't
     this.xterm.writeln(`${ansi.Italic}${ansi.BrightWhite}Loading...${ansi.Reset}`);
   }
@@ -232,14 +232,15 @@ export class ttyXtermClass {
   }
 
   /**
-   * Get non-empty lines as lookup `{ [lineText]: true }`.
-   * ANSI codes are stripped (important for equality testing).
+   * Get non-empty lines as lookup `{ [ansiStrippedLine]: lineNumbers }`.
    */
-  getLines() {
+  getLines(): Record<string, number[]> {
     const activeBuffer = this.xterm.buffer.active;
-    return [...Array(activeBuffer.length)].reduce<Record<string, true>>((agg, _, i) => {
-      const line = activeBuffer.getLine(i)?.translateToString(true);
-      line && (agg[line] = true);
+    return [...Array(activeBuffer.length)].reduce((agg, _, lineIndex) => {
+      const line = activeBuffer.getLine(lineIndex)?.translateToString(true);
+      if (typeof line === 'string' && line !== '') {
+        (agg[line] ??= []).push(lineIndex + 1);
+      }
       return agg;
     }, {});
   }
@@ -358,12 +359,12 @@ export class ttyXtermClass {
       // ansi escape sequences
       switch (data.slice(1)) {
         case "[A": // Up arrow
-          if (this.promptReady) {
+          if (this.promptReady === true) {
             this.reqHistoryLine(+1);
           }
           break;
         case "[B": // Down arrow
-          if (this.promptReady) {
+          if (this.promptReady === true) {
             this.reqHistoryLine(-1);
           }
           break;
@@ -586,20 +587,19 @@ export class ttyXtermClass {
         }
         return;
       case "error":
-        this.queueCommands([
-          {
-            key: "line",
-            line: formatMessage(msg.msg, "error"),
-          },
-        ]);
+        this.queueCommands([{
+          key: "line",
+          line: formatMessage(msg.msg, "error"),
+        }]);
         break;
       case "info":
-        this.queueCommands([
-          {
-            key: "line",
-            line: formatMessage(msg.msg, "info"),
-          },
-        ]);
+        this.queueCommands([{
+          key: "line",
+          line: formatMessage(msg.msg, "info"),
+        }]);
+        break;
+      case "external":
+        // 🔔 handled elsewhere e.g. by <Tty>
         break;
       default: {
         const other = msg as any;
@@ -636,7 +636,6 @@ export class ttyXtermClass {
    * Paste lines, greedily running them as soon as a newline is encountered.
    */
   async pasteAndRunLines(lines: string[], fromProfile = false) {
-    // Clear pending input which should now prefix `lines[0]`
     this.clearInput();
     this.xterm.write(this.prompt);
 
@@ -684,14 +683,11 @@ export class ttyXtermClass {
   async replaceLine(lineNumber: number, line: string) {
     const activeBuffer = this.xterm.buffer.active;
 
-    if (lineNumber < activeBuffer.baseY + 1) {
-      // too far back
-      return await useSession.api.writeMsgCleanly(this.session.key, line, {
-        scrollToBottom: true,
-      });
+    if (lineNumber < activeBuffer.baseY + 1) {// too far back
+      return;
     }
 
-    // Move to `lineNumber` 🚧 abstract "move"
+    // Move to `lineNumber`
     const startCursor = { x: activeBuffer.cursorX, y: activeBuffer.cursorY };
     let deltaY = lineNumber - 1 - (activeBuffer.baseY + activeBuffer.cursorY);
     const numWrappedLines = this.getNumWrappedLines(lineNumber);
@@ -703,16 +699,21 @@ export class ttyXtermClass {
     this.xterm.write("\x1b[F".repeat(numWrappedLines - 1));
 
     // Write new line
-    this.xterm.write(line, () => {
-      // Return to previous cursor position
-      deltaY = startCursor.y - activeBuffer.cursorY;
-      this.xterm.write(deltaY > 0 ? "\x1b[E".repeat(deltaY) : "\x1b[F".repeat(-deltaY));
-      this.xterm.write("\x1b[C".repeat(startCursor.x));
+    // 🔔 await so can compute `activeBuffer.cursorY` next
+    await new Promise<void>(resolve => this.xterm.write(line, resolve));
+
+    // Return to previous cursor position
+    deltaY = startCursor.y - activeBuffer.cursorY;
+    this.xterm.write(deltaY > 0 ? "\x1b[E".repeat(deltaY) : "\x1b[F".repeat(-deltaY));
+
+    // 🔔 await to handle case of multiple replace e.g. `ps`
+    await new Promise<void>(resolve => {
+      this.xterm.write("\x1b[C".repeat(startCursor.x), resolve);
     });
   }
 
   reqHistoryLine(dir: -1 | 1) {
-    if (this.promptReady) {
+    if (this.promptReady === true) {
       this.session.io.writeToReaders({
         key: "req-history-line",
         historyIndex: this.historyIndex + dir,
@@ -767,19 +768,9 @@ export class ttyXtermClass {
           return;
         }
         case "paste-line": {
-          if (command.line.startsWith("NOECHO=1 ")) {
-            this.shouldEcho = false; // Turned off in tty.shell
-          }
-
-          if (this.shouldEcho) {
-            this.xterm.writeln(command.line);
-            this.input = command.line;
-            this.sendLine();
-          } else {
-            this.input = command.line;
-            this.sendLine();
-            // this.input = '';
-          }
+          this.xterm.writeln(command.line);
+          this.input = command.line;
+          this.sendLine();
           return;
         }
         case "resolve": {
@@ -893,7 +884,7 @@ export class ttyXtermClass {
      * (a) delete 1st character of multiline input.
      * (b) delete 1st character while TTY connected to process e.g. `map 'x => 2 ** x'`
      */
-    if (!(realNewInput.endsWith('\n') || !this.promptReady) && this.inputEndsAtEdge(newInput)) {
+    if (!(realNewInput.endsWith('\n') || this.promptReady) && this.inputEndsAtEdge(newInput)) {
       this.xterm.write("\r\n");
     }
     this.input = newInput;
@@ -929,7 +920,7 @@ export class ttyXtermClass {
    * Splice `input` into `this.input`.
    */
   spliceInput(input: string) {
-    if (this.promptReady) {
+    if (this.promptReady === true) {
       const prevInput = this.input;
       const prevCursor = this.cursor;
       this.clearInput();
@@ -944,7 +935,7 @@ export class ttyXtermClass {
   }
 
   warnIfNotReady() {
-    if (!this.promptReady) {
+    if (this.promptReady === false) {
       this.queueCommands([{ key: "line", line: formatMessage("not ready", "info") }]);
       return true; // not ready
     } else {
@@ -1001,7 +992,11 @@ type XtermOutputCommand =
       key: "newline";
     }
   | {
-      /** Write a pasted line of text and send it to tty */
+      /**
+       * Write a pasted line of text and send it to tty.
+       * - Currently this only happens in PROFILE.
+       * - These are not interactively specified.
+       */
       key: "paste-line";
       line: string;
     }

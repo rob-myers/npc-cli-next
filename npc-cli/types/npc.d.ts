@@ -35,6 +35,8 @@ declare namespace NPC {
   interface ClassDef {
     /** e.g. 'Scene' */
     groupName: string;
+    /** Pre-scale animation heights */
+    height: Partial<Record<Key.Anim, number>>;
     /** e.g. 'human_0-material' */
     materialName: string; 
     /** e.g. 'human_0' */
@@ -83,14 +85,32 @@ declare namespace NPC {
 
   interface SpawnOpts extends Partial<Pick<NPCDef, 'angle' | 'classKey' | 'runSpeed' | 'walkSpeed'>> {
     npcKey: string;
-    at: MaybeMeta<(Geom.VectJson | import('three').Vector3Like)>;
+    /**
+     * - Navigable points always on ground
+     * - Doable points may be above ground via `meta.y`.
+     */
+    at: MaybeMeta<NPC.GroundPoint>;
     /** Position to look towards (overrides `angle`) */
-    look?: Geom.VectJson | import('three').Vector3Like;
+    look?: NPC.GroundPoint;
+    /** Overrides `at?.meta` e.g. because `meta.actPoint.meta` is not serializable */
+    meta?: Meta;
     /**
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
      * - object permits brace-expansion of keys.
      */
     skin?: string | Record<string, SkinReMapValue>;
+  }
+
+  interface SpawnManyOpts {
+    baseKey?: string;
+    keys?: string[];
+    /**
+     * Each entry is either:
+     * - Radians, cw from north viewed from above, or
+     * - an `NPC.GroundPoint`
+     */
+    looks?: (number | NPC.GroundPoint)[];
+    points: MaybeMeta<NPC.GroundPoint>[];
   }
 
   type Event = (
@@ -102,7 +122,9 @@ declare namespace NPC {
     | { key: "enabled" }
     | { key: "npc-internal"; npcKey: string; event: "cancelled" | "paused" | "resumed" }
     | { key: "spawned"; npcKey: string; gmRoomId: Geomorph.GmRoomId }
+    | { key: "spawned-many"; npcKeys: string[] }
     | { key: "started-moving"; npcKey: string; showNavPath: boolean }
+    | { key: "continued-moving"; npcKey: string; showNavPath: boolean }
     | { key: "stopped-moving"; npcKey: string; reason: NPC.StopReason }
     | { key: "removed-npc"; npcKey: string }
     | { key: "enter-doorway"; npcKey: string } & Geomorph.GmDoorId
@@ -254,10 +276,20 @@ declare namespace NPC {
     seg: 0 | 1 | 2;
     /** Initial position of npc */
     initPos: Geom.VectJson;
-    /** Adjusted src */
+    /** Adjusted offMeshConnection src */
     src: Geom.VectJson;
-    /** Adjusted dst */
+    /** Adjusted offMeshConnection dst */
     dst: Geom.VectJson;
+    /**
+     * An offMeshConnection traversal will be initially paused if the
+     * npc's direction is not "aligned".
+     * 
+     * This is achieved via:
+     * > `agentAnim.tmid === agentAnim.tmax === Infinity`.
+     *
+     * and we record the correct values for restore later.
+     */
+    anim: { tmid: number; tmax: number; };
 
     /** Unit vector from "initial npc position" to "adjusted src" */
     initUnit: Geom.VectJson;
@@ -268,9 +300,16 @@ declare namespace NPC {
      * It can be null if these two points are too close.
      */
     nextUnit: null | Geom.VectJson;
-    /** Scale factor converting `dtAgentAnimation.t` into total distance along 2 segs */
+    /**
+     * Scale factor converting `dtAgentAnimation.t` into total distance along
+     * the two segments
+     */
     tToDist: number;
   };
+
+  type dtCrowdAgentAnimation = ReturnType<
+    import('@recast-navigation/core').Crowd['raw']['getAgentAnimation']
+  >;
 
   /** Provided after `dtAgentAnimation` has been re-configured */
   interface OverrideOffMeshResult {
@@ -279,7 +318,11 @@ declare namespace NPC {
     src: Geom.VectJson;
     /** Adjusted dst */
     dst: Geom.VectJson;
-    nextCorner: Geom.VectJson
+    nextCorner: Geom.VectJson;
+    /** Might need to restore this when turnBeforeMove */
+    animTmid: number;
+    /** Might need to restore this when turnBeforeMove */
+    animTmax: number;
   }
 
   type Obstacle = {
@@ -413,32 +456,62 @@ declare namespace NPC {
     labelHeight: number;
   }
 
+  /** Support {x,y} or {x,z} */
+  type GroundPoint = (
+    | Geom.VectJson
+    | import('three').Vector3Like
+  );
+
   interface MoveOpts {
-    to: MaybeMeta<Geom.VectJson | THREE.Vector3Like>;
-    /**
-     * Animation to play once we arrive.
-     * - default is `Idle`.
-     * - use 'none' for continuous movement
-     */
-    arriveAnim?: 'none' | Key.Anim;
+    to: GroundPoint | GroundPoint[];
+    /** How far away may we look for a navigable point? */
+    close?: number; 
+    /** Can overwrite state initially. */
+    s?: Partial<Pick<NPC.NPC['s'], (
+      | 'arriveDist'
+    )>>;
     /**
      * Show possible path of agent path (only a guide).
      */
     debugPath?: boolean;
   }
 
-  interface StopReason {
-    type: 'stop-reason';
-    key: (
-      | 'arrived'
-      | 'blocked-doorway'
-      | 'collided'
-      | 'locked-door'
-      | 'move-again'
-      | 'removed'
-      | 'respawned'
-      | 'stopped'
-      | 'stuck'
-    );
+  interface ActOpts {
+    at: WithMeta<GroundPoint, { act: true; actPoint: Geom.VectJson; y?: number }>;
   }
+
+  type StopReason = { type: 'stop-reason'; } & (
+    | { key: 'arrived'; }
+    | { rest: Geom.VectJson[]; } & (
+      | { key: 'blocked-doorway'; otherNpcKey: string; }
+      | { key: 'collided'; otherNpcKey: string; }
+      | { key: 'locked-door'; }
+      | { key: 'move-again'; }
+      | { key: 'stopped'; }
+      | { key: 'stuck'; nearTarget: boolean; }
+    )
+    | { key: 'removed'; }
+    | { key: 'respawned'; }
+  );
+
+  //#region sh js
+  
+  type WorldState = import('../world/World').State;
+  type TabsState = import('../tabs/tabs.store').State;
+  type ProcessApi = import('../sh/cmd.service').ProcessApi;
+  type ProcessContext = import('../sh/cmd.service').ProcessContext;
+
+  interface RunArg<Datum = any> {
+    api: ProcessApi & { getCached(key: '__WORLD_KEY_VALUE__'): WorldState; };
+    args: string[];
+    w: WorldState;
+    tabs: TabsState['api'];
+
+    home: ProcessContext['home'];
+    lib: ProcessContext['lib'];
+
+    datum: Datum;
+  }
+
+  //#endregion
 }

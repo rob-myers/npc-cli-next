@@ -4,8 +4,8 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
-import { entries, isDevelopment, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
-import { computeMeshUvMappings, emptyAnimationMixer, toV3, toXZ } from "../service/three";
+import { debug, entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { computeMeshUvMappings, emptyAnimationMixer, toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
 import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
@@ -24,6 +24,7 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
+    actToNpc: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
     gltfAux: /** @type {*} */ ({}),
@@ -39,7 +40,7 @@ export default function Npcs(props) {
         npc.agent = npc.w.crowd.addAgent(npc.position, {
           ...crowdAgentParams,
           maxSpeed: npc.s.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
-          queryFilterType: npc.w.lib.queryFilterType.respectUnwalkable,
+          queryFilterType: helper.queryFilterType.respectUnwalkable,
         });
         npc.agentAnim = npc.w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
 
@@ -71,7 +72,7 @@ export default function Npcs(props) {
       const { success, point: closest } = w.crowd.navMeshQuery.findClosestPoint(p, {
         // 🔔 ~ (2 * maxDelta) * (2 * smallHalfExtent) * (2 * maxDelta) search space
         halfExtents: { x: maxDelta, y: smallHalfExtent, z: maxDelta },
-        filter: w.crowd.getFilter(w.lib.queryFilterType.respectUnwalkable),
+        filter: w.crowd.getFilter(helper.queryFilterType.respectUnwalkable),
       });
 
       if (success === true && p.distanceTo(closest) <= maxDelta) {
@@ -81,11 +82,8 @@ export default function Npcs(props) {
       warn(`${'getClosestNavigable'} failed: ${JSON.stringify(p)}`);
       return null;
     },
-    getNpc(npcKey, processApi) {
-      const npc = processApi === undefined
-        ? state.npc[npcKey]
-        : undefined // 🚧 state.connectNpcToProcess(processApi, npcKey);
-      ;
+    getNpc(npcKey) {
+      const npc = state.npc[npcKey];
       if (npc === undefined) {
         throw Error(`npc "${npcKey}" does not exist`);
       } else {
@@ -137,15 +135,14 @@ export default function Npcs(props) {
         // npc.applyTint();
       }
     },
-
     isPointInNavmesh(input) {
       const v3 = toV3(input);
       const { success, point } = w.crowd.navMeshQuery.findClosestPoint(v3, { halfExtents: { x: smallHalfExtent, y: smallHalfExtent, z: smallHalfExtent } });
       return success === true && Math.abs(point.x - v3.x) < smallHalfExtent && Math.abs(point.z - v3.z) < smallHalfExtent;
     },
     onStuckNpc: null,
-    onTick(deltaMs) {
-      Object.values(state.npc).forEach(npc => npc.api.onTick(deltaMs, state.physicsPositions));
+    onTick(deltaSecs) {
+      Object.values(state.npc).forEach(npc => npc.api.onTick(deltaSecs, state.physicsPositions));
       // 🔔 Float32Array caused issues i.e. decode failed
       const positions = new Float64Array(state.physicsPositions);
       w.physics.worker.postMessage({ type: 'send-npc-positions', positions}, [positions.buffer]);
@@ -154,7 +151,7 @@ export default function Npcs(props) {
     onTickIdleTurn: null,
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
-      const animKeys = npcs.map(x => x.s.act);
+      const animKeys = npcs.map(x => x.s.anim);
       npcs.forEach(npc => state.removeAgent(npc));
 
       await pause();
@@ -165,7 +162,7 @@ export default function Npcs(props) {
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
           npc.api.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
-          npc.api.move({ to: toXZ(npc.s.target) });
+          npc.api.move({ to: helper.toXZ(npc.s.target) });
         } else {// so they'll move "out of the way" of other npcs
           agent.requestMoveTarget(npc.position);
         }
@@ -181,6 +178,10 @@ export default function Npcs(props) {
           delete state.npc[npcKey];
           state.freeId.add(npc.def.uid);
           state.idToKey.delete(npc.def.uid);
+          if (npc.s.actMeta !== null) {
+            const { actPoint, y } = npc.s.actMeta;
+            delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
+          }
 
           w.events.next({ key: 'removed-npc', npcKey });
         }
@@ -211,6 +212,23 @@ export default function Npcs(props) {
         ...headOverlay !== '-' && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay || 'base' } },
         ...bodyOverlay !== '-' && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay || 'base' } },
       };
+    },
+    setActMeta(npcKey, actMeta) {
+      const npc = w.n[npcKey];
+
+      if (npc.s.actMeta !== null) {
+        const { actPoint, y } = npc.s.actMeta;
+        delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
+      }
+
+      if (actMeta === null) {
+        npc.s.actMeta = null;
+      } else {
+        const { actPoint, y } = actMeta;
+        const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
+        state.actToNpc[key] = npcKey;
+        npc.s.actMeta = actMeta;
+      }
     },
     setupSkins() {
       // 🔔 compute sheetAux e.g. uvMap
@@ -272,28 +290,31 @@ export default function Npcs(props) {
     },
     async spawn(opts) {
       const { at } = opts;
-      const point = toXZ(at ?? {});
+
+      if (!(typeof at?.x === 'number' && typeof at.y === 'number')) {
+        throw Error(`opts.at must be {x,y} or {x,y,z}`);
+      }
+
+      const point = helper.toXZ(at);
+      const meta = opts.meta ?? at.meta ?? {};
 
       if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
         throw Error(`opts.npcKey must match /^[a-z0-9-_]+$/i`);
       } else if (opts.npcKey.length > 10) {
         throw Error(`opts.npcKey must have length ≤ 10`);
-      } else if (!(typeof point?.x === 'number' && typeof point.y === 'number')) {
-        throw Error(`opts.at must be a valid point`);
       }
-
-      if (w.lib.isVectJson(opts.look) === true) {
-        opts.look = toXZ(opts.look);
+      
+      if (helper.isVectJson(opts.look) === true) {
+        opts.look = helper.toXZ(opts.look);
         opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
       }
 
-      const dstNav = at.meta?.nav === true || state.isPointInNavmesh(point);
-      /** Attach agent iff dst navigable */
-      const agent = dstNav;
+      const dstNav = meta.nav === true || state.isPointInNavmesh(point);
+      const attachAgent = dstNav;
 
-      if (dstNav === false && at.meta?.do !== true) {
-        throw Error(`must spawn on navPoly or do point: ${JSON.stringify(at)}`);
-      } else if (opts.classKey !== undefined && !w.lib.isNpcClassKey(opts.classKey)) {
+      if (dstNav === false && meta.act !== true) {
+        throw Error(`not navigable nor actable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
+      } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
       
@@ -302,16 +323,22 @@ export default function Npcs(props) {
         throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }
 
-      let npc = state.npc[opts.npcKey];
+      state.validateActMeta(meta.act === true ? meta : null);
       
+      let npc = state.npc[opts.npcKey];
+
+      if (npc === undefined && state.freeId.size === 0) {
+        throw Error(`max npcs reached: ${maxNumberOfNpcs}`);
+      }
+
       // prevent look e.g. if will Lie
-      const nextAnimKey = helper.getAnimKeyFromMeta(at.meta ?? {});
+      const nextAnimKey = helper.getAnimKeyFromMeta(meta);
       if (helper.canAnimKeyLook(nextAnimKey) === false) {
         opts.angle = opts.look = undefined;
       }
 
-      opts.angle ??= typeof at.meta?.orient === 'number'
-        ? at.meta.orient * (Math.PI / 180) // keep using "cw from north"
+      opts.angle ??= typeof meta.orient === 'number'
+        ? meta.orient * (Math.PI / 180) // keep using "cw from north"
         : undefined
       ;
 
@@ -348,6 +375,8 @@ export default function Npcs(props) {
         npc.api.initialize(state.gltf[npc.def.classKey]);
       }
 
+      state.setActMeta(opts.npcKey, meta.act === true ? meta : null);
+
       if (typeof opts.skin === 'string') {
         opts.skin = state.resolveSkin(opts.skin);
       }
@@ -365,19 +394,18 @@ export default function Npcs(props) {
         });
       }
       
-      // 🔔 input `p` can be Vect (x, y) or Vector3Like (x, y, z)
       const position = toV3(at);
-      // 🔔 non-zero height must be set via `p.meta`
-      position.y = typeof at.meta?.y === 'number' ? at.meta.y : 0;
+      // 🔔 non-zero height must be set via `meta.y`
+      position.y = typeof meta.y === 'number' ? meta.y : 0;
 
       npc.position.copy(position);
       npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
-      npc.api.startAnimation(at.meta ?? {}); // 🔔 at.meta.y important
+      npc.api.startAnimation(meta); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
-        if (agent === true) {
+        if (attachAgent === true) {
           const agent = state.attachAgent(npc);
           // 🔔 pin to current position
           agent.requestMoveTarget(position);
@@ -386,7 +414,7 @@ export default function Npcs(props) {
           state.byAgId[agent.agentIndex] = npc;
         }
       } else {
-        if (dstNav === false || agent === false) {
+        if (dstNav === false || attachAgent === false) {
           state.removeAgent(npc);
           // must tell physics.worker because not moving
           state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
@@ -396,25 +424,147 @@ export default function Npcs(props) {
       }
       
       npc.s.spawns++;
-      npc.s.doMeta = at.meta?.do === true ? at.meta : null;
-
       npc.s.offMesh = null;
       w.events.next({ key: 'spawned', npcKey: npc.key, gmRoomId });
 
       return npc;
     },
-    tickOnceDebounced: debounce(() => {
-      w.crowd.update(w.timer.getFixedDelta()); // agent may no longer exist
-      state.onTick(1000 / 60);
+    async spawnMany(opts) {// 🔔 no validation
+      const baseKey = opts.baseKey ?? 'npc';
+      
+      const numPermitted = maxNumberOfNpcs - state.idToKey.size;
+      /** {x,y} or {x,y,z} possibly with meta  */
+      const groundPoints = opts.points.slice(0, numPermitted);
+      const preNpcKeys = groundPoints.map((_, i) => opts.keys?.[i]);
+      /** Ground point either has act meta or we assume it is navigable */
+      const actMetas = groundPoints.map(p => p.meta?.act === true && helper.isVectJson(p.meta.actPoint) ? p.meta : null);
+      
+      const angles = groundPoints.map((p, i) => {
+        if (typeof p.meta?.orient === 'number') {
+          return p.meta.orient * (Math.PI / 180);
+        } else {
+          const look = helper.isVectJson(opts.looks?.[i]) ? helper.toXZ(opts.looks[i]) : opts.looks?.[i];
+          const { x, y} = helper.toXZ(p);
+          return helper.isVectJson(look) ? geom.clockwiseFromNorth(look.y - y, look.x - x) : Math.PI/2;
+        }
+      });
+      
+      const npcs = /** @type {NPC.NPC[]} */ ([]);
+
+      // initialize all
+      for (const [i, preNpcKey] of preNpcKeys.entries()) {
+        const actMeta = actMetas[i];
+        // fallback npcKey uses 1st freeId
+        const freeId = takeFirst(state.freeId);
+        const npcKey = preNpcKey ?? `${baseKey}_${freeId}`;
+        let npc = state.npc[npcKey];
+        
+        if (npc === undefined) {// spawn
+          npc = state.npc[npcKey] = createNpc({
+            key: npcKey,
+            uid: freeId,
+            angle: angles[i],
+            classKey: defaultClassKey,
+            runSpeed: helper.defaults.runSpeed,
+            walkSpeed: helper.defaults.walkSpeed,
+          }, w);
+
+          state.idToKey.set(npc.def.uid, npcKey);
+          npc.api.initialize(state.gltf[npc.def.classKey]);
+        } else {// respawn
+          state.freeId.add(freeId); // put it back
+          npc.api.cancel('respawned');
+          npc.epochMs = Date.now();
+          npc.s.lookAngleDst = null;
+  
+          npc.def = {
+            key: npcKey,
+            uid: npc.def.uid,
+            angle: npc.api.getAngle(), // prev angle fallback
+            classKey: npc.def.classKey,
+            runSpeed: helper.defaults.runSpeed,
+            walkSpeed: helper.defaults.walkSpeed,
+          };
+
+          // Reorder keys
+          delete state.npc[npcKey];
+          state.npc[npcKey] = npc;
+        }
+
+        if (actMeta !== null) {
+          state.setActMeta(npcKey, actMeta);
+        }
+        npcs.push(npc);
+      }
+
+      // mount all
+      pause().then(update);
+      await Promise.all(npcs.map(npc => new Promise(resolve => npc.resolve.spawn = resolve)));
+
+      // finish setup all
+      for (const [i, point] of groundPoints.entries()) {
+        const position = toV3(point);
+        position.y = typeof point.meta?.y === 'number' ? point.meta.y : 0;
+        
+        const npc = npcs[i];
+        npc.position.copy(position);
+        npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
+        npc.lastTarget.copy(position);
+        npc.api.startAnimation(point.meta ?? {});
+
+        // attach/detach agents
+        const actMeta = actMetas[i];
+        const attachAgent = actMeta === null;
+        if (npc.agent === null) {
+          if (attachAgent === true) {
+            const agent = state.attachAgent(npc);
+            agent.requestMoveTarget(position);
+            state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
+            state.byAgId[agent.agentIndex] = npc;
+          }
+        } else {
+          if (attachAgent === false) {
+            state.removeAgent(npc);
+            state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);
+          } else {
+            npc.agent.teleport(position);
+          }
+        }
+
+        npc.s.spawns++;
+        npc.s.offMesh = null;
+      }
+
+      w.events.next({ key: 'spawned-many', npcKeys: npcs.map(npc => npc.key) });
+    },
+    // Paused spawn is debounced
+    tickOnceSpawn: debounce(() => {
+      // re-spawn outside nav removes agent, so must update crowd
+      w.crowd.update(w.timer.getFixedDelta());
+      state.onTick(1 / 60);
       w.r3f.advance(Date.now()); // so they move
-    }, 30, { immediate: true }),
+    }, 300, { immediate: true }),
     async tickOnceDebug() {
-      state.onTick(1000 / 60);
-      // delay render e.g. for paused npc selection
-      await pause(100);
+      state.onTick(1 / 60);
+      await pause(100); // delay render e.g. for paused npc selection
       w.r3f.advance(Date.now());
     },
     update,
+    validateActMeta(actMeta) {
+      if (actMeta === null) {
+        return;
+      }
+
+      if (!helper.isVectJson(actMeta.actPoint)) {
+        throw Error(`actMeta.actPoint must exist: ${jsStringify(actMeta)}`);
+      }
+
+      const { actPoint, y } = actMeta;
+      const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
+      if (key in state.actToNpc) {
+        throw Error(`actable used by ${state.actToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
+      }
+    },
   }), { reset: { showLastNavPath: true } });
 
   w.npc = state;
@@ -477,6 +627,9 @@ export default function Npcs(props) {
 
 /**
  * @typedef State
+ * @property {Record<`${number},${number},${number}`, string>} actToNpc
+ * Act point to current npc or undefined.
+ * - `${x},${y},${z}` -> npcKey
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
@@ -513,13 +666,13 @@ export default function Npcs(props) {
  * @property {() => void} setupSkins
  * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
- * @property {(npcKey: string, processApi?: any) => NPC.NPC} getNpc
+ * @property {(npcKey: string) => NPC.NPC} getNpc
  * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckNpc
- * @property {(deltaMs: number) => void} onTick
+ * @property {(deltaSecs: number) => void} onTick
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onTickIdleTurn
  * Handle turning of idle npcs e.g. turn towards nearby npcs.
  * @property {(npcKey: string) => void} remove
@@ -529,6 +682,7 @@ export default function Npcs(props) {
  * - `"soldier-0"`
  * - `"soldier-0//soldier-0/scientist-0"`
  * - `"soldier-0/-/-/-"`
+ * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
  * ```js
@@ -536,13 +690,16 @@ export default function Npcs(props) {
  * spawn({ npcKey: "rob", skin: "soldier-0", x, y, z, meta })
  * spawn({ npcKey: "rob", classKey: "human-0", x, y, z, meta })
  * ```
- * @property {() => void} tickOnceDebounced
+ * @property {(opts: NPC.SpawnManyOpts) => Promise<void>} spawnMany
+ * @property {() => void} tickOnceSpawn
  * @property {() => Promise<void>} tickOnceDebug
  * @property {() => void} update
  * - Ensures incomingLabels i.e. does not replace.
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
      avoidable by precomputing labels 
+ * @property {(actMeta: null | Meta) => void} validateActMeta
+ * Throws if `actMeta` lacks `actPoint` or is in use.
  */
 
 /**
@@ -577,7 +734,7 @@ function NPC({ npc }) {
           npc.m.mesh = skinnedMesh; 
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);
         }}
-
+        // renderOrder={5}
         renderOrder={0}
       >
         {/* <meshBasicMaterial color="red" /> */}

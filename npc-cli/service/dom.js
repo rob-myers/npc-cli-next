@@ -31,7 +31,7 @@ export function getGridPattern(dim, color) {
 }
 
 /**
- * @param {PointerEvent | React.PointerEvent | React.MouseEvent} e 
+ * @param {PointerEvent | MouseEvent | React.PointerEvent | React.MouseEvent} e 
  */
 export function getRelativePointer(e) {
   const targetRect = (/** @type {HTMLElement} */ (e.target)).getBoundingClientRect();
@@ -194,6 +194,10 @@ export function fillRing(ct, ring, fill = true) {
   }
 }
 
+export function documentHasSelection() {
+  return window.getSelection()?.isCollapsed === false;
+}
+
 /**
  * Invert `canvas`, overwriting it, while also preserving alpha=0.
  * @param {HTMLCanvasElement} canvas 
@@ -217,12 +221,12 @@ export function invertCanvas(canvas, copyCtxt, maskCtxt) {
 	dstCtxt.globalCompositeOperation = 'source-over';
 }
 
-/**
- * Is Ctrl/Shift/Cmd down?
- * @param {MouseEvent} e 
- */
-export function isModifierKey(e) {
-  return e.shiftKey || e.ctrlKey || e.metaKey;
+/** https://stackoverflow.com/a/57924983/2917822 */
+export function isIOS() {
+  return typeof window !== 'undefined' && (
+    /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
 }
 
 /**
@@ -242,7 +246,6 @@ export function getModifierKeys(e) {
   }
   return keysDown.length === 0 ? undefined : keysDown;
 }
-
 
 /**
  * Is Right Mouse Button (RMB) down?

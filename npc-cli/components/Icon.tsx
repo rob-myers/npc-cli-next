@@ -1,18 +1,6 @@
 "use client";
 import React from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import {
-  faHomeUser,
-  // faCirclePause,
-  // faRefresh,
-  // faExpand,
-  // faPause,
-} from "@fortawesome/free-solid-svg-icons";
-
-export const HomeIcon = () => <FontAwesomeIcon icon={faHomeUser} size="1x" style={{ filter: 'invert(0.5)' }} /> 
-
 /**
  * Manually constructed using Boxy SVG and https://www.svgminify.com/
  */
@@ -55,16 +43,21 @@ export const faCirclePauseThin = {
 export { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export {
-  faCirclePlay,
+  faCheck,
   faChevronRight,
   faCircleInfo,
+  faCirclePlay,
   faCircleQuestion,
+  faClose,
   faCode,
+  faCodeBranch,
+  faCopy,
   faGrip,
   faHomeUser,
-  faRobot,
-  faCodeBranch,
   faPause,
+  faPlay,
   faPlug,
-  faCheck,
+  faPlus,
+  faRefresh,
+  faRobot,
 } from "@fortawesome/free-solid-svg-icons";

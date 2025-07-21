@@ -5,14 +5,14 @@ import cx from "classnames";
 import { stringify as javascriptStringify } from 'javascript-stringify';
 import debounce from "debounce";
 
+import { zIndexWorld } from "../service/const";
 import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { WorldContext } from "./world-context";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
-import { PopUp, popUpContentClassName } from "../components/PopUp";
+// import { PopUp, popUpContentClassName } from "../components/PopUp";
 import { Html3d, objectScale } from "../components/Html3d";
 import { Draggable } from "../components/Draggable";
-import { zIndexWorld } from "../service/const";
 
 export function ContextMenu() {
 
@@ -24,8 +24,9 @@ export function ContextMenu() {
     downAt: null,
     draggable: /** @type {*} */ (null),
     html3d: /** @type {*} */ (null),
+    innerRoot: /** @type {*} */ (null),
     offset: undefined,
-    optsPopUp: /** @type {*} */ (null),
+    // optsPopUp: /** @type {*} */ (null),
     position: new THREE.Vector3(),
     tracked: undefined,
     
@@ -39,8 +40,10 @@ export function ContextMenu() {
     links: [],
     match: {},
     meta: {},
-    selectNpcKeys: [],
 
+    canScroll() {
+      return state.innerRoot !== null && state.innerRoot.clientHeight !== state.innerRoot.scrollHeight;
+    },
     computeKvsFromMeta(meta) {
       const skip = /** @type {Record<string, boolean>} */ ({
         doorId: 'gdKey' in meta,
@@ -80,8 +83,8 @@ export function ContextMenu() {
         return object.position.clone().add(offset);
       }
     },
-    hide(force) {
-      if (state.pinned === true && force !== true) {
+    hide(unlessPinned = false) {
+      if (state.pinned === true && unlessPinned === true) {
         return;
       }
       state.open = false;
@@ -94,6 +97,7 @@ export function ContextMenu() {
       }
     },
     onPointerDown(e) {
+      e.stopPropagation();
       state.downAt = { x: e.clientX, y: e.clientY };
     },
     onPointerUp(e) {
@@ -124,7 +128,7 @@ export function ContextMenu() {
 
       switch (linkKey) {
         // case 'delete': w.c.delete(e.cmKey); break;
-        case 'hide': state.hide(true); break;
+        case 'hide': state.hide(); break;
         case 'toggle-docked': state.toggleDocked(); break;
         case 'toggle-kvs': state.toggleKvs(); break;
         case 'toggle-open': state.toggleOpen(); break;
@@ -134,21 +138,16 @@ export function ContextMenu() {
 
       state.persist();
     },
-    onToggleOptsPopup(willOpen) {
-      if (willOpen) {
-        state.refreshOptsPopUp();
+    onWheel(e) {
+      e.stopPropagation();
+      if (state.canScroll() === false && w.touchDevice === false) {
+        // if no vertical scroll, pass scroll through to canvas (i.e. zoom)
+        w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
       }
-    },
-    onWheel(e) {// pass scroll through to canvas (zoom)
-      w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
     },
     persist() {
       tryLocalStorageSet(`context-menu:pinned@${w.key}`, JSON.stringify(state.pinned));
     },
-    refreshOptsPopUp: debounce(() => {
-      state.selectNpcKeys = Object.keys(w.n);
-      update();
-    }, 30, { immediate: true }),
     /**
      * Context is world position and meta concerning said position
      */
@@ -181,7 +180,7 @@ export function ContextMenu() {
       state.docked = next;
       
       if (state.docked === true) {// About to dock
-        state.optsPopUp.close();
+        // state.optsPopUp.close();
         state.html3d.innerDiv.style.transform = 'scale(1)';
         // 🔔 crucial to avoid flicker on mobile
         state.draggable.el.style.visibility = 'hidden';
@@ -232,12 +231,14 @@ export function ContextMenu() {
       <Draggable
         ref={state.ref('draggable')}
         container={w.view.rootEl}
+        defaultWidth={contextMenuWidthPx}
         disabled={state.docked === false}
         initPos={{ x: 0, y: 2000 }}
         localStorageKey={`contextmenu:dragPos@${w.key}`}
       >
         <div
-          className="inner-root"
+          ref={state.ref('innerRoot')}
+          className={cx("inner-root", { touchDevice: w.touchDevice })}
           onPointerUp={state.onPointerUp}
           onPointerDown={state.onPointerDown}
           onWheel={state.onWheel}
@@ -260,10 +261,10 @@ function ContextMenuLinks({ state }) {
         data-key="toggle-docked"
         onKeyDown={state.onKeyDownButton}
       >
-        {state.docked ? '@3d' : 'dock'}
+        {state.docked ? 'docked' : '3d'}
       </button>
 
-      <PopUp
+      {/* <PopUp
         ref={state.ref('optsPopUp')}
         css={optsPopUpCss}
         label="opts"
@@ -277,16 +278,24 @@ function ContextMenuLinks({ state }) {
         >
           scale
         </button>
-      </PopUp>
+      </PopUp> */}
 
-      <button
+      {state.docked === false && <button
+        key="toggle-scaled"
+        data-key="toggle-scaled"
+        className={!state.scaled ? 'off' : undefined}
+      >
+        scale
+      </button>}
+
+      {/* <button
         key="toggle-kvs"
         data-key="toggle-kvs"
         className={!state.showKvs ? 'off' : undefined}
         onKeyDown={state.onKeyDownButton}
       >
         meta
-      </button>
+      </button> */}
 
       <button
         key="toggle-pinned"
@@ -346,19 +355,29 @@ export const contextMenuCss = css`
   transform-origin: 0 0;
   background: transparent !important;
   pointer-events: none;
+  
+  /* prevent pinch-zoom on mobile */
+  touch-action: none;
 
   > div {
     transform-origin: 0 0;
-    pointer-events: all;
+    /* transformed Draggable receives instead */
+    pointer-events: none;
   }
 
   .inner-root {
-    width: ${contextMenuWidthPx}px;
-    background-color: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: rgba(0, 0, 0, 0.7);
     border-radius: 0 8px 8px 8px;
     border: 1px solid #333;
     padding: 4px;
     font-size: small;
+  }
+  .inner-root.touchDevice {
+    overflow-y: hidden;
   }
   
   z-index: ${zIndexWorld.contextMenu};
@@ -423,16 +442,15 @@ export const contextMenuCss = css`
   }
 `;
 
-const optsPopUpCss = css`
-  z-index: ${zIndexWorld.popUpInContextMenu};
-
-  .${popUpContentClassName} {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    font-size: small;
-  }
-;`
+// const optsPopUpCss = css`
+//   z-index: ${zIndexWorld.popUpInContextMenu};
+//   .${popUpContentClassName} {
+//     display: flex;
+//     justify-content: space-around;
+//     align-items: center;
+//     font-size: small;
+//   }
+// ;`
 
 /**
  * @typedef State
@@ -440,6 +458,7 @@ const optsPopUpCss = css`
  * @property {boolean} docked
  * @property {import('../components/Draggable').State} draggable
  * @property {import("../components/Html3d").State} html3d
+ * @property {HTMLElement} innerRoot
  * @property {null | Geom.VectJson} downAt
  * @property {{ k: string; v: string; length: number }[]} kvs
  * @property {NPC.ContextMenuLink[]} links
@@ -447,25 +466,23 @@ const optsPopUpCss = css`
  * @property {Meta} meta
  * @property {undefined | import("three").Vector3Like} offset
  * @property {boolean} open
- * @property {import("../components/PopUp").State} optsPopUp
+ * //@property {import("../components/PopUp").State} optsPopUp
  * @property {import('three').Vector3} position
  * @property {undefined | { npcKey: string } & import('../components/Html3d').TrackedObject3D} tracked
  * @property {boolean} pinned
  * @property {boolean} scaled
- * @property {string[]} selectNpcKeys
  * @property {boolean} showKvs
+ * @property {() => boolean} canScroll
  * @property {(meta: Meta) => void} computeKvsFromMeta
  * @property {() => void} computeLinks
  * @property {() => THREE.Vector3} getPosition Get actual position e.g. if tracked.
- * @property {(force?: boolean | undefined) => void} hide
+ * @property {(unlessPinned?: boolean) => void} hide
  * @property {(e: React.KeyboardEvent<HTMLButtonElement>) => void} onKeyDownButton
  * @property {(e: React.PointerEvent) => void} onPointerDown
  * @property {(e: React.PointerEvent) => void} onPointerUp
  * @property {(e: React.MouseEvent | React.KeyboardEvent) => void} onToggleLink
- * @property {(willOpen: boolean) => void} onToggleOptsPopup
  * @property {(e: React.WheelEvent) => void} onWheel
  * @property {() => void} persist
- * @property {() => void} refreshOptsPopUp
  * @property {({ position, meta }: NPC.ContextMenuContextDef) => void} setContext
  * @property {(opacity: number) => void} setNonDockedOpacity
  * @property {(npcKey?: string) => void} setTracked

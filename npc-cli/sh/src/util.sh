@@ -1,4 +1,9 @@
-# usage: `cat foo/bar`
+# alias
+[]() {
+  array "$@"
+}
+
+# alias
 cat() {
   get "$@"
 }

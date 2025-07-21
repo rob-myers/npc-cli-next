@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import React from 'react';
 import cx from 'classnames';
 import { css } from '@emotion/react';
@@ -9,40 +10,68 @@ import { sideNoteRootDataAttribute } from './const';
  *   root element, in which case direction is `left`
  */
 export default function SideNote(props: React.PropsWithChildren<Props>) {
+  const trigger = React.useRef<HTMLElement>(null);
+  const bubble = React.useRef<HTMLElement>(null);
   const timeoutId = React.useRef(0);
+
+  React.useEffect(() => {// can force open/closed
+    if (props.open === true) {
+      open({
+        bubble: bubble.current as HTMLElement,
+        props,
+        rect: (trigger.current as HTMLElement).getBoundingClientRect(),
+        timeoutId: timeoutId.current,
+      });
+    } else if (props.open === false) {
+      close({ el: bubble.current as HTMLElement, onClose: props.onClose });
+    } else {
+      // covers true -> undefined
+      close({ el: bubble.current as HTMLElement, onClose: props.onClose });
+    }
+  }, [props.open]);
 
   return <>
     <span
       css={iconTriggerCss}
-      className="side-note"
-      onClick={e => 
+      ref={trigger}
+      className={cx("side-note", props.className)}
+      onClick={e => {
+        if (props.open === false) return;
         open({
-          bubble: e.currentTarget.nextSibling as HTMLElement,
-          rect: e.currentTarget.getBoundingClientRect(),
-          width: props.width,
+          bubble: bubble.current as HTMLElement,
+          props,
+          rect: (trigger.current as HTMLElement).getBoundingClientRect(),
           timeoutId: timeoutId.current,
-          minWidth: props.minWidth,
-        })
-      }
+        });
+      }}
       onMouseEnter={e => {
-        const bubble = e.currentTarget.nextSibling as HTMLElement;
-        const rect = e.currentTarget.getBoundingClientRect();
-        timeoutId.current = window.setTimeout(() => open({ bubble, rect, width: props.width, minWidth: props.minWidth, timeoutId: timeoutId.current }), hoverShowMs);
+        if (props.open === false) return;
+        timeoutId.current = window.setTimeout(() => open({
+          bubble: bubble.current as HTMLElement,
+          props,
+          rect: (trigger.current as HTMLElement).getBoundingClientRect(),
+          timeoutId: timeoutId.current,
+        }), hoverShowMs);
       }}
       onMouseLeave={e => {
+        if (props.open === true) return;
         window.clearTimeout(timeoutId.current); // clear hover timeout
-        timeoutId.current = close(e, 'icon');
+        timeoutId.current = close({ el: bubble.current as HTMLElement, onClose: props.onClose });
       }}
     >
-      ⋯
+      {props.icon ?? '⋯'}
     </span>
     <span
       css={speechBubbleCss}
+      ref={bubble}
       className={cx("side-note-bubble", props.bubbleClassName)}
       onMouseEnter={_ => window.clearTimeout(timeoutId.current)}
-      onMouseLeave={e => (timeoutId.current = close(e, 'bubble'))} // Triggered on mobile click outside
+      onMouseLeave={e => {
+        if (props.open === true) return;
+        timeoutId.current = close({ el: bubble.current as HTMLElement, onClose: props.onClose });
+      }} // Triggered on mobile click outside
     >
-      {props.hideArrow !== true && <span className="arrow"/>}
+      <span className="arrow"/>
       <span className="info">
         {props.children}
       </span>
@@ -52,12 +81,21 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
 
 interface Props {
   bubbleClassName?: string; 
-  hideArrow?: boolean;
-  minWidth?: number;
+  className?: string; 
+  onClose?(): void;
+  open?: boolean; 
+  icon?: React.ReactNode;
   width?: number;
+  /** Override direction (default is 'left' or 'right') */
+  direction?: 'left' | 'right' | 'up' | 'down';
 }
 
-function open({ bubble, rect, width, minWidth, timeoutId }: OpenOpts) {
+function open({
+  bubble,
+  props: { width, direction },
+  rect,
+  timeoutId,
+}: OpenOpts) {
   window.clearTimeout(timeoutId); // clear close timeout
 
   bubble.classList.add('open');
@@ -66,13 +104,15 @@ function open({ bubble, rect, width, minWidth, timeoutId }: OpenOpts) {
   const rootRect = root.getBoundingClientRect();
   const pixelsOnRight = rootRect.right - rect.right;
   const pixelsOnLeft = rect.x - rootRect.x;
-  bubble.classList.remove('left', 'right', 'down');
-  bubble.classList.add(pixelsOnRight < pixelsOnLeft ? 'left' : 'right');
+  bubble.classList.remove('left', 'right', 'up', 'down');
+  bubble.classList.add(
+    direction ?? (pixelsOnRight < pixelsOnLeft ? 'left' : 'right')
+  );
   
   const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
   width = maxWidthAvailable < (width ?? defaultInfoWidthPx) ? maxWidthAvailable : width;
   if (width !== undefined) {
-    width = Math.max(width, minWidth ?? minInfoWidth);
+    width = Math.max(width, minInfoWidth);
     bubble.style.setProperty('--info-width', `${width}px`);
   }
 }
@@ -80,20 +120,20 @@ function open({ bubble, rect, width, minWidth, timeoutId }: OpenOpts) {
 interface OpenOpts {
   bubble: HTMLElement;
   rect: DOMRect;
-  minWidth?: number;
-  width?: number;
   timeoutId: number;
+  props: Props;
 }
 
-function close(e: React.MouseEvent, source: 'icon' | 'bubble') {
-  const bubble = (source === 'icon' ? e.currentTarget.nextSibling : e.currentTarget) as HTMLElement;
+function close({ el, onClose }: { el: HTMLElement; onClose?(): void; }) {
   return window.setTimeout(() => {
-    bubble.classList.remove('open', 'left', 'right', 'down');
-    bubble.style.removeProperty('--info-width');
+    el.classList.remove('open', 'left', 'right', 'up','down');
+    el.style.removeProperty('--info-width');
+    onClose?.();
   }, 100);
 }
 
 const defaultInfoWidthPx = 300;
+const defaultInfoPaddingPx = 16;
 const rootWidthPx = 16;
 const arrowDeltaX = 4;
 
@@ -114,6 +154,8 @@ const iconTriggerCss = css`
 
 const speechBubbleCss = css`
   --info-width: ${defaultInfoWidthPx}px;
+  --info-padding: ${defaultInfoPaddingPx}px;
+
   position: relative;
   top: ${-rootWidthPx}px;
   /** Prevents bubble span from wrapping to next line? */
@@ -135,13 +177,13 @@ const speechBubbleCss = css`
 
   .info {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
 
     visibility: hidden;
     white-space: normal;
     width: var(--info-width);
     margin-left: calc(-0.5 * var(--info-width));
-    padding: 16px;
+    padding: var(--info-padding);
     line-height: 1.6;
 
     background-color: black;
@@ -166,7 +208,7 @@ const speechBubbleCss = css`
   &.left {
     left: ${-1.5 * rootWidthPx}px;
     .info {
-      top: -16px;
+      top: -4px;
       left: calc(-1 * (0.5 * var(--info-width) + ${arrowDeltaX}px ));
     }
     .arrow {
@@ -180,7 +222,7 @@ const speechBubbleCss = css`
   &.right {
     left: ${-rootWidthPx}px;
     .info {
-      top: -16px;
+      top: -4px;
       left: calc(${rootWidthPx}px + 0.5 * var(--info-width) + ${arrowDeltaX}px);
     }
     .arrow {
@@ -191,19 +233,33 @@ const speechBubbleCss = css`
       border-right: 10px solid #444;
     }
   }
+
   &.down {
     .info {
-      top: 20px;
+      top: calc(20px + 4px);
     }
     .arrow {
-      top: calc(-10px + 20px);
-      left: 0;
+      top: calc(-10px + 20px + 4px);
+      left: ${-(rootWidthPx + 2 * arrowDeltaX)}px;
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
       border-bottom: 10px solid #444;
     }
   }
+
+  &.up {
+    .info {
+      bottom: 4px;
+    }
+    .arrow {
+      top: calc(-4px);
+      left: ${-(rootWidthPx + 2 * arrowDeltaX)}px;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #444;
+    }
+  }
 `;
 
 const hoverShowMs = 500;
-const minInfoWidth = 200;
+const minInfoWidth = 100;

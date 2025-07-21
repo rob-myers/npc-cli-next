@@ -7,6 +7,7 @@ import { doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDept
 import * as glsl from "../service/glsl";
 import { getBoxGeometry, getColor, getQuadGeometryXY } from "../service/three";
 import { geomorph } from "../service/geomorph";
+import { helper } from "../service/helper";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 
@@ -141,7 +142,7 @@ export default function Doors(props) {
         doorId < gm.doors.length ? true : (doorId -= gm.doors.length, false)
       ));
       const { meta } = w.gms[gmId].doors[doorId];
-      return { ...w.lib.getGmDoorId(gmId, doorId), ...meta, instanceId };
+      return { ...helper.getGmDoorId(gmId, doorId), ...meta, instanceId };
     },
     getAdjRoomByDir(gdKey, direction) {// 🚧 unused
       const { door } = state.byKey[gdKey];
@@ -178,7 +179,7 @@ export default function Doors(props) {
     isOpen(gmId, doorId) {
       return this.byGmId[gmId][doorId].open;
     },
-    onTick(deltaMs) {
+    onTick(deltaSecs) {
       if (state.movingDoors.size === 0) {
         return;
       }
@@ -187,7 +188,7 @@ export default function Doors(props) {
       const { instanceMatrix } = state.inst;
       for (const [instanceId, door] of state.movingDoors.entries()) {
         const dstRatio = door.open ? 0 : 1;
-        damp(door, 'ratio', dstRatio, 0.1, deltaMs);
+        damp(door, 'ratio', dstRatio, 0.1, deltaSecs);
         const length = door.ratio * door.segLength;
         // set e1 (x,,z)
         instanceMatrix.array[instanceId * 16 + 0] = door.dir.x * length;
@@ -307,7 +308,7 @@ export default function Doors(props) {
       ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.doorCount]}
       frustumCulled={false}
-      renderOrder={1}
+      renderOrder={3}
       visible={state.ready}
     >
       {state.ready && <instancedAtlasMaterial
@@ -373,7 +374,7 @@ export default function Doors(props) {
  * Returns `true` iff successful.
  * @property {(door: Geomorph.DoorState, opts?: Geomorph.ToggleLockOpts) => boolean} toggleLockRaw
  * Returns `true` iff successful.
- * @property {(deltaMs: number) => void} onTick
+ * @property {(deltaSecs: number) => void} onTick
  * @property {() => void} positionInstances
  */
 

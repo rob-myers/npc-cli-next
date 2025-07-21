@@ -1,6 +1,6 @@
-# overriding click that won't terminate anytime soon
+# never-ending overriding click
 click! () {
-  click $( expr Number.MAX_SAFE_INTEGER )
+  click --block
 }
 
 # Usage: gm [gmId] [selector]
@@ -13,8 +13,8 @@ gm() {
 }
 
 # spawn() {
-#   # jsarg "$@" | w npc.spawn - >/dev/null
-#   # echo "$( jsarg $@ )" # 👈 does not work?
-#   local jsArg=$( jsarg "$@" )
+#   # jsArg "$@" | w npc.spawn - >/dev/null
+#   # echo "$( jsArg $@ )" # 👈 does not work?
+#   local jsArg=$( jsArg "$@" )
 #   w npc.spawn "$jsArg" >/dev/null
 # }

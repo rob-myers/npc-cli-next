@@ -1,12 +1,12 @@
 import { type IJsonRowNode, IJsonModel, IJsonTabNode, IJsonTabSetNode } from "flexlayout-react";
 import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
-import { isTouchDevice } from "../service/dom";
-import type { CustomIJsonTabNode, TabDef, TabsetLayout } from "./tab-factory";
+import { isTouchDevice, isIOS } from "../service/dom";
+import type { CustomIJsonTabNode, ManageTabDef, TabDef, TabsetLayout, WorldTabDef } from "./tab-factory";
 import { helper } from "../service/helper";
-import type { ProfileKey } from "../sh/src";
 
 /**
- * If exists do nothing, else mutate by appending to active tabset.
+ * - If tabDef doesn't exist, append to 1st non-active tabset (or only active one).
+ * - Otherwise noop.
  */
 export function addTabToLayout({ layout, selectTab, tabDef }: {
   layout: TabsetLayout;
@@ -25,16 +25,13 @@ export function addTabToLayout({ layout, selectTab, tabDef }: {
     return layout; // already exists
   }
 
-  const activeTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[tabsetNodes.length - 1];
-  activeTabset.active = true;
-  
-  const numTabs = activeTabset.children.push(
-    createTabNodeFromDef(tabDef)
-  );
+  // 1st inactive tabset, or only one
+  const targetTabset = tabsetNodes.find(x => x.active !== true) ?? tabsetNodes[0];
+  const numTabs = targetTabset.children.push(createTabNodeFromDef(tabDef));
 
   if (selectTab === true) {
     tabsetNodes.forEach(x => x.maximized = false); // minimize
-    activeTabset.selected = numTabs - 1; // select
+    targetTabset.selected = numTabs - 1; // select
   }
   
   return layout;
@@ -43,10 +40,11 @@ export function addTabToLayout({ layout, selectTab, tabDef }: {
 export function computeStoredTabsetLookup(): TabsetLayouts {
   
   function restoreLayout(key: keyof TabsetLayouts) {
-    return ensureManageTab(
+    const layout = (
       tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
       ?? deepClone(emptyTabsetLayout)
     );
+    return fixIOSCrash(ensureManageTab(layout));
   }
   
   const synced = restoreLayout('synced');
@@ -60,7 +58,7 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
     version: 0,
   };
 
-  console.log(`${'restoreTabsetLookup'}`, output);
+  console.log(`${'computeStoredTabsetLookup'}`, output);
   return output;
 }
 
@@ -70,43 +68,40 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
  * - for `Tty` have fallback for worldKey
  */
 export function computeTabDef(
-  opts: { suffix: string; } & (
-    | { classKey: 'Debug' | 'HelloWorld' | 'Manage';  }
-    | { classKey: 'Tty'; profileKey?: ProfileKey; env?: Record<string, any> }
-    | { classKey: 'World'; mapKey?: Key.Map }
+  opts: (
+    | { id: `hello-world-${number}`; classKey: 'HelloWorld';  }
+    | { id: `manage-${number}`; classKey: 'Manage';  }
+    | { id: `tty-${number}`; classKey: 'Tty'; profileKey?: Key.Profile; env?: Record<string, any> }
+    | { id: `world-${number}`; classKey: 'World'; mapKey?: Key.Map }
   )
 ): TabDef {
 
   if (opts.classKey === 'Tty') {// 'Tty' is not a Key.ComponentClass
     if (opts.profileKey === undefined || !helper.isProfileKey(opts.profileKey)) {
-      opts.profileKey = 'profile-empty-sh';
+      opts.profileKey = 'default_profile';
     }
     return {
       type: 'terminal',
-      filepath: `tty-${opts.suffix}`,
+      filepath: opts.id,
       profileKey: opts.profileKey,
       env: opts.env ?? {},
     };
   }
 
   let tabDef: TabDef;
-  const { tabPrefix } = helper.toTabClassMeta[opts.classKey];
 
   switch (opts.classKey) {
-    case 'Debug':
     case 'HelloWorld':
-    case 'Manage': {
-      const filepath = `${tabPrefix}-${opts.suffix ?? '0'}`;
+    case 'Manage':
       tabDef = {
         type: 'component',
         class: opts.classKey,
-        filepath,
+        filepath: opts.id,
         props: {},
       };
       break;
-    }
     case 'World': {
-      const worldKey = `${tabPrefix}-${opts.suffix ?? '0'}`;
+      const worldKey = opts.id;
       tabDef = {
         type: 'component',
         class: opts.classKey,
@@ -165,7 +160,7 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
 
   if (tabsets.length === 0) {
     return createLayoutFromBasicLayout([[
-      { type: 'component', class: 'Manage', filepath: 'manage', props: {} },
+      { type: 'component', class: 'Manage', filepath: 'manage-0', props: {} },
     ]]);
   }
 
@@ -173,7 +168,7 @@ export function ensureManageTab(layout: IJsonRowNode): IJsonRowNode {
 
   if (tabset === undefined) {// add manage tab to final tabset
     tabsets.at(-1)!.children.push(createTabNodeFromDef({
-      type: 'component', class: 'Manage', filepath: 'manage', props: {}
+      type: 'component', class: 'Manage', filepath: 'manage-0', props: {}
     }));
   }
 
@@ -198,6 +193,21 @@ function extractTabsetNodes(layout: IJsonRowNode): IJsonTabSetNode[] {
       return child;
     }
   });
+}
+
+/** 🔔 iOS 18.5 iPhone Mini fails on large maps */
+export function fixIOSCrash(layout: IJsonRowNode): IJsonRowNode {
+  
+  if (isIOS()) {
+    const tabNodes = extractTabNodes(layout);
+    for (const { config: tabDef } of tabNodes) {
+      if (isWorldTabDef(tabDef) && !helper.isSmallMap(tabDef.props.mapKey)) {
+        tabDef.props.mapKey = 'small-map-1'; // 🔔 ensure "small" map
+      }
+    }
+  }
+
+  return layout;
 }
 
 export function flattenLayout(layout: IJsonRowNode): IJsonRowNode {
@@ -229,7 +239,8 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
       tabSetMinHeight: 100,
       tabSetMinWidth: 200,
       tabSetEnableDivide: !isTouchDevice(),
-      enableEdgeDock: !isTouchDevice(),
+      // enableEdgeDock: !isTouchDevice(),
+      enableEdgeDock: true,
       splitterExtra: 12,
       splitterSize: 2,
     },
@@ -237,8 +248,12 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
   };
 }
 
-function isManageTabDef(def: TabDef) {
+function isManageTabDef(def: TabDef): def is ManageTabDef {
   return def.type === 'component' && def.class === 'Manage';
+}
+
+function isWorldTabDef(def: TabDef): def is WorldTabDef {
+  return def.type === 'component' && def.class === 'World';
 }
 
 /**
@@ -287,10 +302,24 @@ export function removeTabFromLayout({ layout, tabId }: {
 
 export function resolveLayoutPreset(layoutPresetKey: Key.LayoutPreset) {
   if (!helper.isLayoutPresetKey(layoutPresetKey)) {
-    warn(`${'resolveLayoutPreset'}: invalid layoutKey: ${layoutPresetKey}`);
-    layoutPresetKey = 'layout-preset-0';
+    warn(`${'resolveLayoutPreset'}: invalid layoutPresetKey: ${layoutPresetKey}`);
+    layoutPresetKey = 'world-tty-default_profile';
   }
   return createLayoutFromBasicLayout(helper.layoutPreset[layoutPresetKey]);
+}
+
+export function selectTabInLayout({ layout, tabId }: {
+  layout: IJsonRowNode;
+  tabId: string;
+}) {
+  for (const tabset of extractTabsetNodes(layout)) {
+    const index = tabset.children.findIndex(x => x.id === tabId);
+    if (index >= 0) {
+      tabset.selected = index;
+      return true;
+    }
+  }
+  return false;
 }
 
 const emptyTabsetLayout: TabsetLayout = {
@@ -308,7 +337,9 @@ export interface TabsetLayouts {
   started: TabsetLayout;
   synced: TabsetLayout;
   saved: TabsetLayout;
-  /** The tabs of `synced` */
+  /**
+   * These are the actual tabs of `synced` i.e. not clones.
+   */
   tabs: CustomIJsonTabNode[];
   /**
    * Used to trigger tabset model recompute.

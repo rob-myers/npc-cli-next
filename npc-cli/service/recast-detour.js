@@ -74,7 +74,8 @@ export function computeOffMeshConnectionsParams(w) {
        * we fix via room.meta "small" and "narrow-entrances"
        */
       const narrowEntrance = meta.hull !== true && doorRoomMetas[gmId][doorId].some(x =>
-        x.small === true || x['narrow-entrances'] === true
+        // x.small === true || x['narrow-entrances'] === true
+        x['narrow-entrances'] === true
       );
       const halfLength = meta.hull === true ? offMeshConnectionHalfDepth.hull : offMeshConnectionHalfDepth.nonHull;
       const offsets = meta.hull === true ? [-0.3, 0.01, 0.3] : narrowEntrance === false ? [-0.25, 0.01, 0.25] : [0.01];
@@ -133,8 +134,9 @@ export function getTileCacheMeshProcess(offMeshDefs) {
 export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
   return {
     /** `cs * tileSize` should be 1.5 i.e. Geomorph grid size (meters) */
-    cs: 0.1, tileSize: 15,
-    // cs: 0.075, tileSize: 20,
+    //cs: 0.15, tileSize: 10,
+    //cs: 0.1, tileSize: 15,
+    cs: 0.075, tileSize: 20,
     ch: 0.001,
     borderSize: 0,
     expectedLayersPerTile: 1,

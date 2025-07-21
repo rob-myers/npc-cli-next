@@ -2,6 +2,7 @@ import React from 'react';
 import { init as initRecastNav, importTileCache, Crowd } from "@recast-navigation/core";
 
 import { isDevelopment, warn, debug, testNever, info } from '../service/generic';
+import { maxNumberOfNpcs } from '../service/const';
 import { parsePhysicsBodyKey } from '../service/rapier';
 import { computeOffMeshConnectionsParams, disposeCrowd, getTileCacheMeshProcess } from '../service/recast-detour';
 import { helper } from '../service/helper';
@@ -79,7 +80,7 @@ export default function WorldWorkers() {
       } else {
         w.events.next({ key: isEnter === true ? 'enter-collider' : 'exit-collider', npcKey,
           ...type === 'nearby' 
-            ? { type, ...w.lib.getGmDoorId(subKey) }
+            ? { type, ...helper.getGmDoorId(subKey) }
             : { type, decorKey: subKey }
         });
       }
@@ -125,7 +126,7 @@ export default function WorldWorkers() {
       }
 
       w.crowd = new Crowd(w.nav.navMesh, {
-        maxAgents: 200,
+        maxAgents: maxNumberOfNpcs,
         // 🔔 maxAgentRadius influences m_agentPlacementHalfExtents
         // 🔔 maxAgentRadius influences proximity grid
         // https://github.com/recastnavigation/recastnavigation/blob/77f7e54bc8cf5a816f9f087a3e0ac391d2043be3/DetourCrowd/Source/DetourCrowd.cpp#L394
@@ -162,9 +163,27 @@ export default function WorldWorkers() {
     };
   }, [w.threeReady, Boolean(w.hash.full)]);
 
+  React.useEffect(() => {
+    if (isDevelopment()) {
+      // request nav/physics on HMR
+      state.seenHash = /** @type {*} */ ({});
+      // HMR this file onchange worker files
+      import('./physics.worker');
+      import('./nav.worker');
+    }
+  }, []);
+
+  const visible = Boolean(w.view?.canvas?.checkVisibility());
+
   React.useEffect(() => {// request nav-mesh, fresh physics world
     if (!(w.threeReady && w.hash.full)) {
-      return;
+      return; // not ready
+    }
+    if (w.hash === state.seenHash) {
+      return; // no change
+    }
+    if (visible === false) {
+      return; // skip until visible
     }
 
     const prev = state.seenHash;
@@ -202,15 +221,10 @@ export default function WorldWorkers() {
     w.mapKey, // current map
     w.hash.map, // current map layout (gmKey and transforms)
     w.hash.mapNav, // current map navMeshes 
+    visible,
   ]);
 
   return null;
-}
-
-// 🚧
-if (isDevelopment()) {// propagate HMR to this file onchange worker files
-  import('./physics.worker');
-  import('./nav.worker');
 }
 
 /**

@@ -1,9 +1,10 @@
 import { Subject, Subscription } from "rxjs";
-import { deepClone, removeFirst, last } from "../service/generic";
+import { deepClone, last } from "../service/generic";
 import type * as Sh from "./parse";
 import { traverseParsed } from "./parse";
-import { killError, ttyError } from "./util";
-import useSessionStore, { ProcessMeta, ProcessStatus } from "./session.store";
+import { ttyError } from "./util";
+import useSession from "./session.store";
+// 🔔 cmd.service circular import issue
 
 export const scrollback = 200;
 
@@ -29,7 +30,10 @@ class shellIoClass<R, W> {
     public writable: shellWireClass<W>
   ) {}
 
-  /** Register a callback to handle writes to this file */
+  /**
+   * Register a callback to handle writes to this file,
+   * returning a cleanup function.
+   */
   handleWriters(cb: (msg: W) => void) {
     this.writable.registerCallback(cb);
     return () => this.writable.unregisterCallback(cb);
@@ -115,39 +119,15 @@ export interface ReadResult {
   data?: any;
 }
 
-export async function preProcessWrite(process: ProcessMeta, device: Device) {
-  if (process.status === ProcessStatus.Killed || device.finishedReading(true) === true) {
-    throw killError(process);
-  } else if (process.status === ProcessStatus.Suspended) {
-    let cleanup: () => any;
-    await new Promise<void>((resolve, reject) => {
-      process.onResumes.push(resolve);
-      process.cleanups.push((cleanup = () => reject(killError(process))));
-    });
-    removeFirst(process.cleanups, cleanup!);
-  }
-}
-
-export async function preProcessRead(process: ProcessMeta, _device: Device) {
-  if (process.status === ProcessStatus.Killed) {
-    throw killError(process);
-  } else if (process.status === ProcessStatus.Suspended) {
-    let cleanup = () => {};
-    await new Promise<void>((resolve, reject) => {
-      process.onResumes.push(resolve);
-      process.cleanups.push((cleanup = () => reject(killError(process))));
-    });
-    removeFirst(process.cleanups, cleanup);
-  }
-}
-
 //#region data chunk
 export const dataChunkKey = "__chunk__";
 export function isDataChunk(data: any): data is DataChunk {
-  if (data === undefined || data === null) {
-    return false;
-  }
-  return !!data[dataChunkKey];
+  return (
+    data !== undefined
+    && data !== null
+    // && dataChunkKey in data
+    && !!data[dataChunkKey]
+  );
 }
 export function dataChunk(items: any[]): DataChunk {
   return { __chunk__: true, items };
@@ -189,7 +169,9 @@ export type MessageFromShell =
   | SendXtermError
   | ClearXterm
   | TtyReceivedLine
-  | SendHistoryLine;
+  | SendHistoryLine
+  | ExternalMessage
+;
 
 /** tty sends and sets xterm prompt */
 interface SendXtermPrompt {
@@ -221,6 +203,23 @@ interface SendHistoryLine {
   key: "send-history-line";
   line: string;
   nextIndex: number;
+}
+
+export interface ExternalMessage {
+  key: "external";
+  msg: (
+    | { key: 'auto-re-source-file'; absPath: `/etc/${string}`; }
+    | ExternalMessageProcessLeader
+  );
+}
+
+/** Only sent when `process.src !== ''`. */
+export interface ExternalMessageProcessLeader {
+  key: 'process-leader';
+  pid: number;
+  act: 'started' | 'paused' | 'resumed' | 'ended';
+  /** Pid `0` only */
+  profileRunning?: true;
 }
 
 /** `Proxy`s sent as messages should implement `msg[proxyKey] = true` */
@@ -364,12 +363,12 @@ export class VarDevice implements Device {
     if (this.mode === "array" || this.mode === "fresh-array") {
       if (!this.buffer) {
         if (this.mode === "array") {
-          this.buffer = useSessionStore.api.getVarDeep(this.meta, this.varPath);
+          this.buffer = useSession.api.getVarDeep(this.meta, this.varPath);
           if (!Array.isArray(this.buffer)) {
-            useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
+            useSession.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
           }
         } else {// "fresh-array"
-          useSessionStore.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
+          useSession.api.setVarDeep(this.meta, this.varPath, (this.buffer = []));
         }
       }
       if (data === undefined) {
@@ -383,9 +382,9 @@ export class VarDevice implements Device {
       if (data === undefined) {
         return;
       } else if (isDataChunk(data)) {
-        useSessionStore.api.setVarDeep(this.meta, this.varPath, last(data.items));
+        useSession.api.setVarDeep(this.meta, this.varPath, last(data.items));
       } else {
-        useSessionStore.api.setVarDeep(this.meta, this.varPath, data);
+        useSession.api.setVarDeep(this.meta, this.varPath, data);
       }
     }
   }
@@ -470,7 +469,7 @@ export class VoiceDevice implements Device {
   /**
    * Writing takes a long time, due to speech.
    * Moreover we write every line before returning.
-   * - `VoiceCommand` from e.g. `say foo{1..5}`
+   * - `VoiceCommand` from e.g. `speak foo{1..5}`
    * - `string` from e.g. `echo foo{1..5} >/dev/voice`
    */
   async writeData(input: VoiceCommand | string) {

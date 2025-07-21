@@ -675,7 +675,7 @@ async function createDecorSheetJson(assets, prev) {
   const svgBasenames = fs.readdirSync(decorDir)
     .filter(baseName => baseName.endsWith(".svg"))
     .filter((baseName) => {
-      if (geomorph.isDecorImgKey(baseName.slice(0, -'.svg'.length))) {
+      if (helper.isDecorImgKey(baseName.slice(0, -'.svg'.length))) {
         return true;
       } else {
         warn(`${'createDecorSheetJson'}: expected {decorImgKey}.svg: "${baseName}"`);

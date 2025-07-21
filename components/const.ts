@@ -10,7 +10,7 @@ export const nav = {
   collapsedRem: 4,
   collapsedWidth: `${4}rem`,
   expandedRem: 15,
-  expandedWidth: `${15}rem`,
+  expandedWidth: `${13}rem`,
   menuItemRem: 3.5,
   menuItem: `${3.5}rem`,
   titleMarginTop: `${0.5}rem`,
@@ -53,11 +53,11 @@ export const allArticlesMeta: Record<ArticleKey, ArticleMeta> = {
 };
 
 export const zIndexSite = /** @type {const} */ ({
+  aboveMainFadeOverlay: 55,
+  belowMainFadeOverlay: 45,
   mainHeader: 40,
   mainOverlay: 50,
   nav: 60,
-
-  aboveViewerFocusOutline: 1,
 });
 
 export const sideNoteRootDataAttribute = 'data-side-note-root';

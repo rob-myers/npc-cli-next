@@ -34,7 +34,6 @@ export class GmRoomGraphClass extends BaseGraph {
     );
 
     graph.registerNodes(nodes);
-    const { lib } = gmGraph.w;
 
     // Edges: for fixed gmId
     // Edges: bridging two gmIds (via hull doors)
@@ -50,14 +49,14 @@ export class GmRoomGraphClass extends BaseGraph {
                 (agg[ctxt.adjGmRoomKey] ??= [[], []])[0].push(
                   // { gdKey: geomorphService.getGmDoorKey(gmId, doorId), gmId, doorId, other: { gmId: ctxt.adjGmId, doorId: ctxt.adjDoorId } }
                   // { gdKey: geomorphService.getGmDoorKey(gmId, doorId), gmId, doorId }
-                  lib.getGmDoorId(gmId, doorId),
+                  helper.getGmDoorId(gmId, doorId),
                 );
               } // ctxt `null` for unconnected hull doors
             } else {
               const otherRoomId = /** @type {number} */ (gm.getOtherRoomId(doorId, roomId));
               (agg[helper.getGmRoomKey(gmId, otherRoomId)] ??= [[], []])[0].push(
                 // { gdKey: geomorphService.getGmDoorKey(gmId, doorId), gmId, doorId },
-                lib.getGmDoorId(gmId, doorId),
+                helper.getGmDoorId(gmId, doorId),
               );
             }
             return agg;

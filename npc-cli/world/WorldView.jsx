@@ -6,10 +6,11 @@ import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 
 import { debug, entries, keys } from "../service/generic.js";
+import { helper } from "../service/helper";
 import { Rect, Vect } from "../geom/index.js";
-import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB, isSmallViewport, isTouchDevice } from "../service/dom.js";
+import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB } from "../service/dom.js";
 import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
-import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, toXZ, unitXVector3, v3Precision } from "../service/three.js";
+import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
 import { WorldContext } from "./world-context.js";
 import useStateRef from "../hooks/use-state-ref.js";
@@ -47,7 +48,7 @@ export default function WorldView(props) {
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 40,
+    fov: 30,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
@@ -65,6 +66,7 @@ export default function WorldView(props) {
     },
     pickingScene: new THREE.Scene(),
     raycaster: new THREE.Raycaster(),
+    resizeOpts: { debounce: w.touchDevice === true ? 30 : 0 },
     resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
@@ -153,14 +155,14 @@ export default function WorldView(props) {
       const e = {
         key,
         position: new THREE.Vector3().copy(position),
-        point: toXZ(position),
+        point: helper.toXZ(position),
         distancePx,
         justLongDown,
-        keys: getModifierKeys(event.nativeEvent),
+        keys: getModifierKeys(event),
         pointers: state.getNumPointers(),
-        rmb: isRMB(event.nativeEvent),
+        rmb: isRMB(event),
         screenPoint: getRelativePointer(event),
-        touch: isTouchDevice(),
+        touch: w.touchDevice,
         meta,
       };
       if (e.key === 'pointerup' && state.isPointerEventDrag(e) === false) {
@@ -168,12 +170,12 @@ export default function WorldView(props) {
       }
       return e;
     },
-    handleClickInDebugMode(e) {// debug <=> paused
+    handlePausedClick(screenPoint) {
       if (
         w.disabled === true
         && state.lastDown !== undefined
         && state.lastDown.longDown === false
-        && state.lastDown.screenPoint.distanceTo(getRelativePointer(e)) < 1
+        && state.lastDown.screenPoint.distanceTo(screenPoint) < 1
       ) {
         w.npc.tickOnceDebug();
       }
@@ -245,12 +247,14 @@ export default function WorldView(props) {
         return;
       }
 
+      // 🔔 does not account for npc shader translation (on teleport)
       const res = w.e.getRaycastIntersection(e, decoded);
-
+      
       if (res === null) {
         return;
       }
 
+      // 🤔 npc faceIndex could induce `Key.SkinPart` e.g. "head-front" or "body-left"
       const position = v3Precision(decoded.picked === 'npc'
         ? w.n[decoded.npcKey].position.clone()
         : res.intersection.point.clone()
@@ -269,7 +273,7 @@ export default function WorldView(props) {
       const meta = {
         ...decoded,
         ...pickedTypesInSomeRoom[decoded.picked] === true
-          && w.gmGraph.findRoomContaining(toXZ(position), true),
+          && w.gmGraph.findRoomContaining(helper.toXZ(position), true),
       };
 
       state.lastDown = {
@@ -312,11 +316,11 @@ export default function WorldView(props) {
         return; // ignore ContextMenu clicks
       }
 
-      const cameraKey = e.metaKey || e.ctrlKey || e.shiftKey;
+      const mapControlsKey = e.metaKey === true || e.ctrlKey === true || e.shiftKey === true;
 
       state.down = {
         screenPoint: state.lastScreenPoint.clone(),
-        longTimeoutId: state.down || cameraKey ? 0 : window.setTimeout(() => {
+        longTimeoutId: state.down || mapControlsKey ? 0 : window.setTimeout(() => {
           state.justLongDown = true;
           if (state.lastDown === undefined) {
             return;
@@ -324,7 +328,7 @@ export default function WorldView(props) {
           state.lastDown.longDown = true;
           w.events.next(state.getWorldPointerEvent({
             key: "long-pointerdown",
-            event: e,
+            event: e.nativeEvent,
             justLongDown: false,
             meta: {},
             position: state.lastDown.position,
@@ -337,7 +341,7 @@ export default function WorldView(props) {
       state.pickObject(e);
     },
     onPointerLeave(e) {
-      if (!state.down) {
+      if (state.down === null) {
         return;
       }
 
@@ -370,7 +374,7 @@ export default function WorldView(props) {
         // object-pick has finished, so can send world event
         w.events.next(state.getWorldPointerEvent({
           key: "pointerup",
-          event: e,
+          event: e.nativeEvent,
           meta: state.lastDown.meta ?? {},
           position: state.lastDown.position,
         }));
@@ -378,10 +382,8 @@ export default function WorldView(props) {
 
       state.onPointerLeave(e);
       state.justLongDown = false;
-
-      state.handleClickInDebugMode(e); // step world in debug mode
     },
-    onTick(deltaMs) {
+    onTick(deltaSecs) {
       if (state.dst.azimuthal !== undefined) {// azimuthal angle
         if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
           delete state.dst.azimuthal;
@@ -405,7 +407,7 @@ export default function WorldView(props) {
       if (state.dst.fov !== undefined) {// change fov
         camera.fov = state.fov;
         camera.updateProjectionMatrix();
-        if (damp(state, 'fov', state.dst.fov, 0.4, deltaMs, undefined, undefined, 0.1) === false) {
+        if (damp(state, 'fov', state.dst.fov, 0.4, deltaSecs, undefined, undefined, 0.1) === false) {
           delete state.dst.fov;
           state.resolve.fov?.();
         }
@@ -413,7 +415,7 @@ export default function WorldView(props) {
 
       if (state.dst.look !== undefined && state.down === null) {// look or follow
         const { look: target, lookOpts = {} } = state.dst;
-        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaMs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
+        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
           state.resolve.look?.();
         }
         //@ts-ignore see patch i.e. fix azimuth angle
@@ -424,7 +426,7 @@ export default function WorldView(props) {
         const { minDistance, maxDistance, target } = state.controls;
         const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.dst.distance));
         const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
-        if (damp3(camera.position, targetCamPos, 0.2, deltaMs, undefined, undefined, 0.01) === false) {
+        if (damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.01) === false) {
           delete state.dst.distance;
           state.resolve.distance?.();
         }
@@ -455,9 +457,8 @@ export default function WorldView(props) {
       gl.render(state.pickingScene, camera);
 
       state.epoch.pickStart = Date.now();
-      e.persist();
       gl.readRenderTargetPixelsAsync(pickingRenderTarget, 0, 0, 1, 1, pixelBuffer)
-        .then(state.onObjectPickPixel.bind(null, e))
+        .then(state.onObjectPickPixel.bind(null, e.nativeEvent))
         .finally(() => state.epoch.pickEnd = Date.now())
       ;
 
@@ -608,14 +609,14 @@ export default function WorldView(props) {
       ref={state.canvasRef}
       css={rootCss}
       frameloop={state.syncRenderMode()}
-      resize={{ debounce: 30 }}
+      resize={state.resizeOpts}
       gl={state.glOpts}
       onCreated={state.onCreated}
       onPointerDown={w.r3f === null ? undefined : state.onPointerDown}
       onPointerMove={state.onPointerMove}
       onPointerUp={state.onPointerUp}
       onPointerLeave={state.onPointerLeave}
-      onContextMenu={e => isTouchDevice() && e.preventDefault()}
+      onContextMenu={e => w.touchDevice === true && e.preventDefault()}
       onKeyDown={state.onKeyDown}
       tabIndex={0}
       {...{ [popUpRootDataAttribute]: true }}
@@ -708,6 +709,7 @@ export default function WorldView(props) {
  * @property {{ tri: THREE.Triangle; indices: THREE.Vector3; mat3: THREE.Matrix3 }} normal
  * @property {THREE.Scene} pickingScene Empty scene for picking.
  * @property {THREE.Raycaster} raycaster
+ * @property {import('react-use-measure').Options} resizeOpts
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((value?: any) => void)>} resolve
  * - follow has `resolve.look` undefined i.e. never resolves
  * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((error?: any) => void)>} reject
@@ -720,9 +722,9 @@ export default function WorldView(props) {
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
- * @property {(e: React.PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
+ * @property {(e: PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
- * @property {(e: React.PointerEvent) => void} handleClickInDebugMode
+ * @property {(screenPoint: Geom.VectJson) => void} handlePausedClick
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
  * @property {() => void} lockDistance
  * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
@@ -736,7 +738,7 @@ export default function WorldView(props) {
  * @property {(e: React.PointerEvent) => void} onPointerLeave
  * @property {(e: React.PointerEvent) => void} onPointerMove
  * @property {(e: React.PointerEvent<HTMLElement>) => void} onPointerUp
- * @property {(deltaMs: number) => void} onTick
+ * @property {(deltaSecs: number) => void} onTick
  * @property {(type?: string, quality?: any) => void} openSnapshot
  * @property {(e: React.PointerEvent<HTMLElement>) => void} pickObject
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
@@ -752,7 +754,8 @@ export default function WorldView(props) {
 
 const rootCss = css`
   user-select: none;
-  background-color: rgba(0, 0, 0, 1);
+  background-color: rgba(30, 30, 30, 1);
+  /* background-color: rgba(0, 0, 0, 1); */
 
   canvas[data-engine] {
     width: 100%;
@@ -785,7 +788,7 @@ const statsCss = css`
  * @typedef WorldPointerEventDef
  * @property {'pointerup' | 'pointerdown' | 'long-pointerdown'} key
  * @property {number} [distancePx]
- * @property {React.PointerEvent | React.MouseEvent} event
+ * @property {PointerEvent | MouseEvent} event
  * @property {boolean} [justLongDown]
  * @property {Meta} meta
  * @property {THREE.Vector3Like} position

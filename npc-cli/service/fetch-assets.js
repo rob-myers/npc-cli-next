@@ -1,7 +1,7 @@
 import { queryClient } from "./query-client";
 import { info, isDevelopment, parseJsonArg, pause, warn } from "./generic";
 
-export const DEV_ENV_PORT = 3000;
+export const DEV_ENV_PORT = process.env.DEV_ENV_PORT;
 
 export const DEV_ORIGIN = 'localhost';
 
@@ -74,7 +74,7 @@ export function connectDevEventsWebsocket() {
     console.error('connectDevEventsWebsocket', e);
     eventSource.close();
     
-    if (++devEventsFailures > 5) {// stop trying
+    if (++devEventsFailures > 10) {// stop trying
       devEventsFailures = 0;
       return;
     }

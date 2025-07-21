@@ -54,6 +54,12 @@ export interface HumanZeroMaterialProps {
   labelY: number;
   /* A default value must be provided for object-pick to work */
   objectPick?: boolean;
+  /**
+   * NPC opacity does not work well with semi-transparent instanced mesh walls.
+   * Instead, `opacity` refers to the "teleport ratio" which amounts to:
+   * - selector opacity
+   * - body scale factors (x and z)
+   */
   opacity: number;
   uid: number;
 
@@ -88,13 +94,7 @@ export interface InstancedFlatProps {
 
 export interface InstancedFloorProps extends InstancedAtlasProps {
   lightAtlas: import('three').DataArrayTexture;
-  /** Dynamically follows target */
-  showTorch?: boolean;
   showLights?: boolean;
-  /** (radius, intensity, opacity) */
-  torchData: import('three').Vector3;
-  torchTarget: import('three').Vector3;
-  torchTexture: import('three').CanvasTexture;
 }
 
 export type InstancedFloorKeys = keyof InstancedFloorProps;
@@ -109,6 +109,7 @@ export interface InstancedWallsProps {
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;
+  opacityMin?: number;
   /** Use value `0` to disable */
   opacityCloseDivisor?: number;
 }

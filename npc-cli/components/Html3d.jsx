@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { css } from '@emotion/react';
 import cx from 'classnames';
 import * as ReactDOM from 'react-dom/client';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber'
+import { html3DOpacityCssVar } from '../service/const';
 import useStateRef from '../hooks/use-state-ref';
 
 /**
@@ -120,8 +120,11 @@ export const Html3d = React.forwardRef(({
 
     React.useLayoutEffect(() => {
       if (docked ? state.innerDiv : state.rootDiv) {
-        state.rootDiv.style.visibility = visible ? 'visible' : 'hidden';
         state.rootDiv.className = cx({ docked }, className);
+        const { style } = state.rootDiv;
+        style.visibility = visible ? 'visible' : 'hidden';
+        style.transition = docked ? '' : 'opacity ease-out 100ms';
+        style.opacity = docked ? '' : `var(${html3DOpacityCssVar})`;
       }
     }, [state.rootDiv, state.innerDiv, className, docked, visible]);
 

@@ -2,11 +2,11 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { Deferred, deepGet, keysDeep, pause, removeFirst, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, parseArgsAsJs } from "../service/generic";
+import { deepGet, keysDeep, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import { addStdinToArgs, computeNormalizedParts, formatLink, handleProcessError, killError, killProcess, normalizeAbsParts, parseTtyMarkdownLinks, ProcessError, resolveNormalized, resolvePath, ShError, stripAnsi, ttyError } from "./util";
+import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview } from "./util";
 import type * as Sh from "./parse";
-import { type ReadResult, preProcessRead, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk } from "./io";
+import { type ReadResult, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk, type Device } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
 import { cloneParsed, getOpts, parseService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
@@ -36,7 +36,7 @@ const commandKeys = {
   /** Get each arg from __TODO__ */
   get: true,
   /** Convert (possibly named) args to a single JavaScript object */
-  jsarg: true,
+  jsArg: true,
   /** List commands */
   help: true,
   /** List previous commands */
@@ -58,7 +58,7 @@ const commandKeys = {
   /** Run a javascript generator */
   run: true,
   /** Speech synthesis */
-  say: true,
+  speak: true,
   /** Echo session key */
   session: true,
   /** Set something */
@@ -265,8 +265,11 @@ class cmdServiceClass {
         for (const line of history) yield line;
         break;
       }
-      case "jsarg": {
-        yield parseArgsAsJs(args);
+      case "jsArg": {
+        const { opts, operands } = getOpts(args, {
+          string: ["opts", /** e.g. { to: "array" } */ ],
+        });
+        yield jsArg(operands, opts.opts === '' ? undefined : parseJsArg(opts.opts));
         break;
       }
       case "kill": {
@@ -274,10 +277,17 @@ class cmdServiceClass {
           boolean: [
             "all"  /** --all all processes */,
             "ALL"  /** --ALL all processes */,
-            "STOP" /** --STOP pauses a process */,
             "CONT" /** --CONT continues a paused process */,
+            "GROUP" /** --GROUP extends pids to their process groups */,
+            "STOP" /** --STOP pauses a process */,
           ],
         });
+
+        /**
+         * Actually kill (SIGINT) if we're not stopping or resuming.
+         * We don't support setting ptags from the command line.
+         */
+        const SIGINT = opts.STOP === false && opts.CONT === false;
 
         let pids = [] as number[];
 
@@ -290,11 +300,16 @@ class cmdServiceClass {
           );
         }
 
-        this.killProcesses(meta.sessionKey, pids, { STOP: opts.STOP, CONT: opts.CONT });
+        useSession.api.kill(meta.sessionKey, pids, {
+          CONT: opts.CONT,
+          GROUP: opts.GROUP,
+          STOP: opts.STOP,
+          SIGINT,
+        });
         break;
       }
       case "local": {// 🔔 see DeclClause
-        const process = useSession.api.getProcess(node.meta);
+        const process = getProcess(meta);
         if (process.key === 0) {
           throw new ShError("session leader doesn't support local variables", 1);
         }
@@ -359,105 +374,44 @@ class cmdServiceClass {
       }
       case "ps": {
         const { opts } = getOpts(args, {
-          boolean: ["a" /** Show all processes */, "s" /** Show process src */],
+          boolean: [
+            "a" /** Show all processes */,
+            "s" /** Show process src */,
+          ],
         });
 
-        const allProcesses = useSession.api.getSession(meta.sessionKey).process;
+        /** Either all processes or all process leaders */
+        let processes = useSession.api.getSession(meta.sessionKey).process;
 
-        /** Either all processes, or all group leaders */
-        const processes = opts.a
-          ? allProcesses
-          : Object.values(allProcesses).reduce(
-              (agg, proc) => (proc.key === proc.pgid && (agg[proc.key] = proc), agg),
-              {} as typeof allProcesses,
-            )
-        ;
+        if (opts.a === false) {
+          processes = Object.values(processes).reduce((agg, p) => {
+            if (p.key === p.pgid) agg[p.key] = p;
+            return agg;
+          }, {} as Session['process']);
+        }
 
         const statusColour: Record<ProcessStatus, string> = {
-          0: ansi.DarkGrey,
+          0: `${ansi.Grey}${ansi.Italic}`,
           1: ansi.White,
           2: ansi.Red,
         };
-        const statusLinks: Record<ProcessStatus, string> = {
-          0: `${formatLink(`${statusColour[0]} no `)} ${formatLink(`${statusColour[2]} x `)}`,
-          1: `${formatLink(`${statusColour[1]} on `)} ${formatLink(`${statusColour[2]} x `)}`,
-          2: "",
-        };
 
-        function getProcessDescendants(leader: ProcessMeta) {// 🚧 better way?
-          const lookup = { [leader.key]: true };
-          Object.values(useSession.api.getSession(meta.sessionKey).process).forEach((other) => {
-            if (other.ppid in lookup) lookup[other.key] = true;
-          });
-          return Object.keys(lookup).slice(1).filter((pid) => processes[pid]);
-        }
-
-        function shouldSuppressLinks(process: ProcessMeta) {
-          return (
-            process.status === ProcessStatus.Killed ||
-            process.key === 0 || // suppress links when leader has descendant leader
-            (!opts.a && !opts.s && getProcessDescendants(process).length > 0)
-          );
-        }
-
-        function getProcessLineWithLinks(p: ProcessMeta) {
+        function getProcessLine(p: ProcessMeta) {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
-          const hasLinks = !shouldSuppressLinks(p);
-          const linksOrEmpty = hasLinks ? `${statusLinks[p.status]} ` : '';
-          const tagsOrEmpty = p.ptags !== undefined ? `${ansi.BrightYellow}${opts.s ? jsStringify(p.ptags) : '* '}${ansi.Reset}` : '';
-          const oneLineSrcOrEmpty = !opts.s ? truncateOneLine(p.src.trimStart(), 30) : '';
-          const line = `${statusColour[p.status]}${info}${ansi.Reset}${linksOrEmpty}${tagsOrEmpty}${oneLineSrcOrEmpty}`;
-          if (hasLinks === true) registerStatusLinks(p, line);
+          const ptagPreviews = opts.s === true ? [] : getPtagsPreview(p.ptags);
+          const tagsOrEmpty = `${ansi.BrightYellow}${opts.s === true ? jsStringify(p.ptags) : `${ptagPreviews.join('')}${ptagPreviews.length > 0 ? ' ' : ''}`}${ansi.Reset}`;
+          const oneLineSrcOrEmpty = opts.s === false ? truncateOneLine(p.src.trimStart(), 30) : '';
+          const oneLineSrcColour = p.status === ProcessStatus.Suspended ? statusColour[p.status] : '';
+          const line = `${statusColour[p.status]}${info}${ansi.Reset}${tagsOrEmpty}${oneLineSrcColour}${oneLineSrcOrEmpty}`;
           return line;
-        }
-
-        function registerStatusLinks(process: ProcessMeta, processLine: string) {
-          const lineText = stripAnsi(processLine);
-
-          function updateLine(lineNumber: number) {
-            useSession.api.removeTtyLineCtxts(meta.sessionKey, lineText);
-            const { xterm: ttyXterm } = useSession.api.getSession(meta.sessionKey).ttyShell;
-            lineNumber = ttyXterm.getWrapStartLineNumber(lineNumber);
-            ttyXterm.replaceLine(lineNumber, getProcessLineWithLinks(process));
-          }
-
-          useSession.api.addTtyLineCtxts(meta.sessionKey, lineText, [
-            {
-              lineText,
-              linkText: "on",
-              linkStartIndex: lineText.indexOf("on") - 1,
-              callback(lineNumber) {
-                cmdService.killProcesses(meta.sessionKey, [process.key], { STOP: true });
-                updateLine(lineNumber);
-              },
-            },
-            {
-              lineText,
-              linkText: "no",
-              linkStartIndex: lineText.indexOf("no") - 1,
-              callback(lineNumber) {
-                cmdService.killProcesses(meta.sessionKey, [process.key], { CONT: true });
-                updateLine(lineNumber);
-              },
-            },
-            {
-              lineText,
-              linkText: "x",
-              linkStartIndex: lineText.indexOf("x") - 1,
-              async callback(lineNumber) {
-                cmdService.killProcesses(meta.sessionKey, [process.key]);
-                updateLine(lineNumber);
-              },
-            },
-          ]);
         }
 
         const title = ["pid", "ppid", "pgid"].map((x) => x.padEnd(5)).join(" ");
         yield `${ansi.Blue}${title}${ansi.Reset}`;
 
         for (const process of Object.values(processes)) {
-          yield getProcessLineWithLinks(process);
-          if (opts.s) {// Avoid multiline white in tty
+          yield getProcessLine(process);
+          if (opts.s === true) {// Avoid multiline white in tty
             yield* process.src.split("\n").map((x) => `${ansi.Reset}${x}`);
           }
         }
@@ -469,7 +423,7 @@ class cmdServiceClass {
         break;
       }
       case "return": {
-        let exitCode = parseInt(args[0] || "1");
+        let exitCode = parseInt(args[0] || '0');
         if (!Number.isFinite(exitCode)) {
           useSession.api.writeMsg(meta.sessionKey, `return: numeric argument required`, "error");
           exitCode = 2;
@@ -505,12 +459,68 @@ class cmdServiceClass {
         }
         break;
       }
-      /** e.g. run '({ api:{read} }) { yield "foo"; yield await read(); }' */
+      /**
+       * e.g.
+       * ```sh
+       * run '({ api:{read} }) { yield "foo"; yield await read(); }'
+       * run game move npcKey:rob to:$( click 1 )
+       * ```
+       */
       case "run": {
         try {
-          const fnName = meta.stack.at(-1) || "generator";
-          const func = Function("_", `return async function *${fnName} ${args[0]}`);
-          yield* func()(this.provideProcessCtxt(meta, args.slice(1)));
+          const ct = this.provideProcessCtxt(meta, args.slice(1));
+
+          if (args[0] in ct.lib) {
+
+            // 🔔 support process hot-reloading
+            // ℹ️ e.g. call '({ api }) => api.getProcess({ sessionKey: "tty-0", pid: 11 }).reboot.apply()'
+            const process = getProcess(meta);
+            process.reboot = {
+              apply() {
+                if (this.applying === true) return warn(`already rebooting process ${process.key}: ${process.src}`);
+                this.applying = true;
+                const removed = process.cleanups.splice(this.cleanupId, process.cleanups.length - this.cleanupId);
+                removed.forEach(cleanup => cleanup());
+              },
+              applying: false,
+              cleanupId: process.cleanups.length,
+            };
+            meta.stack.push(`${args[0]}.${args[1]}`);
+
+            while (true) {
+              try {
+                const func = (ct.lib as any)[args[0]]?.[args[1]];
+                if (func === undefined) {
+                  throw Error(`not found`);
+                }
+    
+                ct.args = args.slice(2); // discard 2nd arg too
+                
+                if (functionOrAsync.includes(func.constructor.name)) {
+                  yield await func(ct); // support all sh/src/* functions
+                } else {
+                  yield* func(ct);
+                }
+                
+                break;
+
+              } catch (e) {// 🔔 distinguish hot-reload from error
+                if (process.reboot.applying === false || process.status === ProcessStatus.Killed) {
+                  throw e;
+                }
+                process.reboot.applying = false;
+              }
+            }
+
+          } else {
+
+            // Function provided as argument
+            const fnName = meta.stack.at(-1) || "generator";
+            const func = Function("_", `return async function *${fnName} ${args[0]}`);
+            yield* func()(ct);
+
+          }
+
         } catch (e) {
           if (e instanceof ProcessError) {
             handleProcessError(node, e);
@@ -528,39 +538,35 @@ class cmdServiceClass {
         }
         break;
       }
-      case "say": {
+      case "speak": {
         const { opts, operands } = getOpts(args, {
           string: ["v"],
         });
 
-        if (opts.v === "?") {
-          // List available voices
+        if (opts.v === "?") {// List available voices
           yield* window.speechSynthesis.getVoices().map(({ name, lang }) => `${name} (${lang})`);
           return;
         }
 
         redirectNode(node.parent!, { 1: "/dev/voice" });
 
-        const process = getProcess(meta);
-        process.cleanups.push(() => window.speechSynthesis.cancel());
-        process.onSuspends.push(() => {
-          window.speechSynthesis.pause();
-          return true;
-        });
-        process.onResumes.push(() => {
-          window.speechSynthesis.resume();
-          return true;
+        const handlers = cmdService.handleStatus(meta, {
+          cleanups() { window.speechSynthesis.cancel(); },
+          onResumes() { window.speechSynthesis.resume(); return true; },
+          onSuspends() { window.speechSynthesis.pause(); return true; }
         });
 
-        if (!operands.length) {
-          // Say lines from stdin
-          let datum: string | VoiceCommand | null;
-          while ((datum = await read(meta)) !== EOF) {
-            yield { voice: opts.v, text: `${datum}` };
+        try {
+          if (operands.length > 0) {// Say operands
+            yield { voice: opts.v, text: operands.join(" ") };
+          } else if (isTtyAt(node.meta, 0) === false) {// Say lines from stdin
+            let datum: string | VoiceCommand | null;
+            while ((datum = await read(meta)) !== EOF) {
+              yield { voice: opts.v, text: `${datum}` };
+            }
           }
-        } else {
-          // Say operands
-          yield { voice: opts.v, text: operands.join(" ") };
+        } finally {
+          handlers.dispose();
         }
 
         break;
@@ -585,34 +591,54 @@ class cmdServiceClass {
         if (!(Number.isInteger(shiftBy) && shiftBy >= 0)) {
           throw new ShError("usage: `shift [n]` for non-negative integer n", 1);
         }
-        const { positionals } = useSession.api.getProcess(meta);
+        const { positionals } = getProcess(meta);
         for (let i = 0; i < shiftBy; i++) positionals.shift();
         break;
       }
       case "sleep": {
         const seconds = args.length ? parseFloat(parseJsonArg(args[0])) || 0 : 1;
-        await sleep(meta, seconds);
+        await this.sleep(meta, seconds);
         break;
       }
       case "source": {
-        if (args[0] === undefined) {
+        const [filepath] = args;
+        if (filepath === undefined) {
           return;
         }
-        const script = this.get(node, [args[0]])[0];
+        
+        const [script] = this.get(node, args.slice(0, 1));
+        
         if (script === undefined) {
-          useSession.api.writeMsg(meta.sessionKey, `source: "${args[0]}" not found`, "error");
-        } else if (typeof script !== "string") {
-          useSession.api.writeMsg(meta.sessionKey, `source: "${args[0]}" does not resolve as a string`, "error");
-        } else {
-          // We cache scripts
-          const parsed = parseService.parse(script, true);
-          // We mutate `meta` because it may occur many times deeply in tree
-          // Also, pid will be overwritten in `ttyShell.spawn`
-          Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
-          const { ttyShell } = useSession.api.getSession(meta.sessionKey);
-          // We spawn a new process (unlike bash `source`), but we don't localize PWD
-          await ttyShell.spawn(parsed, { leading: meta.pid === 0, posPositionals: args.slice(1) });
+          throw Error(`source: "${filepath}" not found`);
         }
+        if (typeof script !== "string") {
+          throw Error(`source: "${filepath}" is not a string`);
+        }
+
+        const parsed = parseService.parse(script, true); // we cache scripts
+
+        // Mutate `parsed.meta` because it may occur many times deeply in tree
+        // Note pid will be overwritten in `ttyShell.spawn`
+        Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
+
+        const { ttyShell } = useSession.api.getSession(meta.sessionKey);
+        await ttyShell.spawn(parsed, {
+          by: 'source',
+          posPositionals: args.slice(1),
+        });
+
+        // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
+        const absPath = cmdService.absPath(node.meta, filepath);
+        if (absPath.startsWith('/etc/')) {
+          useSession.api.getSession(meta.sessionKey).ttyShell.io.write({
+            key: 'external',
+            msg: {
+              key: 'auto-re-source-file',
+              absPath: `/etc/${absPath.slice('/etc/'.length)}`,
+            },
+          });
+        }
+
         break;
       }
       case "test": {
@@ -646,29 +672,64 @@ class cmdServiceClass {
     }
   }
 
+  absPath(meta: Sh.BaseMeta, path: string) {
+    const pwd = useSession.api.getVar<string>(meta, "PWD");
+    return absPath(path, pwd);
+  }
+
+  /** Wait for process to resume with escape-hatch `exposeReject`. */
+  async awaitResume(
+    meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">,
+    exposeReject?: (reject: (reason?: any) => void) => void,
+  ) {
+    let handlers: HandleStatusReturns;
+
+    const { status } = getProcess(meta);
+    if (status === ProcessStatus.Running) {
+      return;
+    } else if (status === ProcessStatus.Killed) {
+      throw killError(meta);
+    }
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        handlers = cmdService.handleStatus(meta, {
+          onResumes: resolve,
+          cleanups: () => reject(killError(meta)),
+        });
+        exposeReject?.(reject);
+      });
+    } finally {
+      handlers!.dispose();
+    }
+  }
+
   private async *choice(meta: Sh.BaseMeta, { text }: ChoiceReadValue) {
     const lines = text.replace(/\r/g, "").split(/\n/);
     const defaultValue = undefined;
-    const parsedLines = lines.map((text) => parseTtyMarkdownLinks(text, defaultValue, meta.sessionKey));
+    const parsedLines = lines.map((text) => computeChoiceTtyLinkFactory(text, defaultValue, meta.sessionKey));
     for (const { ttyText } of parsedLines) {
       yield ttyText;
     }
 
-    try {
-      if (parsedLines.some((x) => x.linkCtxtsFactory !== undefined) === true) {
-        // some link must be clicked to proceed
-        yield await new Promise<any>((resolve, reject) => {
-          getProcess(meta).cleanups.push(reject);
-          parsedLines.forEach(({ ttyTextKey, linkCtxtsFactory }) =>
-            linkCtxtsFactory !== undefined && useSession.api.addTtyLineCtxts(
-              meta.sessionKey,
-              ttyTextKey,
-              linkCtxtsFactory(resolve),
-            )
-          );
-        })
-      }
+    if (!parsedLines.some((x) => x.linkCtxtsFactory !== undefined)) {
+      return;
+    }
+    
+    let handlers: HandleStatusReturns;
+    try {// some link must be clicked to proceed
+      yield await new Promise<any>((resolve, reject) => {
+        handlers = cmdService.handleStatus(meta, { cleanups: reject });
+        parsedLines.forEach(({ ttyTextKey, linkCtxtsFactory }) =>
+          linkCtxtsFactory !== undefined && useSession.api.addTtyLineCtxts(
+            meta.sessionKey,
+            ttyTextKey,
+            linkCtxtsFactory(resolve),
+          )
+        );
+      });
     } finally {
+      handlers!.dispose();
       // ℹ️ currently assume one time usage
       parsedLines.forEach(({ ttyTextKey }) =>
         useSession.api.removeTtyLineCtxts(meta.sessionKey, ttyTextKey)
@@ -684,7 +745,7 @@ class cmdServiceClass {
   get(node: Sh.BaseNode, args: string[]) {
     const root = this.provideProcessCtxt(node.meta);
     const pwd = useSession.api.getVar<string>(node.meta, "PWD");
-    const process = useSession.api.getProcess(node.meta);
+    const process = getProcess(node.meta);
 
     const outputs = args.map((arg) => {
       const parts = arg.split("/");
@@ -704,47 +765,15 @@ class cmdServiceClass {
     return outputs;
   }
 
-  killProcesses(
-    sessionKey: string,
-    pids: number[],
-    opts: {
-      STOP?: boolean;
-      CONT?: boolean;
-      /** Ctrl-C, originating from pid 0 */
-      SIGINT?: boolean;
-      group?: boolean;
-    } = {}
-  ) {
-    const session = useSession.api.getSession(sessionKey);
-    for (const pid of pids) {
-      const { [pid]: process } = session.process;
-
-      if (!process) {
-        continue; // Already killed
-      }
-
-      const processes = process.pgid === pid || opts.group
-        ? // Apply command to whole process group __in reverse__
-          useSession.api.getProcesses(sessionKey, process.pgid).reverse()
-        : [process] // Apply command to exactly one process
-      ;
-
-      // onSuspend onResume are "first-in first-invoked"
-      for (const p of processes) {
-        if (opts.STOP) {
-          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(false));
-          p.status = ProcessStatus.Suspended;
-        } else if (opts.CONT) {
-          p.onResumes = p.onResumes.filter((onResume) => onResume());
-          p.status = ProcessStatus.Running;
-        } else {
-          p.status = ProcessStatus.Killed;
-          // Avoid immediate clean because it stops `sleep` (??)
-          // window.setTimeout(() => killProcess(p, opts.SIGINT));
-          killProcess(p, opts.SIGINT);
-        }
-      }
-    }
+  handleStatus(meta: Pick<Sh.BaseMeta, 'sessionKey' | 'pid'>, handlers: HandleStatusHandlers) {
+    const process = getProcess(meta);
+    const handlerEntries = entries(handlers);
+    for (const [key, fn] of handlerEntries) process[key].push(fn as any);
+    return Object.assign(handlers, {
+      dispose() {
+        for (const [key, fn] of handlerEntries) removeLast(process[key], fn);
+      },
+    });
   }
 
   async launchFunc(node: Sh.CallExpr, namedFunc: Sh.NamedFunction, args: string[]) {
@@ -757,7 +786,10 @@ class cmdServiceClass {
     } as Sh.BaseMeta);
     try {
       // Run function in own process, yet without localized PWD
-      await ttyShell.spawn(cloned, { posPositionals: args.slice() });
+      await ttyShell.spawn(cloned, {
+        by: 'function',
+        posPositionals: args.slice(),
+      });
     } finally {
       // Propagate function exitCode to callee
       // ℹ️ Errors are usually caught earlier via `handleShError`,
@@ -769,44 +801,19 @@ class cmdServiceClass {
   /**
    * 🔔 Core per-process API.
    *
-   * Currently, methods only have access to `this.meta` and `this.session`.
+   * Currently, methods only have access to `this.meta`.
    * Sometimes this means working directly with the process object.
    */
   private readonly processApi = {
     // Overwritten via Function.prototype.bind.
     meta: {} as Sh.BaseMeta,
-    session: {} as Session,
 
     ansi,
 
-    /** Returns provided cleanup */
-    addCleanUp(cleanup: () => void) {
-      getProcess(this.meta).cleanups.push(cleanup);
-      return cleanup;
-    },
-    /**
-     * Executed on suspend, without clearing `true` returners.
-     * The latter should be idempotent, e.g. unsubscribe, pause.
-     */
-    addResume(cleanup: () => void) {
-      getProcess(this.meta).onResumes.push(cleanup);
-    },
-    /**
-     * Executed on suspend, without clearing `true` returners.
-     * The latter should be idempotent, e.g. unsubscribe, pause.
-     */
-    addSuspend(cleanup: (global?: boolean) => void) {
-      getProcess(this.meta).onSuspends.push(cleanup);
-    },
-
     addStdinToArgs,
 
-    awaitResume(cleanUpError = Error('cancelled')) {
-      return new Promise<void>((resolve, reject) => {
-        const { cleanups, onResumes } = getProcess(this.meta);
-        cleanups.push(() => reject(cleanUpError));
-        onResumes.push(resolve);
-      });
+    async awaitResume(exposeReject?: (reject: (reason?: any) => void) => void) {
+      await cmdService.awaitResume(this.meta, exposeReject);
     },
     
     dataChunk,
@@ -842,8 +849,8 @@ class cmdServiceClass {
 
     getOpts,
 
-    getProcess() {
-      return getProcess(this.meta);
+    getProcess(meta?: Parameters<typeof getProcess>[0]) {
+      return getProcess(meta ?? this.meta);
     },
 
     getShError(message: string, exitCode = 1) {
@@ -855,7 +862,20 @@ class cmdServiceClass {
       return uid();
     },
 
+    /**
+     * Optionally add cleanup, onSuspend, onResume.
+     * Returns dispose.
+     */
+    handleStatus(handlers: HandleStatusHandlers) {
+      return cmdService.handleStatus(this.meta, handlers);
+    },
+
     isDataChunk,
+
+    /** Is the process paused? */
+    isPaused() {
+      return getProcess(this.meta).status === ProcessStatus.Suspended;
+    },
 
     /** Is the process running? */
     isRunning() {
@@ -866,33 +886,35 @@ class cmdServiceClass {
       return isTtyAt(this.meta, fd);
     },
 
+    jsArg,
+
     /** Create succinct JSON projections of JS values */
     json(x: any) {
       return safeJsonCompact(x);
     },
 
-    kill(group = false) {
-      cmdService.killProcesses(this.meta.sessionKey, [this.meta.pid], { group });
-    },
-
     observableToAsyncIterable,
-
-    parseArgsAsJs,
 
     /** js parse with string fallback */
     parseJsArg,
 
     parseFnOrStr,
 
-    /** Output 1, 2, ... at fixed intervals */
+    pause() {
+      useSession.api.kill(this.meta.sessionKey, [this.meta.pgid], {
+        STOP: true,
+        GROUP: true, // already follows because [pgid]
+      });
+    },
+
+    /** Output 1, 2, ... at fixed intervals (minimum every 0.5s) */
     async *poll(args: string[]) {
       const seconds = args.length ? parseFloat(parseJsonArg(args[0])) || 1 : 1;
-      const [delayMs, deferred] = [Math.max(seconds, 0.5) * 1000, new Deferred<void>()];
-      getProcess(this.meta).cleanups.push(() => deferred.reject(killError(this.meta)));
+      const delaySecs = Math.max(seconds, 0.5);
       let count = 1;
       while (true) {
         yield count++;
-        await Promise.race([pause(delayMs), deferred.promise]);
+        await cmdService.sleep(this.meta, delaySecs);
       }
     },
 
@@ -909,16 +931,7 @@ class cmdServiceClass {
     safeJsStringify,
 
     async sleep(seconds: number) {
-      await sleep(this.meta, seconds);
-    },
-
-    throwOnPause(pauseError: any, global?: boolean) {
-      return new Promise((_, reject) => {
-        const { onSuspends } = getProcess(this.meta);
-        onSuspends.push((isGlobal) => (
-          global === undefined || global === isGlobal
-        ) && reject(pauseError))
-      });
+      await cmdService.sleep(this.meta, seconds);
     },
 
     writeError(message: string) {
@@ -934,9 +947,9 @@ class cmdServiceClass {
     const cacheShortcuts = session.var.CACHE_SHORTCUTS ?? {};
     return new Proxy(
       {
-        home: session.var,
+        home: session.var, // see RunArg['home']
         etc: session.etc,
-        lib: session.jsFunc,
+        lib: session.jsFunc, // see RunArg['lib']
         // cache: queryCache,
         // dev: useSession.getState().device,
       },
@@ -994,7 +1007,7 @@ class cmdServiceClass {
           return Reflect.ownKeys(target);
         },
       }
-    );
+    ) as ProcessContext;
   }
 
   private async *readLoop(
@@ -1003,7 +1016,7 @@ class cmdServiceClass {
     once = false,
     chunks: boolean
   ) {
-    const process = useSession.api.getProcess(meta);
+    const process = getProcess(meta);
     const device = useSession.api.resolve(0, meta);
 
     if (device === undefined) {
@@ -1033,11 +1046,64 @@ class cmdServiceClass {
     }
     return { eof: true };
   }
+
+  async sleep(meta: Sh.BaseMeta, seconds: number) {
+    const process = getProcess(meta);
+    
+    let resolve = emptyResolve;
+    let reject = emptyReject;
+    let durationMs = 1000 * seconds;
+    let startedAt = 0;
+    let timeoutId = 0;
+
+    const handlers = this.handleStatus(meta, {
+      onResumes() {
+        startedAt = Date.now();
+        timeoutId = window.setTimeout(resolve, durationMs);
+        return true;
+      },
+      onSuspends() {
+        window.clearTimeout(timeoutId);
+        durationMs -= (Date.now() - startedAt);
+        return true;
+      },
+      cleanups() {
+        reject(killError(meta));
+      },
+    });
+
+    try {
+      await new Promise<void>((resolveSleep, rejectSleep) => {
+        resolve = resolveSleep;
+        reject = rejectSleep; // cannot resume until now:
+        if (process.status === ProcessStatus.Running) handlers.onResumes!();
+        if (process.status === ProcessStatus.Killed) handlers.cleanups!();
+      });
+    } finally {
+      handlers.dispose();
+    }
+  }
+}
+
+export async function preProcessWrite(process: ProcessMeta, device: Device) {
+  if (process.status === ProcessStatus.Killed || device.finishedReading(true) === true) {
+    throw killError(process);
+  } else if (process.status === ProcessStatus.Suspended) {
+    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
+  }
+}
+
+export async function preProcessRead(process: ProcessMeta, _device: Device) {
+  if (process.status === ProcessStatus.Killed) {
+    throw killError(process);
+  } else if (process.status === ProcessStatus.Suspended) {
+    await cmdService.awaitResume({ sessionKey: process.sessionKey, pid: process.key });
+  }
 }
 
 //#region processApi related
 
-function getProcess(meta: Sh.BaseMeta) {
+export function getProcess(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid">) {
   return useSession.api.getProcess(meta);
 }
 
@@ -1072,43 +1138,38 @@ async function read(meta: Sh.BaseMeta, chunks = false) {
   return result?.eof === true ? EOF : result.data;
 }
 
-export async function sleep(meta: Sh.BaseMeta, seconds: number) {
-  const process = getProcess(meta);
-  
-  await new Promise<void>((resolveSleep, rejectSleep) => {
-    let durationMs = 1000 * seconds;
-    let startedAt = 0;
-    let timeoutId = 0;
-
-    function onResume() {
-      startedAt = Date.now();
-      timeoutId = window.setTimeout(onResolve, durationMs);
-    }
-    function onSuspend() {
-      window.clearTimeout(timeoutId);
-      durationMs -= (Date.now() - startedAt);
-    }
-    function onResolve() {
-      removeFirst(process.cleanups, onCleanup);
-      resolveSleep();
-    }
-    function onCleanup() {
-      rejectSleep(killError(meta));
-    }
-
-    process.onSuspends.push(onSuspend);
-    process.onResumes.push(onResume);
-    process.cleanups.push(onCleanup);
-    onResume();
-  });
-}
-
 //#endregion
 
 interface ChoiceReadValue {
   text: string;
 }
 
+export type ProcessContext = {
+  home: Session['var']; // see RunArg['home']
+  etc: Session['etc'];
+  lib: Session['jsFunc']; // see RunArg['lib']
+} & {
+  set args(args: string[]);
+  get api(): ProcessApi;
+};
+
+export type ProcessApi = CmdService['processApi'];
+
+export interface HandleStatusHandlers {
+  /* An optional cleanup */
+  cleanups?: ProcessMeta['cleanups'][0];
+  /* An optional resume */
+  onResumes?: ProcessMeta['onResumes'][0];
+  /* An optional suspend */
+  onSuspends?: ProcessMeta['onSuspends'][0];
+}
+
+export type HandleStatusReturns = ReturnType<CmdService['handleStatus']>;
+
 export const cmdService = new cmdServiceClass();
 
 export type CmdService = typeof cmdService;
+
+const emptyResolve = () => {};
+const emptyReject = (e: any) => {};
+const functionOrAsync = ['Function', 'AsyncFunction'];

@@ -127,11 +127,13 @@ export default function Walls(props) {
       <instancedWallsMaterial
         key={InstancedWallsMaterial.key}
         alphaTest={0}
+        // side={THREE.DoubleSide}
         diffuse={[0, 0, 0]}
         depthWrite={!transparent}
         transparent={transparent}
         opacity={state.opacity}
-        opacityCloseDivisor={18}
+        opacityCloseDivisor={10}
+        opacityMin={0.5}
       />
     </instancedMesh>
   );

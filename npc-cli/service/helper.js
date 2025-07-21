@@ -1,4 +1,4 @@
-import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta } from "./const";
+import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
 import { keys } from "./generic";
 
 /**
@@ -10,7 +10,6 @@ export const helper = {
 
   /** @type {Record<Key.ComponentClass, true>} */
   fromComponentClass: {
-    Debug: true,
     HelloWorld: true,
     Manage: true,
     World: true,
@@ -25,16 +24,19 @@ export const helper = {
   ...(/** @param {Record<Key.Profile, true>} fromProfileKey */
     (fromProfileKey) => ({ fromProfileKey, profileKeys: keys(fromProfileKey) })
   )({
-    "profile-1-sh": true,
-    "profile-awaitWorld-sh": true,
-    "profile-empty-sh": true,
+    default_profile: true, // 1st is default
+    profile_1: true,
+    empty_profile: true,
   }),
 
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
-    (fromMapKey) => ({ fromMapKey, mapKeys: keys(fromMapKey) })
+    (fromMapKey) => ({
+      fromMapKey,
+      mapKeys: keys(fromMapKey),
+    })
   )({
+    "small-map-1": true, // default
     "demo-map-1": true,
-    "small-map-1": true,
   }),
 
   /** @type {Record<Key.NpcClass, true>} */
@@ -42,44 +44,37 @@ export const helper = {
     "human-0": true,
   },
 
+  /** @type {Record<Key.TabClassPrefix, true>} */
+  fromTabPrefix: {
+    "hello-world": true,
+    manage: true,
+    tty: true,
+    world: true,
+  },
+
   /**
-   * These are "basic layouts".
    * @type {Record<Key.LayoutPreset, import("../tabs/tab-util").BasicTabsLayout>}
    */
   layoutPreset: {
     "empty-layout": [],
-    "layout-preset-0": [
+    "world-tty-default_profile": [
       [
-        {
-          type: "component",
-          class: "World",
-          filepath: "test-world-1",
-          // props: { worldKey: "test-world-1", mapKey: "small-map-1" },
-          props: { worldKey: "test-world-1", mapKey: "demo-map-1" },
-        },
-        {
-          type: "component",
-          class: "Debug",
-          filepath: "debug",
-          props: {},
-        },
+        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
       ],
       [
-        {
-          type: "terminal",
-          filepath: "tty-1",
-          profileKey: 'profile-1-sh',
-          env: { WORLD_KEY: "test-world-1" },
-        },
-        {
-          type: "terminal",
-          filepath: "tty-2",
-          profileKey: 'profile-awaitWorld-sh',
-          env: { WORLD_KEY: "test-world-1" },
-        },
-        { type: "component", class: "HelloWorld", filepath: "hello-world-1", props: {} },
+        { type: "component", class: "Manage", filepath: "manage-0", props: {} },
+        { type: "terminal", filepath: "tty-0", profileKey: 'default_profile', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
       ]
-    ]
+    ],
+    "world-tty-profile_1": [
+      [
+        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
+      ],
+      [
+        { type: "component", class: "Manage", filepath: "manage-0", props: {} },
+        { type: "terminal", filepath: "tty-0", profileKey: 'profile_1', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
+      ]
+    ],
   },
 
   /** Global over all `queryFilter`s */
@@ -96,9 +91,8 @@ export const helper = {
     respectUnwalkable: 1,
   }),
 
-  /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: string; }>} */
+  /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: Key.TabClassPrefix; }>} */
   toTabClassMeta: {
-    Debug: { key: 'Debug', tabPrefix: 'debug' },
     HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
     Manage: { key: 'Manage', tabPrefix: 'manage' },
     Tty: { key: 'Tty', tabPrefix: 'tty' },
@@ -309,11 +303,19 @@ export const helper = {
   },
 
   /**
-   * @param {string} input 
-   * @returns {input is Key.TabClass}
+   * @param {string | undefined} input
+   * @returns {input is Key.DecorImg}
    */
-  isTabClassKey(input) {
-    return input === 'Tty' || (input in helper.fromComponentClass);
+  isDecorImgKey(input) {
+    return input !== undefined && input in helper.fromDecorImgKey;
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.LayoutPreset}
+   */
+  isLayoutPresetKey(input) {
+    return input in helper.layoutPreset;
   },
 
   /**
@@ -334,14 +336,6 @@ export const helper = {
 
   /**
    * @param {string} input 
-   * @returns {input is Key.LayoutPreset}
-   */
-  isLayoutPresetKey(input) {
-    return input in helper.layoutPreset;
-  },
-
-  /**
-   * @param {string} input 
    * @returns {input is Key.Profile}
    */
   isProfileKey(input) {
@@ -356,6 +350,68 @@ export const helper = {
     return input in helper.fromSkinPart;
   },
 
+  /**
+   * @param {Key.Map} mapKey 
+   */
+  isSmallMap(mapKey) {
+    return mapKey.includes('small');
+  },
+
+  /**
+   * @param {*} error
+   * @returns {error is NPC.StopReason} 
+   */
+  isStopReason(error) {
+    return !!error && /** @type {NPC.StopReason} */ (error)?.type === 'stop-reason';
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.TabClass}
+   */
+  isTabClassKey(input) {
+    return input === 'Tty' || (input in helper.fromComponentClass);
+  },
+
+  /**
+   * @param {string} input 
+   * @returns {input is Key.TabId}
+   */
+  isTabId(input) {
+    if (typeof input !== 'string') {
+      return false;
+    } else {
+      const matched = input.match(/^(.+)-\d+$/);
+      return (
+        matched !== null
+        && matched[1] in helper.fromTabPrefix
+      );
+    }
+  },
+
+  /**
+   * @param {*} input 
+   * @return {input is Geom.VectJson}
+   */
+  isVectJson(input) {
+    return !!input && typeof input.x === 'number' && typeof input.y === 'number';
+  },
+
+  /**
+   * - `{ x, y, z }` -> `{ x, y: z }`
+   * - `THREE.Vector3` -> `{ x, y: z }`
+   * - `{ x, y }` -> `{ x, y }` (fresh)
+   * @param {Geom.VectJson | import('three').Vector3Like} input 
+   * @returns {Geom.VectJson}
+   */
+  toXZ(input) {
+    if ('z' in input) {
+      return { x: input.x, y: input.z };
+    } else {
+      return { x: input.x, y: input.y };
+    }
+  },
+  
 };
 
 /**

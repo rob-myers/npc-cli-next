@@ -3,11 +3,15 @@ import { Action, Actions, Layout as FlexLayout, Model, type TabNode, type TabSet
 import debounce from "debounce";
 import { css } from "@emotion/react";
 
+import { TABS_API_KEY } from "../service/const";
 import { detectTabPrevNextShortcut } from "../service/generic";
+import { removeCached, setCached } from "../service/query-client";
 import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
 import { layoutToModelJson } from './tab-util';
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
+import useTabs from "./tabs.store";
+import { isTouchDevice } from "../service/dom";
 
 export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
 
@@ -16,7 +20,6 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     everEnabled: false,
     hash: "",
     model: {} as Model,
-    prevFocused: null,
     resets: 0,
     rootEl: null as any,
     tabsState: {},
@@ -48,18 +51,18 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
           // We're maximising: 🔔 disable hidden non-terminal tabs
           const maxIds = (state.model.getNodeById(act.data.node) as TabSetNode)
             .getChildren()
-            .map((x) => x.getId());
+            .map((x) => x.getId())
+          ;
+
           state.model.visitNodes((node) => {
             const id = node.getId();
             const tabState = state.tabsState[id];
             if (
-              node.getType() !== "tab"
-              || maxIds.includes(id)
-              || tabState?.type === "terminal"
+              tabState !== undefined
+              && !maxIds.includes(id)
+              && tabState.type === "component"
+              && tabState.disabled === false
             ) {
-              return;
-            }
-            if (tabState.disabled === false) {
               tabState.justCovered = true;
               tabState.disabled = true;
               props.onToggleTab?.(tabState);
@@ -117,18 +120,16 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         return;
       }
 
-      state.everEnabled ||= nextEnabled;
-      state.enabled = nextEnabled;
-
-      if (nextEnabled === true) {
-        const prevFocused = state.prevFocused;
-        state.prevFocused = null;
-        // setTimeout prevents enter propagating to Terminal
-        setTimeout(() => (prevFocused || state.rootEl).focus());
-      } else {
-        state.prevFocused = document.activeElement as HTMLElement | null;
-        state.rootEl.focus();
+      if (state.everEnabled === false) {
+        state.everEnabled = true;
+        if (isTouchDevice()) {// Initially stay paused on mobile
+          props.onToggled?.(false)
+          update();
+          return;
+        }
       }
+
+      state.enabled = nextEnabled;
 
       // Toggle all tabs
       state.toggleTabsDisabled(!nextEnabled);
@@ -157,6 +158,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     props.onHardReset, 
     props.onToggled
   ]});
+
+  React.useImperativeHandle(ref, () => state);
   
   const tabsDefChanged = state.updateHash(JSON.stringify(props.tabset));
 
@@ -177,7 +180,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       node.setEventListener("visibility", async ({ visible }) => {
         // console.log('visibility', key, visible);
         
-        const [key, tabDef] = [node.getId(), (node as TabNode).getConfig() as TabDef];
+        const [key, tabDef] = [node.getId() as Key.TabId, (node as TabNode).getConfig() as TabDef];
         const prevDisabled = key in state.tabsState ? state.tabsState[key].disabled : undefined;
         const tabState = state.tabsState[key] ??= {
           key,
@@ -189,7 +192,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         };
         
         if (visible) {
-          // 🔔 visible tab enabled iff Tabs is
+          // 🔔 visible tab enabled iff Tabs is enabled
           tabState.disabled = !state.enabled;
           const maxNode = state.model.getMaximizedTabset()?.getSelectedNode();
           tabState.everUncovered ||= maxNode ? node === maxNode : true;
@@ -217,11 +220,18 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         delete state.tabsState[tabId];
       }
     }
-
+    
+    
     return output;
   }, [tabsDefChanged, state.resets, props.updates]);
+  
+  // Restrict tab meta to extant tabs
+  React.useEffect(() => void useTabs.api.cleanTabMeta(), [state.model]);
 
-  React.useImperativeHandle(ref, () => state);
+  React.useEffect(() => {// provide useTabs.api to TTYs
+    setCached([TABS_API_KEY], useTabs.api);
+    return () => removeCached([]);
+  }, []);
 
   const update = useUpdate();
 
@@ -267,7 +277,6 @@ export interface State {
   enabled: boolean;
   everEnabled: boolean;
   hash: string;
-  prevFocused: null | HTMLElement;
   /** A reset involves remounting */
   resets: number;
   rootEl: HTMLElement;
@@ -289,7 +298,7 @@ export interface State {
 
 export interface TabState {
   /** Tab identifier */
-  key: string;
+  key: Key.TabId;
   type: TabDef["type"];
   disabled: boolean;
   /**
@@ -344,6 +353,9 @@ const tabsCss = css`
   }
   .flexlayout__tab_toolbar_button {
     cursor: pointer;
+    &:focus {
+      outline: 2px solid #99f;
+    }
   }
   .flexlayout__tab_toolbar_button-max svg {
     border: 1px solid white;

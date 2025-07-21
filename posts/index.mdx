@@ -8,97 +8,86 @@ export const metadata = {
   tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
 };
 
+import Card from "../components/Card";
 import Carousel from '../components/Carousel';
+import Code from '../components/Code';
+import Figure from '../components/Figure';
 import Image from 'next/image';
+import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
+import Video from '../components/Video';
 
-{/* 🚧 */}
-import FirstWithTtyWebp from '../public/images/first-example-with-tty.png.webp';
-import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__27-05-2025.webp';
+import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
 import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
+import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
+import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-viewport.webp';
 
 # Home
 
-## Intent
+## Quickstart
 
-This blog is driven by a fun yet challenging problem.
-
-<Card id="underlying-problem"> 
-**Underlying Problem**
-
-Create a video game whose Non-Player Characters behave just like human-controlled characters.
-</Card>
-
-The underlying problem is related to Turing's _Imitation Game_:
-the Player is the interrogator,
-the questions are video game interactions.
-Can the NPCs fool the Player? <SideNote>
+Let's spawn, move, and remove an NPC.<SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
 
-{/* <SideNote>
-  Imagine a human hired to "play the part" of an NPC,
-  rather than another human Player.
-</SideNote> */}
-
 <Carousel
+  height={500}
+  heightMobile={400}
   items={[
-    {
-      img: DesktopEmptyWorldWebp,
-      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
-      objectPosition: '0% 50%',
-    },
-    {
-      img: ManyRobsTestWebp,
-      label: <>Our system <em>NPC CLI</em> is built into this site.</>,
-      objectPosition: '0% 75%',
-    },
-    {
-      img: FirstWithTtyWebp,
-      label: <>CLI stands for <em>Command Line Interface.</em></>,
-      objectPosition: '0% 70%',
-    },
+    <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />,
+    <Video videoKey='mobileDemo' label="Mobile demo" />,
+    <Video videoKey='mobileDemo' label="Mobile demo" />,
   ]}
-  filter="brightness(1.0)"
-  maxHeight={400}
-  minHeight={400}
 />
 
-Human behaviour must be expressible for the underlying problem to be meaningful.
-Racing games only permit physical collisions, which ain't enough wiggle room.
-Abstract puzzle games are also too constrained.
-Even games with complex environments usually only offer *aggressive* NPCs,
-restricted by their time-limited existence.
-So let's assume our NPCs can move freely through a 3D environment without time constraints.
-Under this assumption, no known game solves the underlying problem
-(or even comes close). But why?
+The videos above show NPC CLI in a wide viewport and a narrow one (e.g. mobile phone).
+Feel free to step through the code below using the _Viewer_, which is either on the right or at the bottom of this page.
 
-> Because it's too damn hard!
+<Code>
+```sh title="" caption="Spawn, move and remove" showLineNumbers
+# spawn npc rob at click
+spawn npcKey:rob at:$( click 1 )
+# must be navigable or actable
 
-In a nutshell:
-freely combining behaviours yields state-space explosions.<SideNote>Even in very restricted settings e.g. [Conway's Game of Life](new-tab:https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).</SideNote>
-The number of states becomes too large to effectively explore.
-How can composite behaviour be resolved if the developer has never encountered it?
-Even behaviour we have accounted for may go unnoticed or be misinterpreted by the Player.
-But we can solve all these problems if we _continually react to the Player_.
-Rather than situate them in a prefabrication,
-we could fabricate everything around them, as and when we need to.
+# move rob to click
+move npcKey:rob to:$( click 1 )
+# must be on nav mesh
+# must have access to doors
 
-This leads to intermediate objectives, stepping stones towards the underlying problem.
+# respawn with skeleton key
+spawn npcKey:rob at:$( click 1 ) grant:.
 
-<Card id="underlying-problem"> 
-**Our Objectives**
+# move via a waypoint
+move npcKey:rob to:$( click 2 )
 
-1. Build real-time control systems for NPCs.
-2. Enable a Game Master to act indistinguishably from many humans. <SideNote>
-  A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
-</Card>
+# dust to dust
+w npc.remove rob
+```
+</Code>
 
-Reacting continually to the Player requires real-time control systems.
-Solving the underlying problem would also require an "automated director".
-As an intermediate step we permit a human Game Master to control these systems.
-Then the underlying problem becomes (2) above: can a single human act indistinguishably from many?
+Having seen the system in action,
+we now list our underlying motivations.
 
-## Our approach
+- _Create a video game whose NPCs behave just like human-controlled characters._
+  This is related to Turing's Imitation Game:
+  The Player interrogates, the questions are video game actions. Can the NPCs fool the Player?
 
-{/* 🚧 pillars */}
-{/* 🚧 use FE dev env */}
-{/* 🚧 use site: first demo */}
+- _As above but with a human Game Master._ Allowing another human to control the NPCs makes the problem more tractable. It also motivates realtime control systems for NPCs.
+
+- _Provide an in-depth explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation)._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll analyse the underlying C++ driving our fabrications.
+
+- _Provide a generic scripting system for [three.js](https://www.npmjs.com/package/three)._ Our xterm.js terminals interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript. In production one run commands. In development shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
+
+
+## What's next
+
+We provide two blogs.
+Our _main_ blog is about creating, combining and controlling NPC behaviour in realtime.
+Our _dev_ blog is concerned with the underlying software (internal and external).
+They're separated for clarity.
+
+### `main`
+
+🚧 Multiple NPCs
+
+### `dev`
+
+🚧 Introducing the `World`

@@ -1,21 +1,32 @@
 import React from "react";
 import debounce from "debounce";
+import { css } from "@emotion/react";
+import cx from "classnames";
 
 import { tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { getTouch, getTouchIdentifier } from "../service/dom";
 import useStateRef from "../hooks/use-state-ref";
 
 /**
- * Based on https://github.com/pmndrs/drei/blob/master/src/web/Html.tsx
- * @type {React.ForwardRefExoticComponent<React.PropsWithChildren<BaseProps> & React.RefAttributes<State>>}
+ * @type {React.ForwardRefExoticComponent<
+ *   React.PropsWithChildren<BaseProps> & React.RefAttributes<State>
+ * >}
  */
 export const Draggable = React.forwardRef(function Draggable(props, ref) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    down: {
+      clientX: 0,
+      clientY: 0,
+      translateX: 0,
+      translateY: 0,
+      width: 0,
+      height: 0,
+    },
     dragging: false,
     el: /** @type {*} */ (null),
     pos: tryLocalStorageGetParsed(props.localStorageKey ?? '') ?? {...props.initPos ?? { x: 0, y: 0 }},
-    rel: { x: 0, y: 0 },
+    resizing: false,
     touchId: /** @type {undefined | number} */ (undefined),
 
     canDrag(e) {
@@ -25,71 +36,112 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       );
     },
     onMouseDown(e) {
-      if (!state.canDrag(e)) {
-        return;
-      }
       e.stopPropagation();
-      // e.preventDefault();
-      state.dragging = true;
-      state.rel.x = e.clientX - state.el.offsetLeft;
-      state.rel.y = e.clientY - state.el.offsetTop;
+
+      if (e.target.matches('[data-draggable-corner]')) {
+        state.resizing = true;
+      } else if (!state.canDrag(e)) {
+        return;
+      } else {
+        state.dragging = true;
+      }
+
+      state.setRel(e.clientX, e.clientY);
     },
     onMouseUp(e) {
-      // e.stopPropagation();
-      // e.preventDefault();
       state.dragging = false;
+      state.resizing = false;
     },
     onMouseMove(e) {
-      if (state.dragging === false) {
+      if (state.dragging === false && state.resizing === false) {
         return;
       }
       e.stopPropagation();
       e.preventDefault();
 
       // Subtract rel to keep the cursor "in same position"
-      state.updatePos(e.clientX - state.rel.x, e.clientY - state.rel.y);
+      if (state.dragging === true) {
+        state.updatePos(
+          state.down.translateX + (e.clientX - state.down.clientX),
+          state.down.translateY + (e.clientY - state.down.clientY),
+        );
+      } else {
+        state.updateSize(
+          e.clientX - state.down.clientX,
+          e.clientY - state.down.clientY,
+        );
+      }
     },
     onTouchStart(e) {
       e.stopPropagation();
-      if (!state.canDrag(e)) {
-        return;
-      }
+      e.preventDefault();
+
       state.touchId = getTouchIdentifier(e);
-      const touchObj = typeof state.touchId  === 'number' ? getTouch(e, state.touchId) : null;
-      if (!touchObj) {
-        return null; // not the right touch
+      const touchObj = typeof state.touchId  === 'number' && getTouch(e, state.touchId) || null;
+      if (touchObj === null) {
+        return; // not the right touch
       }
 
-      state.dragging = true;
-      state.rel.x = touchObj.clientX - state.el.offsetLeft;
-      state.rel.y = touchObj.clientY - state.el.offsetTop;
+      if (e.target.matches('[data-draggable-corner]')) {
+        state.resizing = true;
+      } else if (!state.canDrag(e)) {
+        return;
+      } else {
+        state.dragging = true;
+      }
+
+      state.setRel(touchObj.clientX, touchObj.clientY);
     },
     onTouchEnd(e) {
       state.dragging = false;
+      state.resizing = false;
       state.touchId = undefined;
     },
     onTouchMove(e) {
-      if (state.dragging === false) {
+      if (state.dragging === false && state.resizing === false) {
         return;
       }
       e.stopPropagation();
       
-      // Subtract rel to keep the cursor "in same position"
       const touchObj = /** @type {{clientX: number, clientY: number}} */ (getTouch(e, /** @type {number} */ (state.touchId)));
-      state.updatePos(touchObj.clientX - state.rel.x, touchObj.clientY - state.rel.y);
+      
+      // Subtract rel to keep the cursor "in same position"
+      if (state.dragging === true) {
+        state.updatePos(
+          state.down.translateX + (touchObj.clientX - state.down.clientX),
+          state.down.translateY + (touchObj.clientY - state.down.clientY),
+        );
+      } else {
+        state.updateSize(
+          touchObj.clientX - state.down.clientX,
+          touchObj.clientY - state.down.clientY,
+        );
+      }
     },
     persist: debounce(() => {
       if (props.localStorageKey !== undefined)
         tryLocalStorageSet(props.localStorageKey, JSON.stringify(state.pos))
     }, 300),
+    setRel(clientX, clientY) {
+      const { x, y, width, height } = state.el.getBoundingClientRect();
+      const container = props.container.getBoundingClientRect();
+      state.down.clientX = clientX;
+      state.down.clientY = clientY;
+      state.down.translateX = x - container.x;
+      state.down.translateY = y - container.y;
+      state.down.width = width;
+      state.down.height = height;
+    },
     updatePos(x = state.pos.x, y = state.pos.y) {
-      // ensure within bounds
-      const container = props.container ?? document.body;
-      state.pos.x = Math.max(0, Math.min(container.clientWidth - state.el.offsetWidth, x));
-      state.pos.y = Math.max(0, Math.min(container.clientHeight - state.el.offsetHeight, y));
-      state.el.style.left = `${state.pos.x}px`;
-      state.el.style.top = `${state.pos.y}px`;
+      if (props.disabled === true) return; // ensure within bounds:
+      state.pos.x = Math.max(0, Math.min(props.container.clientWidth - state.el.offsetWidth, x));
+      state.pos.y = Math.max(0, Math.min(props.container.clientHeight - state.el.offsetHeight, y));
+      state.el.style.transform = `translate(${state.pos.x}px, ${state.pos.y}px)`;
       state.persist();
+    },
+    updateSize(x, y) {
+      state.el.style.width = `${Math.max(80, state.down.width + x)}px`;
+      state.el.style.height = `${Math.max(80, state.down.height + y)}px`;
     },
   }), { deps: [props.container, props.disabled, props.dragClassName, props.localStorageKey] });
 
@@ -127,7 +179,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
   return (
     <div
       ref={state.ref('el')}
-      className={props.className}
+      className={cx('draggable', props.className)}
       
       onMouseDown={state.onMouseDown}
       onMouseUp={state.onMouseUp}
@@ -136,12 +188,17 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       onTouchMove={state.onTouchMove}
 
       style={{
-        position: props.disabled ? 'unset' : 'absolute',
-        left: state.pos.x,
-        top: state.pos.y,
+        transform: props.disabled ? undefined : `translate(${state.pos.x}px, ${state.pos.y}px)`,
+        width: props.defaultWidth,
+        height: props.defaultHeight,
       }}
     >
       {props.children}
+
+      <div
+        css={cornerCss}
+        data-draggable-corner
+      />
     </div>
   )
 })
@@ -149,8 +206,9 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
 /**
  * @typedef BaseProps
  * @property {string} [className]
- * @property {HTMLElement} [container]
- * So can keep draggable within container
+ * @property {HTMLElement} container
+ * - So can keep draggable within container.
+ * - Now required so we can compute analogy of `offset{Left,Top}`
  * @property {boolean} [disabled]
  * @property {string} [dragClassName]
  * If defined, can only drag element matching it
@@ -158,6 +216,8 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
  * Initial position, usually overridden via localStorage
  * @property {string} [localStorageKey]
  * Where to store the position in local storage
+ * @property {number} [defaultWidth]
+ * @property {number} [defaultHeight]
  */
 
 /**
@@ -165,16 +225,30 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
  *   dragging: boolean;
  *   el: HTMLDivElement;
  *   pos: Geom.VectJson;
- *   rel: { x: number; y: number };
+ *   down: { clientX: number; clientY: number; translateX: number; translateY: number; width: number; height: number; };
+ *   resizing: boolean;
  *   touchId: undefined | number;
  *   canDrag(e: React.MouseEvent | React.TouchEvent): boolean;
- *   onMouseDown(e: React.MouseEvent): void;
+ *   onMouseDown(e: React.MouseEvent<HTMLDivElement> & { target: HTMLElement }): void;
  *   onMouseUp(e: React.MouseEvent | MouseEvent): void;
  *   onMouseMove(e: React.MouseEvent | MouseEvent): void;
- *   onTouchStart(e: React.TouchEvent): null | undefined;
+ *   onTouchStart(e: React.TouchEvent<HTMLDivElement> & { target: HTMLElement }): void;
  *   onTouchEnd(e: React.TouchEvent): void;
  *   onTouchMove(e: React.TouchEvent): void;
  *   persist(): void;
+ *   setRel(clientX: number, clientY: number): void;
  *   updatePos(x?: number, y?: number): void;
+ *   updateSize(x: number, y: number): void;
  * }} State
  */
+
+const cornerCss = css`
+  position: absolute;
+  z-index: 100;
+  right: 0;
+  bottom: 0;
+  border-left: 20px solid transparent;
+  border-bottom: 20px solid #666;
+  cursor: nwse-resize;
+  pointer-events: all;
+`;

@@ -43,7 +43,12 @@ const nextConfig: NextConfig = {
 const withMDX = createMDX({
   options: {
     remarkPlugins: [],
-    rehypePlugins: [['rehype-pretty-code' as any, { theme: 'dark-plus' }]],
+    rehypePlugins: [
+      // https://shiki.style/themes#themes
+      // ['rehype-pretty-code' as any, { theme: 'dark-plus' }]
+      // 🔔 safari/iOS lack ::selection support
+      ['rehype-pretty-code' as any, { theme: 'github-light-default' }]
+    ],
   },
 });
 

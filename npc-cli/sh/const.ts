@@ -10,12 +10,14 @@ export const ansi = {
   BrightWhite: "\x1b[97m",
   Cyan: "\x1b[96m",
   DarkGreen: "\x1b[32m",
+  Grey: "\x1b[38;5;248m",
   DarkGrey: "\x1b[90m",
   DarkGreyBg: "\x1b[100m",
   GreyBg: "\x1b[47m",
   Italic: "\x1b[3m",
   Purple: "\x1b[35m",
-  Red: "\x1b[31;1m",
+  //Red: "\x1b[31;1m",
+  Red: "\x1b[1;38;2;255;100;100m",
   Reverse: "\x1b[7m",
   ReverseReset: "\x1b[27m",
   Reset: "\x1b[0m",
@@ -28,3 +30,15 @@ export const ansi = {
 };
 
 export const EOF = Symbol.for("EOF");
+
+export const ProcessTag = {
+  /** STOP/CONT by ptags is based on this process tag */
+  always: 'always',
+  /** Interactive processes e.g. a non-background pipeline spawned from shell */
+  interactive: 'interactive',
+} as const;
+
+export const ProcessTagPreview = {
+  always: 'a',
+  interactive: 'i',
+} as const;

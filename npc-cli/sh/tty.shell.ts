@@ -1,31 +1,43 @@
 import type * as Sh from "./parse";
-import { error, testNever } from "../service/generic";
+import { error, testNever, warn } from "../service/generic";
 import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
-import { ansi } from "./const";
-import { ProcessError, ShError, ttyError } from "./util";
+import { ansi, ProcessTag } from "./const";
+import { killError, ProcessError, ShError, ttyError, updatePtags } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
-import useSession, { ProcessMeta, ProcessStatus } from "./session.store";
+import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
 import { semanticsService } from "./semantics.service";
 import { ttyXtermClass } from "./tty.xterm";
 
 export class ttyShellClass implements Device {
   public key: string;
   public xterm!: ttyXtermClass;
+  /** Suspend processes without process tag 'interactive'? */
+  public suspendNonInteractive = false;
+
   /** Lines received from a TtyXterm. */
   private inputs = [] as { line: string; resolve: () => void }[];
   private input = null as null | { line: string; resolve: () => void };
   /** Lines in current interactive parse */
   private buffer = [] as string[];
+  private cleanups = [] as (() => void)[];
   private readonly maxLines = 500;
   private process!: ProcessMeta;
-  private cleanups = [] as (() => void)[];
+  private profileFinished = false;
 
   private oneTimeReaders = [] as {
     resolve: (msg: any) => void;
     reject: (e: any) => void;
   }[];
+
+  /**
+   * `ptags.interactive` inherited until overwritten via `&` (background operator).
+   * Pipes don't overwrite, despite having their own process group.
+   */
+  private get sessionLeaderPtags() {
+    return { [ProcessTag.interactive]: true };
+  }
 
   constructor(
     public sessionKey: string,
@@ -42,10 +54,6 @@ export class ttyShellClass implements Device {
     this.cleanups.length = 0;
   }
 
-  get initialized() {
-    return !!this.process;
-  }
-
   async initialise(xterm: ttyXtermClass) {
     await loadMvdanSh(); // ensure parser loaded
 
@@ -58,7 +66,27 @@ export class ttyShellClass implements Device {
       ppid: 0,
       pgid: 0,
       src: "",
+      ptags: this.sessionLeaderPtags,
     });
+  }
+
+  isInitialized() {
+    return !!this.process;
+  }
+
+  /**
+   * The shell is "interactive" iff the profile has run and the prompt is ready.
+   * This should happen exactly when the leading process is NOT running.
+   * 
+   * We also tag processes with `ProcessTag.interactive`,
+   * where the session leader is always tagged.
+   */
+  isInteractive() {
+    return this.profileFinished === true && this.xterm.isPromptReady() === true;
+  }
+
+  isProfileFinished() {
+    return this.profileFinished;
   }
 
   private onMessage(msg: MessageFromXterm) {
@@ -73,7 +101,7 @@ export class ttyShellClass implements Device {
         break;
       }
       case "send-line": {
-        if (this.oneTimeReaders.length) {
+        if (this.oneTimeReaders.length > 0) {
           this.oneTimeReaders.shift()!.resolve(msg.line);
           this.io.write({ key: "tty-received-line" });
         } else {
@@ -140,6 +168,8 @@ export class ttyShellClass implements Device {
   /**
    * We run the profile by pasting it into the terminal.
    * This explicit approach can be avoided via `source`.
+   * 
+   * Importantly this sets `this.profileHasRun` as `true`.
    */
   async runProfile() {
     const profile = useSession.api.getVar(
@@ -147,29 +177,40 @@ export class ttyShellClass implements Device {
       "PROFILE",
     ) || "";
 
-    const session = useSession.api.getSession(this.sessionKey);
-
     try {
-      session.ttyShell.xterm.historyEnabled = false;
+      this.xterm.historyEnabled = false;
       useSession.api.writeMsg(
         this.sessionKey,
         `${ansi.Blue}${this.sessionKey}${ansi.White} running ${ansi.Blue}/home/PROFILE${ansi.Reset}`,
         "info"
       );
-      await session.ttyShell.xterm.pasteAndRunLines(profile.split("\n"), true);
-      this.prompt("$");
+      
+      await this.xterm.pasteAndRunLines(profile.split("\n"), true);
+
     } catch {
+      // see tryParse catch
     } finally {
-      session.ttyShell.xterm.historyEnabled = true;
+      this.profileFinished = true;
+      this.process.status = ProcessStatus.Suspended;
+      this.xterm.historyEnabled = true;
+      this.prompt("$");
     }
   }
 
-  async sourceEtcFile(filename: string) {
+  /**
+   * 🔔 We run `/etc/foo` in session leader `this.process`,
+   * even if latter is already running. This is a bit of a
+   * hack, but it should be OK if these files only contain shell
+   * function declarations.
+   * 
+   * @param filename `/etc/foo` which only contains shell function declarations
+   */
+  async sourceFuncDeclarations(filename: string) {
     const session = useSession.api.getSession(this.sessionKey);
     const src = session.etc[filename];
     const term = parseService.parse(src);
     this.provideContextToParsed(term);
-    return this.spawn(term);
+    await this.spawn(term, { by: 'source-external' });
   }
 
   /**
@@ -181,51 +222,139 @@ export class ttyShellClass implements Device {
   async spawn(
     term: Sh.FileWithMeta,
     opts: {
+      /**
+       * Spawned by:
+       * - `&` -- running a background operator.
+       * - `|` -- running a shell pipeline.
+       * - `()` -- running a subshell.
+       * - `$()` -- running a command substitution.
+       * - `function` -- invoking shell function.
+       * - `root` -- the session leader right after parsing shell code.
+       * - `source` -- the builtin `source` in cmd.service.
+       * - `source-external` -- a non-pausable externally triggered "source".
+       */
+      by: '&' | '|' | '()' | '$()' | 'function' | 'root' | 'source' | 'source-external';
       cleanups?: (() => void)[];
-      leading?: boolean;
       localVar?: boolean;
       posPositionals?: string[];
-    } = {}
+      /** Process tags overriding those inherited from parent */
+      ptags?: Ptags;
+    }
   ) {
     const { meta } = term;
 
-    if (opts.leading) {
-      this.process.status = ProcessStatus.Running;
+    /** A "builtin spawn" runs by re-using the session leader i.e. `this.process`. */
+    const builtin = meta.pgid === 0 && (opts.by === 'source' || opts.by === 'root');
+
+    let process = this.process;
+
+    if (this.profileFinished === true) {
+      if (builtin === true) {
+        // Only reachable by interactively specifying a command after profile has run
+        // We ensure session leader has status Running
+        process.status = ProcessStatus.Running;
+      }
     } else {
-      const { ppid, pgid } = meta;
-      const { positionals, ptags } = useSession.api.getProcess(meta); // parent
-      const process = useSession.api.createProcess({
+      if (process.status === ProcessStatus.Suspended && opts.by !== 'source-external') {
+        // Only reachable if session leader paused via <Tabs> during profile
+        // We halt
+        await new Promise<void>((resolve, reject) => {
+          process.cleanups.push(() => reject(killError(meta, 130)));
+          process.onResumes.push(resolve);
+        });
+      }
+    }
+
+    if (builtin !== true) {
+      // Create subprocess
+      const { ppid, pgid, sessionKey } = meta;
+      const session = useSession.api.getSession(sessionKey);
+      const parent = session.process[ppid]; // Exists
+      process = useSession.api.createProcess({
         ppid,
         pgid,
-        sessionKey: meta.sessionKey,
+        sessionKey,
         src: srcService.src(term),
-        posPositionals: opts.posPositionals || positionals.slice(1),
-        ptags,
+        posPositionals: opts.posPositionals || parent.positionals.slice(1),
+        ptags: updatePtags(parent.ptags, { ...parent.ptagsDelta, ...opts.ptags }),
       });
       meta.pid = process.key;
-      opts.cleanups !== undefined && process.cleanups.push(...opts.cleanups);
 
-      const session = useSession.api.getSession(meta.sessionKey);
-      const parent = session.process[meta.ppid]; // Exists
+      if (opts.cleanups !== undefined) {
+        process.cleanups.push(...opts.cleanups);
+      }
+      parent.ptagsDelta = {}; // reset after spawn
+
+      if (// Represent <Tabs> disabled
+        this.suspendNonInteractive === true
+        // processes not tagged with 'always' are paused,
+        // except those which are tagged interactive
+        && !(ProcessTag.always in process.ptags)
+        && !(ProcessTag.interactive in process.ptags)
+      ) {
+        process.status = ProcessStatus.Suspended;
+      }
+
       // Shallow clone avoids mutation by descendants
       process.inheritVar = { ...parent.inheritVar, ...parent.localVar };
-      if (opts.localVar) {
+      if (opts.localVar === true) {
         // Some processes need their own PWD e.g. background, subshell
         process.localVar.PWD = parent.inheritVar.PWD ?? session.var.PWD;
         process.localVar.OLDPWD = parent.inheritVar.OLDPWD ?? session.var.OLDPWD;
       }
+
+      if (opts.by === '&') {
+        session.lastBg = process.key;
+      }
     }
 
-    try {
+    /**
+     * This spawn is leading if either:
+     * 1. `pgid === 0` and it was spawned by session leader (not `source`).
+     * 2. `pid === pgid !== 0`
+     */
+    const leading = builtin ? opts.by === 'root' : meta.pid === meta.pgid;
+
+    if (leading) {// Process leaders emit external events
+      process.src !== '' && this.io.write({ key: 'external', msg: {
+        key: 'process-leader',
+        pid: meta.pid,
+        act: 'started',
+        profileRunning: this.profileFinished === false ? true : undefined,
+        // src: process.src,
+      }});
+
+      process.onSuspends.push(() => {
+        this.io.write({ key: 'external', msg: {
+          key: 'process-leader',
+          pid: meta.pid,
+          act: 'paused',
+          profileRunning: this.profileFinished === false ? true : undefined,
+        }});
+        return true;
+      });
+
+      process.onResumes.push(() => {
+        this.io.write({ key: 'external', msg: {
+          key: 'process-leader',
+          pid: meta.pid,
+          act: 'resumed',
+          profileRunning: this.profileFinished === false ? true : undefined,
+        }});
+        return true;
+      });
+    }
+
+    try {// Run process
       for await (const _ of semanticsService.File(term)) {
-        // Unreachable: yielded values already sent to devices (tty, fifo, null, var, voice)
+        // Unreachable: yielded values already sent to devices:
+        // (tty, fifo, null, var, voice)
       }
-      term.meta.verbose &&
-        console.warn(
-          `${meta.sessionKey}${meta.background ? " (background)" : ""}: ${meta.pid}: exit ${
-            term.exitCode
-          }`
-        );
+      term.meta.verbose === true && warn(
+        `${meta.sessionKey}${meta.background ? " (background)" : ""}: ${meta.pid}: exit ${
+          term.exitCode
+        }`
+      );
     } catch (e) {
       if (e instanceof ProcessError) {
         // 🔔 possibly via preProcessWrite
@@ -238,16 +367,38 @@ export class ttyShellClass implements Device {
       throw e;
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
-      !opts.leading && meta.pid && useSession.api.removeProcess(meta.pid, this.sessionKey);
+
+      if (!builtin) {
+        useSession.api.removeProcess(meta.pid, this.sessionKey);
+      }
+
+      if (leading) {
+        process.src !== '' && this.io.write({ key: 'external', msg: {
+          key: 'process-leader',
+          pid: meta.pid,
+          act: 'ended',
+          profileRunning: this.profileFinished === false ? true : undefined,
+        }});
+
+        // must clear in case of session leader (reused)
+        process.cleanups.length = 0;
+        process.onResumes.length = 0;
+        process.onSuspends.length = 0;
+      }
+
     }
   }
 
   private storeSrcLine(srcLine: string) {
     const prev = this.history.pop();
-    prev && this.history.push(prev);
+    if (prev !== undefined) {
+      this.history.push(prev);
+    }
     if (prev !== srcLine) {
       this.history.push(srcLine);
-      while (this.history.length > this.maxLines) this.history.shift();
+      while (this.history.length > this.maxLines) {
+        this.history.shift();
+      }
       useSession.api.persistHistory(this.sessionKey);
     }
   }
@@ -263,16 +414,16 @@ export class ttyShellClass implements Device {
 
       switch (result.key) {
         case "failed": {
-          this.xterm.shouldEcho = true;
           const errMsg = `mvdan-sh: ${result.error.replace(/^src\.sh:/, "")}`;
           error(errMsg);
           this.io.write({ key: "error", msg: errMsg });
+          // also mvdan-sh parse errors in history
+          this.storeSrcLine(this.buffer.join('\n'));
           this.buffer.length = 0;
           this.prompt("$");
           break;
         }
         case "complete": {
-          this.xterm.shouldEcho = true;
           this.buffer.length = 0;
           const singleLineSrc = srcService.src(result.parsed);
           if (singleLineSrc && this.xterm.historyEnabled) {
@@ -282,7 +433,7 @@ export class ttyShellClass implements Device {
           // Run command
           this.process.src = singleLineSrc;
           this.provideContextToParsed(result.parsed);
-          await this.spawn(result.parsed, { leading: true });
+          await this.spawn(result.parsed, { by: 'root' });
 
           this.prompt("$");
           break;
@@ -302,8 +453,13 @@ export class ttyShellClass implements Device {
     } finally {
       this.input?.resolve();
       this.input = null;
-      this.process.status = ProcessStatus.Suspended;
-      this.process.ptags = undefined;
+      this.process.ptags = this.sessionLeaderPtags;
+      
+      // do not suspend leading process during profile,
+      // otherwise we'll pause before spawning each subprocess
+      if (this.profileFinished === true) {
+        this.process.status = ProcessStatus.Suspended;
+      }
     }
   }
 

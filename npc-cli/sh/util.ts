@@ -1,7 +1,7 @@
 import braces from "braces";
-import { ansi } from "./const";
+import { ansi, ProcessTagPreview } from "./const";
 import { debug, last, parseJsArg } from "../service/generic";
-import { ProcessMeta, ProcessStatus, TtyLinkCtxt } from "./session.store";
+import { type ProcessMeta, ProcessStatus, type Ptags, type TtyLinkCtxt } from "./session.store";
 import { SigEnum } from "./io";
 import type * as Sh from "./parse";
 
@@ -134,12 +134,12 @@ export class ProcessError extends Error {
   }
 }
 
-export function killError(meta: Sh.BaseMeta | ProcessMeta, exitCode?: number, depth?: number) {
+export function killError(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid"> | ProcessMeta, exitCode?: number, depth?: number) {
   return new ProcessError(
     SigEnum.SIGKILL,
     "pid" in meta ? meta.pid : meta.key,
     meta.sessionKey,
-    exitCode,
+    exitCode ?? 130,
     depth
   );
 }
@@ -153,9 +153,28 @@ export function killProcess(p: ProcessMeta, SIGINT?: boolean) {
   p.cleanups.length = 0;
 }
 
+/**
+ * Computes fresh ptags.
+ * - A process "has" tag `key` iff `key in process.ptags`.
+ * - An updates value of `undefined` or `null` deletes the tag.
+ */
+export function updatePtags(ptags: Ptags, updates: Ptags) {
+  const output = { ...ptags }; // same as deep clone
+  Object.entries(updates).forEach(([k, v]) => {
+    if (v == null) delete output[k];
+    else output[k] = v;
+  });
+  return output;
+}
+
 //#endregion
 
 //#region resolution
+
+export function absPath(path: string, pwd: string) {
+  const absParts = path.startsWith("/") ? path.split("/") : pwd.split("/").concat(path.split("/"));
+  return `/${normalizeAbsParts(absParts).join("/")}`;
+}
 
 export function resolvePath(path: string, root: any, pwd: string) {
   const absParts = path.startsWith("/") ? path.split("/") : pwd.split("/").concat(path.split("/"));
@@ -245,16 +264,28 @@ export function formatMessage(msg: string, level: "info" | "error") {
     : `${ansi.Red}${msg}${ansi.Reset}`;
 }
 
+export function getPtagsPreview(ptags: Ptags) {
+  return Object.keys(ptags).map(key =>
+    key in ProcessTagPreview ? (ProcessTagPreview)[key as keyof typeof ProcessTagPreview] : `[${key[0]}]`
+  );
+}
+
 /**
- * - We'll compute text `textForTty` where each `[foo](bar)` is replaced by `[foo]`.
+ * Used by builtin `choice`.
+ * - We'll compute text `textForTty` where each `[ foo ](bar)` is replaced by `[ foo ]`.
  * - The relationship between `foo` and `bar` is stored in a `TtyLinkCtxt`.
  * - We need `sessionKey` for special actions e.g. `href:#somewhere else`.
  */
-export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKey: string) {
+export function computeChoiceTtyLinkFactory(text: string, defaultValue: any, sessionKey: string): {
+  ttyText: string;
+  /** `ttyText` with ansi colours stripped */
+  ttyTextKey: string;
+  linkCtxtsFactory?(resolve: (v: any) => void): TtyLinkCtxt[];
+} {
   /**
-   * - match[1] is either empty or the escape character (to support ansi special chars)
-   * - match[2] is the link label e.g. "[foo]"
-   * - match[3] is the link value e.g. "bar" (interprets as 'bar') or "2" (interprets as 2)
+   * - `match[1]` is either empty or the escape character (to support ansi special chars)
+   * - `match[2]` is the link label e.g. "[ foo ]"
+   * - `match[3]` is the link value e.g. "bar" (string 'bar') or "2" (number 2)
    */
   // const mdLinksRegex = /(^|[^\x1b])\[([^()]+?)\]\((.*?)\)/g;
   const mdLinksRegex = /(^|[^\x1b])\[ ([^()]+?) \]\((.*?)\)/g;
@@ -268,32 +299,36 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
   const addedZero = boundaries[0] === 0 ? 0 : boundaries.unshift(0) && 1;
   const parts = boundaries
     .map((textIndex, i) => text.slice(textIndex, boundaries[i + 1] ?? text.length))
-    .map((part, i) =>
-      addedZero === i % 2
-        ? formatLink(part.slice(1, part.indexOf("(") - 1))
-        : `${ansi.White}${part}${ansi.Reset}`
+    .map((part, i) => addedZero === i % 2
+      ? formatLink(part.slice(1, part.indexOf("(") - 1))
+      : `${ansi.White}${part}${ansi.Reset}`
     );
   const ttyText = parts.join("");
   const ttyTextKey = stripAnsi(ttyText);
 
-  const linkCtxtsFactory = matches.length
-    ? (resolve: (v: any) => void): TtyLinkCtxt[] =>
+  if (matches.length > 0) {
+    return {
+      linkCtxtsFactory: (resolve: (value: any) => void): TtyLinkCtxt[] =>
         matches.map((match, i) => ({
           lineText: ttyTextKey,
           linkText: stripAnsi(match[2]),
+
           // 1 + ensures we're inside the square brackets:
           linkStartIndex: 1 + stripAnsi(parts.slice(0, 2 * i + addedZero).join("")).length,
+
           callback() {
             let value = parseJsArg(
-              match[3] === "" // links [foo]() has value "foo"
-                ? match[2] // links [foo](-) has value undefined
+              match[3] === "" // links [ foo ]() has value "foo"
+                ? match[2] // links [ foo ](-) has value undefined
                 : match[3] === "-"
                 ? undefined
                 : match[3]
             );
-            value === undefined && (value = defaultValue);
+            if (value === undefined) {
+              value = defaultValue;
+            }
 
-            // 🚧 We support special actions
+            // 🚧 support special actions
             // if (typeof value === "string") {
             //   if (value.startsWith("href:")) {
             //     // `"href:{navigable}"`
@@ -304,15 +339,19 @@ export function parseTtyMarkdownLinks(text: string, defaultValue: any, sessionKe
             // }
             resolve(value);
           },
-        }))
-    : undefined;
 
-  return {
-    ttyText,
-    /** `ttyText` with ansi colours stripped */
-    ttyTextKey,
-    linkCtxtsFactory,
-  };
+          // 🤔 `choice` could support refresh e.g. links change on pause
+          // refresh() {},
+        })),
+      ttyText,
+      ttyTextKey,
+    };
+  } else {
+    return {
+      ttyText,
+      ttyTextKey,
+    };
+  }
 }
 
 /** Avoid clogging logs with "pseudo errors" */

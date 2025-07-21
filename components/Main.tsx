@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
@@ -5,17 +6,19 @@ import { shallow } from "zustand/shallow";
 
 import { afterBreakpoint, breakpoint, zIndexSite, sideNoteRootDataAttribute } from "./const";
 import useSite from "./site.store";
-import { isSmallView } from "./layout";
+import useRefreshScrollRestoration from "./use-refresh-scroll-restore";
 
 export default function Main(props: React.PropsWithChildren) {
   const site = useSite(({ navOpen, draggingView }) => ({ navOpen, draggingView }), shallow);
+  const rootRef = React.useRef<HTMLDivElement>(null);
 
-  const overlayOpen = site.draggingView || (site.navOpen && isSmallView());
+  useRefreshScrollRestoration(rootRef.current);
 
   return (
     <div
       css={mainCss}
       className={cx("scroll-container", { draggingView: site.draggingView })}
+      ref={rootRef}
     >
       <section
         className="prose max-w-screen-lg prose-headings:font-light dark:prose-invert"
@@ -26,7 +29,7 @@ export default function Main(props: React.PropsWithChildren) {
           css={mainHeaderCss}
           data-testid="main-title"
         >
-          NPC CLI
+          <Link href="/blog/index">NPC CLI</Link>
         </header>
 
         <main css={mainMainCss}>
@@ -35,7 +38,7 @@ export default function Main(props: React.PropsWithChildren) {
 
         <div
           css={overlayCss}
-          className={cx({ overlayOpen, navOpen: site.navOpen })}
+          className={cx({ draggingView: site.draggingView, navOpen: site.navOpen })}
           onClick={() => useSite.api.toggleNav()}
         />
       </section>
@@ -44,6 +47,8 @@ export default function Main(props: React.PropsWithChildren) {
 }
 
 const mainCss = css`
+  --main-min-width-desktop: calc(600px + 2 * 2rem);
+
   width: 100%;
   overflow: scroll;
   &.draggingView {
@@ -85,8 +90,13 @@ const mainHeaderCss = css`
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
 
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
   @media (min-width: ${afterBreakpoint}) {
-    min-width: calc(400px + 2 * 2rem);
+    min-width: var(--main-min-width-desktop);
 
     margin-top: 0rem;
     margin-right: 1rem;
@@ -106,7 +116,7 @@ const mainMainCss = css`
 
   @media (min-width: ${afterBreakpoint}) {
     flex: 1;
-    min-width: calc(400px + 2 * 2rem);
+    min-width: var(--main-min-width-desktop);
     margin: 0 1rem;
     padding: 2rem 4rem 6rem 4rem;
   }
@@ -126,13 +136,15 @@ const overlayCss = css`
   transition: opacity 300ms;
   opacity: 0;
 
-  &.overlayOpen {
+  &.draggingView {
     cursor: pointer;
     opacity: 1;
   }
-  
-  /* fix Safari i.e. Viewer scroll was jerky when pointer-events: all */
-  &.overlayOpen.navOpen {
-    pointer-events: all;
+  @media (max-width: ${breakpoint}) {
+    &.navOpen {
+      cursor: pointer;
+      pointer-events: all;
+      opacity: 1;
+    }
   }
 `;

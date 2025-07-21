@@ -378,30 +378,16 @@ export const pickingRenderTarget = new THREE.WebGLRenderTarget(1, 1, {
  * - clones `THREE.Vector3`
  * - `{ x, y, z }` -> `new THREE.Vector3(x, y, z)`
  * - `{ x, y }` -> `new THREE.Vector3(x, 0, y)`
- * @param {Geom.VectJson | THREE.Vector3Like} input 
+ * @param {Geom.VectJson | THREE.Vector3Like} input
+ * @param {number} [precision] Only if specified
  * @returns {THREE.Vector3}
  */
-export function toV3(input) {
-  if ('z' in input) {
-    return input instanceof THREE.Vector3 ? input.clone() : new THREE.Vector3().copy(input);
-  } else {
-    return new THREE.Vector3(input.x, 0, input.y);
-  }
-}
-
-/**
- * - `{ x, y, z }` -> `{ x, y: z }`
- * - `THREE.Vector3` -> `{ x, y: z }`
- * - `{ x, y }` -> `{ x, y }` (fresh)
- * @param {Geom.VectJson | THREE.Vector3Like} input 
- * @returns {Geom.VectJson}
- */
-export function toXZ(input) {
-  if ('z' in input) {
-    return { x: input.x, y: input.z };
-  } else {
-    return { x: input.x, y: input.y };
-  }
+export function toV3(input, precision) {
+  const output = 'z' in input
+    ? input instanceof THREE.Vector3 ? input.clone() : new THREE.Vector3().copy(input)
+    : new THREE.Vector3(input.x, 0, input.y)
+  ;
+  return typeof precision === 'number' ? v3Precision(output, precision) : output;
 }
 
 /**
@@ -483,20 +469,20 @@ let resX = false, resY = false, resZ = false, dx = 0, dz = 0, dMax = 0;
  * @param {THREE.Vector3} current 
  * @param {THREE.Vector3} target 
  * @param {number} [smoothTime] 
- * @param {number} [deltaMs] 
+ * @param {number} [deltaSecs] 
  * @param {number} [maxSpeed] 
  * @param {number} [y] override target.y (originally `easing`)
  * @param {number} [eps]
  * @returns 
  */
-export function dampXZ(current, target, smoothTime, deltaMs, maxSpeed = Infinity, y, eps = 0.001) {
+export function dampXZ(current, target, smoothTime, deltaSecs, maxSpeed = Infinity, y, eps = 0.001) {
   v3d.copy(target);
   dx = Math.abs(current.x - target.x);
   dz = Math.abs(current.z - target.z);
   dMax = Math.max(dx, dz);
-  resX = dMax < eps ? false : damp(current, "x", v3d.x, smoothTime, deltaMs, maxSpeed * (dx / dMax), undefined, eps);
-  resY = y === undefined ? false : damp(current, "y", y, smoothTime, deltaMs, maxSpeed, undefined, eps);
-  resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaMs, maxSpeed * (dz / dMax), undefined, eps);
+  resX = dMax < eps ? false : damp(current, "x", v3d.x, smoothTime, deltaSecs, maxSpeed * (dx / dMax), undefined, eps);
+  resY = y === undefined ? false : damp(current, "y", y, smoothTime, deltaSecs, maxSpeed, undefined, eps);
+  resZ = dMax < eps ? false : damp(current, "z", v3d.z, smoothTime, deltaSecs, maxSpeed * (dz / dMax), undefined, eps);
   return resX || resY || resZ;
 }
 

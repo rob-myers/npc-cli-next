@@ -3,16 +3,17 @@ import { css } from '@emotion/react';
 import useMeasure from 'react-use-measure';
 import debounce from 'debounce';
 
-import { error, keys } from '../service/generic';
+import { error, jsStringify, keys, testNever, warn } from '../service/generic';
 import { isTouchDevice } from '../service/dom';
 import type { Session } from "../sh/session.store";
 import type { BaseTabProps } from '../tabs/tab-factory';
+import type { ExternalMessage } from '../sh/io';
 
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
 import useSession, { ProcessStatus } from '../sh/session.store';
 import TtyMenu from './TtyMenu';
-import { BaseTty, State as BaseTtyState } from './BaseTty';
+import { BaseTty, type State as BaseTtyState } from './BaseTty';
 
 /**
  * A `BaseTty` which can be:
@@ -32,12 +33,50 @@ export default function Tty(props: Props) {
      */
     booted: false,
     bounds,
-    fitDebounced: debounce(() => { state.base?.fitAddon.fit(); }, 300),
-    functionFiles: {} as Props['shFiles'],
+    canContOrStop: null as null | 'CONT' | 'STOP',
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
-    pausedPids: {} as Record<number, true>,
+    /** Should file be auto-re-sourced on hot-module-reload? */
+    reSource: {} as Record<string, true>,
 
+    fitDebounced: debounce(() => {
+      if (state.base) {
+        // 🔔 fix scrollbar sync issue
+        state.base.xterm.forceResize();
+        state.base.fitAddon.fit();
+      }
+    }, 300),
+    handleExternalMsg({ msg }: ExternalMessage) {
+      switch (msg.key) {
+        case 'auto-re-source-file': {
+          const basename = msg.absPath.slice('/etc/'.length);
+          if (basename in props.shFiles) {
+            // 🔔 delete and assign _appends_ the key for non-integer keys
+            delete state.reSource[basename];
+            state.reSource[basename] = true;
+          } else {
+            warn(`${'handleExternalMsg'}: basename not found: ${basename}`);
+          }
+          break;
+        }
+        case 'process-leader': {
+          if (msg.pid === 0) {
+            if (msg.act === 'started' || msg.act == 'resumed') {
+              state.canContOrStop = 'STOP';
+            } else if (msg.act === 'paused') {
+              state.canContOrStop = 'CONT';
+            } else if (msg.act === 'ended') {
+              state.canContOrStop = null;
+            }
+            update();
+          }
+          break;
+        }
+        default:
+          warn(`${'handleExternalMsg'}: unexpected message: ${jsStringify(msg)}`);
+          testNever(msg);
+      }
+    },
     onFocus() {
       if (state.inputOnFocus !== undefined) {
         state.base.xterm.setInput(state.inputOnFocus.input);
@@ -45,14 +84,17 @@ export default function Tty(props: Props) {
         state.inputOnFocus = undefined;
       }
     },
-    pauseRunningProcesses() {
-      Object.values(state.base.session.process ?? {})
-        .filter((p) => p.status === ProcessStatus.Running && p.ptags?.[noPausePtag] !== true)
-        .forEach((p) => {
-          p.onSuspends = p.onSuspends.filter((onSuspend) => onSuspend(true));
-          p.status = ProcessStatus.Suspended;
-          state.pausedPids[p.key] = true;
-        });
+    pauseByPtags() {
+      useSession.api.kill(props.sessionKey, [], { byPtags: true, STOP: true });
+      
+      const { session } = state.base;
+      if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
+        state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
+      } else {
+        state.canContOrStop = null;
+      }
+
+      update();
     },
     reboot() {
       state.booted = false;
@@ -73,23 +115,29 @@ export default function Tty(props: Props) {
         state.fitDebounced();
       }
     },
-    resumeRunningProcesses() {
-      Object.values(state.base?.session?.process ?? {})
-        .filter((p) => state.pausedPids[p.key])
-        .forEach((p) => {
-          if (p.status === ProcessStatus.Suspended) {
-            p.onResumes = p.onResumes.filter((onResume) => onResume());
-            p.status = ProcessStatus.Running;
-          }
-          delete state.pausedPids[p.key];
-        });
-    },
-    async sourceFuncs() {
-      const session = state.base.session;
-      Object.assign(session.etc, state.functionFiles);
+    resumeByPtags() {
+      useSession.api.kill(props.sessionKey, [], { byPtags: true, CONT: true });
+      
+      const { session } = state.base;
+      if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
+        state.canContOrStop = session.process[0].status === ProcessStatus.Running ? 'STOP' : 'CONT';
+      } else {
+        state.canContOrStop = null;
+      }
 
-      await Promise.all(keys(props.shFiles).map(filename =>
-        session.ttyShell.sourceEtcFile(filename).catch(e => {
+      update();
+    },
+    async storeAndSourceFuncs() {
+      const session = state.base.session;
+
+      Object.assign(session.etc, props.shFiles);
+
+      // only auto-re-source shell function declaration files,
+      // that have already have been sourced in this session
+      await Promise.all(keys(state.reSource).map(async filename => {
+        try {
+          await session.ttyShell.sourceFuncDeclarations(filename);  
+        } catch (e: any) {
           if (typeof e?.$type === 'string') {// mvdan.cc/sh/v3/syntax.ParseError
             const fileContents = props.shFiles[filename];
             const [line, column] = [e.Pos.Line(), e.Pos.Col()];
@@ -98,40 +146,67 @@ export default function Tty(props: Props) {
           } else {
             state.writeErrorToTty(session.key, `/etc/${filename}: failed to run`, e)
           }
-        })
-      ));
+        }
+      }));
 
       // store original functions too
-      session.jsFunc = props.jsFunctions;
+      Object.assign(session.jsFunc, props.jsFunc);
     },
     writeErrorToTty(sessionKey: string, message: string, origError: any) {
       useSession.api.writeMsg(sessionKey, `${message} (see console)`, 'error');
       error(message);
       error(origError);
     },
-  }));
-
-  state.functionFiles = props.shFiles;
+  }), {
+    deps: [props.shFiles],
+  });
 
   React.useEffect(() => {// Pause/resume
-    if (props.disabled && state.base.session) {
-      state.pauseRunningProcesses();
-      return () => {
-        state.resumeRunningProcesses();
-      };
+    const { session } = state.base;
+    if (!session) {
+      return;
+    }
+
+    // if disabled, suspend spawned bg processes sans process tag 'always'
+    session.ttyShell.suspendNonInteractive = !!props.disabled;
+    
+    if (props.disabled === true) {
+      // avoid initial pause: something was spawned
+      session.nextPid > 1 && state.pauseByPtags();
+    } else {
+      state.resumeByPtags();
     }
   }, [props.disabled, state.base.session])
 
   React.useEffect(() => {// Bind external events
     if (state.base.session) {
+      const { xterm: { xterm }, session } = state.base;
+      
+      xterm.attachCustomKeyEventHandler((e) => {
+        // xterm.js should not handle shift/ctrl + enter,
+        // so we can unpause Tabs from Tty
+        if (e.type === 'keyup') {
+          props.onKey?.(e); // handle shift/ctrl + enter
+        }
+        if (e.key === 'Enter' && (e.shiftKey === true || e.ctrlKey === true)) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+
       state.resize();
-      const { xterm } = state.base.xterm;
-      const onKeyDispose = xterm.onKey((e) => props.onKey?.(e.domEvent));
+      // const onKeyDispose = xterm.onKey((e) => props.onKey?.(e.domEvent));
       xterm.textarea?.addEventListener("focus", state.onFocus);
       
+      const cleanupExternalMsgs = session.ttyShell.io.handleWriters(msg =>
+        msg?.key === 'external' && state.handleExternalMsg(msg),
+      );
+
       return () => {
-        onKeyDispose.dispose();
+        // onKeyDispose.dispose();
         xterm.textarea?.removeEventListener("focus", state.onFocus);
+        cleanupExternalMsgs();
       };
     }
   }, [state.base.session, props.onKey]);
@@ -142,10 +217,14 @@ export default function Tty(props: Props) {
   }, [bounds]);
 
   React.useEffect(() => {// sync shell functions
-    if (state.base.session?.ttyShell.initialized === true) {
-      state.sourceFuncs();
+    if (state.base.session?.ttyShell.isInitialized()) {
+      state.storeAndSourceFuncs();
     }
-  }, [state.base.session, ...Object.entries(props.shFiles).flatMap(x => x)]);
+  }, [
+    state.base.session,
+    ...Object.entries(props.shFiles).flatMap(x => x),
+    ...Object.entries(props.jsFunc).flatMap(x => x),
+  ]);
 
   React.useEffect(() => {// sync ~/PROFILE
     if (state.base.session) {
@@ -153,14 +232,20 @@ export default function Tty(props: Props) {
     }
   }, [state.base.session, props.profile]);
 
-  React.useEffect(() => {// Boot profile
-    if (state.base.session && !props.disabled && !state.booted) {
+  React.useEffect(() => {// Boot profile (possibly while disabled)
+    if (state.base.session && !state.booted) {
       const { xterm, session } = state.base;
       xterm.initialise();
       state.booted = true;
       
+      // distinguish this instance of sessionKey from hot reloads
+      props.updateTabMeta({
+        key: /** @type {Key.TabId} */ (props.sessionKey),
+        ttyBootedAt: Date.now(),
+      });
+
       session.ttyShell.initialise(xterm).then(async () => {
-        await state.sourceFuncs();
+        await state.storeAndSourceFuncs();
         update();
         await session.ttyShell.runProfile();
       });
@@ -179,8 +264,9 @@ export default function Tty(props: Props) {
       />
       {state.base.session && (
         <TtyMenu
-          session={state.base.session}
+          canContOrStop={state.canContOrStop}
           disabled={props.disabled}
+          session={state.base.session}
           setTabsEnabled={props.setTabsEnabled}
         />
       )}
@@ -189,11 +275,18 @@ export default function Tty(props: Props) {
 }
 
 export interface Props extends BaseTabProps {
-  sessionKey: string;
+  sessionKey: `tty-${number}`;
   /** Can initialize variables */
   env: Partial<Session["var"]>;
-  jsFunctions: import('./TtyWithFunctions').TtyJsFunctions;
-  /** Synced with e.g. game-generators.sh */
+  /**
+   * All js functions which induce shell functions.
+   * They are partitioned by "fileKey".
+   */
+  jsFunc: import('./TtyWithFunctions').TtyJsModules;
+  /**
+   * All shell files (*.sh and *.js.sh).
+   * They are spread into `/etc`.
+   */
   shFiles: Record<string, string>;
   /** Synced with e.g. profile-1.sh */
   profile: string;
@@ -204,5 +297,3 @@ const rootCss = css`
   height: 100%;
   padding: 4px;
 `;
-
-const noPausePtag = 'always';

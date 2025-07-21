@@ -2,9 +2,9 @@ import React from "react";
 import loadable from "@loadable/component";
 import type { IJsonRowNode, IJsonTabNode, TabNode } from "flexlayout-react";
 
-import type { ProfileKey } from "../sh/src";
 import type ActualTerminal from "../terminal/TtyWithFunctions";
 import type { State as TabsApi } from "./Tabs";
+import { type TabStoreTabMeta } from "./tabs.store";
 import { TabMemo } from "./Tab";
 import { CentredSpinner } from "../components/Spinner";
 
@@ -30,18 +30,22 @@ export type TabDef = { weight?: number } & (
   | ({
       type: "component";
       /** Determines tab */
-      filepath: string;
+      filepath: Key.TabId;
       /** Determines component */
       class: ComponentClassKey;
     } & TabMetaProps)
   | {
       type: "terminal";
       /** Session identifier (determines tab) */
-      filepath: string;
-      profileKey: ProfileKey;
+      filepath: Extract<Key.TabId, `tty-${number}`>;
+      profileKey: Key.Profile;
       env?: Record<string, any>;
     }
 );
+
+export type ManageTabDef = Extract<TabDef, TabMetaPropsGeneric<"Manage">>;
+export type TtyTabDef = Extract<TabDef, { type: "terminal" }>;
+export type WorldTabDef = Extract<TabDef, TabMetaPropsGeneric<"World">>;
 
 export interface TabsBaseProps {
   /** Required e.g. as identifier */
@@ -54,7 +58,6 @@ export interface TabsBaseProps {
 }
 
 const classToComponent = {
-  Debug: loadableComponentFactory(() => import("../components/Debug")),
   HelloWorld: loadableComponentFactory(() => import("../components/HelloWorld")),
   Manage: loadableComponentFactory(() => import("../components/Manage")),
   World: loadableComponentFactory(() => import("../world/World")),
@@ -80,7 +83,7 @@ export async function getComponent(componentClassKey: ComponentClassKey, errorId
 /** Components we can instantiate inside a tab */
 export type ComponentClassKey = keyof typeof classToComponent;
 
-type TabMetaProps = TabMetaPropsDistributed<ComponentClassKey>;
+export type TabMetaProps = TabMetaPropsDistributed<ComponentClassKey>;
 
 type TabMetaPropsDistributed<K extends ComponentClassKey> = K extends infer A
   ? A extends ComponentClassKey
@@ -90,7 +93,7 @@ type TabMetaPropsDistributed<K extends ComponentClassKey> = K extends infer A
 
 type TabMetaPropsGeneric<K extends ComponentClassKey> = {
   class: K;
-  props: Omit<ComponentClassKeyToProps[K], 'setTabsEnabled'>;
+  props: Omit<ComponentClassKeyToProps[K], 'setTabsEnabled' | 'updateTabMeta'>;
 };
 
 type ComponentClassKeyToProps = {
@@ -112,15 +115,26 @@ export interface BaseTabProps {
    * - onclick a link (Tty)
    */
   setTabsEnabled(next: boolean): void;
+  /**
+   * Components can update their meta in tabs.store.
+   * For example, Tty can update ttyBootedAt to distinguish
+   * hot-reloaded sessions.
+   */
+  updateTabMeta(meta: TabStoreTabMeta): void;
 }
 
 function FallbackComponentFactory(componentKey: string) {
   return () =>
-    React.createElement(
-      "div",
-      { style: { color: "white", padding: "0 8px", fontSize: 20 } },
-      `Component "${componentKey}" not found`
-    );
+    React.createElement("div", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        color: "#ff9",
+        fontSize: 16,
+      },
+    }, `Component "${componentKey}" not found`);
 }
 
 export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
@@ -128,4 +142,7 @@ export const Terminal = loadable(() => import("../terminal/TtyWithFunctions"), {
   fallback: <CentredSpinner size={32} />,
 }) as typeof ActualTerminal;
 
-export type CustomIJsonTabNode = Omit<IJsonTabNode, 'config'> & { config: TabDef };
+export type CustomIJsonTabNode = Omit<IJsonTabNode, 'config'> & {
+  id: Key.TabId;
+  config: TabDef;
+};

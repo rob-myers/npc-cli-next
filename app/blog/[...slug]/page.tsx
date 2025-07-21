@@ -1,5 +1,6 @@
 import React from 'react';
-import Card from "@/components/Card";
+import Link from 'next/link';
+import { promises as fs } from "fs";
 import SideNote from "@/components/SideNote";
 
 export default async function BlogPage(props: {
@@ -14,47 +15,46 @@ export default async function BlogPage(props: {
 
     {React.createElement(imported.default, {
       components: {
-        Card,
         SideNote: (props: React.ComponentProps<typeof SideNote>) => (
           <SideNote bubbleClassName="not-prose" {...props} />
         ),
         a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+          props.href ??= '';
           return (
-            <a
-              {...props} // new-tab:href induces new tab
-              {...props.href?.startsWith('new-tab:') && {
-                href: props.href.slice('new-tab:'.length),
-                target: "_blank",
-              }}
+            <Link
+              {...props}
+              href={props.href}
+              target={props.title?.startsWith('@') ? props.target : '_blank'}
+              title={props.title?.startsWith('@') ? props.title.slice(1) : props.title}
             >
               {props.children}
-            </a>
+            </Link>
           );
         },
+        pre: 'pre',
       },
     })}
 
     <script
       id="page-metadata-json"
       // stringify twice avoids "SyntaxError: Unexpected token ':' (at blog/:1:16614)"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON.stringify(
-        imported.metadata ?? { key: 'fallback-metadata' }
-      )) }}
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(JSON.stringify(
+          imported.metadata ?? { key: 'fallback-metadata' }
+        ))
+      }}
     />
 
   </>;
 }
 
 export async function generateStaticParams(): Promise<Slug[]> {
-  // 🚧 generate automatically
-  // const posts = await fetch('https://.../posts').then((res) => res.json())
-  // return posts.map((post) => ({
-  //   slug: post.slug,
-  // }))
-  return [
-    { slug: ['index'] }, 
-    { slug: ['strategy-1'] },
-  ];
+  const dirEntries = await fs.readdir("posts", { withFileTypes: true });
+  const blogNames = dirEntries
+    .filter((x) => x.isDirectory() === false && x.name.endsWith(".mdx"))
+    .map((x) => x.name.slice(0, -'.mdx'.length))
+  ;
+  return blogNames.map(blogName => ({ slug: [blogName] }));
 }
 
 interface Slug {

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" style="filter: none;" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:grid x="0" y="0" width="300" height="300"/>
+  </defs>
+  <ellipse style="stroke-width: 4px; filter: none; fill: none; stroke: rgb(255, 255, 255);" cx="50" cy="50" rx="48" ry="48">
+    <title>circle</title>
+  </ellipse>
+  <text style="fill: rgb(255, 255, 255); font-family: &quot;Courier New&quot;; font-size: 80px; font-weight: 700; white-space: pre;" x="25.995" y="71.319">3</text>
+</svg>

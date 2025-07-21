@@ -1,8 +1,10 @@
 import React from "react";
+import { isTouchDevice } from "../service/dom";
 
 /**
- * Based on https://stackoverflow.com/a/54749871/2917822
- * Invokes `config.onClick` if press isn't long enough.
+ * - Based on https://stackoverflow.com/a/54749871/2917822
+ * - Invokes `config.onClick` if press isn't long enough.
+ * - On touchstart will only consider touchevents
  * @param {Config} config
  */
 export default function useLongPress(config) {
@@ -12,23 +14,26 @@ export default function useLongPress(config) {
 
   return React.useMemo(
     () => ({
-      onMouseDown() {
-        timerId.current = window.setTimeout(config.onLongPress, config.ms);
-        epochMs.current = Date.now();
-      },
-      onTouchStart() {
-        timerId.current = window.setTimeout(config.onLongPress, config.ms);
-        epochMs.current = Date.now();
-      },
-      /** @param {React.MouseEvent} e */
-      onMouseUp(e) {
-        clearTimeout(timerId.current);
-        Date.now() - epochMs.current < ms && config.onClick?.(e);
-      },
-      /** @param {React.TouchEvent} e */
-      onTouchEnd(e) {
-        clearTimeout(timerId.current);
-        Date.now() - epochMs.current < ms && config.onClick?.(e);
+      ...isTouchDevice() ? {
+        onTouchStart() {
+          timerId.current = window.setTimeout(config.onLongPress, config.ms);
+          epochMs.current = Date.now();
+        },
+        /** @param {React.TouchEvent} e */
+        onTouchEnd(e) {
+          clearTimeout(timerId.current);
+          Date.now() - epochMs.current < ms && config.onClick?.(e);
+        },
+      } : {
+        onMouseDown() {
+          timerId.current = window.setTimeout(config.onLongPress, config.ms);
+          epochMs.current = Date.now();
+        },
+        /** @param {React.MouseEvent} e */
+        onMouseUp(e) {
+          clearTimeout(timerId.current);
+          Date.now() - epochMs.current < ms && config.onClick?.(e);
+        },
       },
       onMouseLeave() {
         clearTimeout(timerId.current);

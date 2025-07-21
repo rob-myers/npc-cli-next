@@ -2,9 +2,10 @@ import React from "react";
 import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 
-import { decorGridSize, decorIconRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
+import { Poly } from "../geom/poly";
+import { decorGridSize, decorIconRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
 import { isDevelopment, pause, removeDups, testNever, toPrecision, warn } from "../service/generic";
-import { tmpMat1, tmpRect1 } from "../service/geom";
+import { geom, tmpMat1, tmpRect1, tmpVec1 } from "../service/geom";
 import { getCanvas } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { addToDecorGrid, removeFromDecorGrid } from "../service/grid";
@@ -26,6 +27,7 @@ export default function Decor(props) {
     cuboidGeom: getBoxGeometry(`${w.key}-decor-cuboid`),
     cuboids: [],
     cuboidInst: /** @type {*} */ (null),
+    group: {},
     labels: [],
     labelInst: /** @type {*} */ (null),
     label: {
@@ -38,60 +40,14 @@ export default function Decor(props) {
     quad: getQuadGeometryXZ(`${w.key}-decor-xz`),
     quadInst: /** @type {*} */ (null),
     queryStatus: 'pending',
+    registeredAt: 0,
     rmKeys: new Set(),
     seenHash : /** @type {*} */ (null),
     showLabels: false,
 
-    addDecor(ds, removeExisting = true) {
-      const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
-        void warn(`decor "${d.key}" cannot be added: not in any room`, d)
-      );
-      if (addable.length === 0) {
-        return;
-      }
-
-      const grouped = addable.reduce((agg, d) => {
-        (agg[d.meta.grKey] ??= { meta: d.meta, add: [], remove: [] }).add.push(d);
-        
-        const prev = state.byKey[d.key];
-        if (prev !== undefined) {// Add pre-existing decor to removal group
-          d.updatedAt = Date.now();
-          (agg[prev.meta.grKey] ??= { meta: prev.meta, add: [], remove: [] }).remove.push(prev);
-        }
-
-        return agg;
-      }, /** @type {Record<`g${number}r${number}`, { meta: Meta<Geomorph.GmRoomId> } & { [x in 'add' | 'remove']: Geomorph.Decor[] }>} */ ({}));
-
-      if (removeExisting) {
-        Object.values(grouped).forEach(({ meta, remove }) =>
-          state.removeDecorFromRoom(meta.gmId, meta.roomId, remove)
-        );
-      }
-
-      Object.values(grouped).forEach(({ meta, add }) =>
-        state.addDecorToRoom(meta.gmId, meta.roomId, add)
-      );
-
-      state.updateDecorLists();
-      w.events.next({ key: 'decors-added', decors: ds });
-      update();
-    },
-    addDecorToRoom(gmId, roomId, ds) {
-      const atRoom = state.byRoom[gmId][roomId];
-
-      for (const d of ds) {
-        if (d.key in state.byKey) {
-          continue;
-        }
-        addToDecorGrid(d, state.byGrid);
-        state.byKey[d.key] = d;
-        atRoom.add(d);
-        state.rmKeys.delete(d.key);
-      }
-    },
     addGm(gmId) {
       const gm = w.gms[gmId];
-      state.addDecor(gm.decor.map(d => state.instantiateDecor(d, gmId, gm))
+      state.register(gm.decor.map(d => state.instantiateDecor(d, gmId, gm))
         // Don't re-instantiate explicitly removed
         // .filter(d => !state.rmKeys.has(d.key) && (d.meta.roomId >= 0 ||
         .filter(d => (d.meta.roomId >= 0 ||
@@ -142,7 +98,7 @@ export default function Decor(props) {
       for (const [instanceId, d] of state.quads.entries()) {
         if (d.type === 'point') {
           const { x, y, width, height, sheetId } = sheet[
-            geomorph.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.point
+            helper.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.point
           ];
           uvTextureIds.push(sheetId);
 
@@ -150,7 +106,7 @@ export default function Decor(props) {
           uvDimensions.push(width / maxDecorDim.width, height / maxDecorDim.height);
         } else {
           const { x, y, width, height, sheetId } = sheet[
-            geomorph.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.quad
+            helper.isDecorImgKey(d.meta.img) ? d.meta.img : fallbackDecorImgKey.quad
           ];
           uvTextureIds.push(sheetId);
           
@@ -183,13 +139,117 @@ export default function Decor(props) {
         new THREE.InstancedBufferAttribute(new Uint32Array(instanceIds), 1),
       );
     },
-    computeDecorMeta(decor, instanceId) {
-      /** @type {Meta} */
-      const meta = { decor: true, ...decor.meta, instanceId };
-      if (decor.type === 'point' && decor.meta.do === true) {
-        meta.doPoint = { x: decor.x, y: decor.y };
+    create(def) {
+      /** @type {Geomorph.Decor} */ let d;
+      const meta = /** @type {Meta<Geomorph.GmRoomId>} */ (def.meta ?? {});
+      meta.decor = true;
+
+      switch (def.type) {
+        case 'circle': {
+          d = {
+            type: 'circle',
+            key: def.key,
+            meta: Object.assign(meta, { circle: true }),
+            bounds2d: { x: def.center.x - def.radius, y: def.center.y - def.radius, width: def.radius * 2, height: def.radius * 2 },
+            radius: def.radius,
+            center: def.center,
+          };
+          break;
+        }
+        case 'cuboid': {
+          const transform = def.transform ?? [1, 0, 0, 1, 0, 0];
+          const matrix = tmpMat1.feedFromArray(transform);
+          const poly = Poly.fromRect(def).applyMatrix(matrix);
+          const center2d = poly.center;
+          d = {
+            type: 'cuboid',
+            key: def.key,
+            meta: Object.assign(meta, { cuboid: true, h: def.height3d, y: def.baseY }),
+            bounds2d: poly.rect.precision(precision).json,
+            center: geom.toPrecisionV3({ x: center2d.x, y: def.baseY + def.height3d/2, z: center2d.y }),
+            transform,
+          };
+          break;
+        }
+        case 'quad': {
+          const transform = def.transform ?? [1, 0, 0, 1, 0, 0];
+          // scale must be represented inside transform
+          transform[0] *= def.width;
+          transform[1] *= def.width;
+          transform[2] *= def.height;
+          transform[3] *= def.height;
+          // translation must be represented inside transform
+          transform[4] += def.x;
+          transform[5] += def.y;
+          const matrix = tmpMat1.feedFromArray(transform);
+          const poly = Poly.fromRect({ x:0, y:0, width: def.width, height: def.height }).applyMatrix(matrix);
+
+          if (!helper.isDecorImgKey(def.img)) {
+            warn(`${'Decor.create'}: def.img not a DecorImgKey, using "icon--warn"`);
+            def.img = 'icon--warn';
+          }
+
+          d = {
+            type: 'quad',
+            key: def.key,
+            meta: Object.assign(meta, {
+              quad: true,
+              color: def.color,
+              img: def.img,
+              y: def.y3d,
+            }),
+            bounds2d: poly.rect.precision(precision).json,
+            transform,
+            center: poly.center.precision(3).json,
+            det: matrix.a * matrix.d - matrix.b * matrix.c,
+          };
+          break;
+        }
+        case 'rect': {
+          const poly = geom.angledRectToPoly({ baseRect: tmpRect1.setFromJson(def), angle: def.angle ?? 0 })
+          d = {
+            type: 'rect',
+            key: def.key,
+            meta: Object.assign(meta, { rect: true }),
+            bounds2d: poly.rect.json,
+            points: poly.outline.map(x => x.json),
+            center: poly.center.precision(3).json,
+            angle: def.angle ?? 0,
+          };
+          break;
+        }
+        case 'point':
+        default: {
+          const center = tmpVec1.copy(def).precision(precision);
+          const radius = decorIconRadius + 2;
+          const bounds2d = tmpRect1.set(center.x - radius, center.y - radius, 2 * radius, 2 * radius).precision(precision).json;
+
+          if ('img' in def && !helper.isDecorImgKey(def.img)) {
+            warn(`${'Decor.create'}: def.img not a DecorImgKey, using "icon--warn"`);
+            def.img = 'icon--warn';
+          }
+
+          d = {
+            type: 'point',
+            key: def.key,
+            meta: Object.assign(meta, {
+              point: true,
+              y: def.y3d,
+              ...def.img !== undefined && { img: def.img },
+              ...meta.act === true && { actPoint: {...center} },
+            }),
+            bounds2d,
+            x: center.x,
+            y: center.y,
+            orient: def.orient ?? 0,
+          };
+          break;
+        }
       }
-      return meta;
+
+      state.ensureGmRoomId(d);
+      state.register([d]);
+      return d;
     },
     createCuboidMatrix4(d) {
       tmpMat1.feedFromArray(d.transform);
@@ -306,8 +366,8 @@ export default function Decor(props) {
           instance.x = toPrecision(instance.x);
           instance.y = toPrecision(instance.y);
           instance.meta.orient = orient; // update `meta` too
-          if (base.meta.do === true) {
-            instance.meta.doPoint = { x: instance.x, y: instance.y };
+          if (base.meta.act === true) {
+            instance.meta.actPoint = { x: instance.x, y: instance.y };
           }
           break;
         }
@@ -337,9 +397,11 @@ export default function Decor(props) {
     /** @returns {d is Geomorph.DecorPoint | Geomorph.DecorQuad} */
     isDecorQuad(d) {
       return d.type === 'point' && (
-        d.meta.do === true || d.meta.button === true
+        typeof d.meta.img === 'string'
+        // these fallback to icon--info
+        || d.meta.act === true || d.meta.button === true
       ) || d.type === 'quad' && (
-        typeof d.meta.img === 'string' // 🚧 warn if n'exist pas?
+        typeof d.meta.img === 'string' 
       );
     },
     positionCuboids() { 
@@ -388,6 +450,85 @@ export default function Decor(props) {
       }
       quadInst.computeBoundingSphere();
     },
+    register(ds, removeExisting = true) {
+      const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
+        void warn(`decor "${d.key}" cannot be added: not in any room`, d)
+      );
+
+      if (addable.length === 0) {
+        return;
+      }
+
+      const grouped = addable.reduce((agg, d) => {
+        (agg[d.meta.grKey] ??= { meta: d.meta, add: [], remove: [] }).add.push(d);
+        
+        const prev = state.byKey[d.key];
+        if (prev !== undefined) {// Add pre-existing decor to removal group
+          d.updatedAt = Date.now();
+          (agg[prev.meta.grKey] ??= { meta: prev.meta, add: [], remove: [] }).remove.push(prev);
+        }
+
+        return agg;
+      }, /**
+          * @type {Record<Geomorph.GmRoomKey, {
+          *   add: Geomorph.Decor[];
+          *   remove: Geomorph.Decor[];
+          *   meta: Meta<Geomorph.GmRoomId>;
+          * }>}
+          */ ({})
+      );
+
+      if (removeExisting === true) {
+        Object.values(grouped).forEach(({ meta, remove }) =>
+          state.removeFromRoom(meta.gmId, meta.roomId, remove)
+        );
+      }
+
+      Object.values(grouped).forEach(({ meta, add }) =>
+        state.registerInRoom(meta.gmId, meta.roomId, add)
+      );
+
+      state.updateDecorLists();
+      w.events.next({ key: 'decors-added', decors: ds });
+
+      state.registeredAt = Date.now();
+      update();
+    },
+    registerInRoom(gmId, roomId, ds) {
+      const atRoom = state.byRoom[gmId][roomId];
+
+      for (const d of ds) {
+        if (d.key in state.byKey) {
+          continue;
+        }
+        addToDecorGrid(d, state.byGrid);
+        state.byKey[d.key] = d;
+        atRoom.add(d);
+        state.rmKeys.delete(d.key);
+      }
+    },
+    rememberInGroup(groupName, ...decorKeys) {
+      (state.group[groupName] ??= []).push(...decorKeys);
+    },
+    remove(...decorKeys) {
+      const ds = decorKeys.map(x => state.byKey[x]).filter(Boolean);
+      if (ds.length === 0) {
+        return;
+      }
+
+      const grouped = ds.reduce((agg, d) => {
+        (agg[d.meta.grKey] ??= { meta: d.meta, ds: [] }).ds.push(d);
+        return agg;
+      }, /** @type {Record<Geomorph.GmRoomKey, { meta: Meta<Geomorph.GmRoomId> } & { ds: Geomorph.Decor[] }>} */ ({}));
+
+      for (const { meta, ds } of Object.values(grouped)) {
+        state.removeFromRoom(meta.gmId, meta.roomId, ds)
+      }
+
+      state.updateDecorLists();
+      w.events.next({ key: 'decors-removed', decors: ds });
+      update();
+    },
     removeAllInstantiated() {
       for (const d of Object.values(state.byKey)) {
         d.src !== undefined && delete state.byKey[d.key];
@@ -404,26 +545,7 @@ export default function Decor(props) {
         }
       }
     },
-    removeDecor(...decorKeys) {
-      const ds = decorKeys.map(x => state.byKey[x]).filter(Boolean);
-      if (ds.length === 0) {
-        return;
-      }
-
-      const grouped = ds.reduce((agg, d) => {
-        (agg[d.meta.grKey] ??= { meta: d.meta, ds: [] }).ds.push(d);
-        return agg;
-      }, /** @type {Record<`g${number}r${number}`, { meta: Meta<Geomorph.GmRoomId> } & { ds: Geomorph.Decor[] }>} */ ({}));
-
-      for (const { meta, ds } of Object.values(grouped)) {
-        state.removeDecorFromRoom(meta.gmId, meta.roomId, ds)
-      }
-
-      state.updateDecorLists();
-      w.events.next({ key: 'decors-removed', decors: ds });
-      update();
-    },
-    removeDecorFromRoom(gmId, roomId, ds) {
+    removeFromRoom(gmId, roomId, ds) {
       const atRoom = state.byRoom[gmId][roomId];
 
       for (const d of ds) {
@@ -451,6 +573,11 @@ export default function Decor(props) {
           inner[j]?.forEach(d => d.src !== undefined && inner[j].delete(d));
         }
       }
+    },
+    removeGroup(groupName) {
+      const decorKeys = state.group[groupName];
+      state.remove(...decorKeys ?? []);
+      delete state.group[groupName];
     },
     updateDecorLists() {
       state.cuboids = Object.values(state.byKey).filter(geomorph.isDecorCuboid);
@@ -551,7 +678,7 @@ export default function Decor(props) {
     } else if (query.data === false && query.isRefetching === false) {
       query.refetch(); // hmr
     }
-  }, [query.data, state.cuboids.length, state.quads.length, labels.length]);
+  }, [query.data, state.cuboids.length, state.quads.length, labels.length, state.registeredAt]);
 
   const update = useUpdate();
   const ready = !!state.seenHash;
@@ -637,6 +764,9 @@ export default function Decor(props) {
  * @property {THREE.BufferGeometry} cuboidGeom
  * @property {Geomorph.DecorCuboid[]} cuboids
  * @property {THREE.InstancedMesh} cuboidInst
+ * @property {number} registeredAt
+ * The epoch we last registered; used to force length-preserving updates
+ * @property {{ [decorKeysGroupName: string]: string[] }} group
  * @property {Geomorph.DecorPoint[]} labels
  * @property {THREE.InstancedMesh} labelInst
  * @property {import("../service/three").LabelsSheetAndTex} label
@@ -651,13 +781,13 @@ export default function Decor(props) {
  * @property {Geomorph.GeomorphsHash} seenHash Clone of last seen value of `w.hash`
  * @property {boolean} showLabels
  *
- * @property {(ds: Geomorph.Decor[], removeExisting?: boolean) => void} addDecor
+ * @property {(ds: Geomorph.Decor[], removeExisting?: boolean) => void} register
  * Can manually `removeExisting` e.g. during re-instantiation of geomorph decor
  * @property {() => void} addLabelUvs
  * @property {() => void} addQuadUvs
  * @property {() => void} addCuboidAttributes
- * @property {(decor: Geomorph.Decor, instanceId: number) => Meta} computeDecorMeta
- * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} addDecorToRoom
+ * @property {(def: Geomorph.DecorDef) => Geomorph.Decor} create
+ * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerInRoom
  * @property {(d: Geomorph.DecorCuboid) => THREE.Matrix4} createCuboidMatrix4
  * @property {(d: Geomorph.DecorPoint | Geomorph.DecorQuad) => THREE.Matrix4} createQuadMatrix4
  * @property {(d: Geomorph.DecorPoint) => THREE.Matrix4} createLabelMatrix4
@@ -670,10 +800,12 @@ export default function Decor(props) {
  * @property {() => void} positionInstances
  * @property {() => void} positionLabels
  * @property {() => void} positionQuads
+ * @property {(groupName: string, ...decorKeys: string[]) => void} rememberInGroup
+ * @property {(...decorKeys: string[]) => void} remove
  * @property {() => void} removeAllInstantiated
- * @property {(...decorKeys: string[]) => void} removeDecor
- * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} removeDecorFromRoom
+ * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} removeFromRoom
  * @property {(gmId: number) => void} removeGm
+ * @property {(groupName: string) => void} removeGroup
  * @property {() => void} updateDecorLists
  */
 

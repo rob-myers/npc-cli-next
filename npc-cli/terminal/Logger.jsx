@@ -99,8 +99,8 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
     xterm.open(state.container);
     state.fitAddon.fit();
     
-    state.container.style.width = `${props.initDim[0]}px`;
-    state.container.style.height = `${props.initDim[1]}px`;
+    // state.container.style.width = `${props.initDim[0]}px`;
+    // state.container.style.height = `${props.initDim[1]}px`;
 
     return () => {
       state.contents = state.serializeAddon.serialize();
@@ -154,6 +154,7 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
     <div
       ref={state.containerRef}
       css={loggerCss}
+      className="logger"
     />
   );
 });
@@ -182,10 +183,16 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
  */
 
 const loggerCss = css`
-  overflow: auto;
+  overflow: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: white black;
+
   width: 100%;
+  height: 100%;
   pointer-events: all;
-  
+  /* prevent pinch-zoom on mobile */
+  touch-action: none;
+
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.2);
   

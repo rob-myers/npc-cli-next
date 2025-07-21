@@ -31,6 +31,6 @@
                 <title>obstacle nav-outset=4</title>
         </path>
         <use width="1" height="1" transform="matrix(0, 20, -20, 0, 74.5, 94.50000762939453)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" xlink:href="#symbol-8">
-                <title>decor do sit toilet y=0.01</title>
+                <title>decor act sit toilet y=0.01</title>
         </use>
 </svg>

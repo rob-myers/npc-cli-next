@@ -1,16 +1,32 @@
 /**
+ * Interpret args.
+ * ```sh
+ * array 42 $( echo foo; echo bar; )
+ * ```
+ * @param {NPC.RunArg} ct
+ */
+export async function* array(ct) {
+  yield ct.args.map(ct.api.parseJsArg);
+}
+
+/**
  * Execute a javascript function, e.g.
  * ```sh
  * call "() => 42"
  * call "({ home }) => home.foo"
  * call '({ args }) => `Hello, ${args[0]}`' Rob
  * ```
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* call(ctxt) {
-  const func = Function(`return ${ctxt.args[0]}`)();
-  ctxt.args = ctxt.args.slice(1);
-  yield await func(ctxt);
+export async function* call(ct) {
+  if (ct.args[0] in ct.lib) {
+    const func = /** @type {*} */ (ct.lib)[ct.args[0]][ct.args[1]];
+    yield await func(ct);
+  } else {
+    const func = Function(`return ${ct.args[0]}`)();
+    ct.args = ct.args.slice(1);
+    yield await func(ct);
+  }
 }
 
 /**
@@ -20,11 +36,11 @@ export async function* call(ctxt) {
  * expr window.navigator.vendor
  * expr '((x) => [x, x, x])("a lady")'
  * ```
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  */
-export function* expr({ api, args }) {
+export const expr = ({ api, args }) => {
   const input = args.join(" ");
-  yield api.parseJsArg(input);
+  return api.parseJsArg(input);
 }
 
 /**
@@ -33,17 +49,17 @@ export function* expr({ api, args }) {
  * seq 10 | filter 'x => !(x % 2)'
  * expr window | keysAll | split | filter /^n/
  * ```
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* filter(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* filter(ct) {
+  let { api, args, datum } = ct;
   const func = api.generateSelector(
     api.parseFnOrStr(args[0]),
     args.slice(1).map((x) => api.parseJsArg(x))
   );
   while ((datum = await api.read(true)) !== api.eof)
-    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.filter((x) => func(x, ctxt)));
-    else if (func(datum, ctxt)) yield datum;
+    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.filter((x) => func(x, ct)));
+    else if (func(datum, ct)) yield datum;
 }
 
 /**
@@ -53,15 +69,15 @@ export async function* filter(ctxt) {
  * { range 10; range 20; } | flatMap 'x => x'
  * ```
  * - ℹ️ supports chunks
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* flatMap(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* flatMap(ct) {
+  let { api, args, datum } = ct;
   let result;
   const func = Function(`return ${args[0]}`)();
   while ((datum = await api.read(true)) !== api.eof) {
-    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.flatMap((x) => func(x, ctxt)));
-    else if (Array.isArray((result = func(datum, ctxt)))) yield* result;
+    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.flatMap((x) => func(x, ct)));
+    else if (Array.isArray((result = func(datum, ct)))) yield* result;
     else yield result;
   }
 }
@@ -74,7 +90,7 @@ export async function* flatMap(ctxt) {
  * ```
  * - ℹ️ `map console.log` would log 2nd arg too
  * - ℹ️ logs chunks larger than 1000, so e.g. `seq 1000000 | log` works
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ctxt 
  * @returns 
  */
 export async function* log({ api, args, datum }) {
@@ -97,21 +113,34 @@ export async function* log({ api, args, datum }) {
  * expr window | map navigator.connection | log
  * ```
  * - ℹ️ To use `await`, the provided function must begin with `async`.
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* map(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* map(ct) {
+  let { api, args, datum } = ct;
   const { operands, opts } = api.getOpts(args, { boolean: ["forever"] });
 
-  const baseSelector = api.parseFnOrStr(operands[0]);
-  const func = typeof baseSelector === "string"
-    // e.g. expr "{ foo: { inc: (x) => x+1  }  }" | map foo.inc 3
-    ? api.generateSelector(baseSelector, operands.slice(1).map(api.parseJsArg))
-    // e.g. echo | map "(x, {args}) => args[1]" foo
-    : api.generateSelector(baseSelector)
-  ;
-  // fix e.g. `expr "new Set([1, 2, 3])" | map Array.from`
-  const isNativeCode = /\{\s*\[\s*native code\s*\]\s*\}$/m.test(`${baseSelector}`);
+  /** @type {(x: any, ...xs: any[]) => any} */
+  let func;
+  let isNativeCode = false;
+
+  if (args[0] in ct.lib) {
+
+    func = /** @type {*} */ (ct.lib)[args[0]][args[1]];
+
+  } else {
+
+    const baseSelector = api.parseFnOrStr(operands[0]);
+    func = typeof baseSelector === "string"
+      // e.g. expr "{ foo: { inc: (x) => x+1  }  }" | map foo.inc 3
+      ? api.generateSelector(baseSelector, operands.slice(1).map(api.parseJsArg))
+      // e.g. echo | map "(x, {args}) => args[1]" foo
+      : api.generateSelector(baseSelector)
+    ;
+    // fix e.g. `expr "new Set([1, 2, 3])" | map Array.from`
+    isNativeCode = /\{\s*\[\s*native code\s*\]\s*\}$/m.test(`${baseSelector}`);
+
+  }
+
   const isAsync = func.constructor.name === "AsyncFunction";
   let count = 0;
 
@@ -120,17 +149,18 @@ export async function* map(ctxt) {
     while ((datum = await api.read(true)) !== api.eof) {
       try {
         if (api.isDataChunk(datum) === true) {
-          if (isAsync === false) {// fast on chunks:
-            yield api.dataChunk(datum.items.map(x => func(x, ctxt, count++)));
-          } else {// unwind chunks:
-            for (const item of datum.items) yield await func(item, ctxt, count++);
+          if (isAsync === false) {// fast on chunks
+            yield api.dataChunk(datum.items.map(x => func(x, ct, count++)));
+          } else {// unwind chunks
+            for (const item of datum.items)
+              yield await func(item, ct, count++);
           }
         } else {
-          yield await func(datum, ctxt, count++);
+          yield await func(datum, ct, count++);
         }
       } catch (e) {
         if (opts.forever === true) {
-          api.writeError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
+          api.writeError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}`);
           continue;
         }
         throw e;
@@ -161,10 +191,10 @@ export async function* map(ctxt) {
  * ```
  * - ℹ️ We do not support chunks.
  * - ℹ️ To use `await`, the one-arg-function must begin with `async`.
- * @param {RunArg} ctxt
+ * @param {NPC.RunArg} ct
  */
-export async function* mapBasic(ctxt) {
-  let { api, args, datum } = ctxt;
+export async function* mapBasic(ct) {
+  let { api, args, datum } = ct;
   const { operands, opts } = api.getOpts(args, { boolean: ["forever"] });
   // e.g. "Array.from", "x => [x, x]"
   const func = Function(`return ${operands[0]}`)();
@@ -183,7 +213,16 @@ export async function* mapBasic(ctxt) {
 }
 
 /**
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ct
+ */
+export async function pause(ct) {
+  ct.api.pause();
+  await ct.api.awaitResume();
+  // yield; // blocking empty write
+}
+
+/**
+ * @param {NPC.RunArg} ctxt 
  */
 export async function* poll({ api, args }) {
   yield* api.poll(args);
@@ -191,7 +230,7 @@ export async function* poll({ api, args }) {
 
 /**
  * Reduce all items from stdin
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ct 
  */
 export async function* reduce({ api, args, datum }) {
   const inputs = []; // eslint-disable-next-line no-new-func
@@ -211,7 +250,7 @@ export async function* reduce({ api, args, datum }) {
  * Split strings by optional separator (default `''`), e.g.
  * - `split ,` splits by comma
  * - `split '/\n/'` splits by newlines
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ct
  */
 export async function* split({ api, args, datum }) {
   let arg = api.parseJsArg( args[0] || "");
@@ -230,7 +269,7 @@ export async function* split({ api, args, datum }) {
 
 /**
  * Collect stdin into a single array
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ct
  */
 export async function* sponge({ api, datum }) {
   const outputs = [];
@@ -247,7 +286,7 @@ export async function* sponge({ api, datum }) {
 /**
  * Usage
  * - `poll 1 | while x=$( take 1 ); do echo ${x} ${x}; done`
- * @param {RunArg} ctxt 
+ * @param {NPC.RunArg} ct
  */
 export async function* take({ api, args, datum }) {
   try {
@@ -264,11 +303,3 @@ export async function* take({ api, args, datum }) {
     throw e ?? api.getKillError();
   }
 }
-
-/**
- * @typedef RunArg
- * @property {import('../cmd.service').CmdService['processApi']} api
- * @property {string[]} args
- * @property {{ [key: string]: any }} home
- * @property {*} [datum] A shortcut for declaring a variable
- */

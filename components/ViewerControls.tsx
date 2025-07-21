@@ -23,10 +23,10 @@ import {
   faChevronRight,
   faGrip,
   faCirclePlay,
-} from "./Icon";
+} from "../npc-cli/components/Icon";
 
 export default function ViewerControls({ api }: Props) {
-  const site = useSite(({ viewOpen }) => ({ viewOpen }), shallow);
+  const site = useSite(({ navOpen, viewOpen }) => ({ navOpen, viewOpen }), shallow);
 
   const state = useStateRef(() => ({
     dragOffset: null as null | number,
@@ -34,16 +34,24 @@ export default function ViewerControls({ api }: Props) {
 
     getViewerBase() {
       const percentage = api.rootEl.style.getPropertyValue(viewerBaseCssVar);
-      return percentage === null ? null : parseFloat(percentage);
+      return percentage === '' ? null : parseFloat(percentage);
     },
-    onLongReset() {
-      api.tabs.hardReset();
-      state.showReset = false;
+    onClickChevron(longPress = false) {
+      const percentage = state.getViewerBase();
+      if (percentage === null) {
+        state.setVisibility('open'); // initial?
+      } else if (longPress === false && percentage > 50) {
+        state.setVisibility('midpoint');
+      } else if (percentage === 0) {
+        state.setViewerBase(longPress ? 75 : 50);
+        state.setVisibility('open');
+      } else {
+        state.setVisibility('closed');
+      }
+    },
+    onClickEnabledOrPause() {
+      api.tabs.toggleEnabled();
       update();
-    },
-    onMaximize() {
-      state.setViewerBase(100);
-      useSite.api.toggleView(true);
     },
     onDrag(e: PointerEvent) {
       if (state.dragOffset === null) {
@@ -73,9 +81,8 @@ export default function ViewerControls({ api }: Props) {
         api.rootEl.style.transition = "";
 
         const percent = parseFloat(api.rootEl.style.getPropertyValue(viewerBaseCssVar));
-        if (percent < 10) {
-          api.rootEl.style.setProperty(viewerBaseCssVar, `${50}%`);
-          state.toggleCollapsed();
+        if (percent < 10) {// almost closed anyway
+          state.setVisibility('closed');
         }
       }
     },
@@ -110,7 +117,16 @@ export default function ViewerControls({ api }: Props) {
         useSite.api.toggleView(true);
       }
     },
-    onPreReset() {
+    onLongReset() {
+      api.tabs.hardReset();
+      state.showReset = false;
+      update();
+    },
+    onClickMaximize() {
+      state.setViewerBase(100);
+      useSite.api.toggleView(true);
+    },
+    onClickReset() {// pre reset i.e. show actual reset button
       state.showReset = true;
       setTimeout(() => (state.showReset = false, update()), 3000);
       update();
@@ -125,25 +141,24 @@ export default function ViewerControls({ api }: Props) {
       api.rootEl.style.setProperty(viewerBaseCssVar, `${percentage}%`);
       tryLocalStorageSet(localStorageKey.viewerBasePercentage, `${percentage}%`);
     },
-    toggleCollapsed() {
-      const percentage = state.getViewerBase();
-      if (percentage !== null && percentage > 50) {// collapse half way
-        state.setViewerBase(50);
-      } else {// collapse or expand
-        state.dragOffset = null;
-        const willExpand = useSite.api.toggleView();
-        if (!willExpand) {// will collapse
+    setVisibility(act: 'closed' | 'midpoint' | 'open') {
+      switch (act) {
+        case 'midpoint':
+          state.setViewerBase(50);
+          state.setVisibility('open');
+          break;
+        case 'closed':
+          state.dragOffset = null;
+          useSite.api.toggleView(false);
           api.tabs.toggleEnabled(false);
-        }
-        if (willExpand) {// will expand to last percentage (≤50)
+          state.setViewerBase(0);
+          break;
+        case 'open':
+          state.dragOffset = null;
+          useSite.api.toggleView(true);
           isSmallView() && useSite.api.toggleNav(false);
-        }
+          break;
       }
-
-    },
-    toggleEnabled() {
-      api.tabs.toggleEnabled();
-      update();
     },
   }));
 
@@ -153,13 +168,22 @@ export default function ViewerControls({ api }: Props) {
     ms: 1000,
   });
 
+  const chevronHandlers = useLongPress({
+    onLongPress: state.onClickChevron.bind(state, true),
+    onClick: state.onClickChevron.bind(state, false),
+    ms: 500,
+  });
+
   const update = useUpdate();
 
   return (
     <div
-      css={buttonsCss}
+      css={viewerControlsCss}
       className="viewer-buttons"
       onPointerDown={state.onDragStart}
+      style={{
+        zIndex: site.navOpen ? zIndexSite.belowMainFadeOverlay : zIndexSite.aboveMainFadeOverlay,
+      }}
     >
       <div className="left-or-bottom-group">
         <div className="drag-indicator">
@@ -167,29 +191,32 @@ export default function ViewerControls({ api }: Props) {
         </div>
       </div>
 
-      <div className={cx("paused-text", { paused: !api.tabs.enabled })}>
-        paused
+      <div className="status-text">
+        {api.tabs.everEnabled
+          ? api.tabs.enabled ? 'active' : 'paused'
+          : 'idle'}
       </div>
 
       <button
         title={api.tabs.enabled ? "pause tabs" : "enable tabs"}
-        onClick={state.toggleEnabled}
+        onClick={state.onClickEnabledOrPause}
         className="top-level"
       >
         <FontAwesomeIcon icon={api.tabs.enabled ? faCirclePauseThin : faCirclePlay} size="1x" />
       </button>
 
-      <div className="reset-container">
+      <div className={cx("reset-container", { showReset: state.showReset })}>
         <button
           className="top-level"
           title="reset tabs"
-          onClick={state.onPreReset}
-          disabled={api.tabs.everEnabled === false}
+          onClick={state.onClickReset}
+          /* disabled={api.tabs.everEnabled === false} */
         >
           <FontAwesomeIcon icon={faRefreshThin} size="1x" />
         </button>
         <button
-          className={cx("confirm-reset", { show: state.showReset })}
+          className="confirm-reset"
+          title="hold for hard reset"
           {...resetHandlers}
         >
           reset
@@ -199,15 +226,15 @@ export default function ViewerControls({ api }: Props) {
       <button
         className="top-level"
         title="maximise tabs"
-        onClick={state.onMaximize}
-        >
+        onClick={state.onClickMaximize}
+      >
         <FontAwesomeIcon icon={faExpandThin} size="1x" />
       </button>
 
       <button
         className="top-level"
-        title={site.viewOpen ? "hide tabs" : "show tabs"}
-        onClick={() => state.toggleCollapsed()}
+        title={site.viewOpen === true ? "hide tabs" : "show tabs"}
+        {...chevronHandlers}
       >
         <FontAwesomeIcon
           icon={faChevronRight}
@@ -224,33 +251,26 @@ interface Props {
   api: State;
 }
 
-const buttonsCss = css`
-  z-index: ${zIndexSite.aboveViewerFocusOutline};
-
+const viewerControlsCss = css`
   display: flex;
   justify-content: right;
   align-items: center;
 
   background-color: #000;
   touch-action: none;
-  border-top: 1px solid #333;
+  border-top: 1px solid #555;
 
-  > .paused-text {    
+  > .status-text {    
     display: flex;
     justify-content: start;
     align-items: center;
     
     font-size: 0.9rem;
+    font-family: 'Courier New', Courier, monospace;
     color: #dda;
-    letter-spacing: 7px;
+    letter-spacing: 2px;
     pointer-events: none;
     user-select: none;
-    
-    transition: opacity 300ms;
-    opacity: 0;
-  }
-  .paused-text.paused {
-    opacity: 1;
   }
 
   @media (min-width: ${afterBreakpoint}) {
@@ -262,7 +282,7 @@ const buttonsCss = css`
     border-right: 1px solid #444;
     font-size: 1rem;
 
-    > .paused-text {
+    > .status-text {
       writing-mode: vertical-rl;
       text-orientation: upright;
       padding-top: 32px;
@@ -276,7 +296,7 @@ const buttonsCss = css`
     cursor: row-resize;
     border-bottom: 1px solid #444;
 
-    > .paused-text {
+    > .status-text {
       height: 100%;
       padding-right: 12px;
       margin-top: 2px;
@@ -333,35 +353,40 @@ const buttonsCss = css`
   
   .reset-container {
     position: relative;
-  }
 
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  @keyframes fadeOut {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  .confirm-reset {
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    width: calc(100% - 2px);
-    height: calc(100% - 2px);
-    font-size: small;
-    color: rgba(255, 150, 150, 1);
-    background-color: rgba(0, 0, 0, 1);
-    user-select: none;
-
-    transition: opacity 300ms;
-    opacity: 0;
-    pointer-events: none;
-    
-    &.show {
+    .top-level {
+      transition: opacity 300ms;
       opacity: 1;
-      pointer-events: all;
     }
+
+    .confirm-reset {
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      font-size: small;
+      color: rgba(255, 150, 150, 1);
+      user-select: none;
+  
+      transition: opacity 300ms, transform 1s;
+      opacity: 0;
+      pointer-events: none;
+      &:active {
+        transform: scale(1.4);
+      }
+    }
+
+    &.showReset {
+      .top-level {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .confirm-reset {
+        opacity: 1;
+        pointer-events: all;
+      }
+    }
+
   }
 `;

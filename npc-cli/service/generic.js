@@ -94,21 +94,6 @@ function* deepKeys(t, path = []) {
 }
 
 /**
- * @template T
- */
-export class Deferred {
-  /** @type {(value: T | PromiseLike<T>) => void} */
-  resolve = () => {};
-  /** @type {(reason?: any) => void} */
-  reject = () => {};
-  /** @type {Promise<T>} */
-  promise = new Promise((resolve, reject) => {
-    this.resolve = resolve;
-    this.reject = reject;
-  });
-}
-
-/**
  * Test equality, i.e. test fn `equality`,
  * falling back to primitive equality,
  * and recurse on arrays/objects.
@@ -226,19 +211,25 @@ export function entries(record) {
  * Technically the latter selectors are dependent on the particular value of `x`.
  * But in practice we can often expect them to act uniformly like the examples above.
  * 
+ * In strict mode we throw on resolve `undefined`.
  * 
  * @param {((x: any) => any) | string | RegExp} selector
  * @param {any[]} [extraArgs]
+ * @param {boolean} [strict]
  * @returns {(x: any, ...xs: any[]) => any}
  */
-export function generateSelector(selector, extraArgs) {
+export function generateSelector(selector, extraArgs, strict = false) {
   if (typeof selector === "string") {
     /** @param {any} x @param {any[]} xs */
     return function selectByStr(x, ...xs) {
       const selected = /** @type {string} */ (selector).split(".").reduce(
         (agg, part) => (x = agg)[part], // x is parent of possible function
         /** @type {*} */ (x)
-      ); // If we selected a function, invoke it
+      );
+      if (strict === true && typeof selected === 'undefined') {
+        throw Error(`selector not found: ${selector}`);
+      }
+      // If we selected a function, invoke it
       return typeof selected === "function"
         ? selected.call(x, ...(extraArgs ?? []))
         : selected // 🔔 permits using args supplied elsewhere
@@ -315,12 +306,17 @@ export function isInsideWebWorker() {
   return typeof self !== 'undefined' && self.document === undefined;
 }
 
+/** @param {string} input  */
+export function isStringInt(input) {
+  return String(parseInt(input)) === input;
+}
+
 /**
  * Outputs JS expressions.
  * @param {*} input 
  * @returns {string}
  */
-export function jsStringify(input, pretty = false) {
+export function jsStringify(input, pretty = false, suppressFunctions = false) {
   return javascriptStringify(input, function (value, indent, stringify) {
     // use double-quotes instead of single-quotes
     if (typeof value === "string") {
@@ -328,6 +324,14 @@ export function jsStringify(input, pretty = false) {
     }
     if (value instanceof Promise) {
       return '{ /* Promise */ }';
+    }
+    if (suppressFunctions === true && typeof value === 'function') {
+      //return `function () { /* Function ${value.name} */ }`;
+      //return `function ${(value.name + 'Mock').replace(/\./g, '_')}() {}`;
+      return `function () { /* Mock Function ${value.name} */ }`;
+    }
+    if (typeof value?._internalRoot === 'object') {
+      return undefined;
     }
     return stringify(value);
   }, pretty === true ? 2 : undefined) ?? '';
@@ -362,8 +366,9 @@ export function mapValues(input, transform) {
 }
 
 /**
+ * Parse args as a single JavaScript object.
  * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
- * - 'foo:42 bar' -> { "foo": 42, 1: "bar" }
+ * - 'foo:42 bar' -> { "foo": 42, 0: "bar" }
  * - 🔔 assume keys do not contain double-quote character
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
@@ -371,11 +376,12 @@ export function mapValues(input, transform) {
  * @param {{ [key: string]: 'array' }} [opts]
  * @returns {T}
  */
-export function parseArgsAsJs(args, opts = {}) {
-  return /** @type {T} */ (args.reduce((agg, arg, index) => {
+export function jsArg(args, opts = {}) {
+  let nakedSeen = 0;
+  return /** @type {T} */ (args.reduce((agg, arg) => {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
-      agg[index] = arg;
+      agg[nakedSeen++] = arg;
     } else {
       const key = arg.slice(0, colonIndex);
       agg[key] = parseJsArg(arg.slice(colonIndex + 1));
@@ -389,9 +395,9 @@ export function parseArgsAsJs(args, opts = {}) {
 }
 
 /**
- * Parse input with string fallback
- * - preserves `undefined`
- * - preserves empty-string
+ * Parse input with string fallback (by default)
+ * - preserves `undefined` (by default)
+ * - preserves empty-string (by default)
  * @param {string} [input]
  */
 export function parseJsArg(input) {
@@ -466,6 +472,21 @@ export function removeFirst(array, elem) {
   const firstIndex = array.indexOf(elem);
   if (firstIndex !== -1) {
     array.splice(firstIndex, 1);
+  }
+  return array;
+}
+
+/**
+ * Remove the _last_ occurrence of `elem` from _`array`_,
+ * **mutating** the latter if the former exists.
+ * @template T
+ * @param {T[]} array
+ * @param {T} elem
+ */
+export function removeLast(array, elem) {
+  const lastIndex = array.lastIndexOf(elem);
+  if (lastIndex !== -1) {
+    array.splice(lastIndex, 1);
   }
   return array;
 }
@@ -631,11 +652,11 @@ export function tryLocalStorageRemove(key, logErr = true) {
  * @param {string} key
  * @param {string} value
  */
-export function tryLocalStorageSet(key, value, logErr = true) {
+export function tryLocalStorageSet(key, value) {
   try {
     localStorage.setItem(key, value);
   } catch (e) {
-    logErr && console.error(e);
+    debug(e);
   }
 }
 

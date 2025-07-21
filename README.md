@@ -101,10 +101,6 @@ w n.rob.applySkin
 # reset npc rob's skin
 w n.rob.resetSkin
 
-# - tell npc rob to change speed by factor `dst` onenter next offMeshConnection
-# - onexit speed will suddenly increase unless we set agent maxSpeed whilst traversing
-w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'
-
 # pass from Vector3 to Vect for an internal function which only supports the latter
 click | map xz | w n.rob.getLookAngle -
 
@@ -112,9 +108,9 @@ w view.controls | assign '{minDistance:1}'
 
 w n.rob.position | w floor.setTorchTarget -
 
-foo() { jsarg "${@}"; }
+foo() { jsArg "${@}"; }
 foo bar:[1,4,9] baz:baz qux:42
-foo() { echo $( jsarg "${@}" ); }
+foo() { echo $( jsArg "${@}" ); }
 foo bar:[1,4,9] baz:baz qux:42
 
 while { false; test ${?}; }; do echo foo; done
@@ -182,6 +178,24 @@ This permits us to patch `three-stdlib` inside `@react-three/drei`.
 npx patch-package @react-three/drei/three-stdlib
 ```
 
+### Screencast Android to MacBook
+
+- https://github.com/Genymobile/scrcpy/blob/master/doc/macos.md
+- https://github.com/Genymobile/scrcpy?tab=readme-ov-file
+
+```sh
+export PATH="$PATH:~/Downloads/scrcpy-macos-aarch64-v3.3.1"
+
+# plug phone into usb and permit usb debug (via settings > developer options)
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid
+
+# this command works with Quicktime Player
+# https://github.com/Genymobile/scrcpy/issues/4068#issuecomment-1581233072
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4
+
+# 🔔 no need for record because we'll use OBS
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder'
+```
 
 ### Bump versions in our branch of recast-navigation-js
 

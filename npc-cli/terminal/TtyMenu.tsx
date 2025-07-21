@@ -1,9 +1,12 @@
 import React from "react";
 import { css } from "@emotion/react";
 import cx from "classnames";
-import { tryLocalStorageGet, tryLocalStorageSet } from "../service/generic";
+import { tryLocalStorageGet, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { localStorageKey, zIndexTabs } from "../service/const";
+import { isTouchDevice } from "../service/dom";
+import { ProcessTag } from "../sh/const";
 import type { Session } from "../sh/session.store";
+import useSession from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 
@@ -11,9 +14,24 @@ export default function TtyMenu(props: Props) {
   const update = useUpdate();
 
   const state = useStateRef(() => ({
-    xterm: props.session.ttyShell.xterm,
     touchMenuOpen: true,
+    xterm: props.session.ttyShell.xterm,
 
+    contOrStopInteractive() {
+      switch (props.canContOrStop) {
+        case 'CONT':
+          useSession.api.kill(props.session.key, [0], { CONT: true, GROUP: true });
+          break;
+        case 'STOP':
+          // on manual STOP interactive process, add ptags.always i.e. now independent of <Tty> pause/resume
+          useSession.api.kill(props.session.key, [0], {
+            STOP: true,
+            GROUP: true,
+            ptags: { [ProcessTag.always]: true },
+          });
+          break;
+      }
+    },
     async onClickMenu(e: React.MouseEvent) {
       const target = e.target as HTMLElement;
       state.xterm.xterm.scrollToBottom();
@@ -29,7 +47,7 @@ export default function TtyMenu(props: Props) {
         next && state.xterm.warnIfNotReady();
         update();
       } else if (target.classList.contains("ctrl-c")) {
-        state.xterm.sendSigKill();
+        useSession.api.killSessionLeader(props.session.key);
       } else if (target.classList.contains("enter")) {
         if (!state.xterm.warnIfNotReady()) {
           // avoid sending 'newline' whilst 'await-prompt'
@@ -53,23 +71,28 @@ export default function TtyMenu(props: Props) {
       tryLocalStorageSet(localStorageKey.touchTtyOpen, `${next}`);
       update();
     },
-  }));
+  }), { deps: [props.canContOrStop] });
 
   state.xterm = props.session.ttyShell.xterm;
 
   React.useMemo(() => {
     if (!tryLocalStorageGet(localStorageKey.touchTtyCanType)) {
-      // tty enabled by default (including touch devices)
-      tryLocalStorageSet(localStorageKey.touchTtyCanType, "true");
+      tryLocalStorageSet(localStorageKey.touchTtyCanType, JSON.stringify(
+        // tty disabled by default on touch devices
+        isTouchDevice() ? false : true
+      ));
     }
     if (!tryLocalStorageGet(localStorageKey.touchTtyOpen)) {
-      // touch menu closed by default
-      tryLocalStorageSet(localStorageKey.touchTtyOpen, "false");
+      tryLocalStorageSet(localStorageKey.touchTtyOpen, JSON.stringify(
+        // touch menu open by default on touch devices
+        isTouchDevice() ? true : false
+      ));
     }
-    state.xterm.setCanType(tryLocalStorageGet(localStorageKey.touchTtyCanType) === "true");
-    state.touchMenuOpen = tryLocalStorageGet(localStorageKey.touchTtyOpen) === "true";
+    state.xterm.setCanType(tryLocalStorageGetParsed(localStorageKey.touchTtyCanType) === true);
+    state.touchMenuOpen = tryLocalStorageGetParsed(localStorageKey.touchTtyOpen) === true;
     return () => void state.xterm.setCanType(true);
   }, []);
+
 
   return <>
     <div
@@ -81,15 +104,23 @@ export default function TtyMenu(props: Props) {
         <div className="toggle" onClick={state.toggleTouchMenu}>
           {state.touchMenuOpen ? ">" : "<"}
         </div>
+        {props.canContOrStop !== undefined && (
+          <div
+            className="cont-or-stop-interactive"
+            onClick={state.contOrStopInteractive}
+          >
+            {props.canContOrStop}
+          </div>
+        )}
       </div>
       
       <div className="touch-menu">
-        {/* <div
+        <div
           className={cx("icon can-type", { enabled: state.xterm.canType() })}
           title={`text input ${state.xterm.canType() ? "enabled" : "disabled"}`}
         >
           $
-        </div> */}
+        </div>
         <div className="icon paste" title="or press e.g. Cmd+V">
           paste
         </div>
@@ -117,13 +148,15 @@ export default function TtyMenu(props: Props) {
 }
 
 interface Props {
-  session: Session;
+  canContOrStop: null | 'CONT' | 'STOP';
   disabled?: boolean;
+  session: Session;
   setTabsEnabled(next: boolean): void;
 }
 
 const menuCss = css`
   --menu-width: 54px;
+  height: calc(100% - 8px);
 
   position: absolute;
   z-index: ${zIndexTabs.pausedControls};
@@ -134,11 +167,10 @@ const menuCss = css`
   display: flex;
   flex-direction: column;
 
+  font-size: 0.8rem;
   line-height: 1; /** Needed for mobile viewing 'Desktop site' */
-  background-color: rgba(0, 0, 0, 0.7);
-  font-size: 8px;
-  border: 1px solid #555;
-  border-width: 1px 1px 1px 1px;
+  border: none;
+  border-width: 0 0 2px 2px;
   color: white;
 
   transition: transform 500ms;
@@ -148,6 +180,7 @@ const menuCss = css`
       background: rgba(0, 0, 0, 0.5);
     }
   }
+
   &:not(.open) {
     transform: translate(var(--menu-width), 0px);
   }
@@ -155,7 +188,7 @@ const menuCss = css`
   .toggle-and-paused-controls {
     position: absolute;
     top: 0px;
-    right: calc(var(--menu-width) - 1px);
+    right: var(--menu-width);
 
     .toggle {
       width: 32px;
@@ -164,22 +197,51 @@ const menuCss = css`
       display: flex;
       justify-content: center;
       align-items: center;
-  
+      
       cursor: pointer;
-      font-size: 12px;
+      font-size: 1rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: rgba(0, 0, 0, 0.5);
       color: #ddd;
-      border: 2px solid #444;
+      border: none;
+    }
+    
+    .cont-or-stop-interactive {
+      width: 32px;
+      display: flex;
+      align-items: center;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      
+      cursor: pointer;
+      padding: 8px 0;
+      border: none;
+      color: #0f0b;
+      font-weight: 600;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
     }
   }
 
+  .touch-menu {
+    max-height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: white black;
+    border-left: 1px solid #444;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+    border-radius: 0 0 8px 8px;
+  }
+
   .icon {
-    cursor: pointer;
     width: 100%;
+    height: 32px;
+    cursor: pointer;
     text-align: center;
-    padding: 12px;
-    transform: scale(1.2);
+    padding: 12px 0;
     color: #cfc;
+    background-color: rgba(0, 0, 0, 0.7);
   }
 
   .can-type {

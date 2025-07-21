@@ -2,6 +2,7 @@ import type Sh from "mvdan-sh";
 import cloneWithRefs from "lodash.clonedeep";
 //@ts-ignore
 import getopts from "getopts";
+import type * as GetOpts from "getopts";
 import { testNever, last, error } from "../service/generic";
 
 // We lazy-load the shell parser `mvdan-sh`.
@@ -36,7 +37,7 @@ export interface BaseNode {
   meta: BaseMeta;
   /** Reference to parent node  */
   parent: null | ParsedSh;
-  /** Used for arithmetic/boolean expansion */
+  /** Used for expansion */
   string?: string;
   /** Used to calculate actual exit codes */
   exitCode?: number;
@@ -319,14 +320,13 @@ function getChildren(node: ParsedSh): ParsedSh[] {
   }
 }
 
-export function getOpts(args: string[], options?: getopts.Options) {
-  /**
-   * Changes e.g. -a1 to -1a (avoid short-opt-assigns)
-   * Does not alter e.g. --STOP
-   */
+export function getOpts(args: string[], options?: GetOpts.Options) {
   const sortedOpts = args
-    .filter((x) => x[0] === "-")
-    .map((x) => (x[1] === "-" ? x : Array.from(x).sort().join("")));
+    .filter(x => x[0] === "-")
+    // -a1 --> -1a (avoid short-opt-assigns)
+    // --foo is preserved
+    .map(x => (x[1] === "-" ? x : Array.from(x).sort().join("")))
+  ;
   const operands = args.filter((x) => x[0] !== "-");
   return {
     opts: simplifyGetOpts(getopts(sortedOpts, options)),
@@ -339,8 +339,8 @@ export function getOpts(args: string[], options?: getopts.Options) {
  * We restrict it to the final item. We also store list
  * of extant option names as value of key `__optKeys`.
  */
-function simplifyGetOpts(parsed: getopts.ParsedOptions) {
-  const output = parsed as getopts.ParsedOptions & { operands: string[] };
+function simplifyGetOpts(parsed: GetOpts.ParsedOptions) {
+  const output = parsed as GetOpts.ParsedOptions & { operands: string[] };
   Object.keys(parsed).forEach((key) => {
     output.__optKeys = [];
     if (key !== "_") {

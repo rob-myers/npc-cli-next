@@ -56,7 +56,7 @@
     <title>decor label=cargo</title>
   </rect>
   <use width="1" height="1" transform="matrix(0, -20, -20, 0, 174.5, 804.4998779296875)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" xlink:href="#symbol-8">
-    <title>decor do sit obscured</title>
+    <title>decor act sit obscured</title>
   </use>
   <rect width="134.117083" height="194.245108" style="fill: rgb(0, 0, 255); fill-opacity: 0.5; transform-box: fill-box; transform-origin: 50% 50%;" x="62.842036" y="31.473018" transform="matrix(0.992528676987, 0.12201192975, -0.12201192975, 0.992528676987, -8.308224725497, 4.134996160105)">
     <title>obstacle box</title>
