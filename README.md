@@ -101,10 +101,6 @@ w n.rob.applySkin
 # reset npc rob's skin
 w n.rob.resetSkin
 
-# - tell npc rob to change speed by factor `dst` onenter next offMeshConnection
-# - onexit speed will suddenly increase unless we set agent maxSpeed whilst traversing
-w n.rob.s | assign '{ tScale: { start: 0, dst: 0.1 } }'
-
 # pass from Vector3 to Vect for an internal function which only supports the latter
 click | map xz | w n.rob.getLookAngle -
 

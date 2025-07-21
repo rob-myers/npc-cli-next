@@ -310,7 +310,7 @@
   - ℹ️ points weren't on nav mesh
   - ℹ️ we decreased to `1.5 * arriveDist`
 
-- 🚧 rename meta.do -> meta.act
+- ✅ rename meta.do -> meta.act
   - ℹ️ because `do` is reserved word (loop construct)
   - ✅ svg: decor do -> decor act
   - ✅ meta.doPoint -> meta.actPoint
@@ -319,6 +319,9 @@
 - `act npcKey:rob at:$( click 1 )`
 
 - ✅ can force while loop to continue via `|| true`
+
+- 🚧 some offMesh traversals seem slow
+  - 🚧 might have fixed computation of tmax
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 

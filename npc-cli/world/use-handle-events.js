@@ -44,7 +44,6 @@ export default function useHandleEvents(w) {
       // 🔔 offMeshConnection can happen when `npc.s.offMesh === null`
       // e.g. npc without access near door
       npc.agentAnim?.set_active(false);
-      npc.agentAnim?.set_tScale(1);
       npc.s.turnBeforeMove = null;
 
       if (npc.s.offMesh === null) {
@@ -500,7 +499,7 @@ export default function useHandleEvents(w) {
       if (door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
-        const nextCorner = npc.api.getNextCorner();
+        //const nextCorner = npc.api.getNextCorner();
         npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.api.getRemainingPath() });
         npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(offMesh.dst));
         return;
@@ -653,6 +652,7 @@ export default function useHandleEvents(w) {
       // Entrances are aligned to offMeshConnections
       // - entrance segment (enSrc, enDst)
       // - exit segment (exSrc, exDst)
+      // They border the connector joining the rooms.
       const { src: enSrc, dst: enDst } = door.entrances[offMesh.aligned === true ? 0 : 1];
       const { src: exSrc, dst: exDst } = door.entrances[offMesh.aligned === true ? 1 : 0];
 
@@ -717,7 +717,8 @@ export default function useHandleEvents(w) {
 
       const delta = tmpVect1.copy(newDst).sub(newSrc);
       const tmid = npcPoint.distanceTo(newSrc) / speed;
-      const tmax = anim.tmid + (delta.length / speed);
+      // const tmax = anim.tmid + (delta.length / speed);
+      const tmax = tmid + (delta.length / speed);
 
       anim.set_t(0);
       anim.set_tmid(tmid);
