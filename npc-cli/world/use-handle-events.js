@@ -423,6 +423,9 @@ export default function useHandleEvents(w) {
           if (e.speech !== '') {
             w.menu.say(e.npcKey, e.speech);
           }
+          if (w.disabled === true) {
+            w.npc.tickOnceDebug();
+          }
           break;
         case "started-moving": {
           /**
@@ -749,9 +752,9 @@ export default function useHandleEvents(w) {
     revokeAccess(regexDef, npcKey) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
-    async say(npcKey, ...parts) {// ensure/change/delete
+    say({ npcKey, words}) {// ensure/change/delete
       const cm = w.bubble.get(npcKey) || w.bubble.create(npcKey);
-      const speechWithLinks = parts.join(' ').trim();
+      const speechWithLinks = words ?? '';
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
 
       /** Otherwise, stop saying */
@@ -759,10 +762,8 @@ export default function useHandleEvents(w) {
       
       const npc = w.n[npcKey];
       npc.api.showLabel(!startSaying);
-      // 🔔 ensure label change whilst paused
-      w.disabled === true && await w.npc.tickOnceDebug();
 
-      if (startSaying) {
+      if (startSaying === true) {
         cm.speech = speechSansLinks;
         cm.update();
       } else {
@@ -910,7 +911,7 @@ export default function useHandleEvents(w) {
  * @property {() => void} showDefaultContextMenu
  * Default context menu, unless clicked on an npc
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
- * @property {(npcKey: string, ...parts: string[]) => void} say
+ * @property {(opts: { npcKey: string, words?: string }) => void} say
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
  * @property {(offMesh1: NPC.OffMeshState, offMesh2: NPC.OffMeshState) => boolean} testOffMeshDisjoint
  * Are two offMeshConnection traversals disjoint?

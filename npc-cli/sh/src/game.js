@@ -279,7 +279,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
 
 /**
  * ```sh
- * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
+ * spawn npcKey:rob at:$( click 1 )
  * spawn npcKey:rob at:$( click 1 ) grant:.
  * ```
  * @param {NPC.RunArg} ctxt
@@ -290,6 +290,18 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
   if (typeof opts.grant === 'string') {
     w.e.grantAccess(opts.grant, opts.npcKey);
   }
+}
+
+/**
+ * ```sh
+ * say npcKey:rob words:'hey there!'
+ * say npcKey:rob
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string; words?: string }} [opts]
+ */
+export const say = ({ api, args, w }, opts = api.jsArg(args)) => {
+  w.e.say(opts);
 }
 
 /**
