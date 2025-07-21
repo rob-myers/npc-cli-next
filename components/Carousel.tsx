@@ -80,6 +80,7 @@ const carouselCss = css`
     align-items: end;
     border-radius: 0;
     background-color: #000;
+    cursor: grab;
     
     @keyframes fadeScrollBarIn {
       0% { opacity: 0; }
