@@ -159,7 +159,7 @@ export function createBaseNpc(def, w) {
       turn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
     },
   
-    reject: {// 🚧 support multiple rejects in each case
+    reject: {
       fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
       move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
       separate: /** @type {undefined | ((error: any) => void)} */ (undefined),
@@ -169,8 +169,9 @@ export function createBaseNpc(def, w) {
 
     /** Additional callbacks to be executed on reject */
     onRejects: {
-      fade: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
+      fade: /** @type {((error: Error) => void)[]} */ ([]),
       move: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
+      turn: /** @type {((error: Error) => void)[]} */ ([]),
     },
 
     w,
@@ -241,7 +242,7 @@ export class NpcApi {
     const w = this.w;
     const srcNav = w.npc.isPointInNavmesh(this.base.position);
     
-    // actable dst
+    // dst act
     if (meta.act === true) {
       const otherNpcKey = w.npc.actToNpc[`${meta.actPoint.x},${meta.y ?? 0},${meta.actPoint.y}`];
       if (otherNpcKey !== undefined) {
@@ -256,7 +257,7 @@ export class NpcApi {
       return;
     }
 
-    // src acted and dst navigable
+    // acting and dst navigable
     if (this.s.actMeta !== null && meta.nav === true) {
       if (srcNav === true) {
         w.npc.setActMeta(this.key, null);
@@ -397,7 +398,7 @@ export class NpcApi {
 
     this.rejectFade(Error(`${'cancel'}: cancelled fade`));
     this.rejectMove({ type: 'stop-reason', key: reason });
-    this.reject.turn?.(`${'cancel'}: cancelled turn`);
+    this.rejectTurn(Error(`${'cancel'}: cancelled fade`));
 
     this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
   }
@@ -548,8 +549,13 @@ export class NpcApi {
         meta: opts.meta,
         npcKey: this.key,
       });
-    } finally {
+
       await this.fade(1, 150);
+
+    } catch (e) {
+      // ensure opacity 1 without blocking
+      this.fade(1, 150 * (1 - this.s.opacity));
+      throw e;
     }
   }
 
@@ -877,7 +883,7 @@ export class NpcApi {
       throw new Error(`npc ${this.key} lacks agent`);
     }
     if (Date.now() < this.s.offMeshCoolDown) {
-      throw Error('too soon after offMesh');
+      throw Error('too soon after offMesh attempt');
     }
     if (this.s.actMeta !== null) {// must be on-mesh act point
       this.w.npc.setActMeta(this.key, null);
@@ -932,9 +938,7 @@ export class NpcApi {
     agent.requestMoveTarget(closest);
 
     const nextAct = this.s.run === true ? 'Run' : 'Walk';
-    if (this.s.anim !== nextAct) {
-      this.startAnimation(nextAct);
-    }
+    this.startAnimation(nextAct, true);
 
     this.w.events.next({
       key: 'started-moving',
@@ -1060,30 +1064,23 @@ export class NpcApi {
     }
 
     // `meta.orient` (degrees) uses "cw from north",
-    const dstRadians = typeof meta.orient === 'number'
+    const angle = typeof meta.orient === 'number'
       ? meta.orient * (Math.PI/180)
       : undefined
     ;
     
     // 🤔 could do visibility check (raycast)
     if (!opts.preferSpawn && this.w.npc.isPointInNavmesh(actPoint) === true) {
-      /**
-       * Walk, [Turn], Do
-       */
+      // Walk, [Turn], Act
       await this.move({ to: actPoint });
-      if (typeof dstRadians === 'number') {
-        await this.look(dstRadians, 500 * geom.compareAngles(this.getAngle(), dstRadians));
+      if (typeof angle === 'number') {
+        await this.look(angle, 500 * geom.compareAngles(this.getAngle(), angle));
       }
       this.w.npc.setActMeta(this.key, meta);
-      this.startAnimation(meta);
+      this.startAnimation(meta, true);
     } else {
-      // sets `this.s.actMeta` because `meta.act === true`
-      await this.fadeSpawn(actPoint, {
-        angle: dstRadians,
-        requireNav: false,
-        meta,
-        // fadeOutMs: opts.fadeOutMs,
-      });
+      // this also sets act meta
+      await this.fadeSpawn(actPoint, { angle, requireNav: false, meta });
     }
   }
 
@@ -1311,6 +1308,13 @@ export class NpcApi {
     this.base.onRejects.move.length = 0;
   }
 
+  /** @param {Error} [error] */
+  rejectTurn(error = Error('cancelled')) {
+    this.reject.turn?.(error);
+    this.base.onRejects.turn.forEach(reject => reject(error));
+    this.base.onRejects.turn.length = 0;
+  }
+
   resetSkin() {
     this.base.skin = {};
     this.applySkin();
@@ -1423,10 +1427,14 @@ export class NpcApi {
    * Start animation via key or meta
    * @param {Key.Anim | Meta} input
    */
-  startAnimation(input) {
+  startAnimation(input, ignoreIfSame = false) {
     if (typeof input !== 'string') {
       input = helper.getAnimKeyFromMeta(input);
     }
+    if (ignoreIfSame === true && input === this.s.anim) {
+      return;
+    }
+
     const curr = this.m.toAct[this.s.anim];
     const next = this.m.toAct[input];
     curr.fadeOut(glbFadeOut[this.s.anim][input]);

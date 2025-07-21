@@ -51,15 +51,15 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      const { gdKey } = npc.s.offMesh.orig;
+      const { orig, seg } = npc.s.offMesh;
       npc.s.offMesh = null;
 
-      // 🔔 throttle `this.move` to fix repeated offMesh attempts
-      npc.s.offMeshCoolDown = Date.now() + 300;
+      if (seg === 0) {// 🔔 throttle `move` to fix repeated offMesh attempts
+        npc.s.offMeshCoolDown = Date.now() + 300;
+      }
       
-      state.doorToOffMesh[gdKey] = state.doorToOffMesh[gdKey].filter(x => x.npcKey !== npc.key);
+      state.doorToOffMesh[orig.gdKey] = state.doorToOffMesh[orig.gdKey].filter(x => x.npcKey !== npc.key);
       (state.npcToDoors[npc.key] ??= { inside: null, nearby: new Set() }).inside = null;
-      // w.nav.navMesh.setPolyFlags(state.npcToOffMesh[e.npcKey].offMeshRef, helper.navPolyFlag.walkable);
     },
     decodeObjectPick(r, g, b, a) {
       if (r === 1) {// wall
@@ -634,8 +634,8 @@ export default function useHandleEvents(w) {
         if (npc.agent.maxSpeed !== maxSpeed) {
           npc.agent.raw.params.set_maxSpeed(maxSpeed);
         }
-        if (npc.s.run === true && npc.s.anim !== 'Run') {
-          npc.api.startAnimation('Run');
+        if (npc.s.run === true) {
+          npc.api.startAnimation('Run', true);
         }
       }
 

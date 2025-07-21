@@ -14,15 +14,15 @@ export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
 
   const handlers = api.handleStatus({
     cleanups() {
-      if (npc.s.actMeta !== meta) {
-        npc.api.rejectMove(Error('cancelled'));
-        npc.api.rejectFade(Error('cancelled'));
-      }
+      npc.api.rejectMove(Error('cancelled'));
+      npc.api.rejectFade(Error('cancelled'));
+      npc.api.rejectTurn(Error('cancelled'));
     },
     onSuspends(byPtags) {
       if (!byPtags && npc.s.actMeta !== meta) {
         npc.api.rejectMove(Error('manual-pause'));
         npc.api.rejectFade(Error('manual-pause'));
+        npc.api.rejectTurn(Error('manual-pause'));
         return true;
       }
     },
@@ -40,6 +40,7 @@ export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
         await api.awaitResume(reject => {
           npc.onRejects.move.push(reject);
           npc.onRejects.fade.push(reject);
+          npc.onRejects.turn.push(reject);
         });
       }
     }
