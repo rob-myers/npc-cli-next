@@ -18,14 +18,14 @@ export default function Debug(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     navMesh: /** @type {*} */ (null),
-    offMeshConnections: /** @type {*} */ (null),
+    navMeshShown: false,
     navPath: /** @type {*} */ (null),
+    origNavPolyShown: false,
+    offMeshConnections: /** @type {*} */ (null),
     pick: null,
     physicsLines: new THREE.BufferGeometry(),
     selectedNavPolys: null,
-    showNavMesh: false,
-    showOrigNavPoly: false,
-    showStaticColliders: false,
+    staticCollidersShown: false,
     staticColliders: [],
 
     ensureNavPoly(gmKey) {
@@ -135,14 +135,16 @@ export default function Debug(props) {
       state.pick = downData || null;
       update();
     },
-    show({ navMesh, origNavPoly, staticColliders } = {
-      navMesh: false,
-      origNavPoly: false,
-      staticColliders: false,
-    }) {
-      state.showNavMesh = navMesh ?? state.showNavMesh;
-      state.showOrigNavPoly = origNavPoly ?? state.showOrigNavPoly;
-      state.showStaticColliders = staticColliders ?? state.showStaticColliders;
+    showNavMesh(shouldShow = !state.navMeshShown) {
+      state.navMeshShown = shouldShow;
+      w.update();
+    },
+    showOrigNavPoly(shouldShow = !state.origNavPolyShown) {
+      state.origNavPolyShown = shouldShow;
+      w.update();
+    },
+    showStaticColliders(shouldShow = !state.staticCollidersShown) {
+      state.staticCollidersShown = shouldShow;
       w.update();
     },
   }));
@@ -171,7 +173,7 @@ export default function Debug(props) {
   }, [w.nav.navMesh]);
 
   React.useEffect(() => {// debug colliders via physics.worker
-    if (state.showStaticColliders) {
+    if (state.staticCollidersShown) {
       w.physics.worker.addEventListener('message', state.onPhysicsDebugData);
       w.physics.worker.postMessage({ type: 'get-debug-data' });
       return () => void w.physics.worker.removeEventListener('message', state.onPhysicsDebugData);
@@ -180,12 +182,12 @@ export default function Debug(props) {
       state.physicsLines = new THREE.BufferGeometry();
       update();
     }
-  }, [state.showStaticColliders, w.physics.rebuilds]);
+  }, [state.staticCollidersShown, w.physics.rebuilds]);
 
   React.useEffect(() => {// original navMesh
     w.gms.forEach(gm => state.ensureNavPoly(gm.key));
     w.update();
-  }, [state.showOrigNavPoly]);
+  }, [state.origNavPolyShown]);
 
   const update = useUpdate();
 
@@ -220,7 +222,7 @@ export default function Debug(props) {
       </mesh>
     </group>}
 
-    {state.showNavMesh === true && <>
+    {state.navMeshShown === true && <>
       <primitive
         name="nav-mesh-helper"
         position={[0, 0.01, 0]}
@@ -239,7 +241,7 @@ export default function Debug(props) {
       renderOrder={0}
     />}
 
-    {state.showOrigNavPoly === true && (
+    {state.origNavPolyShown === true && (
       w.gms.map((gm, gmId) => (
         <group
           key={`${gm.key} ${gmId} ${gm.transform}`}
@@ -250,7 +252,7 @@ export default function Debug(props) {
             name="orig-nav-poly"
             args={[w.gmsData[gm.key].navPoly, origNavPolyMaterial]}
             position={[0, 0.0001, 0]}
-            visible={state.showOrigNavPoly}
+            visible={state.origNavPolyShown}
           />
         </group>
       ))
@@ -280,11 +282,11 @@ export default function Debug(props) {
  * @typedef State
  * @property {NavMeshHelper} navMesh
  * @property {OffMeshConnectionsHelper} offMeshConnections
+ * @property {boolean} origNavPolyShown
+ * @property {boolean} navMeshShown
  * @property {THREE.Group} navPath
  * @property {null | THREE.BufferGeometry} selectedNavPolys
- * @property {boolean} showNavMesh
- * @property {boolean} showOrigNavPoly
- * @property {boolean} showStaticColliders
+ * @property {boolean} staticCollidersShown
  * @property {(WW.PhysicDebugItem & { parsedKey: WW.PhysicsParsedBodyKey })[]} staticColliders
  * @property {null | NPC.DownData} pick
  * @property {THREE.BufferGeometry} physicsLines
@@ -294,7 +296,9 @@ export default function Debug(props) {
  * @property {(...polyIds: number[]) => void} selectNavPolys
  * https://github.com/isaac-mason/recast-navigation-js/blob/bb3e49af3f4ff274afe84341d4c51a9f5fac609c/apps/navmesh-website/src/features/recast/export/nav-mesh-to-gltf.ts#L31
  * @property {(downData?: NPC.DownData) => void} setPickIndicator
- * @property {(opts: { navMesh?: boolean; origNavPoly?: boolean; staticColliders?: boolean; }) => void} show
+ * @property {(shouldShow?: boolean) => void} showNavMesh
+ * @property {(shouldShow?: boolean) => void} showOrigNavPoly
+ * @property {(shouldShow?: boolean) => void} showStaticColliders
  */
 
 const origNavPolyMaterial = new THREE.MeshBasicMaterial({

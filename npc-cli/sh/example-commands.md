@@ -24,8 +24,10 @@ seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint'
 ```
 
 ```sh
-w debug.show '{navMesh: true}'
-w debug.show
+# debug toggles
+w debug.showNavMesh
+w debug.showOrigNavPoly
+w debug.showStaticColliders
 ```
 
 # Npcs
@@ -51,3 +53,6 @@ w npc.remove npc_{0..99}
 tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )
 ```
 
+```sh
+act npcKey:rob at:$( click 1 )
+```
