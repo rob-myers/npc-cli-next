@@ -98,7 +98,7 @@ const navCss = css`
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
   color: #ddd;
-  font-size: 0.9rem;
+  font-size: 1rem;
   letter-spacing: 0.1rem;
 
   // root item height and hover
@@ -109,6 +109,9 @@ const navCss = css`
       background-color: transparent;
       text-decoration: underline;
     }
+  }
+  .title a.${menuClasses.button}, ${menuClasses.button}:hover {
+    text-decoration: none;
   }
 
   // root item icon
