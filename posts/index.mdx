@@ -38,24 +38,22 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   ]}
 />
 
-The videos depict this website on a laptop or mobile phone.
+The above videos show this website on a laptop or mobile phone.
 You can step through the code below using the _Viewer_ (right/bottom of this page).
 
 <Code>
 ```sh title="" caption="Spawn, move and remove" showLineNumbers
-# spawn npc rob at click
+# spawn npc at navigable or actable
 spawn npcKey:rob at:$( click 1 )
-# must be navigable or actable
 
-# move rob to click
+# move rob to navigable
+# assuming doors accessible
 move npcKey:rob to:$( click 1 )
-# must be on nav mesh
-# must have access to doors
 
-# respawn with skeleton key
+# respawn rob with skeleton key
 spawn npcKey:rob at:$( click 1 ) grant:.
 
-# move via a waypoint
+# move rob via a waypoint
 move npcKey:rob to:$( click 2 )
 
 # dust to dust
