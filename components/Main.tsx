@@ -82,30 +82,36 @@ const mainHeaderCss = css`
   justify-content: right;
   align-items: center;
 
-  /* 🚧 dark mode issue */
-  background-color: #fff;
+  background-color: #fff8;
   color: #444;
 
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
-
+  
+  pointer-events: none;
   a {
+    display: none;
     color: black;
     text-decoration: none;
+    pointer-events: all;
   }
-
+  
   @media (min-width: ${afterBreakpoint}) {
     min-width: var(--main-min-width-desktop);
-
+  
     margin-top: 0rem;
     margin-right: 1rem;
     margin-left: 1rem;
-
+    
     padding-top: 1rem;
     padding-right: 2rem;
     padding-bottom: 1rem;
     padding-left: 2rem;
+
+    a {
+      display: initial;
+    }
   }
 `;
 
