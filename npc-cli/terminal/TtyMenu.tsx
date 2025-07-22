@@ -156,6 +156,10 @@ interface Props {
 
 const menuCss = css`
   --menu-width: 54px;
+  @media (max-width: 500px) {
+    --menu-width: 90px;
+  }
+
   height: calc(100% - 8px);
 
   position: absolute;
