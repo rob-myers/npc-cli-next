@@ -11,20 +11,22 @@ import { createDecorNumber } from './game_1';
 export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getNpc(opts.npcKey);
   const { meta } = opts.at
+  let abortAwaitResume = /** @param {*} e */ (e) => {};
 
   const handlers = api.handleStatus({
     cleanups() {
       npc.api.rejectMove(Error('cancelled'));
       npc.api.rejectFade(Error('cancelled'));
       npc.api.rejectTurn(Error('cancelled'));
+      abortAwaitResume(Error('cancelled'));
     },
     onSuspends(byPtags) {
       if (!byPtags && npc.s.actMeta !== meta) {
         npc.api.rejectMove(Error('manual-pause'));
         npc.api.rejectFade(Error('manual-pause'));
         npc.api.rejectTurn(Error('manual-pause'));
-        return true;
       }
+      return true;
     },
   });
 
@@ -37,11 +39,7 @@ export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
         if (!(e instanceof Error && e.message === 'manual-pause')) {
           throw e;
         }
-        await api.awaitResume(reject => {
-          npc.onRejects.move.push(reject);
-          npc.onRejects.fade.push(reject);
-          npc.onRejects.turn.push(reject);
-        });
+        await api.awaitResume(reject => abortAwaitResume = reject);
       }
     }
   } finally {
@@ -226,21 +224,33 @@ export async function* events({ api, args, w }) {
  * @param {{ at: string | import('three').Vector3 | Geom.Vect }} [opts]
  */
 export async function* look({ api, args, w }, opts = api.jsArg(args)) {
+  let abortAwaitResume = /** @param {*} e */ (e) => {};
+
   const handlers = api.handleStatus({
-    cleanups() { w.view.reject.look?.('cancelled'); },
-    onSuspends() { w.view.reject.look?.('pause'); return true; },
+    cleanups() {
+      w.view.reject.look?.(Error('cancelled'));
+      abortAwaitResume(Error('cancelled'));
+    },
+    onSuspends() {
+      w.view.reject.look?.(Error('manual-pause')); 
+      return true;
+    },
   });
 
-  while (true) {
-    try {
-      return await w.e.lookAt(opts.at).then(handlers.dispose);
-    } catch (e) {
-      if (e !== 'pause') {
-        handlers.dispose();
-        throw e;
+  try {
+    while (true) {
+      try {
+        await w.e.lookAt(opts.at);
+        break;
+      } catch (e) {
+        if (!(e instanceof Error && e.message === 'manual-pause')) {
+          throw e;
+        }
+        await api.awaitResume(reject => abortAwaitResume = reject);
       }
     }
-    await api.awaitResume();
+  } finally {
+    handlers.dispose();
   }
 }
 
@@ -254,22 +264,33 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
   const npc = w.npc.getNpc(opts.npcKey);
+  let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
+  let abortAwaitResume = /** @param {*} e */ (e) => {};
+
   const handlers = api.handleStatus({
-    cleanups() { npc.api.rejectMove(Error('cancelled')); },
-    onSuspends(byPtags) { if (!byPtags) { npc.api.rejectMove(Error('manual-pause')); return true; } },
+    cleanups() {
+      npc.api.rejectMove(Error('cancelled'));
+      abortAwaitResume(Error('cancelled'));
+    },
+    onSuspends(byPtags) {
+      if (!byPtags) {
+        to = npc.api.getRemainingPath();
+        npc.api.rejectMove(Error('manual-pause'));
+      }
+      return true;
+    },
   });
 
   try {
     while (true) {
       try {
-        await npc.api.move(opts);
-        //await api.sleep(0.3);
+        await npc.api.move({ ...opts, to });
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {
           throw e;
         }
-        await api.awaitResume(reject => npc.onRejects.move.push(reject));
+        await api.awaitResume(reject => abortAwaitResume = reject);
       }
     }
   } finally {

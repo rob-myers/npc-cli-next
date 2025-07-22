@@ -167,13 +167,6 @@ export function createBaseNpc(def, w) {
       turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
     },
 
-    /** Additional callbacks to be executed on reject */
-    onRejects: {
-      fade: /** @type {((error: Error) => void)[]} */ ([]),
-      move: /** @type {((error: NPC.StopReason | Error) => void)[]} */ ([]),
-      turn: /** @type {((error: Error) => void)[]} */ ([]),
-    },
-
     w,
   };
 }
@@ -692,9 +685,11 @@ export class NpcApi {
     if (this.s.target === null) {
       warn(`${'getRemainingPath'}: ${this.key}: npc.s.target is null`);
       return this.pendingTargets.map(helper.toXZ);
-    } else if (this.pendingTargets.length > 0 && this.isNearTarget() === true) {
-      return this.pendingTargets.map(helper.toXZ);
-    } else {
+    }
+    // else if (this.pendingTargets.length > 0 && this.isNearTarget() === true) {
+    //   return this.pendingTargets.map(helper.toXZ);
+    // }
+    else {
       return [this.s.target].concat(this.pendingTargets).map(helper.toXZ);
     }
   }
@@ -1297,22 +1292,16 @@ export class NpcApi {
   /** @param {Error} [error] */
   rejectFade(error = Error('cancelled')) {
     this.reject.fade?.(error);
-    this.base.onRejects.fade.forEach(reject => reject(error));
-    this.base.onRejects.fade.length = 0;
   }
 
   /** @param {NPC.StopReason | Error} [error] */
   rejectMove(error = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() }) {
     this.reject.move?.(error);
-    this.base.onRejects.move.forEach(reject => reject(error));
-    this.base.onRejects.move.length = 0;
   }
 
   /** @param {Error} [error] */
   rejectTurn(error = Error('cancelled')) {
     this.reject.turn?.(error);
-    this.base.onRejects.turn.forEach(reject => reject(error));
-    this.base.onRejects.turn.length = 0;
   }
 
   resetSkin() {
