@@ -23,9 +23,15 @@ export default function Nav() {
       // do not toggleCollapsed
       e.stopPropagation();
 
-      // can click anywhere in li
+      // can click anywhere in li,
+      // except 1st one when collapsed
+      if (collapsed && li.previousSibling === null) {
+        return;
+      }
       const as = li.querySelectorAll('a');
-      if (as.length === 1) router.push(as[0].href);
+      if (as.length === 1) {
+        router.push(as[0].href);
+      }
     },
     toggleCollapsed() {
       useSite.api.toggleNav();
@@ -107,12 +113,12 @@ const navCss = css`
     
     &:hover {
       background-color: transparent;
-      text-decoration: underline;
+      /* text-decoration: underline; */
     }
   }
-  .title a.${menuClasses.button}, ${menuClasses.button}:hover {
-    text-decoration: none;
-  }
+  /* .title a.${menuClasses.button}, ${menuClasses.button}:hover {
+    text-decoration: none !important;
+  } */
 
   // root item icon
   span.${menuClasses.icon} {
