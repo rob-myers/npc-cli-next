@@ -63,6 +63,9 @@
 
 ### World
 
+- skin order should be head/head-overlay/body/body-overlay
+  - currently need e.g. `spawn npcKey:foo at:$( click 1 ) skin:soldier-0/suit-0/soldier-0/suit-0`
+
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 
 - BUG: sometimes tty-0 fails to persist /home?
