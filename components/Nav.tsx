@@ -51,7 +51,6 @@ export default function Nav() {
       <button
         css={toggleCss}
         className="toggle"
-        style={{ zIndex: 10 }}
       >
          <FontAwesomeIcon
           icon={faChevronRight}
@@ -218,6 +217,7 @@ const icon = {
 
 const toggleCss = css`
   position: absolute;
+  z-index: ${zIndexSite.navToggle};
   top: 0.6rem;
   right: 1rem;
   transition: margin-top 300ms;
