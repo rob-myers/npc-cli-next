@@ -13,7 +13,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
 
-export default function Carousel(props: Props) {
+export default function Carousel(props: React.PropsWithChildren<Props>) {
 
   const state = useStateRef(() => ({
     maximized: null as null | { slide: HTMLElement; baseWidth: number; },
@@ -33,9 +33,10 @@ export default function Carousel(props: Props) {
       style={{
         ['--slider-height' as any]: `${props.height}px`,
         ['--slider-height-mobile' as any]: `${props.heightMobile ?? props.height}px`,
+        background: props.background,
       }}
     >
-      {props.items.map((child, index) =>
+      {React.Children.toArray(props.children).map((child, index) =>
         <SwiperSlide key={index} data-id={index}>
           {child}
         </SwiperSlide>
@@ -45,9 +46,9 @@ export default function Carousel(props: Props) {
 }
 
 interface Props {
+  background?: string;
   height: number;
   heightMobile?: number;
-  items: React.ReactElement[];
 }
 
 
@@ -58,7 +59,7 @@ const carouselCss = css`
   
   height: var(--slider-height);
   margin: 48px 0;
-  background-color: #000;
+  /* background-color: #000; */
   
   @media (max-width: ${mobileBreakpoint}) {
     --slider-scrollbar-height: 32px;

@@ -89,6 +89,7 @@ export default function Code({ children }: React.PropsWithChildren) {
       onClick={state.onClick}
       onPointerDown={state.onPointerDown}
       {...{ [sideNoteRootDataAttribute]: true }}
+      // className="not-prose"
     >
       <div
         className='copy-all'
@@ -113,9 +114,32 @@ export default function Code({ children }: React.PropsWithChildren) {
 
 const codeContainerCss = css`
   position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
   
-  pre {// github-light-default
+  figure {
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     border: 1px solid #7775;
+  }
+  figcaption {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    background-color: #eee;
+    color: #000;
+  }
+  pre {
+    padding-top: 0;
+    //padding-bottom: 0;
+    flex: 1;
+    display: flex;
   }
 
   > .copy-all {
