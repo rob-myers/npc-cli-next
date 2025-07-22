@@ -82,6 +82,7 @@ const mainHeaderCss = css`
   justify-content: right;
   align-items: center;
 
+  pointer-events: none;
   background-color: #fff8;
   color: #444;
 
@@ -89,12 +90,10 @@ const mainHeaderCss = css`
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
   
-  pointer-events: none;
   a {
     display: none;
     color: black;
     text-decoration: none;
-    pointer-events: all;
   }
   
   @media (min-width: ${afterBreakpoint}) {
@@ -109,6 +108,8 @@ const mainHeaderCss = css`
     padding-bottom: 1rem;
     padding-left: 2rem;
 
+    pointer-events: all;
+    background-color: #fff;
     a {
       display: initial;
     }
