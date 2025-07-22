@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperProps, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 
 import { Scrollbar } from 'swiper/modules';
@@ -25,6 +25,7 @@ export default function Carousel(props: React.PropsWithChildren<Props>) {
     <Swiper
       css={carouselCss}
       loop={false}
+      allowTouchMove={props.allowTouchMove}
       modules={[Scrollbar]}
       onSwiper={state.onSwiper}
       scrollbar={{ draggable: true }}
@@ -45,7 +46,7 @@ export default function Carousel(props: React.PropsWithChildren<Props>) {
   );
 }
 
-interface Props {
+interface Props extends Pick<SwiperProps, 'allowTouchMove'> {
   background?: string;
   height: number;
   heightMobile?: number;
