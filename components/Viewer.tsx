@@ -5,7 +5,7 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 import { useBeforeunload } from "react-beforeunload";
 
-import { view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar } from "./const";
+import { view, viewerCssVar } from "./const";
 import { afterBreakpoint, breakpoint } from "./const";
 
 import { parseJsArg, pause, tryLocalStorageGet } from "@/npc-cli/service/generic";
@@ -39,6 +39,16 @@ export default function Viewer() {
     rootEl: null as any,
     tabs: {} as TabsState,
 
+    animateInternalApiSpinner() {
+      state.rootEl.animate([
+        { [viewerCssVar.internalApiSpinnerOpacity]: 0, offset: 0 },
+        { [viewerCssVar.internalApiSpinnerOpacity]: 1, offset: 0.1 },
+        { [viewerCssVar.internalApiSpinnerOpacity]: 0, offset: 1 },
+      ], {
+        duration: 1000,
+        iterations: 1,
+      });
+    },
     onChangeIntersect: debounce((intersects: boolean) => {
       !intersects && state.tabs?.enabled && state.tabs.toggleEnabled();
       update();
@@ -116,6 +126,8 @@ export default function Viewer() {
           return;
       }
 
+      state.animateInternalApiSpinner();
+
       window.location.hash = '/internal/noop';
     },
     onKeyDown(e) {
@@ -156,7 +168,7 @@ export default function Viewer() {
   React.useEffect(() => {
     // remember Viewer percentage
     const percentStr = tryLocalStorageGet(localStorageKey.viewerBasePercentage);
-    percentStr !== null && state.rootEl.style.setProperty(viewerBaseCssVar, percentStr);
+    percentStr !== null && state.rootEl.style.setProperty(viewerCssVar.base, percentStr);
 
     // ensure layout if localStorage empty
     useTabs.api.restoreLayoutWithFallback("world-tty-default", { preserveRestore: false });
@@ -216,6 +228,7 @@ export interface State {
   rootEl: HTMLElement;
   /** Tabs API */
   tabs: TabsState;
+  animateInternalApiSpinner(): void;
   onChangeIntersect(intersects: boolean): void;
   onHardReset(): void;
   /** @param pathname e.g. `/internal/set-tabset/empty` */
@@ -229,12 +242,13 @@ export interface State {
 
 const viewerCss = css`
   ${css`
-    ${viewBarSizeCssVar}: ${view.barSize};
-    ${viewIconSizeCssVar}: ${view.iconSize};
+    ${viewerCssVar.barSize}: ${view.barSize};
+    ${viewerCssVar.iconSize}: ${view.iconSize};
+    ${viewerCssVar.internalApiSpinnerOpacity}: 0.5;
   `}
 
   // if never drag or maximise, toggle acts like this
-  ${viewerBaseCssVar}: 50%;
+  ${viewerCssVar.base}: 50%;
 
   position: relative;
   display: flex;
@@ -247,7 +261,7 @@ const viewerCss = css`
   @media (min-width: ${afterBreakpoint}) {
     flex-direction: row;
     transition: min-width 500ms;
-    min-width: var(${viewerBaseCssVar});
+    min-width: var(${viewerCssVar.base});
     &.collapsed {
       min-width: 0%;
     }
@@ -256,8 +270,8 @@ const viewerCss = css`
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
     transition: height 500ms ease-in-out, min-height 500ms ease-in-out;
-    height: calc( max(var(${viewerBaseCssVar}, 0px), ${view.barSize}) );
-    min-height: calc( max(var(${viewerBaseCssVar}, 0px), ${view.barSize}) );
+    height: calc( max(var(${viewerCssVar.base}, 0px), ${view.barSize}) );
+    min-height: calc( max(var(${viewerCssVar.base}, 0px), ${view.barSize}) );
     &.collapsed {
       height: ${view.barSize};
       min-height: ${view.barSize};
