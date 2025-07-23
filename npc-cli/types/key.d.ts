@@ -36,8 +36,7 @@ namespace Key {
 
   type LayoutPreset = (
     | 'empty-layout'
-    | 'world-tty-default_profile'
-    | 'world-tty-profile_1'
+    | `world-tty-${Key.Profile}`
   );
 
   type Map = import('../world/World.jsx').MapKey;

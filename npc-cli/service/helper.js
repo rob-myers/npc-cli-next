@@ -1,5 +1,20 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
-import { keys } from "./generic";
+import { keys, mapValues } from "./generic";
+
+/**
+ * @type {{ fromProfileKey: Record<Key.Profile, true>, profileKeys: Key.Profile[]}}
+ */
+const { fromProfileKey, profileKeys } = (/** @param {Record<Key.Profile, true>} fromProfileKey */
+  (fromProfileKey) => ({
+    fromProfileKey,
+    profileKeys: keys(fromProfileKey),
+  })
+)({
+  default: true, // 1st is default in <select>
+  dev_only: true,
+  empty: true,
+  quickstart: true,
+});
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -21,17 +36,8 @@ export const helper = {
   /** Aligned to media/decor/{key}.svg */
   fromDecorImgKey,
 
-  ...(/** @param {Record<Key.Profile, true>} fromProfileKey */
-    (fromProfileKey) => ({
-      fromProfileKey,
-      profileKeys: keys(fromProfileKey),
-    })
-  )({
-    default: true, // 1st is default in <select>
-    dev_only: true,
-    empty: true,
-    profile_1: true,
-  }),
+  fromProfileKey,
+  profileKeys,
 
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
     (fromMapKey) => ({
@@ -61,24 +67,20 @@ export const helper = {
    */
   layoutPreset: {
     "empty-layout": [],
-    "world-tty-default_profile": [
-      [
-        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
-      ],
-      [
-        { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        { type: "terminal", filepath: "tty-0", profileKey: 'default', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
-      ]
-    ],
-    "world-tty-profile_1": [
-      [
-        { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
-      ],
-      [
-        { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        { type: "terminal", filepath: "tty-0", profileKey: 'profile_1', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
-      ]
-    ],
+
+    // each profile has a basic layout preset
+    ...profileKeys.reduce((agg, profileKey) => {
+      agg[`world-tty-${profileKey}`] = [
+        [
+          { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
+        ],
+        [
+          { type: "component", class: "Manage", filepath: "manage-0", props: {} },
+          { type: "terminal", filepath: "tty-0", profileKey, env: { WORLD_KEY: "world-0", TABS_API_KEY } },
+        ],
+      ];
+      return agg;
+    }, /** @type {Record<`world-tty-${Key.Profile}`, import("../tabs/tab-util").BasicTabsLayout>} */ ({})),
   },
 
   /** Global over all `queryFilter`s */

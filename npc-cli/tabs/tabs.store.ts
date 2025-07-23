@@ -160,7 +160,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
 
     revertCurrentTabset(restoreDefaultPreset = false) {
       const layout = restoreDefaultPreset
-        ? resolveLayoutPreset('world-tty-default_profile')
+        ? resolveLayoutPreset('world-tty-default')
         : deepClone(get().tabset.saved)
       ;
       const synced = deepClone(layout);

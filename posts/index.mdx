@@ -12,8 +12,9 @@ import Card from "../components/Card";
 import Carousel from '../components/Carousel';
 import Code from '../components/Code';
 import Figure from '../components/Figure';
-import Image from 'next/image';
 import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
+import Image from 'next/image';
+import TabsLayoutLink from '@/npc-cli/components/TabsLayoutLink';
 import Video from '../components/Video';
 
 import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
@@ -47,9 +48,7 @@ Using a terminal on a mobile is a bit tricky, so we'll avoid it.<SideNote>Althou
 {/* The above videos show this website on a laptop or mobile phone.
 You can step through the code below using the _Viewer_ (right/bottom of this page). */}
 
-🚧
-
-Choose [desktop layout](#/internal/set-tabs/world-tty-default_profile) or [mobile layout](#/internal/set-tabs/world-tty-profile_1).
+Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>.
 
 <Code>
   ```sh title="Spawn, move and remove" showLineNumbers

@@ -13,6 +13,7 @@ import useSession from "../sh/session.store";
 import useUpdate from "../hooks/use-update";
 import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/npc-cli/components/Icon";
 import PsList from "./PsList";
+import TabsLayoutLink from "./TabsLayoutLink";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -290,10 +291,10 @@ export default function Manage(props) {
             Layout
           </li>
           <li>
-            <a href={`#/internal/set-tabs/world-tty-default_profile`}>world + tty (default_profile)</a>
+            <TabsLayoutLink layoutPresetKey="world-tty-default">world + tty (default)</TabsLayoutLink>
           </li>
           <li>
-            <a href={`#/internal/set-tabs/world-tty-profile_1`}>world + tty (profile_1)</a>
+            <TabsLayoutLink layoutPresetKey="world-tty-quickstart">world + tty (quickstart)</TabsLayoutLink>
           </li>
           <li>
             <a href={`#/internal/remember-tabs`}>remember tabset</a>
