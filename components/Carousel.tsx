@@ -60,7 +60,7 @@ const carouselCss = css`
   --slider-scrollbar-height: 48px;
   
   height: var(--slider-height);
-  margin: 48px 0;
+  margin: 32px 0;
   /* background-color: #000; */
   
   @media (max-width: ${mobileBreakpoint}) {
