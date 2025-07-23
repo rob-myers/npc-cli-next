@@ -21,6 +21,7 @@ import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__2025061
 import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
 import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
 import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-viewport.webp';
+import ViewerControlsWithPlayCircled from '../public/images/viewer-controls-with-play-circled.png.webp';
 
 # Home
 
@@ -31,8 +32,8 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 
 <Card background='#eee'>
 Desktop users (e.g. laptop, PC) can follow along with the 1st video.
-Mobile users can watch both videos but follow the 2nd one.
-Using a terminal on a mobile is a bit tricky, so we'll avoid it.<SideNote>Although other touch screens are easier e.g. iPads.</SideNote>
+Mobile users can watch both videos but follow along with the 2nd one.
+Using a terminal on a mobile is a bit tricky, so we'll avoid it for now.<SideNote>Although other touch screens are easier e.g. iPads.</SideNote>
 </Card>
 
 <Carousel
@@ -49,6 +50,12 @@ Using a terminal on a mobile is a bit tricky, so we'll avoid it.<SideNote>Althou
 You can step through the code below using the _Viewer_ (right/bottom of this page). */}
 
 Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>.
+Then open the _Viewer_ (drag or toggle) and press play.
+
+<Image
+  src={ViewerControlsWithPlayCircled}
+  alt="Viewer controls with play circled"
+/>
 
 <Code>
   ```sh title="Spawn, move and remove" showLineNumbers
