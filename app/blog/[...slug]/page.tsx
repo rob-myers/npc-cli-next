@@ -20,16 +20,24 @@ export default async function BlogPage(props: {
         ),
         a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
           props.href ??= '';
-          return (
-            <Link
-              {...props}
-              href={props.href}
-              target={props.title?.startsWith('@') ? props.target : '_blank'}
-              title={props.title?.startsWith('@') ? props.title.slice(1) : props.title}
-            >
-              {props.children}
-            </Link>
-          );
+          if (props.href.startsWith('#')) {
+            return (// 🔔 <Link> reloaded anchor
+              <a {...props} href={props.href}>
+                {props.children}
+              </a>
+            );
+          } else {
+            return (
+              <Link
+                {...props}
+                href={props.href}
+                target={props.title?.startsWith('@') ? props.target : '_blank'}
+                title={props.title?.startsWith('@') ? props.title.slice(1) : props.title}
+              >
+                {props.children}
+              </Link>
+            );
+          }
         },
         pre: 'pre',
       },
