@@ -134,6 +134,7 @@ const codeContainerCss = css`
     margin-bottom: 1rem;
     background-color: #eee;
     color: #000;
+    height: 50px;
   }
   pre {
     padding-top: 0;
