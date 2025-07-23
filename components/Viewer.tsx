@@ -47,6 +47,7 @@ export default function Viewer() {
       ], {
         duration: 1000,
         iterations: 1,
+        fill: 'forwards',
       });
     },
     onChangeIntersect: debounce((intersects: boolean) => {
@@ -244,7 +245,7 @@ const viewerCss = css`
   ${css`
     ${viewerCssVar.barSize}: ${view.barSize};
     ${viewerCssVar.iconSize}: ${view.iconSize};
-    ${viewerCssVar.internalApiSpinnerOpacity}: 0.5;
+    ${viewerCssVar.internalApiSpinnerOpacity}: 0;
   `}
 
   // if never drag or maximise, toggle acts like this
