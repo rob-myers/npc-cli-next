@@ -25,12 +25,14 @@ import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-view
 
 ## Quickstart
 
+🚧 split by desktop or mobile
+
 Let's spawn, move, and remove an NPC.<SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
 
 <Carousel
   height={500}
-  heightMobile={400}
+  heightMobile={300}
   background="#000"
 >
   <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />
@@ -41,54 +43,25 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 The above videos show this website on a laptop or mobile phone.
 You can step through the code below using the _Viewer_ (right/bottom of this page).
 
-<Carousel
-  height={500}
-  heightMobile={400}
-  background="#fff"
-  allowTouchMove={false}
->
+  <Code>
+  ```sh title="Spawn, move and remove" showLineNumbers
+  # spawn npc at navigable or actable
+  spawn npcKey:rob at:$( click 1 )
 
-<Code>
-```sh title="Spawn, move and remove" showLineNumbers
-# spawn npc at navigable or actable
-spawn npcKey:rob at:$( click 1 )
+  # move rob to navigable
+  # assuming doors accessible
+  move npcKey:rob to:$( click 1 )
 
-# move rob to navigable
-# assuming doors accessible
-move npcKey:rob to:$( click 1 )
+  # respawn rob with skeleton key
+  spawn npcKey:rob at:$( click 1 ) grant:.
 
-# respawn rob with skeleton key
-spawn npcKey:rob at:$( click 1 ) grant:.
+  # move rob via a waypoint
+  move npcKey:rob to:$( click 2 )
 
-# move rob via a waypoint
-move npcKey:rob to:$( click 2 )
-
-# dust to dust
-w npc.remove rob
-```
-</Code>
-
-<Code>
-```sh title="Mobile profile here... 🚧" showLineNumbers
-# spawn npc at navigable or actable
-spawn npcKey:rob at:$( click 1 )
-
-# move rob to navigable
-# assuming doors accessible
-move npcKey:rob to:$( click 1 )
-
-# respawn rob with skeleton key
-spawn npcKey:rob at:$( click 1 ) grant:.
-
-# move rob via a waypoint
-move npcKey:rob to:$( click 2 )
-
-# dust to dust
-w npc.remove rob
-```
-</Code>
-
-</Carousel>
+  # dust to dust
+  w npc.remove rob
+  ```
+  </Code>
 
 Having seen this website in action,
 let's list our underlying motivations.
