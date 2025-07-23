@@ -91,7 +91,6 @@ const mainHeaderCss = css`
   letter-spacing: 1.5rem;
   
   a {
-    display: none;
     color: black;
     text-decoration: none;
   }
@@ -111,7 +110,7 @@ const mainHeaderCss = css`
     pointer-events: all;
     background-color: #fff;
     a {
-      display: initial;
+      pointer-events: all;
     }
   }
 `;
