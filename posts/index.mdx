@@ -25,10 +25,14 @@ import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-view
 
 ## Quickstart
 
-🚧 split by desktop or mobile
-
 Let's spawn, move, and remove an NPC.<SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
+
+<Card background='#eee'>
+Desktop users (e.g. laptop, PC) can follow along with the 1st video.
+Mobile users can watch both videos but follow the 2nd one.
+Using a terminal on a mobile is a bit tricky, so we'll avoid it.<SideNote>Although other touch screens are easier e.g. iPads.</SideNote>
+</Card>
 
 <Carousel
   height={500}
@@ -40,10 +44,16 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   <Video videoKey='mobileDemo' label="Mobile demo" />
 </Carousel>
 
-The above videos show this website on a laptop or mobile phone.
-You can step through the code below using the _Viewer_ (right/bottom of this page).
+{/* The above videos show this website on a laptop or mobile phone.
+You can step through the code below using the _Viewer_ (right/bottom of this page). */}
 
-  <Code>
+🚧
+
+Desktop users [world + tty (default_profile)](#/internal/set-tabs/world-tty-default_profile)
+
+Mobile users [world + tty (profile_1)](#/internal/set-tabs/world-tty-profile_1)
+
+<Code>
   ```sh title="Spawn, move and remove" showLineNumbers
   # spawn npc at navigable or actable
   spawn npcKey:rob at:$( click 1 )
@@ -61,7 +71,7 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
   # dust to dust
   w npc.remove rob
   ```
-  </Code>
+</Code>
 
 Having seen this website in action,
 let's list our underlying motivations.
