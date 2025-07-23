@@ -1,29 +1,28 @@
 "use client";
 import { css } from "@emotion/react";
-import type { StaticImageData } from "next/image";
 
-export default function Figure({ data, label, objectPosition }: Props) {
+export default function Figure({ children, label, maxHeight }: React.PropsWithChildren<Props>) {
   return (
-    <figure css={labelledImageCss}>
-      {typeof label !== undefined && <label>
+    <figure
+      css={labelledImageCss}
+      style={{ ['--figure-max-height' as any]: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight }}
+    >
+      {label && <label>
         {label}
       </label>}
-      <img
-        width={data.width}
-        height={data.height}
-        src={data.src}
-        {...objectPosition && { style: { objectPosition } }}
-      />
+      {children}
     </figure>
   );
 }
 
 interface Props extends Pick<React.CSSProperties, 'objectPosition'> {
-  data: StaticImageData;
   label?: React.ReactElement;
+  maxHeight?: string | number;
 }
 
 const labelledImageCss = css`
+  position: relative;
+
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -37,11 +36,12 @@ const labelledImageCss = css`
     padding: 0 16px;
     background-color: #2228;
     color: white;
+    border: 1px solid #fff7;
     border-radius: 8px;
   }
 
   img {
-    height: 100%;
-    object-fit: cover;
+    max-height: var(--figure-max-height);
+    object-fit: contain;
   }
 `;
