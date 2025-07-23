@@ -3,7 +3,7 @@ import React from "react";
 import { Swiper, SwiperProps, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 
-import { Scrollbar } from 'swiper/modules';
+import { Scrollbar, Navigation } from 'swiper/modules';
 import { css } from '@emotion/react';
 
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
@@ -26,7 +26,8 @@ export default function Carousel(props: React.PropsWithChildren<Props>) {
       css={carouselCss}
       loop={false}
       allowTouchMove={props.allowTouchMove}
-      modules={[Scrollbar]}
+      modules={[Scrollbar, Navigation]}
+      navigation={props.navigation}
       onSwiper={state.onSwiper}
       scrollbar={{ draggable: true }}
       slidesPerView={1}
@@ -46,7 +47,7 @@ export default function Carousel(props: React.PropsWithChildren<Props>) {
   );
 }
 
-interface Props extends Pick<SwiperProps, 'allowTouchMove'> {
+interface Props extends Pick<SwiperProps, 'allowTouchMove' | 'navigation'> {
   background?: string;
   height: number;
   heightMobile?: number;
