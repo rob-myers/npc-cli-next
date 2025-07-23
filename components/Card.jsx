@@ -8,7 +8,11 @@ import { breakpoint } from './const';
 export default function Card(props) {
 
   /** @type {React.CSSProperties | undefined} */
-  const styles = typeof props.background === 'string' ? { background: props.background, paddingTop: 8, paddingBottom: 8 } : undefined;
+  const styles = typeof props.background === 'string' ? {
+    background: props.background,
+    paddingTop: 8,
+    paddingBottom: 8,
+  } : undefined;
 
   return (
     <div css={rootCss} style={styles}>
