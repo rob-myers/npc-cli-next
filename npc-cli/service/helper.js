@@ -22,11 +22,15 @@ export const helper = {
   fromDecorImgKey,
 
   ...(/** @param {Record<Key.Profile, true>} fromProfileKey */
-    (fromProfileKey) => ({ fromProfileKey, profileKeys: keys(fromProfileKey) })
+    (fromProfileKey) => ({
+      fromProfileKey,
+      profileKeys: keys(fromProfileKey),
+    })
   )({
-    default_profile: true, // 1st is default
+    default: true, // 1st is default in <select>
+    dev_only: true,
+    empty: true,
     profile_1: true,
-    empty_profile: true,
   }),
 
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
@@ -63,7 +67,7 @@ export const helper = {
       ],
       [
         { type: "component", class: "Manage", filepath: "manage-0", props: {} },
-        { type: "terminal", filepath: "tty-0", profileKey: 'default_profile', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
+        { type: "terminal", filepath: "tty-0", profileKey: 'default', env: { WORLD_KEY: "world-0", TABS_API_KEY } },
       ]
     ],
     "world-tty-profile_1": [

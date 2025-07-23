@@ -1,6 +1,6 @@
 import React from "react";
 
-import { profile } from '../sh/src/profiles';
+import * as profile from '../sh/src/profiles';
 
 import utilSh from "../sh/src/util.sh";
 import gameSh from "../sh/src/game.sh";
