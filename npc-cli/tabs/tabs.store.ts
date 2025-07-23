@@ -192,7 +192,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         layout = resolveLayoutPreset(layout);
       }
 
-      if (isTouchDevice()) {// better UX on mobile
+      if (isTouchDevice()) {// 🔔 better UX on mobile
         layout = flattenLayout(deepClone(layout));
       }
       const synced = deepClone(layout);
