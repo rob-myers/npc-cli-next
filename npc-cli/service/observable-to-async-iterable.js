@@ -5,10 +5,11 @@
 
 /**
  * @template T
- * @param {import('rxjs').Observable<T>} observable
+ * @param {import('@/npc-cli/service/broadcaster').Broadcaster<T>} observable
+ * @param {boolean} [independent]
  * @returns {AsyncIterableIterator<T>}
  */
-export function observableToAsyncIterable(observable) {
+export function observableToAsyncIterable(observable, independent = false) {
   const pullQueue = /** @type {Array<Callback>} */ ([]);
   const pushQueue = /** @type {Array<any>} */ ([]);
 
@@ -57,18 +58,16 @@ export function observableToAsyncIterable(observable) {
     );
 
   const subscription = observable.subscribe({
-    /** @param {any} value */
     next(value) {
       pushValue(value);
     },
-    /** @param {Error} err */
     error(err) {
       pushError(err);
     },
     complete() {
       pushDone();
     },
-  });
+  }, independent);
 
   const emptyQueue = () => {
     if (listening) {

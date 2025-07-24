@@ -63,6 +63,11 @@
 
 ### World
 
+- ✅ BUG `w.events` sees `clear-off-mesh` before `enter-off-mesh` even though they execute in other order
+  - ℹ️ `next enter-off-mesh` triggers a subscriber which `next clear-off-mesh` then executes 2nd subscriber
+  - ℹ️ later subscribers see `clear-off-mesh` then `enter-off-mesh`
+  - ✅ Broadcaster class like `Subject` but with prioritised listeners `independents`
+
 - skin order should be head/head-overlay/body/body-overlay
   - currently need e.g. `spawn npcKey:foo at:$( click 1 ) skin:soldier-0/suit-0/soldier-0/suit-0`
 

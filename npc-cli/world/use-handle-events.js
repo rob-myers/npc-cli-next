@@ -860,7 +860,8 @@ export default function useHandleEvents(w) {
   w.e = state; // e for 'events state'
 
   React.useEffect(() => {
-    const sub = w.events.subscribe(state.handleEvents);
+    // 🔔 not independent because we synchronously invoke `w.events.next`
+    const sub = w.events.subscribe({ next: state.handleEvents });
     return () => {
       sub.unsubscribe();
     };
@@ -927,6 +928,5 @@ export default function useHandleEvents(w) {
 /** e.g. `'^g0'` -> `/^g0/` */
 const regexCache = /** @type {Record<string, RegExp>} */ ({});
 const tmpVect1 = new Vect();
-const tmpVect2 = new Vect();
 const tmpRect1 = new Rect();
 const tmpRect2 = new Rect();

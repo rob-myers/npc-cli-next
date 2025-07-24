@@ -1484,6 +1484,7 @@ export class NpcApi {
     if (this.base.agentAnim?.active !== true) {
       return false;
     }
+
     if (
       this.base.agentAnim.t <= this.base.agentAnim.tmid
       || this.base.agentAnim.tmax === Infinity // turnBeforeMove

@@ -118,7 +118,7 @@ export async function* click(ct) {
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
   const filter = filterDef !== undefined ? api.generateSelector(api.parseFnOrStr(filterDef), []) : undefined;
 
-  /** @type {import('rxjs').Subscription} */
+  /** @type {import('@/npc-cli/service/broadcaster').BasicSubscription} */
   let eventsSub;
 
   // suspend/resume handled by `api.isRunning()` below
@@ -203,7 +203,8 @@ export async function* events({ api, args, w }) {
     [],
   ) : undefined;
   
-  const asyncIterable = api.observableToAsyncIterable(w.events);
+  // 🔔 independent because we won't synchronously invoke `w.events.next`
+  const asyncIterable = api.observableToAsyncIterable(w.events, true);
   const handlers = api.handleStatus({
     // could not catch asyncIterable.throw?.(api.getKillError())
     cleanups() { asyncIterable.return?.() },
