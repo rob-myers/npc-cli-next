@@ -142,7 +142,8 @@ export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
     expectedLayersPerTile: 1,
     walkableClimb: 0,
     tileCacheMeshProcess,
-    maxSimplificationError: 0.85,
+    // maxSimplificationError: 0.85,
+    maxSimplificationError: 3, // prev 0.85
   };
 }
 
