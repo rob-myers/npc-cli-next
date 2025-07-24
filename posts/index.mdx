@@ -54,32 +54,36 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
 
 {/* Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>. */}
 
-To follow along,
-ensure the same tabs by clicking <TabsLayoutLink layoutPresetKey="world-tty-default">set-tabs/world-tty-default</TabsLayoutLink>.
-Next ensure the Viewer is _open_: its on the right and can be dragged or toggled.
-Finally click the _play button_ as indicated in the slides below.
+<Card background='#eef'>
+  To follow along,
+  ensure the same tabs by clicking <TabsLayoutLink layoutPresetKey="world-tty-default">here</TabsLayoutLink>.
+  The Viewer must be _open_: its on the right side of the screen and can be dragged or toggled.
+  Finally click the _play button_ as indicated in the slides below.
 
-<Carousel
-  height={450}
-  heightMobile={300}
-  border='1px solid #aaa'
-  navigation
-  effect='coverflow'
->
-  <Figure label="Viewer closed">
-    <Image src={DesktopViewerClosedWebp} alt="Desktop Viewer closed"/>
-  </Figure>
-  <Figure label="Viewer open">
-    <Image src={DesktopViewerOpenWebp} alt="Desktop Viewer open"/>
-  </Figure>
-  <Figure label="Viewer play button">
-    <Image src={DesktopViewerPlayButtonWebp} alt="Desktop Viewer play button"/>
-  </Figure>
-  {/* <Figure maxHeight={80}><Image src={ViewerControlsWithPlayCircled} alt="Viewer controls with play circled"/></Figure> */}
-</Carousel>
+  <Carousel
+    height={450}
+    heightMobile={300}
+    border='1px solid #aaa'
+    navigation
+    effect='coverflow'
+    background='white'
+  >
+    <Figure label="Viewer closed">
+      <Image src={DesktopViewerClosedWebp} alt="Desktop Viewer closed"/>
+    </Figure>
+    <Figure label="Viewer open">
+      <Image src={DesktopViewerOpenWebp} alt="Desktop Viewer open"/>
+    </Figure>
+    <Figure label="Viewer play button">
+      <Image src={DesktopViewerPlayButtonWebp} alt="Desktop Viewer play button"/>
+    </Figure>
+    {/* <Figure maxHeight={80}><Image src={ViewerControlsWithPlayCircled} alt="Viewer controls with play circled"/></Figure> */}
+  </Carousel>
+</Card>
+
 
 In the video we work our way through the following commands.
-Although not particularly inspiring they're a natural beginning.
+Although not particularly inspiring they're a natural place to start.
 
 <Code>
   ```sh title="Spawn, move and remove" showLineNumbers
