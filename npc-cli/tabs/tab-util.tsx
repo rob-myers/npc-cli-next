@@ -25,8 +25,8 @@ export function addTabToLayout({ layout, selectTab, tabDef }: {
     return layout; // already exists
   }
 
-  // 1st inactive tabset, or only one
-  const targetTabset = tabsetNodes.find(x => x.active !== true) ?? tabsetNodes[0];
+  // 1st active tabset, or first tabset
+  const targetTabset = tabsetNodes.find(x => x.active) ?? tabsetNodes[0];
   const numTabs = targetTabset.children.push(createTabNodeFromDef(tabDef));
 
   if (selectTab === true) {
