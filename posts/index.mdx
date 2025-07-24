@@ -24,6 +24,7 @@ import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-view
 import ViewerControlsWithPlayCircled from '../public/images/viewer-controls-with-play-circled.webp';
 import DesktopViewerClosedWebp from '../public/images/desktop-viewer-closed.webp';
 import DesktopViewerOpenWebp from '../public/images/desktop-viewer-open.webp';
+import DesktopViewerPlayButtonWebp from '../public/images/desktop-viewer-play-button.webp';
 
 # Home
 
@@ -39,7 +40,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 </Card>
 
 <Carousel
-  height={500}
+  height={450}
   heightMobile={300}
   background="#000"
 >
@@ -54,14 +55,16 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
 {/* Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>. */}
 
 To follow along,
-select the same tabs layout by <TabsLayoutLink layoutPresetKey="world-tty-default">clicking here</TabsLayoutLink>.
-Next ensure the _Viewer_ is open: its on the right and can be dragged or toggled.
-
+ensure the same tabs by clicking <TabsLayoutLink layoutPresetKey="world-tty-default">set-tabs/world-tty-default</TabsLayoutLink>.
+Next ensure the Viewer is _open_: its on the right and can be dragged or toggled.
+Finally click the _play button_ as indicated in the slides below.
 
 <Carousel
-  height={500}
+  height={450}
   heightMobile={300}
-  background="#000"
+  border='1px solid #aaa'
+  navigation
+  effect='coverflow'
 >
   <Figure label="Viewer closed">
     <Image src={DesktopViewerClosedWebp} alt="Desktop Viewer closed"/>
@@ -69,10 +72,11 @@ Next ensure the _Viewer_ is open: its on the right and can be dragged or toggled
   <Figure label="Viewer open">
     <Image src={DesktopViewerOpenWebp} alt="Desktop Viewer open"/>
   </Figure>
+  <Figure label="Viewer play button">
+    <Image src={DesktopViewerPlayButtonWebp} alt="Desktop Viewer play button"/>
+  </Figure>
   {/* <Figure maxHeight={80}><Image src={ViewerControlsWithPlayCircled} alt="Viewer controls with play circled"/></Figure> */}
 </Carousel>
-
-
 
 In the video we work our way through the following commands.
 Although not particularly inspiring they're a natural beginning.
@@ -97,19 +101,21 @@ Although not particularly inspiring they're a natural beginning.
   ```
 </Code>
 
-🚧 screenshots with labels
 
 ## Mobile Devices
 
-Terminals traditionally have a profile (initial script).
+{/* Terminals traditionally have a profile (initial script).
 The _default profile_ provides various shell functions.
 Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
-Follow along on Desktop or Mobile.
+Follow along on Desktop or Mobile. */}
+
+🚧
 
 <Carousel
-  height={500}
+  height={450}
   heightMobile={300}
   background="#000"
+  scrollbar
 >
   <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />
   <Video videoKey='mobileDemo' label="Mobile demo" />
