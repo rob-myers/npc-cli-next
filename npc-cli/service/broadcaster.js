@@ -7,10 +7,10 @@
 export class Broadcaster {
 
   /**
-   * A listener is independent if it never invokes `next`.
+   * These listeners never invoke `next`.
    * This avoids events occurring "out of order" due to recursive `next` invocations.
    */
-  independents = /** @type {((value: T) => void)[]} */ ([]);
+  listeners = /** @type {((value: T) => void)[]} */ ([]);
   
   /**
    * These listeners can invoke `next`.
@@ -18,17 +18,17 @@ export class Broadcaster {
    * Ideally there should be 0 or 1 of them.
    * Given multiple, they should be independent of event re-orderings due to recursive `next`,
    * 
-   * > e.g. if `enter-off-mesh` induces `clear-off-mesh`,
+   * > e.g. if `enter-off-mesh` synchronously induces `clear-off-mesh`,
    * > later listeners shouldn't mind if `clear-off-mesh` comes 1st.
    */
-  listeners = /** @type {((value: T) => void)[]} */ ([]);
+  internals = /** @type {((value: T) => void)[]} */ ([]);
 
   /**
    * @param {T} value 
    */
   next(value) {
-    this.independents.forEach(listener => listener(value));
     this.listeners.forEach(listener => listener(value));
+    this.internals.forEach(listener => listener(value));
   }
 
   /**
@@ -36,11 +36,11 @@ export class Broadcaster {
    * @param {((value: T) => void)} observer.next
    * @param {((value: T) => void)} [observer.error]
    * @param {((value: T) => void)} [observer.complete]
-   * @param {boolean} [independent]
+   * @param {{ internal?: boolean }} [opts]
    * @returns {BasicSubscription}
    */
-  subscribe({ next, error, complete}, independent = false) {
-    const key = independent ? 'independents' : 'listeners';
+  subscribe({ next, error, complete}, opts = {}) {
+    const key = opts.internal ? 'internals' : 'listeners';
     this[key].push(next);
     const tearDowns = /** @type {(() => void)[]} */ ([]);
     return {

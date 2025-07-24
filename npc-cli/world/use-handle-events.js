@@ -860,8 +860,8 @@ export default function useHandleEvents(w) {
   w.e = state; // e for 'events state'
 
   React.useEffect(() => {
-    // 🔔 not independent because we synchronously invoke `w.events.next`
-    const sub = w.events.subscribe({ next: state.handleEvents });
+    // 🔔 internal because it can synchronously invoke `w.events.next`
+    const sub = w.events.subscribe({ next: state.handleEvents }, { internal: true });
     return () => {
       sub.unsubscribe();
     };

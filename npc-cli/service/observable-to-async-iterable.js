@@ -6,10 +6,9 @@
 /**
  * @template T
  * @param {import('@/npc-cli/service/broadcaster').Broadcaster<T>} observable
- * @param {boolean} [independent]
  * @returns {AsyncIterableIterator<T>}
  */
-export function observableToAsyncIterable(observable, independent = false) {
+export function observableToAsyncIterable(observable) {
   const pullQueue = /** @type {Array<Callback>} */ ([]);
   const pushQueue = /** @type {Array<any>} */ ([]);
 
@@ -67,7 +66,7 @@ export function observableToAsyncIterable(observable, independent = false) {
     complete() {
       pushDone();
     },
-  }, independent);
+  });
 
   const emptyQueue = () => {
     if (listening) {

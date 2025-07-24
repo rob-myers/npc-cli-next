@@ -204,7 +204,7 @@ export async function* events({ api, args, w }) {
   ) : undefined;
   
   // 🔔 independent because we won't synchronously invoke `w.events.next`
-  const asyncIterable = api.observableToAsyncIterable(w.events, true);
+  const asyncIterable = api.observableToAsyncIterable(w.events);
   const handlers = api.handleStatus({
     // could not catch asyncIterable.throw?.(api.getKillError())
     cleanups() { asyncIterable.return?.() },
