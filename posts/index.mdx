@@ -13,6 +13,7 @@ import Carousel from '../components/Carousel';
 import Code from '../components/Code';
 import Figure from '../components/Figure';
 import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
+import { LaptopIcon, MobileIcon } from '@/npc-cli/components/Icons';
 import Image from 'next/image';
 import TabsLayoutLink from '@/npc-cli/components/TabsLayoutLink';
 import Video from '../components/Video';
@@ -34,9 +35,9 @@ Let's spawn, move, and remove an NPC.<SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
 
 <Card background='#eef'>
-  Desktop users can follow along.
+  <LaptopIcon/> Laptop users can follow along.
 
-  Mobile users can watch the video then skip to the mobile section.<SideNote width={200}>Using a terminal on a mobile is a bit tricky.</SideNote>
+  <MobileIcon/> Mobile users can watch the video then skip to the mobile section.<SideNote width={200}>Using a terminal on a mobile is a bit tricky.</SideNote>
 </Card>
 
 <Carousel
@@ -55,14 +56,14 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
 {/* Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>. */}
 
 <Card background='#eef'>
-  To follow along,
+  <LaptopIcon/> To follow along,
   ensure the same tabs by clicking <TabsLayoutLink layoutPresetKey="world-tty-default">here</TabsLayoutLink>.
   The Viewer must be _open_: its on the right side of the screen and can be dragged or toggled.
-  Finally click the _play button_ as indicated in the slides below.
+  Finally click the _play button_ shown in the slides below.
 
   <Carousel
     height={450}
-    heightMobile={300}
+    heightMobile={250}
     border='1px solid #aaa'
     navigation
     effect='coverflow'
