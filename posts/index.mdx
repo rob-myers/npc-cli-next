@@ -22,6 +22,8 @@ import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
 import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
 import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-viewport.webp';
 import ViewerControlsWithPlayCircled from '../public/images/viewer-controls-with-play-circled.webp';
+import DesktopViewerClosedWebp from '../public/images/desktop-viewer-closed.webp';
+import DesktopViewerOpenWebp from '../public/images/desktop-viewer-open.webp';
 
 # Home
 
@@ -31,9 +33,9 @@ Let's spawn, move, and remove an NPC.<SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
 
 <Card background='#eef'>
-  Desktop users can follow along,
-  mobile users should probably wait.
-  <SideNote>Using a terminal on a mobile is a bit tricky, we'll avoid it for now.</SideNote>
+  Desktop users can follow along.
+
+  Mobile users can watch the video then skip to the mobile section.<SideNote width={200}>Using a terminal on a mobile is a bit tricky.</SideNote>
 </Card>
 
 <Carousel
@@ -51,15 +53,26 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
 
 {/* Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>. */}
 
-To use the same tabs layout <TabsLayoutLink layoutPresetKey="world-tty-default">click here</TabsLayoutLink>.
-Next, ensure the _Viewer_ is open (drag or toggle) and press play.
+To follow along,
+select the same tabs layout by <TabsLayoutLink layoutPresetKey="world-tty-default">clicking here</TabsLayoutLink>.
+Next ensure the _Viewer_ is open: its on the right and can be dragged or toggled.
 
-<Figure maxHeight={80}>
-  <Image
-    src={ViewerControlsWithPlayCircled}
-    alt="Viewer controls with play circled"
-  />
-</Figure>
+
+<Carousel
+  height={500}
+  heightMobile={300}
+  background="#000"
+>
+  <Figure label="Viewer closed">
+    <Image src={DesktopViewerClosedWebp} alt="Desktop Viewer closed"/>
+  </Figure>
+  <Figure label="Viewer open">
+    <Image src={DesktopViewerOpenWebp} alt="Desktop Viewer open"/>
+  </Figure>
+  {/* <Figure maxHeight={80}><Image src={ViewerControlsWithPlayCircled} alt="Viewer controls with play circled"/></Figure> */}
+</Carousel>
+
+
 
 In the video we work our way through the following commands.
 Although not particularly inspiring they're a natural beginning.
@@ -85,6 +98,8 @@ Although not particularly inspiring they're a natural beginning.
 </Code>
 
 🚧 screenshots with labels
+
+## Mobile Devices
 
 Terminals traditionally have a profile (initial script).
 The _default profile_ provides various shell functions.
