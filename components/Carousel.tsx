@@ -3,7 +3,7 @@ import React from "react";
 import { Swiper, SwiperProps, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 
-import { Scrollbar, Navigation } from 'swiper/modules';
+import { Scrollbar, Navigation, EffectFade, EffectCoverflow } from 'swiper/modules';
 import { css } from '@emotion/react';
 
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
@@ -12,6 +12,8 @@ import { mobileBreakpoint } from './const';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
+import 'swiper/css/effect-fade';
+import 'swiper/css/effect-coverflow';
 
 export default function Carousel(props: React.PropsWithChildren<Props>) {
 
@@ -26,16 +28,19 @@ export default function Carousel(props: React.PropsWithChildren<Props>) {
       css={carouselCss}
       loop={false}
       allowTouchMove={props.allowTouchMove}
-      modules={[Scrollbar, Navigation]}
+      modules={[Scrollbar, Navigation, EffectFade, EffectCoverflow]}
       navigation={props.navigation}
       onSwiper={state.onSwiper}
-      scrollbar={{ draggable: true }}
+      scrollbar={props.scrollbar ? { draggable: true } : undefined}
       slidesPerView={1}
       spaceBetween={50}
+      effect={props.effect}
       style={{
         ['--slider-height' as any]: `${props.height}px`,
         ['--slider-height-mobile' as any]: `${props.heightMobile ?? props.height}px`,
+        ['--slider-scrollbar-height' as any]: props.scrollbar ? undefined : `${0}px`,
         background: props.background,
+        border: props.border,
       }}
     >
       {React.Children.toArray(props.children).map((child, index) =>
@@ -49,8 +54,11 @@ export default function Carousel(props: React.PropsWithChildren<Props>) {
 
 interface Props extends Pick<SwiperProps, 'allowTouchMove' | 'navigation'> {
   background?: string;
+  border?: string;
   height: number;
   heightMobile?: number;
+  scrollbar?: boolean;
+  effect?: 'fade' | 'slide' | 'coverflow';
 }
 
 
@@ -61,8 +69,9 @@ const carouselCss = css`
   
   height: var(--slider-height);
   margin: 32px 0;
-  /* background-color: #000; */
-  
+
+  --swiper-navigation-size: 24px !important;
+
   @media (max-width: ${mobileBreakpoint}) {
     --slider-scrollbar-height: 32px;
     height: var(--slider-height-mobile);
@@ -70,7 +79,8 @@ const carouselCss = css`
   }
 
   .swiper-slide {
-    height: calc(100% - var(--slider-scrollbar-height) - 4px);
+    /* height: calc(100% - var(--slider-scrollbar-height) - 4px); */
+    height: calc(100% - var(--slider-scrollbar-height));
     display: flex;
     justify-content: center;
     align-items: center;
