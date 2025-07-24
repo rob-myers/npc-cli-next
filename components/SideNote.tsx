@@ -161,7 +161,7 @@ const speechBubbleCss = css`
   /** Prevents bubble span from wrapping to next line? */
   display: inline-block;
 
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-style: normal;
   text-align: center;
   white-space: nowrap;
