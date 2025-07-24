@@ -1,13 +1,13 @@
 /**
- * Basic `Subject` replacement with notion of "independent" listeners:
- *  - These listeners never invoke `next`
- *  - They avoid events occurring "out of order"
+ * Basic `Subject` replacement with notion of "internal" listeners:
+ *  - Internal listeners may invoke `next`
+ *  - Normal listeners may not, which avoids events occurring "out of order" in later list
  * @template T
  */
 export class Broadcaster {
 
   /**
-   * These listeners never invoke `next`.
+   * These listeners never invokehttp://localhost:3000/blog/index `next`.
    * This avoids events occurring "out of order" due to recursive `next` invocations.
    */
   listeners = /** @type {((value: T) => void)[]} */ ([]);
