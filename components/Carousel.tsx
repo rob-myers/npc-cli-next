@@ -68,7 +68,7 @@ const carouselCss = css`
   --slider-scrollbar-height: 48px;
   
   height: var(--slider-height);
-  margin: 32px 0;
+  margin: 48px 0;
 
   --swiper-navigation-size: 24px !important;
 
