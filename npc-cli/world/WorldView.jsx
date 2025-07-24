@@ -48,7 +48,7 @@ export default function WorldView(props) {
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 30,
+    fov: 40,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
@@ -754,8 +754,8 @@ export default function WorldView(props) {
 
 const rootCss = css`
   user-select: none;
-  //background-color: rgba(30, 30, 30, 1);
-  background-color: rgba(0, 0, 0, 1);
+  background-color: rgba(30, 30, 30, 1);
+  //background-color: rgba(0, 0, 0, 1);
 
   canvas[data-engine] {
     width: 100%;
