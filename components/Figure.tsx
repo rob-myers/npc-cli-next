@@ -5,17 +5,17 @@ export default function Figure({ children, label, maxHeight }: React.PropsWithCh
   return (
     <figure
       css={labelledImageCss}
-      style={{ ['--figure-max-height' as any]: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight }}
+      style={{
+        ['--figure-max-height' as any]: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
+      }}
     >
-      {label && <label>
-        {label}
-      </label>}
+      {label && <label>{label}</label>}
       {children}
     </figure>
   );
 }
 
-interface Props extends Pick<React.CSSProperties, 'objectPosition'> {
+interface Props {
   label?: React.ReactElement;
   maxHeight?: string | number;
 }
@@ -25,8 +25,10 @@ const labelledImageCss = css`
 
   height: 100%;
   display: flex;
+
   flex-direction: column;
   align-items: center;
+  /* justify-content: center; */
 
   label {
     position: absolute;
@@ -41,6 +43,7 @@ const labelledImageCss = css`
   }
 
   img {
+    height: 100%;
     max-height: var(--figure-max-height);
     object-fit: contain;
   }
