@@ -8,14 +8,15 @@ export const metadata = {
   tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
 };
 
+import Image from 'next/image';
+
 import Card from "../components/Card";
 import Carousel from '../components/Carousel';
 import Code from '../components/Code';
 import Figure from '../components/Figure';
-import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
-import { LaptopIcon, MobileIcon } from '@/npc-cli/components/Icons';
-import Image from 'next/image';
-import TabsLayoutLink from '@/npc-cli/components/TabsLayoutLink';
+import { faGrip, faExpandThin, faChevronRight } from '../npc-cli/components/Icon';
+import { LaptopIcon, MobileIcon } from '../npc-cli/components/Icons';
+import TabsLayoutLink from '../npc-cli/components/TabsLayoutLink';
 import Video from '../components/Video';
 
 import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
@@ -66,7 +67,7 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
     heightMobile={250}
     border='1px solid #aaa'
     navigation
-    effect='coverflow'
+    allowTouchMove={false}
     background='white'
   >
     <Figure label="Viewer closed">
@@ -120,7 +121,7 @@ Follow along on Desktop or Mobile. */}
   height={450}
   heightMobile={300}
   background="#000"
-  scrollbar
+  navigation
 >
   <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />
   <Video videoKey='mobileDemo' label="Mobile demo" />
