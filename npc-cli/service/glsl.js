@@ -753,7 +753,7 @@ const instancedWallsShader = {
       return;
     }
     
-    gl_FragColor = vec4(diffuse, min(opacity * vOpacityScale, opacityMin));
+    gl_FragColor = vec4(diffuse, opacity == 1.0 ? 1.0 : min(opacity * vOpacityScale, opacityMin));
     // gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
     #include <logdepthbuf_fragment>
   }
