@@ -124,7 +124,7 @@ export default function Ceiling(props) {
         depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
         objectPickRed={3}
-        opacityCloseDivisor={20}
+        opacityCloseDivisor={8}
       />
     </instancedMesh>
   );
