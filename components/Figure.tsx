@@ -1,5 +1,6 @@
 "use client";
 import { css } from "@emotion/react";
+import { mobileBreakpoint } from "./const";
 
 export default function Figure({ children, label, maxHeight }: React.PropsWithChildren<Props>) {
   return (
@@ -46,5 +47,13 @@ const labelledImageCss = css`
     height: 100%;
     max-height: var(--figure-max-height);
     object-fit: contain;
+  }
+
+  @media (max-width: ${mobileBreakpoint}) {
+    background-color: #eee;
+
+    label {
+      top: 8px;
+    }
   }
 `;
