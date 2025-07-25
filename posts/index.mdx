@@ -113,12 +113,16 @@ The _default profile_ provides various shell functions.
 Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
 Follow along on Desktop or Mobile. */}
 
-🚧
-
 The desktop and mobile versions of this site have the same features.
-However, it is harder to use a terminal on a mobile device e.g. unhelpful predictive text, auto-punctuation conflicts, (usually) no arrow keys.
-More obviously mobile screens are too small.
-Ideally we'd see this blog, the 3D world, and one or more terminals, all at once.
+But it's harder to use a terminal on a mobile.
+
+> <MobileIcon/> The keyboard takes up space,
+the predictive text is unhelpful,
+there are auto-punctuation conflicts,
+and no arrow keys (usually).
+
+Moreover mobile screens are too small.
+Ideally we want to see this blog, a 3D world, and one or more terminals, all at once.
 
 <Carousel
   height={450}
@@ -132,20 +136,18 @@ Ideally we'd see this blog, the 3D world, and one or more terminals, all at once
 
 ## Motivations
 
-🚧
-
-Our underlying motivations...
+Let us list our underlying motivations.
 
 - __NPCs indistinguishable from human-controlled characters.__
-  Permitting a human Game Master makes this possible.<SideNote>
-  Can one human act indistinguishably from many humans playing individual parts?</SideNote>
-  It also motivates realtime control systems.
+  Permitting a human Game Master makes this tractable.
+  Can one human act indistinguishably from many humans playing individual parts?
+  <SideNote>It also motivates realtime control systems.</SideNote>
 
-- __An in-depth explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation).__
-  Our NPCs are driven by Recast-Detour running as WASM in a web worker.
+- __Understand [Recast-Detour](https://github.com/recastnavigation/recastnavigation).__
+  Our NPCs are driven by Recast-Detour.
   We'll analyse this important C++ library.
 
-- __A generic scripting system for [three.js](https://www.npmjs.com/package/three).__
+- __Generic scripting for [three.js](https://www.npmjs.com/package/three).__
   We interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript.
   In production one can run commands.
   In development, shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
