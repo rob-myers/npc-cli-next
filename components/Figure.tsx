@@ -46,12 +46,13 @@ const labelledImageCss = css`
   img {
     height: 100%;
     max-height: var(--figure-max-height);
-    object-fit: contain;
+    object-fit: cover;
   }
-
+  
   @media (max-width: ${mobileBreakpoint}) {
-    background-color: #eee;
-
+    img {
+      object-fit: contain;
+    }
     label {
       top: 8px;
     }
