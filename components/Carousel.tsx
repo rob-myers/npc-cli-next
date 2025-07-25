@@ -69,10 +69,10 @@ const carouselCss = css`
   
   height: var(--slider-height);
   margin: 48px 0;
-
-  --swiper-navigation-size: 24px !important;
-
+  --swiper-navigation-color: #090;
+  
   @media (max-width: ${mobileBreakpoint}) {
+    --swiper-navigation-size: 24px !important;
     --slider-scrollbar-height: 32px;
     height: var(--slider-height-mobile);
     margin: 32px 0;
