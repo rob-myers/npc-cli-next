@@ -75,8 +75,8 @@ export const helper = {
           { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
         ],
         [
-          { type: "component", class: "Manage", filepath: "manage-0", props: {} },
           { type: "terminal", filepath: "tty-0", profileKey, env: { WORLD_KEY: "world-0", TABS_API_KEY } },
+          { type: "component", class: "Manage", filepath: "manage-0", props: {} },
         ],
       ];
       return agg;
