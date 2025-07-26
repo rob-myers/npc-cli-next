@@ -30,6 +30,12 @@ w debug.showOrigNavPoly
 w debug.showStaticColliders
 ```
 
+```sh
+w view.showEffects
+w view.showEffects { darkness:1 }
+w view.showEffects $( jsArg darkness:3 )
+```
+
 # Npcs
 
 ```sh
