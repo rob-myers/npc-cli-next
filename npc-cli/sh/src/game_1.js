@@ -300,47 +300,6 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 }
 
 /**
- * @param {NPC.RunArg} ct
- */
-export const testAddDecor = (ct) => {
-  const decorCircle = ct.w.decor.create({
-    type: 'circle',
-    key: 'test-decor-circle',
-    center: { x: 2.5, y: 2.5 },
-    radius: 1.5,
-  });
-  
-  const decorPoint = ct.w.decor.create({
-    type: 'point',
-    key: 'test-decor-point',
-    x: 3,
-    y: 7.5,
-    img: 'icon--robot',
-    orient: 0,
-    y3d: 0.01,
-  });
-
-  const decorQuad = ct.w.decor.create({
-    type: 'quad',
-    key: 'test-decor-quad',
-    x: 3,
-    y: 7.5,
-    width: 2,
-    height: 0.025,
-    img: 'colour--white',
-    transform: tmpMat1.setRotation(Math.PI/4).toArray(),
-    y3d: 0.1,
-    color: '#f00',
-  });
-
-  return {
-    decorCircle,
-    decorPoint,
-    decorQuad,
-  };
-};
-
-/**
  * 
  * ```sh
  * tour npcKey:rob to:"$( click 5 )"

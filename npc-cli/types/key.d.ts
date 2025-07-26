@@ -61,7 +61,7 @@ namespace Key {
   );
 
   
-  type Profile = keyof typeof import('../sh/src/profiles');
+  type Profile = keyof typeof import('../sh/profiles');
 
   type SkinPart = keyof import('../service/helper').Helper['fromSkinPart'];
 

@@ -62,3 +62,13 @@ tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )
 ```sh
 act npcKey:rob at:$( click 1 )
 ```
+
+```sh
+# inline example
+ptags+=always; click meta.floor | map --forever '(input, { w, home }) => {
+  const npc = w.n[home.selectedNpcKey];
+  if (!npc) return;
+  npc.s.run = input.keys?.includes("shift") ?? false;
+  npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
+}' &
+```

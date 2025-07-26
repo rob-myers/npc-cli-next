@@ -122,10 +122,15 @@ export async function* map(ct) {
   /** @type {(x: any, ...xs: any[]) => any} */
   let func;
   let isNativeCode = false;
+  let passCount = true;
 
   if (args[0] in ct.lib) {
 
     func = /** @type {*} */ (ct.lib)[args[0]][args[1]];
+
+    // when more than 2 operands do not provide count to func,
+    // so that `opts = api.jsArg(args)` works
+    passCount = operands.length <= 2;
 
   } else {
 
@@ -150,13 +155,13 @@ export async function* map(ct) {
       try {
         if (api.isDataChunk(datum) === true) {
           if (isAsync === false) {// fast on chunks
-            yield api.dataChunk(datum.items.map(x => func(x, ct, count++)));
+            yield api.dataChunk(datum.items.map(x => func(x, ct, passCount === true ? count++ : undefined)));
           } else {// unwind chunks
             for (const item of datum.items)
-              yield await func(item, ct, count++);
+              yield await func(item, ct, passCount === true ? count++ : undefined);
           }
         } else {
-          yield await func(datum, ct, count++);
+          yield await func(datum, ct, passCount === true ? count++ : undefined);
         }
       } catch (e) {
         if (opts.forever === true) {
