@@ -143,7 +143,8 @@ export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
     walkableClimb: 0,
     tileCacheMeshProcess,
     // maxSimplificationError: 0.85,
-    maxSimplificationError: 3,
+    maxSimplificationError: 2,
+    // maxSimplificationError: 3,
   };
 }
 
