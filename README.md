@@ -207,7 +207,7 @@ but after publishing we should re-comment these paths and use turbopack.
 #### At `recast-navigation-js` repo root
 
 1. Manually bump versions
-  - search for current patch e.g. `0.39.2` and replace with next e.g. `0.39.3`
+  - search for current patch e.g. `0.39.7` and replace with next e.g. `0.39.8`
   - do not include yarn.lock, files should be:
     > packages/recast-navigation{,-core,-generators,-playcanvas,-three,-wasm}
 

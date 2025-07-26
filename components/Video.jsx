@@ -86,6 +86,7 @@ const videoLookup = {
   mobileDemo: { id: 'WIIihWnOQ2E', title: 'mobile demo' },
   desktopDemo: { id: 'yDbGkW2umw4', title: 'desktop demo' },
   desktopDemo2: { id: 'w7P0FtfB4L4', title: 'desktop demo 2' },
+  quickstartAttempt1: { id: '9aGLVR1iEhk', title: 'quickstart 1' }
 };
 
 /** @typedef {keyof typeof videoLookup} VideoKey */
