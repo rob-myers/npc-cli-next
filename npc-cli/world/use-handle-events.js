@@ -650,7 +650,7 @@ export default function useHandleEvents(w) {
     },
     overrideOffMeshConnectionAngle(npc, offMesh, door) {
       const npcPoint = Vect.from(npc.api.getPoint());
-      const nextCorner = npc.api.getCornerAfterOffMesh();
+      const nextCorner = npc.api.getCornerAfterOffMesh(offMesh);
 
       // Entrances are aligned to offMeshConnections
       // - entrance segment (enSrc, enDst)

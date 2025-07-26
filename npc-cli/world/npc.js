@@ -568,12 +568,18 @@ export class NpcApi {
 
   /**
    * Cannot use agent.corners() because ag->ncorners is 0 on offMeshConnection
+   * @param {NPC.OffMeshLookupValue} offMesh
    */
-  getCornerAfterOffMesh() {
-    return {
-      x: /** @type {NPC.CrowdAgent} */ (this.base.agent).raw.get_cornerVerts(6 + 0),
-      y: /** @type {NPC.CrowdAgent} */ (this.base.agent).raw.get_cornerVerts(6 + 2),
-    };
+  getCornerAfterOffMesh(offMesh) {
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    // try to use 3rd point but sometimes must use 4th
+    const x = agent.raw.get_cornerVerts(6 + 0);
+    const y = agent.raw.get_cornerVerts(6 + 2);
+    if (Math.abs(offMesh.dst.x - x) < 0.05 && Math.abs(offMesh.dst.z - y) < 0.05) {
+      return { x: agent.raw.get_cornerVerts(9 + 0), y: agent.raw.get_cornerVerts(9 + 2) };
+    } else {
+      return { x, y };
+    }
   }
 
   /**
