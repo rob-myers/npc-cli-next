@@ -162,9 +162,9 @@ const codeContainerCss = css`
       justify-content: center;
       align-items: center;
 
-      border: 1px solid #7775;
       border-radius: 0;
-      background-color: white;
+      border: none;
+      background-color: unset;
       color: black;
     }
 
