@@ -173,32 +173,35 @@ export default function Manage(props) {
                       {def.filepath}
                     </button>
                   </span>
-                  <span className="tab-def-options">
-                    {def.type === 'terminal' && <>
-                      <span
-                        className="sync-world-key"
-                        onClick={state.syncWorldKey}
-                      >
-                        {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
-                      </span>
-                      <select
-                        value={def.profileKey}
-                        onChange={state.changeTtyProfile}
-                      >
-                        {state.profileKeys.map(profileKey =>
-                          <option key={profileKey} value={profileKey}>{profileKey}</option>
-                        )}
-                      </select>
-                    </>}
-                    {def.type === 'component' && def.class === 'World' && (
-                      <select
-                        defaultValue={def.props.mapKey}
-                        onChange={state.setMapKey}
-                      >
-                        {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
-                      </select>
-                    )}
-                  </span>
+                  
+                  {def.type === 'terminal' && <span className="tab-def-options">
+                    <span
+                      className="sync-world-key"
+                      onClick={state.syncWorldKey}
+                    >
+                      {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
+                    </span>
+                    <select
+                      value={def.profileKey}
+                      onChange={state.changeTtyProfile}
+                    >
+                      {state.profileKeys.map(profileKey =>
+                        <option key={profileKey} value={profileKey}>{profileKey}</option>
+                      )}
+                    </select>
+                  </span>}
+
+                  {def.type === 'component' && def.class === 'World' && (
+                    <span className="tab-def-options">
+                    <select
+                      defaultValue={def.props.mapKey}
+                      onChange={state.setMapKey}
+                    >
+                      {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
+                    </select>
+                    </span>
+                  )}
+
                 </span>
                 <button
                   onClick={state.closeTab}
@@ -434,6 +437,7 @@ const manageCss = css`
       border-left: var(--separating-border);
     }
     .tab-def-options {
+      flex: 1;
       display: flex;
       gap: 8px;
       max-width: 200px;
