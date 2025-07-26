@@ -31,14 +31,12 @@ export default function Carousel(props: React.PropsWithChildren<Props>) {
       modules={[Scrollbar, Navigation, EffectFade, EffectCoverflow]}
       navigation={props.navigation}
       onSwiper={state.onSwiper}
-      scrollbar={props.scrollbar ? { draggable: true } : undefined}
       slidesPerView={1}
       spaceBetween={50}
       effect={props.effect}
       style={{
         ['--slider-height' as any]: `${props.height}px`,
         ['--slider-height-mobile' as any]: `${props.heightMobile ?? props.height}px`,
-        ['--slider-scrollbar-height' as any]: props.scrollbar ? undefined : `${0}px`,
         background: props.background,
         border: props.border,
       }}
@@ -57,7 +55,6 @@ interface Props extends Pick<SwiperProps, 'allowTouchMove' | 'navigation'> {
   border?: string;
   height: number;
   heightMobile?: number;
-  scrollbar?: boolean;
   effect?: 'fade' | 'slide' | 'coverflow';
 }
 
@@ -65,48 +62,23 @@ interface Props extends Pick<SwiperProps, 'allowTouchMove' | 'navigation'> {
 const carouselCss = css`
   --slider-height: 100%;
   --slider-height-mobile: 100%;
-  --slider-scrollbar-height: 48px;
   
   height: var(--slider-height);
   margin: 48px 0;
-  --swiper-navigation-color: #090;
+  --swiper-navigation-color: #88f;
   
   @media (max-width: ${mobileBreakpoint}) {
     --swiper-navigation-size: 24px !important;
-    --slider-scrollbar-height: 32px;
     height: var(--slider-height-mobile);
     margin: 32px 0;
   }
 
   .swiper-slide {
-    /* height: calc(100% - var(--slider-scrollbar-height) - 4px); */
-    height: calc(100% - var(--slider-scrollbar-height));
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
   }
   
-  .swiper-scrollbar {
-    height: var(--slider-scrollbar-height);
-    transform: scaleX(102%) translate(0, 4px);
-    display: flex;
-    align-items: end;
-    border-radius: 0;
-    background-color: #000;
-    cursor: grab;
-    
-    @keyframes fadeScrollBarIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    
-    div {
-      height: 50%;
-      border-radius: 0;
-      border: 1px solid white;
-      background-color: #777;
-      animation: fadeIn 1s forwards;
-    }
-  }
 
 `;
