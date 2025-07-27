@@ -518,7 +518,12 @@ export default function useHandleEvents(w) {
         npc.api.getLookAngle(adjusted.dst),
       );
 
-      if (Math.abs(deltaAng) > Math.PI/2) {
+      const doorEntryTooFar = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src) > 0.5;
+
+      if (
+        Math.abs(deltaAng) > Math.PI/2
+        && doorEntryTooFar === false // avoid early pause e.g. 180deg round corner
+      ) {
         // look towards door entry, or door exit if too close
         const towards = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src) > 0.1 ? adjusted.src : adjusted.dst;
         npc.s.turnBeforeMove = { ms: 400, towards };
