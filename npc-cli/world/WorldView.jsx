@@ -506,6 +506,7 @@ export default function WorldView(props) {
     },
     showEffects(partial = { enabled: !state.effects.enabled }) {
       Object.assign(state.effects, partial);
+      state.effectComposer.render();
       update();
     },
     stopFollowing() {
