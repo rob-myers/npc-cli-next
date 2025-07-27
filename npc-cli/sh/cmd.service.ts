@@ -601,42 +601,45 @@ class cmdServiceClass {
         break;
       }
       case "source": {
-        const [filepath] = args;
-        if (filepath === undefined) {
-          return;
-        }
-        
-        const [script] = this.get(node, args.slice(0, 1));
-        
-        if (script === undefined) {
-          throw Error(`source: "${filepath}" not found`);
-        }
-        if (typeof script !== "string") {
-          throw Error(`source: "${filepath}" is not a string`);
-        }
-
-        const parsed = parseService.parse(script, true); // we cache scripts
-
-        // Mutate `parsed.meta` because it may occur many times deeply in tree
-        // Note pid will be overwritten in `ttyShell.spawn`
-        Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
-
-        const { ttyShell } = useSession.api.getSession(meta.sessionKey);
-        await ttyShell.spawn(parsed, {
-          by: 'source',
-          posPositionals: args.slice(1),
-        });
-
-        // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
-        const absPath = cmdService.absPath(node.meta, filepath);
-        if (absPath.startsWith('/etc/')) {
-          useSession.api.getSession(meta.sessionKey).ttyShell.io.write({
-            key: 'external',
-            msg: {
-              key: 'auto-re-source-file',
-              absPath: `/etc/${absPath.slice('/etc/'.length)}`,
-            },
+        for (const filepath of args) {
+          
+          const [script] = this.get(node, [filepath]);
+          
+          if (script === undefined) {
+            throw Error(`source: "${filepath}" not found`);
+          }
+          if (typeof script !== "string") {
+            throw Error(`source: "${filepath}" is not a string`);
+          }
+  
+          const parsed = parseService.parse(script, true); // we cache scripts
+  
+          // Mutate `parsed.meta` because it may occur many times deeply in tree
+          // Note pid will be overwritten in `ttyShell.spawn`
+          Object.assign(parsed.meta, {
+            ...meta,
+            ppid: meta.pid,
+            fd: { ...meta.fd },
+            stack: meta.stack.slice(),
           });
+  
+          const { ttyShell } = useSession.api.getSession(meta.sessionKey);
+          await ttyShell.spawn(parsed, {
+            by: 'source',
+            posPositionals: args.slice(1),
+          });
+  
+          // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
+          const absPath = cmdService.absPath(node.meta, filepath);
+          if (absPath.startsWith('/etc/')) {
+            useSession.api.getSession(meta.sessionKey).ttyShell.io.write({
+              key: 'external',
+              msg: {
+                key: 'auto-re-source-file',
+                absPath: `/etc/${absPath.slice('/etc/'.length)}`,
+              },
+            });
+          }
         }
 
         break;
