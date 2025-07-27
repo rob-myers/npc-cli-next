@@ -506,8 +506,8 @@ export default function WorldView(props) {
     },
     showEffects(partial = { enabled: !state.effects.enabled }) {
       Object.assign(state.effects, partial);
-      state.effectComposer.render();
       update();
+      w.disabled === true && w.r3f.advance(Date.now());
     },
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
