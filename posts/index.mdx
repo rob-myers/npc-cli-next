@@ -101,11 +101,6 @@ They're a natural place to start.
 
 ## Mobile users as the Player
 
-{/* Terminals traditionally have a profile (initial script).
-The _default profile_ provides various shell functions.
-Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
-Follow along on Desktop or Mobile. */}
-
 This site has the same features on desktop, mobile or tablet.
 Sadly it's harder to use a terminal on a mobile.
 
@@ -131,18 +126,32 @@ Nevertheless, stepping through commands on the blog, terminal, and 3D view _in t
 </Carousel>
 
 We want each NPC to be indistinguishable from a human playing an in-game character.
-Importantly, we additionally assume all NPCs are controlled by a single human Game Master.<SideNote>
+Importantly, we also assume a single human Game Master.<SideNote>
 A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
-That is, _can one human act indistinguishably from many humans playing individual parts_?
+Then we're asking, _can one human act indistinguishably from many humans playing individual parts_?
 
 The human Game Master pulls the strings;
 the human Player is enveloped in the fabrication.
 This will require at least 2 networked users e.g. via Peer-to-Peer tech like [WebRTC](https://webrtc.org/).
-In the meantime, desktop users may assume both roles, whereas:
+In the meantime,
 
-> <MobileIcon/> _mobile users are best thought of as the Player_.
 
-🚧
+> <LaptopIcon/> desktop users may assume both roles.
+>
+> <MobileIcon/> mobile users are best thought of as the Player.
+
+Rather than stepping through commands, mobile users can run terminal profiles,
+and interact with the induced NPC behaviours as the Player would.
+This is also relevant for desktop users.
+
+<Card background='#eef'>
+  To see the "quickstart" profile in the Viewer, click <TabsLayoutLink layoutPresetKey="world-tty-quickstart">here</TabsLayoutLink>.
+</Card>
+
+{/* Terminals traditionally have a profile (initial script).
+The _default profile_ provides various shell functions.
+Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
+Follow along on Desktop or Mobile. */}
 
 <Carousel
   height={450}
