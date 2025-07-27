@@ -53,16 +53,15 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
 {/* Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>. */}
 
 <Card background='#eef'>
-  <LaptopIcon/> To follow along, open the Viewer: its on the right side of the screen and can be dragged or toggled.
+  <LaptopIcon/> To follow along, open the Viewer on the right side of the screen (it can be dragged or toggled).
   Click the _play button_ shown in the slides below.
   Finally ensure the same tabs by clicking <TabsLayoutLink layoutPresetKey="world-tty-default">here</TabsLayoutLink>.
 
   <Carousel
     height={400}
     heightMobile={250}
-    border='1px solid #aaa'
     navigation
-    background='#559'
+    background='rgba(0, 0, 0, 0)'
   >
     <Figure label="Viewer closed">
       <Image src={DesktopViewerClosedWebp} alt="Desktop Viewer closed"/>
@@ -100,15 +99,15 @@ They're a natural place to start.
 </Code>
 
 
-## Mobile Devices
+## Mobile Users
 
 {/* Terminals traditionally have a profile (initial script).
 The _default profile_ provides various shell functions.
 Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
 Follow along on Desktop or Mobile. */}
 
-Although the desktop and mobile versions of this site have the same features<SideNote>Supporting touch screens makes sense for tablets e.g. iPads.</SideNote>,
-it's harder to use a terminal on a mobile.
+Although mobile users have the same features,
+it's harder to use a terminal.<SideNote>Supporting touch screens also makes sense for tablets e.g. iPads.</SideNote>
 
 > <MobileIcon/> The keyboard hogs space,
 predictive text is unhelpful,
@@ -116,18 +115,12 @@ there are auto-punctuation conflicts,
 and usually no arrow keys.
 
 Mobile screens are too small.
-Ideally you should be able to see this blog, a 3D world, and multiple terminals, all at once.
-We provide a "touch menu" on the right of terminals to make e.g. pasting, submitting, cancelling commands easier.
+We provide a terminal "touch menu" e.g. for pasting/submitting/cancelling commands without a keyboard.
 But stepping through commands on the blog, terminal, _and_ 3D view is cumbersome.
-
-{/* Technically one can:
-- copy commands from the blog and paste them into the terminal on your mobile using  */}
-
-🚧
 
 <Carousel
   height={400}
-  heightMobile={30}
+  heightMobile={300}
   border='1px solid #aaa'
   navigation
   background='white'
@@ -136,6 +129,10 @@ But stepping through commands on the blog, terminal, _and_ 3D view is cumbersome
     <Image src={MobileTtyTouchMenuWebp} alt="TTY touch menu"/>
   </Figure>
 </Carousel>
+
+🚧
+
+We're going to view mobile users as Players...
 
 
 <Carousel
