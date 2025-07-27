@@ -53,7 +53,7 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
         disabled={tabState.disabled}
         env={{ ...def.env, CACHE_SHORTCUTS: {
           w: "WORLD_KEY",
-          tabs: TABS_API_KEY,
+          tabs: "TABS_API_KEY",
         }}}
         onKey={state.onTerminalKey}
         profileKey={def.profileKey}

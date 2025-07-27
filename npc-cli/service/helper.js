@@ -1,5 +1,5 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
-import { keys, mapValues } from "./generic";
+import { keys } from "./generic";
 
 /**
  * @type {{ fromProfileKey: Record<Key.Profile, true>, profileKeys: Key.Profile[]}}

@@ -314,7 +314,7 @@ export default function Manage(props) {
           <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
           <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
           <li><a href={`#/internal/open-tab/HelloWorld?id=hello-world-1`}>open tab hello-world-1</a></li>
-          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li>
+          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"tabs_api_key"}`}>open Tty tab</a></li>
           */}
           
           {/* <li><a href={`#/internal/open-tab/World?id=world-2&mapKey=small-map-1`}>open World tab</a></li>
