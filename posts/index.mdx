@@ -19,14 +19,10 @@ import { LaptopIcon, MobileIcon } from '../npc-cli/components/Icons';
 import TabsLayoutLink from '../npc-cli/components/TabsLayoutLink';
 import Video from '../components/Video';
 
-import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
-import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
-import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
-import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-viewport.webp';
-import ViewerControlsWithPlayCircled from '../public/images/viewer-controls-with-play-circled.webp';
 import DesktopViewerClosedWebp from '../public/images/desktop-viewer-closed.webp';
 import DesktopViewerOpenWebp from '../public/images/desktop-viewer-open.webp';
 import DesktopViewerPlayButtonWebp from '../public/images/desktop-viewer-play-button.webp';
+import MobileTtyTouchMenuWebp from '../public/images/mobile-tty-touch-menu.webp';
 
 # Home
 
@@ -66,7 +62,7 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
     heightMobile={250}
     border='1px solid #aaa'
     navigation
-    background='white'
+    background='#559'
   >
     <Figure label="Viewer closed">
       <Image src={DesktopViewerClosedWebp} alt="Desktop Viewer closed"/>
@@ -74,7 +70,7 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
     <Figure label="Viewer open">
       <Image src={DesktopViewerOpenWebp} alt="Desktop Viewer open"/>
     </Figure>
-    <Figure label="Viewer play button">
+    <Figure label="Viewer play button" objectFit="contain">
       <Image src={DesktopViewerPlayButtonWebp} alt="Desktop Viewer play button"/>
     </Figure>
   </Carousel>
@@ -111,18 +107,36 @@ The _default profile_ provides various shell functions.
 Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
 Follow along on Desktop or Mobile. */}
 
-The desktop and mobile versions of this site have the same features.
-But it's harder to use a terminal on a mobile.
+Although the desktop and mobile versions of this site have the same features<SideNote>Supporting touch screens makes sense for tablets e.g. iPads.</SideNote>,
+it's harder to use a terminal on a mobile.
 
-> <MobileIcon/> The keyboard takes up space,
-the predictive text is unhelpful,
+> <MobileIcon/> The keyboard hogs space,
+predictive text is unhelpful,
 there are auto-punctuation conflicts,
-and no arrow keys (usually).
+and usually no arrow keys.
+
+Mobile screens are too small.
+Ideally you should be able to see this blog, a 3D world, and multiple terminals, all at once.
+We provide a "touch menu" on the right of terminals to make e.g. pasting, submitting and cancelling commands easier.
+But stepping through commands on the blog, the terminal, and the 3D view is cumbersome.
+
+{/* Technically one can:
+- copy commands from the blog and paste them into the terminal on your mobile using  */}
 
 🚧
 
-Moreover mobile screens are too small.
-Ideally we want to see this blog, a 3D world, and one or more terminals, all at once.
+<Carousel
+  height={400}
+  heightMobile={300}
+  border='1px solid #aaa'
+  navigation
+  background='white'
+>
+  <Figure label="TTY touch menu" objectPosition='100% 0%'>
+    <Image src={MobileTtyTouchMenuWebp} alt="TTY touch menu"/>
+  </Figure>
+</Carousel>
+
 
 <Carousel
   height={450}
@@ -130,8 +144,8 @@ Ideally we want to see this blog, a 3D world, and one or more terminals, all at 
   background="#000"
   navigation
 >
+  <Video videoKey='mobileDemo' label="Mobile demo" noBg />
   <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />
-  <Video videoKey='mobileDemo' label="Mobile demo" />
 </Carousel>
 
 ## Motivations

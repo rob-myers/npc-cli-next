@@ -2,23 +2,30 @@
 import { css } from "@emotion/react";
 import { mobileBreakpoint } from "./const";
 
-export default function Figure({ children, label, maxHeight }: React.PropsWithChildren<Props>) {
+export default function Figure(props: React.PropsWithChildren<Props>) {
   return (
     <figure
       css={labelledImageCss}
       style={{
-        ['--figure-max-height' as any]: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
+        ['--figure-image-max-height' as any]: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : props.maxHeight,
+        ['--figure-object-fit' as any]: props.objectFit ?? 'cover',
+        ['--figure-object-position' as any]: props.objectPosition,
       }}
     >
-      {label && <label>{label}</label>}
-      {children}
+      {props.label && (
+        <label>{props.label}</label>
+      )}
+      {props.children}
     </figure>
   );
 }
 
 interface Props {
   label?: React.ReactElement;
+  labelPosition?: "top" | "bottom";
   maxHeight?: string | number;
+  objectFit?: string;
+  objectPosition?: string;
 }
 
 const labelledImageCss = css`
@@ -45,14 +52,12 @@ const labelledImageCss = css`
 
   img {
     height: 100%;
-    max-height: var(--figure-max-height);
-    object-fit: cover;
+    max-height: var(--figure-image-max-height);
+    object-fit: var(--figure-object-fit);
+    object-position: var(--figure-object-position);
   }
   
   @media (max-width: ${mobileBreakpoint}) {
-    img {
-      object-fit: contain;
-    }
     label {
       top: 8px;
     }
