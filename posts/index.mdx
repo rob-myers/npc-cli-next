@@ -99,15 +99,15 @@ They're a natural place to start.
 </Code>
 
 
-## Mobile Users
+## Mobiles users as Players
 
 {/* Terminals traditionally have a profile (initial script).
 The _default profile_ provides various shell functions.
 Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
 Follow along on Desktop or Mobile. */}
 
-Although mobile users have the same features,
-it's harder to use a terminal.<SideNote>Supporting touch screens also makes sense for tablets e.g. iPads.</SideNote>
+This site has the same features on desktop, mobile or tablet.
+Sadly it's harder to use a terminal on a mobile.
 
 > <MobileIcon/> The keyboard hogs space,
 predictive text is unhelpful,
@@ -115,8 +115,8 @@ there are auto-punctuation conflicts,
 and usually no arrow keys.
 
 Mobile screens are too small.
-We provide a terminal "touch menu" e.g. for pasting/submitting/cancelling commands without a keyboard.
-But stepping through commands on the blog, terminal, _and_ 3D view is cumbersome.
+We provide a terminal _touch menu_ e.g. for pasting or submitting commands without a keyboard.
+Nevertheless, stepping through commands on the blog, terminal, and 3D view _in tandem_ is cumbersome.
 
 <Carousel
   height={400}
@@ -126,14 +126,24 @@ But stepping through commands on the blog, terminal, _and_ 3D view is cumbersome
   background='white'
 >
   <Figure label="TTY touch menu" objectPosition='100% 0%'>
-    <Image src={MobileTtyTouchMenuWebp} alt="TTY touch menu"/>
+    <Image src={MobileTtyTouchMenuWebp} alt="TTY touch menu" />
   </Figure>
 </Carousel>
 
+We want each NPC to be indistinguishable from a human playing an in-game character.
+Importantly, we additionally assume all NPCs are controlled by a single human Game Master.<SideNote>
+A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
+That is, _can one human act indistinguishably from many humans playing individual parts_?
+
+The human Game Master pulls the strings;
+the human Player is enveloped in the fabrication.
+This will require multiple users e.g. via Peer to Peer tech like [WebRTC](https://webrtc.org/).
+In the meantime, desktop users may assume both roles.
+However:
+
+> <MobileIcon/> _mobile users are best thought of as the Player_.
+
 🚧
-
-We're going to view mobile users as Players...
-
 
 <Carousel
   height={450}
