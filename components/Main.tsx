@@ -83,7 +83,7 @@ const mainHeaderCss = css`
   align-items: center;
 
   pointer-events: none;
-  background-color: #fff8;
+  background-color: rgba(255, 255, 255, 0.25);
   color: #444;
 
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
