@@ -15,7 +15,7 @@ import Carousel from '../components/Carousel';
 import Code from '../components/Code';
 import Figure from '../components/Figure';
 import { faGrip, faExpandThin, faChevronRight } from '../npc-cli/components/Icon';
-import { LaptopIcon, MobileIcon } from '../npc-cli/components/Icons';
+import { LaptopIcon, MobileIcon, PlayIcon } from '../npc-cli/components/Icons';
 import TabsLayoutLink from '../npc-cli/components/TabsLayoutLink';
 import Video from '../components/Video';
 
@@ -54,7 +54,7 @@ You can step through the code below using the _Viewer_ (right/bottom of this pag
 
 <Card background='#eef'>
   <LaptopIcon/> To follow along, open the Viewer on the right side of the screen (it can be dragged or toggled).
-  Click the _play button_ shown in the slides below.
+  Click the play button <PlayIcon/> shown in the slides below.
   Finally ensure the same tabs by clicking <TabsLayoutLink layoutPresetKey="world-tty-default">here</TabsLayoutLink>.
 
   <Carousel
@@ -112,8 +112,8 @@ there are auto-punctuation conflicts,
 and usually no arrow keys.
 
 {/* Mobile screens are too small. */}
-To make things easier, we provide a terminal _touch menu_ e.g. for pasting or submitting commands without a keyboard.
-But using the blog, terminal and 3D view _in tandem_ is still cumbersome on a mobile.
+To make things easier, we provide a terminal _touch menu_ for pasting and submitting commands without a keyboard.
+But using the blog, terminal and 3D view _in tandem_ remains cumbersome on a mobile.
 
 <Carousel
   height={400}
@@ -147,12 +147,12 @@ There are two basic roles we play whilst developing NPCs:
 - The _Game Master_ controls the game.
 - The _Player_ experiences the game.
 
-Desktop users may assume both roles, but mobile users should probably assume the Player role.
-A desktop user might alternate between these roles during development, trying to understand the Player's perspective.
-Mobile users only need to open a terminal whose _profile_ (initial script) sets everything up.
+Desktop users might alternate between these roles, trying to understand the Player's perspective.
+Mobile users should probably assume the Player role.
+This means they only need to open a terminal whose _profile_ (initial script) sets everything up.
 
 <Card background='#eef'>
-  To use the "quickstart" profile in the Viewer,
+  To use the _quickstart_ profile in the Viewer,
   click <TabsLayoutLink layoutPresetKey="world-tty-quickstart">here</TabsLayoutLink>.
 </Card>
 

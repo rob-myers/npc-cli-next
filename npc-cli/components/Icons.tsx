@@ -1,5 +1,5 @@
 
-import { FontAwesomeIcon } from './Icon';
+import { FontAwesomeIcon, faCirclePlay } from './Icon';
 
 import {
   faLaptop,
@@ -10,3 +10,5 @@ import {
 export const LaptopIcon = () => <FontAwesomeIcon icon={faLaptop} style={{ marginRight: '4px' }}/>
 
 export const MobileIcon = () => <FontAwesomeIcon icon={faMobileAndroidAlt} style={{ marginRight: '4px' }} />
+
+export const PlayIcon = () => <FontAwesomeIcon icon={faCirclePlay} style={{ marginRight: '4px' }} />
