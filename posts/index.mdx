@@ -98,13 +98,12 @@ They're a natural place to start.
   ```
 </Code>
 
-This explains the site's name.
-We've seen an NPC driven by a Command Line Interface, hence _NPC CLI_.
+We've seen an NPC driven by a Command Line Interface, hence the site's name _NPC CLI_.
 
 
 ### Running a profile
 
-We provide the same features on desktop, mobile and tablet devices.
+The same features are available on desktop, mobile and tablet devices.
 However it's harder to use a terminal on a mobile.
 
 > <MobileIcon/> The keyboard hogs space,
@@ -138,29 +137,25 @@ the human Player is enveloped in the fabrication.
 This will require at least 2 networked users e.g. via Peer-to-Peer tech like [WebRTC](https://webrtc.org/).
 In the meantime, */}
 
+{/* Terminals traditionally have a profile (initial script).
+The _default profile_ provides various shell functions.
+Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
+Follow along on Desktop or Mobile. */}
+
 There are two basic roles we play whilst developing NPCs:
 
 - The _Game Master_ controls the game.
 - The _Player_ experiences the game.
 
-🚧
-
-> <LaptopIcon/> desktop users may assume both roles.
->
-> <MobileIcon/> mobile users are best thought of as the Player.
-
-Rather than stepping through commands, mobile users can run terminal profiles,
-and interact with the induced NPC behaviours as the Player would.
-This is also relevant for desktop users.
+Desktop users may assume both roles, but mobile users should probably assume the Player role.
+A desktop user might alternate between these roles during development, trying to understand the Player's perspective.
+Mobile users only need to open a terminal whose _profile_ (initial script) sets everything up.
 
 <Card background='#eef'>
-  To see the "quickstart" profile in the Viewer, click <TabsLayoutLink layoutPresetKey="world-tty-quickstart">here</TabsLayoutLink>.
+  To use the "quickstart" profile from the video below, click <TabsLayoutLink layoutPresetKey="world-tty-quickstart">here</TabsLayoutLink>.
 </Card>
 
-{/* Terminals traditionally have a profile (initial script).
-The _default profile_ provides various shell functions.
-Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
-Follow along on Desktop or Mobile. */}
+🚧
 
 <Carousel
   height={450}
@@ -171,6 +166,7 @@ Follow along on Desktop or Mobile. */}
   <Video videoKey='mobileDemo' label="Mobile demo" noBg />
   <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />
 </Carousel>
+
 
 ## Motivations
 
