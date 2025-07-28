@@ -25,7 +25,7 @@ export default function Code({ children }: React.PropsWithChildren) {
     lines: [] as string[],
     openCopyText: undefined as undefined | boolean,
 
-    async copyLines() {
+    async copyAllLines() {
       try {
         await navigator.clipboard.writeText(state.lines.join('\n'));
         state.copyIndicatorText = copyIndication.success;
@@ -35,19 +35,19 @@ export default function Code({ children }: React.PropsWithChildren) {
       }
       update();
     },
-    async copySingleLine(line: string) {
+    async copySomeLines(lines: string[]) {
       try {
-        await navigator.clipboard.writeText(line);
-        await state.indicateLineCopied();
+        await navigator.clipboard.writeText(lines.join('\n'));
+        await state.indicateLineCopied(lines.length);
       } catch (e) {
         console.error(e);
         state.copyIndicatorText = copyIndication.failure;
         update(); 
       }
     },
-    async indicateLineCopied() {
+    async indicateLineCopied(numLines: number) {
       state.openCopyText = true;
-      state.copyIndicatorText = copyIndication.postCopyLine;
+      state.copyIndicatorText = numLines === 1 ? copyIndication.postCopyLine : copyIndication.postCopyLines;
       update();
       await pause(2000);
       state.openCopyText = undefined;
@@ -60,11 +60,23 @@ export default function Code({ children }: React.PropsWithChildren) {
         return;
       }
 
-      const index = Array.from(lineEl.parentElement?.children ?? []).indexOf(lineEl);
-      const line = state.lines[index];
-      if (line.trim().length > 0) {
-        await state.copySingleLine(line);
+      const lineEls = Array.from(lineEl.parentElement!.children);
+      const index = lineEls.indexOf(lineEl);
+
+      if (state.lines[index].trim().length === 0) {
+        return;
       }
+
+      const lines = [] as string[];
+      for (let i = index; i < lineEls.length; i++) {
+        const line = state.lines[i];
+        lines.push(line);
+        if (!(line.at(-1) === '\\' || line.at(-1) === '|')) {
+          break;
+        }
+      }
+
+      await state.copySomeLines(lines);
     },
     async onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
       state.hadSelection = documentHasSelection();
@@ -93,7 +105,7 @@ export default function Code({ children }: React.PropsWithChildren) {
     >
       <div
         className='copy-all'
-        onClick={state.copyLines}
+        onClick={state.copyAllLines}
       >
       <SideNote
         bubbleClassName="copy-all-bubble"
@@ -233,5 +245,6 @@ const copyIndication = {
   failure: 'Copy failed.',
   preCopyAll: 'Copy all?',
   postCopyLine: 'Copied line',
+  postCopyLines: 'Copied lines',
   success: 'Copied!',
 };

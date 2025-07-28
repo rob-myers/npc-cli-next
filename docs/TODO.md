@@ -43,7 +43,7 @@
   - go on a tour
   - move another npc into the way
 
-- 🚧 Code supports multiline copy when lines end with `/` or `|`
+- ✅ Code supports multiline copy when lines end with `\` or `|`
 
 - mention Starship Geomorphs early
 - mention recent improvements in AI
