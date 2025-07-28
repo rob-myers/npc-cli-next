@@ -199,8 +199,8 @@ export default function Npcs(props) {
         npc.s.offMesh = null;
       }
     },
-    resolveSkin(shortcut) {// order: head|head-overlay|body|body-overlay
-      const parts = shortcut.split('|');
+    resolveSkin(shortcut) {// order: head,head-overlay,body,body-overlay
+      const parts = shortcut.split(',');
       const fallback = parts.length === 1 ? parts[0] : undefined;
       const [head, headOverlay = fallback, body = fallback, bodyOverlay = fallback] = parts;
       return {
@@ -677,8 +677,8 @@ export default function Npcs(props) {
  * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
  * Examples:
  * - "base", "soldier-0", "suit-0" remaps all
- * - "soldier-0|soldier-0" remaps head and head-overlay
- * - "||soldier-0|soldier-0" remaps body and body0overlay
+ * - "soldier-0,soldier-0" remaps head and head-overlay
+ * - "soldier-0,soldier-0" remaps body and body0overlay
  * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
