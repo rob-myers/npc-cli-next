@@ -373,7 +373,7 @@ const manageCss = css`
     background-color: #111;
     justify-content: space-between;
     align-items: stretch;
-    gap: 8px;
+    /* gap: 8px; */
     color: white;
 
     .tab-status-and-id {
@@ -404,7 +404,7 @@ const manageCss = css`
       display: flex;
       justify-content: center;
       align-items: stretch;
-      gap: 8px;
+      /* gap: 8px; */
     }
     .tab-id {
       color: #aac;
@@ -414,9 +414,6 @@ const manageCss = css`
       flex: 1;
       display: flex;
       justify-content: center;
-      gap: 4px;
-      padding-left: 12px;
-      /* padding: 8px; */
     }
     .tab-class {
       display: flex;
@@ -427,6 +424,7 @@ const manageCss = css`
       font-size: medium;
       font-weight: 500;
       color: white;
+      padding: 0 12px;
     }
     .close-tab {
       cursor: pointer;
@@ -439,7 +437,7 @@ const manageCss = css`
     .tab-def-options {
       flex: 1;
       display: flex;
-      gap: 8px;
+      /* gap: 8px; */
       max-width: 200px;
       align-items: stretch;
   
