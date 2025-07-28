@@ -1,3 +1,4 @@
+source /etc/util.sh
 source /etc/util.js.sh
 source /etc/game.js.sh
 source /etc/game_demo_1.js.sh
