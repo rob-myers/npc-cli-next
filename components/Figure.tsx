@@ -10,6 +10,7 @@ export default function Figure(props: React.PropsWithChildren<Props>) {
         ['--figure-image-max-height' as any]: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : props.maxHeight,
         ['--figure-object-fit' as any]: props.objectFit ?? 'cover',
         ['--figure-object-position' as any]: props.objectPosition,
+        ...props.style,
       }}
     >
       {props.label && (
@@ -22,10 +23,10 @@ export default function Figure(props: React.PropsWithChildren<Props>) {
 
 interface Props {
   label?: React.ReactElement;
-  labelPosition?: "top" | "bottom";
   maxHeight?: string | number;
   objectFit?: string;
   objectPosition?: string;
+  style?: React.CSSProperties;
 }
 
 const labelledImageCss = css`
