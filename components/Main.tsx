@@ -93,6 +93,7 @@ const mainHeaderCss = css`
   a {
     color: black;
     text-decoration: none;
+    text-shadow: 0 1px #ddd, -0 -1px #ddd, 1px 0 #ddd, -1px 0 #ddd;
   }
   
   @media (min-width: ${afterBreakpoint}) {
