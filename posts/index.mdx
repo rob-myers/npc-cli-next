@@ -34,7 +34,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 <Card background='#eef'>
   <LaptopIcon/> Desktop users can follow along.
 
-  <MobileIcon/> Mobile users can watch the video then skip to the mobile section.<SideNote width={200}>Using a terminal on a mobile is a bit tricky.</SideNote>
+  <MobileIcon/> Mobile users can watch the video then skip to the next section.<SideNote width={200}>Using a terminal on a mobile is a bit tricky.</SideNote>
 </Card>
 
 <Carousel
@@ -98,34 +98,37 @@ They're a natural place to start.
   ```
 </Code>
 
+This explains the site's name.
+We've seen an NPC driven by a Command Line Interface, hence _NPC CLI_.
 
-## Mobile users as the Player
 
-This site has the same features on desktop, mobile or tablet.
-Sadly it's harder to use a terminal on a mobile.
+### Running a profile
+
+We provide the same features on desktop, mobile and tablet devices.
+However it's harder to use a terminal on a mobile.
 
 > <MobileIcon/> The keyboard hogs space,
 predictive text is unhelpful,
 there are auto-punctuation conflicts,
 and usually no arrow keys.
 
-Mobile screens are too small.
-We provide a terminal _touch menu_ e.g. for pasting or submitting commands without a keyboard.
-Nevertheless, stepping through commands on the blog, terminal, and 3D view _in tandem_ is cumbersome.
+{/* Mobile screens are too small. */}
+To make things easier, we provide a terminal _touch menu_ e.g. for pasting or submitting commands without a keyboard.
+But using the blog, terminal and 3D view _in tandem_ is still cumbersome on a mobile.
 
 <Carousel
   height={400}
   heightMobile={300}
   border='1px solid #aaa'
   navigation
-  background='white'
+  background='#222'
 >
-  <Figure label="TTY touch menu" objectPosition='100% 0%'>
+  <Figure label="TTY touch menu" objectPosition='100% 0%' style={{ padding: 32 }}>
     <Image src={MobileTtyTouchMenuWebp} alt="TTY touch menu" />
   </Figure>
 </Carousel>
 
-We want each NPC to be indistinguishable from a human playing an in-game character.
+{/* We want each NPC to be indistinguishable from a human playing an in-game character.
 Importantly, we also assume a single human Game Master.<SideNote>
 A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
 Then we're asking, _can one human act indistinguishably from many humans playing individual parts_?
@@ -133,8 +136,14 @@ Then we're asking, _can one human act indistinguishably from many humans playing
 The human Game Master pulls the strings;
 the human Player is enveloped in the fabrication.
 This will require at least 2 networked users e.g. via Peer-to-Peer tech like [WebRTC](https://webrtc.org/).
-In the meantime,
+In the meantime, */}
 
+There are two basic roles we play whilst developing NPCs:
+
+- The _Game Master_ controls the game.
+- The _Player_ experiences the game.
+
+🚧
 
 > <LaptopIcon/> desktop users may assume both roles.
 >
