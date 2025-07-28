@@ -15,8 +15,8 @@ import { documentHasSelection } from '@/npc-cli/service/dom';
  * Usage: directly provide mdx code block as child,
  * in order for rehype to parse it.
  */
-export default function Code({ children }: React.PropsWithChildren) {
-  
+export default function Code(props: React.PropsWithChildren<Props>) {
+
   const state = useStateRef(() => ({
     container: null as null | HTMLDivElement,
     copyIndicatorText: copyIndication.preCopyAll,
@@ -42,7 +42,7 @@ export default function Code({ children }: React.PropsWithChildren) {
       } catch (e) {
         console.error(e);
         state.copyIndicatorText = copyIndication.failure;
-        update(); 
+        update();
       }
     },
     async indicateLineCopied(numLines: number) {
@@ -107,21 +107,26 @@ export default function Code({ children }: React.PropsWithChildren) {
         className='copy-all'
         onClick={state.copyAllLines}
       >
-      <SideNote
-        bubbleClassName="copy-all-bubble"
-        className="copy-all-side-note"
-        icon={<FontAwesomeIcon icon={faCopy} />}
-        onClose={state.resetCopyText}
-        open={state.openCopyText}
-        width={120}
-      >
-        {state.copyIndicatorText}
-      </SideNote>
+        <SideNote
+          bubbleClassName="copy-all-bubble"
+          className="copy-all-side-note"
+          icon={<FontAwesomeIcon icon={faCopy} />}
+          onClose={state.resetCopyText}
+          open={state.openCopyText}
+          width={120}
+        >
+          {state.copyIndicatorText}
+        </SideNote>
       </div>
 
-      {children}
+      {props.children}
+
     </div>
   );
+}
+
+interface Props {
+  // 🚧
 }
 
 const codeContainerCss = css`
