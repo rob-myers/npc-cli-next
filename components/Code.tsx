@@ -22,6 +22,7 @@ export default function Code(props: React.PropsWithChildren<Props>) {
     copyIndicatorText: copyIndication.preCopyAll,
     /** Text was selected on last pointer down */
     hadSelection: false,
+    hideTimeoutId: 0,
     lines: [] as string[],
     openCopyText: undefined as undefined | boolean,
 
@@ -49,9 +50,11 @@ export default function Code(props: React.PropsWithChildren<Props>) {
       state.openCopyText = true;
       state.copyIndicatorText = numLines === 1 ? copyIndication.postCopyLine : copyIndication.postCopyLines;
       update();
-      await pause(2000);
-      state.openCopyText = undefined;
-      update();
+      window.clearTimeout(state.hideTimeoutId);
+      state.hideTimeoutId = window.setTimeout(() => {
+        state.openCopyText = undefined;
+        update();
+      }, 2000);
     },
     async onClick(e: React.PointerEvent<HTMLDivElement> & { target: HTMLElement }) {
       const lineEl = e.target.closest('[data-line]');
