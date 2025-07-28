@@ -199,18 +199,15 @@ export default function Npcs(props) {
         npc.s.offMesh = null;
       }
     },
-    resolveSkin(shortcut) {
-      // e.g. "soldier-0" maps all
-      // e.g. "soldier-0///" only maps head, otherwise "base" skin
-      // e.g. "soldier-0/-/-/-" only maps head, nothing else changed
-      const parts = shortcut.split('/');
-      const fallback = parts[parts.length - 1];
-      const [head, body = fallback, headOverlay = fallback, bodyOverlay = fallback] = parts;
+    resolveSkin(shortcut) {// order: head|head-overlay|body|body-overlay
+      const parts = shortcut.split('|');
+      const fallback = parts.length === 1 ? parts[0] : undefined;
+      const [head, headOverlay = fallback, body = fallback, bodyOverlay = fallback] = parts;
       return {
-        ...head !== '-' && { "head-{front,back,left,right,top,bottom}": { prefix: head || 'base' } },
-        ...body !== '-' && { "body-{front,back,left,right,top,bottom}": { prefix: body || 'base' } },
-        ...headOverlay !== '-' && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay || 'base' } },
-        ...bodyOverlay !== '-' && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay || 'base' } },
+        ...head !== undefined && { "head-{front,back,left,right,top,bottom}": { prefix: head} },
+        ...headOverlay !== undefined && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay} },
+        ...body !== undefined && { "body-{front,back,left,right,top,bottom}": { prefix: body} },
+        ...bodyOverlay !== undefined && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay} },
       };
     },
     setActMeta(npcKey, actMeta) {
@@ -679,9 +676,9 @@ export default function Npcs(props) {
  * @property {(npc: NPC.NPC) => void} removeAgent
  * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
  * Examples:
- * - `"soldier-0"`
- * - `"soldier-0//soldier-0/scientist-0"`
- * - `"soldier-0/-/-/-"`
+ * - "base", "soldier-0", "suit-0" remaps all
+ * - "soldier-0|soldier-0" remaps head and head-overlay
+ * - "||soldier-0|soldier-0" remaps body and body0overlay
  * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):

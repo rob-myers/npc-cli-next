@@ -890,7 +890,8 @@ export class NpcApi {
       this.w.npc.setActMeta(this.key, null);
     }
 
-    const points = Array.isArray(opts.to) ? opts.to : [opts.to];
+    // ensure fresh points
+    const points = (Array.isArray(opts.to) ? opts.to : [opts.to]).map(helper.toXZ);
     if (!(points.every(helper.isVectJson))) {
       throw Error(`${'npc.api.move'}: opts.to must be {x,y}, {x,y,z} or array`);
     }

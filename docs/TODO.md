@@ -70,8 +70,7 @@
   - ℹ️ later subscribers see `clear-off-mesh` then `enter-off-mesh`
   - ✅ Broadcaster class like `Subject` but with prioritised listeners `independents`
 
-- skin order should be head/head-overlay/body/body-overlay
-  - currently need e.g. `spawn npcKey:foo at:$( click 1 ) skin:soldier-0/suit-0/soldier-0/suit-0`
+- ✅ skin order should be head|head-overlay|body|body-overlay
 
 - BUG: idle npcs are sometimes not staying in place on nav reload?
 

@@ -403,7 +403,6 @@ export function jsArg(args, opts = {}) {
 export function parseJsArg(input) {
   try {
     if (input === "") return input;
-    // eslint-disable-next-line no-new-func
     return Function(`return ${input}`)();
   } catch (e) {
     return input;

@@ -136,9 +136,9 @@ w e.grantAccess . rob kate
 tour npcKey:rob to:"$( click 2 )" &
 tour npcKey:kate to:"$( click 2 )" &
 
-spawn npcKey:kate at:$( click 1 ) skin:soldier-0///medic-0
-spawn npcKey:kate at:$( click 1 ) skin:soldier-0///suit-0
-spawn npcKey:kate at:$( click 1 ) skin:suit-0///soldier-0
+spawn npcKey:kate at:$( click 1 ) skin:'soldier-0||medic-0|'
+spawn npcKey:kate at:$( click 1 ) skin:'soldier-0|||suit-0'
+spawn npcKey:kate at:$( click 1 ) skin:'suit-0|||soldier-0'
 
 click 5 &>> points
 # skips to next point if stopped
