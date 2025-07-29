@@ -12,8 +12,7 @@ import { Mat } from "@/npc-cli/geom";
 export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args)) {
   const npc = w.npc.getNpc(opts.npcKey);
   npc.s.run = input.keys?.includes("shift") ?? false;
-  // we catch so can override move,
-  // which also ignores points too far from nav
+  // catch so can override move, also ignores points too far from nav
   npc.api.move({ to: input, close: 0.5 }).catch(() => {});
 }
 

@@ -94,7 +94,7 @@ They're a natural place to start.
 </Code>
 
 We've seen an _NPC_ driven by a Command Line Interface (_CLI_),
-which gives our site its name.
+giving our site its name.
 
 ### Running a profile
 
@@ -182,7 +182,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 </Code>
 
 <Code
-  title={<>simpleClickToMove (<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo_1.js">demo_1.js</a>)</>}
+  title={<>simpleClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo_1.js">demo_1.js</a></>}
 >
   ```js showLineNumbers
   /**
@@ -193,8 +193,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args)) {
     const npc = w.npc.getNpc(opts.npcKey);
     npc.s.run = input.keys?.includes("shift") ?? false;
-    // we catch so can override move,
-    // which also ignores points too far from nav
+    // catch so can override move, also ignores points too far from nav
     npc.api.move({ to: input, close: 0.5 }).catch(() => {});
   }
   ```
