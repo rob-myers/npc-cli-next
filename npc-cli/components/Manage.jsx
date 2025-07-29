@@ -533,6 +533,8 @@ const manageCss = css`
     appearance: none;
     padding: 0 2px;
     background-color: inherit;
+    border: 1px solid #444;
+    border-width: 0 1px;
     color: var(--select-or-input-color);
     font-size: small;
     text-align: center;
