@@ -11,7 +11,7 @@ export default function useRefreshScrollRestoration(scrollEl: HTMLElement | null
 
     const navigationEntry = window.performance
       .getEntriesByType('navigation')
-      .find((nav) => (nav as any).type === 'reload')
+      .find((nav) => ['reload', 'back_forward'].includes((nav as any).type))
     ;
 
     const pageAccessedByReload = navigationEntry !== undefined;
