@@ -4,7 +4,6 @@ import React from 'react';
 import { css } from '@emotion/react';
 
 import { sideNoteRootDataAttribute } from './const';
-import { pause } from '@/npc-cli/service/generic';
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
 import useUpdate from '@/npc-cli/hooks/use-update';
 import { FontAwesomeIcon, faCopy } from '../npc-cli/components/Icon';
@@ -129,7 +128,8 @@ export default function Code(props: React.PropsWithChildren<Props>) {
 }
 
 interface Props {
-  // 🚧
+  /** Overrides `props.children` */
+  code?: string;
 }
 
 const codeContainerCss = css`

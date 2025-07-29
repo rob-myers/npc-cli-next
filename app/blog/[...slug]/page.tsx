@@ -39,7 +39,6 @@ export default async function BlogPage(props: {
             );
           }
         },
-        pre: 'pre',
       },
     })}
 
