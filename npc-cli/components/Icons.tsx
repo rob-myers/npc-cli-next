@@ -11,4 +11,4 @@ export const LaptopIcon = () => <FontAwesomeIcon icon={faLaptop} style={{ margin
 
 export const MobileIcon = () => <FontAwesomeIcon icon={faMobileAndroidAlt} style={{ marginRight: '4px' }} />
 
-export const PlayIcon = () => <FontAwesomeIcon icon={faCirclePlay} style={{ marginRight: '4px' }} />
+export const PlayIcon = () => <FontAwesomeIcon icon={faCirclePlay} />

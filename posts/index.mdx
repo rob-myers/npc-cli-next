@@ -34,7 +34,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 <Card background='#eef'>
   <LaptopIcon/> Desktop users can follow along.
 
-  <MobileIcon/> Mobile users can watch the video then skip to the next section.<SideNote width={200}>Using a terminal on a mobile is a bit tricky.</SideNote>
+  <MobileIcon/> Mobile users can watch the video then skip to the next section.
 </Card>
 
 <Carousel
@@ -42,19 +42,14 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
   heightMobile={300}
   background="#000"
 >
-  <Video videoKey='quickstartAttempt1' label="Quickstart" noBg />
+  <Video videoKey='quickstartDesktop' label="Quickstart" noBg />
   {/* <Video videoKey='mobileDemo' label="Mobile demo" /> */}
   {/* <Video videoKey='mobileDemo' label="Mobile demo" /> */}
 </Carousel>
 
-{/* The above videos show this website on a laptop or mobile phone.
-You can step through the code below using the _Viewer_ (right/bottom of this page). */}
-
-{/* Choose <TabsLayoutLink layoutPresetKey="world-tty-default">desktop layout</TabsLayoutLink> or <TabsLayoutLink layoutPresetKey="world-tty-quickstart">mobile layout</TabsLayoutLink>. */}
-
 <Card background='#eef'>
-  <LaptopIcon/> To follow along, open the Viewer on the right side of the screen (it can be dragged or toggled).
-  Click the play button <PlayIcon/> shown in the slides below.
+  <LaptopIcon/> To follow along, open the Viewer on the right side of the screen (drag or toggle).
+  Next, click the play button <PlayIcon/> shown in the slides below.
   Finally ensure the same tabs by clicking <TabsLayoutLink layoutPresetKey="world-tty-default">here</TabsLayoutLink>.
 
   <Carousel
@@ -98,7 +93,13 @@ They're a natural place to start.
   ```
 </Code>
 
-We've seen an NPC driven by a Command Line Interface, hence the site's name _NPC CLI_.
+We've seen an NPC driven by a Command Line Interface (CLI),
+hence our incredibly imaginative site name _NPC CLI_.
+
+<Card background='#eef'>
+  Our 3D worlds are based on Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html) - architectural drawings of starships blocks, connectable along their edges. 
+  We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to create [SVG symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).<SideNote>Each hull symbol induces a 3D geomorph e.g. [301--hull.svg](https://github.com/rob-myers/npc-cli-next/blob/main/media/symbol/301--hull.svg).</SideNote>
+</Card>
 
 
 ### Running a profile
@@ -162,15 +163,13 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   background="#000"
   navigation
 >
-  <Video videoKey='mobileDemo' label="Mobile demo" noBg />
-  <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />
+  <Video videoKey='mobileDemo' label={<> <MobileIcon/> Quickstart profile</>} noBg />
+  <Video videoKey='desktopDemo2' label={<> <LaptopIcon/> Quickstart profile</>} noBg />
 </Carousel>
 
 <Code>
   ```sh title="quickstart profile" showLineNumbers
-  source /etc/util.sh
-  source /etc/util.js.sh
-  source /etc/game.js.sh
+  source /etc/util.sh /etc/util.js.sh /etc/game.js.sh
   source /etc/demo_1.js.sh
 
   awaitWorld

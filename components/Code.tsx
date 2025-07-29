@@ -137,6 +137,7 @@ const codeContainerCss = css`
   width: 100%;
   height: 100%;
   overflow: auto;
+  margin: 32px 0;
   
   figure {
     margin-top: 0;
