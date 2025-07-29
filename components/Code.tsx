@@ -105,21 +105,24 @@ export default function Code(props: React.PropsWithChildren<Props>) {
       {...{ [sideNoteRootDataAttribute]: true }}
       // className="not-prose"
     >
-      <div
-        className='copy-all'
-        onClick={state.copyAllLines}
-      >
-        <SideNote
-          bubbleClassName="copy-all-bubble"
-          className="copy-all-side-note"
-          icon={<FontAwesomeIcon icon={faCopy} />}
-          onClose={state.resetCopyText}
-          open={state.openCopyText}
-          width={120}
+      <figcaption>
+        <div
+          className='copy-all'
+          onClick={state.copyAllLines}
         >
-          {state.copyIndicatorText}
-        </SideNote>
-      </div>
+          <SideNote
+            bubbleClassName="copy-all-bubble"
+            className="copy-all-side-note"
+            icon={<FontAwesomeIcon icon={faCopy} />}
+            onClose={state.resetCopyText}
+            open={state.openCopyText}
+            width={120}
+          >
+            {state.copyIndicatorText}
+          </SideNote>
+        </div>
+        {props.title}
+      </figcaption>
 
       {props.children}
 
@@ -128,17 +131,28 @@ export default function Code(props: React.PropsWithChildren<Props>) {
 }
 
 interface Props {
-  /** Overrides `props.children` */
-  code?: string;
+  title?: string;
 }
 
 const codeContainerCss = css`
-  position: relative;
   width: 100%;
   height: 100%;
   overflow: auto;
   margin: 32px 0;
   
+  figcaption {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: #eee;
+    color: #000;
+    height: 50px;
+    border: 1px solid #7775;
+    border-bottom: none;
+  }
   figure {
     margin-top: 0;
     margin-bottom: 0;
@@ -146,25 +160,16 @@ const codeContainerCss = css`
     display: flex;
     flex-direction: column;
     border: 1px solid #7775;
-  }
-  figcaption {
-    display: flex;
-    justify-content: center;
-    padding: 1rem;
-    margin-top: 0;
-    margin-bottom: 1rem;
-    background-color: #eee;
-    color: #000;
-    height: 50px;
+    border-top: none;
   }
   pre {
-    padding-top: 0;
+    padding-top: 1rem;
     //padding-bottom: 0;
     flex: 1;
     display: flex;
   }
 
-  > .copy-all {
+  figcaption .copy-all {
     position: absolute;
     top: 0;
     right: 0;

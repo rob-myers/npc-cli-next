@@ -73,8 +73,8 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 The video works through the commands below.
 They're a natural place to start.
 
-<Code>
-  ```sh title="Spawn, move and remove" showLineNumbers
+<Code title='Spawn, move and remove'>
+  ```sh showLineNumbers
   # spawn npc at navigable or actable
   spawn npcKey:rob at:$( click 1 )
 
@@ -161,8 +161,12 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   <Video videoKey='desktopDemo2' label={<> <LaptopIcon/> Quickstart profile</>} noBg />
 </Carousel>
 
-<Code>
-  ```sh title="quickstart profile" showLineNumbers
+{/* 🚧 move links to branch main */}
+
+<Code
+  title={<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/quickstart_profile.sh">quickstart_profile.sh</a>}
+>
+  ```sh showLineNumbers
   source /etc/util.sh /etc/util.js.sh /etc/game.js.sh
   source /etc/demo_1.js.sh
 
@@ -177,8 +181,10 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   ```
 </Code>
 
-<Code>
-  ```js title="simpleClickToMove from demo_1.js" showLineNumbers
+<Code
+  title={<>simpleClickToMove (<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo_1.js">demo_1.js</a>)</>}
+>
+  ```js showLineNumbers
   /**
    * @param {NPC.ClickOutput} input
    * @param {NPC.RunArg} ctxt
