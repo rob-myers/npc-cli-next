@@ -16,6 +16,10 @@ import { observableToAsyncIterable } from "../service/observable-to-async-iterab
 
 /** Shell builtins */
 const commandKeys = {
+  /** Alias for `array` */
+  '[]': true,
+  /** Array of interpreted args */
+  array: true,
   /** Object.assign of parsed JS or variable-values */
   assign: true,
   /** Change current key prefix */
@@ -87,6 +91,10 @@ class cmdServiceClass {
   async *runCmd(node: Sh.CallExpr | Sh.DeclClause, command: CommandName, args: string[]) {
     const { meta } = node;
     switch (command) {
+      case "[]":
+      case "array":
+        yield args.map(parseJsArg);
+        break;
       case "assign": {
         const values = args.map(arg => {
           const parsed = parseJsArg(arg);

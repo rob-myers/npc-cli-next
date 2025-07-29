@@ -1,15 +1,4 @@
 /**
- * Interpret args.
- * ```sh
- * array 42 $( echo foo; echo bar; )
- * ```
- * @param {NPC.RunArg} ct
- */
-export async function* array(ct) {
-  yield ct.args.map(ct.api.parseJsArg);
-}
-
-/**
  * Execute a javascript function, e.g.
  * ```sh
  * call "() => 42"
