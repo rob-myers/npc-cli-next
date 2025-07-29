@@ -1,11 +1,16 @@
 
-import { FontAwesomeIcon, faCirclePlay } from './Icon';
+import {
+  FontAwesomeIcon,
+  faCirclePlay
+} from './Icon';
 
 import {
+  faEllipsis,
   faLaptop,
-  faMobileAndroidAlt
+  faMobileAndroidAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
+export const EllipsisIcon = () => <FontAwesomeIcon icon={faEllipsis} size="sm" />
 
 export const LaptopIcon = () => <FontAwesomeIcon icon={faLaptop} style={{ marginRight: '4px' }}/>
 

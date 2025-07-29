@@ -4,6 +4,7 @@ import React from 'react';
 import cx from 'classnames';
 import { css } from '@emotion/react';
 import { sideNoteRootDataAttribute } from './const';
+import { EllipsisIcon } from '@/npc-cli/components/Icons';
 
 /**
  * - Direction is `right` unless < 200 pixels to the right of
@@ -59,7 +60,7 @@ export default function SideNote(props: React.PropsWithChildren<Props>) {
         timeoutId.current = close({ el: bubble.current as HTMLElement, onClose: props.onClose });
       }}
     >
-      {props.icon ?? '⋯'}
+      {props.icon ?? <EllipsisIcon />}
     </span>
     <span
       css={speechBubbleCss}
