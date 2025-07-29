@@ -199,9 +199,23 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   ```
 </Code>
 
+
+## Backdrop
+
+Our 3D worlds are directly based on Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html)
+i.e.
+architectural drawings of starships blocks, connectable along their edges. 
+
+We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to recursively define SVG [symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).
+Each hull symbol induces a 3D geomorph.
+Our [maps](https://github.com/rob-myers/npc-cli-next/tree/main/media/map) amount to possibly adjacent rectangles, where each rectangle corresponds to a hull symbol.
+
+For characters we use a basic Blender model, texture-mapped with simplifications of [Minecraft skins](https://github.com/rob-myers/npc-cli-next/tree/main/media/npc).
+
+
 ## Motivations
 
-Let us list our underlying motivations.
+Our underlying motivations are:
 
 - __NPCs indistinguishable from human-controlled characters.__
   Permitting a human Game Master makes this tractable.
@@ -217,17 +231,6 @@ Let us list our underlying motivations.
   In production one can run commands.
   In development, shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
 
-
-## Assets
-
-Importantly, our 3D worlds are based on Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html).
-They are architectural drawings of starships blocks, connectable along their edges. 
-
-We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to create recursively defined SVG [symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).
-Each hull symbol induces a 3D geomorph.
-Our [maps](https://github.com/rob-myers/npc-cli-next/tree/main/media/map) amount to possibly adjacent rectangles, where each rectangle corresponds to a hull symbol.
-
-For characters we use our own very basic Blender model, texture-mapped with simplifications of Minecraft skins (https://github.com/rob-myers/npc-cli-next/tree/main/media/npc).
 
 ## What's next
 
