@@ -82,7 +82,6 @@ const mainHeaderCss = css`
   justify-content: right;
   align-items: center;
 
-  pointer-events: none;
   background-color: rgba(255, 255, 255, 0.25);
   color: #444;
 
