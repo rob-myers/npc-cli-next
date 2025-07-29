@@ -10,8 +10,8 @@ export default function Card(props) {
   /** @type {React.CSSProperties | undefined} */
   const styles = typeof props.background === 'string' ? {
     background: props.background,
-    paddingTop: 8,
-    paddingBottom: 8,
+    // paddingTop: 8,
+    // paddingBottom: 8,
   } : undefined;
 
   return (
@@ -24,17 +24,12 @@ export default function Card(props) {
 
 const rootCss = css`
   margin: 32px 0;
-  padding: 0 48px;
+  padding: 24px 48px;
   border-left: 4px solid #dde;
   position: relative;
 
   @media(max-width: ${breakpoint}) {
-    padding: 0 32px;
-  }
-
-  > .card-anchor {
-    position: absolute;
-    top: -80px;
+    padding: 8px 32px;
   }
 `;
 
