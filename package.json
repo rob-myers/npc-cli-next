@@ -84,6 +84,7 @@
     "react-use-measure": "^2.1.7",
     "recast-navigation": "^0.39.0",
     "rehype-pretty-code": "^0.14.1",
+    "rehype-stringify": "^10.0.1",
     "rxjs": "^7.8.1",
     "safe-stable-stringify": "^2.5.0",
     "shiki": "^3.4.2",
