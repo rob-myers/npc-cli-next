@@ -14,7 +14,7 @@ export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args
   npc.s.run = input.keys?.includes("shift") ?? false;
   // we catch so can override move,
   // which also ignores points too far from nav
-  npc.api.move({ to: input, close: 0.5 }).catch();
+  npc.api.move({ to: input, close: 0.5 }).catch(() => {});
 }
 
 /**

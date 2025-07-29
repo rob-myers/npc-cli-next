@@ -189,7 +189,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
     npc.s.run = input.keys?.includes("shift") ?? false;
     // we catch so can override move,
     // which also ignores points too far from nav
-    npc.api.move({ to: input, close: 0.5 }).catch();
+    npc.api.move({ to: input, close: 0.5 }).catch(() => {});
   }
   ```
 </Code>
@@ -222,12 +222,14 @@ We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to create re
 Each hull symbol induces a 3D geomorph.
 Our [maps](https://github.com/rob-myers/npc-cli-next/tree/main/media/map) amount to possibly adjacent rectangles, where each rectangle corresponds to a hull symbol.
 
+For characters we use our own very basic Blender model, texture-mapped with simplifications of Minecraft skins (https://github.com/rob-myers/npc-cli-next/tree/main/media/npc).
+
 ## What's next
 
 We provide two blogs.
 Our main blog is about creating, combining and controlling NPC behaviour in realtime.
 Our dev blog is concerned with the underlying software (internal and external).
-They're separated in-line with our underlying motivations.
+They're separated in line with our underlying motivations.
 
 ### `main`
 
