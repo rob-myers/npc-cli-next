@@ -9,25 +9,20 @@ export default function useRefreshScrollRestoration(scrollEl: HTMLElement | null
       return;
     }
 
-    const navigationEntry = window.performance
-      .getEntriesByType('navigation')
-      .find((nav) => ['reload', 'back_forward'].includes((nav as any).type))
-    ;
+    // const navigationEntry = window.performance
+    //   .getEntriesByType('navigation')
+    //   .find((nav) => ['reload', 'back_forward', 'navigate'].includes((nav as any).type))
+    // ;
 
-    const pageAccessedByReload = navigationEntry !== undefined;
-    /* const pageAccessedByReload = navigationEntry?.name === window.location.href; */
-    
     const scrollStorageKey = `scrollTop:${window.location.pathname}`;
     let userScrolled = false;
 
-    if (pageAccessedByReload === true) {
-      const scrollPosition = Number.parseInt(sessionStorage.getItem(scrollStorageKey) ?? '0', 10);
-      if (typeof scrollPosition === 'number') {
-        // 🚧 await content loaded
-        pause(500).then(() => {// ignore if already scrolled
-          if (userScrolled === false) scrollEl.scrollTo({ top: scrollPosition, behavior: 'smooth' })
-        });
-      }
+    const scrollPosition = Number.parseInt(sessionStorage.getItem(scrollStorageKey) ?? '0', 10);
+    if (typeof scrollPosition === 'number') {
+      // 🚧 await content loaded
+      pause(500).then(() => {// ignore if already scrolled
+        if (userScrolled === false) scrollEl.scrollTo({ top: scrollPosition, behavior: 'smooth' })
+      });
     }
 
     const handleScroll = throttle(500, () => {
