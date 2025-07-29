@@ -96,11 +96,6 @@ They're a natural place to start.
 We've seen an NPC driven by a Command Line Interface (CLI),
 hence our incredibly imaginative site name _NPC CLI_.
 
-Importantly, our 3D worlds are based on Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html).
-They are architectural drawings of starships blocks, connectable along their edges. 
-We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to create [SVG symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).<SideNote>Each hull symbol induces a 3D geomorph e.g. [301--hull.svg](https://github.com/rob-myers/npc-cli-next/blob/main/media/symbol/301--hull.svg).</SideNote>
-
-
 ### Running a profile
 
 The same features are available on desktop, mobile and tablet devices.
@@ -182,6 +177,23 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   ```
 </Code>
 
+<Code>
+  ```js title="simpleClickToMove from demo_1.js" showLineNumbers
+  /**
+   * @param {NPC.ClickOutput} input
+   * @param {NPC.RunArg} ctxt
+   * @param {{ npcKey: string }} [opts]
+   */
+  export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args)) {
+    const npc = w.npc.getNpc(opts.npcKey);
+    npc.s.run = input.keys?.includes("shift") ?? false;
+    // we catch so can override move,
+    // which also ignores points too far from nav
+    npc.api.move({ to: input, close: 0.5 }).catch();
+  }
+  ```
+</Code>
+
 ## Motivations
 
 Let us list our underlying motivations.
@@ -200,6 +212,13 @@ Let us list our underlying motivations.
   In production one can run commands.
   In development, shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
 
+
+## Assets
+
+Importantly, our 3D worlds are based on Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html).
+They are architectural drawings of starships blocks, connectable along their edges. 
+
+We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to create [SVG symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).<SideNote>Each hull symbol induces a 3D geomorph e.g. [301--hull.svg](https://github.com/rob-myers/npc-cli-next/blob/main/media/symbol/301--hull.svg).</SideNote>
 
 ## What's next
 
