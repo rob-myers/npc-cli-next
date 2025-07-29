@@ -324,6 +324,7 @@ const viewerControlsCss = css`
       height: 100%;
       padding-right: 12px;
       margin-top: 2px;
+      user-select: none;
     }
   }
 
