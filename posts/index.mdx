@@ -96,10 +96,9 @@ They're a natural place to start.
 We've seen an NPC driven by a Command Line Interface (CLI),
 hence our incredibly imaginative site name _NPC CLI_.
 
-<Card background='#eef'>
-  Our 3D worlds are based on Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html) - architectural drawings of starships blocks, connectable along their edges. 
-  We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to create [SVG symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).<SideNote>Each hull symbol induces a 3D geomorph e.g. [301--hull.svg](https://github.com/rob-myers/npc-cli-next/blob/main/media/symbol/301--hull.svg).</SideNote>
-</Card>
+Importantly, our 3D worlds are based on Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html).
+They are architectural drawings of starships blocks, connectable along their edges. 
+We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to create [SVG symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).<SideNote>Each hull symbol induces a 3D geomorph e.g. [301--hull.svg](https://github.com/rob-myers/npc-cli-next/blob/main/media/symbol/301--hull.svg).</SideNote>
 
 
 ### Running a profile
@@ -179,7 +178,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 
   # click near nav to move
   ptags+=always; click meta.floor |
-    map demo_1 demoClickToMove npcKey:rob &
+    map demo_1 simpleClickToMove npcKey:rob &
   ```
 </Code>
 

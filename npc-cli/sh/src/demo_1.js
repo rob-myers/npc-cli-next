@@ -1,14 +1,15 @@
 import { Mat } from "@/npc-cli/geom";
 
 /**
+ * Bound to a particular npcKey.
  * ```sh
- * click meta.floor | map game_demo_1 demoClickToMove npcKey:rob
+ * click meta.floor | map game_demo_1 simpleClickToMove npcKey:rob
  * ```
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string }} [opts]
  */
-export async function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args)) {
+export async function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args)) {
   const npc = w.npc.getNpc(opts.npcKey);
   npc.s.run = input.keys?.includes("shift") ?? false;
   // we catch so can override move,

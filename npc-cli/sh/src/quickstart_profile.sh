@@ -8,4 +8,4 @@ spawn npcKey:rob at:'{x:4.5,y:7.5}' grant:.
 
 # click near nav to move
 ptags+=always; click meta.floor |
-  map demo_1 demoClickToMove npcKey:rob &
+  map demo_1 simpleClickToMove npcKey:rob &
