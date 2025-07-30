@@ -178,7 +178,7 @@ This permits us to patch `three-stdlib` inside `@react-three/drei`.
 npx patch-package @react-three/drei/three-stdlib
 ```
 
-### Screencast Android to MacBook
+### `scrcpy`: Screencast Android to MacBook
 
 - https://github.com/Genymobile/scrcpy/blob/master/doc/macos.md
 - https://github.com/Genymobile/scrcpy?tab=readme-ov-file
@@ -194,7 +194,7 @@ scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhi
 scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4
 
 # 🔔 no need for record because we'll use OBS
-scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder'
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=120 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --disable-screensaver
 ```
 
 ### Bump versions in our branch of recast-navigation-js
