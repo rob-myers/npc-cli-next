@@ -22,9 +22,7 @@ export default function Manage(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     createTabEpoch: 0,
-    profileKeys: process.env.NODE_ENV === 'production'
-      ? helper.profileKeys.filter(key => !key.startsWith('dev_only'))
-      : helper.profileKeys,
+    profileKeys: helper.profileKeys,
     show: {
       create: false,
       created: false,
