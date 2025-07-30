@@ -90,10 +90,10 @@ const mainHeaderCss = css`
   letter-spacing: 1.5rem;
   
   a {
-    color: #eee;
+    color: #000;
     text-decoration: none;
     font-weight: bold;
-    text-shadow: 0 1px #555, -0 -1px #555, 1px 0 #555, -1px 0 #555;
+    text-shadow: 0 1px #fff, -0 -1px #fff, 1px 0 #fff, -1px 0 #fff;
   }
   
   @media (min-width: ${afterBreakpoint}) {
