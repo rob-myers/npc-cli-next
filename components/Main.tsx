@@ -90,8 +90,9 @@ const mainHeaderCss = css`
   letter-spacing: 1.5rem;
   
   a {
-    color: white;
+    color: #eee;
     text-decoration: none;
+    font-weight: bold;
     text-shadow: 0 1px #555, -0 -1px #555, 1px 0 #555, -1px 0 #555;
   }
   
