@@ -1,3 +1,39 @@
+import Image from 'next/image';
+
+import Carousel from '../components/Carousel';
+import Figure from '../components/Figure';
+import { MobileIcon } from '../npc-cli/components/Icons';
+
+import MobileTtyTouchMenuWebp from '../public/images/mobile-tty-touch-menu.webp';
+
 # Help
+
+## Mobile devices
+
+The same features are available on desktop, mobile and tablet devices.
+However it's harder to use a terminal on a mobile.
+
+> <MobileIcon/> The keyboard hogs space,
+predictive text is unhelpful,
+there are auto-punctuation conflicts,
+and usually no arrow keys.
+
+{/* Mobile screens are too small. */}
+To make things easier, we provide a terminal _touch menu_ for pasting and submitting commands without a keyboard.
+But working with the blog/terminal/world _in tandem_ remains cumbersome on a mobile.
+
+{/* 🚧 improve image */}
+
+<Carousel
+  height={400}
+  heightMobile={300}
+  border='1px solid #aaa'
+  navigation
+  background='#222'
+>
+  <Figure label="TTY touch menu" objectPosition='100% 0%' style={{ padding: 48 }}>
+    <Image src={MobileTtyTouchMenuWebp} alt="TTY touch menu" />
+  </Figure>
+</Carousel>
 
 🚧
