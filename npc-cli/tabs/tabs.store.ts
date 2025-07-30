@@ -7,7 +7,7 @@ import { tryLocalStorageGet, tryLocalStorageSet, deepClone, warn, keys } from ".
 import { isIOS, isTouchDevice } from "../service/dom";
 import { helper } from "../service/helper";
 import type { TabDef, TabMetaProps, TabsetLayout, TtyTabDef } from "../tabs/tab-factory";
-import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab, selectTabInLayout, fixIOSCrash } from "../tabs/tab-util";
+import { type TabsetLayouts, addTabToLayout, createLayoutFromBasicLayout, extractTabNodes, flattenLayout, layoutToModelJson, removeTabFromLayout, computeStoredTabsetLookup, resolveLayoutPreset, ensureManageTab, selectTabInLayout, ensureValidTabsetTabs } from "../tabs/tab-util";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   tabset: computeStoredTabsetLookup(),
@@ -94,10 +94,6 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         set({ tabset: computeStoredTabsetLookup() }, undefined, 'recompute-layout-ios');
         helper.mapKeys = helper.mapKeys.filter(helper.isSmallMap);
       }
-    },
-
-    migrateRestoredLayout(layout) {// 🚧 ensure every tab.config has type TabDef
-      return fixIOSCrash(layout);
     },
 
     openTab(tabDef) {
@@ -259,7 +255,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         restored = ensureManageTab(restored);
         
         // props could change over time
-        restored = useTabs.api.migrateRestoredLayout(restored);
+        restored = ensureValidTabsetTabs(restored);
 
         return restored;
       } catch (e) {
@@ -310,8 +306,6 @@ export type State = {
     get(): State;
     getNextSuffix(tabClass: Key.TabClass): number;
     initiateBrowser(): void;
-    /** ensure every `tab.config` has type @see {TabDef} */
-    migrateRestoredLayout(layout: TabsetLayout): TabsetLayout;
     /** Create a tab (returns `true`), or select it (`false`) */
     openTab(tabDef: TabDef): boolean;
     rememberCurrentTabs(): void;

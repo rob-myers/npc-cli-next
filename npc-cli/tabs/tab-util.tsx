@@ -1,8 +1,9 @@
-import { type IJsonRowNode, IJsonModel, IJsonTabNode, IJsonTabSetNode } from "flexlayout-react";
+import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
+import { TABS_API_KEY } from "../service/const";
 import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice, isIOS } from "../service/dom";
-import type { CustomIJsonTabNode, ManageTabDef, TabDef, TabsetLayout, WorldTabDef } from "./tab-factory";
 import { helper } from "../service/helper";
+import type { CustomIJsonTabNode, ManageTabDef, TabDef, TabsetLayout, TtyTabDef, WorldTabDef } from "./tab-factory";
 
 /**
  * - If tabDef doesn't exist, append to 1st non-active tabset (or only active one).
@@ -44,7 +45,7 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
       tryLocalStorageGetParsed<IJsonRowNode>(`tabset@${key}`)
       ?? deepClone(emptyTabsetLayout)
     );
-    return fixIOSCrash(ensureManageTab(layout));
+    return ensureValidTabsetTabs(ensureManageTab(layout));
   }
   
   const synced = restoreLayout('synced');
@@ -195,15 +196,26 @@ function extractTabsetNodes(layout: IJsonRowNode): IJsonTabSetNode[] {
   });
 }
 
-/** 🔔 iOS 18.5 iPhone Mini fails on large maps */
-export function fixIOSCrash(layout: IJsonRowNode): IJsonRowNode {
+/**
+ * - Ensure every `tab.config` has type `TabDef`.
+ * - Ensure tabs don't crash on certain devices e.g. iOS.
+ * 
+ * Use cases:
+ * - 🔔 iOS 18.5 iPhone Mini crash on large maps i.e. force smaller maps.
+ * - onchange value of constant `props.env.TABS_API_KEY` in tty tabs
+ */
+export function ensureValidTabsetTabs(layout: IJsonRowNode): IJsonRowNode {
   
-  if (isIOS()) {
-    const tabNodes = extractTabNodes(layout);
-    for (const { config: tabDef } of tabNodes) {
-      if (isWorldTabDef(tabDef) && !helper.isSmallMap(tabDef.props.mapKey)) {
-        tabDef.props.mapKey = 'small-map-1'; // 🔔 ensure "small" map
-      }
+  const ios = isIOS();
+  const tabNodes = extractTabNodes(layout);
+
+  for (const { config: tabDef } of tabNodes) {
+    if (ios === true && isWorldTabDef(tabDef) && !helper.isSmallMap(tabDef.props.mapKey)) {
+      tabDef.props.mapKey = 'small-map-1'; // 🔔 ensure "small" map
+    }
+    if (isTtyTabDef(tabDef)) {
+      // in case TABS_API_KEY has changed
+      tabDef.env.TABS_API_KEY = TABS_API_KEY;
     }
   }
 
@@ -254,6 +266,10 @@ function isManageTabDef(def: TabDef): def is ManageTabDef {
 
 function isWorldTabDef(def: TabDef): def is WorldTabDef {
   return def.type === 'component' && def.class === 'World';
+}
+
+function isTtyTabDef(def: TabDef): def is TtyTabDef {
+  return def.type === 'terminal';
 }
 
 /**
