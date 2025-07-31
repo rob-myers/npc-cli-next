@@ -232,7 +232,9 @@ const toggleCss = css`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+
+  border: 1px solid black;
   
-  transform: scale(0.8);
+  transform: scale(1);
   filter: invert(1);
 `;
