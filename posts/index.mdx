@@ -19,10 +19,9 @@ import { LaptopIcon, MobileIcon, PlayIcon } from '../npc-cli/components/Icons';
 import TabsLayoutLink from '../npc-cli/components/TabsLayoutLink';
 import Video from '../components/Video';
 
-import DesktopViewerClosedWebp from '../public/images/desktop-viewer-closed.webp';
-import DesktopViewerOpenWebp from '../public/images/desktop-viewer-open.webp';
-import DesktopViewerPlayButtonWebp from '../public/images/desktop-viewer-play-button.webp';
-import MobileTtyTouchMenuWebp from '../public/images/mobile-tty-touch-menu.webp';
+import ViewerClosedDesktopWebp from '../public/images/viewer-closed-desktop.webp';
+import ViewerOpenDesktopWebp from '../public/images/viewer-open-desktop.webp';
+import ViewerOpenPlayButtonDesktopWebp from '../public/images/viewer-open-play-button-desktop.webp';
 
 # Home
 
@@ -59,13 +58,13 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
     background='rgba(0, 0, 0, 0)'
   >
     <Figure label="Viewer closed">
-      <Image src={DesktopViewerClosedWebp} alt="Desktop Viewer closed"/>
+      <Image src={ViewerClosedDesktopWebp} alt="Desktop Viewer closed"/>
     </Figure>
     <Figure label="Viewer open">
-      <Image src={DesktopViewerOpenWebp} alt="Desktop Viewer open"/>
+      <Image src={ViewerOpenDesktopWebp} alt="Desktop Viewer open"/>
     </Figure>
-    <Figure label="Viewer play button" objectFit="contain">
-      <Image src={DesktopViewerPlayButtonWebp} alt="Desktop Viewer play button"/>
+    <Figure label="Viewer play button">
+      <Image src={ViewerOpenPlayButtonDesktopWebp} alt="Desktop Viewer play button"/>
     </Figure>
   </Carousel>
 
@@ -115,8 +114,7 @@ The _default profile_ provides various shell functions.
 Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
 Follow along on Desktop or Mobile. */}
 
-There are two basic roles we play whilst developing NPCs: the _Game Master_<SideNote>
-A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote> controls the game, the _Player_ experiences the game.
+There are two basic roles we play whilst developing NPCs: the _Game Master_ controls the game, the _Player_ experiences the game.
 
 Desktop users might alternate between these roles, designing behaviours while trying to understand the Player's perspective.
 Mobile users should probably assume the Player role.
@@ -182,8 +180,8 @@ Our 3D worlds are implementations of Robert Pearce's [Starship Geomorphs](http:/
 i.e.
 architectural drawings of starships blocks, connectable along their edges. 
 
-We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to recursively define SVG [symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).
-Each hull symbol induces a 3D geomorph.
+We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to recursively define [SVG symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).
+Each hull symbol <SideNote>For example [101--hull.svg](https://github.com/rob-myers/npc-cli-next/blob/almost-ready/media/symbol/101--hull.svg)</SideNote> induces a 3D geomorph.
 Our [maps](https://github.com/rob-myers/npc-cli-next/tree/main/media/map) amount to possibly edge-sharing rectangles, where each rectangle corresponds to a hull symbol.
 
 For characters we use a basic Blender model, texture-mapped with simplifications of [Minecraft skins](https://github.com/rob-myers/npc-cli-next/tree/main/media/npc).
