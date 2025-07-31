@@ -1,8 +1,9 @@
 import Link from "next/link";
 import React from "react";
 import { css } from "@emotion/react";
-import cx from "classnames";
+import { throttle } from "throttle-debounce";
 import { shallow } from "zustand/shallow";
+import cx from "classnames";
 
 import { afterBreakpoint, breakpoint, zIndexSite, sideNoteRootDataAttribute } from "./const";
 import useSite from "./site.store";
@@ -13,6 +14,16 @@ export default function Main(props: React.PropsWithChildren) {
   const rootRef = React.useRef<HTMLDivElement>(null);
 
   useScrollRestoration(rootRef.current);
+
+  React.useEffect(() => {
+    const scrollEl = rootRef.current!
+    const headerLink = scrollEl.querySelector('header > a') as HTMLAnchorElement;
+    const fadeTitleOnScroll = throttle(300, () => {
+      headerLink.style.opacity = String(Math.max(0.2, 1 - 4 * (scrollEl.scrollTop / scrollEl.scrollHeight)));
+    });
+    scrollEl.addEventListener('scroll', fadeTitleOnScroll);
+    return () => scrollEl.removeEventListener('scroll', fadeTitleOnScroll);
+  }, []);
 
   return (
     <div
@@ -92,8 +103,8 @@ const mainHeaderCss = css`
   pointer-events: none;
   
   a {
-    opacity: 0;
-    color: #000;
+    transition: opacity 300ms;
+    color: #444;
     text-decoration: none;
     font-weight: bold;
     text-shadow: 0 1px #fff, -0 -1px #fff, 1px 0 #fff, -1px 0 #fff;
@@ -115,7 +126,7 @@ const mainHeaderCss = css`
     background-color: #fff;
     a {
       pointer-events: all;
-      opacity: 1;
+      opacity: 1 !important;
     }
   }
 `;
