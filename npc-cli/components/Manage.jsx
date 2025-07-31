@@ -110,6 +110,9 @@ export default function Manage(props) {
       const tabId = /** @type {string} */ (li.dataset.tabId);
       useTabs.api.changeTabProps(tabId, { mapKey });
     },
+    stopPropagation(e) {
+      e.stopPropagation();
+    },
     syncWorldKey(e) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabId = /** @type {Key.TabId} */ (li.dataset.tabId);
@@ -264,6 +267,7 @@ export default function Manage(props) {
                     pattern="[0-9]{1}"
                     size={2}
                     defaultValue={0}
+                    onKeyDown={state.stopPropagation}
                   />
                 </span>
               </span>
@@ -562,6 +566,7 @@ const manageCss = css`
  * @property {OnClickHandler} createTab
  * @property {OnClickHandler} selectTab
  * @property {OnChangeHandler} setMapKey
+ * @property {(e: React.KeyboardEvent) => void} stopPropagation
  * @property {OnClickHandler} syncWorldKey
  * @property {OnClickHandler} toggleShown
  */
