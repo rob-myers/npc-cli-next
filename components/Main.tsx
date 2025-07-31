@@ -88,8 +88,11 @@ const mainHeaderCss = css`
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
+
+  pointer-events: none;
   
   a {
+    opacity: 0;
     color: #000;
     text-decoration: none;
     font-weight: bold;
@@ -112,6 +115,7 @@ const mainHeaderCss = css`
     background-color: #fff;
     a {
       pointer-events: all;
+      opacity: 1;
     }
   }
 `;
