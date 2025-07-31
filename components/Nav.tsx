@@ -236,6 +236,6 @@ const toggleCss = css`
   filter: invert(1);
   
   &.collapsed {
-    border: 1px solid black;
+    border: 1px solid #444;
   }
 `;
