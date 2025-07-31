@@ -24,6 +24,7 @@
     "test-clean-transform-origin": "bun scripts/clean-transform-origin",
     "ts-script": "ts-node -r tsconfig-paths/register -O '{ \"module\": \"commonjs\", \"isolatedModules\": false, \"types\": [\"node\"] }'",
     "types": "tsc --noEmit",
+    "watch-highlight": "bun scripts/highlight-nodemon.js",
     "watch-assets": "source scripts/watch-assets.sh",
     "watch-assets-nodemon": "bun scripts/assets-nodemon.js"
   },
