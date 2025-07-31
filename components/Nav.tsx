@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import cx from "classnames";
 import { css } from "@emotion/react";
 import React from "react";
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "react-pro-sidebar";
@@ -50,7 +51,7 @@ export default function Nav() {
     >
       <button
         css={toggleCss}
-        className="toggle"
+        className={cx("toggle", { collapsed })}
       >
          <FontAwesomeIcon
           icon={faChevronRight}
@@ -62,7 +63,9 @@ export default function Nav() {
 
       <Menu onClick={state.onClickMenu}>
         <MenuItem className="title" component="span" tabIndex={-1}>
-          <Link href="/blog/index" tabIndex={-1}>NPC CLI</Link>
+          <Link href="/blog/index" tabIndex={-1}>
+            NPC CLI
+          </Link>
         </MenuItem>
         <SubMenu icon={icon.blog} label="Main">
           <MenuItem component="span">
@@ -115,9 +118,6 @@ const navCss = css`
       /* text-decoration: underline; */
     }
   }
-  /* .title a.${menuClasses.button}, ${menuClasses.button}:hover {
-    text-decoration: none !important;
-  } */
 
   // root item icon
   span.${menuClasses.icon} {
@@ -158,7 +158,6 @@ const navCss = css`
     opacity: 1;
     transition: opacity 500ms;
     margin-left: 0.75rem;
-    font-family: 'Courier New', Courier, monospace;
 
     .${menuClasses.button} {
       pointer-events: none; // ignore clicks outside <a>
@@ -233,8 +232,10 @@ const toggleCss = css`
   align-items: center;
   cursor: pointer;
 
-  border: 1px solid black;
-  
   transform: scale(1);
   filter: invert(1);
+  
+  &.collapsed {
+    border: 1px solid black;
+  }
 `;
