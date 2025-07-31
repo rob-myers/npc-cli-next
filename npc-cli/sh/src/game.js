@@ -1,5 +1,5 @@
 import { isStringInt, removeFirst } from '../../service/generic';
-import { createDecorNumber } from './game_1';
+import { createDecorNumber } from './game.1';
 
 /**
  * ```sh

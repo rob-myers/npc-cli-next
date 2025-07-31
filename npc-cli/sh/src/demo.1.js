@@ -3,7 +3,7 @@ import { Mat } from "@/npc-cli/geom";
 /**
  * Bound to a particular npcKey.
  * ```sh
- * click meta.floor | map game_demo_1 simpleClickToMove npcKey:rob
+ * click meta.floor | map demo.1 simpleClickToMove npcKey:rob
  * ```
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ctxt

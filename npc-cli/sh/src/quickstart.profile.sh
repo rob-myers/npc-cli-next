@@ -1,7 +1,7 @@
 source /etc/util.sh
 source /etc/util.js.sh
 source /etc/game.js.sh
-source /etc/demo_1.js.sh
+source /etc/demo.1.js.sh
 
 awaitWorld
 
@@ -10,4 +10,4 @@ spawn npcKey:rob at:'{x:4.5,y:7.5}' grant:.
 
 # click near nav to move
 ptags+=always; click meta.floor |
-  map demo_1 simpleClickToMove npcKey:rob &
+  map demo.1 simpleClickToMove npcKey:rob &
