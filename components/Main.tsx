@@ -6,13 +6,13 @@ import { shallow } from "zustand/shallow";
 
 import { afterBreakpoint, breakpoint, zIndexSite, sideNoteRootDataAttribute } from "./const";
 import useSite from "./site.store";
-import useRefreshScrollRestoration from "./use-refresh-scroll-restore";
+import useScrollRestoration from "./use-scroll-restore";
 
 export default function Main(props: React.PropsWithChildren) {
   const site = useSite(({ navOpen, draggingView }) => ({ navOpen, draggingView }), shallow);
   const rootRef = React.useRef<HTMLDivElement>(null);
 
-  useRefreshScrollRestoration(rootRef.current);
+  useScrollRestoration(rootRef.current);
 
   return (
     <div

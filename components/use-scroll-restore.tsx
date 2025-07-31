@@ -3,7 +3,7 @@ import { throttle } from 'throttle-debounce';
 import { pause } from '@/npc-cli/service/generic';
 
 // https://github.com/vercel/next.js/discussions/33777#discussioncomment-2148021
-export default function useRefreshScrollRestoration(scrollEl: HTMLElement | null) {
+export default function useScrollRestoration(scrollEl: HTMLElement | null) {
   React.useEffect(() => {
     if (scrollEl === null) {
       return;
