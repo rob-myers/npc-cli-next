@@ -5,10 +5,10 @@ import rehypeStringify from "rehype-stringify";
 import rehypePrettyCode from "rehype-pretty-code";
 
 /**
- * `/api/syntax-highlight/{lang}/{code}`
+ * `POST /api/syntax-highlight -d '{ "lang": "{lang}", "code": "{code}" }'`
  * 
  * ```sh
- * # examples
+ * # e.g.
  * curl --silent -XPOST localhost:3000/api/syntax-highlight -d '{ "lang": "js", "code": "const items = [1, 2, \"three\"]" }' | jq
  * ```
  */
