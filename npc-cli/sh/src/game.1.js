@@ -26,7 +26,7 @@ export const changeAngleOnKeyDown = ({ w }) => {
       case "w": {
         await w.view.tween({
           azimuthal: Math.round(ratio) * delta,
-          polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0,
+          polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/8 : 0,
         });
         break;
       }
