@@ -247,7 +247,7 @@ class cmdServiceClass {
         break;
       }
       case "get": {
-        yield* this.get(node, args);
+        yield* this.get(node.meta, args);
         break;
       }
       case "help": {
@@ -611,7 +611,7 @@ class cmdServiceClass {
       case "source": {
         for (const filepath of args) {
           
-          const [script] = this.get(node, [filepath]);
+          const [script] = this.get(node.meta, [filepath]);
           
           if (script === undefined) {
             throw Error(`source: "${filepath}" not found`);
@@ -753,10 +753,10 @@ class cmdServiceClass {
     return resolveNormalized(pwd.split("/"), root);
   }
 
-  get(node: Sh.BaseNode, args: string[]) {
-    const root = this.provideProcessCtxt(node.meta);
-    const pwd = useSession.api.getVar<string>(node.meta, "PWD");
-    const process = getProcess(node.meta);
+  get(meta: Sh.BaseMeta, args: string[]) {
+    const root = this.provideProcessCtxt(meta);
+    const pwd = useSession.api.getVar<string>(meta, "PWD");
+    const process = getProcess(meta);
 
     const outputs = args.map((arg) => {
       const parts = arg.split("/");
@@ -772,7 +772,6 @@ class cmdServiceClass {
       ;
     });
 
-    node.exitCode = outputs.length && outputs.every((x) => x === undefined) ? 1 : 0;
     return outputs;
   }
 
@@ -851,6 +850,10 @@ class cmdServiceClass {
     eof: EOF,
 
     generateSelector,
+
+    get(args: string[]) {
+      return cmdService.get(this.meta, args);
+    },
 
     getCached,
 
@@ -953,7 +956,7 @@ class cmdServiceClass {
 
   private readonly processApiKeys = Object.keys(this.processApi);
 
-  private provideProcessCtxt(meta: Sh.BaseMeta, posPositionals: string[] = []) {
+  provideProcessCtxt(meta: Sh.BaseMeta, posPositionals: string[] = []) {
     const session = useSession.api.getSession(meta.sessionKey);
     const cacheShortcuts = session.var.CACHE_SHORTCUTS ?? {};
     return new Proxy(

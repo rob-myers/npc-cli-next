@@ -363,7 +363,8 @@ class semanticsServiceClass {
         try {
           // Try to `get` things instead
           for (const arg of args) {
-            const result = cmdService.get(node, [arg]);
+            const result = cmdService.get(node.meta, [arg]);
+            node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
             if (result[0] !== undefined) {
               yield* result; // defined, or invoked defined-valued function
             } else if (matchFuncFormat(arg) !== null) {
@@ -723,7 +724,9 @@ class semanticsServiceClass {
     if (Repl !== null) {
       // ${_/foo/bar/baz}
       const origParam = reconstructReplParamExp(Repl);
-      yield expand(jsStringify(cmdService.get(node, [origParam])[0]));
+      const result = cmdService.get(node.meta, [origParam]);
+      node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
+      yield expand(jsStringify(result[0]));
     } else if (Excl || Length || Slice) {
       throw new ShError(`ParamExp: ${Param.Value}: unsupported operation`, 2);
     } else if (Exp !== null) {
