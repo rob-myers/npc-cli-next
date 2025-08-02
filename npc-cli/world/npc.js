@@ -729,10 +729,10 @@ export class NpcApi {
       this.w.events.next({ key: 'enter-off-mesh-main', npcKey: this.key });
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
-      if (this.pendingTargets.length === 0 && this.isNear() === true) {
-        // 🔔 fix sharp final turn just after offMeshConnection
-        this.s.lookSecs = 0.8;
-      }
+      // if (this.pendingTargets.length === 0 && this.isNear() === true) {
+      //   // 🔔 fix sharp final turn just after offMeshConnection
+      //   this.s.lookSecs = 0.8;
+      // }
     }
 
     // look further along the path

@@ -646,10 +646,10 @@ export default function useHandleEvents(w) {
 
       if (e.offMesh.dstRoomMeta.small !== true) {
         // resume speed
-        const maxSpeed = npc.api.getMaxSpeed();
-        if (npc.agent.maxSpeed !== maxSpeed) {
-          npc.agent.raw.params.set_maxSpeed(maxSpeed);
-        }
+        // const maxSpeed = npc.api.getMaxSpeed();
+        // if (npc.agent.maxSpeed !== maxSpeed) {
+        //   npc.agent.raw.params.set_maxSpeed(maxSpeed);
+        // }
         if (npc.s.run === true) {
           npc.api.startAnimation('Run', true);
         }
