@@ -4,7 +4,7 @@ import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
 import { ansi, ProcessTag } from "./const";
-import { killError, ProcessError, ShError, ttyError, updatePtags } from "./util";
+import { applyPtagUpdates, killError, ProcessError, ShError, ttyError, updatePtags } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
 import { semanticsService } from "./semantics.service";
@@ -276,7 +276,8 @@ export class ttyShellClass implements Device {
         sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || parent.positionals.slice(1),
-        ptags: updatePtags(parent.ptags, { ...parent.ptagsDelta, ...opts.ptags }),
+        // 🔔 expect shallow clone to be deep clone for ptags
+        ptags: applyPtagUpdates({ ...parent.ptags }, { ...session.ptags, ...opts.ptags }),
       });
       meta.pid = process.key;
 

@@ -68,7 +68,7 @@
 - 🚧 refactor ptags
   - ✅ ptags builtin
   - ✅ session.ptags
-  - 🚧 process spawn uses session.ptags
+  - ✅ process spawn uses session.ptags
   - remove `ptags+=`
   - remove `process.ptagsDelta`
 
