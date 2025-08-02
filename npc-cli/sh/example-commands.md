@@ -65,7 +65,8 @@ act npcKey:rob at:$( click 1 )
 
 ```sh
 # inline example
-ptags+=always; click meta.floor | map --forever '(input, { w, home }) => {
+ptags always
+click meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;

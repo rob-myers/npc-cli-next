@@ -51,7 +51,6 @@ const useStore = create<State>()((set, get): State => ({
         localVar: {},
         inheritVar: {},
         ptags,
-        ptagsDelta: {}, // 🚧 remove
       };
     },
 
@@ -600,13 +599,6 @@ export interface ProcessMeta {
   /** Inherited local variables. */
   inheritVar: Record<string, any>;
   ptags: Ptags;
-  /**
-   * Process tags for next spawn.
-   * - Defaults to `ptags`.
-   * - Can be altered via e.g. `ptags+='foo bar'`.
-   * - Resets to `{}` after spawn.
-   */
-  ptagsDelta: Ptags;
 }
 
 interface KillOpts {

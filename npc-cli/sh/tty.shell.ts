@@ -4,7 +4,7 @@ import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
 import { ansi, ProcessTag } from "./const";
-import { applyPtagUpdates, killError, ProcessError, ShError, ttyError, updatePtags } from "./util";
+import { applyPtagUpdates, killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
 import { semanticsService } from "./semantics.service";
@@ -284,7 +284,6 @@ export class ttyShellClass implements Device {
       if (opts.cleanups !== undefined) {
         process.cleanups.push(...opts.cleanups);
       }
-      parent.ptagsDelta = {}; // reset after spawn
 
       if (// Represent <Tabs> disabled
         this.suspendNonInteractive === true

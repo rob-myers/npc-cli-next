@@ -295,7 +295,6 @@ class cmdServiceClass {
 
         /**
          * Actually kill (SIGINT) if we're not stopping or resuming.
-         * We don't support setting ptags from the command line.
          */
         const SIGINT = opts.STOP === false && opts.CONT === false;
 

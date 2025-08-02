@@ -65,12 +65,12 @@
 
 ### World
 
-- 🚧 refactor ptags
+- ✅ refactor ptags
   - ✅ ptags builtin
   - ✅ session.ptags
   - ✅ process spawn uses session.ptags
-  - remove `ptags+=`
-  - remove `process.ptagsDelta`
+  - ✅ remove `ptags+=`
+  - ✅ remove `process.ptagsDelta`
 
 - move dev_only.profile.sh inline functions into js modules
 

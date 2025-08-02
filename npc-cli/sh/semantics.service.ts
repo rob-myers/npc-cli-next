@@ -168,10 +168,6 @@ class semanticsServiceClass {
       node.exitCode = 0;
       return;
     }
-    if (Name.Value === 'ptags') {
-      node.exitCode = 0;
-      return; // used to tag process instead
-    }
 
     const { value, values } = await this.lastExpanded(sem.Expand(Value));
     const firstValue = values[0]; // know values.length > 0 because not Naked
@@ -332,29 +328,11 @@ class semanticsServiceClass {
     return this.stmts(node, node.Stmts);
   }
 
-  /**
-   * - We support process tagging like `ptags+=always; foo | bar &`
-   * - We modify `process.ptagsDelta` and apply in __next spawn only__.
-   */
-  private async supportPTags(node: Sh.CallExpr) {
-    const assigns = node.Assigns.filter(x => x.Name?.Value === 'ptags' && x.Append === true && x.Value !== null);
-    const process = getProcess(node.meta);
-    for (const assign of assigns) {
-      const expanded = await this.lastExpanded(sem.Expand(assign.Value!));
-      const ptags = tagsToMeta(textToTags(expanded.value));
-      Object.assign(process.ptagsDelta, ptags);
-    }
-  }
-
   private async *CallExpr(node: Sh.CallExpr) {
     node.exitCode = 0;
     const args = await sem.performShellExpansion(node.Args);
     const [command, ...cmdArgs] = args;
     node.meta.verbose === true && console.log("simple command", args);
-
-    if (node.Assigns.length > 0) {
-      await this.supportPTags(node);
-    }
 
     if (args.length > 0) {
       let func: Sh.NamedFunction | undefined;
