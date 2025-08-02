@@ -18,6 +18,7 @@ import useStateRef from "../hooks/use-state-ref";
 export default function useHandleEvents(w) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    doorToAccess: {},
     doorToNearbyNpcs: {},
     doorToOffMesh: {},
     externalNpcs: new Set(),
@@ -456,9 +457,17 @@ export default function useHandleEvents(w) {
       return npc !== undefined && w.view.dst.look === npc.position;
     },
     npcCanAccess(npcKey, gdKey) {
-      for (const regexDef of state.npcToAccess[npcKey] ?? []) {
-        if ((regexCache[regexDef] ??= new RegExp(regexDef)).test(gdKey)) {
-          return true;
+      if (state.doorToAccess[gdKey]?.size) {// check special access
+        for (const regexDef of state.doorToAccess[gdKey]) {
+          if (state.npcToAccess[npcKey]?.has(regexDef)) {
+            return true;
+          }
+        }
+      } else {// check standard access
+        for (const regexDef of state.npcToAccess[npcKey] ?? []) {
+          if ((regexCache[regexDef] ??= new RegExp(regexDef)).test(gdKey)) {
+            return true;
+          }
         }
       }
       return false;
@@ -875,6 +884,9 @@ export default function useHandleEvents(w) {
 
 /**
  * @typedef State
+ * @property {{ [gdKey: Geomorph.GmDoorKey]: Set<string> }} doorToAccess
+ * - Relates `Geomorph.GmDoorKey` to access keys (`regexDef`) an npc must have.
+ * - Use this to refine `npcToAccess` e.g. lock a toilet even when `npcToAccess[npcKey] = ['.']`.
  * @property {{ [gdKey: Geomorph.GmDoorKey]: Set<string> }} doorToNearbyNpcs
  * Relates `Geomorph.GmDoorKey` to nearby/inside `npcKey`s
  * @property {{ [gdKey: Geomorph.GmDoorKey]: NPC.OffMeshState[] }} doorToOffMesh

@@ -101,4 +101,8 @@ spawn npcKey:rada angle:Math.PI skin:'{
 
 ```sh
 w e.grantAccess . rob will kate suit rada
+
+# only allow rob to access door whilst locked
+w e.doorToAccess | assign '{ g0d11: new Set(["foo"]) }'
+w e.npcToAccess.rob | map 'x => x.add("foo")'
 ```
