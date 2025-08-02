@@ -1467,7 +1467,7 @@ export class NpcApi {
 
     this.s.lookSecs = lookSecsNoTarget;
     if (this.s.lookAngleDst !== null) {
-      // nulling causes jerk if stop "just round corner" after doorway
+      // avoid jerk if stop "just round corner" after doorway
       const delta = deltaAngle(this.base.rotation.y, this.s.lookAngleDst);
       this.s.lookAngleDst = Math.abs(delta) > 0.25 ? this.base.rotation.y + delta/2 : null;
     }
