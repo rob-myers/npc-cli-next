@@ -451,13 +451,18 @@ class semanticsServiceClass {
       const command = node.type === 'CallExpr' ? node.Args[0]?.string ?? 'CallExpr' : node.type;
       node.meta.stack.splice(cmdStackIndex, 0, command);
 
-      const error = e instanceof ShError ? e : new ShError("", 1, e as Error);
+      // normalize errors
+      const error = e instanceof ShError || e instanceof ProcessError
+        ? e
+        : new ShError("", 1, e as Error)
+      ;
       error.message = `${node.meta.stack.join(": ")}: ${(e as Error).message || e}`;
       if (command === "run" && node.meta.stack.length === 1) {
         // When directly using `run` append helpful format message
         error.message += '\n\r' + formatMessage(`format: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
       }
-      sem.handleShError(node, e);
+
+      sem.handleShError(node, error);
     }
   }
 
