@@ -93,7 +93,10 @@ class semanticsServiceClass {
     // write to stderr
     const device = useSession.api.resolve(2, node.meta);
     if (device !== undefined) {
-      device.writeData(`${ansi.Red}${message}${ansi.Reset}`); // 🔔 non-blocking promise
+      const lines = message.split(/\r?\n/); // 🔔 non-blocking promise:
+      device.writeData(`${
+        lines.map(line => formatMessage(line, 'error')).join('\n')
+      }${ansi.Reset}`)
     } else {
       ttyError(`ShError: ${node.meta.sessionKey}: stderr does not exist`);
     }
@@ -447,19 +450,21 @@ class semanticsServiceClass {
         }
       }
     } catch (e) {
+      const { stack } = node.meta;
+
       // now know CallExpr command (1st arg), although `foo=bar` has no command
       const command = node.type === 'CallExpr' ? node.Args[0]?.string ?? 'CallExpr' : node.type;
-      node.meta.stack.splice(cmdStackIndex, 0, command);
+      stack.splice(cmdStackIndex, 0, command);
 
-      // normalize errors
+      // normalize error
       const error = e instanceof ShError || e instanceof ProcessError
         ? e
         : new ShError("", 1, e as Error)
       ;
-      error.message = `${node.meta.stack.join(": ")}: ${(e as Error).message || e}`;
-      if (command === "run" && node.meta.stack.length === 1) {
-        // When directly using `run` append helpful format message
-        error.message += '\n\r' + formatMessage(`format: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
+      error.message = `${stack.join(": ")}: ${(e as Error).message || e}`;
+      if (command === "run" && stack.length === 1) {
+        // when directly using `run` append helpful format message
+        error.message += '\n' + formatMessage(`usage: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
       }
 
       sem.handleShError(node, error);
