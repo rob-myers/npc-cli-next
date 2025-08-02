@@ -10,6 +10,7 @@ import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, v3Precision } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
+import { deltaAngle } from 'maath/misc';
 
 /**
  * @param {NPC.NPCDef} def 
@@ -1127,7 +1128,7 @@ export class NpcApi {
     this.base.mixer.update(deltaSecs);
 
     if (this.s.lookAngleDst !== null) {
-      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaSecs, 20, undefined, 0.01) === false) {
+      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaSecs, undefined, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
       }
@@ -1465,8 +1466,12 @@ export class NpcApi {
     }
 
     this.s.lookSecs = lookSecsNoTarget;
-    // causes jerk if stop "just round corner" after doorway
-    //this.s.lookAngleDst = null;
+    if (this.s.lookAngleDst !== null) {
+      // nulling causes jerk if stop "just round corner" after doorway
+      const delta = deltaAngle(this.base.rotation.y, this.s.lookAngleDst);
+      this.s.lookAngleDst = Math.abs(delta) > 0.25 ? this.base.rotation.y + delta/2 : null;
+    }
+
     this.s.slowBegin = null;
     this.s.target = null;
 
