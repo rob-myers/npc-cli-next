@@ -13,7 +13,7 @@ import useSession from "../sh/session.store";
 import useUpdate from "../hooks/use-update";
 import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/npc-cli/components/Icon";
 import PsList from "./PsList";
-import TabsLayoutLink from "./TabsLayoutLink";
+import TabsLayoutLink from "./SetTabsLink";
 
 /** @param {Props} props */
 export default function Manage(props) {
