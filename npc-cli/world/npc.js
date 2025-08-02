@@ -1465,7 +1465,8 @@ export class NpcApi {
     }
 
     this.s.lookSecs = lookSecsNoTarget;
-    this.s.lookAngleDst = null;
+    // causes jerk if stop "just round corner" after doorway
+    //this.s.lookAngleDst = null;
     this.s.slowBegin = null;
     this.s.target = null;
 
