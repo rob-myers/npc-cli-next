@@ -154,17 +154,31 @@ export function killProcess(p: ProcessMeta, SIGINT?: boolean) {
 }
 
 /**
+ * 🚧 remove
  * Computes fresh ptags.
  * - A process "has" tag `key` iff `key in process.ptags`.
  * - An updates value of `undefined` or `null` deletes the tag.
  */
 export function updatePtags(ptags: Ptags, updates: Ptags) {
-  const output = { ...ptags }; // same as deep clone
+  const output = { ...ptags }; // should be same as deep clone
   Object.entries(updates).forEach(([k, v]) => {
     if (v == null) delete output[k];
     else output[k] = v;
   });
   return output;
+}
+
+/**
+ * Mutates `ptags`.
+ * - A process "has" tag `key` iff `key in process.ptags`.
+ * - An updates value of `undefined` or `null` deletes the tag.
+ */
+export function applyPtagUpdates(ptags: Ptags, updates: Ptags) {
+  Object.entries(updates).forEach(([k, v]) => {
+    if (v == null) delete ptags[k];
+    else ptags[k] = v;
+  });
+  return ptags;
 }
 
 //#endregion

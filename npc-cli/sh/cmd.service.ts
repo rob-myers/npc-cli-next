@@ -2,9 +2,9 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { deepGet, keysDeep, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn } from "../service/generic";
+import { deepGet, keysDeep, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn, tagsToMeta } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview } from "./util";
+import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview, applyPtagUpdates } from "./util";
 import type * as Sh from "./parse";
 import { type ReadResult, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk, type Device } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
@@ -53,6 +53,8 @@ const commandKeys = {
   ls: true,
   /** List running processes */
   ps: true,
+  /** List, add, remove session ptags for subsequent spawned processes */
+  ptags: true,
   /** Print current key prefix */
   pwd: true,
   /** Exit from a function */
@@ -424,6 +426,16 @@ class cmdServiceClass {
           }
         }
 
+        break;
+      }
+      case "ptags": {
+        const { ptags } = useSession.api.getSession(meta.sessionKey);
+        if (args.length === 0) {
+          yield ptags;
+        } else {
+          const ptagUpdates = tagsToMeta(args);
+          applyPtagUpdates(ptags, ptagUpdates);
+        }
         break;
       }
       case "pwd": {

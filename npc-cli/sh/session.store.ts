@@ -51,7 +51,7 @@ const useStore = create<State>()((set, get): State => ({
         localVar: {},
         inheritVar: {},
         ptags,
-        ptagsDelta: {},
+        ptagsDelta: {}, // 🚧 remove
       };
     },
 
@@ -79,6 +79,7 @@ const useStore = create<State>()((set, get): State => ({
               ...deepClone(env),
             },
             jsFunc: {} as any,
+            ptags: {},
             nextPid: 0,
             process: {},
             lastBg: 0,
@@ -522,6 +523,8 @@ export interface Session {
     CACHE_SHORTCUTS?: { [key: string]: string };
   };
   jsFunc: import('../terminal/TtyWithFunctions').TtyJsModules;
+  /** Process tags to apply to spawned processes */
+  ptags: Ptags;
 
   nextPid: number;
   /** Last exit code: */
@@ -596,7 +599,6 @@ export interface ProcessMeta {
   localVar: Record<string, any>;
   /** Inherited local variables. */
   inheritVar: Record<string, any>;
-  /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
   ptags: Ptags;
   /**
    * Process tags for next spawn.

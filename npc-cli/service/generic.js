@@ -549,7 +549,7 @@ export function tagsToMeta(tags, baseMeta = {}, names, values) {
     if (eqIndex > -1) {
       meta[tag.slice(0, eqIndex)] = parseJsWithCt(tag.slice(eqIndex + 1), names, values);
     } else {
-      meta[tag] = true; // Omit tags `foo=bar`
+      meta[tag] = true;
     }
     return meta;
   }, baseMeta);

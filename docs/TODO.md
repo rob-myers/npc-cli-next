@@ -65,6 +65,15 @@
 
 ### World
 
+- 🚧 refactor ptags
+  - ✅ ptags builtin
+  - ✅ session.ptags
+  - 🚧 process spawn uses session.ptags
+  - remove `ptags+=`
+  - remove `process.ptagsDelta`
+
+- move dev_only.profile.sh inline functions into js modules
+
 - ✅ BUG `w.events` sees `clear-off-mesh` before `enter-off-mesh` even though they execute in other order
   - ℹ️ `next enter-off-mesh` triggers a subscriber which `next clear-off-mesh` then executes 2nd subscriber
   - ℹ️ later subscribers see `clear-off-mesh` then `enter-off-mesh`
