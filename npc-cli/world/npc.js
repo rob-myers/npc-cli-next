@@ -729,7 +729,7 @@ export class NpcApi {
       this.w.events.next({ key: 'enter-off-mesh-main', npcKey: this.key });
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
-      if (this.pendingTargets.length === 0 && this.isNearTarget() === true) {
+      if (this.pendingTargets.length === 0 && this.isNear() === true) {
         // 🔔 fix sharp final turn just after offMeshConnection
         this.s.lookSecs = 0.8;
       }
@@ -835,11 +835,15 @@ export class NpcApi {
     this.base.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
-  isNearTarget(nearDistance = nearTargetDistance) {
-    const { lastTarget, position } = this.base;
+  /**
+   * @param {NPC.GroundPoint} [groundPoint]
+   * @param {number} [nearDistance]
+   */
+  isNear(groundPoint = this.base.lastTarget, nearDistance = nearTargetDistance) {
+    const z = 'z' in groundPoint ? groundPoint.z : groundPoint.y;
     return (
-      Math.abs(lastTarget.x - position.x) < nearDistance
-      && Math.abs(lastTarget.z - position.z) < nearDistance
+      Math.abs(groundPoint.x - this.base.position.x) < nearDistance
+      && Math.abs(z - this.base.position.z) < nearDistance
     );
   }
 
@@ -905,7 +909,12 @@ export class NpcApi {
     if (points.length === 0) {
       return;
     }
-    
+  
+    // console.log({points})
+    // if (points.length > 1 && this.isNear(points[0]) === true) {
+    //   points.shift(); // 🚧
+    // }
+
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
     this.pendingTargets.push(...points.map(x => toV3(x, precision)));
     this.setSlowDown(this.pendingTargets.length === 0);
@@ -939,8 +948,12 @@ export class NpcApi {
 
     agent.requestMoveTarget(closest);
 
-    const nextAct = this.s.run === true ? 'Run' : 'Walk';
-    this.startAnimation(nextAct, true);
+    if (this.pendingTargets.length === 0 && this.isNear(closest, 0.35) === true) {
+      this.startAnimation('Idle', true); // avoid jerk on resume move near target
+    } else {
+      const nextAct = this.s.run === true ? 'Run' : 'Walk';
+      this.startAnimation(nextAct, true);
+    }
 
     this.w.events.next({
       key: 'started-moving',
@@ -1251,7 +1264,7 @@ export class NpcApi {
       this.stopMoving({
         type: 'stop-reason',
         key: 'stuck',
-        nearTarget: this.isNearTarget(),
+        nearTarget: this.isNear(),
         rest: this.getRemainingPath(),
       });
     } else {
@@ -1463,7 +1476,7 @@ export class NpcApi {
     agent.raw.params.set_separationWeight(defaultIdleSeparationWeight);
     agent.raw.params.set_radius(helper.defaults.radius);
     
-    this.startAnimation('Idle');
+    this.startAnimation('Idle', true);
 
     const pos = agent.position(); // reset small motions:
     const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;
@@ -1541,6 +1554,7 @@ const defaultMaxAcceleration = 7;
  * 🔔 sudden change can cause jerk onexit doorway
  * 🔔 relevant to reachability of arrival distance
  */
+// const defaultSeparationWeight = 0.25;
 const defaultSeparationWeight = 0.1;
 const defaultIdleSeparationWeight = 0.25;
 const defaultCollisionQueryRange = 2;
