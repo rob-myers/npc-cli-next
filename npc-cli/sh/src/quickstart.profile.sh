@@ -9,7 +9,5 @@ awaitWorld
 spawn npcKey:rob at:'{x:4.5,y:7.5}' grant:.
 
 # click near nav to move
-ptags always
-click meta.floor |
+ptags always && click meta.floor |
   map demo.1 simpleClickToMove npcKey:rob &
-ptags always=null

@@ -243,13 +243,13 @@ export class ttyShellClass implements Device {
   ) {
     const { meta } = term;
 
-    /** A "builtin spawn" runs by re-using the session leader i.e. `this.process`. */
-    const builtin = meta.pgid === 0 && (opts.by === 'source' || opts.by === 'root');
+    /** An "interactive spawn" runs by re-using the session leader i.e. `this.process`. */
+    const interactive = meta.pgid === 0 && (opts.by === 'source' || opts.by === 'root');
 
     let process = this.process;
 
     if (this.profileFinished === true) {
-      if (builtin === true) {
+      if (interactive === true) {
         // Only reachable by interactively specifying a command after profile has run
         // We ensure session leader has status Running
         process.status = ProcessStatus.Running;
@@ -265,7 +265,7 @@ export class ttyShellClass implements Device {
       }
     }
 
-    if (builtin !== true) {
+    if (interactive !== true) {
       // Create subprocess
       const { ppid, pgid, sessionKey } = meta;
       const session = useSession.api.getSession(sessionKey);
@@ -276,7 +276,6 @@ export class ttyShellClass implements Device {
         sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || parent.positionals.slice(1),
-        // 🔔 expect shallow clone to be deep clone for ptags
         ptags: applyPtagUpdates({ ...parent.ptags }, { ...session.ptags, ...opts.ptags }),
       });
       meta.pid = process.key;
@@ -284,6 +283,8 @@ export class ttyShellClass implements Device {
       if (opts.cleanups !== undefined) {
         process.cleanups.push(...opts.cleanups);
       }
+
+      session.ptags = {}; // reset after non-interactive spawn
 
       if (// Represent <Tabs> disabled
         this.suspendNonInteractive === true
@@ -313,7 +314,7 @@ export class ttyShellClass implements Device {
      * 1. `pgid === 0` and it was spawned by session leader (not `source`).
      * 2. `pid === pgid !== 0`
      */
-    const leading = builtin ? opts.by === 'root' : meta.pid === meta.pgid;
+    const leading = interactive ? opts.by === 'root' : meta.pid === meta.pgid;
 
     if (leading) {// Process leaders emit external events
       process.src !== '' && this.io.write({ key: 'external', msg: {
@@ -368,7 +369,7 @@ export class ttyShellClass implements Device {
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
 
-      if (!builtin) {
+      if (!interactive) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       }
 

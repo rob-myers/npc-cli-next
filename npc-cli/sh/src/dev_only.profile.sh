@@ -15,31 +15,22 @@ spawn npcKey:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' g
 w n.rob.api.showSelector true
 selectedNpcKey="rob"
 
-# spawned processes run when game paused
-ptags always
 
 # 🚧 game.1 function using api.get to get chosen "selectedNpcKey" variable
 # select selectedNpcKey on click npc
-click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
+ptags always && click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.api.showSelector(false);
   w.n[meta.npcKey].api.showSelector(true);
   home.selectedNpcKey = meta.npcKey;
 }' &
 
 # click navmesh to move selectedNpcKey
-click meta.floor | map --forever '(input, { w, home }) => {
+ptags always && click meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;
   npc.s.run = input.keys?.includes("shift") ?? false;
   npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
 }' &
-
-setupContextMenu
-events | handleContextMenu &
-events | handleLoggerLinks & 
-
-# spawned processes do not run when game paused
-ptags always=null
 
 # open door on click
 click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)' &
@@ -58,6 +49,9 @@ click --long | map --forever 'async (input, {home, w}) => {
 w update 'w => w.decor.showLabels = true'
 
 changeAngleOnKeyDown # WASD camera azimuthal angle
+setupContextMenu
+ptags always && events | handleContextMenu &
+ptags always && events | handleLoggerLinks & 
 
 look at:rob
 zoom distance:12

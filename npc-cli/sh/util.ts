@@ -155,7 +155,7 @@ export function killProcess(p: ProcessMeta, SIGINT?: boolean) {
 
 /**
  * Mutates `ptags`.
- * - A process "has" tag `key` iff `key in process.ptags`.
+ * - A process has tag `key` iff `key in process.ptags`.
  * - An updates value of `undefined` or `null` deletes the tag.
  */
 export function applyPtagUpdates(ptags: Ptags, updates: Ptags) {
