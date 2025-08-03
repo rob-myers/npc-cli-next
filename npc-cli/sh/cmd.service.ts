@@ -428,12 +428,12 @@ class cmdServiceClass {
         break;
       }
       case "ptags": {
-        const { ptags } = useSession.api.getSession(meta.sessionKey);
+        const process = getProcess(meta);
         if (args.length === 0) {
-          yield ptags;
+          yield process.ptags;
         } else {
           const ptagUpdates = tagsToMeta(args);
-          applyPtagUpdates(ptags, ptagUpdates);
+          applyPtagUpdates(process.ptags, ptagUpdates);
         }
         break;
       }

@@ -78,7 +78,6 @@ const useStore = create<State>()((set, get): State => ({
               ...deepClone(env),
             },
             jsFunc: {} as any,
-            ptags: {},
             nextPid: 0,
             process: {},
             lastBg: 0,
@@ -167,11 +166,11 @@ const useStore = create<State>()((set, get): State => ({
       const session = api.getSession(sessionKey);
 
       if (opts.byPtags === true) {
-        const interactive = session.ttyShell.isInteractive()
+        const interactive = session.ttyShell.isInteractive();
 
         if (opts.STOP === true) {
           const processes = Object.values(session.process).filter(p => 
-            (p.pgid === 0 ? interactive === false :  p.status === ProcessStatus.Running)
+            (p.pgid === 0 ? interactive === false : p.status === ProcessStatus.Running)
               && !(ProcessTag.always in p.ptags)
           );
           return api.killProcesses(processes, opts);
@@ -522,8 +521,6 @@ export interface Session {
     CACHE_SHORTCUTS?: { [key: string]: string };
   };
   jsFunc: import('../terminal/TtyWithFunctions').TtyJsModules;
-  /** Process tags to apply to spawned processes */
-  ptags: Ptags;
 
   nextPid: number;
   /** Last exit code: */

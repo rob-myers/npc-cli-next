@@ -244,7 +244,7 @@ export class ttyShellClass implements Device {
     const { meta } = term;
 
     /** An "interactive spawn" runs by re-using the session leader i.e. `this.process`. */
-    const interactive = meta.pgid === 0 && (opts.by === 'source' || opts.by === 'root');
+    const interactive = meta.pgid === 0 && (opts.by === 'root' || opts.by === 'source');
 
     let process = this.process;
 
@@ -276,7 +276,7 @@ export class ttyShellClass implements Device {
         sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || parent.positionals.slice(1),
-        ptags: applyPtagUpdates({ ...parent.ptags }, { ...session.ptags, ...opts.ptags }),
+        ptags: applyPtagUpdates({ ...parent.ptags }, opts.ptags ?? {}),
       });
       meta.pid = process.key;
 
@@ -284,7 +284,10 @@ export class ttyShellClass implements Device {
         process.cleanups.push(...opts.cleanups);
       }
 
-      session.ptags = {}; // reset after non-interactive spawn
+      if (parent.pgid === 0 && opts.by !== 'source-external') {
+        // reset session leader ptags after non-interactive spawn
+        this.process.ptags = this.sessionLeaderPtags;
+      }
 
       if (// Represent <Tabs> disabled
         this.suspendNonInteractive === true
@@ -314,7 +317,7 @@ export class ttyShellClass implements Device {
      * 1. `pgid === 0` and it was spawned by session leader (not `source`).
      * 2. `pid === pgid !== 0`
      */
-    const leading = interactive ? opts.by === 'root' : meta.pid === meta.pgid;
+    const leading = interactive === true ? opts.by === 'root' : meta.pid === meta.pgid;
 
     if (leading) {// Process leaders emit external events
       process.src !== '' && this.io.write({ key: 'external', msg: {
@@ -454,7 +457,6 @@ export class ttyShellClass implements Device {
     } finally {
       this.input?.resolve();
       this.input = null;
-      this.process.ptags = this.sessionLeaderPtags;
       
       // do not suspend leading process during profile,
       // otherwise we'll pause before spawning each subprocess
