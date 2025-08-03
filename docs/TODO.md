@@ -72,7 +72,13 @@
   - ✅ remove `ptags+=`
   - ✅ remove `process.ptagsDelta`
 
+- ✅ ptags resets after each non-interactive spawn
+
 - move dev_only.profile.sh inline functions into js modules
+
+- ✅ symlink hull symbols into public folder for better viewing
+  - raw.github svg does not load image dataurl
+  - e.g. public/symlink/101--hull.svg
 
 - ✅ BUG `w.events` sees `clear-off-mesh` before `enter-off-mesh` even though they execute in other order
   - ℹ️ `next enter-off-mesh` triggers a subscriber which `next clear-off-mesh` then executes 2nd subscriber
