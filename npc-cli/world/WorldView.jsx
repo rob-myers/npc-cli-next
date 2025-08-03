@@ -510,7 +510,7 @@ export default function WorldView(props) {
     showEffects(partial = { enabled: !state.effects.enabled }) {
       Object.assign(state.effects, partial);
       update();
-      w.view.ensureRender();
+      w.npc.tickOnceDebug();
     },
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
