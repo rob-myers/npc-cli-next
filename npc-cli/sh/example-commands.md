@@ -114,4 +114,12 @@ ptags always && click meta.npcKey | map --forever '({ meta, keys }, { home, w })
   w.n[meta.npcKey].api.showSelector(true);
   home.selectedNpcKey = meta.npcKey;
 }' &
+
+# click navmesh to move selectedNpcKey
+ptags always && click meta.floor | map --forever '(input, { w, home }) => {
+  const npc = w.n[home.selectedNpcKey];
+  if (!npc) return;
+  npc.s.run = input.keys?.includes("shift") ?? false;
+  npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
+}' &
 ```

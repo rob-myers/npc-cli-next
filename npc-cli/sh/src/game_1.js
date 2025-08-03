@@ -186,19 +186,35 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 /**
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ctxt
- * @param {{ pathToNpcKey: string }} [opts] Where we store the selected npc key
+ * @param {object} [opts] Where we store the selected npc key
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ * @param {number} [opts.close] Max distance from navigable permitted
+ */
+export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args)) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  const npc = w.n[npcKey];
+  if (npc) {
+    npc.s.run = input.keys?.includes("shift") ?? false;
+    npc.api.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {}); // can override
+  }
+}
+
+/**
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKeyPath: string }} [opts] Where we store the selected npc key
  */
 export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args)) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  
   const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
+  api.set(opts.npcKeyPath, nextNpcKey);
   const nextNpc = w.npc.getNpc(nextNpcKey); // must
   nextNpc.api.showSelector(true);
   
-  const [npcKey] = api.get([opts.pathToNpcKey]);
   if (npcKey !== nextNpcKey) {
     w.n[npcKey]?.api.showSelector(false); // maybe
   }
-
-  api.set(opts.pathToNpcKey, nextNpcKey);
 }
 
 /**

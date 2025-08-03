@@ -13,19 +13,16 @@ spawn npcKey:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' g
 
 w n.rob.api.showSelector true
 selectedNpcKey="rob"
+
 # select selectedNpcKey on click npc
 ptags always && click meta.npcKey |
-  selectNpcOnClick pathToNpcKey:selectedNpcKey &
+  selectNpcOnClick npcKeyPath:selectedNpcKey &
+
+# click navmesh to move selectedNpcKey
+ptags always && click meta.floor |
+  moveNpcOnClick npcKeyPath:selectedNpcKey &
 
 # 🚧
-# click navmesh to move selectedNpcKey
-ptags always && click meta.floor | map --forever '(input, { w, home }) => {
-  const npc = w.n[home.selectedNpcKey];
-  if (!npc) return;
-  npc.s.run = input.keys?.includes("shift") ?? false;
-  npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
-}' &
-
 # open door on click
 click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)' &
 
