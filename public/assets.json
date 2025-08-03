@@ -74,7 +74,7 @@
     },
     "console--022--1x2": {"outputHash": -494656185, "pngHash": 1893433691},
     "console--031--1x1.2": {
-      "outputHash": 1303892088,
+      "outputHash": -163302378,
       "pngHash": -248095598,
       "obsHashes": [-1128567231]
     },
@@ -11263,7 +11263,21 @@
       "walls": [],
       "doors": [],
       "windows": [],
-      "decor": [],
+      "decor": [
+        {
+          "type": "Polygon",
+          "coordinates": [[[1.125, 0], [1.125, 1.5], [0, 1.5], [0, 0]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "h": 0.65,
+            "y": 0,
+            "color": "#888",
+            "transform": [1.125, 0, 0, 1.5, 0, 0]
+          }
+        }
+      ],
       "unsorted": [],
       "width": 1.5,
       "height": 1.5,
