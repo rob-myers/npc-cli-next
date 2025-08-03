@@ -1,7 +1,7 @@
 source /etc/util.js.sh
 source /etc/util.sh
 source /etc/game.js.sh
-source /etc/game.1.js.sh
+source /etc/game_1.js.sh
 
 awaitWorld
 
@@ -16,7 +16,7 @@ w n.rob.api.showSelector true
 selectedNpcKey="rob"
 
 
-# 🚧 game.1 function using api.get to get chosen "selectedNpcKey" variable
+# 🚧 game_1 function using api.get to get chosen "selectedNpcKey" variable
 # select selectedNpcKey on click npc
 ptags always && click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
   w.n[home.selectedNpcKey]?.api.showSelector(false);

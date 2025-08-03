@@ -144,7 +144,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   source /etc/util.sh
   source /etc/util.js.sh
   source /etc/game.js.sh
-  source /etc/demo.1.js.sh
+  source /etc/demo_1.js.sh
 
   awaitWorld
 
@@ -153,12 +153,12 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 
   # click near nav to move
   ptags always && click meta.floor |
-    map demo.1 simpleClickToMove npcKey:rob &
+    map demo_1 simpleClickToMove npcKey:rob &
   ```
 </Code>
 
 <Code
-  title={<>simpleClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo.1.js">demo.1.js</a></>}
+  title={<>simpleClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo_1.js">demo_1.js</a></>}
 >
   ```js showLineNumbers
   /**
