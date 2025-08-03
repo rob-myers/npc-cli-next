@@ -77,6 +77,7 @@ export interface InstancedAtlasProps {
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;
+  opacityMin?: number;
   /** Use value `0` to disable */
   opacityCloseDivisor?: number;
 }

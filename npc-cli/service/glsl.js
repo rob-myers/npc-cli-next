@@ -232,7 +232,6 @@ const instancedAtlasShader = {
 
   varying vec3 vColor;
   flat varying uint vInstanceId;
-  flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
   varying float vOpacityScale;
   flat varying uint vTextureId;
   varying vec2 vUv;
@@ -276,10 +275,10 @@ const instancedAtlasShader = {
   uniform sampler2DArray atlas;
   uniform vec3 diffuse;
   uniform float opacity;
+  uniform float opacityMin;
 
   varying vec3 vColor;
   flat varying uint vInstanceId;
-  flat varying vec4 vLitCircle;
   varying float vOpacityScale;
   flat varying uint vTextureId;
   varying vec2 vUv;
@@ -303,7 +302,7 @@ const instancedAtlasShader = {
     } else {
       if (texel.a * opacity < alphaTest) discard;
       
-      gl_FragColor = texel * vec4(vColor * diffuse, opacity * vOpacityScale);
+      gl_FragColor = texel * vec4(vColor * diffuse, min(opacity * vOpacityScale, opacityMin));
     }
 
     #include <logdepthbuf_fragment>
@@ -320,6 +319,7 @@ const instancedAtlasDefaultProps = {
   objectPick: false,
   objectPickRed: 0,
   opacity: 1,
+  opacityMin: 1,
   opacityCloseDivisor: 0,
   // 🔔 map, mapTransform required else can get weird texture
   // map: null,
@@ -499,10 +499,6 @@ export const InstancedFlatMaterial = shaderMaterial(
 
 const instancedFloorShader = {
   Vert: /* glsl */`
-
-    uniform vec3 torchData;
-    uniform vec3 torchTarget;
-
     attribute vec2 uvDimensions;
     attribute vec2 uvOffsets;
     attribute uint uvTextureIds;
@@ -513,11 +509,6 @@ const instancedFloorShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
-
-    flat varying vec3 vTorchData;
-    // uvs pointing into torchTexture
-    // 🤔 could add extra varying per additional torch
-    varying vec2 vTorchUv;
 
     #include <common>
     #include <logdepthbuf_pars_vertex>

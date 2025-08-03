@@ -60,7 +60,7 @@ export default function Ceiling(props) {
       
       // drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
       // drawPolygons(ct, tops.hull, [black, wallsHighlight, thickLineWidth]); // hull walls and doors
-      drawPolygons(ct, tops.hull, [wallsHighlight, wallsHighlight, thickLineWidth]); // hull walls and doors
+      drawPolygons(ct, tops.hull, ['#000', wallsHighlight, thickLineWidth]); // hull walls and doors
 
       // decals
       polyDecals.filter(x => x.meta.ceil === true).forEach(x => {
@@ -74,13 +74,13 @@ export default function Ceiling(props) {
       ct.strokeStyle = wallsColor;
       
       // Stroke a square at each corner to avoid z-fighting
-      /* const hullRect = layout.hullPoly[0].rect;
+      const hullRect = layout.hullPoly[0].rect;
       const cornerDim = 8 * sguToWorldScale;
       ct.lineWidth = 0.02;
       ct.strokeRect(hullRect.x, hullRect.y, cornerDim, cornerDim);
       ct.strokeRect(hullRect.right - cornerDim, hullRect.y, cornerDim, cornerDim);
       ct.strokeRect(hullRect.x, hullRect.bottom - cornerDim, cornerDim, cornerDim);
-      ct.strokeRect(hullRect.right - cornerDim, hullRect.bottom - cornerDim, cornerDim, cornerDim); */
+      ct.strokeRect(hullRect.right - cornerDim, hullRect.bottom - cornerDim, cornerDim, cornerDim);
 
     },
     positionInstances() {
@@ -125,6 +125,7 @@ export default function Ceiling(props) {
         diffuse={[0.5, 0.5, 0.5]}
         objectPickRed={3}
         opacityCloseDivisor={10}
+        opacityMin={0.5}
       />
     </instancedMesh>
   );
