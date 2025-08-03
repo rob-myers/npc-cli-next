@@ -766,18 +766,16 @@ class cmdServiceClass {
 
   get(meta: Sh.BaseMeta, args: string[]) {
     const root = this.provideProcessCtxt(meta);
-    const pwd = useSession.api.getVar<string>(meta, "PWD");
+    const pwd = root.home.PWD;
     const process = getProcess(meta);
 
     const outputs = args.map((arg) => {
       const parts = arg.split("/");
-      const localCtxt =
-        parts[0] in process.localVar
-          ? process.localVar
-          : parts[0] in process.inheritVar
-          ? process.inheritVar
-          : null;
-      return parts[0] && localCtxt
+      const localCtxt = parts[0] in process.localVar
+        ? process.localVar
+        : parts[0] in process.inheritVar ? process.inheritVar : null
+      ;
+      return parts[0] && localCtxt !== null
         ? parts.reduce((agg, part) => agg[part], localCtxt)
         : resolvePath(arg, root, pwd)
       ;
