@@ -154,6 +154,7 @@ export default function Npcs(props) {
       const animKeys = npcs.map(x => x.s.anim);
       npcs.forEach(npc => state.removeAgent(npc));
 
+      w.crowd.update(w.timer.getFixedDelta());
       await pause();
 
       for(const [i, npc] of npcs.entries()) {

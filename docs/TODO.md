@@ -87,7 +87,7 @@
 
 - ✅ skin order should be head|head-overlay|body|body-overlay
 
-- BUG: idle npcs are sometimes not staying in place on nav reload?
+- 🚧 BUG: idle npcs are sometimes not staying in place on nav reload?
 
 - BUG: sometimes tty-0 fails to persist /home?
 
