@@ -1,4 +1,4 @@
-import { stripAnsi } from "../util";
+import { stripAnsi, ttyError } from "../util";
 
 /**
  * Execute a javascript function, e.g.
@@ -160,10 +160,8 @@ export async function* map(ct) {
           yield await func(datum, ct, passCount === true ? count++ : undefined);
         }
       } catch (e) {
-        // 🚧 better error stack
-        // 🚧 write to console only
         if (opts.forever === true) {
-          api.writeError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}`);
+          ttyError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}`, e);
           continue;
         }
         throw e;
@@ -177,7 +175,7 @@ export async function* map(ct) {
         yield await func(datum);
       } catch (e) {
         if (opts.forever === true) {
-          api.writeError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
+          ttyError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`, e);
           continue;
         }
         throw e;
