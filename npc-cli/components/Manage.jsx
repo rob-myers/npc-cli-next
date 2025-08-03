@@ -550,6 +550,11 @@ const manageCss = css`
     align-items: center;
     height: 100%;
   }
+  select, input, button {
+    &:focus {
+      outline: 1px solid #666;
+    }
+  }
 `;
 
 /**
