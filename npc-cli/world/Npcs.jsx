@@ -540,12 +540,12 @@ export default function Npcs(props) {
       // re-spawn outside nav removes agent, so must update crowd
       w.crowd.update(w.timer.getFixedDelta());
       state.onTick(1 / 60);
-      w.r3f.advance(Date.now()); // so they move
+      w.view.ensureRender();
     }, 300, { immediate: true }),
     async tickOnceDebug() {
       state.onTick(1 / 60);
       await pause(100); // delay render e.g. for paused npc selection
-      w.r3f.advance(Date.now());
+      w.view.ensureRender();
     },
     update,
     validateActMeta(actMeta) {

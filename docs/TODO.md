@@ -74,7 +74,7 @@
 
 - ✅ ptags resets after each non-interactive spawn
 
-- move dev_only.profile.sh inline functions into js modules
+- 🚧 move dev_only.profile.sh inline functions into js modules
 
 - ✅ symlink hull symbols into public folder for better viewing
   - raw.github svg does not load image dataurl

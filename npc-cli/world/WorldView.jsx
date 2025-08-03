@@ -128,6 +128,9 @@ export default function WorldView(props) {
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
     },
+    ensureRender() {
+      if (w.disabled === true) w.r3f.advance(Date.now());
+    },
     followPosition(dst, opts = { smoothTime: 0.3 }) {
       // lock zoom
       state.controls.zoomToConstant = dst;
@@ -507,7 +510,7 @@ export default function WorldView(props) {
     showEffects(partial = { enabled: !state.effects.enabled }) {
       Object.assign(state.effects, partial);
       update();
-      w.disabled === true && w.r3f.advance(Date.now());
+      w.view.ensureRender();
     },
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
@@ -530,7 +533,7 @@ export default function WorldView(props) {
       }
     },
     toDataURL(type, quality) {
-      w.r3f.advance(Date.now());
+      state.ensureRender();
       return state.canvas.toDataURL(type, quality);
     },
     async tween(opts) {
@@ -738,6 +741,7 @@ export default function WorldView(props) {
  * @property {null | { min: number; max: number; current: number }} lockedDistance
  *
  * @property {(enabled?: boolean) => void} enableControls Default `true`
+ * @property {() => void} ensureRender
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers

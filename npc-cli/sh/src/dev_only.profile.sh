@@ -9,12 +9,10 @@ spawn npcKey:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }' grant:.
 spawn npcKey:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' grant:.
 spawn npcKey:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' grant:.
 spawn npcKey:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' grant:.
-
 spawn npcKey:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' grant:.
 
 w n.rob.api.showSelector true
 selectedNpcKey="rob"
-
 
 # 🚧 game_1 function using api.get to get chosen "selectedNpcKey" variable
 # select selectedNpcKey on click npc
