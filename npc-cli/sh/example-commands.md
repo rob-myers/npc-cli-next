@@ -12,6 +12,10 @@ answer=$( call '() => 42')
 echo 42 | map Number >answer
 ```
 
+```sh
+ps -a | filter --ansi /^0/
+```
+
 # World
 
 ```sh
@@ -122,4 +126,6 @@ ptags always && click meta.floor | map --forever '(input, { w, home }) => {
   npc.s.run = input.keys?.includes("shift") ?? false;
   npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
 }' &
+
+click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)' &
 ```

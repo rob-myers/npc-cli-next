@@ -1,3 +1,5 @@
+import { stripAnsi } from "../util";
+
 /**
  * Execute a javascript function, e.g.
  * ```sh
@@ -42,13 +44,18 @@ export const expr = ({ api, args }) => {
  */
 export async function* filter(ct) {
   let { api, args, datum } = ct;
+  const { operands, opts } = api.getOpts(args, { boolean: ['ansi'] });
+
   const func = api.generateSelector(
-    api.parseFnOrStr(args[0]),
-    args.slice(1).map((x) => api.parseJsArg(x))
+    api.parseFnOrStr(operands[0]),
+    operands.slice(1).map(api.parseJsArg),
   );
+
   while ((datum = await api.read(true)) !== api.eof)
-    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.filter((x) => func(x, ct)));
-    else if (func(datum, ct)) yield datum;
+    if (api.isDataChunk(datum) === true)
+      yield api.dataChunk(datum.items.filter((x) => func(opts.ansi === true ? stripAnsi(x) : x, ct)));
+    else if (func(opts.ansi === true ? stripAnsi(datum) : datum, ct))
+      yield datum;
 }
 
 /**
@@ -153,6 +160,8 @@ export async function* map(ct) {
           yield await func(datum, ct, passCount === true ? count++ : undefined);
         }
       } catch (e) {
+        // 🚧 better error stack
+        // 🚧 write to console only
         if (opts.forever === true) {
           api.writeError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}`);
           continue;
