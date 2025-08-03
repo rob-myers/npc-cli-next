@@ -25231,6 +25231,106 @@
           "meta": {
             "decor": true,
             "cuboid": true,
+            "table": true,
+            "y": 0.01,
+            "h": 1,
+            "color": "#888"
+          },
+          "bounds2d": {
+            "x": 9.2584,
+            "y": 5.3532,
+            "width": 2.5964,
+            "height": 0.4928
+          },
+          "transform": [2.5964, 0, 0, 0.4928, 9.2584, 5.3532],
+          "center": {"x": 10.56, "y": 0.51, "z": 5.6}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "y": 0.01,
+            "h": 1,
+            "color": "#888"
+          },
+          "bounds2d": {
+            "x": 9.8576,
+            "y": 4.5,
+            "width": 1.9967,
+            "height": 1.3524
+          },
+          "transform": [1.9967, 0, 0, 1.3524, 9.8576, 4.5],
+          "center": {"x": 10.86, "y": 0.51, "z": 5.18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "y": 0.01,
+            "h": 1,
+            "color": "#888"
+          },
+          "bounds2d": {
+            "x": 10.1624,
+            "y": 3.7673,
+            "width": 0.9012,
+            "height": 0.7327
+          },
+          "transform": [0.9013, 0, 0, 0.7327, 10.1624, 3.7673],
+          "center": {"x": 10.61, "y": 0.51, "z": 4.13}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "y": 0.01,
+            "h": 1,
+            "color": "#888"
+          },
+          "bounds2d": {
+            "x": 18.1576,
+            "y": 4.5,
+            "width": 1.9967,
+            "height": 1.3524
+          },
+          "transform": [1.9967, 0, 0, 1.3524, 18.157600000000002, 4.5],
+          "center": {"x": 19.16, "y": 0.51, "z": 5.18}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "table": true,
+            "y": 0.01,
+            "h": 1.2,
+            "color": "#888"
+          },
+          "bounds2d": {
+            "x": 18.9163,
+            "y": 3.7673,
+            "width": 0.9013,
+            "height": 0.7327
+          },
+          "transform": [0.9013, 0, 0, 0.7327, 18.9163, 3.7673],
+          "center": {"x": 19.37, "y": 0.61, "z": 4.13}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
             "h": 0.2,
             "y": 0.2,
             "outline": 0.5
@@ -27600,7 +27700,7 @@
         {
           "symbolKey": "bridge--042--8x9",
           "obstacleId": 0,
-          "height": 1.5,
+          "height": 1.25,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -27617,7 +27717,7 @@
             "meta": {
               "obstacle": true,
               "cpu": true,
-              "y": 1.5,
+              "y": 1.25,
               "symKey": "bridge--042--8x9",
               "obsId": 0
             }
@@ -27627,7 +27727,7 @@
           "meta": {
             "obstacle": true,
             "cpu": true,
-            "y": 1.5,
+            "y": 1.25,
             "symKey": "bridge--042--8x9",
             "obsId": 0
           }
@@ -27635,7 +27735,7 @@
         {
           "symbolKey": "bridge--042--8x9",
           "obstacleId": 1,
-          "height": 1.5,
+          "height": 1.25,
           "origPoly": {
             "type": "Polygon",
             "coordinates": [
@@ -27650,7 +27750,7 @@
             "meta": {
               "obstacle": true,
               "cpu": true,
-              "y": 1.5,
+              "y": 1.25,
               "symKey": "bridge--042--8x9",
               "obsId": 1
             }
@@ -27660,7 +27760,7 @@
           "meta": {
             "obstacle": true,
             "cpu": true,
-            "y": 1.5,
+            "y": 1.25,
             "symKey": "bridge--042--8x9",
             "obsId": 1
           }
@@ -44219,7 +44319,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": 828166783
+    "imagesHash": 2055342649
   },
   "skin": {
     "numSheets": {"human-0": 2},
