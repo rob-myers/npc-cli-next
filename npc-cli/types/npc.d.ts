@@ -507,6 +507,7 @@ declare namespace NPC {
     w: WorldState;
     tabs: TabsState['api'];
 
+    etc: ProcessContext['etc'];
     home: ProcessContext['home'];
     lib: ProcessContext['lib'];
 

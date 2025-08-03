@@ -185,8 +185,8 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 
 /**
  * @param {NPC.ClickOutput} input
- * @param {NPC.RunArg} ctxt
- * @param {object} [opts] Where we store the selected npc key
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  * @param {number} [opts.close] Max distance from navigable permitted
  */
@@ -200,9 +200,20 @@ export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args)) 
 }
 
 /**
+ * Prevent ContextMenu on long press of actable or floor.
+ * @param {NPC.RunArg} ct
+ */
+export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)) => {
+  w.e.pressMenuPrevent.preventMenuOnActOrFloor = (meta) => (
+    meta.act === true || meta.floor === true
+  );
+}
+
+/**
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKeyPath: string }} [opts] Where we store the selected npc key
+ * @param {object} [opts]
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
  */
 export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args)) {
   const [npcKey] = api.get([opts.npcKeyPath]);
@@ -298,6 +309,14 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
     }
 
   };
+}
+
+/**
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ctxt
+ */
+export function toggleOnDoor({ meta }, { w }) {
+  if (meta.gdKey) w.e.toggleDoor(meta.gdKey);
 }
 
 /**

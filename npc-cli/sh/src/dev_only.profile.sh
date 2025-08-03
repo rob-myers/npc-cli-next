@@ -18,18 +18,15 @@ selectedNpcKey="rob"
 ptags always && click meta.npcKey |
   selectNpcOnClick npcKeyPath:selectedNpcKey &
 
-# click navmesh to move selectedNpcKey
+# click near navmesh to move selectedNpcKey
 ptags always && click meta.floor |
   moveNpcOnClick npcKeyPath:selectedNpcKey &
 
+click meta.door | toggleOnDoor &
+
+preventMenuOnActOrFloor
+
 # 🚧
-# open door on click
-click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)' &
-
-w | map '(w, { home }) => w.e.pressMenuFilters.push(
-  (meta) => home.selectedNpcKey in w.n && (meta.act === true || meta.floor === true)
-)'
-
 click --long | map --forever 'async (input, {home, w}) => {
   const npc = w.n[home.selectedNpcKey];
   if (!npc) return;

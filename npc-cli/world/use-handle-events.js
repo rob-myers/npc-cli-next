@@ -25,7 +25,7 @@ export default function useHandleEvents(w) {
     npcToAccess: {},
     npcToDoors: {},
     npcToRoom: new Map(),
-    pressMenuFilters: [],
+    pressMenuPrevent: {},
     roomToNpcs: [],
 
     canCloseDoor(door) {
@@ -229,12 +229,15 @@ export default function useHandleEvents(w) {
           if (lastDown?.meta === undefined) {
             return; // should be unreachable
           }
-          if (state.pressMenuFilters.some(filter => filter(lastDown.meta))) {
-            return; // prevent ContextMenu
+          for (const preventer of Object.values(state.pressMenuPrevent)) {
+            if (preventer(lastDown.meta)) {
+              return; // prevent ContextMenu
+            }
           }
-          if (w.view.isPointerEventDrag(e) === false) {
-            state.showDefaultContextMenu();
+          if (w.view.isPointerEventDrag(e) === true) {
+            return;
           }
+          state.showDefaultContextMenu();
           break;
         }
         case "nav-updated": {
@@ -899,7 +902,7 @@ export default function useHandleEvents(w) {
  * Relate `npcKey` to (a) doorway we're inside, (b) nearby `Geomorph.GmDoorKey`s
  * @property {Map<string, Geomorph.GmRoomId>} npcToRoom npcKey to gmRoomId
  * Relates `npcKey` to current room, unless in a doorway (offMeshConnection)
- * @property {((lastDownMeta: Meta) => boolean)[]} pressMenuFilters
+ * @property {{ [key: string]: (lastDownMeta: Meta) => boolean}} pressMenuPrevent
  * Prevent ContextMenu on long press if any of these return `true`.
  * @property {{[roomId: number]: Set<string>}[]} roomToNpcs
  * The "inverse" of npcToRoom i.e. `roomToNpc[gmId][roomId]` is a set of `npcKey`s
