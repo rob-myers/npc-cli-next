@@ -107,3 +107,11 @@ w e.grantAccess . rob will kate suit rada
 w e.doorToAccess | assign '{ g0d11: new Set(["foo"]) }'
 w e.npcToAccess.rob | map 'x => x.add("foo")'
 ```
+
+```sh
+ptags always && click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
+  w.n[home.selectedNpcKey]?.api.showSelector(false);
+  w.n[meta.npcKey].api.showSelector(true);
+  home.selectedNpcKey = meta.npcKey;
+}' &
+```

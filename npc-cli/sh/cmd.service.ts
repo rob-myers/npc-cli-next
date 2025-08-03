@@ -955,6 +955,10 @@ class cmdServiceClass {
 
     safeJsStringify,
 
+    set(varPath: string, varValue: any) {
+      useSession.api.setVarDeep(this.meta, varPath, varValue);
+    },
+
     async sleep(seconds: number) {
       await cmdService.sleep(this.meta, seconds);
     },

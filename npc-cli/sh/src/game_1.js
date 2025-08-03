@@ -184,6 +184,24 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 }
 
 /**
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ctxt
+ * @param {{ pathToNpcKey: string }} [opts] Where we store the selected npc key
+ */
+export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args)) {
+  const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
+  const nextNpc = w.npc.getNpc(nextNpcKey); // must
+  nextNpc.api.showSelector(true);
+  
+  const [npcKey] = api.get([opts.pathToNpcKey]);
+  if (npcKey !== nextNpcKey) {
+    w.n[npcKey]?.api.showSelector(false); // maybe
+  }
+
+  api.set(opts.pathToNpcKey, nextNpcKey);
+}
+
+/**
 * 🔔 "export const" uses `call` rather than `map`
 * @param {NPC.RunArg} ct
 */
@@ -229,16 +247,6 @@ export const setupContextMenu = ({ w }) => {
 
   w.cm.toggleDocked(true);
 }
-
-// /**
-//  * @param {NPC.RunArg} ct
-//  */
-// export const setupOnStuckNpc = ({ w, args }) => {
-//   w.npc.onStuckCustom = (npc, agent) => {
-//     // console.warn(`${npc.key}: going slow`);
-//     npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
-//   };
-// }
 
 /**
  * @param {NPC.RunArg} ct

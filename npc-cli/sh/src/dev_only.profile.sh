@@ -13,15 +13,11 @@ spawn npcKey:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' g
 
 w n.rob.api.showSelector true
 selectedNpcKey="rob"
-
-# 🚧 game_1 function using api.get to get chosen "selectedNpcKey" variable
 # select selectedNpcKey on click npc
-ptags always && click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
-  w.n[home.selectedNpcKey]?.api.showSelector(false);
-  w.n[meta.npcKey].api.showSelector(true);
-  home.selectedNpcKey = meta.npcKey;
-}' &
+ptags always && click meta.npcKey |
+  selectNpcOnClick pathToNpcKey:selectedNpcKey &
 
+# 🚧
 # click navmesh to move selectedNpcKey
 ptags always && click meta.floor | map --forever '(input, { w, home }) => {
   const npc = w.n[home.selectedNpcKey];
