@@ -546,7 +546,7 @@ export default function useHandleEvents(w) {
       }
 
       /** avoid flicker when next corner after offMeshConnection is too close */      
-      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.05;
+      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.2;
 
       // register adjusted traversal
       npc.s.offMesh = {
@@ -639,6 +639,9 @@ export default function useHandleEvents(w) {
       }
     },
     onExitOffMeshConnection(e, npc) {
+      // means target too close to offMesh.dst
+      const nextUnitNull = npc.s.offMesh?.nextUnit === null;
+
       state.clearOffMesh(npc);
       
       if (npc.agent === null || npc.s.target === null) {
@@ -647,12 +650,11 @@ export default function useHandleEvents(w) {
         return; 
       }
 
+      if (nextUnitNull === true) {// 🔔 fix fast turn just after offMesh
+        npc.api.stopMoving();
+      }
+
       if (e.offMesh.dstRoomMeta.small !== true) {
-        // resume speed
-        // const maxSpeed = npc.api.getMaxSpeed();
-        // if (npc.agent.maxSpeed !== maxSpeed) {
-        //   npc.agent.raw.params.set_maxSpeed(maxSpeed);
-        // }
         if (npc.s.run === true) {
           npc.api.startAnimation('Run', true);
         }
