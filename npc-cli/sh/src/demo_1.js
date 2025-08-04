@@ -82,3 +82,9 @@ export const demoAddDecor = (ct) => {
 };
 
 const tmpMat1 = new Mat();
+
+export const meta = {
+  map: {
+    simpleClickToMove,
+  },
+};

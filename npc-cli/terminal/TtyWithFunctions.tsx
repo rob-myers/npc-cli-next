@@ -86,42 +86,17 @@ function jsFunctionToShellFunction(
       // function* foo { bar }
       // async function* foo { bar }
       ? `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
-      : isMappedFunction(jsModule, fn)
+      /**
+       * A non-generator JS function should be `map`d
+       * if `module.meta` exists and it is listed.
+       *
+       * 🔔 SWC sometimes transpiles arrow functions to functions,
+       *  so we can't distinguish based on arrow functions vs functions.
+       */
+      : fn.name in (jsModule.meta?.map ?? {})
         ? `{\n  map ${moduleKey} ${fnKey} "$@"\n}`
         : `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
   }`;
-}
-
-/**
- * A non-generator JS function should be `map`d if:
- * - it is not an arrow function
- * - if `module.meta` exists then it is listed.
- * 
- * 🔔 SWC sometimes transpiles arrow functions to functions
- */
-function isMappedFunction(
-  module: ModuleMaybeMeta,
-  fn: (
-    | ((arg: NPC.RunArg) => any)
-    | ((input: any, arg: NPC.RunArg) => any)
-  ),
-) {
-  const functionConstructorNames = [
-    'Function',
-    'AsyncFunction',
-  ];
-  if (
-    functionConstructorNames.includes(fn.constructor.name)
-    && !fn.toString().startsWith('function')
-  ) {
-    // const foo = (..args) => bar
-    // const foo = async (..args) => bar
-    return false;
-  }
-  if (module.meta) {
-    return fn.name in module.meta.map;
-  }
-  return true;
 }
 
 type ModuleMaybeMeta = {
