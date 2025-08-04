@@ -363,3 +363,14 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
 
 const tmpVect1 = new Vect();
 const tmpMat1 = new Mat();
+
+export const meta = {
+  map: {
+    handleContextMenu,
+    handleLoggerLinks,
+    moveNpcOnClick,
+    selectNpcOnClick,
+    toggleOnDoor,
+    tour,
+  },
+};

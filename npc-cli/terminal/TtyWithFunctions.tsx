@@ -37,13 +37,14 @@ interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunc'> {
 }
 
 export type TtyJsModules = typeof modules;
+type TtyJsModuleKey = keyof TtyJsModules;
 
 /**
  * Keys of basenames of files in /etc.
  */
 export type EtcBasename = FileKeyToEtcBasename<(
   | keyof typeof scripts
-  | keyof typeof modules
+  | TtyJsModuleKey
 )>
 type FileKeyToEtcBasename<S extends string> = S extends `${infer T}Sh`
   ? `${T}.sh`
@@ -56,8 +57,13 @@ const shellFunctionFiles = {
   }), {} as Record<EtcBasename, string>),
 
   ...Object.entries(modules).reduce((agg, [moduleKey, module]) => ({ ...agg,
-    [`${moduleKey}.js.sh`]: Object.entries(module).map(
-      ([fnKey, fn]) => jsFunctionToShellFunction(moduleKey, fnKey, fn)
+    [`${moduleKey}.js.sh`]: Object.entries(module).flatMap(
+      // exclude non-function exports
+      ([fnKey, fn]) => typeof fn === 'function' ? jsFunctionToShellFunction(
+        moduleKey as TtyJsModuleKey,
+        fnKey,
+        fn as TtyJsFuncType,
+      ) : [],
     ).join('\n\n'),
   }), {} as Record<EtcBasename, string>),
 
@@ -66,32 +72,65 @@ const shellFunctionFiles = {
 export type TtyEtcFiles = typeof shellFunctionFiles;
 
 function jsFunctionToShellFunction(
-  moduleKey: string,
+  moduleKey: keyof typeof modules,
   fnKey: string,
-  fn: (
-    | ((arg: NPC.RunArg) => any)
-    | ((input: any, arg: NPC.RunArg) => any)
-  ),
+  fn: TtyJsFuncType,
 ) {
+  const jsModule = modules[moduleKey] as ModuleMaybeMeta;
   const generatorConstructorNames = [
     'AsyncGeneratorFunction',
     'GeneratorFunction',
-  ];
-  const functionConstructorNames = [
-    'Function',
-    'AsyncFunction',
   ];
   return `${fnKey}() ${
     generatorConstructorNames.includes(fn.constructor.name)
       // function* foo { bar }
       // async function* foo { bar }
       ? `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
-      : functionConstructorNames.includes(fn.constructor.name) && !fn.toString().startsWith('function')
-        // const foo = (..args) => bar
-        // const foo = async (..args) => bar
-        ? `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
-        // function foo { bar }
-        // async function foo { bar }
-        : `{\n  map ${moduleKey} ${fnKey} "$@"\n}`
+      : isMappedFunction(jsModule, fn)
+        ? `{\n  map ${moduleKey} ${fnKey} "$@"\n}`
+        : `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
   }`;
 }
+
+/**
+ * A non-generator JS function should be `map`d if:
+ * - it is not an arrow function
+ * - if `module.meta` exists then it is listed.
+ * 
+ * 🔔 SWC sometimes transpiles arrow functions to functions
+ */
+function isMappedFunction(
+  module: ModuleMaybeMeta,
+  fn: (
+    | ((arg: NPC.RunArg) => any)
+    | ((input: any, arg: NPC.RunArg) => any)
+  ),
+) {
+  const functionConstructorNames = [
+    'Function',
+    'AsyncFunction',
+  ];
+  if (
+    functionConstructorNames.includes(fn.constructor.name)
+    && !fn.toString().startsWith('function')
+  ) {
+    // const foo = (..args) => bar
+    // const foo = async (..args) => bar
+    return false;
+  }
+  if (module.meta) {
+    return fn.name in module.meta.map;
+  }
+  return true;
+}
+
+type ModuleMaybeMeta = {
+  meta?: {
+    map: Meta;
+  };
+};
+
+type TtyJsFuncType = (
+  | ((arg: NPC.RunArg) => any)
+  | ((input: any, arg: NPC.RunArg) => any)
+);

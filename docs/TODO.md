@@ -76,6 +76,19 @@
 
 - 🚧 move dev_only.profile.sh inline functions into js modules
 
+- 🚧 BUG: build transpile is converting arrow function to normal function
+  - ℹ️ breaks profile i.e. if `preventMenuOnActOrFloor` not an arrow function, profile hangs
+    - `call 'ct => ct.lib.game_1.preventMenuOnActOrFloor'`
+  - ❌ node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
+  - 🚧 Maybe babel is transforming them
+    > From arrow functions to template literals, the conversion process helps maintain functionality in older browsers. For instance, arrow functions are transformed into regular function expressions, significantly increasing compatibility.
+    > https://moldstud.com/articles/p-key-babel-transformations-what-happens-to-your-javascript-features-behind-the-scenes
+  - ✅ Could change the way we specify functions as "call" or "map"
+
+- ✅ BUG: dst before offMesh.dst sometimes snaps back
+
+- verify rebooting is working in session leader
+
 - ✅ symlink hull symbols into public folder for better viewing
   - raw.github svg does not load image dataurl
   - e.g. public/symlink/101--hull.svg
