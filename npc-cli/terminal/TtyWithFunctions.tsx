@@ -76,11 +76,15 @@ function jsFunctionToShellFunction(
   fnKey: string,
   fn: TtyJsFuncType,
 ) {
-  const jsModule = modules[moduleKey] as ModuleMaybeMeta;
   const generatorConstructorNames = [
     'AsyncGeneratorFunction',
     'GeneratorFunction',
   ];
+
+  const jsModule = modules[moduleKey] as ModuleMaybeMeta;
+  // check value since name can be different in build
+  const isMapFunc = Object.values(jsModule.meta?.map ?? {}).some(x => x === fn);
+
   return `${fnKey}() ${
     generatorConstructorNames.includes(fn.constructor.name)
       // function* foo { bar }
@@ -93,7 +97,7 @@ function jsFunctionToShellFunction(
        * 🔔 SWC sometimes transpiles arrow functions to functions,
        *  so we can't distinguish based on arrow functions vs functions.
        */
-      : fn.name in (jsModule.meta?.map ?? {})
+      : isMapFunc
         ? `{\n  map ${moduleKey} ${fnKey} "$@"\n}`
         : `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
   }`;
