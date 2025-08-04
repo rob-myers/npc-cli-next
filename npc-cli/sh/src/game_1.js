@@ -361,5 +361,5 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
   }
 }
 
-const tmpMat1 = new Mat();
 const tmpVect1 = new Vect();
+const tmpMat1 = new Mat();
