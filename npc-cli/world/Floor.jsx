@@ -77,7 +77,7 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#191920', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#19191d', null]);
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
