@@ -355,7 +355,7 @@ export function computeChoiceTtyLinkFactory(text: string, defaultValue: any, ses
 
 /** Avoid clogging logs with "pseudo errors" */
 export function ttyError(...args: any[]) {
-  debug('ttyError', ...args);
+  debug('[ttyError]', ...args);
 }
 
 //#endregion

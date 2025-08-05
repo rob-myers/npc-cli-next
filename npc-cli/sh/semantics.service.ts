@@ -812,7 +812,7 @@ class semanticsServiceClass {
         if (e instanceof ProcessError) {
           this.handleTopLevelProcessError(e);
         } else {
-          ttyError("background process error", e);
+          ttyError('background process error\n\n', e);
         }
       });
       

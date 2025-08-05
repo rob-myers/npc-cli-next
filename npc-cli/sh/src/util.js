@@ -118,15 +118,15 @@ export async function* map(ct) {
   /** @type {(x: any, ...xs: any[]) => any} */
   let func;
   let isNativeCode = false;
-  let passCount = true;
+  let provideCount = true;
 
-  if (args[0] in ct.lib) {
+  if (operands[0] in ct.lib) {
 
-    func = /** @type {*} */ (ct.lib)[args[0]][args[1]];
+    func = /** @type {*} */ (ct.lib)[operands[0]][operands[1]];
 
     // when more than 2 operands do not provide count to func,
     // so that `opts = api.jsArg(args)` works
-    passCount = operands.length <= 2;
+    provideCount = operands.length <= 2;
 
   } else {
 
@@ -151,17 +151,17 @@ export async function* map(ct) {
       try {
         if (api.isDataChunk(datum) === true) {
           if (isAsync === false) {// fast on chunks
-            yield api.dataChunk(datum.items.map(x => func(x, ct, passCount === true ? count++ : undefined)));
+            yield api.dataChunk(datum.items.map(x => func(x, ct, provideCount === true ? count++ : undefined)));
           } else {// unwind chunks
             for (const item of datum.items)
-              yield await func(item, ct, passCount === true ? count++ : undefined);
+              yield await func(item, ct, provideCount === true ? count++ : undefined);
           }
         } else {
-          yield await func(datum, ct, passCount === true ? count++ : undefined);
+          yield await func(datum, ct, provideCount === true ? count++ : undefined);
         }
       } catch (e) {
         if (opts.forever === true) {
-          ttyError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}`, e);
+          ttyError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}\n\n`, e);
           continue;
         }
         throw e;
@@ -175,7 +175,7 @@ export async function* map(ct) {
         yield await func(datum);
       } catch (e) {
         if (opts.forever === true) {
-          ttyError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`, e);
+          ttyError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}\n\n`, e);
           continue;
         }
         throw e;
