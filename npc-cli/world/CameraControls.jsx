@@ -14,8 +14,6 @@ import { MapControls as MapControlsImpl } from 'node_modules/@react-three/drei/n
  * >}
  */
 export const CameraControls = React.forwardRef(function CameraControls(props, ref) {
-  // const { domElement, onChange, onStart, onEnd } = props
-  
   const r3f = useThree((s) => ({
     invalidate: s.invalidate,
     camera: /** @type {import('three').PerspectiveCamera} */ (s.camera),
