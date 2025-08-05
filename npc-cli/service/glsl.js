@@ -49,6 +49,12 @@ const humanZeroShader = {
     }
     
     vec3 transformed = vec3(position);
+
+    if (vType == 1) {// prior to bone transforms so aligned to spine
+      transformed.x *= opacity * opacity;
+      transformed.z *= opacity * opacity;
+    }
+
     #include <skinning_vertex>
     vec4 mvPosition;
 
@@ -61,13 +67,6 @@ const humanZeroShader = {
       mvPosition.xy += transformed.xy;
       
     } else {// everything else
-
-      if (vType == 1) {
-        // transformed.y *= 1.0 / opacity;
-        // transformed.y *= opacity;
-        transformed.x *= opacity * opacity;
-        transformed.z *= opacity * opacity;
-      }
 
       mvPosition = modelViewMatrix * vec4(transformed, 1.0);
   
