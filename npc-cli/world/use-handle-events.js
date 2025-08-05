@@ -475,16 +475,6 @@ export default function useHandleEvents(w) {
       }
       return false;
     },
-    npcNearDoor(npcKey, gdKey) {// 🚧 unused
-      // return state.doorToNpc[gdKey]?.nearby.has(npcKey);
-      const { src, dst } = w.door.byKey[gdKey];
-      return geom.lineSegIntersectsCircle(
-        src,
-        dst,
-        w.n[npcKey].api.getPoint(),
-        1.5, // 🚧 hard-coded
-      );
-    },
     onBlockedDoorway(npc, otherNpcKey) {
       npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey, rest: npc.api.getRemainingPath() });
       // teleport to prevent ongoing offMesh traversal
@@ -575,7 +565,7 @@ export default function useHandleEvents(w) {
         adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
       }
     },
-    onEnterOffMeshConnectionMain(e, npc) {
+    onEnterOffMeshConnectionMain(e, npc) {// maybe cancel
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
@@ -591,6 +581,8 @@ export default function useHandleEvents(w) {
 
         if (// traversal same direction, other far enough ahead
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
+          // - prevent moving thru each other diagonally
+          // - prevent jerking other npc once leave connection
           && npc.api.getOtherDoorwayLead(other) >= 0.4
         ) {
           continue;
@@ -599,7 +591,7 @@ export default function useHandleEvents(w) {
         state.onBlockedDoorway(npc, tr.npcKey); // STOP
 
         // 🔔 Wrap to fix bizarre TurboPack error i.e.
-        // helper not defined in final statement
+        // helper not defined after loop
         if (true) {
           return;
         }
@@ -652,9 +644,7 @@ export default function useHandleEvents(w) {
 
       if (nextUnitNull === true) {// 🔔 fix fast turn just after offMesh
         npc.api.stopMoving();
-      }
-
-      if (e.offMesh.dstRoomMeta.small !== true) {
+      } else if (e.offMesh.dstRoomMeta.small !== true) {
         if (npc.s.run === true) {
           npc.api.startAnimation('Run', true);
         }
@@ -926,7 +916,6 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh-main' }>, npc: NPC.NPC) => void} onEnterOffMeshConnectionMain
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
- * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcNearDoor
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.
