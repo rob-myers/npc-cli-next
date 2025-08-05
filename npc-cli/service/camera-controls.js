@@ -48,8 +48,6 @@ export class CameraControls extends EventDispatcher {
   /** Set to false to disable panning */
   enablePan = true;
   panSpeed = 1.0;
-  /** if false, pan orthogonal to world-space direction camera.up */
-  screenSpacePanning = true;
   keyPanSpeed = 7.0;
   zoomToCursor = false;
 
@@ -83,6 +81,27 @@ export class CameraControls extends EventDispatcher {
     lastQuaternion: new THREE.Quaternion(),
   };
 
+  pointers = /** @type {PointerEvent[]} */ ([]);
+  pointerPositions = /** @type {{ [key: string]: THREE.Vector2 }} */ ({})
+
+  //#region MapControls
+  /** if false, pan orthogonal to world-space direction camera.up */
+  screenSpacePanning = false; // pan orthogonal to world-space direction camera.up
+  mouseButtons = {
+    // LEFT: THREE.MOUSE.ROTATE,
+    LEFT: THREE.MOUSE.PAN,
+    MIDDLE: THREE.MOUSE.DOLLY,
+    // RIGHT: THREE.MOUSE.PAN,
+    RIGHT: THREE.MOUSE.ROTATE,
+  }
+  touches = {
+    // ONE: THREE.TOUCH.ROTATE,
+    ONE: THREE.TOUCH.PAN,
+    // TWO: THREE.TOUCH.DOLLY_PAN,
+    TWO: THREE.TOUCH.DOLLY_ROTATE,
+  }
+  //#endregion
+
   /**
    * @param {PerspectiveCamera} object 
    * @param {HTMLElement} domElement 
@@ -101,6 +120,27 @@ export class CameraControls extends EventDispatcher {
     this.u.quatInverse.copy(this.u.quat).invert();
   }
 
+  /** @param {PointerEvent} event */
+  addPointer(event) {
+    this.pointers.push(event);
+  }
+
+  /** @param {HTMLElement} domElement */
+  connect(domElement) {
+    this.domElement = domElement;
+
+    // disables touch scroll
+    // touch-action needs to be defined for pointer events to work on mobile
+    // https://stackoverflow.com/a/48254578
+    this.domElement.style.touchAction = 'none';
+
+    this.domElement.addEventListener('contextmenu', this.onContextMenu);
+    this.domElement.addEventListener('pointerdown', this.onPointerDown);
+    this.domElement.addEventListener('pointercancel', this.onPointerUp);
+    this.domElement.addEventListener('wheel', this.onMouseWheel);
+  }
+  
+
   getAzimuthalAngle() {
     return this.spherical.theta;
   }
@@ -111,6 +151,69 @@ export class CameraControls extends EventDispatcher {
 
   getPolarAngle() {
     return this.spherical.phi;
+  }
+
+  /** @param {MouseEvent} event */
+  onContextMenu(event) {
+    if (this.enabled === false) return;
+    event.preventDefault();
+
+    // 🚧
+  }
+
+  /** @param {MouseEvent} event */
+  onMouseDown(event) {
+    if (this.enabled === false) return;
+    event.preventDefault();
+
+    // 🚧
+  }
+
+  /** @param {WheelEvent} event */
+  onMouseWheel(event) {
+    if (this.enabled === false) return;
+    event.preventDefault();
+
+    // 🚧
+  }
+
+  /** @param {PointerEvent} event */
+  onPointerDown(event) {
+    if (this.enabled === false) return;
+    
+    if (this.pointers.length === 0) {
+      this.domElement?.ownerDocument.addEventListener('pointermove', this.onPointerMove)
+      this.domElement?.ownerDocument.addEventListener('pointerup', this.onPointerUp)
+    }
+
+    this.addPointer(event);
+
+    if (event.pointerType === 'touch') {
+      this.onTouchStart(event)
+    } else {
+      this.onMouseDown(event)
+    }
+  }
+
+  /** @param {PointerEvent} event */
+  onPointerMove(event) {
+    if (this.enabled === false) return;
+ 
+    // 🚧
+  }
+
+  /** @param {PointerEvent} event */
+  onPointerUp(event) {
+    if (this.enabled === false) return;
+    
+    // 🚧
+  }
+
+  /** @param {PointerEvent} event */
+  onTouchStart(event) {
+    this.trackPointer(event)
+
+    // 🚧
   }
 
   reset() {
@@ -142,6 +245,18 @@ export class CameraControls extends EventDispatcher {
   setPolarAngle(angle) {
     this.sphericalDelta.theta = deltaAngle(this.spherical.theta, angle);
     this.update();
+  }
+
+  /** @param {PointerEvent} event */
+  trackPointer(event) {
+    let position = this.pointerPositions[event.pointerId]
+
+    if (position === undefined) {
+      position = new THREE.Vector2();
+      this.pointerPositions[event.pointerId] = position
+    }
+
+    position.set(event.pageX, event.pageY)
   }
 
   // 🚧
