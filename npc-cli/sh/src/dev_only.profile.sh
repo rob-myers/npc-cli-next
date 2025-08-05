@@ -24,8 +24,8 @@ click meta.door | toggleOnDoor &
 
 preventMenuOnActOrFloor
 
-click --long | map --forever \
-  game_1 lookActOnLong npcKeyPath:selected &
+click --long |
+  map game_1 lookActOnLong npcKeyPath:selected &
 
 # 🚧
 w update 'w => w.decor.showLabels = true'
