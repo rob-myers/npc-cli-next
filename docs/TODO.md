@@ -76,7 +76,9 @@
 
 - 🚧 move dev_only.profile.sh inline functions into js modules
 
-- 🚧 BUG: build transpile is converting arrow function to normal function
+- BUG: verify rebooting is working e.g. in `map`d
+
+- ✅ BUG: build transpile is converting arrow function to normal function
   - ℹ️ breaks profile i.e. if `preventMenuOnActOrFloor` not an arrow function, profile hangs
     - `call 'ct => ct.lib.game_1.preventMenuOnActOrFloor'`
   - ❌ node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
@@ -86,8 +88,6 @@
   - ✅ Could change the way we specify functions as "call" or "map"
 
 - ✅ BUG: dst before offMesh.dst sometimes snaps back
-
-- verify rebooting is working in session leader
 
 - ✅ symlink hull symbols into public folder for better viewing
   - raw.github svg does not load image dataurl

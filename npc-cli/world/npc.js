@@ -238,7 +238,8 @@ export class NpcApi {
     
     // dst act
     if (meta.act === true) {
-      const otherNpcKey = w.npc.actToNpc[`${meta.actPoint.x},${meta.y ?? 0},${meta.actPoint.y}`];
+      const actPoint = /** @type {Geom.VectJson} */ (meta.actPoint);
+      const otherNpcKey = w.npc.actToNpc[`${actPoint.x},${meta.y ?? 0},${actPoint.y}`];
       if (otherNpcKey !== undefined) {
         throw Error(`act point in use (${otherNpcKey})`);
       }

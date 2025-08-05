@@ -12,33 +12,29 @@ spawn npcKey:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' grant:.
 spawn npcKey:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' grant:.
 
 w n.rob.api.showSelector true
-selectedNpcKey="rob"
+selected="rob"
 
-# select selectedNpcKey on click npc
 ptags always && click meta.npcKey |
-  selectNpcOnClick npcKeyPath:selectedNpcKey &
+  selectNpcOnClick npcKeyPath:selected &
 
-# click near navmesh to move selectedNpcKey
 ptags always && click meta.floor |
-  moveNpcOnClick npcKeyPath:selectedNpcKey &
+  moveNpcOnClick npcKeyPath:selected &
 
 click meta.door | toggleOnDoor &
 
 preventMenuOnActOrFloor
 
-# 🚧
-click --long | map --forever 'async (input, {home, w}) => {
-  const npc = w.n[home.selectedNpcKey];
-  if (!npc) return;
-  if (input.meta.floor === true && !npc.s.actMeta) npc.api.look(input);
-  else await npc.api.act({ at: input });
-}' &
+click --long | map --forever \
+  game_1 lookActOnLong npcKeyPath:selected &
 
+# 🚧
 w update 'w => w.decor.showLabels = true'
 
 changeAngleOnKeyDown # WASD camera azimuthal angle
+
 setupContextMenu
 ptags always && events | handleContextMenu &
+
 ptags always && events | handleLoggerLinks & 
 
 look at:rob

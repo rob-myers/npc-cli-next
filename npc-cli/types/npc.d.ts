@@ -217,9 +217,9 @@ declare namespace NPC {
     meta: Meta;
   };
 
-  type ClickOutput = import('three').Vector3Like & {
+  type ClickOutput<T extends Meta = Meta> = import('three').Vector3Like & {
     keys?: BasePointerEvent['keys'];
-    meta: Meta;
+    meta: T;
     xz: Geom.VectJson;
   };
 
@@ -477,7 +477,7 @@ declare namespace NPC {
   }
 
   interface ActOpts {
-    at: WithMeta<GroundPoint, { act: true; actPoint: Geom.VectJson; y?: number }>;
+    at: WithMeta<GroundPoint, { act?: true; actPoint?: Geom.VectJson; y?: number }>;
   }
 
   type StopReason = { type: 'stop-reason'; } & (

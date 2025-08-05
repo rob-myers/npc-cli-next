@@ -171,15 +171,26 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
     if (e.key !== "logger-link") {
       continue;
     }
-    
-    // 🚧
-    // if (e.viewportRange.start.x - 1 === 0 && e.viewportRange.start.y - 1 === e.startRow) {
-    //   // clicked initial link
-    // }
     if (e.linkText === e.npcKey) {
       w.e.lookAt(e.npcKey).catch(() => {});
     }
+  }
+}
 
+/**
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ */
+export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args)) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  const npc = w.n[npcKey];
+  if (!npc) return;
+  if (input.meta.floor === true && !npc.s.actMeta) {
+    npc.api.look(input);
+  } else {// act or stop acting
+    await npc.api.act({ at: input });
   }
 }
 
@@ -368,6 +379,7 @@ export const meta = {
   map: {
     handleContextMenu,
     handleLoggerLinks,
+    lookActOnLong,
     moveNpcOnClick,
     selectNpcOnClick,
     toggleOnDoor,
