@@ -139,7 +139,16 @@ export class CameraControls extends EventDispatcher {
     this.domElement.addEventListener('pointercancel', this.onPointerUp);
     this.domElement.addEventListener('wheel', this.onMouseWheel);
   }
-  
+
+  dispose() {
+    this.domElement.style.touchAction = 'auto'; // 🚧
+    this.domElement.removeEventListener('contextmenu', this.onContextMenu);
+    this.domElement.removeEventListener('pointerdown', this.onPointerDown);
+    this.domElement.removeEventListener('pointercancel', this.onPointerUp);
+    this.domElement.removeEventListener('wheel', this.onMouseWheel);
+    this.domElement.ownerDocument.removeEventListener('pointermove', this.onPointerMove);
+    this.domElement.ownerDocument.removeEventListener('pointerup', this.onPointerUp);
+  }
 
   getAzimuthalAngle() {
     return this.spherical.theta;
