@@ -76,6 +76,12 @@
 
 - 🚧 move dev_only.profile.sh inline functions into js modules
 
+- 🚧 start extracting MapControls into our own camera controller
+  - ✅ CameraControls React component
+  - Replace MapControls from drei
+  - CameraControls class
+  - Replace CameraControls from three-lib
+
 - BUG: verify rebooting is working e.g. in `map`d
 
 - ✅ BUG: build transpile is converting arrow function to normal function

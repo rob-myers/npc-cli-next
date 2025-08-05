@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
-import { EffectComposer, BrightnessContrast, Vignette, Pixelation } from '@react-three/postprocessing'
+import { EffectComposer, BrightnessContrast, Vignette } from '@react-three/postprocessing'
 
 import { debug, entries, keys } from "../service/generic.js";
 import { helper } from "../service/helper";
