@@ -78,9 +78,9 @@
 
 - 🚧 start extracting MapControls into our own camera controller
   - ✅ CameraControls React component
-  - Replace MapControls from drei
+  - ✅ Replace MapControls from drei
   - CameraControls class
-  - Replace CameraControls from three-lib
+  - Replace CameraControls from `three-stdlib`
 
 - BUG: verify rebooting is working e.g. in `map`d
 

@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
-import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
+import { PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
 import { EffectComposer, BrightnessContrast, Vignette } from '@react-three/postprocessing'
 
@@ -18,6 +18,7 @@ import useStateRef from "../hooks/use-state-ref.js";
 import useUpdate from "../hooks/use-update.js";
 import NpcSpeechBubbles from "./NpcSpeechBubbles.jsx";
 import { ContextMenu } from "./ContextMenu.jsx";
+import { CameraControls } from './CameraControls.jsx';
 
 /**
  * @param {Props} props
@@ -650,17 +651,17 @@ export default function WorldView(props) {
         zoom={1}
       />
 
-      <MapControls
+
+      <CameraControls
         ref={state.ref('controls')}
-        makeDefault
-        zoomToCursor
-        onChange={state.onChangeControls}
         domElement={state.canvas}
-        onStart={state.onControlsStart}
-        onEnd={state.onControlsEnd}
-        {...state.ctrlOpts}
-        //@ts-ignore see three-stdlib patch
+        //see three-stdlib patch
+        minDistance={state.ctrlOpts.minDistance}
         minPanDistance={w.smallViewport ? 0.05 : 0}
+        maxDistance={state.ctrlOpts.maxDistance}
+        onChange={state.onChangeControls}
+        onEnd={state.onControlsEnd}
+        onStart={state.onControlsStart}
       />
 
       <ContextMenu/>
