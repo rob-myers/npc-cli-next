@@ -861,6 +861,10 @@ class cmdServiceClass {
     generateSelector,
 
     get(args: string[]) {
+      const badIndex = args.findIndex(x => typeof x !== 'string');
+      if (badIndex >= 0) {
+        throw new ShError(`cannot get non-string value: ${JSON.stringify(args[badIndex])}`, 1);
+      }
       return cmdService.get(this.meta, args);
     },
 
