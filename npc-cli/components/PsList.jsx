@@ -69,7 +69,7 @@ export default function PsList() {
           const bootable = group.some(p => p.reboot !== undefined);
           agg[pid] = {
             pid,
-            src,
+            src: src.startsWith('ptags always && ') ? src.slice('ptags always && '.length) : src,
             status,
             ptagsText: getPtagsPreview(ptags).join(''),
             bootable,
@@ -118,6 +118,7 @@ export default function PsList() {
           update();
           break;
         case 'started': {
+          // 🔔 currently only session leader gets here (fired too early otherwise)
           process.status = ProcessStatus.Running;
           const session = useSession.api.getSession(state.sessionKey);
           process.src = session.process[msg.pid]?.src ?? process.src;
