@@ -373,19 +373,22 @@ export function mapValues(input, transform) {
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
  * @param {string[]} args
- * @param {{ [key: string]: 'array' }} [opts]
+ * @param {{ [aliasKey: string]: string; }} [alias]
+ * Map alias keys to their true keys.
+ * @param {{ array?: { [key: string]: true } }} [opts]
  * @returns {T}
  */
-export function jsArg(args, opts = {}) {
+export function jsArg(args, alias, opts) {
   let nakedSeen = 0;
   return /** @type {T} */ (args.reduce((agg, arg) => {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
       agg[nakedSeen++] = arg;
     } else {
-      const key = arg.slice(0, colonIndex);
+      let key = arg.slice(0, colonIndex);
+      key = alias?.[key] ?? key;
       agg[key] = parseJsArg(arg.slice(colonIndex + 1));
-      if (opts[key] === 'array' && Array.isArray(agg[key]) === false) {
+      if (opts?.array?.[key] === true && Array.isArray(agg[key]) === false) {
         // try split by spaces instead
         agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
       }

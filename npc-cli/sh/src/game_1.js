@@ -183,7 +183,7 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
  * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  */
-export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args)) {
+export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (!npc) return;
@@ -201,7 +201,7 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  * @param {number} [opts.close] Max distance from navigable permitted
  */
-export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args)) {
+export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (npc) {
@@ -226,7 +226,7 @@ export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)
  * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  */
-export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args)) {
+export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
   const [npcKey] = api.get([opts.npcKeyPath]);
   
   const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
@@ -346,7 +346,7 @@ export function toggleOnDoor({ meta }, { w }) {
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pause?: number }} [opts]
  */
-export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
+export async function* tour(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, { array: { to: true } })) {
   let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
   opts.pause ??= 0.8;
   while (to = opts.to.shift()) {

@@ -8,7 +8,7 @@ import { createDecorNumber } from './game_1';
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.ActOpts} [opts]
  */
-export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
+export const act = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
   const { meta } = opts.at
   let abortAwaitResume = /** @param {*} e */ (e) => {};
@@ -263,7 +263,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
  */
-export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
+export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
   let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
   let abortAwaitResume = /** @param {*} e */ (e) => {};
@@ -307,7 +307,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
  * @param {NPC.RunArg} ctxt
  * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
  */
-export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
+export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
   await w.npc.spawn(opts);
   if (typeof opts.grant === 'string') {
     w.e.grantAccess(opts.grant, opts.npcKey);
@@ -322,7 +322,7 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string; words?: string }} [opts]
  */
-export const say = ({ api, args, w }, opts = api.jsArg(args)) => {
+export const say = ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   w.e.say(opts);
 }
 

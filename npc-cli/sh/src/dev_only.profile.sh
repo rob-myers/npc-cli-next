@@ -5,31 +5,30 @@ source /etc/game_1.js.sh
 
 awaitWorld
 
-spawn npcKey:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }' grant:.
-spawn npcKey:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' grant:.
-spawn npcKey:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' grant:.
-spawn npcKey:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' grant:.
-spawn npcKey:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' grant:.
+spawn npc:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }' grant:.
+spawn npc:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' grant:.
+spawn npc:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' grant:.
+spawn npc:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' grant:.
+spawn npc:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' grant:.
 
 w n.rob.api.showSelector true
 selected="rob"
 
 ptags always && click meta.npcKey |
-  selectNpcOnClick npcKeyPath:selected &
+  selectNpcOnClick path:selected &
 
 ptags always && click meta.floor |
-  moveNpcOnClick npcKeyPath:selected &
+  moveNpcOnClick path:selected &
 
 click meta.door | toggleOnDoor &
 
 preventMenuOnActOrFloor
 
-click --long |
-  map game_1 lookActOnLong npcKeyPath:selected &
+click --long | lookActOnLong path:selected &
 
 w decor.showLabels true
 
-# 🚧
+# 🚧 from demo_1
 changeAngleOnKeyDown # WASD camera azimuthal angle
 
 setupContextMenu
