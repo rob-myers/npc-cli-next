@@ -927,6 +927,10 @@ export class NpcApi {
       throw new Error(`${this.key}: not navigable: ${JSON.stringify(to)}`);
     }
 
+    if (this.pendingTargets.length === 0 && this.isNear(closest, 0.2) === true) {
+      return; // avoid close click jerk
+    }
+
     v3Precision(closest);
     this.s.arriveDist = opts.s?.arriveDist ?? defaultNpcArriveDistance;
     this.s.lookSecs = 0.2;
@@ -943,7 +947,7 @@ export class NpcApi {
 
     if (this.tryStopOffMesh() === true) {
       agent.teleport(this.base.position);
-      if (this.s.agentState === 2) {// in case of immediate new offMeshConnection
+      if (this.s.agentState === 2) {// handle immediate new offMeshConnection
         this.s.agentState = -1;
       }
     }
