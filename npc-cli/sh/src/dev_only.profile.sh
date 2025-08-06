@@ -27,9 +27,9 @@ preventMenuOnActOrFloor
 click --long |
   map game_1 lookActOnLong npcKeyPath:selected &
 
-# 🚧
-w update 'w => w.decor.showLabels = true'
+w decor.showLabels true
 
+# 🚧
 changeAngleOnKeyDown # WASD camera azimuthal angle
 
 setupContextMenu

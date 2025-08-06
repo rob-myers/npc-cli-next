@@ -111,7 +111,7 @@ export default function WorldView(props) {
        * @type {{ __damp?: { [velKey: string]: number } }}
        */ (state.controls.target).__damp = undefined;
     },
-    computeNormal(mesh, intersection) {// 🚧
+    computeNormal(mesh, intersection) {
       const { indices, mat3, tri } = state.normal;
       const output = new THREE.Vector3();
       const offset = /** @type {number} */ (intersection.faceIndex) * 3;
