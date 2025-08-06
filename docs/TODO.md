@@ -82,6 +82,11 @@
   - 🚧 CameraControls class
   - Replace CameraControls from `three-stdlib`
 
+- ✅ BUG: PsList: gray always process leaders
+  - ℹ️ on mobile not seeing 'resume' for always-tagged process leaders because they aren't resumed
+  - related to `ptags always && foo | bar &` where `ptags always` executed inside background process
+  - ✅ use `ptags always; foo | bar &` instead
+
 - BUG: verify rebooting is working e.g. in `map`d
 
 - ✅ BUG: build transpile is converting arrow function to normal function

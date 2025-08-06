@@ -8,6 +8,5 @@ awaitWorld
 spawn npc:rob at:'{x:4.5,y:7.5}' \
   skin:soldier-0,soldier-0 grant:.
 
-# click near nav to move
-ptags always && click meta.floor |
+ptags always; click meta.floor |
   demoClickToMove npc:rob &

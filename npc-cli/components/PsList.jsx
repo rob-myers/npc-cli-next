@@ -69,7 +69,7 @@ export default function PsList() {
           const bootable = group.some(p => p.reboot !== undefined);
           agg[pid] = {
             pid,
-            src: src.startsWith('ptags always && ') ? src.slice('ptags always && '.length) : src,
+            src: src.startsWith('ptags always; ') ? src.slice('ptags always; '.length) : src,
             status,
             ptagsText: getPtagsPreview(ptags).join(''),
             bootable,
@@ -188,7 +188,7 @@ export default function PsList() {
         )}
       </div>
       
-      {sessionsExist && (
+      {sessionsExist === true && (
         <div className="process-leaders">
           
           {state.ordered.map(p =>

@@ -15,10 +15,10 @@ spawn npc:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' gran
 w n.rob.api.showSelector true
 selected="rob"
 
-ptags always && click meta.npcKey |
+ptags always; click meta.npcKey |
   selectNpcOnClick path:selected &
 
-ptags always && click meta.floor |
+ptags always; click meta.floor |
   moveNpcOnClick path:selected &
 
 click meta.door | toggleOnDoor &
@@ -32,9 +32,9 @@ w decor.showLabels true
 demoCameraWASD
 
 setupContextMenu
-ptags always && events | handleContextMenu &
+ptags always; events | handleContextMenu &
 
-ptags always && events | handleLoggerLinks & 
+ptags always; events | handleLoggerLinks & 
 
 look at:rob
 zoom distance:12
