@@ -73,12 +73,15 @@ export class CameraControls extends EventDispatcher {
 
   /** Update state */
   u = {
-    offset: new THREE.Vector3(),
-    up: new THREE.Vector3(0, 1, 0),
-    quat: new THREE.Quaternion(),
-    quatInverse: new THREE.Quaternion(),
+    dollyStart: new THREE.Vector2(),
+    dollyDirection: new THREE.Vector3(),
     lastPosition: new THREE.Vector3(),
-    lastQuaternion: new THREE.Quaternion(),
+    mouse: new THREE.Vector2(),
+    offset: new THREE.Vector3(),
+    panStart: new THREE.Vector2(),
+    rotateStart: new THREE.Vector2(),
+    up: new THREE.Vector3(0, 1, 0),
+    zoomingToCursor: false,
   };
 
   pointers = /** @type {PointerEvent[]} */ ([]);
@@ -87,13 +90,8 @@ export class CameraControls extends EventDispatcher {
   //#region MapControls
   /** if false, pan orthogonal to world-space direction camera.up */
   screenSpacePanning = false; // pan orthogonal to world-space direction camera.up
-  mouseButtons = {
-    // LEFT: THREE.MOUSE.ROTATE,
-    LEFT: THREE.MOUSE.PAN,
-    MIDDLE: THREE.MOUSE.DOLLY,
-    // RIGHT: THREE.MOUSE.PAN,
-    RIGHT: THREE.MOUSE.ROTATE,
-  }
+  
+  // 🚧 remove
   touches = {
     // ONE: THREE.TOUCH.ROTATE,
     ONE: THREE.TOUCH.PAN,
@@ -115,9 +113,6 @@ export class CameraControls extends EventDispatcher {
     this.target0.copy(this.target);
     this.position0.copy(this.object.position);
     this.zoom0 = this.object.zoom;
-
-    this.u.quat.setFromUnitVectors(this.object.up, this.u.up);
-    this.u.quatInverse.copy(this.u.quat).invert();
   }
 
   /** @param {PointerEvent} event */
@@ -163,11 +158,25 @@ export class CameraControls extends EventDispatcher {
   }
 
   /** @param {MouseEvent} event */
+  handleMouseDownDolly(event) {
+    this.updateMouseParameters(event);
+    this.u.dollyStart.set(event.clientX, event.clientY);
+  }
+
+  /** @param {MouseEvent} event */
+  handleMouseDownPan(event) {
+    this.u.panStart.set(event.clientX, event.clientY);
+  }
+
+  /** @param {MouseEvent} event */
+  handleMouseDownRotate(event) {
+    this.u.rotateStart.set(event.clientX, event.clientY);
+  }
+
+  /** @param {MouseEvent} event */
   onContextMenu(event) {
     if (this.enabled === false) return;
     event.preventDefault();
-
-    // 🚧
   }
 
   /** @param {MouseEvent} event */
@@ -175,7 +184,50 @@ export class CameraControls extends EventDispatcher {
     if (this.enabled === false) return;
     event.preventDefault();
 
-    // 🚧
+    let mouseAction;
+    switch (event.button) {
+      case 0: mouseAction = THREE.MOUSE.PAN; break;
+      case 1: mouseAction = THREE.MOUSE.DOLLY; break;
+      case 2: mouseAction = THREE.MOUSE.ROTATE; break;
+      default: mouseAction = -1;
+    }
+    
+    switch (mouseAction) {
+      case THREE.MOUSE.DOLLY:
+        if (this.enableZoom === false) return;
+        this.handleMouseDownDolly(event);
+        this.state = this.STATE.DOLLY;
+        break;
+      case THREE.MOUSE.ROTATE:
+        if (event.ctrlKey === true || event.metaKey === true || event.shiftKey === true) {
+          if (this.enablePan === false) return;
+          this.handleMouseDownPan(event);
+          this.state = this.STATE.PAN;
+        } else {
+          if (this.enableRotate === false) return;
+          this.handleMouseDownRotate(event);
+          this.state = this.STATE.ROTATE;
+        }
+        break;
+        case THREE.MOUSE.PAN:
+          if (event.ctrlKey === true || event.metaKey === true || event.shiftKey === true) {
+            if (this.enableRotate === false) return;
+            this.handleMouseDownRotate(event);
+            this.state = this.STATE.ROTATE;
+          } else {
+            if (this.enablePan === false) return;
+            this.handleMouseDownPan(event);
+            this.state = this.STATE.PAN;
+          }
+          break;
+      default:
+        this.state = this.STATE.NONE;
+        break;
+    }
+
+    if (this.state !== this.STATE.NONE) {
+      this.dispatchEvent({ type: 'start' });
+    }
   }
 
   /** @param {WheelEvent} event */
@@ -268,26 +320,40 @@ export class CameraControls extends EventDispatcher {
     position.set(event.pageX, event.pageY)
   }
 
-  // 🚧
   update() {
     const u = this.u;
     const object = this.object;;
     const position = object.position;
 
-    u.quat.setFromUnitVectors(object.up, this.u.up);
-    u.quatInverse.copy(u.quat).invert();
-
     u.offset.copy(position).sub(this.target);
 
-    // 🚧
-    // rotate offset to "y-axis-is-up" space
-    u.offset.applyQuaternion(u.quat);
-    // angle from z-axis around y-axis
+    // (x, y, z) -> { r, theta, phi }
     this.spherical.setFromVector3(u.offset);
-
+    
+    // approach target via damped delta
     this.spherical.theta += this.sphericalDelta.theta * this.dampingFactor;
     this.spherical.phi += this.sphericalDelta.phi * this.dampingFactor;
 
+    // 🚧 
     // restrict theta to be between desired limits
+  }
+
+  /**
+   * Update `u.zoomingToCursor`, `u.mouse`, `u.dollyDirection`
+   * @param {MouseEvent} event
+   */
+  updateMouseParameters(event) {
+    this.u.zoomingToCursor = true;
+    const { left, top, width, height } = this.domElement.getBoundingClientRect();
+    this.u.mouse.set(
+      2 * ((event.clientX - left) / width) - 1, // [-1, 1]
+      1 - 2 * ((event.clientY - top) / height), // [-1, 1]
+    );
+    this.u.dollyDirection
+      .set(this.u.mouse.x, this.u.mouse.y, 1)
+      .unproject(this.object) // 🚧
+      .sub(this.object.position)
+      .normalize()
+    ;
   }
 }

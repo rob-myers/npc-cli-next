@@ -74,7 +74,7 @@
 
 - ✅ ptags resets after each non-interactive spawn
 
-- 🚧 move dev_only.profile.sh inline functions into js modules
+- ✅ move dev_only.profile.sh inline functions into js modules
 
 - 🚧 start extracting MapControls into our own camera controller
   - ✅ CameraControls React component
@@ -88,7 +88,7 @@
   - ℹ️ breaks profile i.e. if `preventMenuOnActOrFloor` not an arrow function, profile hangs
     - `call 'ct => ct.lib.game_1.preventMenuOnActOrFloor'`
   - ❌ node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
-  - 🚧 Maybe babel is transforming them
+  - ❌ Maybe babel is transforming them
     > From arrow functions to template literals, the conversion process helps maintain functionality in older browsers. For instance, arrow functions are transformed into regular function expressions, significantly increasing compatibility.
     > https://moldstud.com/articles/p-key-babel-transformations-what-happens-to-your-javascript-features-behind-the-scenes
   - ✅ Could change the way we specify functions as "call" or "map"
