@@ -107,6 +107,7 @@
 - ✅ skin order should be head|head-overlay|body|body-overlay
 
 - 🚧 BUG: idle npcs are sometimes not staying in place on nav reload?
+  - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
 
 - BUG: sometimes tty-0 fails to persist /home?
 
@@ -130,21 +131,20 @@ expr window.document.querySelector'("section")' | log
 - can `w e.say` at different heights, to avoid collisions
   - e.g. when sitting next to each other
 
-- wasd camera controls does not work with follow
+- 🚧 WASD camera controls does not work with follow
   - ℹ️ related to w.view.controls.update(true);
   - 🔔 start porting to our own camera controller
 
-- sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
+- ✅ doors can be further secured via `doorToAccess`
 
-- doors can be further secured by "full match" e.g. `.*` vs `.`
+- ✅ can show navMesh via cli
+  - `w debug.showNavMesh`
 
-- can show navMesh via cli
+- ✅ Ctrl-C "failure" unclear while paused
+  - ✅ tty: run `spawn bar $( click 1 )` then pause... cannot click
+  - ✅ provide UI `cont` interactive process
 
-- Ctrl-C "failure" unclear while paused
-- tty: run `spawn bar $( click 1 )` then pause... cannot click
-  - provide UI `cont` interactive process
-
-- fade ContextMenu and SpeechBubble (as before) on World resize
+- ✅ fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
 
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
