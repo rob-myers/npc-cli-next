@@ -333,13 +333,13 @@ export function toggleOnDoor({ meta }, { w }) {
 /**
  * 
  * ```sh
- * tour npcKey:rob to:"$( click 5 )"
- * tour npcKey:rob to:"$( click 5 | sponge )"
- * tour npcKey:rob to:"$( points )"
+ * tour npc:rob to:"$( click 5 )"
+ * tour npc:rob to:"$( click 5 | sponge )"
+ * tour npc:rob to:"$( points )"
  * 
- * tour npcKey:rob to:"$( [] $( points ) )"
+ * tour npc:rob to:"$( [] $( points ) )"
  * nestedPoints=$( [] $( click 1 ) $( click 2 ) $( click 1 ) )
- * tour npcKey:rob to:$( nestedPoints )
+ * tour npc:rob to:$( nestedPoints )
  * ```
  * 
  * - `opts.pause` in seconds, default `0.8`

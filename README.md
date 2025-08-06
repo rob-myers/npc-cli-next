@@ -80,8 +80,14 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
 ```sh
 c=-1; while c+=1; do
-  spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
+  spawn npc:"rob_${c}" at:$( click 1 ) grant:.
 done
+
+# much faster version:
+seq 100 |
+  map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>>pts
+
+w npc.spawnMany "{ points: $( pts ) }"
 
 # commands work while paused via prefix `ptags=always;`
 ptags=always events
@@ -124,26 +130,26 @@ done &>> points
 
 c=0; while c+=1; do
   test $( expr "$c >= 5" ) && c=0
-  move npcKey:rob arriveAnim:none to:"$( points/$c )"
+  move npc:rob arriveAnim:none to:"$( points/$c )"
 done
 
 
 # playing with loops
-spawn npcKey:rob at:$( click 1 )
-spawn npcKey:kate at:$( click 1 ) skin:medic-0
+spawn npc:rob at:$( click 1 )
+spawn npc:kate at:$( click 1 ) skin:medic-0
 w e.grantAccess . rob kate
 
-tour npcKey:rob to:"$( click 2 )" &
-tour npcKey:kate to:"$( click 2 )" &
+tour npc:rob to:"$( click 2 )" &
+tour npc:kate to:"$( click 2 )" &
 
-spawn npcKey:kate at:$( click 1 ) skin:soldier-0,,medic-0,
-spawn npcKey:kate at:$( click 1 ) skin:soldier-0,,,suit-0
-spawn npcKey:kate at:$( click 1 ) skin:suit-0,,,soldier-0
+spawn npc:kate at:$( click 1 ) skin:soldier-0,,medic-0,
+spawn npc:kate at:$( click 1 ) skin:soldier-0,,,suit-0
+spawn npc:kate at:$( click 1 ) skin:suit-0,,,soldier-0
 
 click 5 &>> points
 # skips to next point if stopped
 while true; do
-  tour npcKey:kate to:"$( points )"
+  tour npc:kate to:"$( points )"
 done &
 
 call Math.random

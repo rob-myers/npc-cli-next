@@ -44,12 +44,12 @@ w view.showEffects $( jsArg darkness:3 )
 
 ```sh
 # spawn rob at a random point on the nav mesh
-spawn npcKey:rob at:$( w crowd.navMeshQuery.findRandomPoint | map randomPoint )
+spawn npc:rob at:$( w crowd.navMeshQuery.findRandomPoint | map randomPoint )
 
 # 🚧 make interactive
 c=0
 while true; do
-  spawn npcKey:rob_$c at:$( w crowd.navMeshQuery.findRandomPoint | map randomPoint )
+  spawn npc:rob_$c at:$( w crowd.navMeshQuery.findRandomPoint | map randomPoint )
   c+=1
 done
 
@@ -60,11 +60,11 @@ w npc.spawnMany "{ points: $( pts ) }"
 w npc.remove npc_{0..99}
 
 # move two points, pause, move two more points
-tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )
+tour npc:rob to:$( [] $( click 2 ) $( click 2 ) )
 ```
 
 ```sh
-act npcKey:rob at:$( click 1 )
+act npc:rob at:$( click 1 )
 ```
 
 ```sh
@@ -79,7 +79,7 @@ click meta.floor | map --forever '(input, { w, home }) => {
 ```
 
 ```sh
-spawn npcKey:rada angle:Math.PI skin:'{
+spawn npc:rada angle:Math.PI skin:'{
   "head-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },

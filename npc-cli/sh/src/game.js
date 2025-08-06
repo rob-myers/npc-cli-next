@@ -258,7 +258,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 /**
  * Supports manual process suspend/resume
  * ```sh
- * move npcKey:rob to:$( click 1 )
+ * move npc:rob to:$( click 1 )
  * ```
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
@@ -301,8 +301,8 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
 
 /**
  * ```sh
- * spawn npcKey:rob at:$( click 1 )
- * spawn npcKey:rob at:$( click 1 ) grant:.
+ * spawn npc:rob at:$( click 1 )
+ * spawn npc:rob at:$( click 1 ) grant:.
  * ```
  * @param {NPC.RunArg} ctxt
  * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
@@ -316,8 +316,8 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'np
 
 /**
  * ```sh
- * say npcKey:rob words:'hey there!'
- * say npcKey:rob
+ * say npc:rob words:'hey there!'
+ * say npc:rob
  * ```
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string; words?: string }} [opts]

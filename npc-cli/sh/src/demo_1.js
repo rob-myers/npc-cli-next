@@ -4,13 +4,13 @@ import { helper } from "@/npc-cli/service/helper";
 /**
  * Bound to a particular npcKey.
  * ```sh
- * click meta.floor | map demo_1 simpleClickToMove npcKey:rob
+ * click meta.floor | simpleClickToMove npc:rob
  * ```
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string }} [opts]
  */
-export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args)) {
+export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
   const npc = w.npc.getNpc(opts.npcKey);
   npc.s.run = input.keys?.includes("shift") ?? false;
   // catch so can override move, also ignores points too far from nav

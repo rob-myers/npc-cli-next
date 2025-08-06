@@ -77,17 +77,17 @@ They're a natural place to start.
 <Code title='Spawn, move and remove'>
   ```sh showLineNumbers
   # spawn npc at navigable or actable
-  spawn npcKey:rob at:$( click 1 )
+  spawn npc:rob at:$( click 1 )
 
   # move rob to navigable
   # assuming doors accessible
-  move npcKey:rob to:$( click 1 )
+  move npc:rob to:$( click 1 )
 
   # respawn rob with skeleton key
-  spawn npcKey:rob at:$( click 1 ) grant:.
+  spawn npc:rob at:$( click 1 ) grant:.
 
   # move rob via a waypoint
-  move npcKey:rob to:$( click 2 )
+  move npc:rob to:$( click 2 )
 
   # dust to dust
   w npc.remove rob
@@ -148,12 +148,12 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 
   awaitWorld
 
-  spawn npcKey:rob at:'{x:4.5,y:7.5}' \
+  spawn npc:rob at:'{x:4.5,y:7.5}' \
     skin:soldier-0,soldier-0 grant:.
 
   # click near nav to move
   ptags always && click meta.floor |
-    map demo_1 simpleClickToMove npcKey:rob &
+    map demo_1 simpleClickToMove npc:rob &
   ```
 </Code>
 
