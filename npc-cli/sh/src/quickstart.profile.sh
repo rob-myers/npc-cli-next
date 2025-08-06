@@ -10,4 +10,4 @@ spawn npc:rob at:'{x:4.5,y:7.5}' \
 
 # click near nav to move
 ptags always && click meta.floor |
-  simpleClickToMove npc:rob &
+  demoClickToMove npc:rob &

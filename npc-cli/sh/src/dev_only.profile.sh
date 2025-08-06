@@ -2,6 +2,7 @@ source /etc/util.js.sh
 source /etc/util.sh
 source /etc/game.js.sh
 source /etc/game_1.js.sh
+source /etc/demo_1.js.sh
 
 awaitWorld
 
@@ -28,8 +29,7 @@ click --long | lookActOnLong path:selected &
 
 w decor.showLabels true
 
-# 🚧 from demo_1
-changeAngleOnKeyDown # WASD camera azimuthal angle
+demoCameraWASD
 
 setupContextMenu
 ptags always && events | handleContextMenu &

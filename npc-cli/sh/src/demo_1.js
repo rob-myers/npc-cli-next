@@ -1,44 +1,8 @@
+import { deltaAngle } from "maath/misc";
 import { Mat } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
+import { geom } from '@/npc-cli/service/geom';
 
-/**
- * Bound to a particular npcKey.
- * ```sh
- * click meta.floor | simpleClickToMove npc:rob
- * ```
- * @param {NPC.ClickOutput} input
- * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string }} [opts]
- */
-export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
-  const npc = w.npc.getNpc(opts.npcKey);
-  npc.s.run = input.keys?.includes("shift") ?? false;
-  // catch so can override move, also ignores points too far from nav
-  npc.api.move({ to: input, close: 0.5 }).catch(() => {});
-}
-
-/**
- * - Make a single hard-coded polygon non-navigable,
- *   using `w.lib.queryFilterType.respectUnwalkable`
- * - Indicate it via debug polygon in `<Debug />`.
- * 
- * ```sh
- * demoSelectPolys
- * ```
- * @param {NPC.RunArg} ct
- */
-export async function* demoSelectPolys({ w }) {
-  const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
-    { x: 1.5 * 1.5, y: 0, z: 2 * 1.5 },
-    { x: 0.1, y: 0.1, z: 0.1 },
-    { maxPolys: 1 },
-  );
-  console.log({ polyRefs });
-
-  const { navPolyFlag } = helper;
-  polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
-  w.debug.selectNavPolys(...polyRefs); // display via debug
-}
 
 /**
  * @param {NPC.RunArg} ct
@@ -81,10 +45,80 @@ export const demoAddDecor = (ct) => {
   };
 };
 
+/**
+ * @param {NPC.RunArg} ct
+ */
+export const demoCameraWASD = ({ w }) => {
+  w.view.keyDowns.changeAngle = async (e) => {
+    const key = e.key.toLowerCase();
+
+    // if (key === 'w') {
+    //   return await w.view.tween({
+    //     polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0
+    //   });
+    // }
+    
+    const angle = geom.radRange(w.view.controls.getAzimuthalAngle());
+    const delta = Math.PI * 0.5;
+    const ratio = angle / delta; // [0..4)
+    switch (key) {
+      case "w": {
+        await w.view.tween({
+          azimuthal: Math.round(ratio) * delta,
+          polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/8 : 0,
+        });
+        break;
+      }
+      case "a": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
+      case "s": await w.view.tween({ azimuthal: angle + Math.PI }); break;
+      case "d": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
+    }
+  };
+};
+
+/**
+ * Bound to a particular npcKey.
+ * ```sh
+ * click meta.floor | demoClickToMove npc:rob
+ * ```
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string }} [opts]
+ */
+export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
+  const npc = w.npc.getNpc(opts.npcKey);
+  npc.s.run = input.keys?.includes("shift") ?? false;
+  // catch so can override move, also ignores points too far from nav
+  npc.api.move({ to: input, close: 0.5 }).catch(() => {});
+}
+
+/**
+ * - Make a single hard-coded polygon non-navigable,
+ *   using `w.lib.queryFilterType.respectUnwalkable`
+ * - Indicate it via debug polygon in `<Debug />`.
+ * 
+ * ```sh
+ * demoSelectPolys
+ * ```
+ * @param {NPC.RunArg} ct
+ */
+export async function* demoSelectPolys({ w }) {
+  const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
+    { x: 1.5 * 1.5, y: 0, z: 2 * 1.5 },
+    { x: 0.1, y: 0.1, z: 0.1 },
+    { maxPolys: 1 },
+  );
+  console.log({ polyRefs });
+
+  const { navPolyFlag } = helper;
+  polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
+  w.debug.selectNavPolys(...polyRefs); // display via debug
+}
+
 const tmpMat1 = new Mat();
 
 export const meta = {
   map: {
-    simpleClickToMove,
+    demoClickToMove,
   },
 };

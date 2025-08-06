@@ -153,12 +153,12 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 
   # click near nav to move
   ptags always && click meta.floor |
-    map demo_1 simpleClickToMove npc:rob &
+    map demo_1 demoClickToMove npc:rob &
   ```
 </Code>
 
 <Code
-  title={<>simpleClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo_1.js">demo_1.js</a></>}
+  title={<>demoClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo_1.js">demo_1.js</a></>}
 >
   ```js showLineNumbers
   /**
@@ -166,7 +166,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
    * @param {NPC.RunArg} ctxt
    * @param {{ npcKey: string }} [opts]
    */
-  export function simpleClickToMove(input, { api, args, w }, opts = api.jsArg(args)) {
+  export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
     const npc = w.npc.getNpc(opts.npcKey);
     npc.s.run = input.keys?.includes("shift") ?? false;
     // catch so can override move, also ignores points too far from nav

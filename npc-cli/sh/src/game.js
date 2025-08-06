@@ -8,7 +8,7 @@ import { createDecorNumber } from './game_1';
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.ActOpts} [opts]
  */
-export const act = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+export const act = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', to: 'at' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
   const { meta } = opts.at
   let abortAwaitResume = /** @param {*} e */ (e) => {};
@@ -307,7 +307,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
  * @param {NPC.RunArg} ctxt
  * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
  */
-export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
+export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', to: 'at' })) {
   await w.npc.spawn(opts);
   if (typeof opts.grant === 'string') {
     w.e.grantAccess(opts.grant, opts.npcKey);
