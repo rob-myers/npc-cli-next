@@ -226,7 +226,7 @@ export class CameraControls extends EventDispatcher {
     }
 
     if (this.state !== this.STATE.NONE) {
-      this.dispatchEvent({ type: 'start' });
+      this.dispatchEvent(startEvent);
     }
   }
 
@@ -283,7 +283,7 @@ export class CameraControls extends EventDispatcher {
     this.object.zoom = this.zoom0;
     this.object.updateProjectionMatrix();
 
-    this.dispatchEvent({ type: 'change' });
+    this.dispatchEvent(changeEvent);
     
     this.update();
 
@@ -357,3 +357,7 @@ export class CameraControls extends EventDispatcher {
     ;
   }
 }
+
+const startEvent = { type: 'start' };
+const endEvent = { type: 'end' };
+const changeEvent = { type: 'change' };
