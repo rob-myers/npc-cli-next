@@ -1255,7 +1255,7 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < 0.5) {
+    if (elapsedTime - this.s.slowBegin < 1) {
       return; // too short
     }
 
