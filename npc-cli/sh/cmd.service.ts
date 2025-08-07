@@ -51,6 +51,8 @@ const commandKeys = {
   local: true,
   /** List variables */
   ls: true,
+  /** Speech synthesis */
+  narrate: true,
   /** List running processes */
   ps: true,
   /** List, add, remove session ptags for subsequent spawned processes */
@@ -63,8 +65,6 @@ const commandKeys = {
   rm: true,
   /** Run a javascript generator */
   run: true,
-  /** Speech synthesis */
-  speak: true,
   /** Echo session key */
   session: true,
   /** Set something */
@@ -557,7 +557,7 @@ class cmdServiceClass {
         }
         break;
       }
-      case "speak": {
+      case "narrate": {
         const { opts, operands } = getOpts(args, {
           string: ["v"],
         });
