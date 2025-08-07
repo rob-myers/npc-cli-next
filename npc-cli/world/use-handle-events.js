@@ -643,7 +643,7 @@ export default function useHandleEvents(w) {
       }
 
       if (nextUnitNull === true) {// 🔔 fix fast turn just after offMesh
-        npc.api.stopMoving();
+        npc.api.stopMoving({ type: 'stop-reason', key: 'arrived' });
       } else if (e.offMesh.dstRoomMeta.small !== true) {
         if (npc.s.run === true) {
           npc.api.startAnimation('Run', true);

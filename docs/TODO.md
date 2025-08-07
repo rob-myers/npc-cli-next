@@ -92,6 +92,7 @@
 - ✅ fix pause/resumeByPtags i.e. only resume processes we actually paused
 - ✅ `moveLoop` can wait when stopped
   - `move` became too ugly
+- ✅ BUG: `move` when target is just beyond doorway
 
 - `move` can expose `{ to, index }` via `expose:foo` for path reconfig
   - ℹ️ so can handle resumed `move` when goto next is "unnatural" i.e. should be skipped
