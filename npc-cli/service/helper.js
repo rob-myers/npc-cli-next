@@ -404,18 +404,15 @@ export const helper = {
   },
 
   /**
+   * Creates fresh object
    * - `{ x, y, z }` -> `{ x, y: z }`
    * - `THREE.Vector3` -> `{ x, y: z }`
-   * - `{ x, y }` -> `{ x, y }` (fresh)
-   * @param {Geom.VectJson | import('three').Vector3Like} input 
+   * - `{ x, y }` -> `{ x, y }`
+   * @param {NPC.GroundPoint} input 
    * @returns {Geom.VectJson}
    */
   toXZ(input) {
-    if ('z' in input) {
-      return { x: input.x, y: input.z };
-    } else {
-      return { x: input.x, y: input.y };
-    }
+    return { x: input.x, y: 'z' in input ? input.z : input.y };
   },
   
 };

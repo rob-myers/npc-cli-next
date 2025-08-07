@@ -10,7 +10,6 @@ import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, v3Precision } from '../service/three';
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
-import { deltaAngle } from 'maath/misc';
 
 /**
  * @param {NPC.NPCDef} def 
@@ -633,7 +632,7 @@ export class NpcApi {
 
   /**
    * Get angle "clockwise from north from above".
-   * @param {Geom.VectJson | THREE.Vector3Like} input
+   * @param {NPC.GroundPoint} input
    */
   getLookAngle(input) {
     const src = this.getPoint();
@@ -896,7 +895,7 @@ export class NpcApi {
       this.w.npc.setActMeta(this.key, null);
     }
 
-    // ensure fresh points
+    // ensure fresh points sans meta
     const points = (Array.isArray(opts.to) ? opts.to : [opts.to]).map(helper.toXZ);
     if (!(points.every(helper.isVectJson))) {
       throw Error(`${'npc.api.move'}: opts.to must be {x,y}, {x,y,z} or array`);
@@ -911,11 +910,6 @@ export class NpcApi {
     if (points.length === 0) {
       return;
     }
-  
-    // console.log({points})
-    // if (points.length > 1 && this.isNear(points[0]) === true) {
-    //   points.shift(); // 🚧
-    // }
 
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
     this.pendingTargets.push(...points.map(x => toV3(x, precision)));

@@ -375,10 +375,12 @@ export const pickingRenderTarget = new THREE.WebGLRenderTarget(1, 1, {
  */
 
 /**
+ * 🚧 try to remove
+ * Creates fresh THREE.Vector3 possibly with precision
  * - clones `THREE.Vector3`
  * - `{ x, y, z }` -> `new THREE.Vector3(x, y, z)`
  * - `{ x, y }` -> `new THREE.Vector3(x, 0, y)`
- * @param {Geom.VectJson | THREE.Vector3Like} input
+ * @param {NPC.GroundPoint} input
  * @param {number} [precision] Only if specified
  * @returns {THREE.Vector3}
  */
@@ -387,7 +389,10 @@ export function toV3(input, precision) {
     ? input instanceof THREE.Vector3 ? input.clone() : new THREE.Vector3().copy(input)
     : new THREE.Vector3(input.x, 0, input.y)
   ;
-  return typeof precision === 'number' ? v3Precision(output, precision) : output;
+  if (typeof precision === 'number') {
+    v3Precision(output, precision);
+  }
+  return output;
 }
 
 /**

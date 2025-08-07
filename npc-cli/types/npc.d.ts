@@ -457,10 +457,10 @@ declare namespace NPC {
   }
 
   /** Support {x,y} or {x,z} */
-  type GroundPoint = (
+  type GroundPoint = MaybeMeta<(
     | Geom.VectJson
     | import('three').Vector3Like
-  );
+  )>;
 
   interface MoveOpts {
     to: GroundPoint | GroundPoint[];

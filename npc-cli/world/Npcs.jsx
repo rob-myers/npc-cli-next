@@ -76,7 +76,7 @@ export default function Npcs(props) {
       });
 
       if (success === true && p.distanceTo(closest) <= maxDelta) {
-        return toV3(closest);
+        return new THREE.Vector3(closest.x, 0, closest.z);
       }
       
       warn(`${'getClosestNavigable'} failed: ${JSON.stringify(p)}`);

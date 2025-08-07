@@ -5,7 +5,7 @@ import { createDefaultTileCacheMeshProcess, dtIlog2, dtNextPow2, getBoundingBox,
 import { offMeshConnectionHalfDepth } from "./const";
 import { range, toPrecision } from "./generic";
 import { geom } from "./geom";
-import { decompToXZGeometry, toV3 } from "./three";
+import { decompToXZGeometry } from "./three";
 import { helper } from "./helper";
 
 /**
