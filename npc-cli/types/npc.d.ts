@@ -476,9 +476,7 @@ declare namespace NPC {
     debugPath?: boolean;
   }
 
-  interface ActOpts {
-    at: WithMeta<GroundPoint, { act?: true; actPoint?: Geom.VectJson; y?: number }>;
-  }
+  type ActOpts = WithMeta<GroundPoint, { act?: true; actPoint?: Geom.VectJson; y?: number }>;
 
   type StopReason = { type: 'stop-reason'; } & (
     | { key: 'arrived'; }

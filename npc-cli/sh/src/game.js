@@ -3,14 +3,13 @@ import { createDecorNumber } from './game_1';
 
 /**
  * ```sh
- * act npcKey:rob at:$( click 1 )
+ * make npc:rob do:$( click 1 )
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & NPC.ActOpts} [opts]
+ * @param {{ npcKey: string; do: NPC.ActOpts; }} [opts]
  */
-export const act = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', to: 'at' })) => {
+export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
-  const { meta } = opts.at
   let abortAwaitResume = /** @param {*} e */ (e) => {};
 
   const handlers = api.handleStatus({
@@ -21,7 +20,7 @@ export const act = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKe
       abortAwaitResume(Error('cancelled'));
     },
     onSuspends(byPtags) {
-      if (!byPtags && npc.s.actMeta !== meta) {
+      if (!byPtags && npc.s.actMeta !== opts.do.meta) {
         npc.api.rejectMove(Error('manual-pause'));
         npc.api.rejectFade(Error('manual-pause'));
         npc.api.rejectTurn(Error('manual-pause'));
@@ -33,7 +32,7 @@ export const act = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKe
   try {
     while (true) {
       try {
-        await npc.api.act(opts);
+        await npc.api.do(opts.do);
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {

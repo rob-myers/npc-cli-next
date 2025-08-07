@@ -158,16 +158,19 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
   if (input.meta.floor === true && !npc.s.actMeta) {
     npc.api.look(input).catch(() => {});
   } else {// act or stop acting
-    await npc.api.act({ at: input }).catch(() => {});
+    await npc.api.do(input).catch(() => {});
   }
 }
 
 /**
- * Same as `move` but on obstruction await resolution, rather than throwing.
+ * Like `move` but on obstruction await resolution, rather than throwing.
+ * ```sh
+ * direct npc:rob to:"$( click 2 )"
+ * ```
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to']; }} [opts]
  */
-export async function* moveLoop(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   let to = opts.to;
   while (true) {
     try {
@@ -341,27 +344,9 @@ export function toggleOnDoor({ meta }, { w }) {
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pause?: number }} [opts]
  */
 export async function* tour(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, { array: { to: true } })) {
-  let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
   opts.pause ??= 0.8;
-  while (to = opts.to.shift()) {
-    try {
-      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-    } catch (e) {
-      if (!helper.isStopReason(e)) {
-        throw e; // e.g. reboot
-      }
-      if ('rest' in e) {
-        opts.to.unshift(e.rest);
-      } else {
-        throw e; // respawn or remove
-      }
-      // on paused interrupt, avoid resuming twice
-      if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting GM resolution...`;
-      }
-      await pause(ct);
-      continue;
-    }
+  for (const to of opts.to) {
+    yield* direct(ct, { npcKey: opts.npcKey, to });
     await ct.api.sleep(opts.pause);
   }
 }
