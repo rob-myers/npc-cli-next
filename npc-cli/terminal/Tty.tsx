@@ -36,6 +36,8 @@ export default function Tty(props: Props) {
     canContOrStop: null as null | 'CONT' | 'STOP',
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
+    /** The process ids we actually paused, so we can resume them  */
+    pausedPids: [] as number[],
     /** Should file be auto-re-sourced on hot-module-reload? */
     reSource: {} as Record<string, true>,
 
@@ -85,7 +87,7 @@ export default function Tty(props: Props) {
       }
     },
     pauseByPtags() {
-      useSession.api.kill(props.sessionKey, [], { byPtags: true, STOP: true });
+      state.pausedPids = useSession.api.kill(props.sessionKey, [], { byPtags: true, STOP: true });
       
       const { session } = state.base;
       if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
@@ -116,7 +118,7 @@ export default function Tty(props: Props) {
       }
     },
     resumeByPtags() {
-      useSession.api.kill(props.sessionKey, [], { byPtags: true, CONT: true });
+      useSession.api.kill(props.sessionKey, state.pausedPids, { byPtags: true, CONT: true });
       
       const { session } = state.base;
       if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
