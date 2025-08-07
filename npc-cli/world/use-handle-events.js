@@ -520,14 +520,15 @@ export default function useHandleEvents(w) {
         npc.api.getLookAngle(adjusted.dst),
       );
 
-      const doorEntryTooFar = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src) > 0.5;
+      const doorEntryDist = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src);
 
       if (
         Math.abs(deltaAng) > Math.PI/2
-        && doorEntryTooFar === false // avoid early pause e.g. 180deg round corner
+        && doorEntryDist <= 0.5 // avoid early pause e.g. 180deg round corner
       ) {
         // look towards door exit
-        const towards = adjusted.dst;
+        // const towards = adjusted.dst;
+        const towards = doorEntryDist > 0.1 ? adjusted.src : adjusted.dst;
         npc.s.turnBeforeMove = { ms: 400, towards };
         // 🔔 setting as Infinity freezes offMeshConnection
         const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (npc.agentAnim);
