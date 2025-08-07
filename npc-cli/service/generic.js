@@ -368,7 +368,7 @@ export function mapValues(input, transform) {
 /**
  * Parse args as a single JavaScript object.
  * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
- * - 'foo:42 bar' -> { "foo": 42, 0: "bar" }
+ * - 'foo:42 bar' -> { "foo": 42, "bar": true }
  * - 🔔 assume keys do not contain double-quote character
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
@@ -379,11 +379,10 @@ export function mapValues(input, transform) {
  * @returns {T}
  */
 export function jsArg(args, alias, opts) {
-  let nakedSeen = 0;
   return /** @type {T} */ (args.reduce((agg, arg) => {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
-      agg[nakedSeen++] = arg;
+      agg[arg] = true;
     } else {
       let key = arg.slice(0, colonIndex);
       key = alias?.[key] ?? key;
