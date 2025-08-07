@@ -163,6 +163,32 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
 }
 
 /**
+ * Same as `move` but on obstruction await resolution, rather than throwing.
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to']; }} [opts]
+ */
+export async function* moveLoop(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+  let to = opts.to;
+  while (true) {
+    try {
+      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+      break;
+    } catch (e) {
+      if (!helper.isStopReason(e) || !('rest' in e)) {
+        throw e; // e.g. reboot; respawn or remove
+      }
+      to = e.rest;
+      // on paused interrupt, avoid resuming twice
+      if (!(e.key === 'move-again' && ct.api.isPaused())) {
+        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting resolution...`;
+      }
+      ct.api.pause();
+      await ct.api.awaitResume();
+    }
+  }
+}
+
+/**
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]

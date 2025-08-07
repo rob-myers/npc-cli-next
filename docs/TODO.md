@@ -90,7 +90,7 @@
 - BUG: verify rebooting is working e.g. in `map`d
 
 - ✅ fix pause/resumeByPtags i.e. only resume processes we actually paused
-- 🚧 `moveLoop` can wait when stopped
+- ✅ `moveLoop` can wait when stopped
   - `move` became too ugly
 
 - `move` can expose `{ to, index }` via `expose:foo` for path reconfig
