@@ -89,6 +89,11 @@
 
 - BUG: verify rebooting is working e.g. in `map`d
 
+- 🚧 `move` can wait when stopped
+
+- `move` can expose `{ to, index }` via `expose:foo` for path reconfig
+  - ℹ️ so can handle resumed `move` when goto next is "unnatural" i.e. should be skipped
+
 - ✅ BUG: build transpile is converting arrow function to normal function
   - ℹ️ breaks profile i.e. if `preventMenuOnActOrFloor` not an arrow function, profile hangs
     - `call 'ct => ct.lib.game_1.preventMenuOnActOrFloor'`
