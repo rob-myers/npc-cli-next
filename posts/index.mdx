@@ -76,21 +76,19 @@ They're a natural place to start.
 
 <Code title='Spawn, move and remove'>
   ```sh showLineNumbers
-  # spawn npc at navigable or actable
   spawn npc:rob at:$( click 1 )
 
-  # move rob to navigable
-  # assuming doors accessible
   move npc:rob to:$( click 1 )
 
-  # respawn rob with skeleton key
+  # respawn with skeleton key
   spawn npc:rob at:$( click 1 ) grant:.
 
-  # move rob via a waypoint
+  # waypoint
   move npc:rob to:$( click 2 )
 
-  # dust to dust
-  w npc.remove rob
+  make npc:rob do:$( click 1 )
+
+  remove rob # dust to dust
   ```
 </Code>
 
