@@ -87,12 +87,19 @@
   - related to `ptags always && foo | bar &` where `ptags always` executed inside background process
   - ✅ use `ptags always; foo | bar &` instead
 
+- ✅ BUG: lookActOnLong sometimes initially paused and never resumed
+  - relates to our change to pause/resumeByPtags
+  - ✅ spawned while paused should be resumed
+  - ✅ pause while paused should not be resumed
+
 - BUG: verify rebooting is working e.g. in `map`d
 
 - ✅ fix pause/resumeByPtags i.e. only resume processes we actually paused
 - ✅ `moveLoop` can wait when stopped
   - `move` became too ugly
 - ✅ BUG: `move` when target is just beyond doorway
+
+- `meta.act` -> `meta.do` and `meta.actPoint` -> `meta.doPoint`
 
 - `move` can expose `{ to, index }` via `expose:foo` for path reconfig
   - ℹ️ so can handle resumed `move` when goto next is "unnatural" i.e. should be skipped
