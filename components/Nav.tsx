@@ -69,7 +69,7 @@ export default function Nav() {
         </MenuItem>
         <SubMenu icon={icon.blog} label="Main">
           <MenuItem component="span">
-            <Link href="/blog/main/multiple-npcs">Multiple NPCs</Link>
+            <Link href="/blog/main/multiple-npcs">Many NPCs</Link>
           </MenuItem>
 
           <MenuItem>One</MenuItem>
