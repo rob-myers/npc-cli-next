@@ -69,7 +69,7 @@ export default function PsList() {
           const bootable = group.some(p => p.reboot !== undefined);
           agg[pid] = {
             pid,
-            src: src.startsWith('ptags always; ') ? src.slice('ptags always; '.length) : src,
+            src,
             status,
             ptagsText: getPtagsPreview(ptags).join(''),
             bootable,
