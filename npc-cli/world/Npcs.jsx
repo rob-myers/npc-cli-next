@@ -202,8 +202,11 @@ export default function Npcs(props) {
     },
     resolveSkin(shortcut) {// order: head,head-overlay,body,body-overlay
       const parts = shortcut.split(',');
-      const fallback = parts.length === 1 ? parts[0] : undefined;
-      const [head, headOverlay = fallback, body = fallback, bodyOverlay = fallback] = parts;
+      const head = parts[0];
+      const fallback = parts.length === 1 ? head : undefined;
+      const headOverlay = parts.length > 1 && (parts[1] || parts[0]) || fallback;
+      const body = parts.length > 2 && (parts[2] || parts[0] || parts[1]) || fallback;
+      const bodyOverlay = parts.length > 3 && (parts[3] || parts[2] || parts[0] || parts[1]) || fallback;
       return {
         ...head !== undefined && { "head-{front,back,left,right,top,bottom}": { prefix: head} },
         ...headOverlay !== undefined && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay} },
@@ -677,9 +680,9 @@ export default function Npcs(props) {
  * @property {(npc: NPC.NPC) => void} removeAgent
  * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
  * Examples:
- * - "base", "soldier-0", "suit-0" remaps all
- * - "soldier-0,soldier-0" remaps head and head-overlay
- * - "soldier-0,soldier-0" remaps body and body0overlay
+ * - `base` `soldier-0`, `suit-0` each remap all
+ * - `soldier-0,` remaps head and head-overlay
+ * - `,,soldier-0,` remaps body and body-overlay
  * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
