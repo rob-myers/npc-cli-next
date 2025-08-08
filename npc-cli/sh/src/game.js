@@ -214,7 +214,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  * make npc:rob do:$( click 1 )
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string; do: NPC.ActOpts; }} [opts]
+ * @param {{ npcKey: string } & NPC.ActOpts} [opts]
  */
 export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
@@ -240,7 +240,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
   try {
     while (true) {
       try {
-        await npc.api.do(opts.do);
+        await npc.api.make({ do: opts.do });
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {

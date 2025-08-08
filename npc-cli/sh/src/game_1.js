@@ -158,7 +158,7 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
   if (input.meta.floor === true && !npc.s.actMeta) {
     npc.api.look(input).catch(() => {});
   } else {// act or stop acting
-    await npc.api.do(input).catch(() => {});
+    await npc.api.make({ do: input }).catch(() => {});
   }
 }
 
