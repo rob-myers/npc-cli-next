@@ -1430,6 +1430,7 @@ export class NpcApi {
   showSelector(shouldShow) {
     this.base.tint.selector = [...this.s.selectorTint, shouldShow ? 1 : 0];
     this.applyTint();
+    this.w.view.ensureRender();
   }
 
   /**

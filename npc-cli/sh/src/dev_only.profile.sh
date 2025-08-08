@@ -1,8 +1,6 @@
-source /etc/util.js.sh
-source /etc/util.sh
-source /etc/game.js.sh
-source /etc/game_1.js.sh
-source /etc/demo_1.js.sh
+source /etc/{util,game}.sh
+source /etc/{util,game}.js.sh
+source /etc/{game_1,demo_1}.js.sh
 
 awaitWorld
 
@@ -12,7 +10,7 @@ spawn npc:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' grant:.
 spawn npc:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' grant:.
 spawn npc:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' grant:.
 
-w n.rob.api.showSelector true
+npc rob api.showSelector true
 selected="rob"
 
 ptags always; click meta.npcKey |
