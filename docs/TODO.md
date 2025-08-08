@@ -45,7 +45,7 @@
 
 - ✅ Code supports multiline copy when lines end with `\` or `|`
 
-- mention Starship Geomorphs early
+- ✅ mention Starship Geomorphs early
 - mention recent improvements in AI
   - NPC CLI could use them as tools
 
