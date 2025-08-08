@@ -49,15 +49,16 @@
 - mention recent improvements in AI
   - NPC CLI could use them as tools
 
-- basic help page
-- basic about page
+- ✅ basic about page
+- 🚧 basic help page
 - write 1st dev blog
   - ℹ️ aligned to npc cli too i.e. focus on how various subsystems were built
 - sketch 1st automata blog
   - ℹ️ nondeterministic automata language-theoretically
   - summary of pre-existing academic work
-- Tabs: debug is global among Tab instances
+- ✅ Tabs: debug is global among Tab instances
   - defunct if we remove debug i.e. always paused when paused
+  - "debug" now called "manage"
 - start adding cypress
 
 - navigate to `#foo` then back should preserve scroll
