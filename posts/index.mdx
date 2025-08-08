@@ -151,9 +151,8 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   spawn npc:rob at:'{x:4.5,y:7.5}' \
     skin:soldier-0,soldier-0 grant:.
 
-  # click near nav to move
-  ptags always && click meta.floor |
-    map demo_1 demoClickToMove npc:rob &
+  ptags always; click meta.floor |
+    demoClickToMove npc:rob &
   ```
 </Code>
 
