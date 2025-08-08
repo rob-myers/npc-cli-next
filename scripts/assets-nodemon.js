@@ -36,16 +36,18 @@ info('watching assets...');
 async function onRestart(nodemonFiles = []) {
   nodemonFiles.forEach(file => changed.set(file, Date.now()));
   
-  if (!running) {
-    running = true;
-  } else {
+  if (running) {
     return;
   }
+  running = true;
 
+  // pause to aggregate changes
   await new Promise(resolve => setTimeout(resolve, delayMs));
   
   const startEpochMs = Date.now();
   const changedFiles = Array.from(changed.keys());
+
+  // Run the script
   await labelledSpawn('assets',
     // 'sucrase-node',
     'bun',
@@ -53,13 +55,10 @@ async function onRestart(nodemonFiles = []) {
   );
   const seconds = ((Date.now() - startEpochMs) / 1000).toFixed(2);
   info(`took ${seconds}s`);
-  changed.forEach((epochMs, file) =>
-    epochMs <= startEpochMs && changed.delete(file)
-  );
-
+  
+  changed.forEach((epochMs, file) => epochMs <= startEpochMs && changed.delete(file));
   running = false;
-
-  if (changed.size > 0) {
+  if (changed.size > 0) {// something changed after we started the script
     await onRestart();
   }
 }

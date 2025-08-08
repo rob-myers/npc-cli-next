@@ -2,54 +2,6 @@ import { isStringInt, removeFirst } from '../../service/generic';
 import { createDecorNumber } from './game_1';
 
 /**
- * ```sh
- * act npcKey:rob at:$( click 1 )
- * ```
- * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & NPC.ActOpts} [opts]
- */
-export const act = async ({ api, args, w }, opts = api.jsArg(args)) => {
-  const npc = w.npc.getNpc(opts.npcKey);
-  const { meta } = opts.at
-
-  const handlers = api.handleStatus({
-    cleanups() {
-      npc.api.rejectMove(Error('cancelled'));
-      npc.api.rejectFade(Error('cancelled'));
-      npc.api.rejectTurn(Error('cancelled'));
-    },
-    onSuspends(byPtags) {
-      if (!byPtags && npc.s.actMeta !== meta) {
-        npc.api.rejectMove(Error('manual-pause'));
-        npc.api.rejectFade(Error('manual-pause'));
-        npc.api.rejectTurn(Error('manual-pause'));
-        return true;
-      }
-    },
-  });
-
-  try {
-    while (true) {
-      try {
-        await npc.api.act(opts);
-        break;
-      } catch (e) {
-        if (!(e instanceof Error && e.message === 'manual-pause')) {
-          throw e;
-        }
-        await api.awaitResume(reject => {
-          npc.onRejects.move.push(reject);
-          npc.onRejects.fade.push(reject);
-          npc.onRejects.turn.push(reject);
-        });
-      }
-    }
-  } finally {
-    handlers.dispose();
-  }
-}
-
-/**
  * @param {NPC.RunArg} ctxt
  */
 export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
@@ -120,7 +72,7 @@ export async function* click(ct) {
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
   const filter = filterDef !== undefined ? api.generateSelector(api.parseFnOrStr(filterDef), []) : undefined;
 
-  /** @type {import('rxjs').Subscription} */
+  /** @type {import('@/npc-cli/service/broadcaster').BasicSubscription} */
   let eventsSub;
 
   // suspend/resume handled by `api.isRunning()` below
@@ -205,6 +157,7 @@ export async function* events({ api, args, w }) {
     [],
   ) : undefined;
   
+  // 🔔 independent because we won't synchronously invoke `w.events.next`
   const asyncIterable = api.observableToAsyncIterable(w.events);
   const handlers = api.handleStatus({
     // could not catch asyncIterable.throw?.(api.getKillError())
@@ -226,50 +179,29 @@ export async function* events({ api, args, w }) {
  * @param {{ at: string | import('three').Vector3 | Geom.Vect }} [opts]
  */
 export async function* look({ api, args, w }, opts = api.jsArg(args)) {
-  const handlers = api.handleStatus({
-    cleanups() { w.view.reject.look?.('cancelled'); },
-    onSuspends() { w.view.reject.look?.('pause'); return true; },
-  });
+  let abortAwaitResume = /** @param {*} e */ (e) => {};
 
-  while (true) {
-    try {
-      return await w.e.lookAt(opts.at).then(handlers.dispose);
-    } catch (e) {
-      if (e !== 'pause') {
-        handlers.dispose();
-        throw e;
-      }
-    }
-    await api.awaitResume();
-  }
-}
-
-/**
- * Supports manual process suspend/resume
- * ```sh
- * move npcKey:rob to:$( click 1 )
- * ```
- * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
- */
-export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
-  const npc = w.npc.getNpc(opts.npcKey);
   const handlers = api.handleStatus({
-    cleanups() { npc.api.rejectMove(Error('cancelled')); },
-    onSuspends(byPtags) { if (!byPtags) { npc.api.rejectMove(Error('manual-pause')); return true; } },
+    cleanups() {
+      w.view.reject.look?.(Error('cancelled'));
+      abortAwaitResume(Error('cancelled'));
+    },
+    onSuspends() {
+      w.view.reject.look?.(Error('manual-pause')); 
+      return true;
+    },
   });
 
   try {
     while (true) {
       try {
-        await npc.api.move(opts);
-        //await api.sleep(0.3);
+        await w.e.lookAt(opts.at);
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {
           throw e;
         }
-        await api.awaitResume(reject => npc.onRejects.move.push(reject));
+        await api.awaitResume(reject => abortAwaitResume = reject);
       }
     }
   } finally {
@@ -279,13 +211,114 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args)) => {
 
 /**
  * ```sh
- * spawn npcKey:rob at:$( click 1 ) arriveAnim:none
- * spawn npcKey:rob at:$( click 1 ) grant:.
+ * make npc:rob do:$( click 1 )
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string } & NPC.ActOpts} [opts]
+ */
+export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+  const npc = w.npc.getNpc(opts.npcKey);
+  let abortAwaitResume = /** @param {*} e */ (e) => {};
+
+  const handlers = api.handleStatus({
+    cleanups() {
+      npc.api.rejectMove(Error('cancelled'));
+      npc.api.rejectFade(Error('cancelled'));
+      npc.api.rejectTurn(Error('cancelled'));
+      abortAwaitResume(Error('cancelled'));
+    },
+    onSuspends(byPtags) {
+      if (!byPtags && npc.s.actMeta !== opts.do.meta) {
+        npc.api.rejectMove(Error('manual-pause'));
+        npc.api.rejectFade(Error('manual-pause'));
+        npc.api.rejectTurn(Error('manual-pause'));
+      }
+      return true;
+    },
+  });
+
+  try {
+    while (true) {
+      try {
+        await npc.api.make({ do: opts.do });
+        break;
+      } catch (e) {
+        if (!(e instanceof Error && e.message === 'manual-pause')) {
+          throw e;
+        }
+        await api.awaitResume(reject => abortAwaitResume = reject);
+      }
+    }
+  } finally {
+    handlers.dispose();
+  }
+}
+
+/**
+ * Supports manual process suspend/resume
+ * ```sh
+ * move npc:rob to:$( click 1 )
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
+ */
+export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+  const npc = w.npc.getNpc(opts.npcKey);
+  let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
+  let abortAwaitResume = /** @param {*} e */ (e) => {};
+
+  const handlers = api.handleStatus({
+    cleanups() {
+      npc.api.rejectMove(Error('cancelled'));
+      abortAwaitResume(Error('cancelled'));
+    },
+    onSuspends(byPtags) {
+      if (!byPtags) {
+        to = npc.api.getRemainingPath();
+        npc.api.rejectMove(Error('manual-pause'));
+      }
+      return true;
+    },
+  });
+
+  try {
+    while (true) {
+      try {
+        await npc.api.move({ ...opts, to });
+        break;
+      } catch (e) {
+        if (!(e instanceof Error && e.message === 'manual-pause')) {
+          throw e;
+        }
+        await api.awaitResume(reject => abortAwaitResume = reject);
+      }
+    }
+  } finally {
+    handlers.dispose();
+  }
+}
+
+/**
+ * ```sh
+ * say npc:rob words:'hey there!'
+ * say npc:rob
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string; words?: string }} [opts]
+ */
+export const say = ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+  w.e.say(opts);
+}
+
+/**
+ * ```sh
+ * spawn npc:rob at:$( click 1 )
+ * spawn npc:rob at:$( click 1 ) grant:.
  * ```
  * @param {NPC.RunArg} ctxt
  * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
  */
-export async function* spawn({ api, args, w }, opts = api.jsArg(args)) {
+export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', to: 'at' })) {
   await w.npc.spawn(opts);
   if (typeof opts.grant === 'string') {
     w.e.grantAccess(opts.grant, opts.npcKey);

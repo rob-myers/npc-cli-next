@@ -154,17 +154,16 @@ export function killProcess(p: ProcessMeta, SIGINT?: boolean) {
 }
 
 /**
- * Computes fresh ptags.
- * - A process "has" tag `key` iff `key in process.ptags`.
+ * Mutates `ptags`.
+ * - A process has tag `key` iff `key in process.ptags`.
  * - An updates value of `undefined` or `null` deletes the tag.
  */
-export function updatePtags(ptags: Ptags, updates: Ptags) {
-  const output = { ...ptags }; // same as deep clone
-  Object.entries(updates).forEach(([k, v]) => {
-    if (v == null) delete output[k];
-    else output[k] = v;
-  });
-  return output;
+export function applyPtagUpdates(ptags: Ptags, updates: Ptags) {
+  for (const [k, v] of Object.entries(updates)) {
+    if (v == null) delete ptags[k];
+    else ptags[k] = v;
+  }
+  return ptags;
 }
 
 //#endregion
@@ -356,7 +355,7 @@ export function computeChoiceTtyLinkFactory(text: string, defaultValue: any, ses
 
 /** Avoid clogging logs with "pseudo errors" */
 export function ttyError(...args: any[]) {
-  debug('ttyError', ...args);
+  debug('[ttyError]', ...args);
 }
 
 //#endregion

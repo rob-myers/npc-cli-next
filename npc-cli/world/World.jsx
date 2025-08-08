@@ -1,6 +1,5 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Subject } from "rxjs";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
 
@@ -15,6 +14,7 @@ import { geomorph } from "../service/geomorph";
 import createGmsData from "../service/create-gms-data";
 import { imageLoader } from "../service/three";
 import { TexArray } from "../service/tex-array";
+import { Broadcaster } from "../service/broadcaster";
 import { WorldContext } from "./world-context";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
@@ -53,7 +53,7 @@ export default function World(props) {
     physics: { worker: /** @type {*} */ (null), bodyKeyToUid: {}, bodyUidToKey: {}, rebuilds: 0 },
 
     gmsData: /** @type {*} */ (null),
-    events: new Subject(),
+    events: new Broadcaster(),
     geomorphs: /** @type {*} */ (null),
     gms: [],
     gmGraph: new GmGraphClass([]),
@@ -396,7 +396,8 @@ export default function World(props) {
  *   queryFnHash: number;
  * }} hmr
  * Change-tracking for Hot Module Reloading (HMR) only
- * @property {Subject<NPC.Event>} events
+ * //@property {Subject<NPC.Event>} events
+ * @property {Broadcaster<NPC.Event>} events
  * @property {Geomorph.Geomorphs} geomorphs
  * @property {boolean} threeReady
  * @property {number} reqAnimId

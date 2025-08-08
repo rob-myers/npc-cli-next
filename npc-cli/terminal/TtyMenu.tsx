@@ -4,7 +4,6 @@ import cx from "classnames";
 import { tryLocalStorageGet, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
 import { localStorageKey, zIndexTabs } from "../service/const";
 import { isTouchDevice } from "../service/dom";
-import { ProcessTag } from "../sh/const";
 import type { Session } from "../sh/session.store";
 import useSession from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
@@ -23,12 +22,7 @@ export default function TtyMenu(props: Props) {
           useSession.api.kill(props.session.key, [0], { CONT: true, GROUP: true });
           break;
         case 'STOP':
-          // on manual STOP interactive process, add ptags.always i.e. now independent of <Tty> pause/resume
-          useSession.api.kill(props.session.key, [0], {
-            STOP: true,
-            GROUP: true,
-            ptags: { [ProcessTag.always]: true },
-          });
+          useSession.api.kill(props.session.key, [0], { STOP: true, GROUP: true });
           break;
       }
     },
@@ -127,8 +121,11 @@ export default function TtyMenu(props: Props) {
         <div className="icon enter" title="or press Enter">
           enter
         </div>
-        <div className="icon delete" title="or press Backspace">
-          del
+        <div className="icon up" title="or press Up">
+          prev
+        </div>
+        <div className="icon down" title="or press Down">
+          next
         </div>
         <div className="icon ctrl-c" title="or press Ctrl+C">
           kill
@@ -136,11 +133,8 @@ export default function TtyMenu(props: Props) {
         <div className="icon clear" title="or press Ctrl+L">
           clear
         </div>
-        <div className="icon up" title="or press Up">
-          prev
-        </div>
-        <div className="icon down" title="or press Down">
-          next
+        <div className="icon delete" title="or press Backspace">
+          del
         </div>
       </div>
     </div>
@@ -156,6 +150,10 @@ interface Props {
 
 const menuCss = css`
   --menu-width: 54px;
+  @media (max-width: 500px) {
+    --menu-width: 90px;
+  }
+
   height: calc(100% - 8px);
 
   position: absolute;
@@ -241,7 +239,7 @@ const menuCss = css`
     text-align: center;
     padding: 12px 0;
     color: #cfc;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
   }
 
   .can-type {

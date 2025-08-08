@@ -24,14 +24,27 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="gaussian-blur-filter-0" bx:preset="gaussian-blur 1 2.2" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2 2.2" edgeMode="none"/>
+    </filter>
+    <filter id="posterize-filter-0" bx:preset="posterize 1 r 3 0.9" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feColorMatrix type="saturate" values="0.9"/>
+      <feComponentTransfer>
+        <feFuncR type="discrete" tableValues="0 0.333 0.667 1"/>
+        <feFuncG type="discrete" tableValues=""/>
+        <feFuncB type="discrete" tableValues=""/>
+      </feComponentTransfer>
+    </filter>
   </defs>
-  <path d="M 219.99999 -0.000003 L 219.99999 399.9999 L 0.000001 399.9999 L 0.000001 -0.000003 L 219.99999 -0.000003 Z" style="stroke: rgb(0, 0, 0); filter: none; fill: rgb(153, 153, 170);">
-    <title>bg</title>
-  </path>
-  <path d="M 210 18 L 210 402.001 L 10 402.001 L 10 18 L 210 18 Z" style="stroke: rgb(0, 0, 0); filter: url(&quot;#filter-1&quot;); stroke-width: 4px; fill: rgb(102, 102, 102);">
-    <title>inner</title>
-  </path>
-  <path d="M 200.000022 30.000002 L 200.000022 400.000006 L 20.000002 400.000006 L 20.000002 30.000002 L 200.000022 30.000002 Z" style="stroke: rgb(0, 0, 0); filter: url(&quot;#filter-3&quot;);">
-    <title>inner</title>
-  </path>
+  <g style="filter: url(&quot;#gaussian-blur-filter-0&quot;) url(&quot;#posterize-filter-0&quot;);">
+    <path d="M 219.99999 -0.000003 L 219.99999 399.9999 L 0.000001 399.9999 L 0.000001 -0.000003 L 219.99999 -0.000003 Z" style="stroke: rgb(0, 0, 0); filter: none; fill: rgb(153, 153, 170);">
+      <title>bg</title>
+    </path>
+    <path d="M 210 18 L 210 402.001 L 10 402.001 L 10 18 L 210 18 Z" style="stroke: rgb(0, 0, 0); filter: url(&quot;#filter-1&quot;); stroke-width: 4px; fill: rgb(102, 102, 102);">
+      <title>inner</title>
+    </path>
+    <path d="M 200.000022 30.000002 L 200.000022 400.000006 L 20.000002 400.000006 L 20.000002 30.000002 L 200.000022 30.000002 Z" style="stroke: rgb(0, 0, 0); filter: url(&quot;#filter-3&quot;);">
+      <title>inner</title>
+    </path>
+  </g>
 </svg>

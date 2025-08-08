@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperProps, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper/types';
 
-import { Scrollbar } from 'swiper/modules';
+import { Scrollbar, Navigation, EffectFade, EffectCoverflow } from 'swiper/modules';
 import { css } from '@emotion/react';
 
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
@@ -12,8 +12,10 @@ import { mobileBreakpoint } from './const';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
+import 'swiper/css/effect-fade';
+import 'swiper/css/effect-coverflow';
 
-export default function Carousel(props: Props) {
+export default function Carousel(props: React.PropsWithChildren<Props>) {
 
   const state = useStateRef(() => ({
     maximized: null as null | { slide: HTMLElement; baseWidth: number; },
@@ -25,17 +27,21 @@ export default function Carousel(props: Props) {
     <Swiper
       css={carouselCss}
       loop={false}
-      modules={[Scrollbar]}
+      allowTouchMove={props.allowTouchMove}
+      modules={[Scrollbar, Navigation, EffectFade, EffectCoverflow]}
+      navigation={props.navigation}
       onSwiper={state.onSwiper}
-      scrollbar={{ draggable: true }}
       slidesPerView={1}
       spaceBetween={50}
+      effect={props.effect}
       style={{
         ['--slider-height' as any]: `${props.height}px`,
         ['--slider-height-mobile' as any]: `${props.heightMobile ?? props.height}px`,
+        background: props.background,
+        border: props.border,
       }}
     >
-      {props.items.map((child, index) =>
+      {React.Children.toArray(props.children).map((child, index) =>
         <SwiperSlide key={index} data-id={index}>
           {child}
         </SwiperSlide>
@@ -44,55 +50,35 @@ export default function Carousel(props: Props) {
   );
 }
 
-interface Props {
+interface Props extends Pick<SwiperProps, 'allowTouchMove' | 'navigation'> {
+  background?: string;
+  border?: string;
   height: number;
   heightMobile?: number;
-  items: React.ReactElement[];
+  effect?: 'fade' | 'slide' | 'coverflow';
 }
 
 
 const carouselCss = css`
   --slider-height: 100%;
   --slider-height-mobile: 100%;
-  --slider-scrollbar-height: 48px;
   
   height: var(--slider-height);
   margin: 48px 0;
-  background-color: #000;
+  --swiper-navigation-color: #88f;
   
   @media (max-width: ${mobileBreakpoint}) {
-    --slider-scrollbar-height: 32px;
+    --swiper-navigation-size: 24px !important;
     height: var(--slider-height-mobile);
     margin: 32px 0;
   }
 
   .swiper-slide {
-    height: calc(100% - var(--slider-scrollbar-height) - 4px);
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
   }
   
-  .swiper-scrollbar {
-    height: var(--slider-scrollbar-height);
-    transform: scaleX(102%) translate(0, 4px);
-    display: flex;
-    align-items: end;
-    border-radius: 0;
-    background-color: #000;
-    
-    @keyframes fadeScrollBarIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    
-    div {
-      height: 50%;
-      border-radius: 0;
-      border: 1px solid white;
-      background-color: #777;
-      animation: fadeIn 1s forwards;
-    }
-  }
 
 `;

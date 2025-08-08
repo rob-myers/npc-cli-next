@@ -8,81 +8,211 @@ export const metadata = {
   tags: ['cli', 'web dev', 'npc behaviour', 'video games'],
 };
 
+import Image from 'next/image';
+
 import Card from "../components/Card";
 import Carousel from '../components/Carousel';
 import Code from '../components/Code';
 import Figure from '../components/Figure';
-import Image from 'next/image';
-import { faGrip, faExpandThin, faChevronRight } from '@/npc-cli/components/Icon';
+import { faGrip, faExpandThin, faChevronRight } from '../npc-cli/components/Icon';
+import { LaptopIcon, MobileIcon, PlayIcon } from '../npc-cli/components/Icons';
+import SetTabsLink from '../npc-cli/components/SetTabsLink';
 import Video from '../components/Video';
 
-import DesktopEmptyWorldWebp from '../public/images/desktop-empty-world__20250612.webp';
-import ManyRobsTestWebp from '../public/images/many-robs-test.webp';
-import IdleViewerSmallWiewportWebp from '../public/images/idle-viewer-small-viewport.webp';
-import IdleViewerLargeWiewportWebp from '../public/images/idle-viewer-large-viewport.webp';
+import ViewerClosedDesktopWebp from '../public/images/viewer-closed-desktop.webp';
+import ViewerOpenDesktopWebp from '../public/images/viewer-open-desktop.webp';
+import ViewerOpenPlayButtonDesktopWebp from '../public/images/viewer-open-play-button-desktop.webp';
 
 # Home
 
 ## Quickstart
 
-Let's spawn, move, and remove an NPC.<SideNote>
+Let's spawn, move and remove an NPC.<SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
 
+<Card background='#eef'>
+  <LaptopIcon/> Desktop users can follow along.
+
+  <MobileIcon/> Mobile users can watch the video then skip to the next section.
+</Card>
+
 <Carousel
-  height={500}
-  heightMobile={400}
-  items={[
-    <Video videoKey='desktopDemo2' label="Desktop demo 2" noBg />,
-    <Video videoKey='mobileDemo' label="Mobile demo" />,
-    <Video videoKey='mobileDemo' label="Mobile demo" />,
-  ]}
-/>
+  height={450}
+  heightMobile={300}
+  background="#000"
+  border='1px solid #aaa'
+>
+  <Video videoKey='quickstartDesktop' label="Quickstart" />
+</Carousel>
 
-The videos above show NPC CLI in a wide viewport and a narrow one (e.g. mobile phone).
-Feel free to step through the code below using the _Viewer_, which is either on the right or at the bottom of this page.
+{/* 🚧 bigger images via smaller desktop */}
 
-<Code>
-```sh title="" caption="Spawn, move and remove" showLineNumbers
-# spawn npc rob at click
-spawn npcKey:rob at:$( click 1 )
-# must be navigable or actable
+<Card background='#eef'>
+  <LaptopIcon/> To follow along, open the _Viewer_ on the right of the screen (drag or toggle).
+  Click the play button <PlayIcon/> and finally ensure the same tabs by clicking <SetTabsLink layoutPresetKey="world-tty-default">here</SetTabsLink>.
 
-# move rob to click
-move npcKey:rob to:$( click 1 )
-# must be on nav mesh
-# must have access to doors
+  <Carousel
+    height={400}
+    heightMobile={250}
+    navigation
+    background='rgba(0, 0, 0, 0)'
+  >
+    <Figure label="Viewer closed" objectPosition='top'>
+      <Image src={ViewerClosedDesktopWebp} alt="Desktop Viewer closed"/>
+    </Figure>
+    <Figure label="Viewer open" objectPosition='top'>
+      <Image src={ViewerOpenDesktopWebp} alt="Desktop Viewer open"/>
+    </Figure>
+    <Figure label="Viewer play button" objectPosition='top'>
+      <Image src={ViewerOpenPlayButtonDesktopWebp} alt="Desktop Viewer play button"/>
+    </Figure>
+  </Carousel>
 
-# respawn with skeleton key
-spawn npcKey:rob at:$( click 1 ) grant:.
+  <MobileIcon/> Mobiles have the _Viewer_ at the bottom of the screen; we'll use it in the next section.
+</Card>
 
-# move via a waypoint
-move npcKey:rob to:$( click 2 )
+The video works through the commands below.
+They're a natural place to start.
 
-# dust to dust
-w npc.remove rob
-```
+<Code title='Spawn, move and remove'>
+  ```sh showLineNumbers
+  spawn npc:rob at:$( click 1 )
+
+  move npc:rob to:$( click 1 )
+
+  # respawn with skeleton key
+  spawn npc:rob at:$( click 1 ) grant:.
+
+  # waypoint
+  move npc:rob to:$( click 2 )
+
+  make npc:rob do:$( click 1 )
+
+  # dust to dust
+  remove rob
+  ```
 </Code>
 
-Having seen the system in action,
-we now list our underlying motivations.
+Then we've seen a Non-Player Character (NPC) driven by a Command Line Interface (CLI),
+which is why our site is called **NPC CLI**.
 
-- _Create a video game whose NPCs behave just like human-controlled characters._
-  This is related to Turing's Imitation Game:
-  The Player interrogates, the questions are video game actions. Can the NPCs fool the Player?
+Duh!
 
-- _As above but with a human Game Master._ Allowing another human to control the NPCs makes the problem more tractable. It also motivates realtime control systems for NPCs.
+### Running a profile
 
-- _Provide an in-depth explanation of [Recast-Detour](https://github.com/recastnavigation/recastnavigation)._ Our NPCs are controlled by Recast-Detour running as WASM in a web worker. We'll analyse the underlying C++ driving our fabrications.
+{/* We want each NPC to be indistinguishable from a human playing an in-game character.
+Importantly, we also assume a single human Game Master.<SideNote>
+A Game Master (aka Dungeon Master) is another human who controls the game world.</SideNote>
+Then we're asking, _can one human act indistinguishably from many humans playing individual parts_?
 
-- _Provide a generic scripting system for [three.js](https://www.npmjs.com/package/three)._ Our xterm.js terminals interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript. In production one run commands. In development shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
+The human Game Master pulls the strings;
+the human Player is enveloped in the fabrication.
+This will require at least 2 networked users e.g. via Peer-to-Peer tech like [WebRTC](https://webrtc.org/).
+In the meantime, */}
+
+{/* Terminals traditionally have a profile (initial script).
+The _default profile_ provides various shell functions.
+Let's use a specific profile which (a) spawns an NPC, (b) runs a background process "click to move".
+Follow along on Desktop or Mobile. */}
+
+There are two basic roles we play whilst developing NPCs: the _Game Master_ controls the game, the _Player_ experiences the game.
+
+Desktop users might alternate between these roles, designing behaviours while trying to understand the Player's perspective.
+Mobile users should probably assume the Player role.
+This means they only need to open a terminal whose _profile_ (initial script) sets everything up.
+
+<Card background='#eef'>
+  To use the _quickstart_ profile in the Viewer,
+  click <SetTabsLink layoutPresetKey="world-tty-quickstart">here</SetTabsLink>.
+</Card>
+
+<Carousel
+  height={450}
+  heightMobile={300}
+  background="#000"
+  navigation
+>
+  <Video videoKey='mobileDemo' label={<> <MobileIcon/> Quickstart profile</>} noBg />
+  <Video videoKey='desktopDemo2' label={<> <LaptopIcon/> Quickstart profile</>} noBg />
+</Carousel>
+
+{/* 🚧 move links to branch main */}
+
+<Code
+  title={<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/quickstart.profile.sh">quickstart.profile.sh</a>}
+>
+  ```sh showLineNumbers
+  source /etc/{util,game}.sh
+  source /etc/{util,game}.js.sh
+  source /etc/demo_1.js.sh
+
+  awaitWorld
+
+  spawn npc:rob at:'{x:4.5,y:7.5}' \
+    skin:soldier-0, grant:.
+
+  ptags always; click meta.floor |
+    demoClickToMove npc:rob &
+  ```
+</Code>
+
+<Code
+  title={<>demoClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo_1.js">demo_1.js</a></>}
+>
+  ```js showLineNumbers
+  /**
+   * @param {NPC.ClickOutput} input
+   * @param {NPC.RunArg} ctxt
+   * @param {{ npcKey: string }} [opts]
+   */
+  export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
+    const npc = w.npc.getNpc(opts.npcKey);
+    npc.s.run = input.keys?.includes("shift") ?? false;
+    // catch so can override move, also ignores points too far from nav
+    npc.api.move({ to: input, close: 0.5 }).catch(() => {});
+  }
+  ```
+</Code>
+
+
+## Backdrop
+
+Our 3D worlds are implementations of Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html)
+i.e.
+architectural drawings of starships blocks, connectable along their edges. 
+
+We use Eric Smith's [PNGs](https://ericbsmith.no-ip.org/geomorphs/) to recursively define [SVG symbols](https://github.com/rob-myers/npc-cli-next/tree/main/media/symbol).
+Each hull symbol <SideNote>For example [102--hull.svg](/symlink/102--hull.svg)</SideNote> induces a 3D geomorph.
+Our [maps](https://github.com/rob-myers/npc-cli-next/tree/main/media/map) amount to possibly edge-sharing rectangles, where each rectangle corresponds to a hull symbol.
+
+For characters we use a basic Blender model, texture-mapped with simplifications of [Minecraft skins](https://github.com/rob-myers/npc-cli-next/tree/main/media/npc).
+
+
+## Motivation
+
+Our underlying motivations are:
+
+- __NPCs indistinguishable from human-controlled characters.__
+  A human Game Master makes this tractable.
+  Can one human act indistinguishably from many humans playing individual parts?
+  <SideNote>It also motivates realtime control systems.</SideNote>
+
+- __Understand [Recast-Detour](https://github.com/recastnavigation/recastnavigation).__
+  Our NPCs are driven by Recast-Detour.
+  We'll analyse this important C++ library.
+
+- __Generic scripting for [three.js](https://www.npmjs.com/package/three).__
+  We interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript.
+  In production one can run commands.
+  In development, shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
 
 
 ## What's next
 
 We provide two blogs.
-Our _main_ blog is about creating, combining and controlling NPC behaviour in realtime.
-Our _dev_ blog is concerned with the underlying software (internal and external).
-They're separated for clarity.
+Our main blog is about creating, combining and controlling NPC behaviour in realtime.
+Our dev blog is concerned with the underlying software (internal and external).
+They're separated in line with our underlying motivations.
 
 ### `main`
 

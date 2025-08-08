@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 
 /**
  * Manually constructed using Boxy SVG and https://www.svgminify.com/

@@ -1,6 +1,5 @@
 import React from "react";
 
-import { TABS_API_KEY } from "../service/const";
 import type { TabState, State as TabsApi } from "./Tabs";
 import { TabDef, getComponent, Terminal, BaseTabProps } from "./tab-factory";
 import useTabs from "./tabs.store";
@@ -51,9 +50,10 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
     return (
       <Terminal
         disabled={tabState.disabled}
+        // 🚧 literal "WORLD_KEY" and "TABS_API_KEY" should be constants
         env={{ ...def.env, CACHE_SHORTCUTS: {
           w: "WORLD_KEY",
-          tabs: TABS_API_KEY,
+          tabs: "TABS_API_KEY",
         }}}
         onKey={state.onTerminalKey}
         profileKey={def.profileKey}

@@ -468,22 +468,22 @@
     </g>
     <g transform="matrix(1, 0, 0, 1, 32, 0)" style="filter: url(&quot;#sepia-filter-0&quot;);">
       <title>base_head-overlay</title>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none;" x="512" y="416">
+      <rect width="128" height="128" style="fill: none;" x="512" y="416">
         <title>front</title>
       </rect>
-      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="416">
+      <rect width="128" height="128" style="fill: none;" x="640" y="416">
         <title>back</title>
       </rect>
-      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="512">
+      <rect width="128" height="128" style="fill: none;" y="544" x="512">
         <title>left</title>
       </rect>
-      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="544">
+      <rect width="128" height="128" style="fill: none;" x="640" y="544">
         <title>right</title>
       </rect>
-      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="672">
+      <rect width="128" height="128" style="fill: none;" x="512" y="672">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
+      <rect width="128" height="128" style="fill: none;" x="640" y="672">
         <title>bottom</title>
       </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAN0lEQVQYGWNkAAJXV9f/P3/+ZGBnZ2dApg8dOsQIkh/6AO4NIyOj/9+/fwf7iJOTk+HcuXNgOQDksRQDRyC4RQAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated;">
@@ -497,10 +497,10 @@
       </image>
       <g transform="matrix(1, 0, 0, 1, 350.829986572266, -153.599975585937)" style="visibility: hidden;">
         <title>_eyes</title>
-        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
+        <circle style="fill: rgb(255, 255, 255);" cx="193.17" cy="617.6" r="12">
           <title>_left</title>
         </circle>
-        <circle style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="12">
+        <circle style="fill: rgb(255, 255, 255);" cx="257.17" cy="617.6" r="12">
           <title>_right</title>
         </circle>
       </g>

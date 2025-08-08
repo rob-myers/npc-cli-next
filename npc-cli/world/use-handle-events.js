@@ -18,13 +18,14 @@ import useStateRef from "../hooks/use-state-ref";
 export default function useHandleEvents(w) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    doorToAccess: {},
     doorToNearbyNpcs: {},
     doorToOffMesh: {},
     externalNpcs: new Set(),
     npcToAccess: {},
     npcToDoors: {},
     npcToRoom: new Map(),
-    pressMenuFilters: [],
+    pressMenuPrevent: {},
     roomToNpcs: [],
 
     canCloseDoor(door) {
@@ -228,12 +229,15 @@ export default function useHandleEvents(w) {
           if (lastDown?.meta === undefined) {
             return; // should be unreachable
           }
-          if (state.pressMenuFilters.some(filter => filter(lastDown.meta))) {
-            return; // prevent ContextMenu
+          for (const preventer of Object.values(state.pressMenuPrevent)) {
+            if (preventer(lastDown.meta)) {
+              return; // prevent ContextMenu
+            }
           }
-          if (w.view.isPointerEventDrag(e) === false) {
-            state.showDefaultContextMenu();
+          if (w.view.isPointerEventDrag(e) === true) {
+            return;
           }
+          state.showDefaultContextMenu();
           break;
         }
         case "nav-updated": {
@@ -423,6 +427,9 @@ export default function useHandleEvents(w) {
           if (e.speech !== '') {
             w.menu.say(e.npcKey, e.speech);
           }
+          if (w.disabled === true) {
+            w.npc.tickOnceDebug();
+          }
           break;
         case "started-moving": {
           /**
@@ -453,22 +460,20 @@ export default function useHandleEvents(w) {
       return npc !== undefined && w.view.dst.look === npc.position;
     },
     npcCanAccess(npcKey, gdKey) {
-      for (const regexDef of state.npcToAccess[npcKey] ?? []) {
-        if ((regexCache[regexDef] ??= new RegExp(regexDef)).test(gdKey)) {
-          return true;
+      if (state.doorToAccess[gdKey]?.size) {// check special access
+        for (const regexDef of state.doorToAccess[gdKey]) {
+          if (state.npcToAccess[npcKey]?.has(regexDef)) {
+            return true;
+          }
+        }
+      } else {// check standard access
+        for (const regexDef of state.npcToAccess[npcKey] ?? []) {
+          if ((regexCache[regexDef] ??= new RegExp(regexDef)).test(gdKey)) {
+            return true;
+          }
         }
       }
       return false;
-    },
-    npcNearDoor(npcKey, gdKey) {// 🚧 unused
-      // return state.doorToNpc[gdKey]?.nearby.has(npcKey);
-      const { src, dst } = w.door.byKey[gdKey];
-      return geom.lineSegIntersectsCircle(
-        src,
-        dst,
-        w.n[npcKey].api.getPoint(),
-        1.5, // 🚧 hard-coded
-      );
     },
     onBlockedDoorway(npc, otherNpcKey) {
       npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey, rest: npc.api.getRemainingPath() });
@@ -515,9 +520,15 @@ export default function useHandleEvents(w) {
         npc.api.getLookAngle(adjusted.dst),
       );
 
-      if (Math.abs(deltaAng) > Math.PI/2) {
-        // look towards door entry, or door exit if too close
-        const towards = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src) > 0.1 ? adjusted.src : adjusted.dst;
+      const doorEntryDist = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src);
+
+      if (
+        Math.abs(deltaAng) > Math.PI/2
+        && doorEntryDist <= 0.5 // avoid early pause e.g. 180deg round corner
+      ) {
+        // look towards door exit
+        // const towards = adjusted.dst;
+        const towards = doorEntryDist > 0.1 ? adjusted.src : adjusted.dst;
         npc.s.turnBeforeMove = { ms: 400, towards };
         // 🔔 setting as Infinity freezes offMeshConnection
         const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (npc.agentAnim);
@@ -526,7 +537,7 @@ export default function useHandleEvents(w) {
       }
 
       /** avoid flicker when next corner after offMeshConnection is too close */      
-      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.05;
+      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.2;
 
       // register adjusted traversal
       npc.s.offMesh = {
@@ -555,7 +566,7 @@ export default function useHandleEvents(w) {
         adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
       }
     },
-    onEnterOffMeshConnectionMain(e, npc) {
+    onEnterOffMeshConnectionMain(e, npc) {// maybe cancel
       const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
@@ -571,6 +582,8 @@ export default function useHandleEvents(w) {
 
         if (// traversal same direction, other far enough ahead
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
+          // - prevent moving thru each other diagonally
+          // - prevent jerking other npc once leave connection
           && npc.api.getOtherDoorwayLead(other) >= 0.4
         ) {
           continue;
@@ -579,7 +592,7 @@ export default function useHandleEvents(w) {
         state.onBlockedDoorway(npc, tr.npcKey); // STOP
 
         // 🔔 Wrap to fix bizarre TurboPack error i.e.
-        // helper not defined in final statement
+        // helper not defined after loop
         if (true) {
           return;
         }
@@ -619,6 +632,9 @@ export default function useHandleEvents(w) {
       }
     },
     onExitOffMeshConnection(e, npc) {
+      // means target too close to offMesh.dst
+      const nextUnitNull = npc.s.offMesh?.nextUnit === null;
+
       state.clearOffMesh(npc);
       
       if (npc.agent === null || npc.s.target === null) {
@@ -627,12 +643,9 @@ export default function useHandleEvents(w) {
         return; 
       }
 
-      if (e.offMesh.dstRoomMeta.small !== true) {
-        // resume speed
-        const maxSpeed = npc.api.getMaxSpeed();
-        if (npc.agent.maxSpeed !== maxSpeed) {
-          npc.agent.raw.params.set_maxSpeed(maxSpeed);
-        }
+      if (nextUnitNull === true) {// 🔔 fix fast turn just after offMesh
+        npc.api.stopMoving({ type: 'stop-reason', key: 'arrived' });
+      } else if (e.offMesh.dstRoomMeta.small !== true) {
         if (npc.s.run === true) {
           npc.api.startAnimation('Run', true);
         }
@@ -647,7 +660,7 @@ export default function useHandleEvents(w) {
     },
     overrideOffMeshConnectionAngle(npc, offMesh, door) {
       const npcPoint = Vect.from(npc.api.getPoint());
-      const nextCorner = npc.api.getCornerAfterOffMesh();
+      const nextCorner = npc.api.getCornerAfterOffMesh(offMesh);
 
       // Entrances are aligned to offMeshConnections
       // - entrance segment (enSrc, enDst)
@@ -749,9 +762,9 @@ export default function useHandleEvents(w) {
     revokeAccess(regexDef, npcKey) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
-    async say(npcKey, ...parts) {// ensure/change/delete
+    say({ npcKey, words}) {// ensure/change/delete
       const cm = w.bubble.get(npcKey) || w.bubble.create(npcKey);
-      const speechWithLinks = parts.join(' ').trim();
+      const speechWithLinks = words ?? '';
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
 
       /** Otherwise, stop saying */
@@ -759,10 +772,8 @@ export default function useHandleEvents(w) {
       
       const npc = w.n[npcKey];
       npc.api.showLabel(!startSaying);
-      // 🔔 ensure label change whilst paused
-      w.disabled === true && await w.npc.tickOnceDebug();
 
-      if (startSaying) {
+      if (startSaying === true) {
         cm.speech = speechSansLinks;
         cm.update();
       } else {
@@ -859,7 +870,8 @@ export default function useHandleEvents(w) {
   w.e = state; // e for 'events state'
 
   React.useEffect(() => {
-    const sub = w.events.subscribe(state.handleEvents);
+    // 🔔 internal because it can synchronously invoke `w.events.next`
+    const sub = w.events.subscribe({ next: state.handleEvents }, { internal: true });
     return () => {
       sub.unsubscribe();
     };
@@ -868,6 +880,9 @@ export default function useHandleEvents(w) {
 
 /**
  * @typedef State
+ * @property {{ [gdKey: Geomorph.GmDoorKey]: Set<string> }} doorToAccess
+ * - Relates `Geomorph.GmDoorKey` to access keys (`regexDef`) an npc must have.
+ * - Use this to refine `npcToAccess` e.g. lock a toilet even when `npcToAccess[npcKey] = ['.']`.
  * @property {{ [gdKey: Geomorph.GmDoorKey]: Set<string> }} doorToNearbyNpcs
  * Relates `Geomorph.GmDoorKey` to nearby/inside `npcKey`s
  * @property {{ [gdKey: Geomorph.GmDoorKey]: NPC.OffMeshState[] }} doorToOffMesh
@@ -880,7 +895,7 @@ export default function useHandleEvents(w) {
  * Relate `npcKey` to (a) doorway we're inside, (b) nearby `Geomorph.GmDoorKey`s
  * @property {Map<string, Geomorph.GmRoomId>} npcToRoom npcKey to gmRoomId
  * Relates `npcKey` to current room, unless in a doorway (offMeshConnection)
- * @property {((lastDownMeta: Meta) => boolean)[]} pressMenuFilters
+ * @property {{ [key: string]: (lastDownMeta: Meta) => boolean}} pressMenuPrevent
  * Prevent ContextMenu on long press if any of these return `true`.
  * @property {{[roomId: number]: Set<string>}[]} roomToNpcs
  * The "inverse" of npcToRoom i.e. `roomToNpc[gmId][roomId]` is a set of `npcKey`s
@@ -902,7 +917,6 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh-main' }>, npc: NPC.NPC) => void} onEnterOffMeshConnectionMain
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
- * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcNearDoor
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.
@@ -910,7 +924,7 @@ export default function useHandleEvents(w) {
  * @property {() => void} showDefaultContextMenu
  * Default context menu, unless clicked on an npc
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
- * @property {(npcKey: string, ...parts: string[]) => void} say
+ * @property {(opts: { npcKey: string, words?: string }) => void} say
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
  * @property {(offMesh1: NPC.OffMeshState, offMesh2: NPC.OffMeshState) => boolean} testOffMeshDisjoint
  * Are two offMeshConnection traversals disjoint?
@@ -926,6 +940,5 @@ export default function useHandleEvents(w) {
 /** e.g. `'^g0'` -> `/^g0/` */
 const regexCache = /** @type {Record<string, RegExp>} */ ({});
 const tmpVect1 = new Vect();
-const tmpVect2 = new Vect();
 const tmpRect1 = new Rect();
 const tmpRect2 = new Rect();

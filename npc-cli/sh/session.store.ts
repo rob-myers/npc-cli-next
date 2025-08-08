@@ -51,7 +51,6 @@ const useStore = create<State>()((set, get): State => ({
         localVar: {},
         inheritVar: {},
         ptags,
-        ptagsDelta: {},
       };
     },
 
@@ -167,22 +166,22 @@ const useStore = create<State>()((set, get): State => ({
       const session = api.getSession(sessionKey);
 
       if (opts.byPtags === true) {
-        const interactive = session.ttyShell.isInteractive()
+        // const interactive = session.ttyShell.isInteractive();
 
         if (opts.STOP === true) {
           const processes = Object.values(session.process).filter(p => 
-            (p.pgid === 0 ? interactive === false :  p.status === ProcessStatus.Running)
-              && !(ProcessTag.always in p.ptags)
-          );
-          return api.killProcesses(processes, opts);
+            p.status === ProcessStatus.Running && !(ProcessTag.always in p.ptags)
+          ).reverse();
+          api.killProcesses(processes, opts);
+          return processes.map(p => p.key);
         }
 
-        if (opts.CONT === true) {
-          const processes = Object.values(session.process).filter(p => 
-            (p.pgid === 0 ? interactive === false : p.status === ProcessStatus.Suspended)
-              && !(ProcessTag.always in p.ptags)
+        if (opts.CONT === true) {// 🔔 continue specific pids (ones we previously paused)
+          const processes = pids.map(pid => session.process[pid]).filter(
+            p => p?.status === ProcessStatus.Suspended
           );
-          return api.killProcesses(processes, opts);
+          api.killProcesses(processes, opts);
+          return processes.map(p => p.key);
         }
       }
 
@@ -200,6 +199,7 @@ const useStore = create<State>()((set, get): State => ({
   
         api.killProcesses(processes, opts);
       }
+      return pids;
     },
 
     killProcesses(processes, opts) {
@@ -461,8 +461,11 @@ export type State = {
     getVar: <T = any>(meta: BaseMeta, varName: string) => T;
     getVarDeep: (meta: BaseMeta, varPath: string) => any | undefined;
     getSession: (sessionKey: string) => Session;
-    /** Kill, suspend, resume or decorate with ptags */
-    kill(sessionKey: string, pids: number[], opts: KillOpts): void;
+    /**
+     * Kill, suspend, resume or decorate with process tags (ptags).
+     * We returns the pids we actually acted on.
+     */
+    kill(sessionKey: string, pids: number[], opts: KillOpts): number[];
     /** Kill, suspend, resume or decorate with ptags */
     killProcesses(processes: ProcessMeta[], opts: KillOpts): void;
     killSessionLeader(sessionKey: string): void;
@@ -596,15 +599,7 @@ export interface ProcessMeta {
   localVar: Record<string, any>;
   /** Inherited local variables. */
   inheritVar: Record<string, any>;
-  /** Can specify via e.g. `ptags="always x=foo y=bar" echo baz` */
   ptags: Ptags;
-  /**
-   * Process tags for next spawn.
-   * - Defaults to `ptags`.
-   * - Can be altered via e.g. `ptags+='foo bar'`.
-   * - Resets to `{}` after spawn.
-   */
-  ptagsDelta: Ptags;
 }
 
 interface KillOpts {

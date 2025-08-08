@@ -1,18 +1,29 @@
 import Link from "next/link";
 import React from "react";
 import { css } from "@emotion/react";
-import cx from "classnames";
+import { throttle } from "throttle-debounce";
 import { shallow } from "zustand/shallow";
+import cx from "classnames";
 
 import { afterBreakpoint, breakpoint, zIndexSite, sideNoteRootDataAttribute } from "./const";
 import useSite from "./site.store";
-import useRefreshScrollRestoration from "./use-refresh-scroll-restore";
+import useScrollRestoration from "./use-scroll-restore";
 
 export default function Main(props: React.PropsWithChildren) {
   const site = useSite(({ navOpen, draggingView }) => ({ navOpen, draggingView }), shallow);
   const rootRef = React.useRef<HTMLDivElement>(null);
 
-  useRefreshScrollRestoration(rootRef.current);
+  useScrollRestoration(rootRef.current);
+
+  React.useEffect(() => {
+    const scrollEl = rootRef.current!
+    const headerLink = scrollEl.querySelector('header > a') as HTMLAnchorElement;
+    const fadeTitleOnScroll = throttle(300, () => {
+      headerLink.style.opacity = String(Math.max(0.2, 1 - 4 * (scrollEl.scrollTop / scrollEl.scrollHeight)));
+    });
+    scrollEl.addEventListener('scroll', fadeTitleOnScroll);
+    return () => scrollEl.removeEventListener('scroll', fadeTitleOnScroll);
+  }, []);
 
   return (
     <div
@@ -82,30 +93,41 @@ const mainHeaderCss = css`
   justify-content: right;
   align-items: center;
 
-  /* 🚧 dark mode issue */
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.25);
   color: #444;
 
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
 
+  pointer-events: none;
+  
   a {
-    color: black;
+    transition: opacity 300ms;
+    color: #444;
     text-decoration: none;
+    font-weight: bold;
+    text-shadow: 0 1px #fff, -0 -1px #fff, 1px 0 #fff, -1px 0 #fff;
   }
-
+  
   @media (min-width: ${afterBreakpoint}) {
     min-width: var(--main-min-width-desktop);
-
+  
     margin-top: 0rem;
     margin-right: 1rem;
     margin-left: 1rem;
-
+    
     padding-top: 1rem;
     padding-right: 2rem;
     padding-bottom: 1rem;
     padding-left: 2rem;
+
+    pointer-events: all;
+    background-color: #fff;
+    a {
+      pointer-events: all;
+      opacity: 1 !important;
+    }
   }
 `;
 

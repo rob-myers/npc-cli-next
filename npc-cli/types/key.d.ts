@@ -36,8 +36,7 @@ namespace Key {
 
   type LayoutPreset = (
     | 'empty-layout'
-    | 'world-tty-default_profile'
-    | 'world-tty-profile_1'
+    | `world-tty-${Key.Profile}`
   );
 
   type Map = import('../world/World.jsx').MapKey;
@@ -62,7 +61,7 @@ namespace Key {
   );
 
   
-  type Profile = import('../sh/src/profiles').ProfileKey
+  type Profile = keyof typeof import('../sh/profiles');
 
   type SkinPart = keyof import('../service/helper').Helper['fromSkinPart'];
 

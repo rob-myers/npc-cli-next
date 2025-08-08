@@ -368,24 +368,26 @@ export function mapValues(input, transform) {
 /**
  * Parse args as a single JavaScript object.
  * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
- * - 'foo:42 bar' -> { "foo": 42, 0: "bar" }
+ * - 'foo:42 bar' -> { "foo": 42, "bar": true }
  * - 🔔 assume keys do not contain double-quote character
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
  * @param {string[]} args
- * @param {{ [key: string]: 'array' }} [opts]
+ * @param {{ [aliasKey: string]: string; }} [alias]
+ * Map alias keys to their true keys.
+ * @param {{ array?: { [key: string]: true } }} [opts]
  * @returns {T}
  */
-export function jsArg(args, opts = {}) {
-  let nakedSeen = 0;
+export function jsArg(args, alias, opts) {
   return /** @type {T} */ (args.reduce((agg, arg) => {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
-      agg[nakedSeen++] = arg;
+      agg[arg] = true;
     } else {
-      const key = arg.slice(0, colonIndex);
+      let key = arg.slice(0, colonIndex);
+      key = alias?.[key] ?? key;
       agg[key] = parseJsArg(arg.slice(colonIndex + 1));
-      if (opts[key] === 'array' && Array.isArray(agg[key]) === false) {
+      if (opts?.array?.[key] === true && Array.isArray(agg[key]) === false) {
         // try split by spaces instead
         agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
       }
@@ -403,7 +405,6 @@ export function jsArg(args, opts = {}) {
 export function parseJsArg(input) {
   try {
     if (input === "") return input;
-    // eslint-disable-next-line no-new-func
     return Function(`return ${input}`)();
   } catch (e) {
     return input;
@@ -550,7 +551,7 @@ export function tagsToMeta(tags, baseMeta = {}, names, values) {
     if (eqIndex > -1) {
       meta[tag.slice(0, eqIndex)] = parseJsWithCt(tag.slice(eqIndex + 1), names, values);
     } else {
-      meta[tag] = true; // Omit tags `foo=bar`
+      meta[tag] = true;
     }
     return meta;
   }, baseMeta);

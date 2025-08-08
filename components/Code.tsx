@@ -4,7 +4,6 @@ import React from 'react';
 import { css } from '@emotion/react';
 
 import { sideNoteRootDataAttribute } from './const';
-import { pause } from '@/npc-cli/service/generic';
 import useStateRef from '@/npc-cli/hooks/use-state-ref';
 import useUpdate from '@/npc-cli/hooks/use-update';
 import { FontAwesomeIcon, faCopy } from '../npc-cli/components/Icon';
@@ -15,17 +14,18 @@ import { documentHasSelection } from '@/npc-cli/service/dom';
  * Usage: directly provide mdx code block as child,
  * in order for rehype to parse it.
  */
-export default function Code({ children }: React.PropsWithChildren) {
-  
+export default function Code(props: React.PropsWithChildren<Props>) {
+
   const state = useStateRef(() => ({
     container: null as null | HTMLDivElement,
     copyIndicatorText: copyIndication.preCopyAll,
     /** Text was selected on last pointer down */
     hadSelection: false,
+    hideTimeoutId: 0,
     lines: [] as string[],
     openCopyText: undefined as undefined | boolean,
 
-    async copyLines() {
+    async copyAllLines() {
       try {
         await navigator.clipboard.writeText(state.lines.join('\n'));
         state.copyIndicatorText = copyIndication.success;
@@ -35,23 +35,25 @@ export default function Code({ children }: React.PropsWithChildren) {
       }
       update();
     },
-    async copySingleLine(line: string) {
+    async copySomeLines(lines: string[]) {
       try {
-        await navigator.clipboard.writeText(line);
-        await state.indicateLineCopied();
+        await navigator.clipboard.writeText(lines.join('\n'));
+        await state.indicateLineCopied(lines.length);
       } catch (e) {
         console.error(e);
         state.copyIndicatorText = copyIndication.failure;
-        update(); 
+        update();
       }
     },
-    async indicateLineCopied() {
+    async indicateLineCopied(numLines: number) {
       state.openCopyText = true;
-      state.copyIndicatorText = copyIndication.postCopyLine;
+      state.copyIndicatorText = numLines === 1 ? copyIndication.postCopyLine : copyIndication.postCopyLines;
       update();
-      await pause(2000);
-      state.openCopyText = undefined;
-      update();
+      window.clearTimeout(state.hideTimeoutId);
+      state.hideTimeoutId = window.setTimeout(() => {
+        state.openCopyText = undefined;
+        update();
+      }, 2000);
     },
     async onClick(e: React.PointerEvent<HTMLDivElement> & { target: HTMLElement }) {
       const lineEl = e.target.closest('[data-line]');
@@ -60,11 +62,23 @@ export default function Code({ children }: React.PropsWithChildren) {
         return;
       }
 
-      const index = Array.from(lineEl.parentElement?.children ?? []).indexOf(lineEl);
-      const line = state.lines[index];
-      if (line.trim().length > 0) {
-        await state.copySingleLine(line);
+      const lineEls = Array.from(lineEl.parentElement!.children);
+      const index = lineEls.indexOf(lineEl);
+
+      if (state.lines[index].trim().length === 0) {
+        return;
       }
+
+      const lines = [] as string[];
+      for (let i = index; i < lineEls.length; i++) {
+        const line = state.lines[i];
+        lines.push(line);
+        if (!(line.at(-1) === '\\' || line.at(-1) === '|')) {
+          break;
+        }
+      }
+
+      await state.copySomeLines(lines);
     },
     async onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
       state.hadSelection = documentHasSelection();
@@ -89,36 +103,73 @@ export default function Code({ children }: React.PropsWithChildren) {
       onClick={state.onClick}
       onPointerDown={state.onPointerDown}
       {...{ [sideNoteRootDataAttribute]: true }}
+      // className="not-prose"
     >
-      <div
-        className='copy-all'
-        onClick={state.copyLines}
-      >
-      <SideNote
-        bubbleClassName="copy-all-bubble"
-        className="copy-all-side-note"
-        icon={<FontAwesomeIcon icon={faCopy} />}
-        onClose={state.resetCopyText}
-        open={state.openCopyText}
-        width={120}
-      >
-        {state.copyIndicatorText}
-      </SideNote>
-      </div>
+      <figcaption>
+        <div
+          className='copy-all'
+          onClick={state.copyAllLines}
+        >
+          <SideNote
+            bubbleClassName="copy-all-bubble"
+            className="copy-all-side-note"
+            icon={<FontAwesomeIcon icon={faCopy} />}
+            onClose={state.resetCopyText}
+            open={state.openCopyText}
+            width={120}
+          >
+            {state.copyIndicatorText}
+          </SideNote>
+        </div>
+        {props.title}
+      </figcaption>
 
-      {children}
+      {props.children}
+
     </div>
   );
 }
 
+interface Props {
+  title?: string;
+}
+
 const codeContainerCss = css`
-  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  margin: 32px 0;
   
-  pre {// github-light-default
+  figcaption {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: #eee;
+    color: #000;
+    height: 50px;
     border: 1px solid #7775;
+    border-bottom: none;
+  }
+  figure {
+    margin-top: 0;
+    margin-bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #7775;
+    border-top: none;
+  }
+  pre {
+    padding-top: 1rem;
+    //padding-bottom: 0;
+    flex: 1;
+    display: flex;
   }
 
-  > .copy-all {
+  figcaption .copy-all {
     position: absolute;
     top: 0;
     right: 0;
@@ -137,9 +188,9 @@ const codeContainerCss = css`
       justify-content: center;
       align-items: center;
 
-      border: 1px solid #7775;
       border-radius: 0;
-      background-color: white;
+      border: none;
+      background-color: unset;
       color: black;
     }
 
@@ -208,5 +259,6 @@ const copyIndication = {
   failure: 'Copy failed.',
   preCopyAll: 'Copy all?',
   postCopyLine: 'Copied line',
+  postCopyLines: 'Copied lines',
   success: 'Copied!',
 };

@@ -118,6 +118,7 @@ export default function PsList() {
           update();
           break;
         case 'started': {
+          // 🔔 currently only session leader gets here (fired too early otherwise)
           process.status = ProcessStatus.Running;
           const session = useSession.api.getSession(state.sessionKey);
           process.src = session.process[msg.pid]?.src ?? process.src;
@@ -187,7 +188,7 @@ export default function PsList() {
         )}
       </div>
       
-      {sessionsExist && (
+      {sessionsExist === true && (
         <div className="process-leaders">
           
           {state.ordered.map(p =>

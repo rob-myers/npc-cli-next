@@ -4,11 +4,13 @@ import { css } from "@emotion/react";
 export default function Spinner(props: Props) {
   return (
     <span
+      className={props.className}
       css={rootCss}
       style={{
         width: props.size,
         height: props.size,
         borderWidth: props.size ? props.size / 12 : undefined,
+        borderColor: props.color ? `${props.color} ${props.color} transparent ${props.color}` : undefined,
       }}
     />
   );
@@ -35,6 +37,8 @@ const rootCss = css`
 `;
 
 interface Props {
+  className?: string;
+  color?: string;
   size?: number;
 }
 

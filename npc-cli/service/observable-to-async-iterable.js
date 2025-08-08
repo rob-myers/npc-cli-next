@@ -5,7 +5,7 @@
 
 /**
  * @template T
- * @param {import('rxjs').Observable<T>} observable
+ * @param {import('@/npc-cli/service/broadcaster').Broadcaster<T>} observable
  * @returns {AsyncIterableIterator<T>}
  */
 export function observableToAsyncIterable(observable) {
@@ -57,11 +57,9 @@ export function observableToAsyncIterable(observable) {
     );
 
   const subscription = observable.subscribe({
-    /** @param {any} value */
     next(value) {
       pushValue(value);
     },
-    /** @param {Error} err */
     error(err) {
       pushError(err);
     },

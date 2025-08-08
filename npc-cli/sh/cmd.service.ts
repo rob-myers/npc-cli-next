@@ -2,9 +2,9 @@ import cliColumns from "cli-columns";
 import { uid } from "uid";
 
 import { ansi, EOF } from "./const";
-import { deepGet, keysDeep, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn } from "../service/generic";
+import { deepGet, keysDeep, generateSelector, testNever, truncateOneLine, jsStringify, safeJsStringify, safeJsonCompact, jsArg, removeLast, entries, warn, tagsToMeta } from "../service/generic";
 import { parseJsArg, parseJsonArg } from "../service/generic";
-import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview } from "./util";
+import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview, applyPtagUpdates } from "./util";
 import type * as Sh from "./parse";
 import { type ReadResult, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk, type Device } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
@@ -16,6 +16,10 @@ import { observableToAsyncIterable } from "../service/observable-to-async-iterab
 
 /** Shell builtins */
 const commandKeys = {
+  /** Alias for `array` */
+  '[]': true,
+  /** Array of interpreted args */
+  array: true,
   /** Object.assign of parsed JS or variable-values */
   assign: true,
   /** Change current key prefix */
@@ -47,8 +51,12 @@ const commandKeys = {
   local: true,
   /** List variables */
   ls: true,
+  /** Speech synthesis */
+  narrate: true,
   /** List running processes */
   ps: true,
+  /** List, add, remove session ptags for subsequent spawned processes */
+  ptags: true,
   /** Print current key prefix */
   pwd: true,
   /** Exit from a function */
@@ -57,8 +65,6 @@ const commandKeys = {
   rm: true,
   /** Run a javascript generator */
   run: true,
-  /** Speech synthesis */
-  speak: true,
   /** Echo session key */
   session: true,
   /** Set something */
@@ -87,6 +93,10 @@ class cmdServiceClass {
   async *runCmd(node: Sh.CallExpr | Sh.DeclClause, command: CommandName, args: string[]) {
     const { meta } = node;
     switch (command) {
+      case "[]":
+      case "array":
+        yield args.map(parseJsArg);
+        break;
       case "assign": {
         const values = args.map(arg => {
           const parsed = parseJsArg(arg);
@@ -239,7 +249,7 @@ class cmdServiceClass {
         break;
       }
       case "get": {
-        yield* this.get(node, args);
+        yield* this.get(node.meta, args);
         break;
       }
       case "help": {
@@ -285,7 +295,6 @@ class cmdServiceClass {
 
         /**
          * Actually kill (SIGINT) if we're not stopping or resuming.
-         * We don't support setting ptags from the command line.
          */
         const SIGINT = opts.STOP === false && opts.CONT === false;
 
@@ -418,6 +427,16 @@ class cmdServiceClass {
 
         break;
       }
+      case "ptags": {
+        const process = getProcess(meta);
+        if (args.length === 0) {
+          yield process.ptags;
+        } else {
+          const ptagUpdates = tagsToMeta(args);
+          applyPtagUpdates(process.ptags, ptagUpdates);
+        }
+        break;
+      }
       case "pwd": {
         yield useSession.api.getVar(meta, "PWD");
         break;
@@ -538,13 +557,17 @@ class cmdServiceClass {
         }
         break;
       }
-      case "speak": {
+      case "narrate": {
         const { opts, operands } = getOpts(args, {
-          string: ["v"],
+          string: ["v", "voice"],
         });
 
-        if (opts.v === "?") {// List available voices
-          yield* window.speechSynthesis.getVoices().map(({ name, lang }) => `${name} (${lang})`);
+        const voice = opts.v || opts.voice;
+
+        if (voice === "?") {// List available voices
+          yield* window.speechSynthesis.getVoices().map(
+            ({ name, lang }) => `${name} (${ansi.BrightYellow}${lang}${ansi.White})`
+          );
           return;
         }
 
@@ -558,11 +581,11 @@ class cmdServiceClass {
 
         try {
           if (operands.length > 0) {// Say operands
-            yield { voice: opts.v, text: operands.join(" ") };
+            yield { voice, text: operands.join(" ") };
           } else if (isTtyAt(node.meta, 0) === false) {// Say lines from stdin
             let datum: string | VoiceCommand | null;
             while ((datum = await read(meta)) !== EOF) {
-              yield { voice: opts.v, text: `${datum}` };
+              yield { voice, text: `${datum}` };
             }
           }
         } finally {
@@ -601,42 +624,45 @@ class cmdServiceClass {
         break;
       }
       case "source": {
-        const [filepath] = args;
-        if (filepath === undefined) {
-          return;
-        }
-        
-        const [script] = this.get(node, args.slice(0, 1));
-        
-        if (script === undefined) {
-          throw Error(`source: "${filepath}" not found`);
-        }
-        if (typeof script !== "string") {
-          throw Error(`source: "${filepath}" is not a string`);
-        }
-
-        const parsed = parseService.parse(script, true); // we cache scripts
-
-        // Mutate `parsed.meta` because it may occur many times deeply in tree
-        // Note pid will be overwritten in `ttyShell.spawn`
-        Object.assign(parsed.meta, { ...meta, ppid: meta.pid, fd: { ...meta.fd }, stack: meta.stack.slice() });
-
-        const { ttyShell } = useSession.api.getSession(meta.sessionKey);
-        await ttyShell.spawn(parsed, {
-          by: 'source',
-          posPositionals: args.slice(1),
-        });
-
-        // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
-        const absPath = cmdService.absPath(node.meta, filepath);
-        if (absPath.startsWith('/etc/')) {
-          useSession.api.getSession(meta.sessionKey).ttyShell.io.write({
-            key: 'external',
-            msg: {
-              key: 'auto-re-source-file',
-              absPath: `/etc/${absPath.slice('/etc/'.length)}`,
-            },
+        for (const filepath of args) {
+          
+          const [script] = this.get(node.meta, [filepath]);
+          
+          if (script === undefined) {
+            throw Error(`source: "${filepath}" not found`);
+          }
+          if (typeof script !== "string") {
+            throw Error(`source: "${filepath}" is not a string`);
+          }
+  
+          const parsed = parseService.parse(script, true); // we cache scripts
+  
+          // Mutate `parsed.meta` because it may occur many times deeply in tree
+          // Note pid will be overwritten in `ttyShell.spawn`
+          Object.assign(parsed.meta, {
+            ...meta,
+            ppid: meta.pid,
+            fd: { ...meta.fd },
+            stack: meta.stack.slice(),
           });
+  
+          const { ttyShell } = useSession.api.getSession(meta.sessionKey);
+          await ttyShell.spawn(parsed, {
+            by: 'source',
+            posPositionals: args.slice(1),
+          });
+  
+          // On `source /etc/foo` we'll auto-re-source on hot-reload JavaScript code
+          const absPath = cmdService.absPath(node.meta, filepath);
+          if (absPath.startsWith('/etc/')) {
+            useSession.api.getSession(meta.sessionKey).ttyShell.io.write({
+              key: 'external',
+              msg: {
+                key: 'auto-re-source-file',
+                absPath: `/etc/${absPath.slice('/etc/'.length)}`,
+              },
+            });
+          }
         }
 
         break;
@@ -742,26 +768,23 @@ class cmdServiceClass {
     return resolveNormalized(pwd.split("/"), root);
   }
 
-  get(node: Sh.BaseNode, args: string[]) {
-    const root = this.provideProcessCtxt(node.meta);
-    const pwd = useSession.api.getVar<string>(node.meta, "PWD");
-    const process = getProcess(node.meta);
+  get(meta: Sh.BaseMeta, args: string[]) {
+    const root = this.provideProcessCtxt(meta);
+    const pwd = root.home.PWD;
+    const process = getProcess(meta);
 
     const outputs = args.map((arg) => {
       const parts = arg.split("/");
-      const localCtxt =
-        parts[0] in process.localVar
-          ? process.localVar
-          : parts[0] in process.inheritVar
-          ? process.inheritVar
-          : null;
-      return parts[0] && localCtxt
+      const localCtxt = parts[0] in process.localVar
+        ? process.localVar
+        : parts[0] in process.inheritVar ? process.inheritVar : null
+      ;
+      return parts[0] && localCtxt !== null
         ? parts.reduce((agg, part) => agg[part], localCtxt)
         : resolvePath(arg, root, pwd)
       ;
     });
 
-    node.exitCode = outputs.length && outputs.every((x) => x === undefined) ? 1 : 0;
     return outputs;
   }
 
@@ -840,6 +863,14 @@ class cmdServiceClass {
     eof: EOF,
 
     generateSelector,
+
+    get(args: string[]) {
+      const badIndex = args.findIndex(x => typeof x !== 'string');
+      if (badIndex >= 0) {
+        throw new ShError(`cannot get non-string value: ${JSON.stringify(args[badIndex])}`, 1);
+      }
+      return cmdService.get(this.meta, args);
+    },
 
     getCached,
 
@@ -930,6 +961,10 @@ class cmdServiceClass {
 
     safeJsStringify,
 
+    set(varPath: string, varValue: any) {
+      useSession.api.setVarDeep(this.meta, varPath, varValue);
+    },
+
     async sleep(seconds: number) {
       await cmdService.sleep(this.meta, seconds);
     },
@@ -942,7 +977,7 @@ class cmdServiceClass {
 
   private readonly processApiKeys = Object.keys(this.processApi);
 
-  private provideProcessCtxt(meta: Sh.BaseMeta, posPositionals: string[] = []) {
+  provideProcessCtxt(meta: Sh.BaseMeta, posPositionals: string[] = []) {
     const session = useSession.api.getSession(meta.sessionKey);
     const cacheShortcuts = session.var.CACHE_SHORTCUTS ?? {};
     return new Proxy(

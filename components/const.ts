@@ -58,10 +58,14 @@ export const zIndexSite = /** @type {const} */ ({
   mainHeader: 40,
   mainOverlay: 50,
   nav: 60,
+  navToggle: 10,
 });
 
 export const sideNoteRootDataAttribute = 'data-side-note-root';
 
-export const viewerBaseCssVar = '--viewer-base';
-export const viewBarSizeCssVar = '--view-bar-size';
-export const viewIconSizeCssVar = '--view-icon-size';
+export const viewerCssVar = {
+  base: '--viewer-base',
+  barSize: '--view-bar-size',
+  iconSize: '--view-icon-size',
+  internalApiSpinnerOpacity: '--view-internal-api-spinner-opacity',
+};

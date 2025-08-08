@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
-import { debug, entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
+import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
@@ -76,7 +76,7 @@ export default function Npcs(props) {
       });
 
       if (success === true && p.distanceTo(closest) <= maxDelta) {
-        return toV3(closest);
+        return new THREE.Vector3(closest.x, 0, closest.z);
       }
       
       warn(`${'getClosestNavigable'} failed: ${JSON.stringify(p)}`);
@@ -154,6 +154,7 @@ export default function Npcs(props) {
       const animKeys = npcs.map(x => x.s.anim);
       npcs.forEach(npc => state.removeAgent(npc));
 
+      w.crowd.update(w.timer.getFixedDelta());
       await pause();
 
       for(const [i, npc] of npcs.entries()) {
@@ -162,8 +163,8 @@ export default function Npcs(props) {
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
           npc.api.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
-          npc.api.move({ to: helper.toXZ(npc.s.target) });
-        } else {// so they'll move "out of the way" of other npcs
+          npc.api.move({ to: npc.api.getRemainingPath() });
+        } else {// pin them to current position
           agent.requestMoveTarget(npc.position);
         }
       }
@@ -199,18 +200,18 @@ export default function Npcs(props) {
         npc.s.offMesh = null;
       }
     },
-    resolveSkin(shortcut) {
-      // e.g. "soldier-0" maps all
-      // e.g. "soldier-0///" only maps head, otherwise "base" skin
-      // e.g. "soldier-0/-/-/-" only maps head, nothing else changed
-      const parts = shortcut.split('/');
-      const fallback = parts[parts.length - 1];
-      const [head, body = fallback, headOverlay = fallback, bodyOverlay = fallback] = parts;
+    resolveSkin(shortcut) {// order: head,head-overlay,body,body-overlay
+      const parts = shortcut.split(',');
+      const head = parts[0];
+      const fallback = parts.length === 1 ? head : undefined;
+      const headOverlay = parts.length > 1 && (parts[1] || parts[0]) || fallback;
+      const body = parts.length > 2 && (parts[2] || parts[0] || parts[1]) || fallback;
+      const bodyOverlay = parts.length > 3 && (parts[3] || parts[2] || parts[0] || parts[1]) || fallback;
       return {
-        ...head !== '-' && { "head-{front,back,left,right,top,bottom}": { prefix: head || 'base' } },
-        ...body !== '-' && { "body-{front,back,left,right,top,bottom}": { prefix: body || 'base' } },
-        ...headOverlay !== '-' && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay || 'base' } },
-        ...bodyOverlay !== '-' && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay || 'base' } },
+        ...head !== undefined && { "head-{front,back,left,right,top,bottom}": { prefix: head} },
+        ...headOverlay !== undefined && { "head-overlay-{front,back,left,right,top,bottom}": { prefix: headOverlay} },
+        ...body !== undefined && { "body-{front,back,left,right,top,bottom}": { prefix: body} },
+        ...bodyOverlay !== undefined && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay} },
       };
     },
     setActMeta(npcKey, actMeta) {
@@ -542,12 +543,12 @@ export default function Npcs(props) {
       // re-spawn outside nav removes agent, so must update crowd
       w.crowd.update(w.timer.getFixedDelta());
       state.onTick(1 / 60);
-      w.r3f.advance(Date.now()); // so they move
+      w.view.ensureRender();
     }, 300, { immediate: true }),
     async tickOnceDebug() {
       state.onTick(1 / 60);
       await pause(100); // delay render e.g. for paused npc selection
-      w.r3f.advance(Date.now());
+      w.view.ensureRender();
     },
     update,
     validateActMeta(actMeta) {
@@ -679,9 +680,9 @@ export default function Npcs(props) {
  * @property {(npc: NPC.NPC) => void} removeAgent
  * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
  * Examples:
- * - `"soldier-0"`
- * - `"soldier-0//soldier-0/scientist-0"`
- * - `"soldier-0/-/-/-"`
+ * - `base` `soldier-0`, `suit-0` each remap all
+ * - `soldier-0,` remaps head and head-overlay
+ * - `,,soldier-0,` remaps body and body-overlay
  * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):

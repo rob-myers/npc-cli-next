@@ -1,9 +1,4 @@
-# alias
-[]() {
-  array "$@"
-}
-
-# alias
+# alias for get
 cat() {
   get "$@"
 }
@@ -11,12 +6,6 @@ cat() {
 clone() {
   map 'x => JSON.parse(JSON.stringify(x))'
 }
-
-# empty() {
-#   return $(
-#     call '({ args }) => args.some(Boolean) ? 1 : 0' "$@"
-#   )
-# }
 
 # usage: `expr location | pretty`
 keys() {

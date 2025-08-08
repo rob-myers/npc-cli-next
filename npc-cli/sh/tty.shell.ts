@@ -4,7 +4,7 @@ import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
 import { ansi, ProcessTag } from "./const";
-import { killError, ProcessError, ShError, ttyError, updatePtags } from "./util";
+import { applyPtagUpdates, killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
 import { semanticsService } from "./semantics.service";
@@ -243,13 +243,13 @@ export class ttyShellClass implements Device {
   ) {
     const { meta } = term;
 
-    /** A "builtin spawn" runs by re-using the session leader i.e. `this.process`. */
-    const builtin = meta.pgid === 0 && (opts.by === 'source' || opts.by === 'root');
+    /** An "interactive spawn" runs by re-using the session leader i.e. `this.process`. */
+    const interactive = meta.pgid === 0 && (opts.by === 'root' || opts.by === 'source');
 
     let process = this.process;
 
     if (this.profileFinished === true) {
-      if (builtin === true) {
+      if (interactive === true) {
         // Only reachable by interactively specifying a command after profile has run
         // We ensure session leader has status Running
         process.status = ProcessStatus.Running;
@@ -265,7 +265,7 @@ export class ttyShellClass implements Device {
       }
     }
 
-    if (builtin !== true) {
+    if (interactive !== true) {
       // Create subprocess
       const { ppid, pgid, sessionKey } = meta;
       const session = useSession.api.getSession(sessionKey);
@@ -276,14 +276,18 @@ export class ttyShellClass implements Device {
         sessionKey,
         src: srcService.src(term),
         posPositionals: opts.posPositionals || parent.positionals.slice(1),
-        ptags: updatePtags(parent.ptags, { ...parent.ptagsDelta, ...opts.ptags }),
+        ptags: applyPtagUpdates({ ...parent.ptags }, opts.ptags ?? {}),
       });
       meta.pid = process.key;
 
       if (opts.cleanups !== undefined) {
         process.cleanups.push(...opts.cleanups);
       }
-      parent.ptagsDelta = {}; // reset after spawn
+
+      if (parent.pgid === 0 && opts.by !== 'source-external') {
+        // reset session leader ptags after non-interactive spawn
+        this.process.ptags = this.sessionLeaderPtags;
+      }
 
       if (// Represent <Tabs> disabled
         this.suspendNonInteractive === true
@@ -313,7 +317,7 @@ export class ttyShellClass implements Device {
      * 1. `pgid === 0` and it was spawned by session leader (not `source`).
      * 2. `pid === pgid !== 0`
      */
-    const leading = builtin ? opts.by === 'root' : meta.pid === meta.pgid;
+    const leading = interactive === true ? opts.by === 'root' : meta.pid === meta.pgid;
 
     if (leading) {// Process leaders emit external events
       process.src !== '' && this.io.write({ key: 'external', msg: {
@@ -368,7 +372,7 @@ export class ttyShellClass implements Device {
     } finally {
       useSession.api.setLastExitCode(term.meta, term.exitCode);
 
-      if (!builtin) {
+      if (!interactive) {
         useSession.api.removeProcess(meta.pid, this.sessionKey);
       }
 
@@ -453,7 +457,6 @@ export class ttyShellClass implements Device {
     } finally {
       this.input?.resolve();
       this.input = null;
-      this.process.ptags = this.sessionLeaderPtags;
       
       // do not suspend leading process during profile,
       // otherwise we'll pause before spawning each subprocess

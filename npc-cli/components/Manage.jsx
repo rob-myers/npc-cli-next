@@ -13,6 +13,7 @@ import useSession from "../sh/session.store";
 import useUpdate from "../hooks/use-update";
 import { faCheck, faPlug, faPause, FontAwesomeIcon, faPlus, faClose } from "@/npc-cli/components/Icon";
 import PsList from "./PsList";
+import TabsLayoutLink from "./SetTabsLink";
 
 /** @param {Props} props */
 export default function Manage(props) {
@@ -21,6 +22,7 @@ export default function Manage(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     createTabEpoch: 0,
+    profileKeys: helper.profileKeys,
     show: {
       create: false,
       created: false,
@@ -108,6 +110,9 @@ export default function Manage(props) {
       const tabId = /** @type {string} */ (li.dataset.tabId);
       useTabs.api.changeTabProps(tabId, { mapKey });
     },
+    stopPropagation(e) {
+      e.stopPropagation();
+    },
     syncWorldKey(e) {
       const li = /** @type {HTMLLIElement} */ (e.currentTarget.closest('li'));
       const tabId = /** @type {Key.TabId} */ (li.dataset.tabId);
@@ -169,32 +174,35 @@ export default function Manage(props) {
                       {def.filepath}
                     </button>
                   </span>
-                  <span className="tab-def-options">
-                    {def.type === 'terminal' && <>
-                      <span
-                        className="sync-world-key"
-                        onClick={state.syncWorldKey}
-                      >
-                        {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
-                      </span>
-                      <select
-                        value={def.profileKey}
-                        onChange={state.changeTtyProfile}
-                      >
-                        {helper.profileKeys.map(profileKey =>
-                          <option key={profileKey} value={profileKey}>{profileKey}</option>
-                        )}
-                      </select>
-                    </>}
-                    {def.type === 'component' && def.class === 'World' && (
-                      <select
-                        defaultValue={def.props.mapKey}
-                        onChange={state.setMapKey}
-                      >
-                        {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
-                      </select>
-                    )}
-                  </span>
+                  
+                  {def.type === 'terminal' && <span className="tab-def-options">
+                    <span
+                      className="sync-world-key"
+                      onClick={state.syncWorldKey}
+                    >
+                      {tabMeta?.ttyWorldKey ?? def.env?.WORLD_KEY ?? '-'}
+                    </span>
+                    <select
+                      value={def.profileKey}
+                      onChange={state.changeTtyProfile}
+                    >
+                      {state.profileKeys.map(profileKey =>
+                        <option key={profileKey} value={profileKey}>{profileKey}</option>
+                      )}
+                    </select>
+                  </span>}
+
+                  {def.type === 'component' && def.class === 'World' && (
+                    <span className="tab-def-options">
+                    <select
+                      defaultValue={def.props.mapKey}
+                      onChange={state.setMapKey}
+                    >
+                      {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
+                    </select>
+                    </span>
+                  )}
+
                 </span>
                 <button
                   onClick={state.closeTab}
@@ -245,8 +253,8 @@ export default function Manage(props) {
                 Tty
               </span>
               <span className="tab-def-options">
-                <select data-profile-key defaultValue={helper.profileKeys[0]}>
-                  {helper.profileKeys.map(profileKey =>
+                <select data-profile-key defaultValue={state.profileKeys[0]}>
+                  {state.profileKeys.map(profileKey =>
                     <option key={profileKey} value={profileKey}>{profileKey}</option>
                   )}
                 </select>
@@ -259,6 +267,7 @@ export default function Manage(props) {
                     pattern="[0-9]{1}"
                     size={2}
                     defaultValue={0}
+                    onKeyDown={state.stopPropagation}
                   />
                 </span>
               </span>
@@ -287,10 +296,10 @@ export default function Manage(props) {
             Layout
           </li>
           <li>
-            <a href={`#/internal/set-tabs/world-tty-default_profile`}>world + tty (default_profile)</a>
+            <TabsLayoutLink layoutPresetKey="world-tty-default">world + tty (default)</TabsLayoutLink>
           </li>
           <li>
-            <a href={`#/internal/set-tabs/world-tty-profile_1`}>world + tty (profile_1)</a>
+            <TabsLayoutLink layoutPresetKey="world-tty-quickstart">world + tty (quickstart)</TabsLayoutLink>
           </li>
           <li>
             <a href={`#/internal/remember-tabs`}>remember tabset</a>
@@ -307,7 +316,7 @@ export default function Manage(props) {
           <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
           <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
           <li><a href={`#/internal/open-tab/HelloWorld?id=hello-world-1`}>open tab hello-world-1</a></li>
-          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"TABS_API_KEY"}`}>open Tty tab</a></li>
+          <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"tabs_api_key"}`}>open Tty tab</a></li>
           */}
           
           {/* <li><a href={`#/internal/open-tab/World?id=world-2&mapKey=small-map-1`}>open World tab</a></li>
@@ -319,6 +328,9 @@ export default function Manage(props) {
       </div>
 
       <PsList/>
+
+      <br/>
+      <br/>
     </div>
   );
 }
@@ -363,7 +375,7 @@ const manageCss = css`
     background-color: #111;
     justify-content: space-between;
     align-items: stretch;
-    gap: 8px;
+    /* gap: 8px; */
     color: white;
 
     .tab-status-and-id {
@@ -394,7 +406,7 @@ const manageCss = css`
       display: flex;
       justify-content: center;
       align-items: stretch;
-      gap: 8px;
+      /* gap: 8px; */
     }
     .tab-id {
       color: #aac;
@@ -404,9 +416,6 @@ const manageCss = css`
       flex: 1;
       display: flex;
       justify-content: center;
-      gap: 4px;
-      padding-left: 12px;
-      /* padding: 8px; */
     }
     .tab-class {
       display: flex;
@@ -417,6 +426,7 @@ const manageCss = css`
       font-size: medium;
       font-weight: 500;
       color: white;
+      padding: 0 12px;
     }
     .close-tab {
       cursor: pointer;
@@ -427,8 +437,9 @@ const manageCss = css`
       border-left: var(--separating-border);
     }
     .tab-def-options {
+      flex: 1;
       display: flex;
-      gap: 8px;
+      /* gap: 8px; */
       max-width: 200px;
       align-items: stretch;
   
@@ -524,6 +535,8 @@ const manageCss = css`
     appearance: none;
     padding: 0 2px;
     background-color: inherit;
+    border: 1px solid #444;
+    border-width: 0 1px;
     color: var(--select-or-input-color);
     font-size: small;
     text-align: center;
@@ -537,6 +550,11 @@ const manageCss = css`
     align-items: center;
     height: 100%;
   }
+  select, input, button {
+    &:focus {
+      outline: 1px solid #666;
+    }
+  }
 `;
 
 /**
@@ -546,12 +564,14 @@ const manageCss = css`
 /**
  * @typedef State
  * @property {number} createTabEpoch
+ * @property {Key.Profile[]} profileKeys No `dev_only*` profiles in production
  * @property {{ create: boolean; created: boolean; layout: boolean; }} show
  * @property {OnChangeHandler} changeTtyProfile
  * @property {OnClickHandler} closeTab
  * @property {OnClickHandler} createTab
  * @property {OnClickHandler} selectTab
  * @property {OnChangeHandler} setMapKey
+ * @property {(e: React.KeyboardEvent) => void} stopPropagation
  * @property {OnClickHandler} syncWorldKey
  * @property {OnClickHandler} toggleShown
  */

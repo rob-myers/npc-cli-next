@@ -1,13 +1,4 @@
-/**
- * Interpret args.
- * ```sh
- * array 42 $( echo foo; echo bar; )
- * ```
- * @param {NPC.RunArg} ct
- */
-export async function* array(ct) {
-  yield ct.args.map(ct.api.parseJsArg);
-}
+import { stripAnsi, ttyError } from "../util";
 
 /**
  * Execute a javascript function, e.g.
@@ -53,13 +44,18 @@ export const expr = ({ api, args }) => {
  */
 export async function* filter(ct) {
   let { api, args, datum } = ct;
+  const { operands, opts } = api.getOpts(args, { boolean: ['ansi'] });
+
   const func = api.generateSelector(
-    api.parseFnOrStr(args[0]),
-    args.slice(1).map((x) => api.parseJsArg(x))
+    api.parseFnOrStr(operands[0]),
+    operands.slice(1).map(api.parseJsArg),
   );
+
   while ((datum = await api.read(true)) !== api.eof)
-    if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.filter((x) => func(x, ct)));
-    else if (func(datum, ct)) yield datum;
+    if (api.isDataChunk(datum) === true)
+      yield api.dataChunk(datum.items.filter((x) => func(opts.ansi === true ? stripAnsi(x) : x, ct)));
+    else if (func(opts.ansi === true ? stripAnsi(datum) : datum, ct))
+      yield datum;
 }
 
 /**
@@ -122,10 +118,15 @@ export async function* map(ct) {
   /** @type {(x: any, ...xs: any[]) => any} */
   let func;
   let isNativeCode = false;
+  let provideCount = true;
 
-  if (args[0] in ct.lib) {
+  if (operands[0] in ct.lib) {
 
-    func = /** @type {*} */ (ct.lib)[args[0]][args[1]];
+    func = /** @type {*} */ (ct.lib)[operands[0]][operands[1]];
+
+    // when more than 2 operands do not provide count to func,
+    // so that `opts = api.jsArg(args)` works
+    provideCount = operands.length <= 2;
 
   } else {
 
@@ -150,17 +151,17 @@ export async function* map(ct) {
       try {
         if (api.isDataChunk(datum) === true) {
           if (isAsync === false) {// fast on chunks
-            yield api.dataChunk(datum.items.map(x => func(x, ct, count++)));
+            yield api.dataChunk(datum.items.map(x => func(x, ct, provideCount === true ? count++ : undefined)));
           } else {// unwind chunks
             for (const item of datum.items)
-              yield await func(item, ct, count++);
+              yield await func(item, ct, provideCount === true ? count++ : undefined);
           }
         } else {
-          yield await func(datum, ct, count++);
+          yield await func(datum, ct, provideCount === true ? count++ : undefined);
         }
       } catch (e) {
         if (opts.forever === true) {
-          api.writeError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}`);
+          ttyError(`${api.meta.stack.join(': ')}: ${e instanceof Error ? e.message : e}\n\n`, e);
           continue;
         }
         throw e;
@@ -174,7 +175,7 @@ export async function* map(ct) {
         yield await func(datum);
       } catch (e) {
         if (opts.forever === true) {
-          api.writeError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}`);
+          ttyError(`${api.meta.stack.join(": ")}: ${e instanceof Error ? e.message : e}\n\n`, e);
           continue;
         }
         throw e;

@@ -5,7 +5,7 @@ import { createDefaultTileCacheMeshProcess, dtIlog2, dtNextPow2, getBoundingBox,
 import { offMeshConnectionHalfDepth } from "./const";
 import { range, toPrecision } from "./generic";
 import { geom } from "./geom";
-import { decompToXZGeometry, toV3 } from "./three";
+import { decompToXZGeometry } from "./three";
 import { helper } from "./helper";
 
 /**
@@ -132,17 +132,21 @@ export function getTileCacheMeshProcess(offMeshDefs) {
  * @returns {Partial<TileCacheGeneratorConfig>}
  */
 export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
+  // 🔔 spawn at {x:4.5,y:7.5} has weird initial behaviour for various settings
   return {
     /** `cs * tileSize` should be 1.5 i.e. Geomorph grid size (meters) */
     //cs: 0.15, tileSize: 10,
-    //cs: 0.1, tileSize: 15,
-    cs: 0.075, tileSize: 20,
+    cs: 0.05, tileSize: 30,
+    // cs: 0.1, tileSize: 15,
+    //cs: 0.075, tileSize: 20,
     ch: 0.001,
     borderSize: 0,
     expectedLayersPerTile: 1,
     walkableClimb: 0,
     tileCacheMeshProcess,
-    maxSimplificationError: 0.85,
+    // maxSimplificationError: 0.85,
+    maxSimplificationError: 1.5,
+    // maxSimplificationError: 3,
   };
 }
 

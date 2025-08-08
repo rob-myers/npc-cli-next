@@ -43,7 +43,7 @@ export default function Decor(props) {
     registeredAt: 0,
     rmKeys: new Set(),
     seenHash : /** @type {*} */ (null),
-    showLabels: false,
+    labelsShown: false,
 
     addGm(gmId) {
       const gm = w.gms[gmId];
@@ -579,6 +579,10 @@ export default function Decor(props) {
       state.remove(...decorKeys ?? []);
       delete state.group[groupName];
     },
+    showLabels(shouldShow = !state.labelsShown) {
+      state.labelsShown = shouldShow;
+      w.update();
+    },
     updateDecorLists() {
       state.cuboids = Object.values(state.byKey).filter(geomorph.isDecorCuboid);
       state.quads = Object.values(state.byKey).filter(state.isDecorQuad);
@@ -667,7 +671,7 @@ export default function Decor(props) {
   });
 
   state.queryStatus = query.status;
-  const labels = state.showLabels ? state.labels : [];
+  const labels = state.labelsShown ? state.labels : [];
 
   React.useEffect(() => {
     if (query.data === true) {
@@ -779,7 +783,8 @@ export default function Decor(props) {
  * @property {Set<string>} rmKeys decorKeys manually removed via `removeDecorFromRoom`,
  * but yet added back in. This is useful e.g. so can avoid re-instantiating geomorph decor
  * @property {Geomorph.GeomorphsHash} seenHash Clone of last seen value of `w.hash`
- * @property {boolean} showLabels
+ * @property {(shouldShow?: boolean) => void} showLabels Set or toggle
+ * @property {boolean} labelsShown
  *
  * @property {(ds: Geomorph.Decor[], removeExisting?: boolean) => void} register
  * Can manually `removeExisting` e.g. during re-instantiation of geomorph decor

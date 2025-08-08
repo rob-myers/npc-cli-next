@@ -2,8 +2,9 @@ import React from "react";
 import * as THREE from "three";
 import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
-import { MapControls, PerspectiveCamera, Stats } from "@react-three/drei";
+import { PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
+import { EffectComposer, BrightnessContrast, Vignette } from '@react-three/postprocessing'
 
 import { debug, entries, keys } from "../service/generic.js";
 import { helper } from "../service/helper";
@@ -17,6 +18,7 @@ import useStateRef from "../hooks/use-state-ref.js";
 import useUpdate from "../hooks/use-update.js";
 import NpcSpeechBubbles from "./NpcSpeechBubbles.jsx";
 import { ContextMenu } from "./ContextMenu.jsx";
+import { CameraControls } from './CameraControls.jsx';
 
 /**
  * @param {Props} props
@@ -47,6 +49,8 @@ export default function WorldView(props) {
     ],
     down: null,
     dst: {}, // tween destinations
+    effects: { enabled: false, darkness: 2 },
+    effectComposer: /** @type {*} */ (null),
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
     fov: 30,
     glOpts: {
@@ -107,7 +111,7 @@ export default function WorldView(props) {
        * @type {{ __damp?: { [velKey: string]: number } }}
        */ (state.controls.target).__damp = undefined;
     },
-    computeNormal(mesh, intersection) {// 🚧
+    computeNormal(mesh, intersection) {
       const { indices, mat3, tri } = state.normal;
       const output = new THREE.Vector3();
       const offset = /** @type {number} */ (intersection.faceIndex) * 3;
@@ -124,6 +128,9 @@ export default function WorldView(props) {
     },
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
+    },
+    ensureRender() {
+      if (w.disabled === true) w.r3f.advance(Date.now());
     },
     followPosition(dst, opts = { smoothTime: 0.3 }) {
       // lock zoom
@@ -501,6 +508,11 @@ export default function WorldView(props) {
       const nextFilter = state.cssFilter.map(({ key, value }) => `${key}(${value})`).join(' ');
       state.canvas.style.filter = nextFilter; // e.g. brightness(50%)
     },
+    showEffects(partial = { enabled: !state.effects.enabled }) {
+      Object.assign(state.effects, partial);
+      update();
+      w.npc.tickOnceDebug();
+    },
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
         delete state.dst.look;
@@ -522,7 +534,7 @@ export default function WorldView(props) {
       }
     },
     toDataURL(type, quality) {
-      w.r3f.advance(Date.now());
+      state.ensureRender();
       return state.canvas.toDataURL(type, quality);
     },
     async tween(opts) {
@@ -639,23 +651,32 @@ export default function WorldView(props) {
         zoom={1}
       />
 
-      <MapControls
+
+      <CameraControls
         ref={state.ref('controls')}
-        makeDefault
-        zoomToCursor
-        onChange={state.onChangeControls}
         domElement={state.canvas}
-        onStart={state.onControlsStart}
-        onEnd={state.onControlsEnd}
-        {...state.ctrlOpts}
-        //@ts-ignore see three-stdlib patch
+        //see three-stdlib patch
+        minDistance={state.ctrlOpts.minDistance}
         minPanDistance={w.smallViewport ? 0.05 : 0}
+        maxDistance={state.ctrlOpts.maxDistance}
+        onChange={state.onChangeControls}
+        onEnd={state.onControlsEnd}
+        onStart={state.onControlsStart}
       />
 
       <ContextMenu/>
 
       <NpcSpeechBubbles/>
 
+      <EffectComposer ref={state.ref('effectComposer')}>
+        {state.effects.enabled === true
+          ? <>
+            <BrightnessContrast brightness={-0.23} />
+            <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={0.9} />
+          </>
+          : <></>
+        }
+      </EffectComposer>
     </Canvas>
   );
 }
@@ -678,6 +699,8 @@ export default function WorldView(props) {
  * @property {() => void} clearTweens
  * @property {() => void} clearTargetDamping
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
+ * @property {{ enabled: boolean; darkness: number }} effects
+ * @property {import('postprocessing').EffectComposer} effectComposer
  * @property {import('three-stdlib').MapControls & {
  *   sphericalDelta: THREE.Spherical;
  *   zoomToConstant: null | THREE.Vector3;
@@ -719,6 +742,7 @@ export default function WorldView(props) {
  * @property {null | { min: number; max: number; current: number }} lockedDistance
  *
  * @property {(enabled?: boolean) => void} enableControls Default `true`
+ * @property {() => void} ensureRender
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
@@ -744,6 +768,7 @@ export default function WorldView(props) {
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
  * @property {(partial: Partial<Record<'brightness'| 'sepia' | 'invert', string>>) => void} setCssFilter
+ * @property {(partial?: Partial<State['effects']>) => void} showEffects
  * @property {() => boolean} stopFollowing
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
@@ -753,9 +778,11 @@ export default function WorldView(props) {
  */
 
 const rootCss = css`
+  --world-view-background-color: rgba(0, 0, 0, 1);
+  --world-view-background-color: rgba(30, 30, 30, 1);
+
   user-select: none;
-  background-color: rgba(30, 30, 30, 1);
-  /* background-color: rgba(0, 0, 0, 1); */
+  background-color: var(--world-view-background-color);
 
   canvas[data-engine] {
     width: 100%;

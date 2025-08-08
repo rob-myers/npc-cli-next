@@ -7,7 +7,7 @@ import { error, jsStringify, keys, testNever, warn } from '../service/generic';
 import { isTouchDevice } from '../service/dom';
 import type { Session } from "../sh/session.store";
 import type { BaseTabProps } from '../tabs/tab-factory';
-import type { ExternalMessage } from '../sh/io';
+import type { ExternalMessage, ExternalMessageProcessLeader } from '../sh/io';
 
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
@@ -34,8 +34,13 @@ export default function Tty(props: Props) {
     booted: false,
     bounds,
     canContOrStop: null as null | 'CONT' | 'STOP',
+    disabled: props.disabled,
     inputOnFocus: undefined as undefined | { input: string; cursor: number },
     isTouchDevice: isTouchDevice(),
+    /** The process ids we actually paused, so we can resume them  */
+    pausedPids: new Set<number>(),
+    /** Process group ids spawned whilst paused  */
+    pausedSpawnPgids: new Set<number>(),
     /** Should file be auto-re-sourced on hot-module-reload? */
     reSource: {} as Record<string, true>,
 
@@ -60,21 +65,36 @@ export default function Tty(props: Props) {
           break;
         }
         case 'process-leader': {
-          if (msg.pid === 0) {
-            if (msg.act === 'started' || msg.act == 'resumed') {
-              state.canContOrStop = 'STOP';
-            } else if (msg.act === 'paused') {
-              state.canContOrStop = 'CONT';
-            } else if (msg.act === 'ended') {
-              state.canContOrStop = null;
-            }
-            update();
-          }
+          state.handleProcessLeaderMessage(msg);
           break;
         }
         default:
           warn(`${'handleExternalMsg'}: unexpected message: ${jsStringify(msg)}`);
           testNever(msg);
+      }
+    },
+    handleProcessLeaderMessage(msg: ExternalMessageProcessLeader) {
+      if (msg.pid === 0) {
+        if (msg.act === 'started' || msg.act == 'resumed') {
+          state.canContOrStop = 'STOP';
+        } else if (msg.act === 'paused') {
+          state.canContOrStop = 'CONT';
+        } else if (msg.act === 'ended') {
+          state.canContOrStop = null;
+        }
+        update();
+      } else if (state.disabled === true) {
+        if (msg.act === 'started') {// spawned whilst paused
+          state.pausedSpawnPgids.add(msg.pid);
+        } else if (msg.act === 'paused') {
+          // pause whilst paused e.g. keep paused on resume
+          state.pausedSpawnPgids.delete(msg.pid);
+        } else if (msg.act === 'resumed') {
+          // 🚧 remove pids ...
+          state.pausedSpawnPgids.delete(msg.pid);
+          const pids = useSession.api.getProcesses(props.sessionKey, msg.pid).map(p => p.key);
+          pids.forEach(pid => state.pausedPids.delete(pid));
+        }
       }
     },
     onFocus() {
@@ -85,7 +105,8 @@ export default function Tty(props: Props) {
       }
     },
     pauseByPtags() {
-      useSession.api.kill(props.sessionKey, [], { byPtags: true, STOP: true });
+      const pids = useSession.api.kill(props.sessionKey, [], { byPtags: true, STOP: true });
+      pids.forEach(pid => state.pausedPids.add(pid));
       
       const { session } = state.base;
       if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
@@ -116,7 +137,15 @@ export default function Tty(props: Props) {
       }
     },
     resumeByPtags() {
-      useSession.api.kill(props.sessionKey, [], { byPtags: true, CONT: true });
+      // restore previously paused processes
+      useSession.api.kill(props.sessionKey, Array.from(state.pausedPids), { byPtags: true, CONT: true });
+      state.pausedPids.clear();
+
+      // resume spawned whilst paused, unless explicitly paused
+      for (const pgid of state.pausedSpawnPgids) {
+        useSession.api.kill(props.sessionKey, [pgid], { GROUP: true, CONT: true });
+      }
+      state.pausedSpawnPgids.clear();
       
       const { session } = state.base;
       if (session.ttyShell.isInitialized() && !session.ttyShell.isInteractive()) {
@@ -160,6 +189,8 @@ export default function Tty(props: Props) {
   }), {
     deps: [props.shFiles],
   });
+
+  state.disabled = props.disabled;
 
   React.useEffect(() => {// Pause/resume
     const { session } = state.base;

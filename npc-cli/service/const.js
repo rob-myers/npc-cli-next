@@ -481,6 +481,6 @@ export const nearTargetDistance = 0.5;
 export const texAuxDepth = 256;
 
 /** Literal react query key */
-export const TABS_API_KEY = 'TABS_API_KEY';
+export const TABS_API_KEY = /** @type {const} */ ('tabs_api_key');
 
 export const html3DOpacityCssVar = '--html-3d-opacity';

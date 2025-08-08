@@ -93,7 +93,10 @@ class semanticsServiceClass {
     // write to stderr
     const device = useSession.api.resolve(2, node.meta);
     if (device !== undefined) {
-      device.writeData(`${ansi.Red}${message}${ansi.Reset}`); // 🔔 non-blocking promise
+      const lines = message.split(/\r?\n/); // 🔔 non-blocking promise:
+      device.writeData(`${
+        lines.map(line => formatMessage(line, 'error')).join('\n')
+      }${ansi.Reset}`)
     } else {
       ttyError(`ShError: ${node.meta.sessionKey}: stderr does not exist`);
     }
@@ -164,10 +167,6 @@ class semanticsServiceClass {
       useSession.api.setVar(meta, Name.Value, '');
       node.exitCode = 0;
       return;
-    }
-    if (Name.Value === 'ptags') {
-      node.exitCode = 0;
-      return; // used to tag process instead
     }
 
     const { value, values } = await this.lastExpanded(sem.Expand(Value));
@@ -329,29 +328,11 @@ class semanticsServiceClass {
     return this.stmts(node, node.Stmts);
   }
 
-  /**
-   * - We support process tagging like `ptags+=always; foo | bar &`
-   * - We modify `process.ptagsDelta` and apply in __next spawn only__.
-   */
-  private async supportPTags(node: Sh.CallExpr) {
-    const assigns = node.Assigns.filter(x => x.Name?.Value === 'ptags' && x.Append === true && x.Value !== null);
-    const process = getProcess(node.meta);
-    for (const assign of assigns) {
-      const expanded = await this.lastExpanded(sem.Expand(assign.Value!));
-      const ptags = tagsToMeta(textToTags(expanded.value));
-      Object.assign(process.ptagsDelta, ptags);
-    }
-  }
-
   private async *CallExpr(node: Sh.CallExpr) {
     node.exitCode = 0;
     const args = await sem.performShellExpansion(node.Args);
     const [command, ...cmdArgs] = args;
     node.meta.verbose === true && console.log("simple command", args);
-
-    if (node.Assigns.length > 0) {
-      await this.supportPTags(node);
-    }
 
     if (args.length > 0) {
       let func: Sh.NamedFunction | undefined;
@@ -363,7 +344,8 @@ class semanticsServiceClass {
         try {
           // Try to `get` things instead
           for (const arg of args) {
-            const result = cmdService.get(node, [arg]);
+            const result = cmdService.get(node.meta, [arg]);
+            node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
             if (result[0] !== undefined) {
               yield* result; // defined, or invoked defined-valued function
             } else if (matchFuncFormat(arg) !== null) {
@@ -446,17 +428,24 @@ class semanticsServiceClass {
         }
       }
     } catch (e) {
+      const { stack } = node.meta;
+
       // now know CallExpr command (1st arg), although `foo=bar` has no command
       const command = node.type === 'CallExpr' ? node.Args[0]?.string ?? 'CallExpr' : node.type;
-      node.meta.stack.splice(cmdStackIndex, 0, command);
+      stack.splice(cmdStackIndex, 0, command);
 
-      const error = e instanceof ShError ? e : new ShError("", 1, e as Error);
-      error.message = `${node.meta.stack.join(": ")}: ${(e as Error).message || e}`;
-      if (command === "run" && node.meta.stack.length === 1) {
-        // When directly using `run` append helpful format message
-        error.message += '\n\r' + formatMessage(`format: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
+      // normalize error
+      const error = e instanceof ShError || e instanceof ProcessError
+        ? e
+        : new ShError("", 1, e as Error)
+      ;
+      error.message = `${stack.join(": ")}: ${(e as Error).message || e}`;
+      if (command === "run" && stack.length === 1) {
+        // when directly using `run` append helpful format message
+        error.message += '\n' + formatMessage(`usage: run '({ api:{read} }) { yield "foo"; yield await read(); }'`, 'error');
       }
-      sem.handleShError(node, e);
+
+      sem.handleShError(node, error);
     }
   }
 
@@ -723,7 +712,9 @@ class semanticsServiceClass {
     if (Repl !== null) {
       // ${_/foo/bar/baz}
       const origParam = reconstructReplParamExp(Repl);
-      yield expand(jsStringify(cmdService.get(node, [origParam])[0]));
+      const result = cmdService.get(node.meta, [origParam]);
+      node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
+      yield expand(jsStringify(result[0]));
     } else if (Excl || Length || Slice) {
       throw new ShError(`ParamExp: ${Param.Value}: unsupported operation`, 2);
     } else if (Exp !== null) {
@@ -821,7 +812,7 @@ class semanticsServiceClass {
         if (e instanceof ProcessError) {
           this.handleTopLevelProcessError(e);
         } else {
-          ttyError("background process error", e);
+          ttyError('background process error\n\n', e);
         }
       });
       

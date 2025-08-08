@@ -27,7 +27,7 @@ export default function WorldMenu(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
 
-    brightness: 12, // [1..20] inducing percentage `100 + 10 * (b - 10)`
+    brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
@@ -65,6 +65,7 @@ export default function WorldMenu(props) {
     onChangeBrightness(e) {
       state.brightness = Number(e.currentTarget.value);
       w.view.setCssFilter({ brightness: `${100 + 10 * (state.brightness - 10)}%` });
+      tryLocalStorageSet(`brightness@${w.key}`, `${state.brightness}`);
     },
     onChangeLoggerLog(e) {
       state.showDebug = e.currentTarget.checked;
@@ -434,7 +435,7 @@ const pausedControlsCss = css`
 
 /**
  * @typedef State
- * @property {number} brightness
+ * @property {number} brightness [1..20] inducing percentage `100 + 10 * (b - 10)`
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys

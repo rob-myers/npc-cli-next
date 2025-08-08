@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import cx from "classnames";
 import { css } from "@emotion/react";
 import React from "react";
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses } from "react-pro-sidebar";
@@ -23,9 +24,15 @@ export default function Nav() {
       // do not toggleCollapsed
       e.stopPropagation();
 
-      // can click anywhere in li
+      // can click anywhere in li,
+      // except 1st one when collapsed
+      if (collapsed && li.previousSibling === null) {
+        return;
+      }
       const as = li.querySelectorAll('a');
-      if (as.length === 1) router.push(as[0].href);
+      if (as.length === 1) {
+        router.push(as[0].href);
+      }
     },
     toggleCollapsed() {
       useSite.api.toggleNav();
@@ -44,8 +51,7 @@ export default function Nav() {
     >
       <button
         css={toggleCss}
-        className="toggle"
-        style={{ zIndex: 10 }}
+        className={cx("toggle", { collapsed })}
       >
          <FontAwesomeIcon
           icon={faChevronRight}
@@ -57,20 +63,23 @@ export default function Nav() {
 
       <Menu onClick={state.onClickMenu}>
         <MenuItem className="title" component="span" tabIndex={-1}>
-          <Link href="/blog/index" tabIndex={-1}>NPC CLI</Link>
+          <Link href="/blog/index" tabIndex={-1}>
+            NPC CLI
+          </Link>
         </MenuItem>
         <SubMenu icon={icon.blog} label="Main">
           <MenuItem component="span">
-            <Link href="/blog/intent">Intent</Link>
+            <Link href="/blog/main/multiple-npcs">Many NPCs</Link>
           </MenuItem>
-          <MenuItem component="span">
-            <Link href="/blog/strategy-1">Strategy 1</Link>
-          </MenuItem>
+
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
         <SubMenu icon={icon.devBlog} label="Dev">
-          <MenuItem>Tech</MenuItem>
+        <MenuItem component="span">
+            <Link href="/blog/dev/intro-to-world">World Intro</Link>
+          </MenuItem>
+
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
@@ -98,7 +107,7 @@ const navCss = css`
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
   color: #ddd;
-  font-size: 0.9rem;
+  font-size: 1rem;
   letter-spacing: 0.1rem;
 
   // root item height and hover
@@ -107,7 +116,7 @@ const navCss = css`
     
     &:hover {
       background-color: transparent;
-      text-decoration: underline;
+      /* text-decoration: underline; */
     }
   }
 
@@ -150,7 +159,6 @@ const navCss = css`
     opacity: 1;
     transition: opacity 500ms;
     margin-left: 0.75rem;
-    font-family: 'Courier New', Courier, monospace;
 
     .${menuClasses.button} {
       pointer-events: none; // ignore clicks outside <a>
@@ -209,6 +217,7 @@ const icon = {
 
 const toggleCss = css`
   position: absolute;
+  z-index: ${zIndexSite.navToggle};
   top: 0.6rem;
   right: 1rem;
   transition: margin-top 300ms;
@@ -223,7 +232,11 @@ const toggleCss = css`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  
-  transform: scale(0.8);
+
+  transform: scale(1);
   filter: invert(1);
+  
+  &.collapsed {
+    border: 1px solid #444;
+  }
 `;

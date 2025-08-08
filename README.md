@@ -80,8 +80,14 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
 ```sh
 c=-1; while c+=1; do
-  spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
+  spawn npc:"rob_${c}" at:$( click 1 ) grant:.
 done
+
+# much faster version:
+seq 100 |
+  map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>>pts
+
+w npc.spawnMany "{ points: $( pts ) }"
 
 # commands work while paused via prefix `ptags=always;`
 ptags=always events
@@ -124,26 +130,26 @@ done &>> points
 
 c=0; while c+=1; do
   test $( expr "$c >= 5" ) && c=0
-  move npcKey:rob arriveAnim:none to:"$( points/$c )"
+  move npc:rob arriveAnim:none to:"$( points/$c )"
 done
 
 
 # playing with loops
-spawn npcKey:rob at:$( click 1 )
-spawn npcKey:kate at:$( click 1 ) skin:medic-0
+spawn npc:rob at:$( click 1 )
+spawn npc:kate at:$( click 1 ) skin:medic-0
 w e.grantAccess . rob kate
 
-tour npcKey:rob to:"$( click 2 )" &
-tour npcKey:kate to:"$( click 2 )" &
+tour npc:rob to:"$( click 2 )" &
+tour npc:kate to:"$( click 2 )" &
 
-spawn npcKey:kate at:$( click 1 ) skin:soldier-0///medic-0
-spawn npcKey:kate at:$( click 1 ) skin:soldier-0///suit-0
-spawn npcKey:kate at:$( click 1 ) skin:suit-0///soldier-0
+spawn npc:kate at:$( click 1 ) skin:soldier-0,,medic-0,
+spawn npc:kate at:$( click 1 ) skin:soldier-0,,,suit-0
+spawn npc:kate at:$( click 1 ) skin:suit-0,,,soldier-0
 
 click 5 &>> points
 # skips to next point if stopped
 while true; do
-  tour npcKey:kate to:"$( points )"
+  tour npc:kate to:"$( points )"
 done &
 
 call Math.random
@@ -178,7 +184,7 @@ This permits us to patch `three-stdlib` inside `@react-three/drei`.
 npx patch-package @react-three/drei/three-stdlib
 ```
 
-### Screencast Android to MacBook
+### `scrcpy`: Screencast Android to MacBook
 
 - https://github.com/Genymobile/scrcpy/blob/master/doc/macos.md
 - https://github.com/Genymobile/scrcpy?tab=readme-ov-file
@@ -194,7 +200,7 @@ scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhi
 scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4
 
 # 🔔 no need for record because we'll use OBS
-scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder'
+scrcpy --video-codec=h265 --max-size=1920 --max-fps=120 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --disable-screensaver
 ```
 
 ### Bump versions in our branch of recast-navigation-js
@@ -207,7 +213,7 @@ but after publishing we should re-comment these paths and use turbopack.
 #### At `recast-navigation-js` repo root
 
 1. Manually bump versions
-  - search for current patch e.g. `0.39.2` and replace with next e.g. `0.39.3`
+  - search for current patch e.g. `0.39.7` and replace with next e.g. `0.39.8`
   - do not include yarn.lock, files should be:
     > packages/recast-navigation{,-core,-generators,-playcanvas,-three,-wasm}
 
@@ -336,7 +342,7 @@ We'll try to re-map publicly available Minecraft Skins.
 - https://namemc.com/minecraft-skins/tag/robot
   - ✅ https://namemc.com/skin/4718725ab9582b06 (blend)
   - ✅ https://namemc.com/skin/93f8e14071653c97 (blend)
-  - 🚧 https://namemc.com/skin/e91cc700154075b2
+  - ✅ https://namemc.com/skin/e91cc700154075b2
 
 - https://namemc.com/minecraft-skins/tag/general
 - https://namemc.com/minecraft-skins/tag/business

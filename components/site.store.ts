@@ -8,6 +8,7 @@ import { defaultSiteTopLevelState, siteTopLevelKey, allArticlesMeta } from "./co
 
 import { safeJsonParse, tryLocalStorageGet, tryLocalStorageSet, info, isDevelopment, error } from "@/npc-cli/service/generic";
 import { connectDevEventsWebsocket } from "@/npc-cli/service/fetch-assets";
+import { isTouchDevice } from "@/npc-cli/service/dom";
 
 const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devtools((set, get) => ({
   articleKey: null,
@@ -68,10 +69,11 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       const topLevel: typeof defaultSiteTopLevelState = safeJsonParse(
         tryLocalStorageGet(siteTopLevelKey) ?? JSON.stringify(defaultSiteTopLevelState)
       ) ?? {};
+
       if (topLevel.viewOpen) {
         set(() => ({ viewOpen: topLevel.viewOpen }), undefined, 'restore-view-open');
       }
-      if (topLevel.navOpen) {
+      if (topLevel.navOpen && !isTouchDevice()) {
         set(() => ({ navOpen: topLevel.navOpen }), undefined, 'restore-nav-open');
       }
 

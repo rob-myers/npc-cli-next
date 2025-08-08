@@ -5,7 +5,7 @@ import { shallow } from "zustand/shallow";
 import debounce from "debounce";
 
 import useSite from "./site.store";
-import { afterBreakpoint, breakpoint, nav, view, viewBarSizeCssVar, viewerBaseCssVar, viewIconSizeCssVar, zIndexSite } from "./const";
+import { afterBreakpoint, breakpoint, nav, view, viewerCssVar, zIndexSite } from "./const";
 import { getNavWidth, isSmallView } from "./layout";
 import { isTouchDevice } from "@/npc-cli/service/dom";
 import { tryLocalStorageSet } from "@/npc-cli/service/generic";
@@ -24,6 +24,7 @@ import {
   faGrip,
   faCirclePlay,
 } from "../npc-cli/components/Icon";
+import Spinner from "@/npc-cli/components/Spinner";
 
 export default function ViewerControls({ api }: Props) {
   const site = useSite(({ navOpen, viewOpen }) => ({ navOpen, viewOpen }), shallow);
@@ -33,7 +34,7 @@ export default function ViewerControls({ api }: Props) {
     showReset: false,
 
     getViewerBase() {
-      const percentage = api.rootEl.style.getPropertyValue(viewerBaseCssVar);
+      const percentage = api.rootEl.style.getPropertyValue(viewerCssVar.base);
       return percentage === '' ? null : parseFloat(percentage);
     },
     onClickChevron(longPress = false) {
@@ -80,7 +81,7 @@ export default function ViewerControls({ api }: Props) {
         document.body.removeEventListener("pointerleave", state.onDragEnd);
         api.rootEl.style.transition = "";
 
-        const percent = parseFloat(api.rootEl.style.getPropertyValue(viewerBaseCssVar));
+        const percent = parseFloat(api.rootEl.style.getPropertyValue(viewerCssVar.base));
         if (percent < 10) {// almost closed anyway
           state.setVisibility('closed');
         }
@@ -113,7 +114,7 @@ export default function ViewerControls({ api }: Props) {
       api.rootEl.style.transition = `min-width 0s, min-height 0s`;
 
       if (useSite.api.isViewClosed()) {
-        api.rootEl.style.setProperty(viewerBaseCssVar, `${0}%`);
+        api.rootEl.style.setProperty(viewerCssVar.base, `${0}%`);
         useSite.api.toggleView(true);
       }
     },
@@ -138,7 +139,7 @@ export default function ViewerControls({ api }: Props) {
     }, 300),
     setViewerBase(percentage: number) {
       percentage = Math.max(0, Math.min(100, percentage));
-      api.rootEl.style.setProperty(viewerBaseCssVar, `${percentage}%`);
+      api.rootEl.style.setProperty(viewerCssVar.base, `${percentage}%`);
       tryLocalStorageSet(localStorageKey.viewerBasePercentage, `${percentage}%`);
     },
     setVisibility(act: 'closed' | 'midpoint' | 'open') {
@@ -189,6 +190,7 @@ export default function ViewerControls({ api }: Props) {
         <div className="drag-indicator">
           <FontAwesomeIcon icon={faGrip} size="1x" />
         </div>
+        <Spinner className="internal-api-spinner" size={18} color="#ff9" />
       </div>
 
       <div className="status-text">
@@ -273,8 +275,26 @@ const viewerControlsCss = css`
     user-select: none;
   }
 
+  .left-or-bottom-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 12px 16px;
+    pointer-events: none;
+
+    .drag-indicator {
+      color: #666;
+    }
+    .internal-api-spinner {
+      transition: opacity 500ms;
+      opacity: var(${viewerCssVar.internalApiSpinnerOpacity});
+    }
+  }
+
   @media (min-width: ${afterBreakpoint}) {
-    width: var(${viewBarSizeCssVar});
+    width: var(${viewerCssVar.barSize});
     height: 100%;
     flex-direction: column-reverse;
 
@@ -286,6 +306,10 @@ const viewerControlsCss = css`
       writing-mode: vertical-rl;
       text-orientation: upright;
       padding-top: 32px;
+    }
+    .left-or-bottom-group {
+      flex-direction: column-reverse;
+      align-items: end;
     }
   }
 
@@ -300,19 +324,7 @@ const viewerControlsCss = css`
       height: 100%;
       padding-right: 12px;
       margin-top: 2px;
-    }
-  }
-
-  .left-or-bottom-group {
-    flex: 1;
-    display: flex;
-    align-items: end;
-
-    padding: 12px 16px;
-    pointer-events: none;
-
-    .drag-indicator {
-      color: #666;
+      user-select: none;
     }
   }
 
@@ -323,12 +335,12 @@ const viewerControlsCss = css`
     align-items: center;
 
     @media (min-width: ${afterBreakpoint}) {
-      width: var(${viewBarSizeCssVar});
+      width: var(${viewerCssVar.barSize});
       height: ${nav.menuItem};
     }
     @media (max-width: ${breakpoint}) {
-      width: var(${viewIconSizeCssVar});
-      height: var(${viewBarSizeCssVar});
+      width: var(${viewerCssVar.iconSize});
+      height: var(${viewerCssVar.barSize});
     }
 
     color: white;

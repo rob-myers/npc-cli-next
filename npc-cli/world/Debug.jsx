@@ -77,7 +77,7 @@ export default function Debug(props) {
     selectNavPolys(...polyRefs) {
       if (polyRefs.length === 0) {
         state.selectedNavPolys = null;
-        return update();
+        update();
       }
       const { navMesh } = w.nav;
       const geom = new THREE.BufferGeometry();

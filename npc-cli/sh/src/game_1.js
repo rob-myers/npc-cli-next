@@ -1,41 +1,9 @@
-import { deltaAngle } from "maath/misc";
 import { Mat, Vect } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from '@/npc-cli/service/geom';
 import { ansi } from "../const";
 import { pause } from "./util";
 import { move } from "./game";
-
-/**
- * @param {NPC.RunArg} ct
- */
-export const changeAngleOnKeyDown = ({ w }) => {
-  w.view.keyDowns.changeAngle = async (e) => {
-    const key = e.key.toLowerCase();
-
-    // if (key === 'w') {
-    //   return await w.view.tween({
-    //     polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0
-    //   });
-    // }
-    
-    const angle = geom.radRange(w.view.controls.getAzimuthalAngle());
-    const delta = Math.PI * 0.5;
-    const ratio = angle / delta; // [0..4)
-    switch (key) {
-      case "w": {
-        await w.view.tween({
-          azimuthal: Math.round(ratio) * delta,
-          polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0,
-        });
-        break;
-      }
-      case "a": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
-      case "s": await w.view.tween({ azimuthal: angle + Math.PI }); break;
-      case "d": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
-    }
-  };
-};
 
 /**
  * @param {NPC.RunArg} ct
@@ -171,39 +139,101 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
     if (e.key !== "logger-link") {
       continue;
     }
-    
-    // 🚧
-    // if (e.viewportRange.start.x - 1 === 0 && e.viewportRange.start.y - 1 === e.startRow) {
-    //   // clicked initial link
-    // }
     if (e.linkText === e.npcKey) {
       w.e.lookAt(e.npcKey).catch(() => {});
     }
-
   }
 }
 
 /**
- * - Make a single hard-coded polygon non-navigable,
- *   using `w.lib.queryFilterType.respectUnwalkable`
- * - Indicate it via debug polygon in `<Debug />`.
- * 
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ */
+export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  const npc = w.n[npcKey];
+  if (!npc) return;
+  if (input.meta.floor === true && !npc.s.actMeta) {
+    npc.api.look(input).catch(() => {});
+  } else {// act or stop acting
+    await npc.api.make({ do: input }).catch(() => {});
+  }
+}
+
+/**
+ * Like `move` but on obstruction await resolution, rather than throwing.
  * ```sh
- * selectPolysDemo
+ * direct npc:rob to:"$( click 2 )"
  * ```
  * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to']; }} [opts]
  */
-export async function* selectPolysDemo({ w }) {
-  const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
-    { x: 1.5 * 1.5, y: 0, z: 2 * 1.5 },
-    { x: 0.1, y: 0.1, z: 0.1 },
-    { maxPolys: 1 },
-  );
-  console.log({ polyRefs });
+export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+  let to = opts.to;
+  while (true) {
+    try {
+      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+      break;
+    } catch (e) {
+      if (!helper.isStopReason(e) || !('rest' in e)) {
+        throw e; // e.g. reboot; respawn or remove
+      }
+      to = e.rest;
+      // on paused interrupt, avoid resuming twice
+      if (!(e.key === 'move-again' && ct.api.isPaused())) {
+        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting resolution...`;
+      }
+      ct.api.pause();
+      await ct.api.awaitResume();
+    }
+  }
+}
 
-  const { navPolyFlag } = helper;
-  polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
-  w.debug.selectNavPolys(...polyRefs); // display via debug
+/**
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ * @param {number} [opts.close] Max distance from navigable permitted
+ */
+export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  const npc = w.n[npcKey];
+  if (npc) {
+    npc.s.run = input.keys?.includes("shift") ?? false;
+    npc.api.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {}); // can override
+  }
+}
+
+/**
+ * Prevent ContextMenu on long press of actable or floor.
+ * @param {NPC.RunArg} ct
+ */
+export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)) => {
+  w.e.pressMenuPrevent.preventMenuOnActOrFloor = (meta) => (
+    meta.act === true || meta.floor === true
+  );
+}
+
+/**
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ctxt
+ * @param {object} [opts]
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ */
+export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  
+  const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
+  api.set(opts.npcKeyPath, nextNpcKey);
+  const nextNpc = w.npc.getNpc(nextNpcKey); // must
+  nextNpc.api.showSelector(true);
+  
+  if (npcKey !== nextNpcKey) {
+    w.n[npcKey]?.api.showSelector(false); // maybe
+  }
 }
 
 /**
@@ -253,16 +283,6 @@ export const setupContextMenu = ({ w }) => {
   w.cm.toggleDocked(true);
 }
 
-// /**
-//  * @param {NPC.RunArg} ct
-//  */
-// export const setupOnStuckNpc = ({ w, args }) => {
-//   w.npc.onStuckCustom = (npc, agent) => {
-//     // console.warn(`${npc.key}: going slow`);
-//     npc.api.stopMoving({ type: 'stop-reason', key: 'stuck' });
-//   };
-// }
-
 /**
  * @param {NPC.RunArg} ct
  */
@@ -300,87 +320,48 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 }
 
 /**
- * @param {NPC.RunArg} ct
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ctxt
  */
-export const testAddDecor = (ct) => {
-  const decorCircle = ct.w.decor.create({
-    type: 'circle',
-    key: 'test-decor-circle',
-    center: { x: 2.5, y: 2.5 },
-    radius: 1.5,
-  });
-  
-  const decorPoint = ct.w.decor.create({
-    type: 'point',
-    key: 'test-decor-point',
-    x: 3,
-    y: 7.5,
-    img: 'icon--robot',
-    orient: 0,
-    y3d: 0.01,
-  });
-
-  const decorQuad = ct.w.decor.create({
-    type: 'quad',
-    key: 'test-decor-quad',
-    x: 3,
-    y: 7.5,
-    width: 2,
-    height: 0.025,
-    img: 'colour--white',
-    transform: tmpMat1.setRotation(Math.PI/4).toArray(),
-    y3d: 0.1,
-    color: '#f00',
-  });
-
-  return {
-    decorCircle,
-    decorPoint,
-    decorQuad,
-  };
-};
+export function toggleOnDoor({ meta }, { w }) {
+  if (meta.gdKey) w.e.toggleDoor(meta.gdKey);
+}
 
 /**
  * 
  * ```sh
- * tour npcKey:rob to:"$( click 5 )"
- * tour npcKey:rob to:"$( click 5 | sponge )"
- * tour npcKey:rob to:"$( points )"
+ * tour npc:rob to:"$( click 5 )"
+ * tour npc:rob to:"$( click 5 | sponge )"
+ * tour npc:rob to:"$( points )"
  * 
- * tour npcKey:rob to:"$( [] $( points ) )"
+ * tour npc:rob to:"$( [] $( points ) )"
  * nestedPoints=$( [] $( click 1 ) $( click 2 ) $( click 1 ) )
- * tour npcKey:rob to:$( nestedPoints )
+ * tour npc:rob to:$( nestedPoints )
  * ```
  * 
  * - `opts.pause` in seconds, default `0.8`
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to'][]; pause?: number }} [opts]
  */
-export async function* tour(ct, opts = ct.api.jsArg(ct.args, { to: 'array' })) {
-  let to = /** @type {undefined | NPC.MoveOpts['to']} */ (undefined);
+export async function* tour(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, { array: { to: true } })) {
   opts.pause ??= 0.8;
-  while (to = opts.to.shift()) {
-    try {
-      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-    } catch (e) {
-      if (!helper.isStopReason(e)) {
-        throw e; // e.g. reboot
-      }
-      if ('rest' in e) {
-        opts.to.unshift(e.rest);
-      } else {
-        throw e; // respawn or remove
-      }
-      // on paused interrupt, avoid resuming twice
-      if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting GM resolution...`;
-      }
-      await pause(ct);
-      continue;
-    }
+  for (const to of opts.to) {
+    yield* direct(ct, { npcKey: opts.npcKey, to });
     await ct.api.sleep(opts.pause);
   }
 }
 
-const tmpMat1 = new Mat();
 const tmpVect1 = new Vect();
+const tmpMat1 = new Mat();
+
+export const meta = {
+  map: {
+    handleContextMenu,
+    handleLoggerLinks,
+    lookActOnLong,
+    moveNpcOnClick,
+    selectNpcOnClick,
+    toggleOnDoor,
+    tour,
+  },
+};

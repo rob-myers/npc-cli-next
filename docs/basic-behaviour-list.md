@@ -9,12 +9,12 @@ click | filter meta.nav | take 2 &>> points
 click 2 meta.nav &>> points
 
 # spawn npc granting full access
-spawn npcKey:rob at:$( click 1 ) grant:.
+spawn npc:rob at:$( click 1 ) grant:.
 
 # note: not much time to turn
 while true; do
-  move npcKey:rob arriveAnim:none to:$( points/0 ) &&
-  move npcKey:rob arriveAnim:none to:$( points/1 )
+  move npc:rob arriveAnim:none to:$( points/0 ) &&
+  move npc:rob arriveAnim:none to:$( points/1 )
 done
 ```
 
@@ -24,9 +24,9 @@ done
 # choose 4 nav points
 click 4 meta.nav &>> points
 # spawn npc with full access
-spawn npcKey:rob at:$( click 1 ) grant:.
+spawn npc:rob at:$( click 1 ) grant:.
 # take a tour
-tour npcKey:rob to:"$( points )" 
+tour npc:rob to:"$( points )" 
 ```
 
 ```js
@@ -53,7 +53,7 @@ export async function* tour(ct, opts = ct.api.parseArgsAsJs(ct.args, { to: 'arra
 
 ```sh
 # variants on move command
-move npcKey:rob to:$( click 1 )
+move npc:rob to:$( click 1 )
 # these do not handle suspend/resume:
 w n.rob.move "{ to: $( click 1 ), arriveAnim: 'none' }"
 click 1 | map 'to => ({ to, arriveAnim: "none" })' | w n.rob.move -

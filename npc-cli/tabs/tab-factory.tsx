@@ -39,7 +39,7 @@ export type TabDef = { weight?: number } & (
       /** Session identifier (determines tab) */
       filepath: Extract<Key.TabId, `tty-${number}`>;
       profileKey: Key.Profile;
-      env?: Record<string, any>;
+      env: Record<string, any>;
     }
 );
 

@@ -45,10 +45,16 @@ const humanZeroShader = {
       vType = 3; // selector
     } else {
       vType = 1; // body
-      vHeightShade = min(max(pow(position.y / labelY, .75) + 0.1, 0.4), 1.0);
+      vHeightShade = min(max(pow(position.y / labelY, 2.) + 0.1, 0.4), 1.0);
     }
     
     vec3 transformed = vec3(position);
+
+    if (vType == 1) {// prior to bone transforms so aligned to spine
+      transformed.x *= opacity * opacity;
+      transformed.z *= opacity * opacity;
+    }
+
     #include <skinning_vertex>
     vec4 mvPosition;
 
@@ -61,13 +67,6 @@ const humanZeroShader = {
       mvPosition.xy += transformed.xy;
       
     } else {// everything else
-
-      if (vType == 1) {
-        // transformed.y *= 1.0 / opacity;
-        // transformed.y *= opacity;
-        transformed.x *= opacity * opacity;
-        transformed.z *= opacity * opacity;
-      }
 
       mvPosition = modelViewMatrix * vec4(transformed, 1.0);
   
@@ -232,7 +231,6 @@ const instancedAtlasShader = {
 
   varying vec3 vColor;
   flat varying uint vInstanceId;
-  flat varying vec4 vLitCircle; // (uv.x, uv.y, r, opacity)
   varying float vOpacityScale;
   flat varying uint vTextureId;
   varying vec2 vUv;
@@ -276,10 +274,10 @@ const instancedAtlasShader = {
   uniform sampler2DArray atlas;
   uniform vec3 diffuse;
   uniform float opacity;
+  uniform float opacityMin;
 
   varying vec3 vColor;
   flat varying uint vInstanceId;
-  flat varying vec4 vLitCircle;
   varying float vOpacityScale;
   flat varying uint vTextureId;
   varying vec2 vUv;
@@ -303,7 +301,7 @@ const instancedAtlasShader = {
     } else {
       if (texel.a * opacity < alphaTest) discard;
       
-      gl_FragColor = texel * vec4(vColor * diffuse, opacity * vOpacityScale);
+      gl_FragColor = texel * vec4(vColor * diffuse, min(opacity * vOpacityScale, opacityMin));
     }
 
     #include <logdepthbuf_fragment>
@@ -320,6 +318,7 @@ const instancedAtlasDefaultProps = {
   objectPick: false,
   objectPickRed: 0,
   opacity: 1,
+  opacityMin: 1,
   opacityCloseDivisor: 0,
   // 🔔 map, mapTransform required else can get weird texture
   // map: null,
@@ -499,10 +498,6 @@ export const InstancedFlatMaterial = shaderMaterial(
 
 const instancedFloorShader = {
   Vert: /* glsl */`
-
-    uniform vec3 torchData;
-    uniform vec3 torchTarget;
-
     attribute vec2 uvDimensions;
     attribute vec2 uvOffsets;
     attribute uint uvTextureIds;
@@ -513,11 +508,6 @@ const instancedFloorShader = {
     varying vec2 vUv;
     flat varying uint vTextureId;
     flat varying uint vInstanceId;
-
-    flat varying vec3 vTorchData;
-    // uvs pointing into torchTexture
-    // 🤔 could add extra varying per additional torch
-    varying vec2 vTorchUv;
 
     #include <common>
     #include <logdepthbuf_pars_vertex>
@@ -587,7 +577,7 @@ const instancedFloorShader = {
       
       if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        float lighter = clamp(4.0 * lightTexel.w, 1.0, 3.0);
+        float lighter = clamp(3.5 * lightTexel.w, 1.0, 3.0);
         gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
       } else {
         gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 2.0;
@@ -753,7 +743,7 @@ const instancedWallsShader = {
       return;
     }
     
-    gl_FragColor = vec4(diffuse, min(opacity * vOpacityScale, opacityMin));
+    gl_FragColor = vec4(diffuse, opacity == 1.0 ? 1.0 : min(opacity * vOpacityScale, opacityMin));
     // gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
     #include <logdepthbuf_fragment>
   }

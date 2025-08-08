@@ -1,23 +1,8 @@
 # TODO
 
-## Branch `get-blog-ready`
+## Branch `almost-ready`
 
 ### Site
-
-- ✅ example youtube vid for desktop
-  - upload example vid (short)
-  - ℹ️ https://studio.youtube.com/channel/UC6gBn5ta5ic5iNcQjXoeneQ/videos/short?filter=%5B%5D&sort=%7B%22columnType%22%3A%22date%22%2C%22sortOrder%22%3A%22DESCENDING%22%7D
-  - ℹ️ https://youtube.com/shorts/yDbGkW2umw4
-- ✅ example youtube vid for mobile
-  - ✅ can record via `scrcpy`
-  - ℹ️ `scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4`
-  - ✅ upload example vid
-  - ℹ️ https://youtube.com/shorts/WIIihWnOQ2E
-- ✅ show demo videos in Carousel
-- ✅ better desktop video dimensions
-  - use OSX Screenshot
-- ✅ fix Video style in Carousel (part 1)
-- ✅ fix Video style in Carousel (part 2)
 
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable
@@ -40,52 +25,6 @@
     - ℹ️ keep prompt disabled
     - ✅ show touch points
       - developer options > input > Show taps
-- ✅ fix mic issue: could not turn off voice isolation
-  - System Settings > Sound > select Input
-  - exit Jabra software in taskbar
-  - Change setting to "Standard" in Microphone in taskbar
-- ✅ fix mic issue part 2
-  - took out dongle, put it back, could see mic visualisation in Sound
-- ✅ fix mic too quiet
-  - OBS (Privacy microphone allowed)
-  - Use Razer Bluetooth
-  - Audio input capture: monitor and output
-  - use filter compressor gain instead?
-  - https://obsproject.com/forum/threads/microphone-is-either-loud-and-crackles-or-does-not-crackle-but-is-too-quiet.170668/post-628437
-- 🚧 start code much earlier
-- change writing style
-  - more intertwined with stories
-
-- ✅ migrate from embla carousel to swiper js
-  - https://swiperjs.com/get-started
-  - https://swiperjs.com/demos
-
-- ❌ swiper: slides with different width?
-  - ❌ instead option to switch between 1 or 2 per view
-
-- ❌ redo images in first carousel
-  - ℹ️ https://squoosh.app/editor | size?
-    - webp quality 70
-  - ✅ can spawn with various skins easily
-  - ✅ can spawn facing angle easily
-    - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
-  - ✅ extend 301 with more decor
-    - ✅ add some crates
-    - ✅ add a cuboid with a decor quad e.g. computer screen
-      - ℹ️ `decor quad tilt` tilts around center
-    - ✅ try use nodeCanvas for decor svg detail
-  - 🚧 three images
-    - ℹ️ screenshot of node `.tabs-container`
-    - 🚧 1st ✅ 2nd 🚧 3rd 🚧
-    - desktop and mobile (?)
-
-- ❌ refine chosen carousel embla-carousel
-  - ✅ carousel has labels
-  - ❌ clean carousel css e.g. more css variables
-  - ❌ auto png to webp in public/images
-
-- ✅ support multiple slides in carousel e.g. for small viewport images
-  - ✅ clean up approach
 
 - 🚧 strategy subsection
   - ✅ need `<Code>`
@@ -104,19 +43,22 @@
   - go on a tour
   - move another npc into the way
 
-- mention Starship Geomorphs early
+- ✅ Code supports multiline copy when lines end with `\` or `|`
+
+- ✅ mention Starship Geomorphs early
 - mention recent improvements in AI
   - NPC CLI could use them as tools
 
-- basic help page
-- basic about page
+- ✅ basic about page
+- 🚧 basic help page
 - write 1st dev blog
   - ℹ️ aligned to npc cli too i.e. focus on how various subsystems were built
 - sketch 1st automata blog
   - ℹ️ nondeterministic automata language-theoretically
   - summary of pre-existing academic work
-- Tabs: debug is global among Tab instances
+- ✅ Tabs: debug is global among Tab instances
   - defunct if we remove debug i.e. always paused when paused
+  - "debug" now called "manage"
 - start adding cypress
 
 - navigate to `#foo` then back should preserve scroll
@@ -124,211 +66,69 @@
 
 ### World
 
-- ✅ `npc.api.move` is silently choosing a "closest point" within 0.5
-  - default behaviour should be 0.05 (cannot choose zero because of small ground height)
- 
-- ✅ can pause and turn before moving
-  - ℹ️ we could trigger such turns when next target is not in same room
-  - ✅ try set maxSpeed 0 before "next pending target"
-  - ℹ️ when maxSpeed 0 before offMesh seems recastnavigation `agentAnim.tmax` is Infinity
-    - this "stops" the agents whilst still increases `agentAnim.t`
-    - if we immediately override the offMesh then the agent doesn't stop
-    - if we override but set `tmid` and `tmax` as Infinity then it initially pauses
-  - ✅ only trigger on enter offMesh with large deltaAngle
-  - ✅ resume after given ms
+- ✅ refactor ptags
+  - ✅ ptags builtin
+  - ✅ session.ptags
+  - ✅ process spawn uses session.ptags
+  - ✅ remove `ptags+=`
+  - ✅ remove `process.ptagsDelta`
 
-- ✅ release do point on move from chair to chair
-- ✅  can move and do (1st attempt)
-  - `local pts=$( click 2 ); move npcKey:rada to:$( pts/0 ) && w n.rada.api.do $( pts/1 ) )`
+- ✅ ptags resets after each non-interactive spawn
 
-- ✅ deltaMs -> deltaSecs
-  - seen inside npc.js
+- ✅ move dev_only.profile.sh inline functions into js modules
 
-- ✅ npc fading issue
-  - ℹ️ MUST have npc (non-transparent) sometimes behind walls (transparent)
-  - ℹ️ BUT then fading npc appears to be behind walls when it isn't
-  - ℹ️ issue arises because walls are instanced meshes
-  - ✅ move npc into/out-of baseY (floor, seat, bed)
-  - ✅ combined with opacity instanced mesh ordering issue not apparent
-  - https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
-  - ✅ provide unscaled animHeight as uniform
-  - ✅ clarify that npc shader uniform opacity is "teleport ratio"
+- 🚧 start extracting MapControls into our own camera controller
+  - ✅ CameraControls React component
+  - ✅ Replace MapControls from drei
+  - 🚧 CameraControls class
+  - Replace CameraControls from `three-stdlib`
 
-- ✅ Manage: can collapse/expands Tabs, Create, Layout
+- ✅ BUG: PsList: gray always process leaders
+  - ℹ️ on mobile not seeing 'resume' for always-tagged process leaders because they aren't resumed
+  - related to `ptags always && foo | bar &` where `ptags always` executed inside background process
+  - ✅ use `ptags always; foo | bar &` instead
 
-- ✅ PsList should not initially track on hmr
+- ✅ BUG: lookActOnLong sometimes initially paused and never resumed
+  - relates to our change to pause/resumeByPtags
+  - ✅ spawned while paused should be resumed
+  - ✅ pause while paused should not be resumed
 
-- ✅ `tour`: once blocked then `pause` and wait for help and resume
-  - ℹ️ there is no good general solution otherwise
-    ```sh
-    while true; do
-      tour npcKey:rob to:$( points )
-    done
-    ```
+- BUG: verify rebooting is working e.g. in `map`d
 
-- ✅ get variant of `tour` working with continuous traversal of multiple points
-  - ✅ basic version `ctsTour`
-  - ✅ `ctsTour` restores on finish/kill
-  - ✅ `ctsTour` restores/reverts on pause/resume
-  - ✅ remove change slowDownRadius onenter small room
-  - ✅ `ctsTour` jerks when stuck via other
-    - we'll pause and await GM input
-  - ✅ merge `ctsTour` into `tour`
-    - ✅ `move` cleans its own callbacks
-    - ✅ slowDownRadius change only used for continuous movement
-  - ✅ reboot needs to be handled differently in try catch?
-    - maybe fixed by re-throw non "stopped-reason"
-  - ✅ remove `ctsTour`
+- ✅ fix pause/resumeByPtags i.e. only resume processes we actually paused
+- ✅ `moveLoop` can wait when stopped
+  - `move` became too ugly
+- ✅ BUG: `move` when target is just beyond doorway
 
-- ✅ avoid "continuous true issues" in general via `npc.pendingTargets`
-  - ✅ finally reset `slowDownRadius`
-  - ✅ on reject what happens to unreached e.g. how can we resume?
-    - ✅ do not clear pending targets
-    - ✅ next `move` without points resumes, otherwise clears
-  - ✅ remove `npc.s.continuous`
-  - ✅ can `npc.api.move`
-    - `w n.rob.api.move "{ to: $( click 1 ) }"`
-    - `w n.rob.api.move "{ to: $( click 2 ) }"`
-  - ✅ can `move`
-    - `move npcKey:rob to:$( click 2 )`
-    - can pause/resume
-    - can interrupt
-  - ✅ try clean `move`
-    - ✅ support multiple move rejects
-    - ✅ awaitResume has optional `exposeReject`
-  - ✅ emit event `continued-moving` on continue to pendingTargets
-  - ✅ update slowDownRadius per pendingTargets
-  - ✅ can extend pendingTargets
-  - ✅ can `tour`
-  - ✅ `tour` seems "freely combinable" with `move` interruptions
-  - ✅ `tour` nested arrays
-    - `tour npcKey:rob to:$( array $( click 2 ) )` continuous
-    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) )` stop, then cts
-    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) $( click 1 ) )`
-    ```sh
-    nestedPoints=$( array $( click 1 ) $( click 2 ) $( click 1 ) )
-    tour npcKey:rob to:$( nestedPoints )
-    ```
+- `meta.act` -> `meta.do` and `meta.actPoint` -> `meta.doPoint`
 
-- ✅ api to indicate points using decor points/quads
-  - ✅ add `decor/icon--#{1,2,3}.svg` and extend `fromDecorImgKey`
-  - ✅ run `yarn assets-bun` (seems not auto-picked-up)
-  - ✅ create decor circle via a command
-  - ✅ refactor decor creation
-    - ℹ️ do not use script-only `geomorph.createLayoutDecorFromPoly`
-    - ✅ `Geomorph.DecorDef`
-    - ✅ `w.decor.create(def)`
-  - ✅ create decor quad with texture via command `testAddDecor`
-  - ✅ can create monochromatic line
-    - ✅ translation + scale
-    - ✅ rotation
-  - ✅ `click` can create monochromatic points
-    - ✅ `createDecorLine` creates line
-    - ✅ on re-add decor it should update
-      - `createDecorLine decorKey:foo from:$( click 1 ) to:$( click 1 )`
-    - ✅ hook up to `click`
-    - ✅ avoid z-fighting via monochrome white
-    - ❌ clicks too close to previous?
-    - ✅ decor quads can have meta.nav true
-    - ✅ clicks over 10 receive icon sans number
+- `move` can expose `{ to, index }` via `expose:foo` for path reconfig
+  - ℹ️ so can handle resumed `move` when goto next is "unnatural" i.e. should be skipped
 
-- ✅ BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
-  - try fix by removing unnecessary `this.pendingTargets.length = 0`
+- ✅ BUG: build transpile is converting arrow function to normal function
+  - ℹ️ breaks profile i.e. if `preventMenuOnActOrFloor` not an arrow function, profile hangs
+    - `call 'ct => ct.lib.game_1.preventMenuOnActOrFloor'`
+  - ❌ node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js
+  - ❌ Maybe babel is transforming them
+    > From arrow functions to template literals, the conversion process helps maintain functionality in older browsers. For instance, arrow functions are transformed into regular function expressions, significantly increasing compatibility.
+    > https://moldstud.com/articles/p-key-babel-transformations-what-happens-to-your-javascript-features-behind-the-scenes
+  - ✅ Could change the way we specify functions as "call" or "map"
 
-- ❌ `ptags+=foo` -> builtin `ptags foo`
+- ✅ BUG: dst before offMesh.dst sometimes snaps back
 
-- 🚧 sh: fail early semantics i.e. `set -e`
-  - ℹ️ profile seems "ok": we paste each line, regardless of exitCode
-  - ✅ stmts fails as soon as one does
-  - ✅ while fails if body does
+- ✅ symlink hull symbols into public folder for better viewing
+  - raw.github svg does not load image dataurl
+  - e.g. public/symlink/101--hull.svg
 
-- ℹ️ example commands
-  - `points/reverse'()'`
-  - `points/at'(-1)'`
-  - `testAddDecor`
-  - `w decor.remove test-decor-{circle,point,quad}`
+- ✅ BUG `w.events` sees `clear-off-mesh` before `enter-off-mesh` even though they execute in other order
+  - ℹ️ `next enter-off-mesh` triggers a subscriber which `next clear-off-mesh` then executes 2nd subscriber
+  - ℹ️ later subscribers see `clear-off-mesh` then `enter-off-mesh`
+  - ✅ Broadcaster class like `Subject` but with prioritised listeners `independents`
 
-- ✅ tty: fix mobile closed bracket
-  - ℹ️ works on google gboard, but not microsoft swiftkey
-  - can turn "quick prediction insert" and "quick punctuation" off
+- ✅ skin order should be head|head-overlay|body|body-overlay
 
-- ❌ PsList: pause/resume while Tabs paused broke?
-  - no repro yet
-
-- ✅ move arrival is still delicate
-  - arriveDist:0.1 does not always work
-  - tweak: idle separationWeight 0.25, moving separationWeight 0.1
-
-- ✅ fix spawn onto do point
-  ```sh
-  c=-1; while c+=1; do
-    spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
-  done
-  ```
-
-- profile_1: move inline-functions into js modules
-  - not needed in all cases e.g. reboot still works for `map`
-
-- 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
-  - ✅ invert npc (when WorldMenu invert on)
-  - ❌ torch radius/opacity
-  - breathTriIds (one per classKey)
-  - ...
-
-- ✅ iOS 18.5 not working, probably when recast (WASM) is loaded
-  - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
-  - https://bugs.webkit.org/show_bug.cgi?id=291677
-  - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
-  - ℹ️ `small-map-1` works, so could restrict in case of iOS
-  - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
-  - ✅ check iPad
-
-- 🚧 new example-commands.md
-  - `tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )`
-
-- ✅ spawn more than 200 npcs should throw error
-  - current just sets npc position to (0,0,0)
-
-- ✅ support multi-spawn with simplified opts
-  - ℹ️ `w.npc.spawnMany`
-  - ✅ mounts "all at once"
-  - ✅ fix labels
-  - ✅ attach/detach agents
-
-- ✅ increasing intermediate pendingTarget arrival distance has bad side-effects
-  - ℹ️ means we don't get close enough to intermediate points
-  - `w crowd.navMeshQuery | log`
-  - ✅ expose navMeshQuery methods so we can "look ahead"
-    - initSlicedFindPath 
-    - updateSlicedFindPath
-    - finalizeSlicedFindPath
-    - finalizeSlicedFindPathPartial
-  - ✅ expose finalizeSlicedFindPath too
-  - ✅ try running locally `yarn dev-webpack` with tsconfig paths uncommented
-  - ✅ publish to our recast-navigation-js npm modules
-  - ❌ consider detecting "turn into intermediate target" and use slowDownRadius in that case
-  - ℹ️ points weren't on nav mesh
-  - ℹ️ we decreased to `1.5 * arriveDist`
-
-- ✅ rename meta.do -> meta.act
-  - ℹ️ because `do` is reserved word (loop construct)
-  - ✅ svg: decor do -> decor act
-  - ✅ meta.doPoint -> meta.actPoint
-  - ✅ js changes e.g. api.do -> api.act
-  - ✅ cli changes
-- `act npcKey:rob at:$( click 1 )`
-
-- ✅ can force while loop to continue via `|| true`
-
-- 🚧 some offMesh traversals seem slow
-  - 🚧 might have fixed computation of tmax
-
-- BUG: idle npcs are sometimes not staying in place on nav reload?
-
-- ✅ BUG: collide whilst running does not enter Idle
-
-- ✅ reorg npc.reject.moves
-  - `npc.reject.move` (single) and `npc.onRejects.move` (multiple)
+- 🚧 BUG: idle npcs are sometimes not staying in place on nav reload?
+  - sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
 
 - BUG: sometimes tty-0 fails to persist /home?
 
@@ -352,27 +152,20 @@ expr window.document.querySelector'("section")' | log
 - can `w e.say` at different heights, to avoid collisions
   - e.g. when sitting next to each other
 
-- ✅ try avoid `move` failing with key "stuck" when near others?
-  - idle has larger separationWeight
-  - larger arriveDist i.e. 0.1
-
-- ✅ manage: can select tty profileKey which remounts Tty
-
-- wasd camera controls does not work with follow
+- 🚧 WASD camera controls does not work with follow
   - ℹ️ related to w.view.controls.update(true);
   - 🔔 start porting to our own camera controller
 
-- sometimes spawned npc is not "pinned to spawn point" i.e. lacks target
+- ✅ doors can be further secured via `doorToAccess`
 
-- doors can be further secured by "full match" e.g. `.*` vs `.`
+- ✅ can show navMesh via cli
+  - `w debug.showNavMesh`
 
-- can show navMesh via cli
+- ✅ Ctrl-C "failure" unclear while paused
+  - ✅ tty: run `spawn bar $( click 1 )` then pause... cannot click
+  - ✅ provide UI `cont` interactive process
 
-- Ctrl-C "failure" unclear while paused
-- tty: run `spawn bar $( click 1 )` then pause... cannot click
-  - provide UI `cont` interactive process
-
-- fade ContextMenu and SpeechBubble (as before) on World resize
+- ✅ fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
 
 - BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
@@ -392,8 +185,6 @@ expr window.document.querySelector'("section")' | log
 - Tty: could debounce/cancel CONT/STOP
 
 - tty: command-by-command mode by setting leading process `ProcessStatus.Suspended` after each run
-
-- ✅ support decor cuboid meta `max-height` e.g. cuboid under obstacle
 
 - 🚧 cleanup human-0 skin
   - ✅ Blender: overlay cuboids should be double-sided
@@ -425,8 +216,7 @@ expr window.document.querySelector'("section")' | log
 - npc is lit by static lighting 
   - provide inverse-matrix-per-gmId as uniform
   - provide gmId as uniform
-- ✅ floor torch: more efficient approach
-  - use single varying vec2 vFoo i.e. uvs into radial light fill texture
+
 
 - sh: strategy for stale `ps` after Tabs pause
 - bug: sh
@@ -1650,6 +1440,70 @@ expr window.document.querySelector'("section")' | log
 
 ## Branch `get-blog-ready`
 
+### Site
+
+- ✅ example youtube vid for desktop
+  - upload example vid (short)
+  - ℹ️ https://studio.youtube.com/channel/UC6gBn5ta5ic5iNcQjXoeneQ/videos/short?filter=%5B%5D&sort=%7B%22columnType%22%3A%22date%22%2C%22sortOrder%22%3A%22DESCENDING%22%7D
+  - ℹ️ https://youtube.com/shorts/yDbGkW2umw4
+- ✅ example youtube vid for mobile
+  - ✅ can record via `scrcpy`
+  - ℹ️ `scrcpy --video-codec=h265 --max-size=1920 --max-fps=60 --no-audio --keyboard=uhid --video-codec=h264 --video-encoder='OMX.google.h264.encoder' --record=file.mp4`
+  - ✅ upload example vid
+  - ℹ️ https://youtube.com/shorts/WIIihWnOQ2E
+- ✅ show demo videos in Carousel
+- ✅ better desktop video dimensions
+  - use OSX Screenshot
+- ✅ fix Video style in Carousel (part 1)
+- ✅ fix Video style in Carousel (part 2)
+      
+- ✅ fix mic issue: could not turn off voice isolation
+  - System Settings > Sound > select Input
+  - exit Jabra software in taskbar
+  - Change setting to "Standard" in Microphone in taskbar
+- ✅ fix mic issue part 2
+  - took out dongle, put it back, could see mic visualisation in Sound
+- ✅ fix mic too quiet
+  - OBS (Privacy microphone allowed)
+  - Use Razer Bluetooth
+  - Audio input capture: monitor and output
+  - use filter compressor gain instead?
+  - https://obsproject.com/forum/threads/microphone-is-either-loud-and-crackles-or-does-not-crackle-but-is-too-quiet.170668/post-628437
+- change writing style
+  - more intertwined with stories
+
+- ✅ migrate from embla carousel to swiper js
+  - https://swiperjs.com/get-started
+  - https://swiperjs.com/demos
+
+- ❌ swiper: slides with different width?
+  - ❌ instead option to switch between 1 or 2 per view
+
+- ❌ redo images in first carousel
+  - ℹ️ https://squoosh.app/editor | size?
+    - webp quality 70
+  - ✅ can spawn with various skins easily
+  - ✅ can spawn facing angle easily
+    - `spawn npcKey:foo at:$( click 1 ) look:$( click 1)`
+  - ✅ extend 301 with more decor
+    - ✅ add some crates
+    - ✅ add a cuboid with a decor quad e.g. computer screen
+      - ℹ️ `decor quad tilt` tilts around center
+    - ✅ try use nodeCanvas for decor svg detail
+  - 🚧 three images
+    - ℹ️ screenshot of node `.tabs-container`
+    - 🚧 1st ✅ 2nd 🚧 3rd 🚧
+    - desktop and mobile (?)
+
+- ❌ refine chosen carousel embla-carousel
+  - ✅ carousel has labels
+  - ❌ clean carousel css e.g. more css variables
+  - ❌ auto png to webp in public/images
+
+- ✅ support multiple slides in carousel e.g. for small viewport images
+  - ✅ clean up approach
+
+
 ### World
 
 - ✅ ptags.preview used by `ps` and `PsList`
@@ -2028,6 +1882,224 @@ done
 - ❌ bug: sh: support $@ deeply inside double quotes
   - not a bug: e.g. `foo() { echo "foo bar $( bar ${@} )"; }` behaves like bash
 
+
+- ✅ `npc.api.move` is silently choosing a "closest point" within 0.5
+  - default behaviour should be 0.05 (cannot choose zero because of small ground height)
+ 
+- ✅ can pause and turn before moving
+  - ℹ️ we could trigger such turns when next target is not in same room
+  - ✅ try set maxSpeed 0 before "next pending target"
+  - ℹ️ when maxSpeed 0 before offMesh seems recastnavigation `agentAnim.tmax` is Infinity
+    - this "stops" the agents whilst still increases `agentAnim.t`
+    - if we immediately override the offMesh then the agent doesn't stop
+    - if we override but set `tmid` and `tmax` as Infinity then it initially pauses
+  - ✅ only trigger on enter offMesh with large deltaAngle
+  - ✅ resume after given ms
+
+- ✅ release do point on move from chair to chair
+- ✅  can move and do (1st attempt)
+  - `local pts=$( click 2 ); move npcKey:rada to:$( pts/0 ) && w n.rada.api.do $( pts/1 ) )`
+
+- ✅ deltaMs -> deltaSecs
+  - seen inside npc.js
+
+- ✅ npc fading issue
+  - ℹ️ MUST have npc (non-transparent) sometimes behind walls (transparent)
+  - ℹ️ BUT then fading npc appears to be behind walls when it isn't
+  - ℹ️ issue arises because walls are instanced meshes
+  - ✅ move npc into/out-of baseY (floor, seat, bed)
+  - ✅ combined with opacity instanced mesh ordering issue not apparent
+  - https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
+  - ✅ provide unscaled animHeight as uniform
+  - ✅ clarify that npc shader uniform opacity is "teleport ratio"
+
+- ✅ Manage: can collapse/expands Tabs, Create, Layout
+
+- ✅ PsList should not initially track on hmr
+
+- ✅ `tour`: once blocked then `pause` and wait for help and resume
+  - ℹ️ there is no good general solution otherwise
+    ```sh
+    while true; do
+      tour npcKey:rob to:$( points )
+    done
+    ```
+
+- ✅ get variant of `tour` working with continuous traversal of multiple points
+  - ✅ basic version `ctsTour`
+  - ✅ `ctsTour` restores on finish/kill
+  - ✅ `ctsTour` restores/reverts on pause/resume
+  - ✅ remove change slowDownRadius onenter small room
+  - ✅ `ctsTour` jerks when stuck via other
+    - we'll pause and await GM input
+  - ✅ merge `ctsTour` into `tour`
+    - ✅ `move` cleans its own callbacks
+    - ✅ slowDownRadius change only used for continuous movement
+  - ✅ reboot needs to be handled differently in try catch?
+    - maybe fixed by re-throw non "stopped-reason"
+  - ✅ remove `ctsTour`
+
+- ✅ avoid "continuous true issues" in general via `npc.pendingTargets`
+  - ✅ finally reset `slowDownRadius`
+  - ✅ on reject what happens to unreached e.g. how can we resume?
+    - ✅ do not clear pending targets
+    - ✅ next `move` without points resumes, otherwise clears
+  - ✅ remove `npc.s.continuous`
+  - ✅ can `npc.api.move`
+    - `w n.rob.api.move "{ to: $( click 1 ) }"`
+    - `w n.rob.api.move "{ to: $( click 2 ) }"`
+  - ✅ can `move`
+    - `move npcKey:rob to:$( click 2 )`
+    - can pause/resume
+    - can interrupt
+  - ✅ try clean `move`
+    - ✅ support multiple move rejects
+    - ✅ awaitResume has optional `exposeReject`
+  - ✅ emit event `continued-moving` on continue to pendingTargets
+  - ✅ update slowDownRadius per pendingTargets
+  - ✅ can extend pendingTargets
+  - ✅ can `tour`
+  - ✅ `tour` seems "freely combinable" with `move` interruptions
+  - ✅ `tour` nested arrays
+    - `tour npcKey:rob to:$( array $( click 2 ) )` continuous
+    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) )` stop, then cts
+    - `tour npcKey:rob to:$( array $( click 1 ) $( click 2 ) $( click 1 ) )`
+    ```sh
+    nestedPoints=$( array $( click 1 ) $( click 2 ) $( click 1 ) )
+    tour npcKey:rob to:$( nestedPoints )
+    ```
+
+- ✅ api to indicate points using decor points/quads
+  - ✅ add `decor/icon--#{1,2,3}.svg` and extend `fromDecorImgKey`
+  - ✅ run `yarn assets-bun` (seems not auto-picked-up)
+  - ✅ create decor circle via a command
+  - ✅ refactor decor creation
+    - ℹ️ do not use script-only `geomorph.createLayoutDecorFromPoly`
+    - ✅ `Geomorph.DecorDef`
+    - ✅ `w.decor.create(def)`
+  - ✅ create decor quad with texture via command `testAddDecor`
+  - ✅ can create monochromatic line
+    - ✅ translation + scale
+    - ✅ rotation
+  - ✅ `click` can create monochromatic points
+    - ✅ `createDecorLine` creates line
+    - ✅ on re-add decor it should update
+      - `createDecorLine decorKey:foo from:$( click 1 ) to:$( click 1 )`
+    - ✅ hook up to `click`
+    - ✅ avoid z-fighting via monochrome white
+    - ❌ clicks too close to previous?
+    - ✅ decor quads can have meta.nav true
+    - ✅ clicks over 10 receive icon sans number
+
+- ✅ BUG `move npcKey:rob to:$( points )` sometimes stops at 1st point
+  - try fix by removing unnecessary `this.pendingTargets.length = 0`
+
+- ❌ `ptags+=foo` -> builtin `ptags foo`
+
+- ✅ sh: fail early semantics i.e. `set -e`
+  - ℹ️ profile seems "ok": we paste each line, regardless of exitCode
+  - ✅ stmts fails as soon as one does
+  - ✅ while fails if body does
+  - ✅ support `foo || true`
+
+- ℹ️ example commands
+  - `points/reverse'()'`
+  - `points/at'(-1)'`
+  - `testAddDecor`
+  - `w decor.remove test-decor-{circle,point,quad}`
+
+- ✅ tty: fix mobile closed bracket
+  - ℹ️ works on google gboard, but not microsoft swiftkey
+  - can turn "quick prediction insert" and "quick punctuation" off
+
+- ❌ PsList: pause/resume while Tabs paused broke?
+  - no repro yet
+
+- ✅ move arrival is still delicate
+  - arriveDist:0.1 does not always work
+  - tweak: idle separationWeight 0.25, moving separationWeight 0.1
+
+- ✅ fix spawn onto do point
+  ```sh
+  c=-1; while c+=1; do
+    spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
+  done
+  ```
+
+- profile_1: move inline-functions into js modules
+  - not needed in all cases e.g. reboot still works for `map`
+
+- 🚧 "global vars" DataArrayTexture nx1x1 (1 pixel per texture)
+  - ✅ invert npc (when WorldMenu invert on)
+  - ❌ torch radius/opacity
+  - breathTriIds (one per classKey)
+  - ...
+
+- ✅ iOS 18.5 not working, probably when recast (WASM) is loaded
+  - https://discussions.unity.com/t/webgl-is-not-working-on-safari-after-ios-18-4-update/1628007/29
+  - https://bugs.webkit.org/show_bug.cgi?id=291677
+  - ℹ️ this works: https://recast-navigation-js.isaacmason.com/?path=/story/crowd-crowd-with-multiple-agents--crowd-with-multiple-agents
+  - ℹ️ `small-map-1` works, so could restrict in case of iOS
+  - ✅ restrict layout-preset-0 and Manage `<select>` to mapKeys containing "small"
+  - ✅ check iPad
+
+- 🚧 new example-commands.md
+  - `tour npcKey:rob to:$( [] $( click 2 ) $( click 2 ) )`
+
+- ✅ spawn more than 200 npcs should throw error
+  - current just sets npc position to (0,0,0)
+
+- ✅ support multi-spawn with simplified opts
+  - ℹ️ `w.npc.spawnMany`
+  - ✅ mounts "all at once"
+  - ✅ fix labels
+  - ✅ attach/detach agents
+
+- ✅ increasing intermediate pendingTarget arrival distance has bad side-effects
+  - ℹ️ means we don't get close enough to intermediate points
+  - `w crowd.navMeshQuery | log`
+  - ✅ expose navMeshQuery methods so we can "look ahead"
+    - initSlicedFindPath 
+    - updateSlicedFindPath
+    - finalizeSlicedFindPath
+    - finalizeSlicedFindPathPartial
+  - ✅ expose finalizeSlicedFindPath too
+  - ✅ try running locally `yarn dev-webpack` with tsconfig paths uncommented
+  - ✅ publish to our recast-navigation-js npm modules
+  - ❌ consider detecting "turn into intermediate target" and use slowDownRadius in that case
+  - ℹ️ points weren't on nav mesh
+  - ℹ️ we decreased to `1.5 * arriveDist`
+
+- ✅ rename meta.do -> meta.act
+  - ℹ️ because `do` is reserved word (loop construct)
+  - ✅ svg: decor do -> decor act
+  - ✅ meta.doPoint -> meta.actPoint
+  - ✅ js changes e.g. api.do -> api.act
+  - ✅ cli changes
+- `act npcKey:rob at:$( click 1 )`
+
+- ✅ can force while loop to continue via `|| true`
+
+- ✅ some offMesh traversals seem slow
+  - 🚧 might have fixed computation of tmax
+
+
+- ✅ BUG: collide whilst running does not enter Idle
+
+- ✅ reorg npc.reject.moves
+  - `npc.reject.move` (single) and `npc.onRejects.move` (multiple)
+
+
+- ✅ try avoid `move` failing with key "stuck" when near others?
+  - idle has larger separationWeight
+  - larger arriveDist i.e. 0.1
+
+- ✅ manage: can select tty profileKey which remounts Tty
+
+- ✅ support decor cuboid meta `max-height` e.g. cuboid under obstacle
+
+- ✅ floor torch: more efficient approach
+  - use single varying vec2 vFoo i.e. uvs into radial light fill texture
 
 ### Dev Env
 
