@@ -69,16 +69,17 @@ export default function Nav() {
         </MenuItem>
         <SubMenu icon={icon.blog} label="Main">
           <MenuItem component="span">
-            <Link href="/blog/intent">Intent</Link>
+            <Link href="/blog/main/multiple-npcs">Multiple NPCs</Link>
           </MenuItem>
-          <MenuItem component="span">
-            <Link href="/blog/strategy-1">Strategy 1</Link>
-          </MenuItem>
+
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
         <SubMenu icon={icon.devBlog} label="Dev">
-          <MenuItem>Tech</MenuItem>
+        <MenuItem component="span">
+            <Link href="/blog/dev/intro-to-world">World Intro</Link>
+          </MenuItem>
+
           <MenuItem>One</MenuItem>
           <MenuItem>Two</MenuItem>
         </SubMenu>
