@@ -206,6 +206,11 @@ export interface BaseMeta {
   background?: boolean;
   /** Log extra info? */
   verbose?: boolean;
+  /**
+   * Threw due to non-zero child exit code?
+   * Corresponds to `set -e`.
+   */
+  childExit?: boolean;
 }
 
 export const defaultSessionKey = "code-has-not-run";
