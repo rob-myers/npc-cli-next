@@ -236,7 +236,7 @@ export default function Decor(props) {
               point: true,
               y: def.y3d,
               ...def.img !== undefined && { img: def.img },
-              ...meta.act === true && { actPoint: {...center} },
+              ...meta.do === true && { doPoint: {...center} },
             }),
             bounds2d,
             x: center.x,
@@ -366,8 +366,8 @@ export default function Decor(props) {
           instance.x = toPrecision(instance.x);
           instance.y = toPrecision(instance.y);
           instance.meta.orient = orient; // update `meta` too
-          if (base.meta.act === true) {
-            instance.meta.actPoint = { x: instance.x, y: instance.y };
+          if (base.meta.do === true) {
+            instance.meta.doPoint = { x: instance.x, y: instance.y };
           }
           break;
         }
@@ -399,7 +399,7 @@ export default function Decor(props) {
       return d.type === 'point' && (
         typeof d.meta.img === 'string'
         // these fallback to icon--info
-        || d.meta.act === true || d.meta.button === true
+        || d.meta.do === true || d.meta.button === true
       ) || d.type === 'quad' && (
         typeof d.meta.img === 'string' 
       );

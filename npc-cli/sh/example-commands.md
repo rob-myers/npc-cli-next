@@ -42,6 +42,17 @@ w npc.spawnMany "{ points: $( pts ) }"
 remove npc_{0..99}
 ```
 
+# Moving
+
+```sh
+move npc:rob to:$( click 1 )
+```
+
+# Doing
+
+```sh
+make npc:rob do:$( click 1 )
+```
 
 ### Debug Toggles
 
@@ -53,7 +64,6 @@ w debug.showStaticColliders
 ```
 
 ### Post processing
-
 
 ```sh
 w view.showEffects
@@ -125,28 +135,32 @@ done
 ### Process Management
 
 ```sh
+ps
+ps -s
+ps -a
 ps -a | filter --ansi /^0/
+```
+
+```sh
+kill 4 --STOP
+kill 4 --CONT
+kill --all
+```
+
+```sh
+# set process tags for next non-interactive spawn
+ptags always foo=42
+# view pending process tags
+ptags
+
+sleep # iteractive: ptags not applied
+sleep 10 & # non-interactive: ptags applied and reset
+ps -s # can see ptags
 ```
 
 🚧
 
-## Npcs
-
-```sh
-
-# spawn many
-seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>> pts
-w npc.spawnMany "{ points: $( pts ) }"
-# remove them
-w npc.remove npc_{0..99}
-
-# move two points, pause, move two more points
-tour npc:rob to:$( [] $( click 2 ) $( click 2 ) )
-```
-
-```sh
-act npc:rob at:$( click 1 )
-```
+## Old
 
 ```sh
 # inline example

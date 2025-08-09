@@ -24,7 +24,7 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
-    actToNpc: {},
+    doToNpc: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
     gltfAux: /** @type {*} */ ({}),
@@ -178,9 +178,9 @@ export default function Npcs(props) {
         delete state.npc[npc.key];
         state.freeId.add(npc.def.uid);
         state.idToKey.delete(npc.def.uid);
-        if (npc.s.actMeta !== null) {
-          const { actPoint, y } = npc.s.actMeta;
-          delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
+        if (npc.s.doMeta !== null) {
+          const { doPoint, y } = npc.s.doMeta;
+          delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
         }
       }
       w.events.next({ key: 'removed-npcs', npcKeys: npcs.map(x => x.key) });
@@ -209,21 +209,21 @@ export default function Npcs(props) {
         ...bodyOverlay !== undefined && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay} },
       };
     },
-    setActMeta(npcKey, actMeta) {
+    setDoMeta(npcKey, doMeta) {
       const npc = w.n[npcKey];
 
-      if (npc.s.actMeta !== null) {
-        const { actPoint, y } = npc.s.actMeta;
-        delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
+      if (npc.s.doMeta !== null) {
+        const { doPoint, y } = npc.s.doMeta;
+        delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
       }
 
-      if (actMeta === null) {
-        npc.s.actMeta = null;
+      if (doMeta === null) {
+        npc.s.doMeta = null;
       } else {
-        const { actPoint, y } = actMeta;
-        const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
-        state.actToNpc[key] = npcKey;
-        npc.s.actMeta = actMeta;
+        const { doPoint, y } = doMeta;
+        const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+        state.doToNpc[key] = npcKey;
+        npc.s.doMeta = doMeta;
       }
     },
     setupSkins() {
@@ -308,8 +308,8 @@ export default function Npcs(props) {
       const dstNav = meta.nav === true || state.isPointInNavmesh(point);
       const attachAgent = dstNav;
 
-      if (dstNav === false && meta.act !== true) {
-        throw Error(`not navigable nor actable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
+      if (dstNav === false && meta.do !== true) {
+        throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
@@ -319,7 +319,7 @@ export default function Npcs(props) {
         throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }
 
-      state.validateActMeta(meta.act === true ? meta : null);
+      state.validateDoMeta(meta.do === true ? meta : null);
       
       let npc = state.npc[opts.npcKey];
 
@@ -371,7 +371,7 @@ export default function Npcs(props) {
         npc.api.initialize(state.gltf[npc.def.classKey]);
       }
 
-      state.setActMeta(opts.npcKey, meta.act === true ? meta : null);
+      state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
 
       if (typeof opts.skin === 'string') {
         opts.skin = state.resolveSkin(opts.skin);
@@ -433,7 +433,7 @@ export default function Npcs(props) {
       const groundPoints = opts.points.slice(0, numPermitted);
       const preNpcKeys = groundPoints.map((_, i) => opts.keys?.[i]);
       /** Ground point either has act meta or we assume it is navigable */
-      const actMetas = groundPoints.map(p => p.meta?.act === true && helper.isVectJson(p.meta.actPoint) ? p.meta : null);
+      const doMetas = groundPoints.map(p => p.meta?.do === true && helper.isVectJson(p.meta.doPoint) ? p.meta : null);
       
       const angles = groundPoints.map((p, i) => {
         if (typeof p.meta?.orient === 'number') {
@@ -449,7 +449,7 @@ export default function Npcs(props) {
 
       // initialize all
       for (const [i, preNpcKey] of preNpcKeys.entries()) {
-        const actMeta = actMetas[i];
+        const doMeta = doMetas[i];
         // fallback npcKey uses 1st freeId
         const freeId = takeFirst(state.freeId);
         const npcKey = preNpcKey ?? `${baseKey}_${freeId}`;
@@ -487,8 +487,8 @@ export default function Npcs(props) {
           state.npc[npcKey] = npc;
         }
 
-        if (actMeta !== null) {
-          state.setActMeta(npcKey, actMeta);
+        if (doMeta !== null) {
+          state.setDoMeta(npcKey, doMeta);
         }
         npcs.push(npc);
       }
@@ -509,8 +509,8 @@ export default function Npcs(props) {
         npc.api.startAnimation(point.meta ?? {});
 
         // attach/detach agents
-        const actMeta = actMetas[i];
-        const attachAgent = actMeta === null;
+        const doMeta = doMetas[i];
+        const attachAgent = doMeta === null;
         if (npc.agent === null) {
           if (attachAgent === true) {
             const agent = state.attachAgent(npc);
@@ -546,19 +546,19 @@ export default function Npcs(props) {
       w.view.ensureRender();
     },
     update,
-    validateActMeta(actMeta) {
-      if (actMeta === null) {
+    validateDoMeta(doMeta) {
+      if (doMeta === null) {
         return;
       }
 
-      if (!helper.isVectJson(actMeta.actPoint)) {
-        throw Error(`actMeta.actPoint must exist: ${jsStringify(actMeta)}`);
+      if (!helper.isVectJson(doMeta.doPoint)) {
+        throw Error(`doMeta.doPoint must exist: ${jsStringify(doMeta)}`);
       }
 
-      const { actPoint, y } = actMeta;
-      const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
-      if (key in state.actToNpc) {
-        throw Error(`actable used by ${state.actToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
+      const { doPoint, y } = doMeta;
+      const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+      if (key in state.doToNpc) {
+        throw Error(`actable used by ${state.doToNpc[key]}: ${jsStringify(doMeta.doPoint)} (height ${y})`);
       }
     },
   }), { reset: { showLastNavPath: true } });
@@ -623,7 +623,7 @@ export default function Npcs(props) {
 
 /**
  * @typedef State
- * @property {Record<`${number},${number},${number}`, string>} actToNpc
+ * @property {Record<`${number},${number},${number}`, string>} doToNpc
  * Act point to current npc or undefined.
  * - `${x},${y},${z}` -> npcKey
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
@@ -678,7 +678,7 @@ export default function Npcs(props) {
  * - `base` `soldier-0`, `suit-0` each remap all
  * - `soldier-0,` remaps head and head-overlay
  * - `,,soldier-0,` remaps body and body-overlay
- * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
+ * @property {(npcKey: string, doMeta: null | Meta) => void} setDoMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
  * ```js
@@ -694,8 +694,8 @@ export default function Npcs(props) {
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
      avoidable by precomputing labels 
- * @property {(actMeta: null | Meta) => void} validateActMeta
- * Throws if `actMeta` lacks `actPoint` or is in use.
+ * @property {(doMeta: null | Meta) => void} validateDoMeta
+ * Throws if `doMeta` lacks `doPoint` or is in use.
  */
 
 /**

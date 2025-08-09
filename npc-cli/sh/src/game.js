@@ -214,7 +214,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  * make npc:rob do:$( click 1 )
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & NPC.ActOpts} [opts]
+ * @param {{ npcKey: string } & NPC.DoOpts} [opts]
  */
 export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
@@ -228,7 +228,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
       abortAwaitResume(Error('cancelled'));
     },
     onSuspends(byPtags) {
-      if (!byPtags && npc.s.actMeta !== opts.do.meta) {
+      if (!byPtags && npc.s.doMeta !== opts.do.meta) {
         npc.api.rejectMove(Error('manual-pause'));
         npc.api.rejectFade(Error('manual-pause'));
         npc.api.rejectTurn(Error('manual-pause'));

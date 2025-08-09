@@ -155,7 +155,7 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (!npc) return;
-  if (input.meta.floor === true && !npc.s.actMeta) {
+  if (input.meta.floor === true && !npc.s.doMeta) {
     npc.api.look(input).catch(() => {});
   } else {// act or stop acting
     await npc.api.make({ do: input }).catch(() => {});
@@ -213,7 +213,7 @@ export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, {
  */
 export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)) => {
   w.e.pressMenuPrevent.preventMenuOnActOrFloor = (meta) => (
-    meta.act === true || meta.floor === true
+    meta.do === true || meta.floor === true
   );
 }
 

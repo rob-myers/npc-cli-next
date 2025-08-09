@@ -66,6 +66,8 @@
 
 ### World
 
+- 🚧 act points -> do points
+
 - ✅ refactor ptags
   - ✅ ptags builtin
   - ✅ session.ptags
@@ -2072,7 +2074,7 @@ done
 
 - ✅ rename meta.do -> meta.act
   - ℹ️ because `do` is reserved word (loop construct)
-  - ✅ svg: decor do -> decor act
+  - ✅ svg: decor do -> decor do
   - ✅ meta.doPoint -> meta.actPoint
   - ✅ js changes e.g. api.do -> api.act
   - ✅ cli changes

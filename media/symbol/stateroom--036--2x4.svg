@@ -133,7 +133,7 @@
     <title>decor button shower y=1</title>
   </rect>
   <use width="1" height="1" transform="matrix(0, -20, -20, 0, 87, 149.5)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" xlink:href="#symbol-8">
-    <title>decor act stand</title>
+    <title>decor do stand</title>
   </use>
   <rect y="290" width="600" height="20" style="fill-opacity: 0.5; fill: rgb(255, 0, 0);">
     <title>wall</title>

@@ -235,10 +235,10 @@
     <title>decor label=corridor</title>
   </rect>
   <use width="1" height="1" transform="matrix(20, 0, 0, 20, 2099.5, 1266.5)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" href="#symbol-8">
-    <title>decor act stand</title>
+    <title>decor do stand</title>
   </use>
   <use width="1" height="1" transform="matrix(-20, 0, 0, 20, 2279.5, 1266.5)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" href="#symbol-8">
-    <title>decor act stand</title>
+    <title>decor do stand</title>
   </use>
   <path d="M 49.152699 869.450125 L 571 869 L 572 640 L 314.236542 380.678385 L 218.584066 501.742031 L 154.668658 600 L 95.557707 726.04896 L 49.152699 869.450125 Z" style="fill-opacity: 0.5; fill: rgb(0, 0, 255);">
     <title>obstacle cpu y=1.25</title>
