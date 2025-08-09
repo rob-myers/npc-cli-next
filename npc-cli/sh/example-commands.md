@@ -27,8 +27,19 @@ seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint'
 # spawn rob at click
 spawn npc:rob at:$( click 1 )
 # spawn rob randomly
-getRandomNavigable() w crowd.navMeshQuery.findRandomPoint | map randomPoint
+getRandomNavigable() { w crowd.navMeshQuery.findRandomPoint | map randomPoint; }
 spawn npc:rob at:$( getRandomNavigable )
+
+# spawn 5 npcs by clicking
+for x in {1..5}; do
+  spawn npc:rob_$x at:$( click 1 ) skin:suit-0
+done
+
+# spawn 100 npcs randomly
+seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>> pts
+w npc.spawnMany "{ points: $( pts ) }"
+# remove them
+remove npc_{0..99}
 ```
 
 
@@ -122,12 +133,6 @@ ps -a | filter --ansi /^0/
 ## Npcs
 
 ```sh
-# 🚧 make interactive
-c=0
-while true; do
-  spawn npc:rob_$c at:$( w crowd.navMeshQuery.findRandomPoint | map randomPoint )
-  c+=1
-done
 
 # spawn many
 seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>> pts
