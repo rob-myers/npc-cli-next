@@ -66,7 +66,7 @@
 
 ### World
 
-- 🚧 act points -> do points
+- ✅ act points -> do points
 
 - ✅ refactor ptags
   - ✅ ptags builtin

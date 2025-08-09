@@ -42,13 +42,13 @@ w npc.spawnMany "{ points: $( pts ) }"
 remove npc_{0..99}
 ```
 
-# Moving
+### Moving
 
 ```sh
 move npc:rob to:$( click 1 )
 ```
 
-# Doing
+### Doing
 
 ```sh
 make npc:rob do:$( click 1 )
