@@ -6,6 +6,7 @@ import { SpeechBubbleApi } from "./speech-bubble-api";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import { Html3d } from "../components/Html3d";
+import { zIndexWorld } from "../service/const";
 
 export default function NpcSpeechBubbles() {
 
@@ -13,7 +14,14 @@ export default function NpcSpeechBubbles() {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     lookup: {},
-
+    lastFront: '',
+    bringToFront(npcKey) {
+      const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
+      if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
+      const bubbleDiv = state.lookup[npcKey].html3d.rootDiv;
+      bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
+      state.lastFront = npcKey;
+    },
     create(npcKey) {// assumes non-existent
       if (npcKey in w.n) {
         const cm = state.lookup[npcKey] = new SpeechBubbleApi(npcKey, w);
@@ -23,7 +31,7 @@ export default function NpcSpeechBubbles() {
         update();
         return cm;
       } else {
-        throw Error(`ContextMenus.trackNpc: npc not found: "${npcKey}"`);
+        throw Error(`NpcSpeechBubbles.create: npc not found: "${npcKey}"`);
       }
     },
     delete(...npcKeys) {
@@ -53,7 +61,7 @@ export default function NpcSpeechBubbles() {
   const update = useUpdate();
 
   return Object.values(state.lookup).map(cm =>
-    <MemoizedContextMenu
+    <MemoizedSpeechBubble
       key={cm.key}
       cm={cm}
       epochMs={cm.epochMs}
@@ -63,8 +71,10 @@ export default function NpcSpeechBubbles() {
 
 /**
  * @typedef State
- * @property {{ [cmKey: string]: SpeechBubbleApi }} lookup
+ * @property {string} lastFront npcKey
+ * @property {{ [npcKey: string]: SpeechBubbleApi }} lookup
  *
+ * @property {(npcKey: string) => void} bringToFront
  * @property {(npcKey: string) => SpeechBubbleApi} create Add speech bubble for specific npc
  * @property {(...npcKeys: string[]) => void} delete
  * @property {(npcKey: string) => SpeechBubbleApi} get
@@ -107,7 +117,7 @@ function NpcSpeechBubble({ cm }) {
  */
 
 /** @type {React.MemoExoticComponent<(props: ContextMenuProps & { epochMs: number }) => React.JSX.Element>} */
-const MemoizedContextMenu = React.memo(NpcSpeechBubble);
+const MemoizedSpeechBubble = React.memo(NpcSpeechBubble);
 
 const speechBubbleBaseScale = 4;
 
