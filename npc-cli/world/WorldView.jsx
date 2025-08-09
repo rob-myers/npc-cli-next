@@ -671,8 +671,8 @@ export default function WorldView(props) {
       <EffectComposer ref={state.ref('effectComposer')}>
         {state.effects.enabled === true
           ? <>
-            <BrightnessContrast brightness={-0.23} />
-            <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={0.9} />
+            <BrightnessContrast brightness={-0.28} />
+            <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={1} />
           </>
           : <></>
         }
