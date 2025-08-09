@@ -295,6 +295,38 @@ export default function useHandleEvents(w) {
           state.doorToOffMesh = {};
           state.npcToDoors = {};
           break;
+        case "removed-npcs": {
+          w.physics.worker.postMessage({
+            type: 'remove-bodies',
+            bodyKeys: e.npcKeys.map(npcToBodyKey),
+          });
+
+          state.removeFromSensors(...e.npcKeys);
+
+          for (const npcKey of e.npcKeys) {
+            const gmRoomId = state.npcToRoom.get(npcKey);
+            if (gmRoomId !== undefined) {
+              state.npcToRoom.delete(npcKey);
+              state.roomToNpcs[gmRoomId.gmId][gmRoomId.roomId].delete(npcKey);
+            } else {
+              state.externalNpcs.delete(npcKey);
+            }
+  
+            // npc might have been inside a doorway
+            const gdKey = state.npcToDoors[npcKey]?.inside;
+            if (typeof gdKey === 'string') {
+              state.npcToDoors[npcKey].inside = null;
+              state.doorToOffMesh[gdKey] = (state.doorToOffMesh[gdKey] ?? []).filter(
+                x => x.npcKey !== npcKey
+              );
+            }
+  
+            w.bubble.delete(npcKey);
+          }
+
+          w.update();
+          break;
+        }
         case "spawned-many": {
           // 🚧 compute gmRoomIds
           const workerNpcs = /** @type {WW.NpcDef[]} */ ([]);
@@ -369,37 +401,6 @@ export default function useHandleEvents(w) {
           }
           w.bubble.lookup[npc.key]?.setOpacity(e.opacityDst);
           break;
-        case "removed-npc": {
-          w.physics.worker.postMessage({
-            type: 'remove-bodies',
-            bodyKeys: [npcToBodyKey(e.npcKey)],
-          });
-          state.removeFromSensors(e.npcKey);
-
-          const gmRoomId = state.npcToRoom.get(e.npcKey);
-          if (gmRoomId !== undefined) {
-            state.npcToRoom.delete(e.npcKey);
-            state.roomToNpcs[gmRoomId.gmId][gmRoomId.roomId].delete(e.npcKey);
-          } else {
-            state.externalNpcs.delete(e.key);
-          }
-
-          // npc might have been inside a doorway
-          const gdKey = state.npcToDoors[e.npcKey]?.inside;
-          if (typeof gdKey === 'string') {
-            state.npcToDoors[e.npcKey].inside = null;
-            state.doorToOffMesh[gdKey] = (state.doorToOffMesh[gdKey] ?? []).filter(
-              x => x.npcKey !== e.npcKey
-            );
-          }
-
-          w.bubble.delete(e.npcKey);
-
-          if (w.disabled === true) {
-            w.update();
-          }
-          break;
-        }
         case "spawned": {
           if (npc.s.spawns === 1) {// 1st spawn
             const { x, y, z } = npc.position;
@@ -755,13 +756,15 @@ export default function useHandleEvents(w) {
         animTmax: tmax,
       };
     },
-    removeFromSensors(npcKey) {
-      const closeDoors = state.npcToDoors[npcKey];
-      for (const gdKey of closeDoors?.nearby ?? []) {// npc may never have been close to any door
-        const door = w.door.byKey[gdKey];
-        state.onExitDoorCollider({ key: 'exit-collider', type: 'nearby', gdKey, gmId: door.gmId, doorId: door.doorId, npcKey });
+    removeFromSensors(...npcKeys) {
+      for (const npcKey of npcKeys) {
+        const closeDoors = state.npcToDoors[npcKey];
+        for (const gdKey of closeDoors?.nearby ?? []) {// npc may never have been close to any door
+          const door = w.door.byKey[gdKey];
+          state.onExitDoorCollider({ key: 'exit-collider', type: 'nearby', gdKey, gmId: door.gmId, doorId: door.doorId, npcKey });
+        }
+        state.npcToDoors[npcKey]?.nearby.clear();
       }
-      state.npcToDoors[npcKey]?.nearby.clear();
     },
     revokeAccess(regexDef, npcKey) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
@@ -924,7 +927,7 @@ export default function useHandleEvents(w) {
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.
- * @property {(npcKey: string) => void} removeFromSensors
+ * @property {(...npcKeys: string[]) => void} removeFromSensors
  * @property {() => void} showDefaultContextMenu
  * Default context menu, unless clicked on an npc
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess

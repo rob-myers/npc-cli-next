@@ -5,7 +5,7 @@ import braces from "braces";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance, precision } from '../service/const';
-import { error, info, keys, warn } from '../service/generic';
+import { debug, error, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, v3Precision } from '../service/three';
 import { helper } from '../service/helper';
@@ -318,13 +318,13 @@ export class NpcApi {
    * @param {'removed' | 'respawned'} reason 
    */
   cancel(reason) {
-    info(`${'cancel'}: cancelling ${this.key}`);
+    debug(`${'cancel'}: cancelling ${this.key}`);
 
     this.rejectFade(Error(`${'cancel'}: cancelled fade`));
     this.rejectMove({ type: 'stop-reason', key: reason });
     this.rejectTurn(Error(`${'cancel'}: cancelled fade`));
 
-    this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
+    // this.w.events.next({ key: 'npc-internal', npcKey: this.key, event: 'cancelled' });
   }
 
   disposeModel() {

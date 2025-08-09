@@ -170,25 +170,20 @@ export default function Npcs(props) {
       }
     },
     remove(...npcKeys) {
-      try {
-        for (const npcKey of npcKeys) {
-          const npc = state.getNpc(npcKey); // throw if n'exist pas
-          npc.api.cancel('removed'); // rejects promises
-          state.removeAgent(npc);
-          
-          delete state.npc[npcKey];
-          state.freeId.add(npc.def.uid);
-          state.idToKey.delete(npc.def.uid);
-          if (npc.s.actMeta !== null) {
-            const { actPoint, y } = npc.s.actMeta;
-            delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
-          }
-
-          w.events.next({ key: 'removed-npc', npcKey });
+      const npcs = npcKeys.map(x => state.npc[x]).filter(Boolean);
+      for (const npc of npcs) {
+        npc.api.cancel('removed'); // rejects promises
+        state.removeAgent(npc);
+        
+        delete state.npc[npc.key];
+        state.freeId.add(npc.def.uid);
+        state.idToKey.delete(npc.def.uid);
+        if (npc.s.actMeta !== null) {
+          const { actPoint, y } = npc.s.actMeta;
+          delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
         }
-      } finally {
-        update();
       }
+      w.events.next({ key: 'removed-npcs', npcKeys: npcs.map(x => x.key) });
     },
     removeAgent(npc) {
       if (npc.agent !== null) {

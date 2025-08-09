@@ -120,13 +120,13 @@ declare namespace NPC {
     // | PointerMoveEvent
     | { key: "disabled" }
     | { key: "enabled" }
-    | { key: "npc-internal"; npcKey: string; event: "cancelled" | "paused" | "resumed" }
+    // | { key: "npc-internal"; npcKey: string; event: "cancelled" | "paused" | "resumed" }
     | { key: "spawned"; npcKey: string; gmRoomId: Geomorph.GmRoomId }
     | { key: "spawned-many"; npcKeys: string[] }
     | { key: "started-moving"; npcKey: string; showNavPath: boolean }
     | { key: "continued-moving"; npcKey: string; showNavPath: boolean }
     | { key: "stopped-moving"; npcKey: string; reason: NPC.StopReason }
-    | { key: "removed-npc"; npcKey: string }
+    | { key: "removed-npcs"; npcKeys: string[] }
     | { key: "enter-doorway"; npcKey: string } & Geomorph.GmDoorId
     | { key: "exit-doorway"; npcKey: string } & Geomorph.GmDoorId
     | { key: "enter-room"; npcKey: string } & Geomorph.GmRoomId
