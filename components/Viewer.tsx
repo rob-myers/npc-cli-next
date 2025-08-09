@@ -172,8 +172,7 @@ export default function Viewer() {
     percentStr !== null && state.rootEl.style.setProperty(viewerCssVar.base, percentStr);
 
     // ensure layout if localStorage empty
-    // useTabs.api.restoreLayoutWithFallback("world-tty-default", { preserveRestore: false });
-    useTabs.api.restoreLayoutWithFallback("world-tty-dev_only", { preserveRestore: false });
+    useTabs.api.restoreLayoutWithFallback("world-tty-default", { preserveRestore: false });
 
     // handle #/internal/foo/bar triggered via links in blog
     function onHashChange() {
