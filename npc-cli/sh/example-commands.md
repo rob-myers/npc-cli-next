@@ -1,31 +1,27 @@
-# Generic
+# Example Commands
+
+## World
+
+### _Stories_
 
 ```sh
-# deep thought's answer textually
-echo 42 >answer
-answer=$( echo 42 )
+narrate the man went to his bedroom
 
-# deep thought's answer numerically
-expr 42 >answer
-answer=$( expr 42 )
-answer=$( call '() => 42')
-echo 42 | map Number >answer
+# 🚧
 ```
 
-```sh
-ps -a | filter --ansi /^0/
-```
-
-# World
+### _Random navigable points_
 
 ```sh
-# find a random point on the nav mesh
+# get random navigable point
 w crowd.navMeshQuery.findRandomPoint | map randomPoint
-# find 5 random points on nav mesh
+# get 5 random navigable points
 seq 5 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint'
-# store 100 random points on nav mesh
-seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>> pts
+# store 100 random navigable points at /home/pts
+seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>> ~/pts
 ```
+
+### _Debug Toggles_
 
 ```sh
 # debug toggles
@@ -34,13 +30,41 @@ w debug.showOrigNavPoly
 w debug.showStaticColliders
 ```
 
+### _Post processing_
+
+
 ```sh
 w view.showEffects
 w view.showEffects { darkness:1 }
 w view.showEffects $( jsArg darkness:3 )
 ```
 
-# Npcs
+
+## Abstract
+
+### _Assign variable_
+
+```sh
+# deep thought textually
+echo 42 >answer
+answer=$( echo 42 )
+
+# deep thought numerically
+expr 42 >answer
+answer=$( expr 42 )
+answer=$( call '() => 42')
+echo 42 | map Number >answer
+```
+
+### _Process Management_
+
+```sh
+ps -a | filter --ansi /^0/
+```
+
+🚧
+
+## Npcs
 
 ```sh
 # spawn rob at a random point on the nav mesh
