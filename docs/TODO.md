@@ -168,7 +168,7 @@ expr window.document.querySelector'("section")' | log
 - ✅ fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
 
-- BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
+- ✅ BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
 
 - can scroll ContextMenu on mobile
   - on hold i.e. user can resize instead
