@@ -140,8 +140,9 @@ class semanticsServiceClass {
       return [value.replace(/\\(.|$)/g, "$1")];
     }
   
-    if (value === '~') {
-      return ['/home'];
+    // support basic tilde expansion ~ or ~/foo
+    if (value[0] === '~' && (value[1] === '/' || value.length === 1)) {
+      return [value.replace('~', '/home')];
     }
   
     // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
