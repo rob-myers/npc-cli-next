@@ -72,37 +72,11 @@ export function interpretEscapeSequences(input: string): string {
   );
 }
 
-const bracesOpts: braces.Options = {
+export const bracesOpts: braces.Options = {
   expand: true,
   rangeLimit: Infinity,
   keepQuotes: true, // prevent where's -> wheres
 };
-
-export function literal({ Value, parent }: Sh.Lit): string[] {
-  if (!parent) {
-    throw Error(`Literal must have parent`);
-  }
-  /**
-   * Remove at most one '\\\n'; can arise interactively in quotes,
-   * see https://github.com/mvdan/sh/issues/321.
-   */
-  let value = Value.replace(/\\\n/, "");
-
-  if (parent.type === "DblQuoted") {
-    // Double quotes: interpret ", \, $, `, no brace-expansion.
-    return [value.replace(/\\(["\\$`])/g, "$1")];
-  } else if (parent.type === "TestClause") {
-    // [[ ... ]]: interpret everything, no brace-expansion.
-    return [value.replace(/\\(.|$)/g, "$1")];
-  } else if (parent.type === "Redirect") {
-    // Redirection (e.g. here-doc): interpret everything, no brace-expansion.
-    return [value.replace(/\\(.|$)/g, "$1")];
-  }
-  // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
-  // We escape square brackets for npm module `braces`.
-  value = value.replace(/\\(['"\\$`])/g, "$1");
-  return braces(value.replace(/\[/g, "\\[").replace(/\]/g, "\\]"), bracesOpts);
-}
 
 export function singleQuotes({ Dollar: interpret, Value }: Sh.SglQuoted) {
   return [interpret ? interpretEscapeSequences(Value) : Value];

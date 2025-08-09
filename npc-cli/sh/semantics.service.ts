@@ -1,4 +1,5 @@
 import { uid } from "uid";
+import braces from "braces";
 
 import { ansi, ProcessTag } from "./const";
 import type * as Sh from "./parse";
@@ -9,7 +10,6 @@ import {
   killError,
   expand,
   Expanded,
-  literal,
   matchFuncFormat,
   normalizeWhitespace,
   ProcessError,
@@ -19,6 +19,7 @@ import {
   handleProcessError,
   ttyError,
   formatMessage,
+  bracesOpts,
 } from "./util";
 import { cmdService, isTtyAt, getProcess, preProcessWrite } from "./cmd.service";
 import { srcService } from "./parse";
@@ -116,6 +117,37 @@ class semanticsServiceClass {
     let lastExpanded = undefined as Expanded | undefined;
     for await (const expanded of generator) lastExpanded = expanded;
     return lastExpanded!;
+  }
+
+  private literal({ Value, parent }: Sh.Lit): string[] {
+    if (!parent) {
+      throw Error(`Literal must have parent`);
+    }
+    /**
+     * Remove at most one '\\\n'; can arise interactively in quotes,
+     * see https://github.com/mvdan/sh/issues/321.
+     */
+    let value = Value.replace(/\\\n/, "");
+  
+    if (parent.type === "DblQuoted") {
+      // Double quotes: interpret ", \, $, `, no brace-expansion.
+      return [value.replace(/\\(["\\$`])/g, "$1")];
+    } else if (parent.type === "TestClause") {
+      // [[ ... ]]: interpret everything, no brace-expansion.
+      return [value.replace(/\\(.|$)/g, "$1")];
+    } else if (parent.type === "Redirect") {
+      // Redirection (e.g. here-doc): interpret everything, no brace-expansion.
+      return [value.replace(/\\(.|$)/g, "$1")];
+    }
+  
+    if (value === '~') {
+      return ['/home'];
+    }
+  
+    // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
+    // We escape square brackets for npm module `braces`.
+    value = value.replace(/\\(['"\\$`])/g, "$1");
+    return braces(value.replace(/\[/g, "\\[").replace(/\]/g, "\\]"), bracesOpts);
   }
 
   private async *stmts(parent: Sh.ParsedSh, nodes: Sh.Stmt[]) {
@@ -602,7 +634,7 @@ class semanticsServiceClass {
         return;
       }
       case "Lit": {
-        const literals = literal(node);
+        const literals = this.literal(node);
         // 🔔 HACK: pass `braceExp` to *Expand
         literals.length > 1 && Object.assign(node, { braceExp: true });
         yield expand(literals);
