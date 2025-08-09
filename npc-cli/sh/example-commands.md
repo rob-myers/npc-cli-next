@@ -2,7 +2,7 @@
 
 ## World
 
-### _Stories_
+### Stories
 
 ```sh
 narrate the man went to his bedroom
@@ -10,7 +10,7 @@ narrate the man went to his bedroom
 # 🚧
 ```
 
-### _Random navigable points_
+### Random navigable points
 
 ```sh
 # get random navigable point
@@ -21,7 +21,18 @@ seq 5 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint'
 seq 100 | map '(_, { w }) => w.crowd.navMeshQuery.findRandomPoint().randomPoint' &>> ~/pts
 ```
 
-### _Debug Toggles_
+### Spawning
+
+```sh
+# spawn rob at click
+spawn npc:rob at:$( click 1 )
+# spawn rob randomly
+getRandomNavigable() w crowd.navMeshQuery.findRandomPoint | map randomPoint
+spawn npc:rob at:$( getRandomNavigable )
+```
+
+
+### Debug Toggles
 
 ```sh
 # debug toggles
@@ -30,7 +41,7 @@ w debug.showOrigNavPoly
 w debug.showStaticColliders
 ```
 
-### _Post processing_
+### Post processing
 
 
 ```sh
@@ -42,7 +53,7 @@ w view.showEffects $( jsArg darkness:3 )
 
 ## Abstract
 
-### _Assign variable_
+### Assign variable
 
 ```sh
 # deep thought textually
@@ -56,7 +67,35 @@ answer=$( call '() => 42')
 echo 42 | map Number >answer
 ```
 
-### _Process Management_
+### Loops
+
+Each command loop iteration is forced to take a minimum of 300ms.
+Use JavaScript loops to avoid this restriction.
+This avoids unstoppable infinite loops at the level of commands.
+It also aligns command loops with human reaction speeds.
+
+```sh
+c=5
+while test $c; do
+  echo $c
+  c+=-1
+done
+
+localLoop() {
+  local c=$1
+  while test $c; do
+    echo $c; c+=-1
+  done
+}
+localLoop 10
+
+while true; do
+  echo Ctrl-C to stop...
+done
+```
+
+
+### Process Management
 
 ```sh
 ps -a | filter --ansi /^0/
@@ -67,9 +106,6 @@ ps -a | filter --ansi /^0/
 ## Npcs
 
 ```sh
-# spawn rob at a random point on the nav mesh
-spawn npc:rob at:$( w crowd.navMeshQuery.findRandomPoint | map randomPoint )
-
 # 🚧 make interactive
 c=0
 while true; do
