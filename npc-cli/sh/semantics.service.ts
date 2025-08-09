@@ -141,8 +141,8 @@ class semanticsServiceClass {
     }
   
     // support basic tilde expansion ~ or ~/foo
-    if (value[0] === '~' && (value[1] === '/' || value.length === 1)) {
-      return [value.replace('~', '/home')];
+    if (value[0] === '~' && (value.length === 1 || value[1] === '/')) {
+      value = value.replace('~', '/home');
     }
   
     // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
@@ -715,17 +715,15 @@ class semanticsServiceClass {
       throw new ShError("not implemented", 2);
     }
 
-    // 🚧 for x in {1..5}; do echo $x; done
     const { Loop, Do } = node;
     
     let itStartMs = -1, itLengthMs = 0;
 
     const varName = Loop.Name.Value;
-    const items = Loop.Items as (typeof Loop.Items[0] | { expanded: any })[];
+    const items = Loop.Items.slice() as (typeof Loop.Items[0] | { expanded: any })[];
     let item: typeof items[0] | undefined;
 
     while (item = items.shift()) {
-
       // Force iteration to take at least `itMinLengthMs` milliseconds
       if ((itLengthMs = Date.now() - itStartMs) < itMinLengthMs) {
         await cmdService.sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
@@ -734,21 +732,15 @@ class semanticsServiceClass {
 
       if ('expanded' in item) {// previously expanded
         useSession.api.setVar(node.meta, varName, item.expanded);
-      } else {
-
+        yield* this.stmts(node, Do);
+      } else {// aggregate expanded
         const expanded = await this.lastExpanded(this.Expand(item));
-        
-        // handle fact that $( range 5 ) is "[0, 1, 2, 3, 4]"
-        const parsed = parseJsArg(expanded.value);
-        if (Array.isArray(parsed)) {
-          items.unshift(...parsed.map(x => ({ expanded: x })));
-          continue;
-        }
-
-        useSession.api.setVar(node.meta, varName, parsed);
+        items.unshift(...expanded.values.map(x => parseJsArg(x)).flatMap(
+          // handle $( range 5 ) is "[0, 1, 2, 3, 4]"
+          x => Array.isArray(x) ? x.map(y => ({ expanded: y })) : { expanded: x }
+        ));
+        itStartMs = -1; // assume at least one value added to `items`
       }
-
-      yield* this.stmts(node, Do);
     }
 
   }

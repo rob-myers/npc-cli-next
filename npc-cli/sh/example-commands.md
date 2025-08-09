@@ -75,9 +75,25 @@ This avoids unstoppable infinite loops at the level of commands.
 It also aligns command loops with human reaction speeds.
 
 ```sh
-c=5
-while test $c; do
-  echo $c
+for x in $( range 5 ); do
+  x
+done
+
+for x in $( seq 5 ); do
+  x
+done
+
+for x in {1..5}; do
+  x
+done
+
+for x in {a..h..2} {5..1}; do
+  x
+done
+
+
+c=5; while test $c; do
+  c
   c+=-1
 done
 
@@ -91,10 +107,6 @@ localLoop 10
 
 while true; do
   echo Ctrl-C to stop...
-done
-
-for x in $( range 5 ); do
-  x
 done
 ```
 
