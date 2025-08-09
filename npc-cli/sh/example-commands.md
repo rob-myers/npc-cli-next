@@ -92,6 +92,10 @@ localLoop 10
 while true; do
   echo Ctrl-C to stop...
 done
+
+for x in $( range 5 ); do
+  x
+done
 ```
 
 

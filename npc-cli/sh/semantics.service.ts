@@ -3,7 +3,7 @@ import braces from "braces";
 
 import { ansi, ProcessTag } from "./const";
 import type * as Sh from "./parse";
-import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags, warn } from "../service/generic";
+import { jsStringify, last, pause, safeJsonParse, warn } from "../service/generic";
 import { parseJsArg } from "../service/generic";
 import useSession, { ProcessStatus } from "./session.store";
 import {
@@ -418,6 +418,9 @@ class semanticsServiceClass {
           case "DeclClause":
             generator = this.DeclClause(node);
             break;
+          case "ForClause":
+            generator = this.ForClause(node);
+            break;
           case "FuncDecl":
             generator = this.FuncDecl(node);
             break;
@@ -700,6 +703,54 @@ class semanticsServiceClass {
 
   File(node: Sh.File) {
     return sem.stmts(node, node.Stmts);
+  }
+
+  private async *ForClause(node: Sh.ForClause) {
+    
+    if (node.Select === true) {
+      throw new ShError("not implemented", 2);
+    }
+
+    if (node.Loop.type === 'CStyleLoop') {
+      throw new ShError("not implemented", 2);
+    }
+
+    // 🚧 for x in {1..5}; do echo $x; done
+    const { Loop, Do } = node;
+    
+    let itStartMs = -1, itLengthMs = 0;
+
+    const varName = Loop.Name.Value;
+    const items = Loop.Items as (typeof Loop.Items[0] | { expanded: any })[];
+    let item: typeof items[0] | undefined;
+
+    while (item = items.shift()) {
+
+      // Force iteration to take at least `itMinLengthMs` milliseconds
+      if ((itLengthMs = Date.now() - itStartMs) < itMinLengthMs) {
+        await cmdService.sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
+      }
+      itStartMs = Date.now();
+
+      if ('expanded' in item) {// previously expanded
+        useSession.api.setVar(node.meta, varName, item.expanded);
+      } else {
+
+        const expanded = await this.lastExpanded(this.Expand(item));
+        
+        // handle fact that $( range 5 ) is "[0, 1, 2, 3, 4]"
+        const parsed = parseJsArg(expanded.value);
+        if (Array.isArray(parsed)) {
+          items.unshift(...parsed.map(x => ({ expanded: x })));
+          continue;
+        }
+
+        useSession.api.setVar(node.meta, varName, parsed);
+      }
+
+      yield* this.stmts(node, Do);
+    }
+
   }
 
   private async *FuncDecl(node: Sh.FuncDecl) {
