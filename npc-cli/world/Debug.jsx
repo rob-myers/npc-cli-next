@@ -337,7 +337,7 @@ const MemoizedStaticColliders = React.memo(StaticColliders);
  * @param {{ staticColliders: State['staticColliders']; w: import('./World').State }} props
  */
 function StaticColliders({ staticColliders, w }) {
-  return staticColliders.map(({ parsedKey, position, userData }) => {
+  return staticColliders.map(({ parsedKey, position, userData }, i) => {
 
     if (userData.type === 'cylinder') {
       return (
@@ -359,8 +359,8 @@ function StaticColliders({ staticColliders, w }) {
     if (userData.type === 'cuboid') {
       return (
         <mesh
-          geometry={boxGeometry}
-          position={[position.x, colliderHeight / 2, position.z]}
+          geometry={boxGeometry} // fix z-fighting
+          position={[position.x, (colliderHeight / 2) + i * 0.0001, position.z]}
           scale={[userData.width, colliderHeight, userData.depth]}
           rotation={[0, userData.angle, 0]}
           renderOrder={toColliderMeta[parsedKey[0]]?.renderOrder ?? 3}
