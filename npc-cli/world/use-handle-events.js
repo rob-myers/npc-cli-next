@@ -45,6 +45,7 @@ export default function useHandleEvents(w) {
       // 🔔 offMeshConnection can happen when `npc.s.offMesh === null`
       // e.g. npc without access near door
       npc.agentAnim?.set_active(false);
+      npc.agentAnim?.set_tScale(1);
       npc.s.turnBeforeMove = null;
 
       if (npc.s.offMesh === null) {
@@ -526,8 +527,7 @@ export default function useHandleEvents(w) {
         Math.abs(deltaAng) > Math.PI/2
         && doorEntryDist <= 0.5 // avoid early pause e.g. 180deg round corner
       ) {
-        // look towards door exit
-        // const towards = adjusted.dst;
+        // look towards door entrance or exit
         const towards = doorEntryDist > 0.1 ? adjusted.src : adjusted.dst;
         npc.s.turnBeforeMove = { ms: 400, towards };
         // 🔔 setting as Infinity freezes offMeshConnection
@@ -550,6 +550,10 @@ export default function useHandleEvents(w) {
           tmid: adjusted.animTmid,
           tmax: adjusted.animTmax,
         },
+        closeTarget: (
+          Math.abs(npc.lastTarget.x - adjusted.dst.x) < 0.25
+          && Math.abs(npc.lastTarget.z - adjusted.dst.y) < 0.25
+        ),
 
         initPos: adjusted.initPos,
         initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
@@ -584,7 +588,7 @@ export default function useHandleEvents(w) {
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
           // - prevent moving thru each other diagonally
           // - prevent jerking other npc once leave connection
-          && npc.api.getOtherDoorwayLead(other) >= 0.4
+          && npc.api.getOtherDoorwayLead(other) >= (tr.closeTarget === true ? 0.6 : 0.4)
         ) {
           continue;
         }

@@ -660,10 +660,11 @@ export class NpcApi {
       this.w.events.next({ key: 'enter-off-mesh-main', npcKey: this.key });
     } else if (offMesh.seg === 1 && anim.t > 0.5 * (anim.tmid + anim.tmax)) {
       offMesh.seg = 2; // midway in main segment
-      // if (this.pendingTargets.length === 0 && this.isNear() === true) {
-      //   // 🔔 fix sharp final turn just after offMeshConnection
-      //   this.s.lookSecs = 0.8;
-      // }
+    }
+
+    // slow down if will stop right after doorway
+    if (offMesh.closeTarget === true && this.pendingTargets.length === 0) {
+      anim.set_tScale(1 - 0.75 * (anim.t / anim.tmax) ** 2);
     }
 
     // look further along the path
@@ -675,9 +676,9 @@ export class NpcApi {
     this.s.lookAngleDst = this.getEulerAngle(radians);
 
     if (anim.t > anim.tmax - 0.1) {// exit in direction we're looking
-      anim.set_unitExitVel(0, Math.cos(radians - Math.PI/2));
+      anim.set_unitExitVel(0, Math.cos(radians - Math.PI/2) * anim.tScale);
       anim.set_unitExitVel(1, 0);
-      anim.set_unitExitVel(2, Math.sin(radians - Math.PI/2));
+      anim.set_unitExitVel(2, Math.sin(radians - Math.PI/2) * anim.tScale);
     }
   }
 
@@ -935,6 +936,7 @@ export class NpcApi {
     agent.raw.params.set_separationWeight(defaultSeparationWeight);
     agent.raw.params.set_queryFilterType(helper.queryFilterType.respectUnwalkable);
     agent.raw.params.set_radius((this.s.run ? 1.5 : 1) * helper.defaults.radius);
+    this.base.agentAnim?.set_tScale(1);
 
     this.base.lastStart.copy(this.base.position);
     this.s.target = this.base.lastTarget.copy(closest);
