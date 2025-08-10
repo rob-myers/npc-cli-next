@@ -4,7 +4,7 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
-import { EffectComposer, BrightnessContrast, Vignette } from '@react-three/postprocessing'
+import { EffectComposer, BrightnessContrast, Vignette, Scanline } from '@react-three/postprocessing'
 
 import { debug, entries, keys } from "../service/generic.js";
 import { helper } from "../service/helper";
@@ -671,8 +671,9 @@ export default function WorldView(props) {
       <EffectComposer ref={state.ref('effectComposer')}>
         {state.effects.enabled === true
           ? <>
-            <BrightnessContrast brightness={-0.28} />
-            <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={1} />
+            <BrightnessContrast brightness={-0.24} />
+            <Scanline opacity={0.5} />
+            {/* <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={1} /> */}
           </>
           : <></>
         }
