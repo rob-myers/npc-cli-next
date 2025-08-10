@@ -5,7 +5,24 @@
 ### Stories
 
 ```sh
+spawn npc:rob at:$( click 1)
+
 narrate the man went to his bedroom
+# move rob into a stateroom
+move npc:rob to:$( click 1 )
+
+narrate he yawned
+make npc:rob say:Yaaaawnn
+
+narrate changed into his sleepwear
+spawn npc:rob at:$( npc rob position ) skin:,,base,
+
+narrate and got into bed
+make npc:rob say:
+# click a bed do point
+make npc:rob do:$( click 1 )
+make npc:rob say:Zzzzz
+
 
 # 🚧
 ```
@@ -81,17 +98,20 @@ spawn npc:rob at:$( click 1 )
 source /etc/game.sh
 
 # re-skin rob
-npc rob skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
+npc rob skin | assign '{ "head-overlay-front": { prefix: "scientist-0" } }'
 npc rob api.applySkin
 # and again
-npc rob skin | assign '{ "head-overlay-front": { prefix: "scientist-0" } }'
+npc rob skin | assign '{ "head-{,overlay-}front": { prefix: "suit-0" } }'
+npc rob api.applySkin
+# and again
+npc rob skin | assign $( w npc.resolveSkin ,,suit-0, )
 npc rob api.applySkin
 
 # tint rob
 npc rob tint | assign '{ "body-{front,back,left,right,top,bottom}": [0.25, 0.25, 0.25, 1] }'
 npc rob api.applyTint
 # and again
-npc rob tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
+npc rob skin | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
 npc rob api.applyTint
 ```
 
