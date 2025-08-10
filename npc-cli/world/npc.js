@@ -877,7 +877,7 @@ export class NpcApi {
       }
     }
 
-    throw Error('cannot act');
+    throw Error('not doable');
   }
 
   /**
