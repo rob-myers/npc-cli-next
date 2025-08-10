@@ -338,7 +338,9 @@ export default function Npcs(props) {
         : undefined
       ;
 
-      if (npc !== undefined) {// Respawn
+      if (npc !== undefined) {
+        
+        // Respawn
         npc.api.cancel('respawned');
         npc.epochMs = Date.now();
         npc.s.lookAngleDst = null;
@@ -398,7 +400,8 @@ export default function Npcs(props) {
       npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(position);
 
-      npc.api.startAnimation(meta); // 🔔 at.meta.y important
+      const forceStartAnim = npc.s.spawns === 0;
+      npc.api.startAnimation(meta, forceStartAnim); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
         if (attachAgent === true) {

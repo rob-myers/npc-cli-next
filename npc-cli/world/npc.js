@@ -1439,11 +1439,11 @@ export class NpcApi {
    * Start animation via key or meta
    * @param {Key.Anim | Meta} input
    */
-  startAnimation(input) {
+  startAnimation(input, forceStartAnim = false) {
     if (typeof input !== 'string') {
       input = helper.getAnimKeyFromMeta(input);
     }
-    if (input === this.s.anim) {
+    if (input === this.s.anim && forceStartAnim === false) {
       return;
     }
 
