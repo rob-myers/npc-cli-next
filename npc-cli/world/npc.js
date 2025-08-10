@@ -1429,10 +1429,10 @@ export class NpcApi {
    * Also tints selector via @see {s.selectorColor}
    * @param {boolean} shouldShow
    */
-  showSelector(shouldShow) {
+  showSelector(shouldShow = this.base.tint.selector?.[3] === 1 ? false : true) {
     this.base.tint.selector = [...this.s.selectorTint, shouldShow ? 1 : 0];
     this.applyTint();
-    this.w.view.ensureRender();
+    // this.w.view.ensureRender();
   }
 
   /**
