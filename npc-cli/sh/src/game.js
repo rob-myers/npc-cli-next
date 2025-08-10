@@ -212,12 +212,19 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 /**
  * ```sh
  * make npc:rob do:$( click 1 )
+ * make npc:rob say:$( click 1 )
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & NPC.DoOpts} [opts]
+ * @param {{ npcKey: string } & (NPC.DoOpts | { say: string })} [opts]
  */
 export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
+
+  if ('say' in opts) {
+    w.e.say({ npcKey: opts.npcKey, words: opts.say });
+    return;
+  }
+
   let abortAwaitResume = /** @param {*} e */ (e) => {};
 
   const handlers = api.handleStatus({
@@ -296,18 +303,6 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
   } finally {
     handlers.dispose();
   }
-}
-
-/**
- * ```sh
- * say npc:rob words:'hey there!'
- * say npc:rob
- * ```
- * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string; words?: string }} [opts]
- */
-export const say = ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
-  w.e.say(opts);
 }
 
 /**
