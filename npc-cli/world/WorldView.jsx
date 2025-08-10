@@ -672,7 +672,7 @@ export default function WorldView(props) {
         {state.effects.enabled === true
           ? <>
             <BrightnessContrast brightness={-0.24} />
-            <Scanline opacity={0.5} />
+            <Scanline opacity={0.5} density={1.5} />
             {/* <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={1} /> */}
           </>
           : <></>
