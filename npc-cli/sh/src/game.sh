@@ -19,6 +19,7 @@ npc() {
   local npcKey="${1}" selector="${2:-x=>x}"
   shift 2
   w n.$npcKey | map "$selector" "$@"
+  w update # sometimes needed
 }
 
 # remove npc(s)

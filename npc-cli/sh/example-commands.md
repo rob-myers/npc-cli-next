@@ -42,22 +42,73 @@ w npc.spawnMany "{ points: $( pts ) }"
 remove npc_{0..99}
 ```
 
+```sh
+# spawn with detailed skin spec
+spawn npc:rada angle:Math.PI skin:'{
+  "head-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
+  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
+  "body-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
+  "body-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
+  //"body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
+}' at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }'
+```
+
 ### Moving
 
 ```sh
 move npc:rob to:$( click 1 )
+# via a waypoint
+move npc:rob to:$( click 2 )
+# via waypoints
+move npc:rob to:$( click 4 )
 ```
 
 ### Doing
 
 ```sh
+# click a nearby do point
 make npc:rob do:$( click 1 )
+# click another nearby do point, or a navigable point
+make npc:rob do:$( click 2 )
+```
+
+## Skinning
+
+```sh
+# ensure rob
+spawn npc:rob at:$( click 1 )
+# ensure `npc` command
+source /etc/game.sh
+
+# re-skin rob
+npc rob skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
+npc rob api.applySkin
+# and again
+npc rob skin | assign '{ "head-overlay-front": { prefix: "scientist-0" } }'
+npc rob api.applySkin
+
+# tint rob
+npc rob tint | assign '{ "body-{front,back,left,right,top,bottom}": [0.25, 0.25, 0.25, 1] }'
+npc rob api.applyTint
+# and again
+npc rob tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
+npc rob api.applyTint
+```
+
+### Access
+
+```sh
+w e.grantAccess . rob will kate suit rada
+w e.revokeAccess . rada
+
+# only allow rob to access door g0d11 whilst locked
+w e.doorToAccess | assign '{ g0d11: new Set(["foo"]) }'
+w e.npcToAccess.rob | map 'x => x.add("foo")'
 ```
 
 ### Debug Toggles
 
 ```sh
-# debug toggles
 w debug.showNavMesh
 w debug.showOrigNavPoly
 w debug.showStaticColliders
@@ -67,8 +118,19 @@ w debug.showStaticColliders
 
 ```sh
 w view.showEffects
-w view.showEffects { darkness:1 }
-w view.showEffects $( jsArg darkness:3 )
+w view.showEffects '{ darkness:1 }'
+w view.showEffects $( jsArg darkness:3 enabled )
+```
+
+### Pipelines
+
+```sh
+# `map` with inline function
+# try clicking the floor
+click meta.floor | map --forever 'input => input.meta'
+
+# try clicking a door
+click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)'
 ```
 
 
@@ -136,8 +198,11 @@ done
 
 ```sh
 ps
+# show process source
 ps -s
+# show all processes
 ps -a
+# filter ansi text
 ps -a | filter --ansi /^0/
 ```
 
@@ -156,71 +221,4 @@ ptags
 sleep # iteractive: ptags not applied
 sleep 10 & # non-interactive: ptags applied and reset
 ps -s # can see ptags
-```
-
-🚧
-
-## Old
-
-```sh
-# inline example
-ptags always
-click meta.floor | map --forever '(input, { w, home }) => {
-  const npc = w.n[home.selectedNpcKey];
-  if (!npc) return;
-  npc.s.run = input.keys?.includes("shift") ?? false;
-  npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
-}' &
-```
-
-```sh
-spawn npc:rada angle:Math.PI skin:'{
-  "head-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
-  "head-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
-  "body-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
-  "body-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
-  //"body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-}' at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }'
-
-# re-skin rob
-# w n.rob.skin | assign '{ "head-overlay-front": { prefix: "confused" } }'
-# w n.rob.skin | assign '{ "head-overlay-front": { prefix: "empty", otherPart: "body-front" } }'
-# w n.rob.skin | assign '{
-#   "head-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
-#   // "body-{front,back,left,right,top,bottom}": { prefix: "plain-0" },
-#   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
-#   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "soldier-0" },
-# }' > /dev/null
-# w n.rob.applySkin
-
-# w n.rob.tint | assign '{ "body-{front,back,left,right,top,bottom}": [0.25, 0.25, 0.25, 1] }'
-# w n.rob.applyTint
-# w n.rob.tint | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
-# w n.rob.resetTint
-```
-
-```sh
-w e.grantAccess . rob will kate suit rada
-
-# only allow rob to access door whilst locked
-w e.doorToAccess | assign '{ g0d11: new Set(["foo"]) }'
-w e.npcToAccess.rob | map 'x => x.add("foo")'
-```
-
-```sh
-ptags always && click meta.npcKey | map --forever '({ meta, keys }, { home, w }) => {
-  w.n[home.selectedNpcKey]?.api.showSelector(false);
-  w.n[meta.npcKey].api.showSelector(true);
-  home.selectedNpcKey = meta.npcKey;
-}' &
-
-# click navmesh to move selectedNpcKey
-ptags always && click meta.floor | map --forever '(input, { w, home }) => {
-  const npc = w.n[home.selectedNpcKey];
-  if (!npc) return;
-  npc.s.run = input.keys?.includes("shift") ?? false;
-  npc.api.move({ to: input, close: 0.5 }).catch(() => {}); // can override
-}' &
-
-click meta.door | map '({meta}, {w}) => w.e.toggleDoor(meta.gdKey)' &
 ```
