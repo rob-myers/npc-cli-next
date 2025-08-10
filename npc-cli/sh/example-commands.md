@@ -132,6 +132,7 @@ w e.npcToAccess.rob | map 'x => x.add("foo")'
 w debug.showNavMesh
 w debug.showOrigNavPoly
 w debug.showStaticColliders
+w debug.showOrigin
 ```
 
 ### Post processing

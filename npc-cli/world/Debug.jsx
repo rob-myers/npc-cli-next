@@ -21,6 +21,7 @@ export default function Debug(props) {
     navMeshShown: false,
     navPath: /** @type {*} */ (null),
     origNavPolyShown: false,
+    originShown: false,
     offMeshConnections: /** @type {*} */ (null),
     pick: null,
     physicsLines: new THREE.BufferGeometry(),
@@ -139,6 +140,10 @@ export default function Debug(props) {
       state.navMeshShown = shouldShow;
       w.update();
     },
+    showOrigin(shouldShow = !state.originShown) {
+      state.originShown = shouldShow;
+      w.update();
+    },
     showOrigNavPoly(shouldShow = !state.origNavPolyShown) {
       state.origNavPolyShown = shouldShow;
       w.update();
@@ -197,6 +202,7 @@ export default function Debug(props) {
       name="origin"
       scale={[0.025, 1, 0.025]}
       position={[0, 0.5 - 0.001, 0]}
+      visible={state.originShown}
     >
       <boxGeometry args={[1, 1, 1]} />
       <meshBasicMaterial color="red" />
@@ -283,6 +289,7 @@ export default function Debug(props) {
  * @property {NavMeshHelper} navMesh
  * @property {OffMeshConnectionsHelper} offMeshConnections
  * @property {boolean} origNavPolyShown
+ * @property {boolean} originShown
  * @property {boolean} navMeshShown
  * @property {THREE.Group} navPath
  * @property {null | THREE.BufferGeometry} selectedNavPolys
@@ -297,6 +304,7 @@ export default function Debug(props) {
  * https://github.com/isaac-mason/recast-navigation-js/blob/bb3e49af3f4ff274afe84341d4c51a9f5fac609c/apps/navmesh-website/src/features/recast/export/nav-mesh-to-gltf.ts#L31
  * @property {(downData?: NPC.DownData) => void} setPickIndicator
  * @property {(shouldShow?: boolean) => void} showNavMesh
+ * @property {(shouldShow?: boolean) => void} showOrigin
  * @property {(shouldShow?: boolean) => void} showOrigNavPoly
  * @property {(shouldShow?: boolean) => void} showStaticColliders
  */
