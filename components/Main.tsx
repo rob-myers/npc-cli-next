@@ -19,7 +19,9 @@ export default function Main(props: React.PropsWithChildren) {
     const scrollEl = rootRef.current!
     const headerLink = scrollEl.querySelector('header > a') as HTMLAnchorElement;
     const fadeTitleOnScroll = throttle(300, () => {
-      headerLink.style.opacity = String(Math.max(0.2, 1 - 4 * (scrollEl.scrollTop / scrollEl.scrollHeight)));
+      const opacity = Math.max(0.2, 1 - 4 * (scrollEl.scrollTop / scrollEl.scrollHeight));
+      headerLink.style.opacity = `${opacity}`;
+      headerLink.style.pointerEvents =  opacity > 0.8 ? 'all' : 'none';
     });
     scrollEl.addEventListener('scroll', fadeTitleOnScroll);
     return () => scrollEl.removeEventListener('scroll', fadeTitleOnScroll);
@@ -125,7 +127,7 @@ const mainHeaderCss = css`
     pointer-events: all;
     background-color: #fff;
     a {
-      pointer-events: all;
+      pointer-events: all !important;
       opacity: 1 !important;
     }
   }
