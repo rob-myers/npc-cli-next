@@ -95,9 +95,9 @@ export const specialWallMetaKeys = /** @type {const} */ ([
   'hollow',
 ]);
 
-export const wallHeight = 1.5;
+export const wallHeight = 2;
 
-export const doorHeight = 1.4;
+export const doorHeight = 1.8;
 
 /** Depth of doorway along line walking through hull door */
 export const hullDoorDepth = 40 * sguToWorldScale * sguSymbolScaleDown;
