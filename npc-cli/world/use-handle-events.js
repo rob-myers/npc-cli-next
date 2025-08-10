@@ -648,7 +648,8 @@ export default function useHandleEvents(w) {
         return; 
       }
 
-      if (nextUnitNull === true) {// 🔔 fix fast turn just after offMesh
+      if (nextUnitNull === true && npc.pendingTargets.length === 0) {
+        // 🔔 fix fast turn just after offMesh
         npc.api.stopMoving({ type: 'stop-reason', key: 'arrived' });
       } else if (e.offMesh.dstRoomMeta.small !== true) {
         if (npc.s.run === true) {
