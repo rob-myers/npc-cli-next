@@ -107,7 +107,7 @@ const navCss = css`
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
   color: #ccb;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 200;
   letter-spacing: 0.15em;
 
