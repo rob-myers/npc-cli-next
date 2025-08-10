@@ -951,10 +951,10 @@ export class NpcApi {
     agent.requestMoveTarget(closest);
 
     if (this.pendingTargets.length === 0 && this.isNear(closest, 0.35) === true) {
-      this.startAnimation('Idle', true); // avoid jerk on resume move near target
+      this.startAnimation('Idle'); // avoid jerk on resume move near target
     } else {
       const nextAct = this.s.run === true ? 'Run' : 'Walk';
-      this.startAnimation(nextAct, true);
+      this.startAnimation(nextAct);
     }
 
     this.w.events.next({
@@ -1094,7 +1094,7 @@ export class NpcApi {
         await this.look(angle, 500 * geom.compareAngles(this.getAngle(), angle));
       }
       this.w.npc.setDoMeta(this.key, meta);
-      this.startAnimation(meta, true);
+      this.startAnimation(meta);
     } else {
       // this also sets act meta
       await this.fadeSpawn(doPoint, { angle, requireNav: false, meta });
@@ -1439,11 +1439,11 @@ export class NpcApi {
    * Start animation via key or meta
    * @param {Key.Anim | Meta} input
    */
-  startAnimation(input, ignoreIfSame = false) {
+  startAnimation(input) {
     if (typeof input !== 'string') {
       input = helper.getAnimKeyFromMeta(input);
     }
-    if (ignoreIfSame === true && input === this.s.anim) {
+    if (input === this.s.anim) {
       return;
     }
 
@@ -1479,7 +1479,7 @@ export class NpcApi {
     agent.raw.params.set_separationWeight(defaultIdleSeparationWeight);
     agent.raw.params.set_radius(helper.defaults.radius);
     
-    this.startAnimation('Idle', true);
+    this.startAnimation('Idle');
 
     const pos = agent.position(); // reset small motions:
     const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;
