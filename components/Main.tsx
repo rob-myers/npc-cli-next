@@ -108,7 +108,6 @@ const mainHeaderCss = css`
     transition: opacity 300ms;
     color: #444;
     text-decoration: none;
-    font-weight: bold;
     text-shadow: 0 1px #fff, -0 -1px #fff, 1px 0 #fff, -1px 0 #fff;
   }
   
