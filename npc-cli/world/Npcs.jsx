@@ -197,7 +197,7 @@ export default function Npcs(props) {
     },
     resolveSkin(shortcut) {// order: head,head-overlay,body,body-overlay
       const parts = shortcut.split(',');
-      const head = parts[0];
+      const head = parts[0] || undefined;
       const fallback = parts.length === 1 ? head : undefined;
       const headOverlay = parts.length > 1 && (parts[1] || parts[0]) || fallback;
       const body = parts.length > 2 && (parts[2] || parts[0] || parts[1]) || fallback;
