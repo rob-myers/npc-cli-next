@@ -15,13 +15,6 @@ export default function NpcSpeechBubbles() {
   const state = useStateRef(/** @returns {State} */ () => ({
     lookup: {},
     lastFront: '',
-    bringToFront(npcKey) {
-      const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
-      if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
-      const bubbleDiv = state.lookup[npcKey].html3d.rootDiv;
-      bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
-      state.lastFront = npcKey;
-    },
     create(npcKey) {// assumes non-existent
       if (npcKey in w.n) {
         const cm = state.lookup[npcKey] = new SpeechBubbleApi(npcKey, w);
@@ -46,6 +39,13 @@ export default function NpcSpeechBubbles() {
     },
     get(npcKey) {
       return /** @type {SpeechBubbleApi} */ (state.lookup[npcKey]);
+    },
+    toFront(npcKey) {
+      const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
+      if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
+      const bubbleDiv = state.lookup[npcKey].html3d.rootDiv;
+      bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
+      state.lastFront = npcKey;
     },
   }));
 
@@ -74,7 +74,7 @@ export default function NpcSpeechBubbles() {
  * @property {string} lastFront npcKey
  * @property {{ [npcKey: string]: SpeechBubbleApi }} lookup
  *
- * @property {(npcKey: string) => void} bringToFront
+ * @property {(npcKey: string) => void} toFront
  * @property {(npcKey: string) => SpeechBubbleApi} create Add speech bubble for specific npc
  * @property {(...npcKeys: string[]) => void} delete
  * @property {(npcKey: string) => SpeechBubbleApi} get
