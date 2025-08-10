@@ -106,9 +106,9 @@ const navCss = css`
 
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
-  color: #ddd;
+  color: #ccb;
   font-size: 1rem;
-  letter-spacing: 0.1rem;
+  letter-spacing: 0.15em;
 
   // root item height and hover
   a.${menuClasses.button}, span.${menuClasses.button} {
@@ -116,7 +116,6 @@ const navCss = css`
     
     &:hover {
       background-color: transparent;
-      /* text-decoration: underline; */
     }
   }
 
@@ -128,7 +127,7 @@ const navCss = css`
     margin-left: 12px;
     transition: margin-left 300ms;
     svg {
-      color: #fff;
+      color: #ccc;
       padding: 6px;
       background:#aaa4;
       border-radius: 50%;
@@ -137,8 +136,10 @@ const navCss = css`
 
   // sub-menu
   .${menuClasses.subMenuContent} {
-    background-color: #222222;
+    background-color: #222;
     padding-left: 20px;
+    color: #ddd;
+    font-weight: 200;
   }
   .${menuClasses.SubMenuExpandIcon} {
     padding-right: 0.5rem;
@@ -158,7 +159,12 @@ const navCss = css`
   .${menuClasses.menuItemRoot}.title {
     opacity: 1;
     transition: opacity 500ms;
-    margin-left: 0.75rem;
+    padding-left: 0.75rem;
+    border-bottom: 1px solid #333;
+    font-weight: 200;
+    font-size: 1.2rem;
+    text-transform: capitalize;
+    letter-spacing: 0.5rem;
 
     .${menuClasses.button} {
       pointer-events: none; // ignore clicks outside <a>
@@ -166,13 +172,10 @@ const navCss = css`
     }
     
     .${menuClasses.label} {
-      text-transform: capitalize;
-      letter-spacing: 0.4rem;
       a {
         pointer-events: all;
-        color: #ddd;
+        color: #aab;
       }
-      font-size: 1.1rem;
     }
   }
 
@@ -233,10 +236,11 @@ const toggleCss = css`
   align-items: center;
   cursor: pointer;
 
-  transform: scale(1);
   filter: invert(1);
   
+  display: none;
   &.collapsed {
+    display: initial;
     border: 1px solid #444;
   }
 `;
