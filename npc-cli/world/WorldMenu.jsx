@@ -28,15 +28,12 @@ export default function WorldMenu(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
 
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
+    defaultLoggerWidth: w.smallViewport ? 300 : 500,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
     invertColor: false,
     logger: /** @type {*} */ (null),
-    // 🚧 set before unload
-    loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? (defaultLoggerHeightPx) / loggerHeightDelta,
-    loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? (defaultLoggerWidthPx) / defaultLoggerWidthDelta,
-    loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
     xRayOpacity: 13, // [1..20]
@@ -172,7 +169,7 @@ export default function WorldMenu(props) {
         dragClassName={state.dragClassName}
         initPos={{ x: 0, y: 0 }}
         localStorageKey={`logger:drag-pos@${w.key}`}
-        defaultWidth={400}
+        defaultWidth={state.defaultLoggerWidth}
         defaultHeight={100}
       >
         <PopUp
@@ -236,10 +233,6 @@ export default function WorldMenu(props) {
         <Logger
           ref={state.ref('logger')}
           onClickLink={state.onClickLoggerLink}
-          initDim={[
-            state.loggerWidth * state.loggerWidthDelta,
-            state.loggerHeight * loggerHeightDelta,
-          ]}
         />
       </Draggable>,
       w.view.rootEl,
@@ -253,7 +246,7 @@ export default function WorldMenu(props) {
 }
 
 const defaultLoggerHeightPx = 40;
-const defaultLoggerWidthPx = 800;
+const defaultLoggerWidthPx = 200;
 /** Must be a factor of default height */
 const loggerHeightDelta = 20;
 const defaultLoggerWidthDelta = 40;
@@ -438,14 +431,12 @@ const pausedControlsCss = css`
 /**
  * @typedef State
  * @property {number} brightness [1..20] inducing percentage `100 + 10 * (b - 10)`
+ * @property {number} defaultLoggerWidth
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys
  * @property {boolean} invertColor
  * @property {import('../terminal/Logger').State} logger
- * @property {number} loggerHeight
- * @property {number} loggerWidth
- * @property {number} loggerWidthDelta
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
  * @property {number} xRayOpacity In [1..20]
