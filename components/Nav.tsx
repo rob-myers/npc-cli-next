@@ -108,6 +108,7 @@ const navCss = css`
   text-transform: lowercase;
   color: #ccb;
   font-size: 1rem;
+  font-weight: 200;
   letter-spacing: 0.15em;
 
   // root item height and hover
@@ -162,9 +163,9 @@ const navCss = css`
     padding-left: 0.75rem;
     border-bottom: 1px solid #333;
     font-weight: 200;
-    font-size: 1.2rem;
+    font-size: 1rem;
     text-transform: capitalize;
-    letter-spacing: 0.5rem;
+    letter-spacing: 0.7rem;
 
     .${menuClasses.button} {
       pointer-events: none; // ignore clicks outside <a>
