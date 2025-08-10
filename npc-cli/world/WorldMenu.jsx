@@ -288,11 +288,13 @@ const popUpCss = css`
   // cover Logger scrollbars
   z-index: ${zIndexWorld.loggerPopUp};
   
+  position: absolute;
+  right: 0;
+
   .${popUpButtonClassName} {
     color: #8888ff;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-width: 1px 0 0 1px;
-    background: black;
+    background: #000a;
     padding: 2px 12px;
     text-decoration: underline;
     padding: 0 20px 8px 20px;
