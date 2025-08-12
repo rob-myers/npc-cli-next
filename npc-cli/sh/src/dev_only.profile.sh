@@ -1,6 +1,6 @@
 source /etc/{util,core}.sh
 source /etc/{util,core}.js.sh
-source /etc/{game_1,demo}.js.sh
+source /etc/{game,demo}.js.sh
 
 awaitWorld
 
