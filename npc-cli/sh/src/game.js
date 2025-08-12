@@ -67,6 +67,35 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
 }
 
 /**
+ * Like `move` but on obstruction await resolution, rather than throwing.
+ * ```sh
+ * direct npc:rob to:"$( click 2 )"
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to']; }} [opts]
+ */
+export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+  let to = opts.to;
+  while (true) {
+    try {
+      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
+      break;
+    } catch (e) {
+      if (!helper.isStopReason(e) || !('rest' in e)) {
+        throw e; // e.g. reboot; respawn or remove
+      }
+      to = e.rest;
+      // on paused interrupt, avoid resuming twice
+      if (!(e.key === 'move-again' && ct.api.isPaused())) {
+        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting resolution...`;
+      }
+      ct.api.pause();
+      await ct.api.awaitResume();
+    }
+  }
+}
+
+/**
  * ```sh
  * events | handleContextMenu
  * ```
@@ -158,35 +187,6 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
     npc.api.look(input).catch(() => {});
   } else {// act or stop acting
     await npc.api.make({ do: input }).catch(() => {});
-  }
-}
-
-/**
- * Like `move` but on obstruction await resolution, rather than throwing.
- * ```sh
- * direct npc:rob to:"$( click 2 )"
- * ```
- * @param {NPC.RunArg} ct
- * @param {{ npcKey: string; to: NPC.MoveOpts['to']; }} [opts]
- */
-export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
-  let to = opts.to;
-  while (true) {
-    try {
-      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-      break;
-    } catch (e) {
-      if (!helper.isStopReason(e) || !('rest' in e)) {
-        throw e; // e.g. reboot; respawn or remove
-      }
-      to = e.rest;
-      // on paused interrupt, avoid resuming twice
-      if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting resolution...`;
-      }
-      ct.api.pause();
-      await ct.api.awaitResume();
-    }
   }
 }
 
