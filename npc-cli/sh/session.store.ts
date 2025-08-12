@@ -77,7 +77,7 @@ const useStore = create<State>()((set, get): State => ({
               ...persisted.var,
               ...deepClone(env),
             },
-            jsFunc: {} as any,
+            modules: {} as any,
             nextPid: 0,
             process: {},
             lastBg: 0,
@@ -524,7 +524,7 @@ export interface Session {
     /** `processApi[key]` is `processApi.getCached(var[CACHE_SHORTCUTS[key]])` */
     CACHE_SHORTCUTS?: { [key: string]: string };
   };
-  jsFunc: import('../terminal/TtyWithFunctions').TtyJsModules;
+  modules: import('../terminal/TtyWithFunctions').TtyJsModules;
 
   nextPid: number;
   /** Last exit code: */

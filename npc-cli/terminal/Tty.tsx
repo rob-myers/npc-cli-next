@@ -180,7 +180,7 @@ export default function Tty(props: Props) {
       }));
 
       // store original functions too
-      Object.assign(session.jsFunc, props.modules);
+      Object.assign(session.modules, props.modules);
     },
     writeErrorToTty(sessionKey: string, message: string, origError: any) {
       useSession.api.writeMsg(sessionKey, `${message} (see console)`, 'error');

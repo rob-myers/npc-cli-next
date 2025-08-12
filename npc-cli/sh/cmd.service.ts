@@ -46,6 +46,7 @@ const commandKeys = {
   help: true,
   /** List previous commands */
   history: true,
+  /** Import shell function(s) induced by JavaScript module */
   import: true,
   /** Kill a process */
   kill: true,
@@ -292,7 +293,7 @@ class cmdServiceClass {
         }
 
         const session = useSession.api.getSession(meta.sessionKey);
-        const { jsFunc: modules } = session;
+        const { modules } = session;
 
         if (!(moduleKey in modules)) {
           throw Error(`unknown module: ${moduleKey}`);
@@ -1034,7 +1035,7 @@ class cmdServiceClass {
       {
         home: session.var, // see RunArg['home']
         etc: session.etc,
-        lib: session.jsFunc, // see RunArg['lib']
+        lib: session.modules, // see RunArg['lib']
         // cache: queryCache,
         // dev: useSession.getState().device,
       },
@@ -1232,7 +1233,7 @@ interface ChoiceReadValue {
 export type ProcessContext = {
   home: Session['var']; // see RunArg['home']
   etc: Session['etc'];
-  lib: Session['jsFunc']; // see RunArg['lib']
+  lib: Session['modules']; // see RunArg['lib']
 } & {
   set args(args: string[]);
   get api(): ProcessApi;
