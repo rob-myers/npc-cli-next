@@ -13,6 +13,7 @@ import { ttyShellClass } from "./tty.shell";
 
 import { getCached } from "../service/query-client";
 import { observableToAsyncIterable } from "../service/observable-to-async-iterable";
+import jsFunctionToShellFunction from "./js-to-shell-function";
 
 /** Shell builtins */
 const commandKeys = {
@@ -45,6 +46,7 @@ const commandKeys = {
   help: true,
   /** List previous commands */
   history: true,
+  import: true,
   /** Kill a process */
   kill: true,
   /** Local variables */
@@ -280,6 +282,47 @@ class cmdServiceClass {
         const { ttyShell } = useSession.api.getSession(meta.sessionKey);
         const history = ttyShell.getHistory();
         for (const line of history) yield line;
+        break;
+      }
+      case "import": {
+        const moduleKey = args.pop();
+        const from = args.pop();
+        if (!moduleKey || from !== 'from') {
+          throw Error('format: import foo bar:baz from qux');
+        }
+
+        const session = useSession.api.getSession(meta.sessionKey);
+        const { jsFunc: modules } = session;
+
+        if (!(moduleKey in modules)) {
+          throw Error(`unknown module: ${moduleKey}`);
+        }
+
+        const module = modules[moduleKey as keyof typeof modules];
+        const names = jsArg(args);
+        const namedFuncs = {} as Record<string, (...args: any[]) => any>;
+        for (const [key, value] of Object.entries(names)) {
+          if (value === true) namedFuncs[key] = module[key as keyof typeof module];
+          else namedFuncs[value] = module[key as keyof typeof module];
+          if (namedFuncs[key] === undefined) {
+            throw Error(`unknown function: ${key} from ${moduleKey}`);
+          }
+        }
+        
+        const shellFuncs = Object.entries(namedFuncs).map(([fnKey, fn]) =>
+          jsFunctionToShellFunction({
+            modules,
+            moduleKey,
+            fnKey,
+            fn,
+          })
+        );
+        
+        // source functions
+        const src = shellFuncs.join('\n\n');
+        await session.ttyShell.sourceExternal(src);
+
+        // 🚧 auto re-source?
         break;
       }
       case "jsArg": {

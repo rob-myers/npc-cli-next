@@ -208,9 +208,14 @@ interface SendHistoryLine {
 export interface ExternalMessage {
   key: "external";
   msg: (
-    | { key: 'auto-re-source-file'; absPath: `/etc/${string}`; }
+    | ExternalAutoReSourceFile
     | ExternalMessageProcessLeader
   );
+}
+
+interface ExternalAutoReSourceFile {
+  key: 'auto-re-source-file';
+  absPath: `/etc/${string}`;
 }
 
 /** Only sent when `process.src !== ''`. */

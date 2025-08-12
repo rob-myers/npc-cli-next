@@ -198,19 +198,17 @@ export class ttyShellClass implements Device {
   }
 
   /**
-   * 🔔 We run `/etc/foo` in session leader `this.process`,
+   * 🔔 This runs code `src` in session leader `this.process`,
    * even if latter is already running. This is a bit of a
-   * hack, but it should be OK if these files only contain shell
+   * hack, but it should be OK if the code only contains shell
    * function declarations.
    * 
-   * @param filename `/etc/foo` which only contains shell function declarations
+   * @param src should only contain shell function declarations
    */
-  async sourceFuncDeclarations(filename: string) {
-    const session = useSession.api.getSession(this.sessionKey);
-    const src = session.etc[filename];
+  async sourceExternal(src: string) {
     const term = parseService.parse(src);
     this.provideContextToParsed(term);
-    await this.spawn(term, { by: 'source-external' });
+    await this.spawn(term, { by: 'source-external' });
   }
 
   /**

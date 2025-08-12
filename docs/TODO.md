@@ -66,6 +66,13 @@
 
 ### World
 
+- 🚧 rethink `source` files naming
+  - ✅ `import` builtin can import individual functions
+  - ✅ `import` builtin can rename import
+  - ℹ️ can use `import`in future to refine/augment source
+  - `map` should be a builtin
+  - files util, core, game, demo (no suffix _1)
+
 - ✅ act points -> do points
 
 - ✅ refactor ptags

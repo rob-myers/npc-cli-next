@@ -165,7 +165,8 @@ export default function Tty(props: Props) {
       // that have already have been sourced in this session
       await Promise.all(keys(state.reSource).map(async filename => {
         try {
-          await session.ttyShell.sourceFuncDeclarations(filename);  
+          const src = session.etc[filename];
+          await session.ttyShell.sourceExternal(src);  
         } catch (e: any) {
           if (typeof e?.$type === 'string') {// mvdan.cc/sh/v3/syntax.ParseError
             const fileContents = props.shFiles[filename];
@@ -179,7 +180,7 @@ export default function Tty(props: Props) {
       }));
 
       // store original functions too
-      Object.assign(session.jsFunc, props.jsFunc);
+      Object.assign(session.jsFunc, props.modules);
     },
     writeErrorToTty(sessionKey: string, message: string, origError: any) {
       useSession.api.writeMsg(sessionKey, `${message} (see console)`, 'error');
@@ -187,7 +188,7 @@ export default function Tty(props: Props) {
       error(origError);
     },
   }), {
-    deps: [props.shFiles],
+    deps: [props.shFiles, props.modules],
   });
 
   state.disabled = props.disabled;
@@ -254,7 +255,7 @@ export default function Tty(props: Props) {
   }, [
     state.base.session,
     ...Object.entries(props.shFiles).flatMap(x => x),
-    ...Object.entries(props.jsFunc).flatMap(x => x),
+    ...Object.entries(props.modules).flatMap(x => x),
   ]);
 
   React.useEffect(() => {// sync ~/PROFILE
@@ -313,7 +314,7 @@ export interface Props extends BaseTabProps {
    * All js functions which induce shell functions.
    * They are partitioned by "fileKey".
    */
-  jsFunc: import('./TtyWithFunctions').TtyJsModules;
+  modules: import('./TtyWithFunctions').TtyJsModules;
   /**
    * All shell files (*.sh and *.js.sh).
    * They are spread into `/etc`.
