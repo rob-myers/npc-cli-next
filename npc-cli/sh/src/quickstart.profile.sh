@@ -1,8 +1,5 @@
-# source /etc/{util,core}.sh
-# source /etc/{util,core}.js.sh
-# source /etc/demo_1.js.sh
-import awaitWorld spawn click from core
-import map from util
+source /etc/{util,core}.sh
+source /etc/{util,core}.js.sh
 import demoClickToMove from demo
 
 awaitWorld

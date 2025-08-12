@@ -1,6 +1,6 @@
 source /etc/{util,core}.sh
-source /etc/{util,core}.js.sh
-source /etc/{game,demo}.js.sh
+source /etc/{util,core,game}.js.sh
+import demoCameraWASD from demo
 
 awaitWorld
 
