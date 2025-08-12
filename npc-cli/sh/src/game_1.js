@@ -2,8 +2,7 @@ import { Mat, Vect } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from '@/npc-cli/service/geom';
 import { ansi } from "../const";
-import { pause } from "./util";
-import { move } from "./game";
+import { move } from "./core";
 
 /**
  * @param {NPC.RunArg} ct

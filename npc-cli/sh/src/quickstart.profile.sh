@@ -1,7 +1,7 @@
-# source /etc/{util,game}.sh
-# source /etc/{util,game}.js.sh
+# source /etc/{util,core}.sh
+# source /etc/{util,core}.js.sh
 # source /etc/demo_1.js.sh
-import awaitWorld spawn click from game
+import awaitWorld spawn click from core
 import map from util
 import demoClickToMove from demo
 
