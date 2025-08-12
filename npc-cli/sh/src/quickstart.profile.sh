@@ -3,7 +3,7 @@
 # source /etc/demo_1.js.sh
 import awaitWorld spawn click from game
 import map from util
-import demoClickToMove from demo_1
+import demoClickToMove from demo
 
 awaitWorld
 

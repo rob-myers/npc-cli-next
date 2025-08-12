@@ -73,7 +73,7 @@
   - ❌ `map` should be a builtin
     - want to avoid duplicating `run` process-rebooting,
       so we'll continue letting `run` run `map`
-  - files util, core, game, demo (no suffix _1)
+  - 🚧 files util, core, game, demo (no suffix _1)
 
 - ✅ act points -> do points
 
