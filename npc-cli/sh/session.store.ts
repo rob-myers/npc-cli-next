@@ -568,8 +568,10 @@ export interface ProcessMeta {
    */
   cleanups: ((SIGINT?: boolean) => void)[];
   /**
-   * Processes with src `run {moduleName} {fnName} ...` can be rebooted,
-   * to avoid stale JavaScript on hot module reload.
+   * Processes with src:
+   * > `run {moduleKey} {fnKey} ...`
+   * 
+   * can be rebooted, to avoid stale JavaScript on hot module reload.
    */
   reboot?: {
     apply(): void;

@@ -70,7 +70,9 @@
   - ✅ `import` builtin can import individual functions
   - ✅ `import` builtin can rename import
   - ℹ️ can use `import`in future to refine/augment source
-  - 🚧 `map` should be a builtin
+  - ❌ `map` should be a builtin
+    - want to avoid duplicating `run` process-rebooting,
+      so we'll continue letting `run` run `map`
   - files util, core, game, demo (no suffix _1)
 
 - ✅ act points -> do points
