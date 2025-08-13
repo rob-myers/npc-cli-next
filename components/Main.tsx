@@ -143,6 +143,10 @@ const mainMainCss = css`
     margin: 0 1rem;
     padding: 2rem 4rem 6rem 4rem;
   }
+
+  h1 + h2 {
+    margin-top: 0;
+  }
 `;
 
 const overlayCss = css`
