@@ -149,8 +149,9 @@ const codeContainerCss = css`
     margin-bottom: 0;
     border: 1px solid #ddd;
     border-bottom: none;
-    color: #000;
-    height: 50px;
+    color: #333;
+    height: 60px;
+    font-size: large;
   }
   figure {
     margin-top: 0;
