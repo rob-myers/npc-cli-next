@@ -12,13 +12,12 @@ narrate the man went to his bedroom
 move npc:rob to:$( click 1 )
 
 narrate he yawned
-make npc:rob say:Yaaaawnn
+make npc:rob say:yawn...
 
 narrate changed into his sleepwear
 spawn npc:rob at:$( npc rob position ) skin:,,base,
 
 narrate and got into bed
-make npc:rob say:
 # click a bed do point
 make npc:rob do:$( click 1 )
 make npc:rob say:Zzzzz

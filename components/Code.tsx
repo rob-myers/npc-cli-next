@@ -147,11 +147,10 @@ const codeContainerCss = css`
     padding: 1rem;
     margin-top: 0;
     margin-bottom: 0;
-    background-color: #eee;
+    border: 1px solid #ddd;
+    border-bottom: none;
     color: #000;
     height: 50px;
-    border: 1px solid #7775;
-    border-bottom: none;
   }
   figure {
     margin-top: 0;
@@ -159,12 +158,11 @@ const codeContainerCss = css`
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 1px solid #7775;
+    border: 1px solid #ddd;
     border-top: none;
   }
   pre {
     padding-top: 1rem;
-    //padding-bottom: 0;
     flex: 1;
     display: flex;
   }

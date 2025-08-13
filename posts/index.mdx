@@ -30,7 +30,7 @@ import ViewerOpenPlayButtonDesktopWebp from '../public/images/viewer-open-play-b
 Let's spawn, move and remove an NPC.<SideNote>
 A "Non-Player Character" (NPC) is a video game character not controlled by the Player.</SideNote>
 
-<Card background='#eef'>
+<Card>
   <LaptopIcon/> Desktop users can follow along.
 
   <MobileIcon/> Mobile users can watch the video then skip to the next section.
@@ -47,7 +47,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 
 {/* 🚧 bigger images via smaller desktop */}
 
-<Card background='#eef'>
+<Card>
   <LaptopIcon/> To follow along, open the _Viewer_ on the right of the screen (drag or toggle).
   Click the play button <PlayIcon/> and finally ensure the same tabs by clicking <SetTabsLink layoutPresetKey="world-tty-default">here</SetTabsLink>.
 
@@ -74,7 +74,7 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 The video works through the commands below.
 They're a natural place to start.
 
-<Code title='Spawn, move, do, remove'>
+<Code title='Our first commands'>
   ```sh showLineNumbers
   spawn npc:rob at:$( click 1 )
 
@@ -121,7 +121,7 @@ Desktop users might alternate between these roles, designing behaviours while tr
 Mobile users should probably assume the Player role.
 This means they only need to open a terminal whose _profile_ (initial script) sets everything up.
 
-<Card background='#eef'>
+<Card>
   To use the _quickstart_ profile in the Viewer,
   click <SetTabsLink layoutPresetKey="world-tty-quickstart">here</SetTabsLink>.
 </Card>
@@ -136,15 +136,15 @@ This means they only need to open a terminal whose _profile_ (initial script) se
   <Video videoKey='desktopDemo2' label={<> <LaptopIcon/> Quickstart profile</>} noBg />
 </Carousel>
 
-{/* 🚧 */}
+{/* 🚧 links should point to main */}
 
 <Code
-  title={<a href="https://github.com/rob-myers/npc-cli-next/blob/main/npc-cli/sh/src/quickstart.profile.sh">quickstart.profile.sh</a>}
+  title={<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/quickstart.profile.sh">quickstart.profile.sh</a>}
 >
   ```sh showLineNumbers
   source /etc/{util,core}.sh
   source /etc/{util,core}.js.sh
-  source /etc/demo.js.sh
+  import demoClickToMove from demo
 
   awaitWorld
 
@@ -153,11 +153,12 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 
   ptags always; click meta.floor |
     demoClickToMove npc:rob &
+
   ```
 </Code>
 
 <Code
-  title={<>demoClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/main/npc-cli/sh/src/demo_1.js">demo_1.js</a></>}
+  title={<>demoClickToMove from&nbsp;<a href="https://github.com/rob-myers/npc-cli-next/blob/almost-ready/npc-cli/sh/src/demo.js">demo.js</a></>}
 >
   ```js showLineNumbers
   /**
