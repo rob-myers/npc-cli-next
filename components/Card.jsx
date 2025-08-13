@@ -29,7 +29,7 @@ const rootCss = css`
   position: relative;
 
   @media(max-width: ${breakpoint}) {
-    padding: 8px 32px;
+    padding: 0 32px;
   }
 `;
 

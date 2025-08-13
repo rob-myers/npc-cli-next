@@ -133,9 +133,9 @@ const mainHeaderCss = css`
 `;
 
 const mainMainCss = css`
-  /* 🚧 dark mode issue */
   background-color: #fff;
   padding-top: 2rem;
+  font-size: large;
 
   @media (min-width: ${afterBreakpoint}) {
     flex: 1;
