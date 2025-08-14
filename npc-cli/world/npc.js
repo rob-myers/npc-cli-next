@@ -705,7 +705,7 @@ export class NpcApi {
       const other = this.w.a[nei.idx];
 
       if (other.s.target === null) {
-        const delta = tmpVect1.copy(offMesh.src).sub(point).normalize(closeDist);
+        const delta = tmpVect1.copy(offMesh.src).sub(point).normalize(0.3);
         if (geom.lineSegIntersectsCircle(
           delta.add(point).json, // look further ahead
           offMesh.src,
