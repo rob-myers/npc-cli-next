@@ -1223,9 +1223,9 @@ export class NpcApi {
     }
     
     // avoid fast final turn
-    // if (this.pendingTargets.length === 0 && distance <= 5 * defaultNpcArriveDistance) {
-    //   this.s.lookSecs = 0.5;
-    // }
+    if (this.pendingTargets.length === 0 && this.s.anim !== 'Idle' && distance <= 5 * arriveDist) {
+      this.s.lookSecs = 0.5;
+    }
 
     this.onTickDetectStuck(deltaSecs, agent);
   }
