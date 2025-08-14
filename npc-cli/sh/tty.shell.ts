@@ -287,7 +287,8 @@ export class ttyShellClass implements Device {
         this.process.ptags = this.sessionLeaderPtags;
       }
 
-      if (// Represent <Tabs> disabled
+      if (
+        // Tabs is disabled
         this.suspendNonInteractive === true
         // processes not tagged with 'always' are paused,
         // except those which are tagged interactive
