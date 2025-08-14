@@ -590,13 +590,14 @@ export class NpcApi {
   }
 
   /**
-   * Given another npc in the same doorway, get how far ahead it is.
-   * @param {NPC.NPC} other an npc in same doorway
+   * Given other npc using same offMeshConnection, get how far ahead it is.
+   * @param {NPC.NPC} other another npc using same offMeshConnection
    */
   getOtherDoorwayLead(other) {
     const offMesh = /** @type {NPC.OffMeshState} */ (other.s.offMesh);
-    const direction = tmpVect1.copy(offMesh.dst).sub(offMesh.src).normalize();
-    return ((other.position.x - this.base.position.x) * direction.x) + ((other.position.z - this.base.position.z) * direction.y);
+    const { x: ox, z: oy } = other.position;
+    const direction = offMesh.seg >= 1 ? offMesh.mainUnit : offMesh.initUnit;
+    return (ox - this.base.position.x) * direction.x + (oy - this.base.position.z) * direction.y;
   }
 
   /** @returns {Geom.VectJson} */
@@ -702,24 +703,26 @@ export class NpcApi {
 
       // maybe cancel traversal
       const other = this.w.a[nei.idx];
-      if ((
-        other.s.target === null &&
-        geom.lineSegIntersectsCircle(
-          point,
+
+      if (other.s.target === null) {
+        const delta = tmpVect1.copy(offMesh.src).sub(point).normalize(closeDist);
+        if (geom.lineSegIntersectsCircle(
+          delta.add(point).json, // look further ahead
           offMesh.src,
           other.api.getPoint(),
           0.3, // sometimes small flicker when idle
-        ) === false
-      ) || (
-        other.s.offMesh !== null
-        && (
-          this.getOtherDoorwayLead(other) >= 0.3
-          || this.getOtherDoorwayLead(other) <= 0
-        )
-      )) {
-        // 🔔 other idle and "not in the way", or
-        // 🔔 other traversing with enough lead
-        continue;
+        ) === false) {
+          // 🔔 other idle and "not in the way"
+          continue;
+        }
+      }
+      
+      if (other.s.offMesh !== null) {
+        const lead = this.getOtherDoorwayLead(other);
+        if (lead >= 0.3 || lead <= 0) {
+          // 🔔 other traversing with enough lead
+          continue;
+        }
       }
 
       this.stopMoving({
