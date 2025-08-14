@@ -200,7 +200,7 @@ export default function Tty(props: Props) {
     }
 
     // if disabled, suspend spawned bg processes sans process tag 'always'
-    session.ttyShell.suspendNonInteractive = !!props.disabled;
+    session.ttyShell.disabled = !!props.disabled;
     
     if (props.disabled === true) {
       // avoid initial pause: something was spawned

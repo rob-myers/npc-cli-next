@@ -66,6 +66,13 @@
 
 ### World
 
+- ✅s running `direct npc:kate to:$( click 1 ) &` while paused cannot resolve `click 1` until unpause
+  - ℹ️ confusing but a not bug
+  - ✅ could `direct npc:kate to:$( ptags always; click 1 ) &`
+  - ✅ ui button when Tabs disabled to set background processes initially unpaused
+  - ℹ️ example where you wouldn't want this: `{ sleep 5; ...; } &`
+
+
 - ✅ rethink `source` files naming
   - ✅ `import` builtin can import individual functions
   - ✅ `import` builtin can rename import

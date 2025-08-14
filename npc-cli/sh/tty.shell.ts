@@ -3,7 +3,7 @@ import { error, testNever, warn } from "../service/generic";
 import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
-import { ansi, ProcessTag } from "./const";
+import { ansi, ProcessTag, spawnBgUnpausedDefault } from "./const";
 import { applyPtagUpdates, killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
@@ -13,8 +13,10 @@ import { ttyXtermClass } from "./tty.xterm";
 export class ttyShellClass implements Device {
   public key: string;
   public xterm!: ttyXtermClass;
-  /** Suspend processes without process tag 'interactive'? */
-  public suspendNonInteractive = false;
+  /** Is corresponding component `<Tty>` disabled? */
+  public disabled = false;
+  /** While `this.disabled` spawn background processes unpaused? */
+  public spawnBgUnpaused = spawnBgUnpausedDefault;
 
   /** Lines received from a TtyXterm. */
   private inputs = [] as { line: string; resolve: () => void }[];
@@ -288,12 +290,12 @@ export class ttyShellClass implements Device {
       }
 
       if (
-        // Tabs is disabled
-        this.suspendNonInteractive === true
+        this.disabled === true
         // processes not tagged with 'always' are paused,
         // except those which are tagged interactive
         && !(ProcessTag.always in process.ptags)
         && !(ProcessTag.interactive in process.ptags)
+        && this.spawnBgUnpaused === false
       ) {
         process.status = ProcessStatus.Suspended;
       }
