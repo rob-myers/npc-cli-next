@@ -63,8 +63,8 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
 
       // 🚧 ...
       zoomToCursor
-      minAzimuthAngle={-Infinity}
-      maxAzimuthAngle={+Infinity}
+      minAzimuthAngle={0}
+      maxAzimuthAngle={0}
       minPolarAngle={Math.PI * 0}
       maxPolarAngle={Math.PI * 1/3}
       minDistance={props.minDistance} // target could be ground or npc head
