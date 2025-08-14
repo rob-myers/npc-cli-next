@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { damp } from "maath/easing"
 
 import { Mat, Vect } from "../geom";
-import { doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDepth, instancedMeshName, offMeshConnectionHalfDepth, precision, wallOutset } from "../service/const";
+import { doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDepth, instancedMeshName, precision, wallOutset } from "../service/const";
 import * as glsl from "../service/glsl";
 import { getBoxGeometry, getColor, getQuadGeometryXY } from "../service/three";
 import { geomorph } from "../service/geomorph";
@@ -26,7 +26,7 @@ export default function Doors(props) {
     lockSigGeom: getBoxGeometry(`${w.key}-lock-lights`),
     lockSigInst: /** @type {*} */ (null),
     movingDoors: new Map(),
-    opacity: 0.7,
+    opacity: 0.4,
     ready: false,
 
     addCuboidAttributes() {
