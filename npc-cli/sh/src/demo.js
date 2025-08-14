@@ -69,9 +69,9 @@ export const demoCameraWASD = ({ w }) => {
         });
         break;
       }
-      case "a": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
+      case "a": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
       case "s": await w.view.tween({ azimuthal: angle + Math.PI }); break;
-      case "d": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
+      case "d": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
     }
   };
 };
