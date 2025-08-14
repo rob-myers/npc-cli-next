@@ -104,7 +104,7 @@ function NpcSpeechBubble({ cm }) {
       visible
     >
       <div className="speech">
-        <span className="npc-key">{cm.speech === '' ? '' : `${cm.key}: `}</span>
+        <span className="npc-key">{cm.speech === '' ? '' : `${cm.key} `}</span>
         {cm.speech}
       </div>
     </Html3d>

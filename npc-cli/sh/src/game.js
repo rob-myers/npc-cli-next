@@ -87,7 +87,7 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
       to = e.rest;
       // on paused interrupt, avoid resuming twice
       if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting resolution...`;
+        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset} awaiting resolution...`;
       }
       ct.api.pause();
       await ct.api.awaitResume();
