@@ -67,7 +67,7 @@ export class RoomGraphClass extends BaseGraph {
 
   /** @param {number} doorId */
   getDoorNode(doorId) {
-    return /** @type {Graph.RoomGraphNodeDoor} */ (this.getNodeById(`door-${doorId}`));
+    return /** @type {Graph.RoomGraphNodeDoor} */ (this.getNode(`door-${doorId}`));
   }
 
   /**
@@ -110,7 +110,7 @@ export class RoomGraphClass extends BaseGraph {
 
   /** @param {number} windowIndex */
   getWindowNode(windowIndex) {
-    return /** @type {Graph.RoomGraphNodeWindow} */ (this.getNodeById(`window-${windowIndex}`));
+    return /** @type {Graph.RoomGraphNodeWindow} */ (this.getNode(`window-${windowIndex}`));
   }
 
   /**

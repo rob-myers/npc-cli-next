@@ -4,6 +4,10 @@
 
 ### Stories
 
+#### _Going to bed_
+
+Interactively:
+
 ```sh
 spawn npc:rob at:$( click 1)
 
@@ -21,9 +25,12 @@ narrate and got into bed
 # click a bed do point
 make npc:rob do:$( click 1 )
 make npc:rob say:Zzzzz
+```
 
+Scripting:
 
-# 🚧
+```sh
+🚧
 ```
 
 ### Random navigable points
@@ -88,7 +95,17 @@ make npc:rob do:$( click 1 )
 make npc:rob do:$( click 2 )
 ```
 
-## Skinning
+### Finding
+
+```sh
+# get rob's current room, e.g.
+# {gmId:0,roomId:2,grKey:"g0r2"}
+w e.npcToRoom.get rob
+
+w gmRoomGraph.getReachableUpTo g0r2 '(_, depth) => depth === 2'
+```
+
+### Skinning
 
 ```sh
 # ensure rob

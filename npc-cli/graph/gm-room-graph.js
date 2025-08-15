@@ -108,9 +108,10 @@ export class GmRoomGraphClass extends BaseGraph {
   sameOrAdjRooms(grKey1, grKey2) {
     if (grKey1 === grKey2) {
       return true;
+    } else {
+      const src = /** @type {Graph.GmRoomGraphNode} */ (this.getNode(grKey1));
+      const dst = /** @type {Graph.GmRoomGraphNode} */ (this.getNode(grKey2));
+      return this.succ.get(src)?.get(dst) !== undefined;
     }
-    const src = /** @type {Graph.GmRoomGraphNode} */ (this.getNodeById(grKey1));
-    const dst = /** @type {Graph.GmRoomGraphNode} */ (this.getNodeById(grKey2));
-    return this.succ.get(src)?.get(dst) !== undefined;
   }
 }

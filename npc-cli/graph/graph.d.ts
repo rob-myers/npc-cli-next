@@ -30,7 +30,7 @@ declare namespace Graph {
     reset(): void;
     hasNode(node: Node): boolean;
     isConnected(src: Node, dst: Node): boolean;
-    getNodeById(nodeid: string): Node | null;
+    getNode(nodeid: string): Node | null;
 
     plainJson(): GraphJson<Node, EdgeOpts>;
     plainFrom(json: GraphJson<Node, EdgeOpts>): this;

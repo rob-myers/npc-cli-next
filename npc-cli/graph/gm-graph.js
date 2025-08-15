@@ -239,7 +239,7 @@ export class GmGraphClass extends BaseGraph {
 
     const gm = this.gms[gmId];
     const doorNodeId = getGmDoorNodeId(gm.num, gm.transform, hullDoorId);
-    const doorNode = this.getNodeById(doorNodeId);
+    const doorNode = this.getNode(doorNodeId);
     if (!doorNode) {
       console.error(`${GmGraphClass.name}: failed to find hull door node: ${doorNodeId}`);
       return this.adjRoomCtxt.set(cacheKey, null), null;
@@ -335,7 +335,7 @@ export class GmGraphClass extends BaseGraph {
   getDoorNodeById(gmId, hullDoorId) {
     const gm = this.gms[gmId];
     const nodeId = getGmDoorNodeId(gm.num, gm.transform, hullDoorId);
-    return /** @type {Graph.GmGraphNodeDoor} */ (this.getNodeById(nodeId));
+    return /** @type {Graph.GmGraphNodeDoor} */ (this.getNode(nodeId));
   }
 
   /** @param {Geom.VectJson[]} points */
@@ -523,7 +523,7 @@ export class GmGraphClass extends BaseGraph {
           // console.info('hull door to hull door:', srcItem, hullDoorId, '==>', dstItem, dstHullDoorId)
           const dstDoorNodeId = getGmDoorNodeId(dstGm.num, dstGm.transform, dstHullDoorId);
           // NOTE door nodes with global edges are not sealed
-          /** @type {Graph.GmGraphNodeDoor} */ (graph.getNodeById(srcDoorNodeId)).sealed = false;
+          /** @type {Graph.GmGraphNodeDoor} */ (graph.getNode(srcDoorNodeId)).sealed = false;
           return { src: srcDoorNodeId, dst: dstDoorNodeId };
         } else {
           return [];

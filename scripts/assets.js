@@ -330,7 +330,7 @@ info({ opts });
 
   const changedGmKeys = geomorph.gmKeys.filter(gmKey => {
     const hullKey = helper.toHullKey[gmKey];
-    const hullNode = assertNonNull(symbolGraph.getNodeById(hullKey));
+    const hullNode = assertNonNull(symbolGraph.getNode(hullKey));
     return symbolGraph.getReachableNodes(hullNode).find(x => changedSymbolAndMapKeys.includes(x.id));
   });
   info({ changedGmKeys });

@@ -65,8 +65,8 @@ export class BaseGraph {
    * @param {EdgeOpts} opts
    */
   connect(opts) {
-    const src = this.getNodeById(opts.src);
-    const dst = this.getNodeById(opts.dst);
+    const src = this.getNode(opts.src);
+    const dst = this.getNode(opts.dst);
 
     if (src && dst) {
       let edge = this.getEdge(src, dst);
@@ -210,7 +210,7 @@ ${this.edgesArray.map(x => `  "${x.src.id}" -> "${x.dst.id}" ${edgeLabel(x) || '
    * Get `node` where `node.id === id`, or null.
    * @param {Node['id']} id
    */
-  getNodeById(id) {
+  getNode(id) {
     return this.idToNode.get(id) || null;
   }
 
@@ -235,10 +235,11 @@ ${this.edgesArray.map(x => `  "${x.src.id}" -> "${x.dst.id}" ${edgeLabel(x) || '
 
   /**
    * Get reachable nodes in breadth-first manner.
-   * @param {Node} node
+   * @param {Node | string} node
    * @returns {Node[]}
    */
   getReachableNodes(node) {
+    node = typeof node === 'string' ? /** @type {Node} */ (this.getNode(node)) : node;
     const reachable = new Set([node]);
     let [count, frontier] = [0, [node]];
     while (reachable.size > count) {
@@ -250,11 +251,13 @@ ${this.edgesArray.map(x => `  "${x.src.id}" -> "${x.dst.id}" ${edgeLabel(x) || '
   }
 
   /**
-   * @param {Node | number} node node or index into `nodesArray`
+   * For example `stopWhen(_, depth) { return depth === 3; }`
+   * 
+   * @param {Node | string} node node or node id
    * @param {(node: Node, depth: number) => boolean} stopWhen
    * @returns {Node[]}
    */
-  getReachableUpto(
+  getReachableUpTo(
     node,
     /**
      * Predicate should evaluate true at `node` iff we
@@ -262,7 +265,7 @@ ${this.edgesArray.map(x => `  "${x.src.id}" -> "${x.dst.id}" ${edgeLabel(x) || '
      */
     stopWhen
   ) {
-    const root = typeof node === "number" ? this.nodesArray[node] : node;
+    const root = typeof node === "string" ? /** @type {Node} */ (this.getNode(node)) : node;
     const reachable = new Set([root]);
     let [total, frontier, depth] = [0, [root], 0];
     while (reachable.size > total) {
@@ -385,7 +388,7 @@ ${this.edgesArray.map(x => `  "${x.src.id}" -> "${x.dst.id}" ${edgeLabel(x) || '
    * @protected
    */
   registerEdge(def) {
-    const [src, dst] = [this.getNodeById(def.src), this.getNodeById(def.dst)];
+    const [src, dst] = [this.getNode(def.src), this.getNode(def.dst)];
     if (src && dst) {
       /** @type {Edge} */
       const edge = { ...def, src, dst, id: `${def.src}->${def.dst}` };
