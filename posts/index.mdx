@@ -195,15 +195,18 @@ For characters we use a basic Blender model, texture-mapped with simplifications
 Our underlying motivations are:
 
 - __NPCs indistinguishable from human-controlled characters.__
+  
   A human Game Master makes this tractable.
   Can one human act indistinguishably from many humans playing individual parts?
   <SideNote>It also motivates realtime control systems.</SideNote>
 
 - __Understand [Recast-Detour](https://github.com/recastnavigation/recastnavigation).__
+  
   Our NPCs are driven by Recast-Detour.
   We'll analyse this important C++ library.
 
 - __Generic scripting for [three.js](https://www.npmjs.com/package/three).__
+  
   We interpret [mvdan-sh](https://github.com/mvdan/sh) syntax trees as JavaScript.
   In production one can run commands.
   In development, shell functions and processes are synced with JS modules.<SideNote>Technically this approach is independent of three.js.</SideNote>
