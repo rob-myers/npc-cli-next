@@ -283,7 +283,7 @@ export default function useHandleEvents(w) {
 
           // try fix previous external npcs
           for (const npcKey of prevExternalNpcs) {
-            const npc = w.npc.npc[npcKey];
+            const npc = w.n[npcKey];
             state.tryPutNpcIntoRoom(npc);
           }
           w.menu.measure('pre-request-nav');

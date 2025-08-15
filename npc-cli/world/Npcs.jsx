@@ -37,12 +37,12 @@ export default function Npcs(props) {
 
     attachAgent(npc) {
       if (npc.agent === null) {
-        npc.agent = npc.w.crowd.addAgent(npc.position, {
+        npc.agent = w.crowd.addAgent(npc.position, {
           ...crowdAgentParams,
           maxSpeed: npc.s.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
           queryFilterType: helper.queryFilterType.respectUnwalkable,
         });
-        npc.agentAnim = npc.w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
+        npc.agentAnim = w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
 
         state.byAgId[npc.agent.agentIndex] = npc;
       }
@@ -187,7 +187,7 @@ export default function Npcs(props) {
     },
     removeAgent(npc) {
       if (npc.agent !== null) {
-        npc.w.crowd.removeAgent(npc.agent.agentIndex);
+        w.crowd.removeAgent(npc.agent.agentIndex);
         
         delete state.byAgId[npc.agent.agentIndex];
         npc.agent = null;
@@ -576,7 +576,6 @@ export default function Npcs(props) {
     const cacheBustingQuery = isDevelopment() ? `?hash=${hash}` : '';
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
-  
 
   React.useEffect(() => {// hot reload each npc
     if (process.env.NODE_ENV === 'development') {

@@ -127,8 +127,8 @@ export default function WorldMenu(props) {
   w.menu = state;
 
   React.useEffect(() => {
-    w.crowd && state.applyControlsInitValues();
-  }, [w.crowd]);
+    w.npc !== null && state.applyControlsInitValues();
+  }, [w.npc]);
 
   React.useLayoutEffect(() => {
     const showHtml3dsAfter300ms = debounce(() => 
