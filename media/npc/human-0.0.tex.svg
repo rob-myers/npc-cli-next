@@ -383,22 +383,22 @@
     <title>uv-map</title>
     <g transform="matrix(1, 0, 0, 1, 32, 0)" style="filter: url(&quot;#sepia-filter-1&quot;) url(&quot;#hue-rotate-filter-0&quot;);">
       <title>base_head</title>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="512">
+      <rect width="128" height="128" style="stroke-width: 16px;" x="512">
         <title>front</title>
       </rect>
-      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640">
+      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px;" x="640">
         <title>back</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" y="128" x="512">
+      <rect width="128" height="128" style="stroke-width: 16px;" y="128" x="512">
         <title>left</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640" y="128">
+      <rect width="128" height="128" style="stroke-width: 16px;" x="640" y="128">
         <title>right</title>
       </rect>
-      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px; stroke: rgb(255, 255, 255);" x="512" y="256">
+      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px;" x="512" y="256">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640" y="256">
+      <rect width="128" height="128" style="stroke-width: 16px;" x="640" y="256">
         <title>bottom</title>
       </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAArklEQVQYGWWOMQqEMBREJ7AggpXiDTyBB7Cz8gR26XMGj2ErdrY2Xkas0oZYCUGbuJPFLXan+cP78zMRVVX5KIpwnid+J94S8zz7NE3p/7TvO0Rd1/7ZdF0Hwr7vH4SXUgpFUaBpmi9c1xXLsmDbNohhGEIFLxm8rgtaa7A2VPCTUkpM0wRrbXglyzK0bYtxHCHKsvTOOeR5DgYpLowxiOP4EyBMkiRAeoaP46DFDYHSTi35RdCtAAAAAElFTkSuQmCC" width="128" height="128" x="512" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
