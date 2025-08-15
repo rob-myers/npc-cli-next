@@ -551,15 +551,11 @@ export default function useHandleEvents(w) {
           tmid: adjusted.animTmid,
           tmax: adjusted.animTmax,
         },
-        closeTarget: (
-          Math.abs(npc.lastTarget.x - adjusted.dst.x) < 0.25
-          && Math.abs(npc.lastTarget.z - adjusted.dst.y) < 0.25
-        ),
 
         initPos: adjusted.initPos,
         initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
         mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
-        nextUnit: nextCornerTooClose ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
+        nextUnit: nextCornerTooClose === true ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
         tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
@@ -589,7 +585,7 @@ export default function useHandleEvents(w) {
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
           // - prevent moving thru each other diagonally
           // - prevent jerking other npc once leave connection
-          && npc.api.getOtherDoorwayLead(other) >= (tr.closeTarget === true ? 0.5 : 0.3)
+          && npc.api.getOtherDoorwayLead(other) >= (tr.nextUnit === null ? 0.5 : 0.3)
         ) {
           continue;
         }

@@ -664,7 +664,7 @@ export class NpcApi {
     }
 
     // slow down if will stop right after doorway
-    if (offMesh.closeTarget === true && this.pendingTargets.length === 0) {
+    if (offMesh.nextUnit === null && this.pendingTargets.length === 0) {
       anim.set_tScale(1 - 0.75 * (anim.t / anim.tmax) ** 2);
     }
 

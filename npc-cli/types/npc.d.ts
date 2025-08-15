@@ -290,7 +290,6 @@ declare namespace NPC {
      * and we record the correct values for restore later.
      */
     anim: { tmid: number; tmax: number; };
-    closeTarget: boolean;
 
     /** Unit vector from "initial npc position" to "adjusted src" */
     initUnit: Geom.VectJson;
