@@ -247,21 +247,25 @@ export async function* reduce({ api, args, datum }) {
 }
 
 /**
- * Split arrays from stdin into items.
- * Split strings by optional separator (default `''`), e.g.
- * - `split ,` splits by comma
- * - `split '/\n/'` splits by newlines
+ * - Split arrays from stdin into items.
+ *   - Optionally provide selector we apply pointwise,
+ *     e.g. `points | split x`
+ * - Split strings by optional separator (default `''`), e.g.
+ *   - `split ,` splits by comma
+ *   - `split '/\n/'` splits by newlines
  * @param {NPC.RunArg} ct
  */
 export async function* split({ api, args, datum }) {
-  let arg = api.parseJsArg( args[0] || "");
+  const splitStringArg = api.parseJsArg(args[0] || '');
+  const selectorArg = api.generateSelector(api.parseFnOrStr(args[0] || ''), args.slice(1));
+
   while ((datum = await api.read()) !== api.eof) {
     if (datum instanceof Array) {
       // yield* datum
-      yield api.dataChunk(datum);
+      yield api.dataChunk(args.length >= 1 ? datum.map(selectorArg) : datum);
     } else if (typeof datum === "string") {
       // yield* datum.split(arg)
-      yield api.dataChunk(datum.split(arg));
+      yield api.dataChunk(datum.split(splitStringArg));
     } else if (datum instanceof Set) {
       yield api.dataChunk(Array.from(datum));
     }
