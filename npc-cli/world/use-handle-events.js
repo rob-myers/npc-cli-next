@@ -4,7 +4,7 @@ import { deltaAngle } from "maath/misc";
 
 import { Vect, Rect } from "../geom";
 import { defaultDoorCloseMs, wallHeight } from "../service/const";
-import { pause, warn, testNever } from "../service/generic";
+import { pause, warn, testNever, jsStringify } from "../service/generic";
 import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
@@ -771,6 +771,10 @@ export default function useHandleEvents(w) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
     say({ npcKey, words}) {// ensure/change/delete
+      if (typeof words !== 'string') {
+        throw Error('opts.words must be a string');
+      }
+
       const cm = w.bubble.get(npcKey) || w.bubble.create(npcKey);
       const speechWithLinks = words ?? '';
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
