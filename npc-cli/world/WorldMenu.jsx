@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import debounce from "debounce";
 
 import { debug, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
-import { html3DOpacityCssVar, zIndexTabs, zIndexWorld } from "../service/const";
+import { html3DOpacityCssVar, worldViewBgColorCssVar, zIndexTabs, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -27,7 +27,8 @@ export default function WorldMenu(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
 
-    brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
+    bgScale: 10, // [1..20]
+    brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 10,
     defaultLoggerWidth: w.smallViewport ? 300 : 500,
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
@@ -37,13 +38,12 @@ export default function WorldMenu(props) {
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
     showEffects: false,
-    xRayOpacity: 13, // [1..20]
 
     applyControlsInitValues() {
       /** @param {any} value */
       const toEvent = (value) => /** @type {React.ChangeEvent<HTMLInputElement>} */ ({ currentTarget: { value, checked: value } });
       state.onChangeBrightness(toEvent(state.brightness))
-      state.onChangeXRay(toEvent(state.xRayOpacity));
+      state.onChangeBgScale(toEvent(state.bgScale));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
       state.onChangeInvertColor(toEvent(state.invertColor));
     },
@@ -86,11 +86,11 @@ export default function WorldMenu(props) {
       w.view.showEffects({ enabled: state.invertColor ? false : state.showEffects });
       w.update();
     },
-    onChangeXRay(e) {
-      state.xRayOpacity = Number(e.currentTarget.value);
-      w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity((state.xRayOpacity / 20))
-      w.update();
+    onChangeBgScale(e) {
+      state.bgScale = Number(e.currentTarget.value); // [1..20]
+      const scale = state.bgScale / 10;
+      // 🚧 remove hard-coding
+      w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${70 * scale}, ${70 * scale}, ${80 * scale})`);
     },
     onChangeShowEffects(e) {
       state.showEffects = e.currentTarget.checked;
@@ -122,17 +122,6 @@ export default function WorldMenu(props) {
       state.preventDraggable = !!shouldPrevent;
       update();
     },
-    toggleXRay() {
-      state.xRayOpacity = state.xRayOpacity < 20 ? 20 : 10;
-      w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity(state.xRayOpacity / 20);
-
-      /** @type {HTMLInputElement} */ (// reflect in range
-        state.draggable.el.querySelector('input.change-x-ray')
-      ).value = `${state.xRayOpacity}`;
-      
-      w.update();
-    },
   }));
 
   w.menu = state;
@@ -156,17 +145,6 @@ export default function WorldMenu(props) {
 
   return <>
 
-    {w.disabled === true && (
-      <div css={pausedControlsCss}>
-        <button
-          onClick={state.toggleXRay}
-          className={state.xRayOpacity < 20 ? 'text-green' : undefined}
-        >
-          x-ray
-        </button>
-    </div>
-    )}
-
     {w.view.rootEl !== null && createPortal(
       <Draggable
         css={loggerAndPopUpCss}
@@ -188,11 +166,11 @@ export default function WorldMenu(props) {
             <label>
               <input
                 type="range"
-                className="change-x-ray"
+                className="scale-bg-color"
                 min={1}
                 max={20}
-                defaultValue={state.xRayOpacity}
-                onChange={state.onChangeXRay}
+                defaultValue={state.bgScale}
+                onChange={state.onChangeBgScale}
               />
               <div>🫥</div>
             </label>
@@ -445,6 +423,7 @@ const pausedControlsCss = css`
 
 /**
  * @typedef State
+ * @property {number} bgScale In [1..20]. For background-color scaling.
  * @property {number} brightness [1..20] inducing percentage `100 + 10 * (b - 10)`
  * @property {number} defaultLoggerWidth
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
@@ -455,7 +434,6 @@ const pausedControlsCss = css`
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
  * @property {boolean} showEffects
- * @property {number} xRayOpacity In [1..20]
  *
  * @property {() => void} applyControlsInitValues
  * @property {(msg: string) => void} measure
@@ -465,11 +443,10 @@ const pausedControlsCss = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeShowEffects
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRay
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBgScale
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
  * @property {() => void} onOverlayPointerUp
  * @property {(npcKey: string, line: string) => void} say
  * @property {(shouldPrevent: boolean) => void} setPreventDraggable
- * @property {() => void} toggleXRay
  */

@@ -10,7 +10,7 @@ import { debug, entries, keys } from "../service/generic.js";
 import { helper } from "../service/helper";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB } from "../service/dom.js";
-import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
+import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, worldViewBgColorCssVar, zIndexWorld } from "../service/const.js";
 import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
 import { WorldContext } from "./world-context.js";
@@ -781,12 +781,12 @@ export default function WorldView(props) {
  */
 
 const rootCss = css`
-  --world-view-background-color: rgba(0, 0, 0, 1);
-  --world-view-background-color: rgba(30, 30, 30, 1);
-  --world-view-background-color: rgba(70, 70, 80, 1);
+  ${worldViewBgColorCssVar}: rgba(0, 0, 0, 1);
+  ${worldViewBgColorCssVar}: rgba(30, 30, 30, 1);
+  ${worldViewBgColorCssVar}: rgba(70, 70, 80, 1);
 
   user-select: none;
-  background-color: var(--world-view-background-color);
+  background-color: var(${worldViewBgColorCssVar});
 
   canvas[data-engine] {
     width: 100%;

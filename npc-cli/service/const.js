@@ -486,3 +486,5 @@ export const texAuxDepth = 256;
 export const TABS_API_KEY = /** @type {const} */ ('tabs_api_key');
 
 export const html3DOpacityCssVar = '--html-3d-opacity';
+
+export const worldViewBgColorCssVar = '--world-view-background-color';
