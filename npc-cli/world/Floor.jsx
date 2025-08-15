@@ -19,10 +19,10 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
-    largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(220, 220, 220, 0.05)'),
+    largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(0, 0, 0, 0.4)'),
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: true,
-    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.05)'),
+    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(0, 0, 0, 0.2)'),
     torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
     torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
@@ -77,7 +77,7 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#333', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#444', null]);
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
@@ -151,7 +151,7 @@ export default function Floor(props) {
       state.inst.computeBoundingSphere();
     },
 
-  }), { reset: { smallGrid: false, largeGrid: false, torchData: true } });
+  }), { reset: { smallGrid: true, largeGrid: true, torchData: true } });
 
   w.floor = state;
 
