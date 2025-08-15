@@ -97,12 +97,16 @@ make npc:rob do:$( click 2 )
 
 ### Finding
 
+#### A manual approach
+
 ```sh
 # get rob's current room, e.g.
 # {gmId:0,roomId:2,grKey:"g0r2"}
 w e.npcToRoom.get rob
 
-w gmRoomGraph.getReachableUpTo g0r2 '(_, depth) => depth === 2'
+# get all rooms at most 2 doors away from rob
+w gmRoomGraph.getReachableUpTo g0r2 '(_, depth) => depth === 2' |
+  split id
 ```
 
 ### Skinning
