@@ -1,6 +1,6 @@
 source /etc/{util,core}.sh
 source /etc/{util,core,game}.js.sh
-import demoCameraWASD from demo
+import demoCameraWKey from demo
 
 awaitWorld
 
@@ -27,7 +27,7 @@ click --long | lookActOnLong path:selected &
 
 w decor.showLabels true
 
-demoCameraWASD
+demoCameraWKey
 
 setupContextMenu
 ptags always; events | handleContextMenu &
