@@ -89,8 +89,7 @@ export default function WorldMenu(props) {
     onChangeBgScale(e) {
       state.bgScale = Number(e.currentTarget.value); // [1..20]
       const scale = state.bgScale / 10;
-      // 🚧 remove hard-coding
-      w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${70 * scale}, ${70 * scale}, ${80 * scale})`);
+      w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${100 * scale}, ${100 * scale}, ${120 * scale})`);
     },
     onChangeShowEffects(e) {
       state.showEffects = e.currentTarget.checked;
@@ -172,7 +171,9 @@ export default function WorldMenu(props) {
                 defaultValue={state.bgScale}
                 onChange={state.onChangeBgScale}
               />
-              <div>🫥</div>
+              <div>
+                ⏰
+              </div>
             </label>
             <label>
               <input
