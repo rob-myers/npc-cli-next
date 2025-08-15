@@ -673,9 +673,10 @@ export default function WorldView(props) {
       <EffectComposer ref={state.ref('effectComposer')}>
         {state.effects.enabled === true
           ? <>
-            <BrightnessContrast brightness={-0.24} />
-            <Scanline opacity={0.5} density={1.5} />
-            {/* <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={1} /> */}
+            <BrightnessContrast brightness={-0.22} />
+            {/* <Scanline opacity={0.5} density={1.5} /> */}
+            {/* 🚧 try match "darkness" to camera distance */}
+            <Vignette offset={0.2} darkness={2} opacity={1} />
           </>
           : <></>
         }
