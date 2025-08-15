@@ -783,6 +783,7 @@ export default function WorldView(props) {
 const rootCss = css`
   --world-view-background-color: rgba(0, 0, 0, 1);
   --world-view-background-color: rgba(30, 30, 30, 1);
+  --world-view-background-color: rgba(100, 100, 100, 1);
 
   user-select: none;
   background-color: var(--world-view-background-color);
