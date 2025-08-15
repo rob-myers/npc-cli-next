@@ -194,12 +194,13 @@ export default function Manage(props) {
 
                   {def.type === 'component' && def.class === 'World' && (
                     <span className="tab-def-options">
-                    <select
-                      defaultValue={def.props.mapKey}
-                      onChange={state.setMapKey}
-                    >
-                      {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
-                    </select>
+                      <select
+                        defaultValue={def.props.mapKey}
+                        onChange={state.setMapKey}
+                        disabled={!unmounted && !(def.props.worldKey in tabsMeta)}
+                      >
+                        {helper.mapKeys.map(mapKey => <option key={mapKey} value={mapKey}>{mapKey}</option>)}
+                      </select>
                     </span>
                   )}
 
