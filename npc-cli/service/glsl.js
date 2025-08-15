@@ -45,7 +45,7 @@ const humanZeroShader = {
       vType = 3; // selector
     } else {
       vType = 1; // body
-      vHeightShade = min(max(pow(position.y / labelY, 2.) + 0.1, 0.4), 1.0);
+      vHeightShade = min(max((position.y / labelY) + 0.1, 0.8), 1.0);
     }
     
     vec3 transformed = vec3(position);
@@ -578,7 +578,7 @@ const instancedFloorShader = {
       if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
         float lighter = clamp(2.5 * lightTexel.w, 1.0, 3.0);
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.7;
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * .7;
       } else {
         gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 2.5;
       }
