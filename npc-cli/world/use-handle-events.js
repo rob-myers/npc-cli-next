@@ -538,7 +538,7 @@ export default function useHandleEvents(w) {
       }
 
       /** avoid flicker when next corner after offMeshConnection is too close */      
-      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.2;
+      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.4;
 
       // register adjusted traversal
       npc.s.offMesh = {
