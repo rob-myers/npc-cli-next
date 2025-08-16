@@ -101,15 +101,15 @@ export default function Floor(props) {
       drawPolygons(ct, gm.walls, ['#000', null]);
 
       // ✅ store decor images in w.decorImgs
-      // 🚧 get decals gm.decor instead
+      // 🚧 get decals from gm.decor instead
       // 🚧 use <Decor> approach to computing "global transform"
       const { decor } = w.geomorphs.sheet;
       
-      for (const decal of gm.decals) {
-        const rect = decor[decal.decorKey];
-        drawPolygons(ct, [decal.poly], ['#f00', null]);
-        // ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, dx, dy, dw, dh);
-      }
+      // for (const decal of gm.decals) {
+      //   const rect = decor[decal.decorKey];
+      //   drawPolygons(ct, [decal.poly], ['#f00', null]);
+      //   // ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, dx, dy, dw, dh);
+      // }
     },
     drawGmLight(gmKey) {
       const { ct } = w.texFloorLight;
@@ -166,7 +166,7 @@ export default function Floor(props) {
     state.addUvs();
     state.drawRadialLight();
     state.draw().then(() => w.update());
-  }, [w.texVs.floor, w.hash.mapDecals]);
+  }, [w.texVs.floor]);
 
   return (
     <instancedMesh

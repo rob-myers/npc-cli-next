@@ -75,8 +75,9 @@
 
 - 🚧 try basic carpet textures drawn on floor (so they're lit)
   - ❌ layout.decals, symbol.decals
-  - 🚧 remove layout.decals etc.
-  - 🚧 `decor decal` which could be filtered out and drawn on floor
+  - ✅ remove layout.decals etc.
+  - ✅ `decor decal` yields decor like quad but not drawn by `<Decor>`
+  - 🚧 `decor decal` drawn on floor
 
 - uniform labelY -> labelOffset
   - so we can avoid label covering npc while Lie

@@ -378,6 +378,7 @@ export default function Decor(props) {
           };
           break;
         case "quad":
+        case "decal":
           instance = { ...d, .../** @type {Geomorph.DecorQuad}} */ (base),
             center: gm.matrix.transformPoint({ ...d.center }),
             transform: tmpMat1.setMatrixValue(gm.matrix).preMultiply(d.transform).toArray(),
@@ -667,7 +668,7 @@ export default function Decor(props) {
     refetchOnWindowFocus: false,
     retry: false, // fix dup invokes
     gcTime: 0,
-    // throwOnError: true,
+    throwOnError: isDevelopment(),
     networkMode: isDevelopment() ? 'always' : 'online',
   });
 

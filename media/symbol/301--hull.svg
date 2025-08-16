@@ -376,7 +376,7 @@
   <use width="1" height="1" style="transform-origin: 0px 0.5px;" href="#symbol-0" transform="matrix(100, 0, 0, 150, 1700, 2324.5)">
     <title>decor cuboid table nav h=0.5 y=0 color=#888</title>
   </use>
-  <rect x="768.379" y="1368.38" width="131.621" height="131.621" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);">
-    <title>decal key=carpet--0</title>
-  </rect>
+  <use width="1" height="1" transform="matrix(150, -0.006535, 0.189485, 149.999878, 823.962585, 1574.502563)" style="transform-origin: 0.497029px 0.499996px;" href="#symbol-0">
+    <title>decor decal img=carpet--0</title>
+  </use>
 </svg>
