@@ -23297,9 +23297,18 @@
           "type": "decal",
           "key": "",
           "meta": {"decor": true, "decal": true, "img": "carpet--0", "y": 0},
-          "bounds2d": {"x": 3, "y": 7.5, "width": 1.0322, "height": 1.0323},
-          "transform": [1.0309, 0, 0.0013, 1.0322, 3, 7.5],
-          "center": {"x": 3.516, "y": 8.016},
+          "bounds2d": {"x": 3, "y": 7, "width": 1, "height": 1.0323},
+          "transform": [0.9987, 0, 0.0013, 1.0322, 3, 7],
+          "center": {"x": 3.5, "y": 7.516},
+          "det": 1
+        },
+        {
+          "type": "decal",
+          "key": "",
+          "meta": {"decor": true, "decal": true, "img": "carpet--0", "y": 0},
+          "bounds2d": {"x": 3.9967, "y": 6.9986, "width": 1, "height": 1.0323},
+          "transform": [-0.9987, 0, -0.0013, 1.0322, 4.9967, 6.9987],
+          "center": {"x": 4.497, "y": 7.515},
           "det": 1
         },
         {
@@ -44337,7 +44346,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": -1872371786
+    "imagesHash": -359650070
   },
   "skin": {
     "numSheets": {"human-0": 2},
