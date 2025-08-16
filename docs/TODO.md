@@ -71,8 +71,12 @@
 
 - 🚧 add more details to 301 e.g. main corridors
   - ℹ️ looks a bit empty in a number of places
-  - 🚧 try basic carpet textures drawn on floor (so they're lit)
   - new symbol for screen (cuboid + quad)
+
+- 🚧 try basic carpet textures drawn on floor (so they're lit)
+  - ❌ layout.decals, symbol.decals
+  - 🚧 remove layout.decals etc.
+  - 🚧 `decor decal` which could be filtered out and drawn on floor
 
 - uniform labelY -> labelOffset
   - so we can avoid label covering npc while Lie

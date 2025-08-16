@@ -62,6 +62,8 @@ export default function World(props) {
     smallViewport: isSmallViewport(),
     touchDevice: isTouchDevice(),
 
+    decorImgs: [],
+
     // 🔔 hmr issue when initial width = height = 0
     texAux: new TexArray({ ctKey: 'aux', type: THREE.FloatType, numTextures: texAuxDepth, width: 1, height: 1 }),
     texFloor: new TexArray({ ctKey: 'floor-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
@@ -307,6 +309,11 @@ export default function World(props) {
         update();
       }
 
+      // Also store decor images for decals
+      state.decorImgs = await Promise.all(
+        decorDims.map((_, i) => imageLoader.loadAsync(getDecorSheetUrl(i)))
+      );
+
       state.texNpcLabel.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
 
       state.npc?.forceUpdate(); // violate <MemoizedNPC>
@@ -436,6 +443,8 @@ export default function World(props) {
  * @property {import("./Doors").State['byKey']} d
  * Shortcut for `w.door.byKey`
  * @property {import('./ContextMenu').State} cm
+ *
+ * @property {HTMLImageElement[]} decorImgs For decal drawing on floor
  *
  * @property {TexArray} texAux
  * @property {TexArray} texCeil

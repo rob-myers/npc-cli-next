@@ -99,10 +99,16 @@ export default function Floor(props) {
 
       // walls
       drawPolygons(ct, gm.walls, ['#000', null]);
+
+      // ✅ store decor images in w.decorImgs
+      // 🚧 get decals gm.decor instead
+      // 🚧 use <Decor> approach to computing "global transform"
+      const { decor } = w.geomorphs.sheet;
       
       for (const decal of gm.decals) {
-        // 🚧 draw decor from decor sheet
+        const rect = decor[decal.decorKey];
         drawPolygons(ct, [decal.poly], ['#f00', null]);
+        // ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, dx, dy, dw, dh);
       }
     },
     drawGmLight(gmKey) {
