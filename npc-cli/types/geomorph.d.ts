@@ -38,6 +38,8 @@ declare namespace Geomorph {
     mapNav: number;
     /** Hash of current map decor */
     mapDecor: number;
+    /** Hash of current map decals */
+    mapDecals: number;
 
     /** Hash of all maps */
     maps: number;
@@ -203,6 +205,7 @@ declare namespace Geomorph {
     /** Union of uncut non-optional walls including hull walls. */
     walls: P[];
     windows: P[];
+    decals: Decal<P>[];
     unsorted: P[];
 
     /** Symbols can have sub symbols, e.g. hull symbols use them to layout a geomorph. */
@@ -275,6 +278,7 @@ declare namespace Geomorph {
     num: Key.GeomorphNumber;
     pngRect: R;
 
+    decals: Decal<P>[];
     decor: Decor[];
     doors: C[];
     hullDoors: C[];
@@ -468,6 +472,12 @@ declare namespace Geomorph {
 
   /** Previously we sorted its groups e.g. "points" */
   type RoomDecor = Set<Geomorph.Decor>;
+
+  /** Decor drawn on floor */
+  interface Decal<P extends Geom.GeoJsonPolygon | Geom.Poly = Geom.Poly> {
+    decorKey: Key.DecorImg;
+    poly: P;
+  }
 
   //#endregion
 

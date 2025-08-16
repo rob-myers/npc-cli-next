@@ -69,10 +69,13 @@
 - ✅ clean up current changes
   - drop vignette again
 
-- add more details to 301 e.g. main corridors
-  - some bits look too empty
+- 🚧 add more details to 301 e.g. main corridors
+  - ℹ️ looks a bit empty in a number of places
+  - 🚧 try basic carpet textures drawn on floor (so they're lit)
   - new symbol for screen (cuboid + quad)
 
+- uniform labelY -> labelOffset
+  - so we can avoid label covering npc while Lie
 
 - ✅s running `direct npc:kate to:$( click 1 ) &` while paused cannot resolve `click 1` until unpause
   - ℹ️ confusing but a not bug

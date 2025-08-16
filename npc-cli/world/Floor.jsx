@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { Mat, Poly } from "../geom";
 import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { getGridPattern, drawPolygons, getContext2d, drawRadialFillCustom, getCanvas } from "../service/dom";
+import { getGridPattern, drawPolygons, drawRadialFillCustom, getCanvas } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
@@ -23,8 +23,6 @@ export default function Floor(props) {
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: true,
     smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(0, 0, 0, 0.3)'),
-    torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
-    torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -76,10 +74,11 @@ export default function Floor(props) {
       ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
-      // floor
+      // hull floor
       drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#000d', null]);
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
-      // nav
+
+      // navigable floor
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
       drawPolygons(ct, navPoly, ['#3339', '#000', 0.04]);
@@ -92,7 +91,7 @@ export default function Floor(props) {
       ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
-      // drop shadows (avoid doubling e.g. bunk bed, overlapping tables)
+      // drop shadows, avoiding doubling
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
@@ -100,10 +99,11 @@ export default function Floor(props) {
 
       // walls
       drawPolygons(ct, gm.walls, ['#000', null]);
-      // 🚧 drawn in front of walls seems visible when lighter
-      // const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
-      // drawPolygons(ct, walls2[0], ['#000', null]);
-      // drawPolygons(ct, walls2[1], ['#444', null]);
+      
+      for (const decal of gm.decals) {
+        // 🚧 draw decor from decor sheet
+        drawPolygons(ct, [decal.poly], ['#f00', null]);
+      }
     },
     drawGmLight(gmKey) {
       const { ct } = w.texFloorLight;
@@ -151,7 +151,7 @@ export default function Floor(props) {
       state.inst.computeBoundingSphere();
     },
 
-  }), { reset: { smallGrid: true, largeGrid: true, torchData: true } });
+  }), { reset: { smallGrid: true, largeGrid: true } });
 
   w.floor = state;
 
@@ -160,7 +160,7 @@ export default function Floor(props) {
     state.addUvs();
     state.drawRadialLight();
     state.draw().then(() => w.update());
-  }, [w.texVs.floor]);
+  }, [w.texVs.floor, w.hash.mapDecals]);
 
   return (
     <instancedMesh
@@ -199,8 +199,6 @@ export default function Floor(props) {
  * @property {CanvasPattern} largeGrid
  * @property {THREE.BufferGeometry} quad
  * @property {boolean} showLights Show static lights?
- * @property {THREE.Vector3} torchTarget Torch
- * @property {THREE.Vector3} torchData (radius, intensity, opacity)
  * @property {THREE.CanvasTexture} radialTex
  *
  * @property {() => void} addUvs

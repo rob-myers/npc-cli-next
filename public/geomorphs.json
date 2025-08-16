@@ -37,6 +37,7 @@
       "key": "g-101--multipurpose",
       "num": 101,
       "pngRect": {"x": -0.15, "y": -0.15, "width": 30.3, "height": 30.3},
+      "decals": [],
       "decor": [
         {
           "type": "quad",
@@ -11102,6 +11103,7 @@
       "key": "g-102--research-deck",
       "num": 102,
       "pngRect": {"x": -0.15, "y": -0.15, "width": 30.3, "height": 30.3},
+      "decals": [],
       "decor": [
         {
           "type": "point",
@@ -21025,6 +21027,7 @@
       "key": "g-103--cargo-bay",
       "num": 103,
       "pngRect": {"x": -0.15, "y": -0.15, "width": 30.3, "height": 30.3},
+      "decals": [],
       "decor": [
         {
           "type": "quad",
@@ -22971,6 +22974,18 @@
       "key": "g-301--bridge",
       "num": 301,
       "pngRect": {"x": -0.15, "y": -0.55, "width": 30.3, "height": 15.7},
+      "decals": [
+        {
+          "decorKey": "carpet--0",
+          "poly": {
+            "type": "Polygon",
+            "coordinates": [
+              [[4.5, 6.8419], [4.5, 7.5], [3.8419, 7.5], [3.8419, 6.8419]]
+            ],
+            "meta": {"decal": true, "key": "carpet--0"}
+          }
+        }
+      ],
       "decor": [
         {
           "type": "cuboid",
@@ -30502,13 +30517,6 @@
         {
           "type": "Polygon",
           "coordinates": [
-            [[3.6581, 6.8419], [3.6581, 7.5], [3, 7.5], [3, 6.8419]]
-          ],
-          "meta": {"decal": true, "key": "carpet--0"}
-        },
-        {
-          "type": "Polygon",
-          "coordinates": [
             [
               [20.7003, 14.6506],
               [15.0048, 14.66],
@@ -31367,6 +31375,7 @@
       "key": "g-302--xboat-repair-bay",
       "num": 302,
       "pngRect": {"x": -0.15, "y": -1.53, "width": 30.3, "height": 16.675},
+      "decals": [],
       "decor": [
         {
           "type": "quad",
@@ -34915,6 +34924,7 @@
       "key": "g-303--passenger-deck",
       "num": 303,
       "pngRect": {"x": -0.15, "y": -0.15, "width": 30.3, "height": 15.325},
+      "decals": [],
       "decor": [
         {
           "type": "point",

@@ -131,6 +131,7 @@ class GeomorphService {
       key: gmKey,
       num: helper.toGmNum[gmKey],
       pngRect: pngRect.clone(),
+      decals: symbol.decals,
       decor,
       doors,
       hullPoly,
@@ -230,6 +231,7 @@ class GeomorphService {
     const mapGmKeys = removeDups(map.gms.map(x => x.gmKey));
     const mapNavHash = hashJson(mapGmKeys.map(x => geomorphs.layout[x].navDecomp));
     const mapDecorHash = hashJson(mapGmKeys.map(x => geomorphs.layout[x].decor));
+    const mapDecalsHash = hashJson(mapGmKeys.map(x => geomorphs.layout[x].decals));
     
     // over all maps, layouts, sheets
     const mapsHash = hashJson(geomorphs.map);
@@ -241,6 +243,7 @@ class GeomorphService {
       full: hashJson(value),
       decor: hashJson(value.decor),
       nav: hashJson(value.navDecomp),
+      decals: hashJson(value.decals),
     }));
 
     return {
@@ -252,6 +255,7 @@ class GeomorphService {
       mapGmHashes,
       mapDecor: mapDecorHash,
       mapNav: mapNavHash,
+      mapDecals: mapDecalsHash,
     };
   }
 
@@ -417,9 +421,10 @@ class GeomorphService {
       num: json.num,
       pngRect: Rect.fromJson(json.pngRect),
       
+      decals: json.decals.map(({ decorKey, poly }) => ({ decorKey, poly: Poly.from(poly) })),
       decor: json.decor,
       doors,
-      hullPoly: json.hullPoly.map(x => Poly.from(x)),
+      hullPoly: json.hullPoly.map(Poly.from),
       hullDoors: doors.filter(x => x.meta.hull),
       labels: json.labels,
       obstacles: json.obstacles.map(x => {
@@ -452,6 +457,7 @@ class GeomorphService {
     return {
       key: json.key,
       isHull: json.isHull,
+      decals: json.decals.map(({ decorKey, poly }) => ({ decorKey, poly: Poly.from(poly) })),
       hullWalls: json.hullWalls.map((x) => Object.assign(Poly.from(x), { meta: x.meta })),
       obstacles: json.obstacles.map((x) => Object.assign(Poly.from(x), { meta: x.meta })),
       walls: json.walls.map((x) => Object.assign(Poly.from(x), { meta: x.meta })),
@@ -721,7 +727,7 @@ class GeomorphService {
     const {
       key, isHull,
       addableWalls, removableDoors,
-      walls, obstacles, windows, unsorted,
+      walls, obstacles, windows, decals, unsorted,
       symbols,
     } = symbol;
 
@@ -742,6 +748,7 @@ class GeomorphService {
       obstacles: obstacles.concat(flats.flatMap(x => x.obstacles)),
       doors: flatDoors,
       decor: flatDecor,
+      decals: decals.concat(flats.flatMap(x => x.decals)),
       unsorted: unsorted.concat(flats.flatMap(x => x.unsorted)),
       windows: windows.concat(flats.flatMap(x => x.windows)),
     };
@@ -817,6 +824,7 @@ class GeomorphService {
       walls: sym.walls.concat(wallsToAdd).map((x) => x.cleanClone(tmpMat1)),
       // meta.{y,h} define window dimension
       windows: sym.windows.map((x) => x.cleanClone(tmpMat1, meta)),
+      decals: sym.decals.map(({ decorKey, poly }) => ({ decorKey, poly: poly.cleanClone(tmpMat1) })),
       unsorted: sym.unsorted.map((x) => x.cleanClone(tmpMat1)),
     };
   }
@@ -973,6 +981,7 @@ class GeomorphService {
     const doors = /** @type {Geom.Poly[]} */ ([]);
     const hullWalls = /** @type {Geom.Poly[]} */ ([]);
     const obstacles = /** @type {Geom.Poly[]} */ ([]);
+    const decals = /** @type {Geomorph.Decal[]} */ ([]);
     const unsorted = /** @type {Geom.Poly[]} */ ([]);
     const walls = /** @type {Geom.Poly[]} */ ([]);
     const windows = /** @type {Geom.Poly[]} */ ([]);
@@ -1115,6 +1124,8 @@ class GeomorphService {
           windows.push(poly);
         } else if (meta.decor === true) {
           decor.push(poly);
+        } else if (meta.decal === true && helper.isDecorImgKey(meta.key)) {
+          decals.push({ decorKey: meta.key, poly });
         } else {
           unsorted.push(poly);
         }
@@ -1174,6 +1185,7 @@ class GeomorphService {
       ),
       symbols,
       decor,
+      decals,
       unsorted,
       ...postParse,
     };
@@ -1323,6 +1335,7 @@ class GeomorphService {
       num: layout.num,
       pngRect: layout.pngRect,
 
+      decals: layout.decals.map(({ decorKey, poly }) => ({ decorKey, poly: poly.geoJson })),
       decor: layout.decor,
       doors: layout.doors.map(x => x.json),
       hullDoors: layout.hullDoors.map((x) => x.json),
@@ -1362,6 +1375,7 @@ class GeomorphService {
       doors: parsed.doors.map((x) => Object.assign(x.geoJson, { meta: x.meta })),
       windows: parsed.windows.map((x) => Object.assign(x.geoJson, { meta: x.meta })),
       decor: parsed.decor.map((x) => Object.assign(x.geoJson, { meta: x.meta })),
+      decals: parsed.decals.map(({ decorKey, poly }) => ({ decorKey, poly: poly.geoJson })),
       unsorted: parsed.unsorted.map((x) => Object.assign(x.geoJson, { meta: x.meta })),
       width: parsed.width,
       height: parsed.height,
