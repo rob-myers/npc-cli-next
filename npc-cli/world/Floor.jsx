@@ -181,7 +181,7 @@ export default function Floor(props) {
         alphaTest={0.5}
 
         lightAtlas={w.texFloorLight.tex}
-        showLights={w.crowd !== null && state.showLights === true}
+        showLights={w.crowd === null || state.showLights === true}
       />
     </instancedMesh>
   );
