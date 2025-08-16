@@ -34,5 +34,6 @@ ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
 
+w view.tween '{ polar: Math.PI/6, distance: 10 }'
 look at:rob
-zoom distance:10
+# zoom distance:10

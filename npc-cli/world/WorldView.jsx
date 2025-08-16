@@ -607,12 +607,6 @@ export default function WorldView(props) {
   w.view = state;
 
   React.useEffect(() => {
-    if (state.controls && !w.crowd) {// 🔔 initially only
-      // state.controls.setPolarAngle(Math.PI / 4);
-      // state.controls.setAzimuthalAngle(Math.PI / 4);
-      state.controls.setAzimuthalAngle(0);
-      state.controls.setPolarAngle(Math.PI / 8);
-    }
     state.pickingScene.onAfterRender = state.renderObjectPickScene;
   }, [state.controls]);
 
@@ -781,7 +775,8 @@ export default function WorldView(props) {
  */
 
 const rootCss = css`
-  ${worldViewBgColorCssVar}: rgba(100, 100, 120, 1);
+  ${worldViewBgColorCssVar}: rgb(30, 30, 30);
+  transition: background-color 1s;
 
   user-select: none;
   background-color: var(${worldViewBgColorCssVar});
