@@ -4,11 +4,11 @@ import demoCameraWKey from demo
 
 awaitWorld
 
-spawn npc:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }' grant:.
-spawn npc:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' grant:.
-spawn npc:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' grant:.
-spawn npc:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' grant:.
-spawn npc:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' grant:.
+spawn npc:rob as:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }' granted:.
+spawn npc:will as:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' granted:.
+spawn npc:kate as:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' granted:.
+spawn npc:suit as:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' granted:.
+spawn npc:rada angle:Math.PI as:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' granted:.
 
 npc rob api.showSelector true
 selected="rob"

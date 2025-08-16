@@ -5,7 +5,7 @@ import demoClickToMove from demo
 awaitWorld
 
 spawn npc:rob at:'{x:4.5,y:7.5}' \
-  skin:soldier-0, grant:.
+  as:soldier-0, granted:.
 
 ptags always; click meta.floor |
   demoClickToMove npc:rob &

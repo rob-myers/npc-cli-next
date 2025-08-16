@@ -91,14 +91,15 @@ declare namespace NPC {
      */
     at: MaybeMeta<NPC.GroundPoint>;
     /** Position to look towards (overrides `angle`) */
-    look?: NPC.GroundPoint;
+    facing?: NPC.GroundPoint;
     /** Overrides `at?.meta` e.g. because `meta.doPoint.meta` is not serializable */
     meta?: Meta;
     /**
+     * Skin to apply.
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
      * - object permits brace-expansion of keys.
      */
-    skin?: string | Record<string, SkinReMapValue>;
+    as?: string | Record<string, SkinReMapValue>;
   }
 
   interface SpawnManyOpts {

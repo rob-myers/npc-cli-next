@@ -308,15 +308,15 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
 /**
  * ```sh
  * spawn npc:rob at:$( click 1 )
- * spawn npc:rob at:$( click 1 ) grant:.
+ * spawn npc:rob at:$( click 1 ) granted:.
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ grant?: string } & NPC.SpawnOpts} [opts]
+ * @param {{ granted?: string } & NPC.SpawnOpts} [opts]
  */
-export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', to: 'at' })) {
+export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
   await w.npc.spawn(opts);
-  if (typeof opts.grant === 'string') {
-    w.e.grantAccess(opts.grant, opts.npcKey);
+  if (typeof opts.granted === 'string') {
+    w.e.grantAccess(opts.granted, opts.npcKey);
   }
 }
 

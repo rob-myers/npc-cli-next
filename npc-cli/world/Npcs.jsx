@@ -300,9 +300,9 @@ export default function Npcs(props) {
         throw Error(`opts.npcKey must have length ≤ 10`);
       }
       
-      if (helper.isVectJson(opts.look) === true) {
-        opts.look = helper.toXZ(opts.look);
-        opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
+      if (helper.isVectJson(opts.facing) === true) {
+        opts.facing = helper.toXZ(opts.facing);
+        opts.angle = geom.clockwiseFromNorth(opts.facing.y - point.y, opts.facing.x - point.x);
       }
 
       const dstNav = meta.nav === true || state.isPointInNavmesh(point);
@@ -330,7 +330,7 @@ export default function Npcs(props) {
       // prevent look e.g. if will Lie
       const nextAnimKey = helper.getAnimKeyFromMeta(meta);
       if (helper.canAnimKeyLook(nextAnimKey) === false) {
-        opts.angle = opts.look = undefined;
+        opts.angle = opts.facing = undefined;
       }
 
       opts.angle ??= typeof meta.orient === 'number'
@@ -375,13 +375,13 @@ export default function Npcs(props) {
 
       state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
 
-      if (typeof opts.skin === 'string') {
-        opts.skin = state.resolveSkin(opts.skin);
+      if (typeof opts.as === 'string') {
+        opts.as = state.resolveSkin(opts.as);
       }
 
-      if (opts.skin !== undefined) {
+      if (opts.as !== undefined) {
         // 🔔 opts.skin keys may be brace-expansions (normalized by applySkin)
-        Object.assign(npc.skin, opts.skin);
+        Object.assign(npc.skin, opts.as);
         npc.api.applySkin();
       }
 
