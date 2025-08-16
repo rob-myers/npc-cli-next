@@ -27,7 +27,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 25, 0],
+    camInitPos: [0, 20, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -781,9 +781,7 @@ export default function WorldView(props) {
  */
 
 const rootCss = css`
-  ${worldViewBgColorCssVar}: rgba(0, 0, 0, 1);
-  ${worldViewBgColorCssVar}: rgba(30, 30, 30, 1);
-  ${worldViewBgColorCssVar}: rgba(70, 70, 80, 1);
+  ${worldViewBgColorCssVar}: rgba(100, 100, 120, 1);
 
   user-select: none;
   background-color: var(${worldViewBgColorCssVar});
