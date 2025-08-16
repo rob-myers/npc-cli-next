@@ -597,6 +597,7 @@ export default function Decor(props) {
       'decor',
       w.key,
       w.hash.mapDecor,
+      w.hash.sheets
     ],
 
     async queryFn() {

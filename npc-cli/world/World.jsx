@@ -184,7 +184,8 @@ export default function World(props) {
         next.hash.mapDecor !== state.hash.mapDecor // 🔔 needed for meta.roomId in computeGmData
       );
 
-      if (mapChanged === true) {
+      // also update gms if e.g. unsorted unused polygon added
+      if (dataChanged === true) {
         const mapDef = next.geomorphs.map[next.mapKey];
         next.gms = mapDef.gms.map(({ gmKey, transform }, gmId) => 
           geomorph.computeLayoutInstance(next.geomorphs.layout[gmKey], gmId, transform)
