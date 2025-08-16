@@ -66,7 +66,7 @@
 
 ### World
 
-- 🚧 clean up current changes
+- ✅ clean up current changes
   - drop vignette again
 
 - add more details to 301 e.g. main corridors

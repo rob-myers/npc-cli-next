@@ -89,6 +89,7 @@ export default function WorldMenu(props) {
     onChangeBgScale(e) {
       state.bgScale = Number(e.currentTarget.value); // [1..20]
       const scale = state.bgScale / 10;
+      // 🚧 hard-coded
       w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${100 * scale}, ${100 * scale}, ${120 * scale})`);
     },
     onChangeShowEffects(e) {
