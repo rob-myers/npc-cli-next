@@ -292,7 +292,7 @@ export function createLabelSpriteSheet(labels, sheet, { fontHeight }) {
   const ct = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
   ct.font = `${fontHeight}px 'Courier new'`;
 
-  const strokeWidth = 5;
+  const strokeWidth = 10;
 
   const rects = labels.map(label => ({
     width: ct.measureText(label).width + 2 * strokeWidth,
@@ -321,7 +321,7 @@ export function createLabelSpriteSheet(labels, sheet, { fontHeight }) {
   ct.strokeStyle = 'black';
   ct.fillStyle = 'white';
   ct.lineWidth = strokeWidth;
-  ct.font = `${fontHeight}px 'Courier new'`;
+  ct.font = `${fontHeight}px 'Verdana'`;
   ct.textBaseline = 'top';
   bin.rects.forEach(rect => {
     ct.strokeText(rect.data.label, rect.x + strokeWidth, rect.y + strokeWidth);
