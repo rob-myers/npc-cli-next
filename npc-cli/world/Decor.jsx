@@ -396,7 +396,7 @@ export default function Decor(props) {
       return /** @type {typeof d} */ (instance);
     },
     /** @returns {d is Geomorph.DecorPoint | Geomorph.DecorQuad} */
-    isDecorQuad(d) {
+    isDecorQuad(d) {// 🚧 clean and rename
       return d.type === 'point' && (
         typeof d.meta.img === 'string'
         // these fallback to icon--info

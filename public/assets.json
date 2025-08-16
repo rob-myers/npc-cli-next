@@ -3,7 +3,7 @@
     "101--hull": {"outputHash": 484592053, "pngHash": 568633107},
     "102--hull": {"outputHash": 2049753717, "pngHash": 184103855},
     "103--hull": {"outputHash": -1900416967, "pngHash": -1937509879},
-    "301--hull": {"outputHash": -379809536, "pngHash": 787602800},
+    "301--hull": {"outputHash": -379434560, "pngHash": 787602800},
     "302--hull": {"outputHash": -233330253, "pngHash": -1557128953},
     "303--hull": {"outputHash": -246601453, "pngHash": -299838577},
     "bed--003--1x1.6": {
@@ -433,15 +433,15 @@
         "sheetId": 0,
         "x": 2,
         "y": 364,
-        "width": 120,
-        "height": 120
+        "width": 180,
+        "height": 180
       },
       "screen--1x1": {
         "screen": true,
         "decorImgKey": "screen--1x1",
         "sheetId": 0,
-        "x": 124,
-        "y": 364,
+        "x": 304,
+        "y": 244,
         "width": 120,
         "height": 120
       },
@@ -449,7 +449,7 @@
         "icon": true,
         "decorImgKey": "icon--warn",
         "sheetId": 0,
-        "x": 246,
+        "x": 184,
         "y": 364,
         "width": 84,
         "height": 75
@@ -458,8 +458,8 @@
         "icon": true,
         "decorImgKey": "icon--door-closed",
         "sheetId": 0,
-        "x": 332,
-        "y": 244,
+        "x": 184,
+        "y": 441,
         "width": 77,
         "height": 77
       },
@@ -467,8 +467,8 @@
         "icon": true,
         "decorImgKey": "icon--door-locked",
         "sheetId": 0,
-        "x": 332,
-        "y": 323,
+        "x": 263,
+        "y": 441,
         "width": 77,
         "height": 77
       },
@@ -476,8 +476,8 @@
         "icon": true,
         "decorImgKey": "icon--door-open",
         "sheetId": 0,
-        "x": 332,
-        "y": 402,
+        "x": 342,
+        "y": 366,
         "width": 77,
         "height": 77
       },
@@ -485,8 +485,8 @@
         "icon": true,
         "decorImgKey": "icon--door-unlocked",
         "sheetId": 0,
-        "x": 438,
-        "y": 2,
+        "x": 342,
+        "y": 445,
         "width": 77,
         "height": 77
       },
@@ -494,8 +494,8 @@
         "icon": true,
         "decorImgKey": "icon--doc",
         "sheetId": 0,
-        "x": 438,
-        "y": 81,
+        "x": 270,
+        "y": 366,
         "width": 50,
         "height": 72
       },
@@ -504,7 +504,7 @@
         "decorImgKey": "icon--key-card",
         "sheetId": 0,
         "x": 438,
-        "y": 155,
+        "y": 2,
         "width": 72,
         "height": 48
       },
@@ -513,7 +513,7 @@
         "decorImgKey": "icon--#0",
         "sheetId": 0,
         "x": 438,
-        "y": 205,
+        "y": 52,
         "width": 60,
         "height": 60
       },
@@ -521,8 +521,8 @@
         "icon": true,
         "decorImgKey": "icon--#1",
         "sheetId": 0,
-        "x": 411,
-        "y": 267,
+        "x": 438,
+        "y": 114,
         "width": 60,
         "height": 60
       },
@@ -530,8 +530,8 @@
         "icon": true,
         "decorImgKey": "icon--#10",
         "sheetId": 0,
-        "x": 411,
-        "y": 329,
+        "x": 438,
+        "y": 176,
         "width": 60,
         "height": 60
       },
@@ -539,8 +539,8 @@
         "icon": true,
         "decorImgKey": "icon--#2",
         "sheetId": 0,
-        "x": 411,
-        "y": 391,
+        "x": 438,
+        "y": 238,
         "width": 60,
         "height": 60
       },
@@ -548,8 +548,8 @@
         "icon": true,
         "decorImgKey": "icon--#3",
         "sheetId": 0,
-        "x": 2,
-        "y": 486,
+        "x": 426,
+        "y": 300,
         "width": 60,
         "height": 60
       },
@@ -557,8 +557,8 @@
         "icon": true,
         "decorImgKey": "icon--#4",
         "sheetId": 0,
-        "x": 64,
-        "y": 486,
+        "x": 426,
+        "y": 362,
         "width": 60,
         "height": 60
       },
@@ -566,8 +566,8 @@
         "icon": true,
         "decorImgKey": "icon--#5",
         "sheetId": 0,
-        "x": 126,
-        "y": 486,
+        "x": 421,
+        "y": 424,
         "width": 60,
         "height": 60
       },
@@ -575,8 +575,8 @@
         "icon": true,
         "decorImgKey": "icon--#6",
         "sheetId": 0,
-        "x": 188,
-        "y": 486,
+        "x": 512,
+        "y": 2,
         "width": 60,
         "height": 60
       },
@@ -584,8 +584,8 @@
         "icon": true,
         "decorImgKey": "icon--#7",
         "sheetId": 0,
-        "x": 250,
-        "y": 481,
+        "x": 500,
+        "y": 64,
         "width": 60,
         "height": 60
       },
@@ -593,8 +593,8 @@
         "icon": true,
         "decorImgKey": "icon--#8",
         "sheetId": 0,
-        "x": 312,
-        "y": 481,
+        "x": 500,
+        "y": 126,
         "width": 60,
         "height": 60
       },
@@ -602,8 +602,8 @@
         "icon": true,
         "decorImgKey": "icon--#9",
         "sheetId": 0,
-        "x": 374,
-        "y": 481,
+        "x": 500,
+        "y": 188,
         "width": 60,
         "height": 60
       },
@@ -611,8 +611,8 @@
         "icon": true,
         "decorImgKey": "icon--info",
         "sheetId": 0,
-        "x": 436,
-        "y": 453,
+        "x": 500,
+        "y": 250,
         "width": 60,
         "height": 60
       },
@@ -620,8 +620,8 @@
         "icon": true,
         "decorImgKey": "icon--robot",
         "sheetId": 0,
-        "x": 517,
-        "y": 2,
+        "x": 488,
+        "y": 312,
         "width": 60,
         "height": 60
       },
@@ -629,8 +629,8 @@
         "icon": true,
         "decorImgKey": "icon--white-circle",
         "sheetId": 0,
-        "x": 517,
-        "y": 64,
+        "x": 488,
+        "y": 374,
         "width": 60,
         "height": 60
       },
@@ -638,8 +638,8 @@
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
-        "x": 512,
-        "y": 126,
+        "x": 421,
+        "y": 486,
         "width": 38,
         "height": 58
       },
@@ -647,14 +647,14 @@
         "colour": true,
         "decorImgKey": "colour--white",
         "sheetId": 0,
-        "x": 490,
-        "y": 81,
+        "x": 426,
+        "y": 244,
         "width": 6,
         "height": 6
       }
     },
-    "decorDims": [{"width": 579, "height": 548}],
-    "maxDecorDim": {"width": 579, "height": 548},
+    "decorDims": [{"width": 574, "height": 546}],
+    "maxDecorDim": {"width": 574, "height": 546},
     "obstacle": {
       "bridge--042--8x9 4": {
         "x": 2,
@@ -1450,7 +1450,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": -742008974},
-    "imagesHash": -2130635256
+    "imagesHash": -806767750
   },
   "skin": {
     "numSheets": {"human-0": 2},
@@ -6467,13 +6467,13 @@
         {
           "type": "Polygon",
           "coordinates": [
-            [[4.4991, 7.5], [4.5, 8.25], [3.75, 8.25], [3.7491, 7.5]]
+            [[4.0309, 7.5], [4.0322, 8.5322], [3.0013, 8.5323], [3, 7.5]]
           ],
           "meta": {
             "decor": true,
             "decal": true,
             "img": "carpet--0",
-            "transform": [0.75, 0, 0.0009, 0.75, 3.7491, 7.5]
+            "transform": [1.0309, 0, 0.0013, 1.0322, 3, 7.5]
           }
         }
       ],

@@ -83,6 +83,22 @@ export default function Floor(props) {
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
       drawPolygons(ct, navPoly, ['#3339', '#000', 0.04]);
 
+      // 🚧 decals from gm.decor
+      const { decor } = w.geomorphs.sheet;
+      const decals = gm.decor.filter(x => x.type === 'decal');
+      for (const decal of decals) {
+        const rect = decor[decal.meta.img];
+        // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
+        ct.save();
+        ct.transform(...decal.transform);
+        ct.drawImage(
+          w.decorImgs[rect.sheetId],
+          rect.x, rect.y, rect.width, rect.height,
+          0, 0, 1, 1,
+        );
+        ct.restore();
+      }
+
       // grids
       ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
       ct.fillStyle = state.smallGrid;
@@ -99,17 +115,6 @@ export default function Floor(props) {
 
       // walls
       drawPolygons(ct, gm.walls, ['#000', null]);
-
-      // ✅ store decor images in w.decorImgs
-      // 🚧 get decals from gm.decor instead
-      // 🚧 use <Decor> approach to computing "global transform"
-      const { decor } = w.geomorphs.sheet;
-      
-      // for (const decal of gm.decals) {
-      //   const rect = decor[decal.decorKey];
-      //   drawPolygons(ct, [decal.poly], ['#f00', null]);
-      //   // ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, dx, dy, dw, dh);
-      // }
     },
     drawGmLight(gmKey) {
       const { ct } = w.texFloorLight;

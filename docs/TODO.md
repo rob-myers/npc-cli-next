@@ -77,7 +77,10 @@
   - ❌ layout.decals, symbol.decals
   - ✅ remove layout.decals etc.
   - ✅ `decor decal` yields decor like quad but not drawn by `<Decor>`
-  - 🚧 `decor decal` drawn on floor
+  - ✅ `decor decal` drawn on floor
+  - 🚧 better decals
+
+- hot reload light map?
 
 - uniform labelY -> labelOffset
   - so we can avoid label covering npc while Lie
