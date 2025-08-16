@@ -132,7 +132,7 @@ export default function WorldView(props) {
     ensureRender() {
       if (w.disabled === true) w.r3f.advance(Date.now());
     },
-    followPosition(dst, opts = { smoothTime: 0.3 }) {
+    followPosition(dst, opts = { smoothTime: 1 }) {
       // lock zoom
       state.controls.zoomToConstant = dst;
       /**
@@ -674,9 +674,8 @@ export default function WorldView(props) {
         {state.effects.enabled === true
           ? <>
             <BrightnessContrast brightness={-0.22} />
-            {/* <Scanline opacity={0.5} density={1.5} /> */}
-            {/* 🚧 try match "darkness" to camera distance */}
-            <Vignette offset={0.2} darkness={2} opacity={1} />
+            <Scanline opacity={0.5} density={1.5} />
+            {/* <Vignette offset={0.2} darkness={2} opacity={1} /> */}
           </>
           : <></>
         }

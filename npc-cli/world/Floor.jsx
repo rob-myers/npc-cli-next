@@ -19,10 +19,10 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
-    largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(0, 0, 0, 0.4)'),
+    largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(0, 0, 0, 0.3)'),
     radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
     showLights: true,
-    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(0, 0, 0, 0.2)'),
+    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(0, 0, 0, 0.3)'),
     torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
     torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
@@ -77,12 +77,12 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#333', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#000d', null]);
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
       // nav
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
-      drawPolygons(ct, navPoly, ['#1119', '#666', 0.04]);
+      drawPolygons(ct, navPoly, ['#3339', '#000', 0.04]);
 
       // grids
       ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
@@ -96,7 +96,7 @@ export default function Floor(props) {
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
-      drawPolygons(ct, shadowPolys, ['#10101066', null]);
+      drawPolygons(ct, shadowPolys, ['#000']);
 
       // walls
       drawPolygons(ct, gm.walls, ['#000', null]);

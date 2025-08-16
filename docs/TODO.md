@@ -66,6 +66,14 @@
 
 ### World
 
+- 🚧 clean up current changes
+  - drop vignette again
+
+- add more details to 301 e.g. main corridors
+  - some bits look too empty
+  - new symbol for screen (cuboid + quad)
+
+
 - ✅s running `direct npc:kate to:$( click 1 ) &` while paused cannot resolve `click 1` until unpause
   - ℹ️ confusing but a not bug
   - ✅ could `direct npc:kate to:$( ptags always; click 1 ) &`

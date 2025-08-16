@@ -105,9 +105,9 @@ export const hullDoorDepth = 40 * sguToWorldScale * sguSymbolScaleDown;
 /** Depth of doorway along line walking through door */
 export const doorDepth = 20 * sguToWorldScale * sguSymbolScaleDown;
 
-export const doorLockedColor = 'rgb(200, 160, 160)';
+export const doorLockedColor = 'rgb(180, 160, 160)';
 
-export const doorUnlockedColor = 'rgb(160, 200, 160)';
+export const doorUnlockedColor = 'rgb(160, 180, 160)';
 
 /** @type {Key.NpcClass} */
 export const defaultClassKey = 'human-0';
