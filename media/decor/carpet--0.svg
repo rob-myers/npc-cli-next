@@ -3,5 +3,5 @@
   <defs>
     <bx:grid x="0" y="0" width="300" height="300"/>
   </defs>
-  <rect style="stroke: rgb(0, 0, 0); stroke-width: 8px; fill: rgb(170, 170, 170);" width="295.802" height="296.438" rx="40" ry="40" x="4.198" y="3.562"/>
+  <rect style="fill: none; pointer-events: none; stroke-width: 24px; stroke: rgb(255, 0, 0);" width="295.802" height="296.438" rx="40" ry="40" x="4.198" y="3.562"/>
 </svg>

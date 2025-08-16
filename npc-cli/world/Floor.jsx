@@ -171,7 +171,7 @@ export default function Floor(props) {
     state.addUvs();
     state.drawRadialLight();
     state.draw().then(() => w.update());
-  }, [w.texVs.floor]);
+  }, [w.texVs.floor, w.hash.sheets]);
 
   return (
     <instancedMesh

@@ -499,7 +499,6 @@ declare namespace Geomorph {
     /** Maximum over all sheets, for texture array */
     maxObstacleDim: { width: number; height: number; }
 
-    // 🚧 avoid referencing NPC namespace
     glbHash: Record<Key.NpcClass, number>;
     imagesHash: number;
   }

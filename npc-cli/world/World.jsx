@@ -270,6 +270,11 @@ export default function World(props) {
         skin,
       } = state.geomorphs;
 
+      // We also store decor images for floor decals
+      state.decorImgs = await Promise.all(
+        decorDims.map((_, i) => imageLoader.loadAsync(getDecorSheetUrl(i)))
+      );
+
       for (const { src, dim, texArray, invert } of [
         {
           src: decorDims.map((_, sheetId) => getDecorSheetUrl(sheetId)),
@@ -308,11 +313,6 @@ export default function World(props) {
         texArray.update();
         update();
       }
-
-      // Also store decor images for decals
-      state.decorImgs = await Promise.all(
-        decorDims.map((_, i) => imageLoader.loadAsync(getDecorSheetUrl(i)))
-      );
 
       state.texNpcLabel.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
 
