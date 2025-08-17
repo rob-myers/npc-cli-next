@@ -43,7 +43,6 @@ export default function WorldMenu(props) {
       /** @param {any} value */
       const toEvent = (value) => /** @type {React.ChangeEvent<HTMLInputElement>} */ ({ currentTarget: { value, checked: value } });
       state.onChangeBrightness(toEvent(state.brightness))
-      state.onChangeBgScale(toEvent(state.bgScale));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
       state.onChangeInvertColor(toEvent(state.invertColor));
     },
@@ -85,12 +84,6 @@ export default function WorldMenu(props) {
       });
       w.view.showEffects({ enabled: state.invertColor ? false : state.showEffects });
       w.update();
-    },
-    onChangeBgScale(e) {
-      state.bgScale = Number(e.currentTarget.value); // [1..20]
-      const scale = state.bgScale / 10;
-      // 🚧 hard-coded
-      w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${100 * scale}, ${100 * scale}, ${120 * scale})`);
     },
     onChangeShowEffects(e) {
       state.showEffects = e.currentTarget.checked;
@@ -163,19 +156,6 @@ export default function WorldMenu(props) {
           width={300}
         >
           <div className="ranges">
-            <label>
-              <input
-                type="range"
-                className="scale-bg-color"
-                min={1}
-                max={20}
-                defaultValue={state.bgScale}
-                onChange={state.onChangeBgScale}
-              />
-              <div>
-                ⏰
-              </div>
-            </label>
             <label>
               <input
                 type="range"
@@ -445,7 +425,6 @@ const pausedControlsCss = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeShowEffects
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBgScale
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
  * @property {() => void} onOverlayPointerUp

@@ -75,14 +75,14 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // hull floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#222d', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#222f', null]);
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
 
       // navigable floor
       const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
       const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
       // drawPolygons(ct, navPoly, ['#3339', '#000', 0.04]);
-      drawPolygons(ct, navPoly, ['#333f', '#000', 0.04]);
+      drawPolygons(ct, navPoly, ['#444f', '#000', 0.04]);
       // drawPolygons(ct, navPoly, ['#0009', '#000', 0.04]);
 
       // 🚧 decals from gm.decor
@@ -194,7 +194,8 @@ export default function Floor(props) {
         alphaTest={0.5}
 
         lightAtlas={w.texFloorLight.tex}
-        showLights={w.crowd === null || state.showLights === true}
+        // showLights={w.crowd === null || state.showLights === true}
+        showLights={false}
       />
     </instancedMesh>
   );

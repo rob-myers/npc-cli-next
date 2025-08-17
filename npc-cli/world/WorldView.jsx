@@ -669,7 +669,7 @@ export default function WorldView(props) {
           ? <>
             <BrightnessContrast brightness={-0.22} />
             <Scanline opacity={0.5} density={1.5} />
-            {/* <Vignette offset={0.2} darkness={2} opacity={1} /> */}
+            {/* <Vignette offset={0.2} darkness={1} opacity={1} /> */}
           </>
           : <></>
         }
@@ -775,7 +775,7 @@ export default function WorldView(props) {
  */
 
 const rootCss = css`
-  ${worldViewBgColorCssVar}: rgb(30, 30, 30);
+  ${worldViewBgColorCssVar}: rgb(255, 255, 255);
   transition: background-color 1s;
 
   user-select: none;

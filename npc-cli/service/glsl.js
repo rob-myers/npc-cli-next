@@ -577,11 +577,11 @@ const instancedFloorShader = {
       
       if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        float lighter = clamp(2.5 * lightTexel.w, 1.0, 3.0);
-        // 🔔 we scale opacity too
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * .7;
+        float lighter = clamp(2. * lightTexel.w, 1.0, 3.0);
+        // 🔔 make floor a bit transparent too, against black background
+        gl_FragColor = texel * vec4(vColor * diffuse * lighter * .7, opacity * .7);
       } else {
-        gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 1.5;
+        gl_FragColor = texel * vec4(vColor * diffuse, opacity * .7);
       }
       #include <logdepthbuf_fragment>
       
