@@ -75,7 +75,7 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // hull floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#333d', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#222d', null]);
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
 
       // navigable floor

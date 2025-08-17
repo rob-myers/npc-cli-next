@@ -1575,8 +1575,8 @@ const defaultMaxAcceleration = 7;
  * 🔔 relevant to reachability of arrival distance
  */
 // const defaultSeparationWeight = 0.25;
-const defaultSeparationWeight = 1;
-const defaultIdleSeparationWeight = 1;
+const defaultSeparationWeight = 0.5;
+const defaultIdleSeparationWeight = 0.5;
 const defaultCollisionQueryRange = 2;
 const defaultSlowDownRadius = helper.defaults.radius * 2;
 
