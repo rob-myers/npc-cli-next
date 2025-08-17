@@ -85,6 +85,9 @@
 
 - 🚧 better decals (currently only test ones)
 
+- 🚧 continuous move loop by feeding in pending targets?
+  - then could remove new logic concerning arriveAnim
+
 - ❌ hot reload light map
 
 - uniform labelY -> labelOffset
