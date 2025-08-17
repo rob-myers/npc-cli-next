@@ -578,6 +578,7 @@ const instancedFloorShader = {
       if (showLights == true) {
         vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
         float lighter = clamp(2.5 * lightTexel.w, 1.0, 3.0);
+        // 🔔 we scale opacity too
         gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * .7;
       } else {
         gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 1.5;
