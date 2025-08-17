@@ -589,7 +589,7 @@ export default function useHandleEvents(w) {
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
           // - prevent moving thru each other diagonally
           // - prevent jerking other npc once leave connection
-          && npc.api.getOtherDoorwayLead(other) >= (tr.nextUnit === null ? 0.5 : 0.3)
+          && npc.api.getOtherDoorwayLead(other) >= (tr.nextUnit === null ? 0.5 : 0.4)
         ) {
           continue;
         }

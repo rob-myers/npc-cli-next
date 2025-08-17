@@ -708,12 +708,12 @@ export class NpcApi {
       const other = this.w.a[nei.idx];
 
       if (other.s.target === null) {
-        const delta = tmpVect1.copy(offMesh.dst).sub(point).normalize(0.3);
+        const delta = tmpVect1.copy(offMesh.dst).sub(point).normalize(0.4);
         if (geom.lineSegIntersectsCircle(
           delta.add(point).json, // look further ahead
           offMesh.src,
           other.api.getPoint(),
-          0.3, // sometimes small flicker when idle
+          0.4, // sometimes small flicker when idle
         ) === false) {
           // 🔔 other idle and "not in the way"
           continue;
@@ -1570,15 +1570,13 @@ const lookSecsNoTarget = 0.75;
 // 🔔 tuned so that sharp turns (e.g. 180°) are smooth
 const defaultMaxAcceleration = 7;
 
-// const staticSeparationWeight = 0.25;
-// const movingSeparationWeight = 0.5;
 /**
  * 🔔 sudden change can cause jerk onexit doorway
  * 🔔 relevant to reachability of arrival distance
  */
 // const defaultSeparationWeight = 0.25;
-const defaultSeparationWeight = 0.1;
-const defaultIdleSeparationWeight = 0.25;
+const defaultSeparationWeight = 1;
+const defaultIdleSeparationWeight = 1;
 const defaultCollisionQueryRange = 2;
 const defaultSlowDownRadius = helper.defaults.radius * 2;
 
