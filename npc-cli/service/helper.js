@@ -139,8 +139,8 @@ export const helper = {
   defaults: {
     height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
     radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.75,
-    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale,
-    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale,
+    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale * 0.8,
+    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale * 0.8,
   },
 
   /** @type {Record<Key.Anim, true>} */
