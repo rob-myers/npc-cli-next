@@ -4,9 +4,6 @@ import demoCameraWKey from demo
 
 awaitWorld
 
-# 🚧 draw into floor instead
-w debug.showNavMesh
-
 spawn npc:rob as:soldier-0 at:'{x:6.5, y:5}' granted:. angle:Math.PI
 spawn npc:will as:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' granted:. angle:Math.PI
 spawn npc:kate as:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' granted:. angle:Math.PI

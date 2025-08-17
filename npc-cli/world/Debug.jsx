@@ -18,7 +18,8 @@ export default function Debug(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     navMesh: /** @type {*} */ (null),
-    navMeshShown: false,
+    // 🚧 draw into floor instead
+    navMeshShown: true,
     navPath: /** @type {*} */ (null),
     origNavPolyShown: false,
     originShown: false,
@@ -29,7 +30,7 @@ export default function Debug(props) {
     staticCollidersShown: false,
     staticColliders: [],
 
-    ensureNavPoly(gmKey) {
+    ensureOrigNavPoly(gmKey) {
       if (!w.gmsData[gmKey].navPoly) {
         const layout = w.geomorphs.layout[gmKey];
         // Fix normals for recast/detour -- triangulation ordering?
@@ -190,7 +191,7 @@ export default function Debug(props) {
   }, [state.staticCollidersShown, w.physics.rebuilds]);
 
   React.useEffect(() => {// original navMesh
-    w.gms.forEach(gm => state.ensureNavPoly(gm.key));
+    w.gms.forEach(gm => state.ensureOrigNavPoly(gm.key));
     w.update();
   }, [state.origNavPolyShown]);
 
@@ -297,7 +298,7 @@ export default function Debug(props) {
  * @property {(WW.PhysicDebugItem & { parsedKey: WW.PhysicsParsedBodyKey })[]} staticColliders
  * @property {null | NPC.DownData} pick
  * @property {THREE.BufferGeometry} physicsLines
- * @property {(gmKey: Key.Geomorph) => void} ensureNavPoly
+ * @property {(gmKey: Key.Geomorph) => void} ensureOrigNavPoly
  * @property {(e: MessageEvent<WW.MsgFromPhysicsWorker>) => void} onPhysicsDebugData
  * @property {(path: THREE.Vector3Like[]) => void} setNavPath
  * @property {(...polyIds: number[]) => void} selectNavPolys

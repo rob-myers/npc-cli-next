@@ -534,9 +534,6 @@ const instancedFloorShader = {
 
   Frag: /* glsl */`
 
-    uniform sampler2DArray lightAtlas;
-    uniform bool showLights;
-
     uniform float alphaTest;
     uniform sampler2DArray atlas;
     uniform vec3 diffuse;
@@ -574,15 +571,9 @@ const instancedFloorShader = {
       //#endregion
 
       if (texel.a * opacity < alphaTest) discard;
-      
-      if (showLights == true) {
-        vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        float lighter = clamp(2. * lightTexel.w, 1.0, 3.0);
-        // 🔔 make floor a bit transparent too, against black background
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter * .7, opacity * .7);
-      } else {
-        gl_FragColor = texel * vec4(vColor * diffuse, opacity * .7);
-      }
+
+      // 🔔 reduce opacity
+      gl_FragColor = texel * vec4(vColor * diffuse, opacity * .7);
       #include <logdepthbuf_fragment>
       
     }
@@ -593,8 +584,6 @@ const instancedFloorShader = {
 /** @type {Required<import('@/npc-cli/types/glsl').InstancedFloorProps>} */
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
-  lightAtlas: emptyDataArrayTexture,
-  showLights: false,
 };
 
 /**

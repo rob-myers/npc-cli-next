@@ -67,7 +67,6 @@ export default function World(props) {
     // 🔔 hmr issue when initial width = height = 0
     texAux: new TexArray({ ctKey: 'aux', type: THREE.FloatType, numTextures: texAuxDepth, width: 1, height: 1 }),
     texFloor: new TexArray({ ctKey: 'floor-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
-    texFloorLight: new TexArray({ ctKey: 'floor-light-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texCeil: new TexArray({ ctKey: 'ceil-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texDecor: new TexArray({ ctKey: 'decor-tex', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex', numTextures: 1, width: 0, height: 0 }),
@@ -221,7 +220,6 @@ export default function World(props) {
       if (mapChanged === true) {
         const dimension = floorTextureDimension;
         state.texFloor.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
-        state.texFloorLight.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texCeil.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texVs.floor++; // e.g. fix edit const.js
         state.texVs.ceiling++;
@@ -357,14 +355,14 @@ export default function World(props) {
           <group>
             <React.Suspense>
               {state.crowd !== null && <>
+                <Floor />
+                <Ceiling />
                 <Decor />
                 <Npcs />
                 <Debug />
               </>}
             </React.Suspense>
-            <Floor />
             <group visible={state.crowd !== null}>
-              <Ceiling />
               <Walls />
               <Doors />
               <Obstacles />
@@ -450,7 +448,6 @@ export default function World(props) {
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
  * @property {TexArray} texFloor
- * @property {TexArray} texFloorLight
  * @property {TexArray} texObs
  * @property {TexArray} texSkin skin texels, one pre skin
  * @property {TexArray} texNpcAux uv re-mapping and skin tinting, one per npc

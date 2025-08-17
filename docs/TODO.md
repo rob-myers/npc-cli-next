@@ -75,13 +75,13 @@
 
 - 🚧 try drawing navmesh on floor
   - will need to split it into "first occurrence of geomorph"
+  - 🚧 try style where only navMesh and decals shown
 
 - ✅ try basic carpet textures drawn on floor (so they're lit)
   - ❌ layout.decals, symbol.decals
   - ✅ remove layout.decals etc.
   - ✅ `decor decal` yields decor like quad but not drawn by `<Decor>`
   - ✅ `decor decal` drawn on floor
-
 
 - 🚧 better decals (currently only test ones)
 
