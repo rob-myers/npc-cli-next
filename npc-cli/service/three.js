@@ -290,9 +290,11 @@ export function createLabelSpriteSheet(labels, sheet, { fontHeight }) {
   // Create sprite-sheet
   const canvas = /** @type {HTMLCanvasElement} */ (sheet.tex.image);
   const ct = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
+  ct.clearRect(0, 0, canvas.width, canvas.height);
   ct.font = `${fontHeight}px 'Courier new'`;
+  ct.letterSpacing = '12px';
 
-  const strokeWidth = 5;
+  const strokeWidth = 8;
 
   const rects = labels.map(label => ({
     width: ct.measureText(label).width + 2 * strokeWidth,
@@ -318,11 +320,12 @@ export function createLabelSpriteSheet(labels, sheet, { fontHeight }) {
   }
   ct.clearRect(0, 0, bin.width, bin.height);
   // ct.strokeStyle = ct.fillStyle = 'white';
-  ct.strokeStyle = 'black';
-  ct.fillStyle = 'white';
-  ct.lineWidth = strokeWidth;
   ct.font = `${fontHeight}px 'Verdana'`;
+  ct.lineWidth = strokeWidth;
   ct.textBaseline = 'top';
+  ct.fillStyle = 'white';
+  ct.strokeStyle = 'black';
+  ct.letterSpacing = '12px';
   bin.rects.forEach(rect => {
     ct.strokeText(rect.data.label, rect.x + strokeWidth, rect.y + strokeWidth);
     ct.fillText(rect.data.label, rect.x + strokeWidth, rect.y + strokeWidth);

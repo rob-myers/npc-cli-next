@@ -261,7 +261,8 @@ export default function Decor(props) {
     },
     createLabelMatrix4(d) {
       const { width, height } = state.label.lookup[d.meta.label];
-      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale) * 1;
+      // scale down after earlier scale up in fontSize
+      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale) * 0.25;
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
@@ -610,7 +611,7 @@ export default function Decor(props) {
       const prev = state.seenHash ?? {};
       const next = w.hash;
       const mapChanged = prev.map !== next.map;
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale * 0.8;
+      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale * 2;
 
       state.labels = w.gms.flatMap((gm, gmId) => gm.labels.map(d => state.instantiateDecor(d, gmId, gm)));
       createLabelSpriteSheet(
@@ -746,7 +747,7 @@ export default function Decor(props) {
       ref={state.ref('labelInst')}
       args={[state.labelQuad, undefined, labels.length]}
       frustumCulled={false}
-      renderOrder={2}
+      renderOrder={-4}
     >
       {/* <meshBasicMaterial color="red" /> */}
       <instancedLabelsMaterial
@@ -754,7 +755,7 @@ export default function Decor(props) {
         // side={THREE.DoubleSide}
         map={state.label.tex}
         transparent
-        opacity={0.4}
+        opacity={0.8}
         diffuse={new THREE.Vector3(1, 1, 1)}
       />
     </instancedMesh>
