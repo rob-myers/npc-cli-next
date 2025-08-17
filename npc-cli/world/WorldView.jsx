@@ -775,8 +775,8 @@ export default function WorldView(props) {
  */
 
 const rootCss = css`
-  ${worldViewBgColorCssVar}: rgb(255, 255, 255);
-  transition: background-color 1s;
+  ${worldViewBgColorCssVar}: rgb(50, 50, 50);
+  transition: background-color 3s;
 
   user-select: none;
   background-color: var(${worldViewBgColorCssVar});
