@@ -320,7 +320,7 @@ const origNavPolyMaterial = new THREE.MeshBasicMaterial({
 const navPolyMaterial = new THREE.MeshBasicMaterial({
   wireframe: true,
   // color: "#3f3",
-  color: "#222",
+  color: "#343434",
   transparent: true,
   opacity: 1,
 });
