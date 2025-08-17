@@ -229,7 +229,7 @@
     "fresher--025--3x2": {"outputHash": -2073406480, "pngHash": -1324814803},
     "fresher--036--4x2": {"outputHash": 570694497, "pngHash": 633687707},
     "fuel--010--4x2": {
-      "outputHash": -1844931219,
+      "outputHash": 761162345,
       "pngHash": 858873613,
       "obsHashes": [-2106922932]
     },
@@ -14601,20 +14601,7 @@
           }
         }
       ],
-      "walls": [
-        {
-          "type": "Polygon",
-          "coordinates": [
-            [
-              [6.0925, -0.0975],
-              [6.0925, 3.095],
-              [-0.095, 3.095],
-              [-0.095, -0.0975]
-            ]
-          ],
-          "meta": {"wall": true, "hollow": true, "broad": true}
-        }
-      ],
+      "walls": [],
       "doors": [],
       "windows": [],
       "decor": [
@@ -14624,6 +14611,20 @@
             [[3.05, 0.65], [3.05, 0.75], [2.95, 0.75], [2.95, 0.65]]
           ],
           "meta": {"decor": true, "label": "fuel"}
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[6, 0], [6, 3], [0, 3], [0, 0]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "fuel": true,
+            "max-height": true,
+            "y": 0,
+            "h": -0.1,
+            "color": "#ddd",
+            "transform": [6, 0, 0, 3, 0, 0]
+          }
         }
       ],
       "unsorted": [
