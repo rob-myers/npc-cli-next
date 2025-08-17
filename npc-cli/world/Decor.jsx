@@ -265,7 +265,7 @@ export default function Decor(props) {
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
-        0, transform[3], 0, 2, // 🚧 remove hard-coded height
+        0, transform[3], 0, 2.2, // 🚧 remove hard-coded height
         0, 0, 1, transform[5],
         0, 0, 0, 1
       );
@@ -605,7 +605,7 @@ export default function Decor(props) {
       const prev = state.seenHash ?? {};
       const next = w.hash;
       const mapChanged = prev.map !== next.map;
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale;
+      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale * 0.8;
 
       state.labels = w.gms.flatMap((gm, gmId) => gm.labels.map(d => state.instantiateDecor(d, gmId, gm)));
       createLabelSpriteSheet(
@@ -751,7 +751,7 @@ export default function Decor(props) {
         // side={THREE.DoubleSide}
         map={state.label.tex}
         transparent
-        opacity={0.2}
+        opacity={0.4}
         diffuse={new THREE.Vector3(1, 1, 1)}
       />
     </instancedMesh>
