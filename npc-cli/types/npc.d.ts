@@ -306,6 +306,12 @@ declare namespace NPC {
      * the two segments
      */
     tToDist: number;
+    /** Used for tweening and then applied via `dtAgentAnimation.set_tScale` */
+    tScale: number;
+    /** Destination for `tScale`, non-null only if we need to slow down or speed up. */
+    tScaleDst: null | number;
+    /** Duration for tweening `tScale` */
+    tScaleSecs: number;
   };
 
   type dtCrowdAgentAnimation = ReturnType<

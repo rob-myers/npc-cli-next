@@ -557,6 +557,10 @@ export default function useHandleEvents(w) {
         mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
         nextUnit: nextCornerTooClose === true ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
         tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
+
+        tScale: 1,
+        tScaleDst: nextCornerTooClose === true && npc.pendingTargets.length === 0 ? 0.25 : null,
+        tScaleSecs: 0.4,
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
@@ -633,8 +637,7 @@ export default function useHandleEvents(w) {
       }
     },
     onExitOffMeshConnection(e, npc) {
-      // means target too close to offMesh.dst
-      const nextUnitNull = npc.s.offMesh?.nextUnit === null;
+      const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
       state.clearOffMesh(npc);
       
@@ -644,8 +647,11 @@ export default function useHandleEvents(w) {
         return; 
       }
 
-      if (nextUnitNull === true && npc.pendingTargets.length === 0) {
-        // 🔔 fix fast turn just after offMesh
+      if (
+        offMesh.nextUnit === null // target too close to offMesh.dst
+        && npc.pendingTargets.length === 0 // no other targets
+        && offMesh.tScaleDst !== 1 // not speeding up after changing target
+      ) {
         npc.api.stopMoving({ type: 'stop-reason', key: 'arrived' });
       } else if (e.offMesh.dstRoomMeta.small !== true) {
         if (npc.s.run === true) {

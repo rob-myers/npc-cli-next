@@ -646,10 +646,11 @@ export class NpcApi {
    * We also changed `dtCrowd::update` to ignore collisions of
    * a neighbour on initial part of an offMeshConnection.
    *
+   * @param {number} deltaSecs
    * @param {NPC.CrowdAgent} agent
    * @param {NPC.OffMeshState} offMesh
    */
-  handleOffMeshConnection(agent, offMesh) {
+  handleOffMeshConnection(deltaSecs, agent, offMesh) {
     if (offMesh.seg === 0) {
       this.handlePreOffMeshCollision(agent, offMesh);
     }
@@ -663,9 +664,11 @@ export class NpcApi {
       offMesh.seg = 2; // midway in main segment
     }
 
-    // slow down if will stop right after doorway
-    if (offMesh.nextUnit === null && this.pendingTargets.length === 0) {
-      anim.set_tScale(1 - 0.75 * (anim.t / anim.tmax) ** 2);
+    if (offMesh.seg >= 1 && offMesh.tScaleDst !== null) {
+      // - slow down if will stop right after doorway
+      // - speed up if changed target while slowing down
+      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSecs, deltaSecs);
+      anim.set_tScale(offMesh.tScale);
     }
 
     // look further along the path
@@ -895,9 +898,6 @@ export class NpcApi {
     if (Date.now() < this.s.offMeshCoolDown) {
       throw Error('too soon after offMesh attempt');
     }
-    if (this.s.doMeta !== null) {// must be on-mesh act point
-      this.w.npc.setDoMeta(this.key, null);
-    }
 
     // ensure fresh points sans meta
     const points = (Array.isArray(opts.to) ? opts.to : [opts.to]).map(helper.toXZ);
@@ -929,6 +929,10 @@ export class NpcApi {
       return; // avoid close click jerk
     }
 
+    if (this.s.doMeta !== null) {// must be on-mesh act point
+      this.w.npc.setDoMeta(this.key, null);
+    }
+
     v3Precision(closest);
     this.s.arriveDist = opts.s?.arriveDist ?? defaultNpcArriveDistance;
     this.s.lookSecs = 0.2;
@@ -949,6 +953,10 @@ export class NpcApi {
       if (this.s.agentState === 2) {// handle immediate new offMeshConnection
         this.s.agentState = -1;
       }
+    } else if (typeof this.s.offMesh?.tScaleDst === 'number') {
+      // speed back up
+      this.s.offMesh.tScaleDst = 1;
+      this.s.offMesh.tScaleSecs = 0.1;
     }
 
     agent.requestMoveTarget(closest);
@@ -1181,7 +1189,7 @@ export class NpcApi {
     }
 
     if (this.s.offMesh !== null) {
-      this.handleOffMeshConnection(agent, this.s.offMesh);
+      this.handleOffMeshConnection(deltaSecs, agent, this.s.offMesh);
 
       if (this.s.turnBeforeMove !== null) {
         this.onTurnBeforeMove(agent, deltaSecs, this.s.turnBeforeMove);
@@ -1505,40 +1513,48 @@ export class NpcApi {
   }
 
   tryStopOffMesh() {
-    // 🔔 offMeshConnection can happen when `this.s.offMesh` null,
+    const { agentAnim } = this.base;
+
+    // 🔔 offMeshConnection can happen when `this.s.offMesh === null`
     // e.g. when npc without access is close to door
-    if (this.base.agentAnim?.active !== true) {
+    if (agentAnim?.active !== true) {
       return false;
     }
 
     if (
-      this.base.agentAnim.t <= this.base.agentAnim.tmid
-      || this.base.agentAnim.tmax === Infinity // turnBeforeMove
+      agentAnim.t <= agentAnim.tmid
+      || agentAnim.tmax === Infinity // turnBeforeMove
     ) {
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
     }
-    return false;
+
+    return false; // active in main seg; can't stop without visibly warping
   }
 
   updateLabelOffsets() {
     const { anim: act } = this.s;
     const { animHeights, labelHeight } = this.base.gltfAux;
-    const offsetY = animHeights[act] + 3 * labelHeight;
     
-    // speech bubble (if exists)
+    // Label in model is half below ground with total height `labelHeight`.
+    // We'll move it 2.5 * labelHeight above npc's current height.
+    const offsetY = animHeights[act] + (0.5 + 2.5) * labelHeight;
+    
+    // for speech bubble
     this.base.offsetSpeech.y = offsetY;
 
-    // shader label position
-    this.s.labelY = this.base.position.y + offsetY;
-    this.setUniform('labelY', this.s.labelY);
-
-    if (act === 'Lie') {// fix contextmenu position
+    if (act === 'Lie') {
+      // 🚧 fix label too
+      // fix contextmenu position
       const clockwiseFromEast = this.getAngle() - Math.PI/2;
       this.base.offsetMenu.set(0.5 * Math.cos(clockwiseFromEast), 0, 0.5 * Math.sin(clockwiseFromEast));      
     } else {
       this.base.offsetMenu.set(0, 0, 0);
     }
+
+    // 🚧 labelY -> labelOffset
+    this.s.labelY = this.base.position.y + offsetY;
+    this.setUniform('labelY', this.s.labelY);
   }
 
   async waitUntilStopped() {
