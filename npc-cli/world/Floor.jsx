@@ -8,6 +8,7 @@ import { pause } from "../service/generic";
 import { drawPolygons, getCanvas } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
+import { getTileTriangles } from "../service/recast-detour";
 import { getQuadGeometryXZ } from "../service/three";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -20,8 +21,7 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
-    radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
-    showLights: true,
+    navTris: /** @type {*} */ ({}),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -107,9 +107,28 @@ export default function Floor(props) {
       state.inst.computeBoundingSphere();
     },
     preComputeNav(nav) {
-      // 🚧
-      const [positions, indices] = getNavMeshPositionsAndIndices(nav);
-      console.log({ positions, indices });
+      // at most one per gmKey
+      const seenGms = w.gmsData.seenGmKeys.map(x => w.gms[w.gms.findIndex(y => y.key === x)]);
+      const rects = seenGms.map(x => x.gridRect);
+      const seenGmKeyToTris = /** @type {{[ gmKey in Key.Geomorph ]: [number[], number[]][]}} */ ({});
+      seenGms.forEach(gm => seenGmKeyToTris[gm.key] = [])
+      
+      // iterate over tiles
+      const maxTiles = nav.getMaxTiles();
+      for (let tileIndex = 0; tileIndex < maxTiles; tileIndex++) {
+        const tile = nav.getTile(tileIndex);
+        const header = tile.header();
+        if (!header) continue;
+        const point = { x: header.bmin(0), y: header.bmin(2) };
+        const seenGmsId = rects.findIndex(x => x.contains(point));
+        if (seenGmsId >= 0) {
+          const { key } = seenGms[seenGmsId];
+          seenGmKeyToTris[key].push(getTileTriangles(tile));
+        }
+      }
+
+      console.log({seenGmKeyToTris});
+      state.navTris = seenGmKeyToTris;
     },
   }));
 
@@ -153,9 +172,9 @@ export default function Floor(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
+ * @property {{[gmKey in Key.Geomorph]: [number[], number[]][]}} navTris navTris[seenGmId][tileIndex] is [positions, indices]
  * @property {THREE.BufferGeometry} quad
- * @property {boolean} showLights Show static lights?
- * @property {THREE.CanvasTexture} radialTex
+ 
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw

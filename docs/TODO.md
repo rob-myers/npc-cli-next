@@ -74,8 +74,8 @@
   - new symbol for screen (cuboid + quad)
 
 - 🚧 try drawing navmesh on floor
-  - will need to split it into "first occurrence of geomorph"
   - 🚧 try style where only navMesh and decals shown
+  - 🚧 precompute by splitting it into "first occurrence of geomorph"
 
 - ✅ try basic carpet textures drawn on floor (so they're lit)
   - ❌ layout.decals, symbol.decals

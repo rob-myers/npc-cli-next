@@ -151,6 +151,81 @@ export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
 }
 
 /**
+ * https://github.com/isaac-mason/recast-navigation-js/blob/a5f14a4fd7b5231b4e5c7930f53fa1257f6420b2/packages/recast-navigation-core/src/nav-mesh.ts
+ * @param {import("@recast-navigation/core").DetourMeshTile} tile
+ * @returns {[number[], number[]]}
+ */
+export function getTileTriangles(tile) {
+  const positions = /** @type {number[]} */ ([]);
+  const indices = /** @type {number[]} */ ([]);
+  
+  const tileHeader = tile.header();
+  if (!tileHeader) return [
+    positions,
+    indices,
+  ];
+
+  const tilePolyCount = tileHeader.polyCount();
+  
+  for (
+    let tilePolyIndex = 0;
+    tilePolyIndex < tilePolyCount;
+    ++tilePolyIndex
+  ) {
+    const poly = tile.polys(tilePolyIndex);
+
+    if (poly.getType() === 1) continue;
+
+    const polyVertCount = poly.vertCount();
+    const polyDetail = tile.detailMeshes(tilePolyIndex);
+    const polyDetailTriBase = polyDetail.triBase();
+    const polyDetailTriCount = polyDetail.triCount();
+    let tri = 0;
+
+    for (
+      let polyDetailTriIndex = 0;
+      polyDetailTriIndex < polyDetailTriCount;
+      ++polyDetailTriIndex
+    ) {
+      const detailTrisBaseIndex =
+        (polyDetailTriBase + polyDetailTriIndex) * 4;
+
+      for (let trianglePoint = 0; trianglePoint < 3; ++trianglePoint) {
+        if (
+          tile.detailTris(detailTrisBaseIndex + trianglePoint) < polyVertCount
+        ) {
+          const tileVertsBaseIndex =
+            poly.verts(tile.detailTris(detailTrisBaseIndex + trianglePoint)) *
+            3;
+
+          positions.push(
+            tile.verts(tileVertsBaseIndex),
+            tile.verts(tileVertsBaseIndex + 1),
+            tile.verts(tileVertsBaseIndex + 2),
+          );
+        } else {
+          const tileVertsBaseIndex =
+            (polyDetail.vertBase() +
+              tile.detailTris(detailTrisBaseIndex + trianglePoint) -
+              poly.vertCount()) *
+            3;
+
+          positions.push(
+            tile.detailVerts(tileVertsBaseIndex),
+            tile.detailVerts(tileVertsBaseIndex + 1),
+            tile.detailVerts(tileVertsBaseIndex + 2),
+          );
+        }
+
+        indices.push(tri++);
+      }
+    }
+  }
+
+  return [positions, indices];
+}
+
+/**
  * 
  * @param {THREE.Mesh[]} meshes 
  * @param {Partial<TileCacheGeneratorConfig>} navMeshGeneratorConfig 
