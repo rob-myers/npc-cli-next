@@ -5,7 +5,7 @@ import braces from "braces";
 
 import { Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance, precision } from '../service/const';
-import { debug, error, keys, warn } from '../service/generic';
+import { debug, error, jsStringify, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, v3Precision } from '../service/three';
 import { helper } from '../service/helper';
@@ -85,6 +85,7 @@ export function createBaseNpc(def, w) {
       agentState: /** @type {null | number} */ (null),
       /** Current animation key. */
       anim: /** @type {Key.Anim} */ ('Idle'),
+      arriveAnim: /** @type {false | Key.Anim} */ ('Idle'),
       /** Minimal distance at which npc is consider to have arrived */
       arriveDist: defaultNpcArriveDistance,
       /** Defined iff npc is at an "act point". */
@@ -104,7 +105,6 @@ export function createBaseNpc(def, w) {
       lookSecs: lookSecsNoTarget,
       /** An offMeshConnection traversal */
       offMesh: /** @type {null | NPC.OffMeshState} */ (null),
-      /** For delayed `npc.s.offMesh` `null`ing during initial seg */
       /** Prevent `move` until after this, otherwise repeated offMesh can force its way through  */
       offMeshCoolDown: 0,
       /** Opacity e.g. during fade */
@@ -893,18 +893,23 @@ export class NpcApi {
     const { agent } = this.base;
 
     if (agent === null) {
-      throw new Error(`npc ${this.key} lacks agent`);
-    }
-    if (Date.now() < this.s.offMeshCoolDown) {
-      throw Error('too soon after offMesh attempt');
+      throw new Error(`npc lacks agent: ${this.key}`);
     }
 
     // ensure fresh points sans meta
     const points = (Array.isArray(opts.to) ? opts.to : [opts.to]).map(helper.toXZ);
     if (!(points.every(helper.isVectJson))) {
-      throw Error(`${'npc.api.move'}: opts.to must be {x,y}, {x,y,z} or array`);
+      throw Error(`opts.to must be {x,y}, {x,y,z} or array`);
     }
     
+    if (Date.now() < this.s.offMeshCoolDown) {
+      throw /** @satisfies {NPC.StopReason} */ ({
+        type: 'stop-reason',
+        key: 'too-many-moves',
+        rest: points,
+      });
+    }
+
     this.s.target !== null && this.rejectMove({
       type: 'stop-reason',
       key: 'move-again',
@@ -915,14 +920,16 @@ export class NpcApi {
       return;
     }
 
+    this.s.arriveAnim = opts.arriveAnim ?? 'Idle';
+
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
     this.pendingTargets.push(...points.map(x => toV3(x, precision)));
-    this.setSlowDown(this.pendingTargets.length === 0);
+    this.setSlowDown();
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
     const closest = this.w.npc.getClosestNavigable(toV3(to), Math.max(opts.close ?? 0, 0.05));
     if (closest === null) {
-      throw new Error(`${this.key}: not navigable: ${JSON.stringify(to)}`);
+      throw new Error(`not navigable: ${jsStringify(to)}`);
     }
 
     if (this.pendingTargets.length === 0 && this.isNear(closest, 0.2) === true) {
@@ -983,7 +990,7 @@ export class NpcApi {
       throw e;
     } finally {
       this.pendingTargets.length = 0;
-      this.setSlowDown(true); // turn off continuous motion
+      this.setSlowDown();
       this.tryStopOffMesh(); // when turnBeforeMove
       this.s.turnBeforeMove = null;
       this.base.numCorners = 0;
@@ -1224,7 +1231,7 @@ export class NpcApi {
         this.s.target = this.base.lastTarget.copy(pendingTarget);
         this.base.numCorners = 0;
         agent.requestMoveTarget(this.s.target);
-        this.setSlowDown(this.pendingTargets.length === 0); // update per pendingTarget
+        this.setSlowDown();
         this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
       }
       return;
@@ -1411,10 +1418,8 @@ export class NpcApi {
     this.w.texNpcLabel.updateIndex(this.def.uid);
   }
 
-  /**
-   * @param {boolean} enabled 
-   */
-  setSlowDown(enabled) {
+  setSlowDown() {
+    const enabled = this.pendingTargets.length === 0 && this.s.arriveAnim !== false;
     const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
@@ -1490,7 +1495,11 @@ export class NpcApi {
     agent.raw.params.set_separationWeight(defaultIdleSeparationWeight);
     agent.raw.params.set_radius(helper.defaults.radius);
     
-    this.startAnimation('Idle');
+    if (reason.key === 'arrived') {
+      this.startAnimation(this.s.arriveAnim === false ? this.s.anim : this.s.arriveAnim);
+    } else {
+      this.startAnimation('Idle');
+    }
 
     const pos = agent.position(); // reset small motions:
     const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;

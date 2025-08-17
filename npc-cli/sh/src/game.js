@@ -78,7 +78,7 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
   let to = opts.to;
   while (true) {
     try {
-      await move(ct, { npcKey: opts.npcKey, to });
+      await move(ct, { npcKey: opts.npcKey, to, arriveAnim: false });
       break;
     } catch (e) {
       if (!helper.isStopReason(e) || !('rest' in e)) {

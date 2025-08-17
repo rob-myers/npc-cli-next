@@ -471,6 +471,7 @@ declare namespace NPC {
 
   interface MoveOpts {
     to: GroundPoint | GroundPoint[];
+    arriveAnim?: false | Key.Anim;
     /** How far away may we look for a navigable point? */
     close?: number; 
     /** Show possible path of agent path (only a guide). */
@@ -490,6 +491,7 @@ declare namespace NPC {
       | { key: 'move-again'; }
       | { key: 'stopped'; }
       | { key: 'stuck'; nearTarget: boolean; }
+      | { key: 'too-many-moves'; }
     )
     | { key: 'removed'; }
     | { key: 'respawned'; }
