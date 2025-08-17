@@ -327,7 +327,7 @@ const navPolyMaterial = new THREE.MeshBasicMaterial({
 });
 
 const offMeshLineMaterial = new THREE.LineBasicMaterial({
-  color: "#ff7",
+  color: "#335",
 });
 
 const selectedNavPolysMaterial = new THREE.MeshBasicMaterial({
