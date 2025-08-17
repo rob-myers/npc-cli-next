@@ -713,7 +713,7 @@ export class NpcApi {
           delta.add(point).json, // look further ahead
           offMesh.src,
           other.api.getPoint(),
-          0.4, // sometimes small flicker when idle
+          0.35, // sometimes small flicker when idle
         ) === false) {
           // 🔔 other idle and "not in the way"
           continue;
