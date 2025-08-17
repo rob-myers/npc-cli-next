@@ -73,19 +73,24 @@
   - ℹ️ looks a bit empty in a number of places
   - new symbol for screen (cuboid + quad)
 
-- 🚧 try basic carpet textures drawn on floor (so they're lit)
+- 🚧 try drawing navmesh on floor
+  - will need to split it into "first occurrence of geomorph"
+
+- ✅ try basic carpet textures drawn on floor (so they're lit)
   - ❌ layout.decals, symbol.decals
   - ✅ remove layout.decals etc.
   - ✅ `decor decal` yields decor like quad but not drawn by `<Decor>`
   - ✅ `decor decal` drawn on floor
-  - 🚧 better decals
 
-- hot reload light map?
+
+- 🚧 better decals (currently only test ones)
+
+- ❌ hot reload light map
 
 - uniform labelY -> labelOffset
   - so we can avoid label covering npc while Lie
 
-- ✅s running `direct npc:kate to:$( click 1 ) &` while paused cannot resolve `click 1` until unpause
+- ✅ running `direct npc:kate to:$( click 1 ) &` while paused cannot resolve `click 1` until unpause
   - ℹ️ confusing but a not bug
   - ✅ could `direct npc:kate to:$( ptags always; click 1 ) &`
   - ✅ ui button when Tabs disabled to set background processes initially unpaused
