@@ -594,7 +594,12 @@ export default function Decor(props) {
   
   // instantiate geomorph decor
   const query = useQuery({
-    queryKey: ['decor', w.key],
+    queryKey: [
+      'decor',
+      w.key,
+      w.hash.mapDecor,
+      w.hash.sheets,
+    ],
 
     async queryFn() {
       if (module.hot?.active === false) {
@@ -686,8 +691,6 @@ export default function Decor(props) {
     state.quads.length,
     labels.length,
     state.registeredAt,
-    w.hash.mapDecor,
-    w.hash.sheets,
   ]);
 
   const update = useUpdate();
