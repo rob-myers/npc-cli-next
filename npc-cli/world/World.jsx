@@ -186,7 +186,7 @@ export default function World(props) {
       );
 
       // also update gms if e.g. unsorted unused polygon added
-      if (dataChanged === true) {
+      if (dataChanged === true || mapChanged === true) {
         const mapDef = next.geomorphs.map[next.mapKey];
         next.gms = mapDef.gms.map(({ gmKey, transform }, gmId) => 
           geomorph.computeLayoutInstance(next.geomorphs.layout[gmKey], gmId, transform)

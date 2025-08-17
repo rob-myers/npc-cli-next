@@ -88,6 +88,8 @@
 - 🚧 continuous move loop by feeding in pending targets?
   - then could remove new logic concerning arriveAnim
 
+- ✅ fix change mapKey
+
 - ❌ hot reload light map
 
 - uniform labelY -> labelOffset
