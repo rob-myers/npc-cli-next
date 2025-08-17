@@ -934,7 +934,7 @@ export class NpcApi {
     }
 
     v3Precision(closest);
-    this.s.arriveDist = opts.s?.arriveDist ?? defaultNpcArriveDistance;
+    this.s.arriveDist = defaultNpcArriveDistance;
     this.s.lookSecs = 0.2;
 
     agent.raw.params.set_maxAcceleration(defaultMaxAcceleration);
@@ -1268,7 +1268,7 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < 0.5) {
+    if (elapsedTime - this.s.slowBegin < 0.75) {
       return; // too short
     }
 
@@ -1568,15 +1568,15 @@ export class NpcApi {
 
 const lookSecsNoTarget = 0.75;
 // 🔔 tuned so that sharp turns (e.g. 180°) are smooth
-const defaultMaxAcceleration = 7;
+const defaultMaxAcceleration = 10;
 
 /**
  * 🔔 sudden change can cause jerk onexit doorway
  * 🔔 relevant to reachability of arrival distance
  */
 // const defaultSeparationWeight = 0.25;
-const defaultSeparationWeight = 0.5;
-const defaultIdleSeparationWeight = 0.5;
+const defaultSeparationWeight = 0.1;
+const defaultIdleSeparationWeight = 0.25;
 const defaultCollisionQueryRange = 2;
 const defaultSlowDownRadius = helper.defaults.radius * 2;
 

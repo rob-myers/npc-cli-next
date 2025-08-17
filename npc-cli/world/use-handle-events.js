@@ -560,7 +560,7 @@ export default function useHandleEvents(w) {
 
         tScale: 1,
         tScaleDst: nextCornerTooClose === true && npc.pendingTargets.length === 0 ? 0.25 : null,
-        tScaleSecs: 0.4,
+        tScaleSecs: 0.5,
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;

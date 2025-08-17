@@ -473,13 +473,7 @@ declare namespace NPC {
     to: GroundPoint | GroundPoint[];
     /** How far away may we look for a navigable point? */
     close?: number; 
-    /** Can overwrite state initially. */
-    s?: Partial<Pick<NPC.NPC['s'], (
-      | 'arriveDist'
-    )>>;
-    /**
-     * Show possible path of agent path (only a guide).
-     */
+    /** Show possible path of agent path (only a guide). */
     debugPath?: boolean;
   }
 
