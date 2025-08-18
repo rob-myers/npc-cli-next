@@ -95,22 +95,23 @@ export default function Floor(props) {
           // triangle.outline[triVId].set(positions[3 * vertId], positions[3 * vertId + 2]);
           if (triVId === 2) {
             // drawPolygons(ct, [triangle], [null, '#777']);
-            drawPolygons(ct, [triangle], ['#aaa', '#666']);
+            drawPolygons(ct, [triangle], ['#ddd', '#666']);
           }
         }
       });
 
       // 🚧 decals from gm.decor
-      const { decor } = w.geomorphs.sheet;
-      const decals = gm.decor.filter(x => x.type === 'decal');
-      for (const decal of decals) {
-        const rect = decor[decal.meta.img];
-        // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
-        ct.save();
-        ct.transform(...decal.transform);
-        ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
-        ct.restore();
-      }
+      // 🚧 test decals -> real ones
+      // const { decor } = w.geomorphs.sheet;
+      // const decals = gm.decor.filter(x => x.type === 'decal');
+      // for (const decal of decals) {
+      //   const rect = decor[decal.meta.img];
+      //   // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
+      //   ct.save();
+      //   ct.transform(...decal.transform);
+      //   ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
+      //   ct.restore();
+      // }
 
     },
     positionInstances() {
