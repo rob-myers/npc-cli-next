@@ -370,7 +370,7 @@ export const contextMenuCss = css`
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
     border-radius: 0 8px 8px 8px;
     border: 1px solid #333;
     padding: 4px;
