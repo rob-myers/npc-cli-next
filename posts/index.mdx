@@ -19,10 +19,6 @@ import { LaptopIcon, MobileIcon, PlayIcon } from '../npc-cli/components/Icons';
 import SetTabsLink from '../npc-cli/components/SetTabsLink';
 import Video from '../components/Video';
 
-import ViewerClosedDesktopWebp from '../public/images/viewer-closed-desktop.webp';
-import ViewerOpenDesktopWebp from '../public/images/viewer-open-desktop.webp';
-import ViewerOpenPlayButtonDesktopWebp from '../public/images/viewer-open-play-button-desktop.webp';
-
 # Home
 
 ## Quickstart
@@ -48,32 +44,15 @@ A "Non-Player Character" (NPC) is a video game character not controlled by the P
 {/* 🚧 bigger images via smaller desktop */}
 
 <Card>
-  <LaptopIcon/> To follow along, open the _Viewer_ on the right of the screen (drag or toggle).
-  Click the play button <PlayIcon/> and finally ensure the same tabs by clicking <SetTabsLink layoutPresetKey="world-tty-default">here</SetTabsLink>.
+  <LaptopIcon/> To follow along:
+  - open the _Viewer_ on the right.
+  - click play <PlayIcon/> and <SetTabsLink layoutPresetKey="world-tty-default">sync tabs</SetTabsLink>.
 
-  <Carousel
-    height={600}
-    heightMobile={450}
-    navigation
-    background='rgba(0, 0, 0, 0)'
-  >
-    <Figure label="Viewer closed" objectPosition='top'>
-      <Image src={ViewerClosedDesktopWebp} alt="Desktop Viewer closed"/>
-    </Figure>
-    <Figure label="Viewer open" objectPosition='top'>
-      <Image src={ViewerOpenDesktopWebp} alt="Desktop Viewer open"/>
-    </Figure>
-    <Figure label="Viewer play button" objectPosition='top'>
-      <Image src={ViewerOpenPlayButtonDesktopWebp} alt="Desktop Viewer play button"/>
-    </Figure>
-  </Carousel>
-
-  <MobileIcon/> Mobiles have the _Viewer_ at the bottom of the screen; we'll use it in the next section.
+  <MobileIcon/> Mobiles have the _Viewer_ at the bottom; see the next section.
 </Card>
 
-The video above works step-by-step through the commands below.
-
-They're a natural place to start, although far from the whole story.
+The video above steps through the commands below.
+They're a natural place to start, but far from the whole story.
 
 <Code title='Our first commands'>
   ```sh showLineNumbers
@@ -97,7 +76,7 @@ They're a natural place to start, although far from the whole story.
 Then we've seen a Non-Player Character (NPC) driven by a Command Line Interface (CLI),
 which is why our site is called **NPC CLI**.
 
-Duh!
+> Duh!
 
 ### Running a profile
 
@@ -169,8 +148,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
    */
   export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
     const npc = w.npc.getNpc(opts.npcKey);
-    npc.s.run = input.keys?.includes("shift") ?? false;
-    // catch so can override move, also ignores points too far from nav
+    // catch to override + ignore points too far from nav
     npc.api.move({ to: input, close: 0.5 }).catch(() => {});
   }
   ```

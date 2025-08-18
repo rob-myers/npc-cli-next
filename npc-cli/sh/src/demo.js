@@ -1,8 +1,6 @@
 import { deltaAngle } from "maath/misc";
 import { Mat } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
-import { geom } from '@/npc-cli/service/geom';
-
 
 /**
  * @param {NPC.RunArg} ct
@@ -70,8 +68,7 @@ export const demoCameraWKey = ({ w }) => {
  */
 export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
   const npc = w.npc.getNpc(opts.npcKey);
-  npc.s.run = input.keys?.includes("shift") ?? false;
-  // catch so can override move, also ignores points too far from nav
+  // catch to override + ignore points too far from nav
   npc.api.move({ to: input, close: 0.5 }).catch(() => {});
 }
 

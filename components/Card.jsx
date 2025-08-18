@@ -27,9 +27,10 @@ const rootCss = css`
   padding: 4px 48px;
   border-left: 4px solid #dde;
   position: relative;
-
+  
   @media(max-width: ${breakpoint}) {
     padding: 0 32px;
+    margin: 48px 0;
   }
 `;
 

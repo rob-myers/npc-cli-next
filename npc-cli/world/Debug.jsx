@@ -254,6 +254,7 @@ export default function Debug(props) {
           key={`${gm.key} ${gmId} ${gm.transform}`}
           matrix={gm.mat4}
           matrixAutoUpdate={false}
+          renderOrder={-2}
         >
           <mesh
             name="orig-nav-poly"
@@ -312,8 +313,8 @@ export default function Debug(props) {
 
 const origNavPolyMaterial = new THREE.MeshBasicMaterial({
   side: THREE.FrontSide,
-  color: "yellow",
-  wireframe: true,
+  color: "#888",
+  // wireframe: true,
   transparent: true,
   opacity: 0.8,
 });
