@@ -94,7 +94,8 @@ export default function Floor(props) {
 
       // 🚧 draw nav mesh
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
-      ct.lineWidth = 0.025;
+      ct.lineWidth = 0.03;
+      ct.lineJoin = 'round';
       
       const { inverseMatrix } = w.gms[w.gms.findIndex(x => x.key === gm.key)];
       state.navTris[gm.key].forEach(([positions, indices]) => {
@@ -103,9 +104,10 @@ export default function Floor(props) {
           const vertId = indices[index];
           const { x, y } = inverseMatrix.transformPoint({ x: positions[3 * vertId], y: positions[3 * vertId + 2] })
           triangle.outline[triVId].set(x, y);
+          // triangle.outline[triVId].set(positions[3 * vertId], positions[3 * vertId + 2]);
           if (triVId === 2) {
-            // drawPolygons(ct, [triangle], ['#f00', null]);
-            drawPolygons(ct, [triangle], [null, '#777']);
+            // drawPolygons(ct, [triangle], [null, '#777']);
+            drawPolygons(ct, [triangle], ['#aaa', '#444']);
           }
         }
       });
@@ -126,7 +128,7 @@ export default function Floor(props) {
       const seenGms = w.gmsData.seenGmKeys.map(x => w.gms[w.gms.findIndex(y => y.key === x)]);
       const gridRects = seenGms.map(x => x.gridRect);
       const seenGmKeyToTris = /** @type {{[ gmKey in Key.Geomorph ]: [number[], number[]][]}} */ ({});
-      seenGms.forEach(gm => seenGmKeyToTris[gm.key] = [])
+      seenGms.forEach(gm => seenGmKeyToTris[gm.key] = []);
       
       // iterate over tiles
       const maxTiles = nav.getMaxTiles();
@@ -155,7 +157,7 @@ export default function Floor(props) {
     state.addUvs();
     state.preComputeNav(w.crowd.navMesh); // 🔔 crowd must exist
     state.draw().then(() => w.update());
-  }, [w.texVs.floor, w.hash.sheets]);
+  }, [w.texVs.floor, w.hash.sheets, w.crowd.navMesh]);
 
   return (
     <instancedMesh
