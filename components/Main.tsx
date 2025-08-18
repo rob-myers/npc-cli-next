@@ -109,6 +109,7 @@ const mainHeaderCss = css`
     color: #444;
     text-decoration: none;
     text-shadow: 0 1px #fff, -0 -1px #fff, 1px 0 #fff, -1px 0 #fff;
+    pointer-events: all;
   }
   
   @media (min-width: ${afterBreakpoint}) {
@@ -126,9 +127,9 @@ const mainHeaderCss = css`
     pointer-events: all;
     background-color: #fff;
     a {
-      pointer-events: all !important;
       opacity: 1 !important;
-    }
+    pointer-events: all !important;
+  }
   }
 `;
 
