@@ -85,8 +85,10 @@
 
 - 🚧 better decals (currently only test ones)
 
-- 🚧 continuous move loop by feeding in pending targets?
-  - then could remove new logic concerning arriveAnim
+- ❌ continuous move loop by feeding in pending targets?
+  - instead we avoided teleport which broke smoothness
+
+- ✅ clean arriveAnim
 
 - ✅ fix change mapKey
 

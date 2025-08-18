@@ -85,6 +85,7 @@ export function createBaseNpc(def, w) {
       agentState: /** @type {null | number} */ (null),
       /** Current animation key. */
       anim: /** @type {Key.Anim} */ ('Idle'),
+      /** Animation to play on arrival or none if `false` (e.g. continuous loop) */
       arriveAnim: /** @type {false | Key.Anim} */ ('Idle'),
       /** Minimal distance at which npc is consider to have arrived */
       arriveDist: defaultNpcArriveDistance,
@@ -924,7 +925,7 @@ export class NpcApi {
 
     const to = /** @type {NPC.GroundPoint} */ (points.shift());
     this.pendingTargets.push(...points.map(x => toV3(x, precision)));
-    this.setSlowDown();
+    this.setSlowDownRadius();
 
     // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
     const closest = this.w.npc.getClosestNavigable(toV3(to), Math.max(opts.close ?? 0, 0.05));
@@ -990,7 +991,7 @@ export class NpcApi {
       throw e;
     } finally {
       this.pendingTargets.length = 0;
-      this.setSlowDown(true);
+      this.setSlowDownRadius(true);
       this.tryStopOffMesh(); // when turnBeforeMove
       this.s.turnBeforeMove = null;
       this.base.numCorners = 0;
@@ -1231,7 +1232,7 @@ export class NpcApi {
         this.s.target = this.base.lastTarget.copy(pendingTarget);
         this.base.numCorners = 0;
         agent.requestMoveTarget(this.s.target);
-        this.setSlowDown();
+        this.setSlowDownRadius();
         this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
       }
       return;
@@ -1418,7 +1419,12 @@ export class NpcApi {
     this.w.texNpcLabel.updateIndex(this.def.uid);
   }
 
-  setSlowDown(enabled = this.pendingTargets.length === 0 && this.s.arriveAnim !== false) {
+  /**
+   * - When enabled it has normal size, otherwise it is very small (almost no effect).
+   * - By default it is enabled when there are no pendingTargets and there is an arriveAnim.
+   * @param {boolean} [enabled] 
+   */
+  setSlowDownRadius(enabled = this.pendingTargets.length === 0 && this.s.arriveAnim !== false) {
     const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
@@ -1495,7 +1501,9 @@ export class NpcApi {
     agent.raw.params.set_radius(helper.defaults.radius);
     
     if (reason.key === 'arrived') {
-      this.startAnimation(this.s.arriveAnim === false ? this.s.anim : this.s.arriveAnim);
+      if (typeof this.s.arriveAnim === 'string') {
+        this.startAnimation(this.s.arriveAnim);
+      }
     } else {
       this.startAnimation('Idle');
     }
