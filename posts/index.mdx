@@ -103,7 +103,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 
 <Card>
   To use the _quickstart_ profile in the Viewer,
-  click <SetTabsLink layoutPresetKey="world-tty-quickstart">here</SetTabsLink>.
+  <SetTabsLink layoutPresetKey="world-tty-quickstart">sync tabs</SetTabsLink>.
 </Card>
 
 <Carousel
@@ -148,7 +148,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
    */
   export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
     const npc = w.npc.getNpc(opts.npcKey);
-    // catch to override + ignore points too far from nav
+    // catch permits override and ignores points too far from nav
     npc.api.move({ to: input, close: 0.5 }).catch(() => {});
   }
   ```
@@ -157,7 +157,7 @@ This means they only need to open a terminal whose _profile_ (initial script) se
 
 ## Backdrop
 
-Our 3D worlds are implementations of Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html)
+The 3D worlds on this site implement Robert Pearce's [Starship Geomorphs](http://travellerrpgblog.blogspot.com/2020/07/starship-geomorphs-20.html)
 i.e.
 architectural drawings of starships blocks, connectable along their edges. 
 
@@ -181,7 +181,7 @@ Our underlying motivations are:
 - __Understand [Recast-Detour](https://github.com/recastnavigation/recastnavigation).__
   
   Our NPCs are driven by Recast-Detour.
-  We'll analyse this important C++ library.
+  We'll analyse this important C++ library in depth.
 
 - __Generic scripting for [three.js](https://www.npmjs.com/package/three).__
   
