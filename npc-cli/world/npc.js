@@ -990,7 +990,7 @@ export class NpcApi {
       throw e;
     } finally {
       this.pendingTargets.length = 0;
-      this.setSlowDown();
+      this.setSlowDown(true);
       this.tryStopOffMesh(); // when turnBeforeMove
       this.s.turnBeforeMove = null;
       this.base.numCorners = 0;
@@ -1418,8 +1418,7 @@ export class NpcApi {
     this.w.texNpcLabel.updateIndex(this.def.uid);
   }
 
-  setSlowDown() {
-    const enabled = this.pendingTargets.length === 0 && this.s.arriveAnim !== false;
+  setSlowDown(enabled = this.pendingTargets.length === 0 && this.s.arriveAnim !== false) {
     const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
@@ -1506,7 +1505,7 @@ export class NpcApi {
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
       this.tryStopOffMesh();
-      agent.teleport(position);
+      // agent.teleport(position); // breaks smooth loops
       agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
       agent.requestMoveTarget(toV3(this.s.offMesh.dst));
@@ -1534,6 +1533,7 @@ export class NpcApi {
       agentAnim.t <= agentAnim.tmid
       || agentAnim.tmax === Infinity // turnBeforeMove
     ) {
+      this.base.agent?.teleport(this.base.position);
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
     }
