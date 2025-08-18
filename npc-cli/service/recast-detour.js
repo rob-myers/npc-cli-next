@@ -166,6 +166,7 @@ export function getTileTriangles(tile) {
   ];
 
   const tilePolyCount = tileHeader.polyCount();
+  let tri = 0;
   
   for (
     let tilePolyIndex = 0;
@@ -180,7 +181,6 @@ export function getTileTriangles(tile) {
     const polyDetail = tile.detailMeshes(tilePolyIndex);
     const polyDetailTriBase = polyDetail.triBase();
     const polyDetailTriCount = polyDetail.triCount();
-    let tri = 0;
 
     for (
       let polyDetailTriIndex = 0;
