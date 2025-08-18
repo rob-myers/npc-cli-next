@@ -1,11 +1,10 @@
 import React from "react";
 import * as THREE from "three";
-import { getNavMeshPositionsAndIndices } from "@recast-navigation/core";
 
-import { Mat, Poly } from "../geom";
+import { Mat, Poly, Vect } from "../geom";
 import { gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { drawPolygons, getCanvas } from "../service/dom";
+import { drawPolygons } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getTileTriangles } from "../service/recast-detour";
@@ -94,6 +93,22 @@ export default function Floor(props) {
       drawPolygons(ct, gm.walls, ['#0008', null]);
 
       // 🚧 draw nav mesh
+      const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
+      ct.lineWidth = 0.025;
+      
+      const { inverseMatrix } = w.gms[w.gms.findIndex(x => x.key === gm.key)];
+      state.navTris[gm.key].forEach(([positions, indices]) => {
+        for (const index of indices) {
+          const triVId = index % 3; // 0, 1, 2
+          const vertId = indices[index];
+          const { x, y } = inverseMatrix.transformPoint({ x: positions[3 * vertId], y: positions[3 * vertId + 2] })
+          triangle.outline[triVId].set(x, y);
+          if (triVId === 2) {
+            // drawPolygons(ct, [triangle], ['#f00', null]);
+            drawPolygons(ct, [triangle], [null, '#777']);
+          }
+        }
+      });
     },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
@@ -106,10 +121,10 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    preComputeNav(nav) {
+    preComputeNav(nav) {// 🚧 compute elsewhere, earlier?
       // at most one per gmKey
       const seenGms = w.gmsData.seenGmKeys.map(x => w.gms[w.gms.findIndex(y => y.key === x)]);
-      const rects = seenGms.map(x => x.gridRect);
+      const gridRects = seenGms.map(x => x.gridRect);
       const seenGmKeyToTris = /** @type {{[ gmKey in Key.Geomorph ]: [number[], number[]][]}} */ ({});
       seenGms.forEach(gm => seenGmKeyToTris[gm.key] = [])
       
@@ -119,15 +134,16 @@ export default function Floor(props) {
         const tile = nav.getTile(tileIndex);
         const header = tile.header();
         if (!header) continue;
-        const point = { x: header.bmin(0), y: header.bmin(2) };
-        const seenGmsId = rects.findIndex(x => x.contains(point));
+        const point = { x: (header.bmin(0) + header.bmax(0)) * 0.5, y: (header.bmin(2) + header.bmax(2)) * 0.5 };
+        const seenGmsId = gridRects.findIndex(x => x.contains(point));
         if (seenGmsId >= 0) {
           const { key } = seenGms[seenGmsId];
           seenGmKeyToTris[key].push(getTileTriangles(tile));
-        }
+        } // otherwise in later geomorph instance
       }
 
-      console.log({seenGmKeyToTris});
+
+      // console.log({seenGmKeyToTris, gridRects});
       state.navTris = seenGmKeyToTris;
     },
   }));

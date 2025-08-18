@@ -18,8 +18,7 @@ export default function Debug(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     navMesh: /** @type {*} */ (null),
-    // 🚧 draw into floor instead
-    navMeshShown: true,
+    navMeshShown: false,
     navPath: /** @type {*} */ (null),
     origNavPolyShown: false,
     originShown: false,
