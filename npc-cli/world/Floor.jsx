@@ -70,7 +70,7 @@ export default function Floor(props) {
 
       // hull floor
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#ffff', null]);
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#444', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#666', null]);
 
       // drop shadows, avoiding doubling
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
