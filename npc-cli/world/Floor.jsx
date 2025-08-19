@@ -69,7 +69,8 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // hull floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#ffff', null]);
+      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#ffff', null]);
+      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#444', null]);
 
       // drop shadows, avoiding doubling
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
@@ -84,6 +85,8 @@ export default function Floor(props) {
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineWidth = 0.03;
       ct.lineJoin = 'round';
+      const fillStyle = w.touchDevice ? '#aaa' : '#aaa';
+      const strokeStyle = w.touchDevice ? '#777' : '#777';
       
       const { inverseMatrix } = w.gms[w.gms.findIndex(x => x.key === gm.key)];
       state.navTris[gm.key].forEach(([positions, indices]) => {
@@ -94,8 +97,7 @@ export default function Floor(props) {
           triangle.outline[triVId].set(x, y);
           // triangle.outline[triVId].set(positions[3 * vertId], positions[3 * vertId + 2]);
           if (triVId === 2) {
-            // drawPolygons(ct, [triangle], [null, '#777']);
-            drawPolygons(ct, [triangle], ['#999', '#666']);
+            drawPolygons(ct, [triangle], [fillStyle, strokeStyle]);
           }
         }
       });
