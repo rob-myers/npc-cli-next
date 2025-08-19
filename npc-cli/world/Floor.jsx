@@ -85,8 +85,8 @@ export default function Floor(props) {
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineWidth = 0.03;
       ct.lineJoin = 'round';
-      const fillStyle = w.touchDevice ? '#aaa' : '#aaa';
-      const strokeStyle = w.touchDevice ? '#777' : '#777';
+      const fillStyle = w.touchDevice ? '#888' : '#aaa';
+      const strokeStyle = w.touchDevice ? '#444' : '#777';
       
       const { inverseMatrix } = w.gms[w.gms.findIndex(x => x.key === gm.key)];
       state.navTris[gm.key].forEach(([positions, indices]) => {
