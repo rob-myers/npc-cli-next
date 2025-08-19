@@ -1513,7 +1513,10 @@ export class NpcApi {
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
       this.tryStopOffMesh();
-      // agent.teleport(position); // breaks smooth loops
+      if (agent.state() === 2) {
+        // must teleport before requestMoveTarget when offMesh
+        agent.teleport(position);
+      }
       agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
       agent.requestMoveTarget(toV3(this.s.offMesh.dst));
@@ -1541,7 +1544,6 @@ export class NpcApi {
       agentAnim.t <= agentAnim.tmid
       || agentAnim.tmax === Infinity // turnBeforeMove
     ) {
-      this.base.agent?.teleport(this.base.position);
       this.w.events.next({ key: 'clear-off-mesh', npcKey: this.key });
       return true;
     }
