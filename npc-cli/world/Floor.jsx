@@ -81,12 +81,12 @@ export default function Floor(props) {
       // wall bases
       drawPolygons(ct, gm.walls, ['#0008', null]);
 
-      // 🚧 draw nav mesh
+      // draw nav mesh
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
       ct.lineWidth = w.touchDevice ? 0.05 : 0.03;
       const fillStyle = '#999';
-      const strokeStyle = '#444';
+      const strokeStyle = w.touchDevice ? '#4448' : '#4448';
       
       const { inverseMatrix } = w.gms[w.gms.findIndex(x => x.key === gm.key)];
       state.navTris[gm.key].forEach(([positions, indices]) => {
@@ -101,6 +101,7 @@ export default function Floor(props) {
           }
         }
       });
+      // 🚧 draw off mesh connections
 
       // 🚧 decals from gm.decor
       // 🚧 test decals -> real ones
@@ -127,7 +128,7 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    preComputeNav(nav) {// 🚧 compute elsewhere, earlier?
+    preComputeNav(nav) {// 🚧 compute in worker
       // at most one per gmKey
       const seenGms = w.gmsData.seenGmKeys.map(x => w.gms[w.gms.findIndex(y => y.key === x)]);
       const gridRects = seenGms.map(x => x.gridRect);
@@ -147,7 +148,6 @@ export default function Floor(props) {
           seenGmKeyToTris[key].push(getTileTriangles(tile));
         } // otherwise in later geomorph instance
       }
-
 
       // console.log({seenGmKeyToTris, gridRects});
       state.navTris = seenGmKeyToTris;
