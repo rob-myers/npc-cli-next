@@ -70,13 +70,13 @@ export default function Floor(props) {
 
       // hull floor
       // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#ffff', null]);
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#666', null]);
+      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#666', null]);
 
       // drop shadows, avoiding doubling
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
-      drawPolygons(ct, shadowPolys, ['#0007', null]);
+      drawPolygons(ct, shadowPolys, ['#0004', null]);
 
       // wall bases
       drawPolygons(ct, gm.walls, ['#0008', null]);
@@ -180,7 +180,7 @@ export default function Floor(props) {
         depthWrite={false} // fix z-fighting
         diffuse={[1, 1, 1]}
         objectPickRed={2}
-        alphaTest={0.5}
+        alphaTest={0.1}
       />
     </instancedMesh>
   );
