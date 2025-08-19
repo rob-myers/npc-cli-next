@@ -95,7 +95,7 @@ export default function Floor(props) {
           // triangle.outline[triVId].set(positions[3 * vertId], positions[3 * vertId + 2]);
           if (triVId === 2) {
             // drawPolygons(ct, [triangle], [null, '#777']);
-            drawPolygons(ct, [triangle], ['#ddd', '#666']);
+            drawPolygons(ct, [triangle], ['#999', '#666']);
           }
         }
       });
