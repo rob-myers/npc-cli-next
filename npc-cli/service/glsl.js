@@ -555,7 +555,8 @@ const instancedFloorShader = {
 
       //#region object-pick 
       if (objectPick == true) {
-        if (texel.a < alphaTest) discard;
+        // 🔔 treat floor as non-transparent...
+        // if (texel.a < alphaTest) discard;
 
         gl_FragColor = vec4(
           float(objectPickRed) / 255.0,
