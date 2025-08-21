@@ -559,7 +559,7 @@ export default function useHandleEvents(w) {
         tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
 
         tScale: 1,
-        tScaleDst: nextCornerTooClose === true && npc.pendingTargets.length === 0 ? 0.25 : null,
+        tScaleDst: nextCornerTooClose === true && npc.pendingTargets.length === 0 ? 0.1 : null,
         tScaleSecs: 0.5,
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
