@@ -3,8 +3,8 @@ import * as THREE from "three";
 
 import { Mat, Poly, Vect } from "../geom";
 import { gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
-import { pause } from "../service/generic";
-import { drawPolygons } from "../service/dom";
+import { mapValues, pause } from "../service/generic";
+import { drawCircle, drawPolygons } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getTileTriangles } from "../service/recast-detour";
@@ -20,7 +20,8 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
-    navTris: /** @type {*} */ ({}),
+    offMeshEdges: /** @type {*} */ ({}),
+    toNavTris: /** @type {*} */ ({}),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -89,19 +90,29 @@ export default function Floor(props) {
       const strokeStyle = w.touchDevice ? '#4448' : '#4448';
       
       const { inverseMatrix } = w.gms[w.gms.findIndex(x => x.key === gm.key)];
-      state.navTris[gm.key].forEach(([positions, indices]) => {
+      state.toNavTris[gm.key].forEach(([positions, indices]) => {
         for (const index of indices) {
           const triVId = index % 3; // 0, 1, 2
           const vertId = indices[index];
-          const { x, y } = inverseMatrix.transformPoint({ x: positions[3 * vertId], y: positions[3 * vertId + 2] })
-          triangle.outline[triVId].set(x, y);
-          // triangle.outline[triVId].set(positions[3 * vertId], positions[3 * vertId + 2]);
+          triangle.outline[triVId].set(positions[3 * vertId], positions[3 * vertId + 2]);
           if (triVId === 2) {
             drawPolygons(ct, [triangle], [fillStyle, strokeStyle]);
           }
         }
       });
+
       // 🚧 draw off mesh connections
+      for (const { src, dst } of state.offMeshEdges[gm.key]) {
+        ct.lineWidth = 0.02;
+        drawCircle(ct, src, 0.04, ['#222', '#fff']);
+        drawCircle(ct, dst, 0.04, ['#222', '#fff']);
+        ct.strokeStyle = '#0006';
+        ct.lineWidth = 0.025;
+        ct.beginPath();
+        ct.moveTo(src.x, src.y);
+        ct.lineTo(dst.x, dst.y);
+        ct.stroke();
+      }
 
       // 🚧 decals from gm.decor
       // 🚧 test decals -> real ones
@@ -128,29 +139,58 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    preComputeNav(nav) {// 🚧 compute in worker
-      // at most one per gmKey
-      const seenGms = w.gmsData.seenGmKeys.map(x => w.gms[w.gms.findIndex(y => y.key === x)]);
-      const gridRects = seenGms.map(x => x.gridRect);
-      const seenGmKeyToTris = /** @type {{[ gmKey in Key.Geomorph ]: [number[], number[]][]}} */ ({});
-      seenGms.forEach(gm => seenGmKeyToTris[gm.key] = []);
+    preComputeNav(nav, offMeshLookup) {// 🚧 compute in worker
+      state.toNavTris = mapValues(w.gmsData.gmKeyToFirst, () => []);
+      /** Those geomorph instances which are 1st for their gmKey */
+      const firstGms = Object.values(w.gmsData.gmKeyToFirst);
+      const v2d = new Vect();
       
-      // iterate over tiles
+      // compute nav tris in local coords for each seen gmKey
       const maxTiles = nav.getMaxTiles();
       for (let tileIndex = 0; tileIndex < maxTiles; tileIndex++) {
         const tile = nav.getTile(tileIndex);
         const header = tile.header();
         if (!header) continue;
+        
         const point = { x: (header.bmin(0) + header.bmax(0)) * 0.5, y: (header.bmin(2) + header.bmax(2)) * 0.5 };
-        const seenGmsId = gridRects.findIndex(x => x.contains(point));
-        if (seenGmsId >= 0) {
-          const { key } = seenGms[seenGmsId];
-          seenGmKeyToTris[key].push(getTileTriangles(tile));
-        } // otherwise in later geomorph instance
+        const gm = firstGms.find(x => x.gridRect.contains(point));
+        
+        if (gm !== undefined) {
+          const tileTris = getTileTriangles(tile); // [positions, indices][]
+          
+          // apply inverseTransform because we'll draw in local coords
+          tileTris[0].forEach((t, i, positions) => {
+            if (i % 3 === 0) {// x -> x
+              v2d.x = t;
+            } else if (i % 3 === 2) {// z -> y
+              v2d.y = t;
+              gm.inverseMatrix.transformPoint(v2d);
+              positions[i - 2] = v2d.x;
+              positions[i] = v2d.y;
+            }
+          });
+
+          state.toNavTris[gm.key].push(tileTris);
+        }
       }
 
-      // console.log({seenGmKeyToTris, gridRects});
-      state.navTris = seenGmKeyToTris;
+      // compute off mesh edges in local coords for each seen gmKey
+      state.offMeshEdges = mapValues(w.gmsData.gmKeyToFirst, () => []);
+      const firstGmIds = new Set(firstGms.map(x => x.gmId));
+
+      const offMeshEdges = Object.values(offMeshLookup)
+        .map(x => ({ gmId: x.gmId, src: x.src, dst: x.dst }))
+        .filter(x => firstGmIds.has(x.gmId));
+      ;
+
+      for (const { gmId, src, dst } of offMeshEdges) {
+        const gm = w.gms[gmId];
+        state.offMeshEdges[gm.key].push({
+          // transform to local coords
+          src: gm.inverseMatrix.transformPoint(v2d.set(src.x, src.z)).json,
+          dst: gm.inverseMatrix.transformPoint(v2d.set(dst.x, dst.z)).json,
+        });
+      }
     },
   }));
 
@@ -159,7 +199,7 @@ export default function Floor(props) {
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
-    state.preComputeNav(w.crowd.navMesh); // 🔔 crowd must exist
+    state.preComputeNav(w.crowd.navMesh, w.nav.offMeshLookup); // 🔔 crowd must exist
     state.draw().then(() => w.update());
   }, [w.texVs.floor, w.hash.sheets, w.crowd.navMesh]);
 
@@ -194,14 +234,16 @@ export default function Floor(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
- * @property {{[gmKey in Key.Geomorph]: [number[], number[]][]}} navTris navTris[seenGmId][tileIndex] is [positions, indices]
+ * @property {{[gmKey in Key.Geomorph]: { src: Geom.VectJson; dst: Geom.VectJson; }[]}} offMeshEdges
+ * @property {{[gmKey in Key.Geomorph]: [number[], number[]][]}} toNavTris
+ * navTris[seenGmId][tileIndex] is [positions, indices]
  * @property {THREE.BufferGeometry} quad
  
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
- * @property {(nav: import('@recast-navigation/core').NavMesh) => void} preComputeNav
+ * @property {(nav: import('@recast-navigation/core').NavMesh, offMeshLookup: NPC.SrcToOffMeshLookup) => void} preComputeNav
  * @property {() => void} positionInstances
  */
 
