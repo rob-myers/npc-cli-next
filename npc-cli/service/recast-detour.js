@@ -39,6 +39,7 @@ export function computeGmInstanceMesh(gm) {
 }
 
 /**
+ * Compute off mesh connection definitions, which we'll send to worker.
  * @param {import('../world/World').State} w
  */
 export function computeOffMeshConnectionsParams(w) {

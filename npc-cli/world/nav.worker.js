@@ -29,7 +29,7 @@ async function handleMessages(e) {
 async function onRequestNav(msg) {
 
   const geomorphs = geomorph.deserializeGeomorphs(await fetchGeomorphsJson(msg.baseUrl));
-  const map = geomorphs.map[msg.mapKey ?? "demo-map-1"];
+  const map = geomorphs.map[msg.mapKey ?? "small-map-1"];
   const gms = map.gms.map(({ gmKey, transform }, gmId) =>
     geomorph.computeLayoutInstance(geomorphs.layout[gmKey], gmId, transform)
   );

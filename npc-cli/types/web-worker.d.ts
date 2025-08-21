@@ -14,7 +14,7 @@ declare namespace WW {
 
   interface RequestNavMesh {
     type: "request-nav";
-    mapKey: string;
+    mapKey: Key.Map;
     offMeshDefs: import('recast-navigation').OffMeshConnectionParams[];
     /** Used to fetch public assets from worker */
     baseUrl: string;
@@ -22,7 +22,7 @@ declare namespace WW {
 
   interface NavMeshResponse {
     type: "nav-mesh-response";
-    mapKey: string;
+    mapKey: Key.Map;
     exportedNavMesh: Uint8Array;
     offMeshLookup: NPC.SrcToOffMeshLookup;
   }

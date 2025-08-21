@@ -1,7 +1,7 @@
 import React from 'react';
 import { init as initRecastNav, importTileCache, Crowd } from "@recast-navigation/core";
 
-import { isDevelopment, warn, debug, testNever, info } from '../service/generic';
+import { isDevelopment, warn, debug } from '../service/generic';
 import { maxNumberOfNpcs } from '../service/const';
 import { parsePhysicsBodyKey } from '../service/rapier';
 import { computeOffMeshConnectionsParams, disposeCrowd, getTileCacheMeshProcess } from '../service/recast-detour';

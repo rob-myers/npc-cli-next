@@ -391,7 +391,7 @@ export default function World(props) {
  * @typedef State
  * @property {`world-${number}`} key This is `props.worldKey` and never changes
  * @property {boolean} disabled
- * @property {string} mapKey
+ * @property {Key.Map} mapKey
  * @property {Geomorph.GeomorphsHash} hash
  * @property {Geomorph.GmsData} gmsData
  * Data determined by `w.gms` or a `Key.Geomorph`.
