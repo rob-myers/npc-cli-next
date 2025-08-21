@@ -40,9 +40,11 @@ export function computeGmInstanceMesh(gm) {
 
 /**
  * Compute off mesh connection definitions, which we'll send to worker.
- * @param {import('../world/World').State} w
+ * @param {Geomorph.LayoutInstance[]} gms
+ * @param {Graph.GmGraph} gmGraph
+ * @returns {import("recast-navigation").OffMeshConnectionParams[]}
  */
-export function computeOffMeshConnectionsParams(w) {
+export function computeOffMeshConnectionsParams(gms, gmGraph) {
   
   /**
    * - ignore isolated hull doors
@@ -51,18 +53,18 @@ export function computeOffMeshConnectionsParams(w) {
   const ignoreGdKeys = /** @type {Set<Geomorph.GmDoorKey>} */ (new Set());
 
   /** `gms[gmId].doors[doorId]` are the metas of the adj rooms */
-  const doorRoomMetas = w.gms.map(gm => {
+  const doorRoomMetas = gms.map(gm => {
     const roomMetas = gm.rooms.map(x => x.meta);
     return gm.doors.map(({ roomIds }) => 
       roomIds.flatMap(roomId => roomId !== null ? roomMetas[roomId] : [])
     );
   });
 
-  return w.gms.flatMap((gm, gmId) => gm.doors.flatMap(/** @returns {import("recast-navigation").OffMeshConnectionParams[]} */
+  return gms.flatMap((gm, gmId) => gm.doors.flatMap(/** @returns {import("recast-navigation").OffMeshConnectionParams[]} */
     ({ center, normal, meta, roomIds }, doorId) => {
 
       if (meta.hull === true) {
-        const adj = w.gmGraph.getAdjacentRoomCtxt(gmId, doorId);
+        const adj = gmGraph.getAdjacentRoomCtxt(gmId, doorId);
         if (ignoreGdKeys.has(`g${gmId}d${doorId}`) === true || adj === null) {
           return [];
         } else {

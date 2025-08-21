@@ -75,8 +75,9 @@ export default function createGmsData() {
       gmData.hitCtxt.canvas.height = bounds.height;
       gmsData.drawHitCanvas(gm);
       
-      // compute `connector.roomIds` before `roomGraph`
-      // 🔔 technically can avoid recompute when only gmsDataChanged
+      // 🔔 compute `connector.roomIds` before `roomGraph` and `gmGraph`
+      // - thus have to compute offMeshConnection defs in main thread, not nav.worker
+      // - technically can avoid recompute when only gmsDataChanged
       await pause(); 
       for (const connector of gm.doors) {
         connector.roomIds = /** @type {[number | null, number | null]} */ (connector.entries.map(
