@@ -101,17 +101,21 @@ export default function Floor(props) {
         }
       });
 
-      // 🚧 draw off mesh connections
+      // draw off mesh connections
+      const normal = tmpVect1;
+      const halfWidth = 0.01;
       for (const { src, dst } of state.offMeshEdges[gm.key]) {
-        ct.lineWidth = 0.02;
-        drawCircle(ct, src, 0.04, ['#222', '#fff']);
-        drawCircle(ct, dst, 0.04, ['#222', '#fff']);
-        ct.strokeStyle = '#0006';
-        ct.lineWidth = 0.025;
+        normal.set(-(dst.y - src.y), dst.x - src.x);
+        ct.fillStyle = '#0009';
         ct.beginPath();
-        ct.moveTo(src.x, src.y);
-        ct.lineTo(dst.x, dst.y);
-        ct.stroke();
+        ct.moveTo(src.x - normal.x * halfWidth, src.y - normal.y * halfWidth);
+        ct.lineTo(dst.x - normal.x * halfWidth, dst.y - normal.y * halfWidth);
+        ct.lineTo(dst.x + normal.x * halfWidth, dst.y + normal.y * halfWidth);
+        ct.moveTo(src.x + normal.x * halfWidth, src.y + normal.y * halfWidth);
+        ct.fill();
+        ct.lineWidth = 0.02;
+        drawCircle(ct, src, 0.02, ['#fff', '#000']);
+        drawCircle(ct, dst, 0.02, ['#fff', '#000']);
       }
 
       // 🚧 decals from gm.decor
@@ -248,4 +252,5 @@ export default function Floor(props) {
  */
 
 const tmpMat1 = new Mat();
+const tmpVect1 = new Vect();
 const worldToCanvas = worldToSguScale * gmFloorExtraScale;
