@@ -21,41 +21,6 @@ export default function WorldWorkers() {
   const state = useStateRef(/** @returns {State} */ () => ({
     seenHash: /** @type {*} */ ({}),
 
-    // 🔔 compute each offMeshLookup[i].{srcGrKey,dstGrKey,dstRoomMeta}
-    // 🔔 compute "aligned" i.e. whether normal points towards src
-    postProcessNavResponse(msg) {
-      for (const value of Object.values(msg.offMeshLookup)) {
-        const door = w.door.byKey[value.gdKey];
-        /** Is the transformed door's normal pointing towards `value.src`? */
-        const normalTowardsSrc = (
-          (value.src.x - door.center.x) * door.normal.x +
-          (value.src.z - door.center.y) * door.normal.y > 0
-        );
-
-        if (door.hull === true) {
-          const adj = w.gmGraph.getAdjacentRoomCtxt(value.gmId, value.doorId);
-          if (adj === null) {
-            continue; // unreachable because offMeshConnection doesn't exist
-          } else if (normalTowardsSrc === true) {// hull normal points outwards
-            value.srcGrKey = adj.adjGmRoomKey;
-            value.dstGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
-          } else {
-            value.srcGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
-            value.dstGrKey = adj.adjGmRoomKey;
-          }
-        } else {// 🔔 non-hull doors always have roomIds [number, number] (?)
-          const srcRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 0 : 1]);
-          const dstRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 1 : 0]);
-          value.srcGrKey = `g${value.gmId}r${srcRoomId}`;
-          value.dstGrKey = `g${value.gmId}r${dstRoomId}`;
-        }
-
-        value.aligned = normalTowardsSrc;
-        const { gmId, roomId } = helper.getGmRoomId(value.dstGrKey);
-        value.dstRoomMeta = w.gms[gmId].rooms[roomId].meta;
-      }
-    },
-
     async handleNavWorkerMessage(e) {
       const msg = e.data;
       // 🔔 avoid logging navMesh to save memory
@@ -143,6 +108,41 @@ export default function WorldWorkers() {
       // const oap = new RecastWasm.dtObstacleAvoidanceParams();
       
       w.npc?.restore();
+    },
+
+    // 🔔 compute each offMeshLookup[i].{srcGrKey,dstGrKey,dstRoomMeta}
+    // 🔔 compute "aligned" i.e. whether normal points towards src
+    postProcessNavResponse(msg) {
+      for (const value of Object.values(msg.offMeshLookup)) {
+        const door = w.door.byKey[value.gdKey];
+        /** Is the transformed door's normal pointing towards `value.src`? */
+        const normalTowardsSrc = (
+          (value.src.x - door.center.x) * door.normal.x +
+          (value.src.z - door.center.y) * door.normal.y > 0
+        );
+
+        if (door.hull === true) {
+          const adj = w.gmGraph.getAdjacentRoomCtxt(value.gmId, value.doorId);
+          if (adj === null) {
+            continue; // unreachable because offMeshConnection doesn't exist
+          } else if (normalTowardsSrc === true) {// hull normal points outwards
+            value.srcGrKey = adj.adjGmRoomKey;
+            value.dstGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
+          } else {
+            value.srcGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
+            value.dstGrKey = adj.adjGmRoomKey;
+          }
+        } else {// 🔔 non-hull doors always have roomIds [number, number] (?)
+          const srcRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 0 : 1]);
+          const dstRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 1 : 0]);
+          value.srcGrKey = `g${value.gmId}r${srcRoomId}`;
+          value.dstGrKey = `g${value.gmId}r${dstRoomId}`;
+        }
+
+        value.aligned = normalTowardsSrc;
+        const { gmId, roomId } = helper.getGmRoomId(value.dstGrKey);
+        value.dstRoomMeta = w.gms[gmId].rooms[roomId].meta;
+      }
     },
   }));
 
