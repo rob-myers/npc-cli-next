@@ -415,6 +415,8 @@ export default function World(props) {
  *   offMeshDefs: import("recast-navigation").OffMeshConnectionParams[];
  *   offMeshLookup: NPC.SrcToOffMeshLookup;
  *   doorToOffMesh: NPC.DoorToOffMeshLookup;
+ *   toNavTris: NPC.FloorNavTris;
+ *   toOffMeshEdges: NPC.FloorOffMeshEdges;
  * } & NPC.TiledCacheResult} nav
  * @property {{ worker: WW.PhysicsWorker; rebuilds: number; } & import("../service/rapier").PhysicsBijection} physics
  *

@@ -74,7 +74,7 @@ export default function WorldWorkers() {
       }
     },
 
-    loadTiledMesh({ exportedNavMesh, offMeshLookup }) {
+    loadTiledMesh({ exportedNavMesh, offMeshLookup, toNavTris, toOffMeshEdges }) {
       const tiledCacheResult = /** @type {NPC.TiledCacheResult} */ (
         importTileCache(exportedNavMesh, getTileCacheMeshProcess(w.nav.offMeshDefs))
       );
@@ -85,6 +85,8 @@ export default function WorldWorkers() {
         (agg[v.gdKey] ??= []).push(v);
         return agg;
       }, /** @type {NPC.DoorToOffMeshLookup} */ ({}));
+      w.nav.toNavTris = toNavTris;
+      w.nav.toOffMeshEdges = toOffMeshEdges;
 
       if (w.crowd !== null) {
         disposeCrowd(w.crowd, w.nav.navMesh);

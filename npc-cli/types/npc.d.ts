@@ -236,6 +236,9 @@ declare namespace NPC {
     }[];
   }
 
+  type FloorNavTris = {[gmKey in Key.Geomorph]: [number[], number[]][]};
+  type FloorOffMeshEdges = {[gmKey in Key.Geomorph]: { src: Geom.VectJson; dst: Geom.VectJson; }[]};
+
   type CrowdAgent = import("@recast-navigation/core").CrowdAgent;
 
   type SrcToOffMeshLookup = {

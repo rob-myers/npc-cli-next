@@ -25,6 +25,8 @@ declare namespace WW {
     mapKey: Key.Map;
     exportedNavMesh: Uint8Array;
     offMeshLookup: NPC.SrcToOffMeshLookup;
+    toNavTris: NPC.FloorNavTris;
+    toOffMeshEdges: NPC.FloorOffMeshEdges;
   }
   
   interface BuildTileResponse {

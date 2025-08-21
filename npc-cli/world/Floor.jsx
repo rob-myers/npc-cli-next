@@ -3,11 +3,10 @@ import * as THREE from "three";
 
 import { Mat, Poly, Vect } from "../geom";
 import { gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
-import { mapValues, pause } from "../service/generic";
+import { pause } from "../service/generic";
 import { drawCircle, drawPolygons } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
-import { getTileTriangles } from "../service/recast-detour";
 import { getQuadGeometryXZ } from "../service/three";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -20,8 +19,6 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
-    offMeshEdges: /** @type {*} */ ({}),
-    toNavTris: /** @type {*} */ ({}),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -90,7 +87,7 @@ export default function Floor(props) {
       const strokeStyle = w.touchDevice ? '#4448' : '#4448';
       
       const { inverseMatrix } = w.gms[w.gms.findIndex(x => x.key === gm.key)];
-      state.toNavTris[gm.key].forEach(([positions, indices]) => {
+      w.nav.toNavTris[gm.key].forEach(([positions, indices]) => {
         for (const index of indices) {
           const triVId = index % 3; // 0, 1, 2
           const vertId = indices[index];
@@ -104,7 +101,7 @@ export default function Floor(props) {
       // draw off mesh connections
       const normal = tmpVect1;
       const halfWidth = 0.01;
-      for (const { src, dst } of state.offMeshEdges[gm.key]) {
+      for (const { src, dst } of w.nav.toOffMeshEdges[gm.key]) {
         normal.set(-(dst.y - src.y), dst.x - src.x);
         ct.fillStyle = '#0009';
         ct.beginPath();
@@ -118,7 +115,7 @@ export default function Floor(props) {
         drawCircle(ct, dst, 0.02, ['#fff', '#000']);
       }
 
-      // 🚧 decals from gm.decor
+      // decals from gm.decor
       // 🚧 test decals -> real ones
       // const { decor } = w.geomorphs.sheet;
       // const decals = gm.decor.filter(x => x.type === 'decal');
@@ -143,59 +140,6 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    preComputeNav(nav, offMeshLookup) {// 🚧 compute in worker
-      state.toNavTris = mapValues(w.gmsData.gmKeyToFirst, () => []);
-      /** Those geomorph instances which are 1st for their gmKey */
-      const firstGms = Object.values(w.gmsData.gmKeyToFirst);
-      const v2d = new Vect();
-      
-      // compute nav tris in local coords for each seen gmKey
-      const maxTiles = nav.getMaxTiles();
-      for (let tileIndex = 0; tileIndex < maxTiles; tileIndex++) {
-        const tile = nav.getTile(tileIndex);
-        const header = tile.header();
-        if (!header) continue;
-        
-        const point = { x: (header.bmin(0) + header.bmax(0)) * 0.5, y: (header.bmin(2) + header.bmax(2)) * 0.5 };
-        const gm = firstGms.find(x => x.gridRect.contains(point));
-        
-        if (gm !== undefined) {
-          const tileTris = getTileTriangles(tile); // [positions, indices][]
-          
-          // apply inverseTransform because we'll draw in local coords
-          tileTris[0].forEach((t, i, positions) => {
-            if (i % 3 === 0) {// x -> x
-              v2d.x = t;
-            } else if (i % 3 === 2) {// z -> y
-              v2d.y = t;
-              gm.inverseMatrix.transformPoint(v2d);
-              positions[i - 2] = v2d.x;
-              positions[i] = v2d.y;
-            }
-          });
-
-          state.toNavTris[gm.key].push(tileTris);
-        }
-      }
-
-      // compute off mesh edges in local coords for each seen gmKey
-      state.offMeshEdges = mapValues(w.gmsData.gmKeyToFirst, () => []);
-      const firstGmIds = new Set(firstGms.map(x => x.gmId));
-
-      const offMeshEdges = Object.values(offMeshLookup)
-        .map(x => ({ gmId: x.gmId, src: x.src, dst: x.dst }))
-        .filter(x => firstGmIds.has(x.gmId));
-      ;
-
-      for (const { gmId, src, dst } of offMeshEdges) {
-        const gm = w.gms[gmId];
-        state.offMeshEdges[gm.key].push({
-          // transform to local coords
-          src: gm.inverseMatrix.transformPoint(v2d.set(src.x, src.z)).json,
-          dst: gm.inverseMatrix.transformPoint(v2d.set(dst.x, dst.z)).json,
-        });
-      }
-    },
   }));
 
   w.floor = state;
@@ -203,7 +147,6 @@ export default function Floor(props) {
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
-    state.preComputeNav(w.crowd.navMesh, w.nav.offMeshLookup); // 🔔 crowd must exist
     state.draw().then(() => w.update());
   }, [w.texVs.floor, w.hash.sheets, w.crowd.navMesh]);
 
@@ -238,8 +181,6 @@ export default function Floor(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
- * @property {{[gmKey in Key.Geomorph]: { src: Geom.VectJson; dst: Geom.VectJson; }[]}} offMeshEdges
- * @property {{[gmKey in Key.Geomorph]: [number[], number[]][]}} toNavTris
  * navTris[seenGmId][tileIndex] is [positions, indices]
  * @property {THREE.BufferGeometry} quad
  
@@ -247,7 +188,6 @@ export default function Floor(props) {
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
- * @property {(nav: import('@recast-navigation/core').NavMesh, offMeshLookup: NPC.SrcToOffMeshLookup) => void} preComputeNav
  * @property {() => void} positionInstances
  */
 
