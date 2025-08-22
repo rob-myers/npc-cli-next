@@ -1,3 +1,4 @@
+/// <reference path="../types/global.d.ts"/>
 import prettyCompact from "json-stringify-pretty-compact";
 // import safeStableStringify from "safe-stable-stringify";
 import { stringify as javascriptStringify } from 'javascript-stringify';

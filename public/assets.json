@@ -219,6 +219,7 @@
       "pngHash": 906794356,
       "obsHashes": [-877033108]
     },
+    "extra--021--screen--0.1x0.5": {"outputHash": -474938673, "pngHash": 0},
     "fresher--002--0.4x0.6": {
       "outputHash": 1400761609,
       "pngHash": -1792259774,
@@ -12859,6 +12860,23 @@
       "width": 3,
       "height": 1,
       "pngRect": {"x": 0, "y": 0, "width": 3, "height": 1},
+      "symbols": [],
+      "removableDoors": [],
+      "addableWalls": []
+    },
+    "extra--021--screen--0.1x0.5": {
+      "key": "extra--021--screen--0.1x0.5",
+      "isHull": false,
+      "hullWalls": [],
+      "obstacles": [],
+      "walls": [],
+      "doors": [],
+      "windows": [],
+      "decor": [],
+      "unsorted": [],
+      "width": 0.15,
+      "height": 0.75,
+      "pngRect": {"x": 0, "y": 0, "width": 0.15, "height": 0.75},
       "symbols": [],
       "removableDoors": [],
       "addableWalls": []

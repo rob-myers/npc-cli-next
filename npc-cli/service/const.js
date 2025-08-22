@@ -344,6 +344,7 @@ export const fromSymbolKey = /** @type {const} */ ({// 🔔 must extend when add
   "extra--018--table-0.25x0.25": true,
   "extra--019--table-0.5x2": true,
   "extra--020--table-2x0.66": true,
+  'extra--021--screen--0.1x0.5': true,
 });
 
 /**

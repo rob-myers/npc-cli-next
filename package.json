@@ -16,6 +16,7 @@
     "clean-assets": "rm public/{assets.json,geomorphs.json} public/2d/{obstacles,decor}.*.png{,.webp}",
     "cwebp": "npm run ts-script scripts/cwebp",
     "cwebp-fast": "bun scripts/cwebp",
+    "empty-symbol": "npm run ts-script scripts/empty-symbol",
     "get-pngs": "npm run ts-script scripts/get-pngs",
     "get-pngs-fast": "bun scripts/get-pngs",
     "pre-push": "npm run assets-bun -- --prePush",
