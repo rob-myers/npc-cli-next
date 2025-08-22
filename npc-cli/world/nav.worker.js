@@ -110,9 +110,9 @@ function navForFloorDraw(gms, nav, offMeshLookup) {
     (agg, gm) => (agg[gm.key] ??= gm, agg),
     /** @type {Record<Key.Geomorph, Geomorph.LayoutInstance>} */ ({}),
   );
-
   /** @type {NPC.FloorNavTris} */
   const toNavTris = mapValues(gmKeyToFirst, () => []);
+
   /** Those geomorph instances which are 1st for their gmKey */
   const firstGms = Object.values(gmKeyToFirst);
   const v2d = new Vect();
@@ -152,12 +152,14 @@ function navForFloorDraw(gms, nav, offMeshLookup) {
   const firstGmIds = new Set(firstGms.map(x => x.gmId));
 
   const offMeshEdges = Object.values(offMeshLookup)
-    .map(x => ({ gmId: x.gmId, src: x.src, dst: x.dst }))
+    .map(x => ({ gmId: x.gmId, doorId: x.doorId, src: x.src, dst: x.dst }))
     .filter(x => firstGmIds.has(x.gmId));
   ;
 
-  for (const { gmId, src, dst } of offMeshEdges) {
+  for (const { gmId, doorId, src, dst } of offMeshEdges) {
     const gm = gms[gmId];
+    // skip hull edges: they may or may not be present in different geomorph instances
+    if (gm.isHullDoor(doorId) === true) continue;
     toOffMeshEdges[gm.key].push({
       // transform to local coords
       src: gm.inverseMatrix.transformPoint(v2d.set(src.x, src.z)).json,

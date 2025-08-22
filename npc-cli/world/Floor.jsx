@@ -114,6 +114,11 @@ export default function Floor(props) {
         drawCircle(ct, dst, 0.02, ['#fff', '#000']);
       }
 
+      // hull doorways
+      // 🚧 geomorphs are slightly misaligned e.g. 301 vs 101 in small-map-1
+      // drawPolygons(ct, gm.hullDoors.flatMap(x => x.computeDoorway()), ['#000', null]);
+      drawPolygons(ct, gm.hullDoors.flatMap(x => x.poly), ['#0004', null]);
+
       // decals from gm.decor
       // 🚧 test decals -> real ones
       // const { decor } = w.geomorphs.sheet;
