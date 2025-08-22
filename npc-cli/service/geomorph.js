@@ -955,7 +955,7 @@ class GeomorphService {
     // info("parseStarshipSymbol", symbolKey, "...");
     const isHull = this.isHullKey(symbolKey);
     const scale = sguToWorldScale * sguSymbolScaleDown;
-    const permittedFolders = { symbols: true, lights: true };
+    const permittedFolders = { symbols: true };
 
     const folderStack = /** @type {string[]} */ ([]);
     /** Matrices of transforms arising from `g.transform`s */
@@ -1066,17 +1066,6 @@ class GeomorphService {
             });
           }
 
-          return;
-        }
-        
-        if (folderStack[0] === "lights") {
-          const meta = tagsToMeta(ownTags, {}, metaVarNames, metaVarValues);
-          meta.light = true;
-          const poly = geomorph.extractPoly({ tagMeta: { ...parent, title: contents }, meta });
-
-          if (poly !== null) {
-            unsorted.push(poly);
-          }
           return;
         }
 

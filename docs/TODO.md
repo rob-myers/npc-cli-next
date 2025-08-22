@@ -69,21 +69,21 @@
 - ✅ clean up current changes
   - drop vignette again
 
-- 🚧 add more details to 301 e.g. main corridors
-  - ℹ️ looks a bit empty in a number of places
-  - new symbol for screen (cuboid + quad)
+- ✅ remove lights
+- 🚧 fix pixelated npc labels
+- new symbol for screen (cuboid + quad)
+- table could have cuboid base
+- better decals (currently only test ones)
 
-- 🚧 try drawing navmesh on floor
-  - 🚧 try style where only navMesh and decals shown
-  - 🚧 precompute by splitting it into "first occurrence of geomorph"
+- ✅ try drawing navmesh on floor
+  - ✅ try style where only navMesh and decals shown
+  - ✅ precompute by splitting it into "first occurrence of geomorph"
 
 - ✅ try basic carpet textures drawn on floor (so they're lit)
   - ❌ layout.decals, symbol.decals
   - ✅ remove layout.decals etc.
   - ✅ `decor decal` yields decor like quad but not drawn by `<Decor>`
   - ✅ `decor decal` drawn on floor
-
-- 🚧 better decals (currently only test ones)
 
 - ❌ continuous move loop by feeding in pending targets?
   - instead we avoided teleport which broke smoothness

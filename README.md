@@ -48,7 +48,6 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 1. Our SVG symbols currently do not support parent transforms
   - e.g. on "symbols" folder
-  - e.g. on "lights" folder
 
 1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle both `transform` and `transform-box`.
    > https://github.com/Automattic/node-canvas/issues/2507
