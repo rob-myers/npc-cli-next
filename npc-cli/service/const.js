@@ -465,10 +465,12 @@ export const skinsTextureDimension = 2048;
  */
 export const skinsUvsTextureWidth = 128;
 
+export const skinsLabelScale = 2;
+
 /** Max width (pixels) of any label */
-export const skinsLabelsTextureWidth = 200;
+export const skinsLabelsTextureWidth = (200) * skinsLabelScale;
 /** Max height (pixels) of any label */
-export const skinsLabelsTextureHeight = 200 / 4;
+export const skinsLabelsTextureHeight = (200 / 4) * skinsLabelScale;
 
 /**
  * Works for `24px Monospace` on OSX Chrome/Safari/Firefox

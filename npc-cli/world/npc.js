@@ -4,7 +4,7 @@ import { damp, dampAngle } from "maath/easing";
 import braces from "braces";
 
 import { Vect } from '../geom';
-import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance, precision } from '../service/const';
+import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance, precision, skinsLabelScale } from '../service/const';
 import { debug, error, jsStringify, keys, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, v3Precision } from '../service/three';
@@ -1396,6 +1396,7 @@ export class NpcApi {
     }
 
     const { ct } = this.w.texNpcLabel;
+    ct.setTransform(1, 0, 0, 1, 0, 0);
     ct.clearRect(0, 0, skinsLabelsTextureWidth, skinsLabelsTextureHeight);
     
     if (label === null) {
@@ -1403,13 +1404,16 @@ export class NpcApi {
       return;
     }
 
-    const strokeWidth = 5;
-    const fontHeight = 28; // permits > 12 chars on OSX Chrome
-    ct.strokeStyle = 'black';
-    ct.fillStyle = '#aaa';
+
+    const strokeWidth = 8 * skinsLabelScale;
+    const fontHeight = 36 * skinsLabelScale; // permits > 12 chars on OSX Chrome
+    ct.strokeStyle = 'rgba(50, 50, 50, 1)';
+    ct.fillStyle = 'rgba(200, 200, 200, 1)';
     ct.lineWidth = strokeWidth;
-    ct.font = `${fontHeight}px Monospace`;
+    ct.font = `${fontHeight}px "Courier New"`;
     ct.textBaseline = 'top';
+    ct.letterSpacing = '4px';
+    ct.textRendering = 'optimizeLegibility';
     const { width } = ct.measureText(label);
     const dx = (skinsLabelsTextureWidth - width)/2;
     const dy = (skinsLabelsTextureHeight - fontHeight)/2;

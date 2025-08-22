@@ -154,6 +154,9 @@ const humanZeroShader = {
         )
       );
 
+      // 🔔 fix pixelation around edge of text
+      if (texel.a < 0.75) discard;
+
     } else {// body=1, breath=2, selector=3
 
       if (!invert) {
