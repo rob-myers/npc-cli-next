@@ -68,6 +68,7 @@ export function computeOffMeshConnectionsParams(gms, gmGraph) {
         if (ignoreGdKeys.has(`g${gmId}d${doorId}`) === true || adj === null) {
           return [];
         } else {
+          // 🔔 avoid duplicate hull door connections
           ignoreGdKeys.add(`g${adj.adjGmId}d${adj.adjDoorId}`);
         }
       }

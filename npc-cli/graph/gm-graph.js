@@ -8,11 +8,12 @@ import { helper } from "../service/helper";
 import { AStar } from "../pathfinding/AStar";
 
 /**
- * The _Geomorph Graph_,
- * - where each hull door yields a node
- * - where each navigation mesh in a geomorph yields a node (often one-per-geomorph)
- * - where a geomorph is connected to a hull door iff the geomorph has that hull door
- * - where a hull door is connected to another hull door iff they have been identified
+ * The _Geomorph Graph_, where:
+ * - each hull door yields a node
+ * - each "original navigation mesh with doors" in a geomorph yields a node (often one-per-geomorph)
+ * - a geomorph node is connected to a hull door node iff the geomorph has that hull door
+ * - a hull door node is connected to another hull door node iff they have been identified by
+ *   gluing geomorphs along shared edges.
  * @extends {BaseGraph<Graph.GmGraphNode, Graph.GmGraphEdgeOpts>}
  */
 export class GmGraphClass extends BaseGraph {
