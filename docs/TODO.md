@@ -71,8 +71,8 @@
 
 - ✅ remove lights
 - ✅ fix pixelated npc labels
-- new symbol for screen (cuboid + quad)
-- table could have cuboid base
+- ✅ new symbol for screen (cuboid + quad)
+- long table could have cuboid base
 - better decals (currently only test ones)
 
 - ✅ try drawing navmesh on floor

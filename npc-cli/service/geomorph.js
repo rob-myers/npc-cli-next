@@ -3,20 +3,7 @@ import * as THREE from "three";
 
 import { sguToWorldScale, precision, wallOutset, obstacleOutset, hullDoorDepth, doorDepth, decorIconRadius, sguSymbolScaleDown, doorSwitchHeight, doorSwitchDecorImgKey, specialWallMetaKeys, wallHeight, switchDecorQuadScaleUp, connectorEntranceHalfDepth } from "./const";
 import { Mat, Poly, Rect, Vect } from "../geom";
-import {
-  info,
-  error,
-  warn,
-  debug,
-  safeJsonParse,
-  mapValues,
-  keys,
-  toPrecision,
-  hashJson,
-  tagsToMeta,
-  textToTags,
-  removeDups,
-} from "./generic";
+import { info, error, warn, debug, safeJsonParse, mapValues, keys, toPrecision, hashJson, tagsToMeta, textToTags, removeDups } from "./generic";
 import { geom, tmpRect1 } from "./geom";
 import { helper } from "./helper";
 
