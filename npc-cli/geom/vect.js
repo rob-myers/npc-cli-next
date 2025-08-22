@@ -96,6 +96,14 @@
     return Math.hypot(p.x - this.x, p.y - this.y);
   }
 
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
+  distToCoords(x, y) {
+    return Math.hypot(x - this.x, y - this.y);
+  }
+
   /** @param {Geom.VectJson} p */
   distanceToSquared(p) {
     return Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2);

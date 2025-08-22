@@ -537,8 +537,14 @@ export default function useHandleEvents(w) {
         agentAnim.set_tmax(Infinity);
       }
 
-      /** avoid flicker when next corner after offMeshConnection is too close */      
-      const nextCornerTooClose = tmpVect1.copy(adjusted.dst).distanceTo(adjusted.nextCorner) < 0.4;
+      /**
+       * `nextUnit` is desired direction after offMeshConnection.
+       * - It should be `null` iff we intend to slow down to stop inside doorway.
+       * - We also want to avoid flicker when target is just round corner of a doorway.
+       */
+      const nextUnitNull = (// target is too close
+        tmpVect1.copy(adjusted.dst).distToCoords(npc.lastTarget.x, npc.lastTarget.z) < 0.4
+      );
 
       // register adjusted traversal
       npc.s.offMesh = {
@@ -555,11 +561,11 @@ export default function useHandleEvents(w) {
         initPos: adjusted.initPos,
         initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
         mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
-        nextUnit: nextCornerTooClose === true ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
+        nextUnit: nextUnitNull === true ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
         tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
 
         tScale: 1,
-        tScaleDst: nextCornerTooClose === true && npc.pendingTargets.length === 0
+        tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0
           ? door.hull === true ? 0.25 : 0.1
           : null,
         tScaleSecs: 0.5,
