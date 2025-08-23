@@ -376,10 +376,15 @@ export function mapValues(input, transform) {
  * @param {string[]} args
  * @param {{ [aliasKey: string]: string; }} [alias]
  * Map alias keys to their true keys.
- * @param {{ array?: { [key: string]: true }; join?: { [key: string]: true } }} [opts]
+ * @param {{
+ *   array?: { [key: string]: true };
+ *   join?: { [key: string]: true };
+ *   operands?: boolean;
+ * }} [opts]
  * - `opts.array` tries to enforce array value
  * - `opts.join` joins multiple key occurrences as a space-separated string
  *   to support brace-expansion e.g. `words:{1..5}` 
+ * - `opts.operands` stores all naked (sans colon) args in a field named "operands"
  * @returns {T}
  */
 export function jsArg(args, alias, opts) {
@@ -387,6 +392,9 @@ export function jsArg(args, alias, opts) {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
       agg[arg] = true;
+      if (opts?.operands === true) {
+        (agg.operands ??= []).push(arg);
+      }
     } else {
       let key = arg.slice(0, colonIndex);
       key = alias?.[key] ?? key;

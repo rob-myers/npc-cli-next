@@ -54,8 +54,6 @@ const commandKeys = {
   local: true,
   /** List variables */
   ls: true,
-  /** Speech synthesis */
-  narrate: true,
   /** List running processes */
   ps: true,
   /** List, add, remove session ptags for subsequent spawned processes */
@@ -613,43 +611,6 @@ class cmdServiceClass {
             throw new ShError(`${(e as Error)?.message ?? safeJsStringify(e)}`, 1);
           }
         }
-        break;
-      }
-      case "narrate": {
-        const { opts, operands } = getOpts(args, {
-          string: ["v", "voice"],
-        });
-
-        const voice = opts.v || opts.voice;
-
-        if (voice === "?") {// List available voices
-          yield* window.speechSynthesis.getVoices().map(
-            ({ name, lang }) => `${name} (${ansi.BrightYellow}${lang}${ansi.White})`
-          );
-          return;
-        }
-
-        redirectNode(node.parent!, { 1: "/dev/voice" });
-
-        const handlers = cmdService.handleStatus(meta, {
-          cleanups() { window.speechSynthesis.cancel(); },
-          onResumes() { window.speechSynthesis.resume(); return true; },
-          onSuspends() { window.speechSynthesis.pause(); return true; }
-        });
-
-        try {
-          if (operands.length > 0) {// Say operands
-            yield { voice, text: operands.join(" ") };
-          } else if (isTtyAt(node.meta, 0) === false) {// Say lines from stdin
-            let datum: string | VoiceCommand | null;
-            while ((datum = await read(meta)) !== EOF) {
-              yield { voice, text: `${datum}` };
-            }
-          }
-        } finally {
-          handlers.dispose();
-        }
-
         break;
       }
       case "session": {

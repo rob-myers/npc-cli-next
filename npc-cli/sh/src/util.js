@@ -215,11 +215,19 @@ export async function* mapBasic(ct) {
 }
 
 /**
- * 🚧 rename as narrate
+ * ```sh
+ * # list available voices (device dependent)
+ * narrate list:voices
+ * # use different voices
+ * narrate {1..10} as:'Bad News'
+ * narrate words:{1..5}
+ * # operands supported via jsArg option
+ * narrate {a..z} as:'Google UK English Female'
+ * ```
  * @param {NPC.RunArg} ct
- * @param {{ words?: string, voice?: string; list?: 'voices' }} [opts]
+ * @param {{ words?: string | string[]; voice?: string; list?: 'voices'; operands?: string[] }} [opts]
  */
-export async function* narrate2({ api, args }, opts = api.jsArg(args, { as: 'voice' }, { join: { words: true } })) {
+export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voice' }, { operands: true, join: { words: true } })) {
   
   if (opts.list === 'voices') {// List available voices
     yield* window.speechSynthesis.getVoices().map(
@@ -237,17 +245,20 @@ export async function* narrate2({ api, args }, opts = api.jsArg(args, { as: 'voi
   api.redirect({ 1: "/dev/voice" });
 
   try {
-    if (typeof opts.words === 'string') {
-      yield {
-        voice: opts.voice,
-        text: opts.words,
-      };
+
+    // 🔔 `narrate foo bar words:baz` say "baz"
+    const input = opts.words ?? opts.operands;
+    const words = Array.isArray(input) ? input.join(' ') : opts.words;
+    const voice = opts.voice;
+
+    if (typeof words === 'string') {
+      yield { voice, text: words };
     }
 
     if (api.isTtyAt(0) === false) {
       let datum;
       while ((datum = await api.read()) !== api.eof) {
-        yield { voice: opts.voice, text: `${datum}` };
+        yield { voice, text: `${datum}` };
       }
     }
 

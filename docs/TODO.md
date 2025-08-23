@@ -73,7 +73,7 @@
 - ✅ fix pixelated npc labels
 - ✅ new symbol for screen (cuboid + quad)
 
-- 🚧 move `narrate` from builtin into `util.js`
+- ✅ move `narrate` from builtin into `util.js`
   - ℹ️ we want to write js scripts involving it
   - ✅ `narrate2` has functionality of `narrate`
 
