@@ -385,10 +385,10 @@ export async function* w(ct) {
 
 /**
  * @param {NPC.RunArg} ctxt
- * @param {{ distance: number }} [opts]
+ * @param {{ to: number }} [opts]
  */
 export async function* zoom({ api, args, w }, opts = api.jsArg(args)) {
-  if (typeof opts.distance !== 'number') {
+  if (typeof opts.to !== 'number') {
     throw Error(`opts.distance must be numeric`);
   }
   const handlers = api.handleStatus({
@@ -398,7 +398,7 @@ export async function* zoom({ api, args, w }, opts = api.jsArg(args)) {
 
   while (true) {
     try {
-      return await w.view.tween({ distance: opts.distance }).then(handlers.dispose);
+      return await w.view.tween({ distance: opts.to }).then(handlers.dispose);
     } catch (e) {
       if (e !== 'pause') {
         handlers.dispose();
