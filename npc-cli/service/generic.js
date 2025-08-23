@@ -376,7 +376,10 @@ export function mapValues(input, transform) {
  * @param {string[]} args
  * @param {{ [aliasKey: string]: string; }} [alias]
  * Map alias keys to their true keys.
- * @param {{ array?: { [key: string]: true } }} [opts]
+ * @param {{ array?: { [key: string]: true }; join?: { [key: string]: true } }} [opts]
+ * - `opts.array` tries to enforce array value
+ * - `opts.join` joins multiple key occurrences as a space-separated string
+ *   to support brace-expansion e.g. `words:{1..5}` 
  * @returns {T}
  */
 export function jsArg(args, alias, opts) {
@@ -387,10 +390,15 @@ export function jsArg(args, alias, opts) {
     } else {
       let key = arg.slice(0, colonIndex);
       key = alias?.[key] ?? key;
-      agg[key] = parseJsArg(arg.slice(colonIndex + 1));
-      if (opts?.array?.[key] === true && Array.isArray(agg[key]) === false) {
+      const value = parseJsArg(arg.slice(colonIndex + 1));
+
+      if (opts?.join?.[key] === true) {// assume string
+        agg[key] = key in agg ? `${agg[key]} ${value}` : value;
+      } else if (opts?.array?.[key] === true && Array.isArray(value) === false) {
         // try split by spaces instead
         agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
+      } else {
+        agg[key] = value;
       }
     }
     return agg;
