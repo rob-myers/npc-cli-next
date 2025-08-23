@@ -129,7 +129,7 @@ export const glbFadeOut = {
  * @type {Record<Key.Anim, Record<Key.Anim, number>>}
  */
  export const glbFadeIn = {
-    Idle: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0.1, Lie: 0 },
+    Idle: { Idle: 0, Run: 0.05, Walk: 0.05, Sit: 0.1, Lie: 0 },
     Lie: { Idle: 0, Run: 0, Walk: 0, Sit: 0, Lie: 0 },
     Run: { Idle: 0.15, Run: 0, Walk: 0.1, Sit: 0.2, Lie: 0 },
     Sit: { Idle: 0.1, Run: 0.1, Walk: 0.1, Sit: 0, Lie: 0 },
