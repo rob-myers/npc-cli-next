@@ -175,7 +175,7 @@ export async function* events({ api, args, w }) {
 }
 
 /**
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  * @param {{ at: string | import('three').Vector3 | Geom.Vect }} [opts]
  */
 export async function* look({ api, args, w }, opts = api.jsArg(args)) {

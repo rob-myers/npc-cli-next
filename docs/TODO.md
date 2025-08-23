@@ -72,6 +72,12 @@
 - ✅ remove lights
 - ✅ fix pixelated npc labels
 - ✅ new symbol for screen (cuboid + quad)
+
+- 🚧 move `narrate` from builtin into `util.js`
+  - ℹ️ we want to write js scripts involving it
+
+- 🚧 can redirect node inside processApi
+
 - long table could have cuboid base
 - better decals (currently only test ones)
 

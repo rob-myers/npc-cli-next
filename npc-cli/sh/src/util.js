@@ -1,3 +1,4 @@
+import { ansi } from '../const';
 import { stripAnsi, ttyError } from "../util";
 
 /**
@@ -211,6 +212,44 @@ export async function* mapBasic(ct) {
       }
     }
   }
+}
+
+/**
+ * 🚧 rename as narrate
+ * @param {NPC.RunArg} ct
+ * @param {{ words?: string, voice?: string; list?: 'voices' }} [opts]
+ */
+export async function* narrate2({ api, args, w }, opts = api.jsArg(args, { as: 'voice' })) {
+  
+  if (opts.list === 'voices') {// List available voices
+    yield* window.speechSynthesis.getVoices().map(
+      ({ name, lang }) => `${name} (${ansi.BrightYellow}${lang}${ansi.White})`
+    );
+    return;
+  }
+  
+  const handlers = api.handleStatus({
+    cleanups() { window.speechSynthesis.cancel(); },
+    onResumes() { window.speechSynthesis.resume(); return true; },
+    onSuspends() { window.speechSynthesis.pause(); return true; }
+  });
+  
+  // 🚧 can api.redirectNode
+  // api.redirectNode(node.parent!, { 1: "/dev/voice" });
+
+  try {
+    if (typeof opts.words === 'string') {
+      yield {
+        voice: opts.voice,
+        text: opts.words,
+      };
+    }
+    // 🚧
+
+  } finally {
+    handlers.dispose();
+  }
+  
 }
 
 /**
