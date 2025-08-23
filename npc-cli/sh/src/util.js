@@ -219,7 +219,7 @@ export async function* mapBasic(ct) {
  * @param {NPC.RunArg} ct
  * @param {{ words?: string, voice?: string; list?: 'voices' }} [opts]
  */
-export async function* narrate2({ api, args, w }, opts = api.jsArg(args, { as: 'voice' })) {
+export async function* narrate2({ api, args }, opts = api.jsArg(args, { as: 'voice' }, { join: { words: true } })) {
   
   if (opts.list === 'voices') {// List available voices
     yield* window.speechSynthesis.getVoices().map(
@@ -234,8 +234,7 @@ export async function* narrate2({ api, args, w }, opts = api.jsArg(args, { as: '
     onSuspends() { window.speechSynthesis.pause(); return true; }
   });
   
-  // 🚧 can api.redirectNode
-  // api.redirectNode(node.parent!, { 1: "/dev/voice" });
+  api.redirect({ 1: "/dev/voice" });
 
   try {
     if (typeof opts.words === 'string') {
@@ -244,7 +243,13 @@ export async function* narrate2({ api, args, w }, opts = api.jsArg(args, { as: '
         text: opts.words,
       };
     }
-    // 🚧
+
+    if (api.isTtyAt(0) === false) {
+      let datum;
+      while ((datum = await api.read()) !== api.eof) {
+        yield { voice: opts.voice, text: `${datum}` };
+      }
+    }
 
   } finally {
     handlers.dispose();

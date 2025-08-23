@@ -144,13 +144,13 @@ class cmdServiceClass {
             useSession.api.setVar(meta, "PWD", prevPwd);
           } else if (args[0].startsWith("/")) {
             const parts = normalizeAbsParts(args[0].split("/"));
-            if (resolveNormalized(parts, this.provideProcessCtxt(node.meta)) === undefined) {
+            if (resolveNormalized(parts, this.provideProcessCtxt(node)) === undefined) {
               throw Error();
             }
             useSession.api.setVar(meta, "PWD", ['', ...parts].join("/"));
           } else {
             const parts = normalizeAbsParts(currPwd.split("/").concat(args[0].split("/")));
-            if (resolveNormalized(parts, this.provideProcessCtxt(node.meta)) === undefined) {
+            if (resolveNormalized(parts, this.provideProcessCtxt(node)) === undefined) {
               throw Error();
             }
             useSession.api.setVar(meta, "PWD", ['', ...parts].join("/"));
@@ -259,7 +259,7 @@ class cmdServiceClass {
         break;
       }
       case "get": {
-        yield* this.get(node.meta, args);
+        yield* this.get(node, args);
         break;
       }
       case "help": {
@@ -328,9 +328,16 @@ class cmdServiceClass {
       }
       case "jsArg": {
         const { opts, operands } = getOpts(args, {
-          string: ["opts", /** e.g. { to: "array" } */ ],
+          string: [
+            "alias", /** e.g. '{ points: "ps" }' */
+            "opts",  /** e.g. '{ array: { to: true } }' */
+          ],
         });
-        yield jsArg(operands, opts.opts === '' ? undefined : parseJsArg(opts.opts));
+        yield jsArg(
+          operands,
+          opts.alias === '' ? undefined : parseJsArg(opts.alias),
+          opts.opts === '' ? undefined : parseJsArg(opts.opts),
+        );
         break;
       }
       case "kill": {
@@ -394,7 +401,7 @@ class cmdServiceClass {
         });
         const pwd = useSession.api.getVar(meta, "PWD");
         const queries = operands.length > 0 ? operands.slice() : [""];
-        const root = this.provideProcessCtxt(meta);
+        const root = this.provideProcessCtxt(node);
         const roots = queries.map((path) => resolvePath(path, root, pwd));
 
         const { ttyShell } = useSession.api.getSession(node.meta.sessionKey);
@@ -509,7 +516,7 @@ class cmdServiceClass {
           boolean: ["f"],
         });
 
-        const root = this.provideProcessCtxt(meta);
+        const root = this.provideProcessCtxt(node);
         const pwd = useSession.api.getVar<string>(meta, "PWD");
         const force = opts.f === true;
 
@@ -538,7 +545,7 @@ class cmdServiceClass {
        */
       case "run": {
         try {
-          const ct = this.provideProcessCtxt(meta, args.slice(1));
+          const ct = this.provideProcessCtxt(node, args.slice(1));
 
           if (args[0] in ct.lib) {
 
@@ -650,7 +657,7 @@ class cmdServiceClass {
         break;
       }
       case "set": {
-        const root = this.provideProcessCtxt(meta);
+        const root = this.provideProcessCtxt(node);
         const value = parseJsArg(args[1]);
         if (args[0][0] === "/") {
           Function("__1", "__2", `return __1.${args[0].slice(1)} = __2`)(root, value);
@@ -677,7 +684,7 @@ class cmdServiceClass {
       case "source": {
         for (const filepath of args) {
           
-          const [script] = this.get(node.meta, [filepath]);
+          const [script] = this.get(node, [filepath]);
           
           if (script === undefined) {
             throw Error(`source: "${filepath}" not found`);
@@ -819,8 +826,9 @@ class cmdServiceClass {
     return resolveNormalized(pwd.split("/"), root);
   }
 
-  get(meta: Sh.BaseMeta, args: string[]) {
-    const root = this.provideProcessCtxt(meta);
+  get(node: Sh.ParsedSh, args: string[]) {
+    const meta = node.meta
+    const root = this.provideProcessCtxt(node);
     const pwd = root.home.PWD;
     const process = getProcess(meta);
 
@@ -881,6 +889,8 @@ class cmdServiceClass {
   private readonly processApi = {
     // Overwritten via Function.prototype.bind.
     meta: {} as Sh.BaseMeta,
+    // Overwritten via Function.prototype.bind.
+    node: {} as Sh.ParsedSh,
 
     ansi,
 
@@ -920,7 +930,7 @@ class cmdServiceClass {
       if (badIndex >= 0) {
         throw new ShError(`cannot get non-string value: ${JSON.stringify(args[badIndex])}`, 1);
       }
-      return cmdService.get(this.meta, args);
+      return cmdService.get(this.node, args);
     },
 
     getCached,
@@ -1010,6 +1020,10 @@ class cmdServiceClass {
       return read(this.meta, chunks);
     },
 
+    redirect(fdUpdates: Record<number, string>) {
+      redirectNode(this.node, fdUpdates);
+    },
+
     safeJsStringify,
 
     set(varPath: string, varValue: any) {
@@ -1028,16 +1042,15 @@ class cmdServiceClass {
 
   private readonly processApiKeys = Object.keys(this.processApi);
 
-  provideProcessCtxt(meta: Sh.BaseMeta, posPositionals: string[] = []) {
+  provideProcessCtxt(node: Sh.ParsedSh, posPositionals: string[] = []) {
+    const meta = node.meta;
     const session = useSession.api.getSession(meta.sessionKey);
     const cacheShortcuts = session.var.CACHE_SHORTCUTS ?? {};
     return new Proxy(
       {
-        home: session.var, // see RunArg['home']
+        home: session.var, // see NPC.RunArg['home']
         etc: session.etc,
-        lib: session.modules, // see RunArg['lib']
-        // cache: queryCache,
-        // dev: useSession.getState().device,
+        lib: session.modules, // see NPC.RunArg['lib']
       },
       {
         get: (target, key) => {
@@ -1045,8 +1058,7 @@ class cmdServiceClass {
             return new Proxy(this.processApi, {
               get(target, key: keyof cmdServiceClass["processApi"]) {
                 if (typeof target[key] === "function") {
-                  // 🤔 could provide context cmdService.processApi
-                  return (target[key] as Function).bind({ meta, session });
+                  return (target[key] as Function).bind({ meta, node });
                 }
                 if (key === "meta") {
                   return meta;

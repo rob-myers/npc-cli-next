@@ -377,7 +377,7 @@ class semanticsServiceClass {
         try {
           // Try to `get` things instead
           for (const arg of args) {
-            const result = cmdService.get(node.meta, [arg]);
+            const result = cmdService.get(node, [arg]);
             node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
             if (result[0] !== undefined) {
               yield* result; // defined, or invoked defined-valued function
@@ -788,7 +788,7 @@ class semanticsServiceClass {
     if (Repl !== null) {
       // ${_/foo/bar/baz}
       const origParam = reconstructReplParamExp(Repl);
-      const result = cmdService.get(node.meta, [origParam]);
+      const result = cmdService.get(node, [origParam]);
       node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
       yield expand(jsStringify(result[0]));
     } else if (Excl || Length || Slice) {

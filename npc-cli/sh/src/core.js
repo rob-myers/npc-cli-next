@@ -212,12 +212,12 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 /**
  * ```sh
  * make npc:rob do:$( click 1 )
- * make npc:rob say:$( click 1 )
+ * make npc:rob say:{1..5}
  * ```
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & (NPC.DoOpts | { say: string })} [opts]
  */
-export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { join: { say: true } })) => {
   const npc = w.npc.getNpc(opts.npcKey);
 
   if ('say' in opts) {
