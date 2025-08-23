@@ -3,7 +3,7 @@ import { error, testNever, warn } from "../service/generic";
 import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
-import { ansi, ProcessTag, spawnBgUnpausedDefault } from "./const";
+import { ansi, ProcessTag, spawnBgPausedDefault } from "./const";
 import { applyPtagUpdates, killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
@@ -15,8 +15,8 @@ export class ttyShellClass implements Device {
   public xterm!: ttyXtermClass;
   /** Is corresponding component `<Tty>` disabled? */
   public disabled = false;
-  /** While `this.disabled` spawn background processes unpaused? */
-  public spawnBgUnpaused = spawnBgUnpausedDefault;
+  /** While `this.disabled` spawn background processes paused? */
+  public spawnBgPaused = spawnBgPausedDefault;
 
   /** Lines received from a TtyXterm. */
   private inputs = [] as { line: string; resolve: () => void }[];
@@ -295,7 +295,7 @@ export class ttyShellClass implements Device {
         // except those which are tagged interactive
         && !(ProcessTag.always in process.ptags)
         && !(ProcessTag.interactive in process.ptags)
-        && this.spawnBgUnpaused === false
+        && this.spawnBgPaused === true
       ) {
         process.status = ProcessStatus.Suspended;
       }

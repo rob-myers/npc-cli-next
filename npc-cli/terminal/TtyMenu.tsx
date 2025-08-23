@@ -5,7 +5,7 @@ import { tryLocalStorageGet, tryLocalStorageGetParsed, tryLocalStorageSet } from
 import { localStorageKey, zIndexTabs } from "../service/const";
 import { isTouchDevice } from "../service/dom";
 import type { Session } from "../sh/session.store";
-import { spawnBgUnpausedDefault } from "../sh/const";
+import { spawnBgPausedDefault } from "../sh/const";
 import useSession from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -16,9 +16,9 @@ export default function TtyMenu(props: Props) {
   const state = useStateRef(() => ({
     /**
      * Given `props.disabled`, should interactively spawned
-     * background processes start unpaused?
+     * background processes also start paused?
      */
-    spawnBgUnpaused: spawnBgUnpausedDefault,
+    spawnBgPaused: spawnBgPausedDefault,
     touchMenuOpen: true,
     xterm: props.session.ttyShell.xterm,
 
@@ -65,9 +65,9 @@ export default function TtyMenu(props: Props) {
       // on mobile avoid close keyboard
       state.xterm.xterm.focus();
     },
-    setSpawnBgUnpaused(next = !state.spawnBgUnpaused) {
-      state.spawnBgUnpaused = next;
-      props.session.ttyShell.spawnBgUnpaused = state.spawnBgUnpaused;
+    setSpawnBgPaused(next = !state.spawnBgPaused) {
+      state.spawnBgPaused = next;
+      props.session.ttyShell.spawnBgPaused = state.spawnBgPaused;
       update();
     },
     toggleTouchMenu() {
@@ -119,9 +119,9 @@ export default function TtyMenu(props: Props) {
           </div>
         )}
         {props.disabled && <div
-          className={cx("spawn-background-unpaused", { enabled: state.spawnBgUnpaused })}
-          onClick={state.setSpawnBgUnpaused.bind(null, undefined)}
-          title={state.spawnBgUnpaused ? 'spawn background paused' : 'spawn background unpaused'}
+          className={cx("spawn-background-paused", { disabled: !state.spawnBgPaused })}
+          onClick={state.setSpawnBgPaused.bind(null, undefined)}
+          title={state.spawnBgPaused ? 'spawning background paused' : 'spawning background unpaused'}
         >
           BG
         </div>}
@@ -223,7 +223,7 @@ const menuCss = css`
       border: none;
     }
     
-    .cont-or-stop-interactive, .spawn-background-unpaused {
+    .cont-or-stop-interactive, .spawn-background-paused {
       width: 32px;
       display: flex;
       align-items: center;
@@ -240,12 +240,12 @@ const menuCss = css`
       letter-spacing: 2px;
     }
 
-    .spawn-background-unpaused {
-      color: #777;
+    .spawn-background-paused {
       padding-top: 4px;
+      color: #777;
     }
-    .spawn-background-unpaused.enabled {
-      color: #aa6;
+    .spawn-background-paused.disabled {
+      color: #cc6;
     }
   }
 

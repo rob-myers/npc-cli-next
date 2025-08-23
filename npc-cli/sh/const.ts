@@ -44,6 +44,6 @@ export const ProcessTagPreview = {
 } as const;
 
 /**
- * Whilst paused, should spawned background processes start unpaused?
+ * Whilst paused, should spawned background processes also start paused?
  */
-export const spawnBgUnpausedDefault = true;
+export const spawnBgPausedDefault = false;
