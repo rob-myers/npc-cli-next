@@ -161,7 +161,7 @@ const humanZeroShader = {
 
       if (!invert) {
         // 🌞 flat shading via vDotProduct
-        float ambientLight = 0.25;
+        float ambientLight = 0.2;
         tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
       } else {// invert, making selector more visible
         tint = vec4(vec3(vType == 3 ? 4.0 : 0.8), tint.a);

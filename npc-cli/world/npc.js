@@ -1404,10 +1404,9 @@ export class NpcApi {
       return;
     }
 
-
     const strokeWidth = 8 * skinsLabelScale;
     const fontHeight = 36 * skinsLabelScale; // permits > 12 chars on OSX Chrome
-    ct.strokeStyle = 'rgba(50, 50, 50, 1)';
+    ct.strokeStyle = 'rgba(20, 20, 20, 1)';
     ct.fillStyle = 'rgba(200, 200, 200, 1)';
     ct.lineWidth = strokeWidth;
     ct.font = `${fontHeight}px "Courier New"`;
