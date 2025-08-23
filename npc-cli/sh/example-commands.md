@@ -135,6 +135,10 @@ npc rob skin | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 
 npc rob api.applyTint
 ```
 
+```sh
+npc rob api.setLabel "foo bar"
+```
+
 ### Access
 
 ```sh

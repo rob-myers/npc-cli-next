@@ -34,6 +34,6 @@ ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
 
-w view.tween '{ polar: Math.PI/4, azimuthal: Math.PI/4, distance: 20 }'
+w view.tween '{ polar: Math.PI/4, azimuthal: Math.PI/4, distance: 22 }'
 look at:rob
 # zoom distance:10
