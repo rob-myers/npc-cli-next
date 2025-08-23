@@ -200,10 +200,7 @@ export class ttyShellClass implements Device {
   }
 
   /**
-   * 🔔 This runs code `src` in session leader `this.process`,
-   * even if latter is already running. This is a bit of a
-   * hack, but it should be OK if the code only contains shell
-   * function declarations.
+   * 🔔 This runs code `src` in a process whose parent is the session leader.
    * 
    * @param src should only contain shell function declarations
    */
@@ -231,7 +228,7 @@ export class ttyShellClass implements Device {
        * - `function` -- invoking shell function.
        * - `root` -- the session leader right after parsing shell code.
        * - `source` -- the builtin `source` in cmd.service.
-       * - `source-external` -- a non-pausable externally triggered "source".
+       * - `source-external` -- an externally triggered "source".
        */
       by: '&' | '|' | '()' | '$()' | 'function' | 'root' | 'source' | 'source-external';
       cleanups?: (() => void)[];
@@ -285,7 +282,8 @@ export class ttyShellClass implements Device {
       }
 
       if (parent.pgid === 0 && opts.by !== 'source-external') {
-        // reset session leader ptags after non-interactive spawn
+        // reset session leader ptags after non-interactive spawn,
+        // except e.g. external sources triggered by hot-module-reload
         this.process.ptags = this.sessionLeaderPtags;
       }
 
