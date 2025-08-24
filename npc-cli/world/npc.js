@@ -711,10 +711,12 @@ export class NpcApi {
       if (other.s.target === null) {
         const delta = tmpVect1.copy(offMesh.dst).sub(point).normalize(0.4);
         if (geom.lineSegIntersectsCircle(
-          delta.add(point).json, // look further ahead
+          // look further ahead to avoid another npc behind stopping this
+          delta.add(point).json,
+          // point,
           offMesh.src,
           other.api.getPoint(),
-          0.35, // sometimes small flicker when idle
+          0.3, // sometimes small flicker when idle
         ) === false) {
           // 🔔 other idle and "not in the way"
           continue;
@@ -1519,7 +1521,7 @@ export class NpcApi {
       this.tryStopOffMesh();
       if (agent.state() === 2) {
         // must teleport before requestMoveTarget when offMesh
-        agent.teleport(position);
+        agent.teleport(position); // 🔔 sometimes jerky?
       }
       agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
