@@ -716,7 +716,7 @@ export class NpcApi {
           // point,
           offMesh.src,
           other.api.getPoint(),
-          0.35, // sometimes small flicker when idle
+          0.3, // sometimes small flicker when idle
         ) === false) {
           // 🔔 other idle and "not in the way"
           continue;
