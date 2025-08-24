@@ -716,7 +716,7 @@ export class NpcApi {
           // point,
           offMesh.src,
           other.api.getPoint(),
-          0.3, // sometimes small flicker when idle
+          0.35, // sometimes small flicker when idle
         ) === false) {
           // 🔔 other idle and "not in the way"
           continue;
@@ -1522,8 +1522,9 @@ export class NpcApi {
       if (agent.state() === 2) {
         // must teleport before requestMoveTarget when offMesh
         agent.teleport(position); // 🔔 sometimes jerky?
-        // 🚧 try pushing back then tween to usual separation weight
-        agent.raw.params.set_separationWeight(1.1)
+
+        // agent.raw.params.set_separationWeight(1.1)
+        // this.base.agentAnim?.set_active(false);
       }
       agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
@@ -1602,7 +1603,7 @@ const defaultMaxAcceleration = 10;
  * 🔔 relevant to reachability of arrival distance
  */
 // const defaultSeparationWeight = 0.25;
-const defaultSeparationWeight = 0.1;
+const defaultSeparationWeight = 0.25;
 const defaultIdleSeparationWeight = 0.25;
 const defaultCollisionQueryRange = 2;
 const defaultSlowDownRadius = helper.defaults.radius * 2;

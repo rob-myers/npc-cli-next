@@ -66,6 +66,8 @@
 
 ### World
 
+- ✅ moving camera should cancel `look at:rob` during profile
+
 - ✅ clean up current changes
   - drop vignette again
 

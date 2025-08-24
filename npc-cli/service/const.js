@@ -373,7 +373,7 @@ export const npcClassToMeta = {
     modelHeight: 2.2, // 🚧 measure in Blender
     modelRadius: 0.5,
     runSpeed: 4,
-    scale: 0.75,
+    scale: 0.7,
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
     walkSpeed: 2.5,
   },
