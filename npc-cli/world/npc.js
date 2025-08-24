@@ -1511,8 +1511,9 @@ export class NpcApi {
       this.startAnimation('Idle');
     }
 
-    const pos = agent.position(); // reset small motions:
-    const position = this.base.lastStart.distanceTo(pos) <= 0.05 ? this.base.lastStart : pos;
+    // reset small motions
+    const { position: pos, lastStart } = this.base;
+    const position = pos.distanceTo(lastStart) <= 0.05 ? lastStart : pos;
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
       this.tryStopOffMesh();
