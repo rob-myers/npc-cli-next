@@ -1522,6 +1522,8 @@ export class NpcApi {
       if (agent.state() === 2) {
         // must teleport before requestMoveTarget when offMesh
         agent.teleport(position); // 🔔 sometimes jerky?
+        // 🚧 try pushing back then tween to usual separation weight
+        agent.raw.params.set_separationWeight(1.1)
       }
       agent.requestMoveTarget(position);
     } else {// midway through traversal, so stop when finish
