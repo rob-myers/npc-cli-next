@@ -186,8 +186,9 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
       w.view.reject.look?.(Error('cancelled'));
       abortAwaitResume(Error('cancelled'));
     },
-    onSuspends() {
-      w.view.reject.look?.(Error('manual-pause')); 
+    onSuspends(byPtags) {
+      // 🔔 don't enter manual pause on global pause, else can't reject
+      !byPtags && w.view.reject.look?.(Error('manual-pause')); 
       return true;
     },
   });
