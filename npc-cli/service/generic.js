@@ -370,7 +370,8 @@ export function mapValues(input, transform) {
  * Parse args as a single JavaScript object.
  * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
  * - 'foo:42 bar' -> { "foo": 42, "bar": true }
- * - 🔔 assume keys do not contain double-quote character
+ * 
+ * We assume keys do not contain the double-quote character.
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
  * @param {string[]} args
@@ -378,13 +379,8 @@ export function mapValues(input, transform) {
  * Map alias keys to their true keys.
  * @param {{
  *   array?: { [key: string]: true };
- *   join?: { [key: string]: true };
- *   operands?: boolean;
  * }} [opts]
- * - `opts.array` tries to enforce array value
- * - `opts.join` joins multiple key occurrences as a space-separated string
- *   to support brace-expansion e.g. `words:{1..5}` 
- * - `opts.operands` stores all naked (sans colon) args in a field named "operands"
+ * - `opts.array` if value isn't an array try to convert space-separated js values into one
  * @returns {T}
  */
 export function jsArg(args, alias, opts) {
@@ -392,22 +388,17 @@ export function jsArg(args, alias, opts) {
     const colonIndex = arg.indexOf(':');
     if (colonIndex === -1) {
       agg[arg] = true;
-      if (opts?.operands === true) {
-        (agg.operands ??= []).push(arg);
-      }
     } else {
       let key = arg.slice(0, colonIndex);
       key = alias?.[key] ?? key;
-      const value = parseJsArg(arg.slice(colonIndex + 1));
 
-      if (opts?.join?.[key] === true) {// assume string
-        agg[key] = key in agg ? `${agg[key]} ${value}` : value;
-      } else if (opts?.array?.[key] === true && Array.isArray(value) === false) {
-        // try split by spaces instead
-        agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
-      } else {
-        agg[key] = value;
+      let value = parseJsArg(arg.slice(colonIndex + 1));
+
+      if (opts?.array?.[key] === true && Array.isArray(value) === false) {
+        value = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
       }
+
+      agg[key] = value;
     }
     return agg;
   }, /** @type {Record<string, any>} */ ({})));

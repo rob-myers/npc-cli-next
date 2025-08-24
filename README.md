@@ -135,15 +135,15 @@ done
 
 # playing with loops
 spawn npc:rob at:$( click 1 )
-spawn npc:kate at:$( click 1 ) skin:medic-0
+spawn npc:kate at:$( click 1 ) as:medic-0
 w e.grantAccess . rob kate
 
 tour npc:rob to:"$( click 2 )" &
 tour npc:kate to:"$( click 2 )" &
 
-spawn npc:kate at:$( click 1 ) skin:soldier-0,,medic-0,
-spawn npc:kate at:$( click 1 ) skin:soldier-0,,,suit-0
-spawn npc:kate at:$( click 1 ) skin:suit-0,,,soldier-0
+spawn npc:kate at:$( click 1 ) as:soldier-0,,medic-0,
+spawn npc:kate at:$( click 1 ) as:soldier-0,,,suit-0
+spawn npc:kate at:$( click 1 ) as:suit-0,,,soldier-0
 
 click 5 &>> points
 # skips to next point if stopped

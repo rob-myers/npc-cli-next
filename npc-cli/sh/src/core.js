@@ -212,18 +212,12 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 /**
  * ```sh
  * make npc:rob do:$( click 1 )
- * make npc:rob say:{1..5}
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & (NPC.DoOpts | { say: string })} [opts]
+ * @param {{ npcKey: string } & NPC.DoOpts} [opts]
  */
-export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { join: { say: true } })) => {
+export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
   const npc = w.npc.getNpc(opts.npcKey);
-
-  if ('say' in opts) {
-    w.e.say({ npcKey: opts.npcKey, words: opts.say });
-    return;
-  }
 
   let abortAwaitResume = /** @param {*} e */ (e) => {};
 
@@ -269,7 +263,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
  */
-export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { array: { to: true } })) => {
   const npc = w.npc.getNpc(opts.npcKey);
   let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
   let abortAwaitResume = /** @param {*} e */ (e) => {};
@@ -302,6 +296,24 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
     }
   } finally {
     handlers.dispose();
+  }
+}
+
+/**
+ * ```sh
+ * say {1..5} npc:rob
+ * say world: 1, rob: 0 npc:rob
+ * say words:hello npc:rob
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string; say: string; words?: string; operands?: string[] }} [opts]
+ */
+export const say = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+  if (opts.words) {
+    w.e.say({ npcKey: opts.npcKey, words: opts.words });
+  } else {
+    const words = args.filter(x => !x.startsWith('npc:')).join(' ');
+    w.e.say({ npcKey: opts.npcKey, words });
   }
 }
 

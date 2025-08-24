@@ -685,7 +685,7 @@ export default function Npcs(props) {
  * Examples (js):
  * ```js
  * spawn({ npcKey: "rob", x, y, meta })
- * spawn({ npcKey: "rob", skin: "soldier-0", x, y, z, meta })
+ * spawn({ npcKey: "rob", as: "soldier-0", x, y, z, meta })
  * spawn({ npcKey: "rob", classKey: "human-0", x, y, z, meta })
  * ```
  * @property {(opts: NPC.SpawnManyOpts) => Promise<void>} spawnMany

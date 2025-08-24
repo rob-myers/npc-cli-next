@@ -3,6 +3,11 @@ click! () {
   click --block
 }
 
+# click which outputs array of clicks
+clicks () {
+  click "$@" | sponge
+}
+
 # Select static geomorph data
 # Usage: gm [gmId] [selector]
 # Examples: `gm` `gm 0 key` `gm 0 rooms | split | map meta`

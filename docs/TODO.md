@@ -79,6 +79,10 @@
 
 - ✅ can redirect node inside processApi
 
+- ✅ change `echo $( echo foo; echo bar )` to `foo bar`
+  - ℹ️ currently `["foo", "bar"]` which is incompatible with brace expansion
+  - ℹ️ but now must write `move npc:rob to:"$( click 2 )"`
+
 - long table could have cuboid base
 - better decals (currently only test ones)
 

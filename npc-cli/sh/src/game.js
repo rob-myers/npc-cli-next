@@ -75,7 +75,7 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to']; in?: 'loop'; }} [opts]
  */
-export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, { array: { to: true } })) {
   let to = opts.to;
   while (true) {
     try {
@@ -331,13 +331,13 @@ export function toggleOnDoor({ meta }, { w }) {
 /**
  * 
  * ```sh
- * tour npc:rob to:"$( click 5 )"
- * tour npc:rob to:"$( click 5 | sponge )"
- * tour npc:rob to:"$( points )"
+ * tour npc:rob to:"$( click 3 )"
+ * tour npc:rob to:"[$( click 3 )]"
+ * tour npc:rob to:"$( clicks 2 ) $( clicks 2 )"
  * 
- * tour npc:rob to:"$( [] $( points ) )"
- * nestedPoints=$( [] $( click 1 ) $( click 2 ) $( click 1 ) )
- * tour npc:rob to:$( nestedPoints )
+ * points=$( click 4 )
+ * tour npc:rob to:"$( points )"
+ * tour npc:rob to:"[$( points )]"
  * ```
  * 
  * - `opts.pause` in seconds, default `0.8`

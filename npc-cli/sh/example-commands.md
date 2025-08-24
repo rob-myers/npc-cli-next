@@ -16,15 +16,15 @@ narrate the man went to his bedroom
 move npc:rob to:$( click 1 )
 
 narrate he yawned
-make npc:rob say:yawn...
+say yawn... npc:rob
 
 narrate changed into his sleepwear
-spawn npc:rob at:$( npc rob position ) skin:,,base,
+spawn npc:rob at:$( npc rob position ) as:,,base,
 
 narrate and got into bed
 # click a bed do point
 make npc:rob do:$( click 1 )
-make npc:rob say:Zzzzz
+say Zzzzz npc:rob
 ```
 
 Scripting:
@@ -55,7 +55,7 @@ spawn npc:rob at:$( getRandomNavigable )
 
 # spawn 5 npcs by clicking
 for x in {1..5}; do
-  spawn npc:rob_$x at:$( click 1 ) skin:suit-0
+  spawn npc:rob_$x at:$( click 1 ) as:suit-0
 done
 
 # spawn 100 npcs randomly
@@ -67,7 +67,7 @@ remove npc_{0..99}
 
 ```sh
 # spawn with detailed skin spec
-spawn npc:rada angle:Math.PI skin:'{
+spawn npc:rada angle:Math.PI as:'{
   "head-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
   "head-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
   "body-overlay-{front,back,left,right,top,bottom}": { prefix: "robot-1" },
@@ -81,9 +81,10 @@ spawn npc:rada angle:Math.PI skin:'{
 ```sh
 move npc:rob to:$( click 1 )
 # via a waypoint
-move npc:rob to:$( click 2 )
+move npc:rob to:"$( click 2 )"
+move npc:rob to:$( clicks 2 )
 # via waypoints
-move npc:rob to:$( click 4 )
+move npc:rob to:"$( click 4 )"
 ```
 
 ### Doing
@@ -238,6 +239,19 @@ while true; do
 done
 ```
 
+### Underlying JavaScript
+
+```sh
+declare -f narrate
+# narrate () {
+#   run util narrate "${@}"
+# }
+call 'x => x.lib.util.narrate'
+# async function* narrate({ api, args }, opts = api.jsArg(args, {
+#     as: 'voice'
+# }, {
+# ...
+```
 
 ### Process Management
 

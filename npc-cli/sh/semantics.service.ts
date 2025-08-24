@@ -676,10 +676,11 @@ class semanticsServiceClass {
               .replace(/\n*$/, "") // remove trailing newlines
             );
           } else {
-             if (values.length > 1) {// expand jsStringified array when multiple values
-              yield expand(jsStringify(values));
+             if (values.length > 1) {
+             // yield expand(jsStringify(values));
+              yield expand(values.map(x => typeof x === 'string' ? x : jsStringify(x)));
             } else if (typeof values[0] === 'string') {
-              yield expand(values[0].replace(/\n*$/, ""));
+              yield expand(values[0].replace(/\n*$/, ''));
             } else {
               yield expand(jsStringify(values[0]));
             }
