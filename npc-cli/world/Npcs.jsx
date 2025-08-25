@@ -509,7 +509,8 @@ export default function Npcs(props) {
         npc.position.copy(position);
         npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
         npc.lastTarget.copy(position);
-        npc.api.startAnimation(point.meta ?? {});
+        const forceStartAnim = npc.s.spawns === 0;
+        npc.api.startAnimation(point.meta ?? {}, forceStartAnim);
 
         // attach/detach agents
         const doMeta = doMetas[i];
