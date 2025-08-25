@@ -1607,7 +1607,7 @@ const defaultMaxAcceleration = 10;
 // const defaultSeparationWeight = 0.25;
 const defaultSeparationWeight = 0.1;
 const defaultIdleSeparationWeight = 0.25;
-const defaultCollisionQueryRange = 2;
+const defaultCollisionQueryRange = helper.defaults.radius * 8;
 const defaultSlowDownRadius = helper.defaults.radius * 2;
 
 const preOffMeshCloseDist = helper.defaults.radius;

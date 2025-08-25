@@ -105,9 +105,19 @@ export default function WorldWorkers() {
       filter.excludeFlags = helper.navPolyFlag.unWalkable;
 
       // 🚧 try modify dtObstacleAvoidanceParams
-      // const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = w.crowd.raw.getObstacleAvoidanceParams(0);
+      // const obsAvoidParams = w.crowd.raw.getObstacleAvoidanceParams(0);
+      // const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = obsAvoidParams;
       // info('dtObstacleAvoidanceParams', { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi });
-      // const oap = new RecastWasm.dtObstacleAvoidanceParams();
+      // // obsAvoidParams.adaptiveDepth = adaptiveDepth;
+      // // obsAvoidParams.adaptiveDivs = 1;
+      // // obsAvoidParams.adaptiveRings = 0;
+      // // obsAvoidParams.gridSize = gridSize;
+      // // obsAvoidParams.horizTime = horizTime;
+      // // obsAvoidParams.velBias = 0.5;
+      // // obsAvoidParams.weightCurVel = weightCurVel;
+      // // obsAvoidParams.weightSide = weightSide;
+      // // obsAvoidParams.weightToi = weightToi;
+      // w.crowd.raw.setObstacleAvoidanceParams(0, obsAvoidParams);
       
       w.npc?.restore();
     },
