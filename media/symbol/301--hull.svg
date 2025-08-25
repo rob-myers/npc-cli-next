@@ -177,10 +177,10 @@
     <use width="300" height="300" transform="matrix(0, 1, -1, 0, 5700, 1200)" style="transform-origin: 150px 150px;" href="#symbol-7">
       <title>iris-valves--006--1x1</title>
     </use>
-    <use href="#symbol-6" width="30" height="150" transform="matrix(0.000017, 1, -1, 0.000017, 1638.549438, 1140.615967)" style="transform-box: fill-box; transform-origin: 50% 50%;">
+    <use href="#symbol-6" width="30" height="150" transform="matrix(0.000017000002117129043, 1, -1, 0.000017000002117129043, 1638.5494384765625, 1140.615966796875)" style="transform-box: fill-box; transform-origin: 50% 50%;">
       <title>extra--021--screen--0.1x0.5 y=1</title>
     </use>
-    <use href="#symbol-6" width="30" height="150" transform="matrix(1, -0.000017, 0.000017, 1, 1237.582642, 1798.97644)" style="transform-origin: 15px 75px;">
+    <use href="#symbol-6" width="30" height="150" transform="matrix(1, -0.000017000002117129043, 0.000017000002117129043, 1, 1237.5826416015625, 1798.9764404296875)" style="transform-origin: 15px 75px;">
       <title>extra--021--screen--0.1x0.5 y=0.6</title>
     </use>
   </g>
@@ -316,10 +316,10 @@
   <use width="1" height="1" style="transform-origin: 0px 0.5px;" href="#symbol-0" transform="matrix(100, 0, 0, 150, 1700, 2324.5)">
     <title>decor cuboid table nav h=0.5 y=0 color=#888</title>
   </use>
-  <use width="1" height="1" transform="matrix(199.74734497070312, -0.008981999941170216, 0.252653032541275, 206.44375610351562, 698.9095458984375, 1502.7255859375)" style="transform-origin: 0.497029px 0.499996px;" href="#symbol-0">
+  <use width="1" height="1" transform="matrix(199.74734497070312, -0.00898200087249279, 0.2526530623435974, 206.44375610351562, 698.9095458984375, 1502.7255859375)" style="transform-origin: 0.497029px 0.499996px;" href="#symbol-0">
     <title>decor decal img=carpet--0</title>
   </use>
-  <use width="1" height="1" transform="matrix(-199.74734497070312, -0.008981999941170216, -0.252653032541275, 206.44375610351562, 899.4452514648438, 1502.450439453125)" style="transform-origin: 0.497029px 0.499996px;" href="#symbol-0">
-    <title>decor decal img=carpet--0</title>
+  <use width="1" height="1" transform="matrix(20, 0, 0, 600, 599.5, 1499.5)" style="transform-origin: 0.5px 0.5px;" href="#symbol-0">
+    <title>decor cuboid girder h=0.11 y=wallHeight-0.1 color=#888</title>
   </use>
 </svg>

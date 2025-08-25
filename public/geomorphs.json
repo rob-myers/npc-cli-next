@@ -22646,13 +22646,19 @@
           "det": 1
         },
         {
-          "type": "decal",
+          "type": "cuboid",
           "key": "",
-          "meta": {"decor": true, "decal": true, "img": "carpet--0", "y": 0},
-          "bounds2d": {"x": 3.9967, "y": 6.9986, "width": 1, "height": 1.0323},
-          "transform": [-0.9987, 0, -0.0013, 1.0322, 4.9967, 6.9987],
-          "center": {"x": 4.497, "y": 7.515},
-          "det": 1
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "girder": true,
+            "h": 0.11,
+            "y": 1.9,
+            "color": "#888"
+          },
+          "bounds2d": {"x": 2.95, "y": 6, "width": 0.1, "height": 3},
+          "transform": [0.1, 0, 0, 3, 2.95, 6],
+          "center": {"x": 3, "y": 1.95, "z": 7.5}
         },
         {
           "type": "rect",

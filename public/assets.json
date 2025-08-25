@@ -3,7 +3,7 @@
     "101--hull": {"outputHash": -1537734539, "pngHash": 568633107},
     "102--hull": {"outputHash": -1106929025, "pngHash": 184103855},
     "103--hull": {"outputHash": -1589531377, "pngHash": -1937509879},
-    "301--hull": {"outputHash": -1017596975, "pngHash": 787602800},
+    "301--hull": {"outputHash": 102687871, "pngHash": 787602800},
     "302--hull": {"outputHash": 967391303, "pngHash": -1557128953},
     "303--hull": {"outputHash": 1657774121, "pngHash": -299838577},
     "bed--003--1x1.6": {
@@ -5863,19 +5863,15 @@
         },
         {
           "type": "Polygon",
-          "coordinates": [
-            [
-              [4.9967, 6.9987],
-              [4.9955, 8.0309],
-              [3.9967, 8.0308],
-              [3.998, 6.9986]
-            ]
-          ],
+          "coordinates": [[[3.05, 6], [3.05, 9], [2.95, 9], [2.95, 6]]],
           "meta": {
             "decor": true,
-            "decal": true,
-            "img": "carpet--0",
-            "transform": [-0.9987, 0, -0.0013, 1.0322, 4.9967, 6.9987]
+            "cuboid": true,
+            "girder": true,
+            "h": 0.11,
+            "y": 1.9,
+            "color": "#888",
+            "transform": [0.1, 0, 0, 3, 2.95, 6]
           }
         }
       ],
