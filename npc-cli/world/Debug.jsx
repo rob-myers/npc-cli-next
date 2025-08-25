@@ -229,11 +229,11 @@ export default function Debug(props) {
     </group>}
 
     {state.navMeshShown === true && <>
-      {/* <primitive
+      <primitive
         name="nav-mesh-helper"
         position={[0, 0.01, 0]}
         object={state.navMesh}
-      /> */}
+      />
       <primitive
         name="off-mesh-connection-helper"
         position={[0, 0.02, 0]}

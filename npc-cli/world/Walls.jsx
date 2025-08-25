@@ -123,7 +123,7 @@ export default function Walls(props) {
       // ℹ️ for transparency
       renderOrder={transparent ? 2 : undefined}
     >
-      {/* <meshBasicMaterial side={THREE.DoubleSide} color="#866" wireframe /> */}
+      {/* <meshBasicMaterial side={THREE.FrontSide} color="#0f0" wireframe /> */}
       <instancedWallsMaterial
         key={InstancedWallsMaterial.key}
         alphaTest={0}
