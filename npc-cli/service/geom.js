@@ -311,6 +311,22 @@ class geomServiceClass {
   }
 
   /**
+   * Compute intersection of line segments
+   * `p0 -- p1` and `q0 -- q1`
+   *
+   * If they intersect, return `lambda` ∊ [0, 1] s.t. intersection is
+   * `p0 + (p1 - p0) * lambda`, else return `null`.
+   * @param {Geom.VectJson} p0
+   * @param {Geom.VectJson} p1
+   * @param {Geom.VectJson} q0
+   * @param {Geom.VectJson} q1
+   * @param {boolean} [ignoreColinear]
+   */
+  lineSegsIntersect(p0, p1, q0, q1, ignoreColinear) {
+    return this.getLineSegsIntersection(p0, p1, q0, q1, ignoreColinear) !== null;
+  }
+
+  /**
    * https://github.com/davidfig/intersects/blob/master/line-polygon.js
    * Does line segment intersect polygon?
    * - we ignore holes
@@ -369,21 +385,36 @@ class geomServiceClass {
   /**
    * https://stackoverflow.com/a/1079478/2917822
    * https://github.com/davidfig/intersects/blob/master/line-circle.js
+   * @param {number} ax
+   * @param {number} ay
+   * @param {number} bx
+   * @param {number} by
+   * @param {number} cx center.x
+   * @param {number} cy center.y
+   * @param {number} radius
+   */
+  lineSegCoordsIntersectsCircle(ax, ay, bx, by, cx, cy, radius) {
+    const ab = tempVect1.set(bx - ax, by - ay);
+    const ac = tempVect2.set(cx - ax, cy - ay);
+    const ab2 = ab.dot(ab); // |ab|^2
+    const acab = ac.dot(ab);
+    let t = acab / ab2;
+    t = t < 0 ? 0 : t;
+    t = t > 1 ? 1 : t;
+    const h = tempVect2.set(ab.x * t + ax - cx, ab.y * t + ay - cy);
+    return h.dot(h) <= radius * radius;
+  }
+
+  /**
+   * https://stackoverflow.com/a/1079478/2917822
+   * https://github.com/davidfig/intersects/blob/master/line-circle.js
    * @param {Geom.VectJson} a
    * @param {Geom.VectJson} b
    * @param {Geom.VectJson} center
    * @param {number} radius
    */
   lineSegIntersectsCircle(a, b, center, radius) {
-    const ab = tempVect1.copy(b).sub(a);
-    const ac = tempVect2.copy(center).sub(a);
-    const ab2 = ab.dot(ab); // |ab|^2
-    const acab = ac.dot(ab);
-    let t = acab / ab2;
-    t = t < 0 ? 0 : t;
-    t = t > 1 ? 1 : t;
-    const h = tempVect2.set(ab.x * t + a.x - center.x, ab.y * t + a.y - center.y);
-    return h.dot(h) <= radius * radius;
+    return this.lineSegCoordsIntersectsCircle(a.x, a.y, b.x, b.y, center.x, center.y, radius);
   }
 
   /**
