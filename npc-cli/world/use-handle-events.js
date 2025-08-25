@@ -463,6 +463,7 @@ export default function useHandleEvents(w) {
     },
     isOtherNearDoorAndBlocking(npc, offMesh) {
       const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
+      // const gmRoomId = state.npcToRoom.get(npc.key);
   
       for (const otherNpcKey of npcsNearbyDoor) {
         if (otherNpcKey === npc.key) {
@@ -475,7 +476,7 @@ export default function useHandleEvents(w) {
           // elsewhere, we'll always stop on collide npc with target
           continue;
         }
-        
+
         const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
           offMesh.src.x, offMesh.src.z,
           offMesh.dst.x, offMesh.dst.z,
@@ -639,7 +640,7 @@ export default function useHandleEvents(w) {
         if (// traversal same direction, other far enough ahead
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
           // - prevent jerk other on leave connection
-          && tr.tScaleDst == null
+          && tr.tScaleDst === null
           // - prevent moving thru each other diagonally
           // - prevent jerk other on leave connection
           && npc.api.getOtherDoorwayLead(other) >= (tr.nextUnit === null ? 0.5 : 0.4)
@@ -871,7 +872,7 @@ export default function useHandleEvents(w) {
     },
     testOffMeshDisjoint(offMesh1, offMesh2) {
       // 🚧 handle diagonal doors
-      const npcRadius = helper.defaults.radius;
+      const npcRadius = helper.defaults.radius * 0.8;
       const rect1 = tmpRect1.setFromPoints(offMesh1.src, offMesh1.dst).outset(npcRadius);
       const rect2 = tmpRect2.setFromPoints(offMesh2.src, offMesh2.dst).outset(npcRadius);
       return rect1.intersects(rect2) === false;
