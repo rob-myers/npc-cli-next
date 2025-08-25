@@ -461,6 +461,46 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       return npc !== undefined && w.view.dst.look === npc.position;
     },
+    isOtherNearDoorAndBlocking(npc, offMesh) {
+      const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
+  
+      for (const otherNpcKey of npcsNearbyDoor) {
+        if (otherNpcKey === npc.key) {
+          continue;
+        }
+  
+        const other = w.n[otherNpcKey];
+  
+        if (other.s.target !== null) {
+          // elsewhere, we'll always stop on collide npc with target
+          continue;
+        }
+        
+        const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
+          offMesh.src.x, offMesh.src.z,
+          offMesh.dst.x, offMesh.dst.z,
+          other.position.x, other.position.z,
+          0.2,
+        );
+        
+        if (otherIntersectsMainSeg === false) {
+          // other is not close enough to offMesh connection
+          continue;
+        }
+  
+        const door = w.d[offMesh.gdKey];
+        if (geom.lineSegCoordsIntersectsCircle(
+          npc.position.x, npc.position.z,
+          door.center.x, door.center.y,
+          other.position.x, other.position.z,
+          0.4,
+        ) === true) {
+          return true;
+        }
+      }
+  
+      return false;
+    },
     npcCanAccess(npcKey, gdKey) {
       if (state.doorToAccess[gdKey]?.size) {// check special access
         for (const regexDef of state.doorToAccess[gdKey]) {
@@ -503,8 +543,11 @@ export default function useHandleEvents(w) {
       const door = w.door.byKey[offMesh.gdKey];
 
       // try open closed door
-      if (door.open === false &&
-        state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
+      if (
+        // 🔔 avoid yank via early-exit
+        state.isOtherNearDoorAndBlocking(npc, offMesh) ||
+        (door.open === false &&
+        state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false)
       ) {
         //const nextCorner = npc.api.getNextCorner();
         npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.api.getRemainingPath() });
@@ -933,6 +976,10 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
  * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
+ * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => boolean} isOtherNearDoorAndBlocking
+ * offMesh early-exit-test i.e. test for some other npc which:
+ * - is idle and in the way
+ * - is very close to main segment of offMesh connection
  * @property {(npc: NPC.NPC, otherNpcKey: string) => void} onBlockedDoorway
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
