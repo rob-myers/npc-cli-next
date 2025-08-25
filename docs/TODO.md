@@ -166,9 +166,9 @@
   - `move` became too ugly
 - ✅ BUG: `move` when target is just beyond doorway
 
-- `meta.act` -> `meta.do` and `meta.actPoint` -> `meta.doPoint`
+- ✅ `meta.act` -> `meta.do` and `meta.actPoint` -> `meta.doPoint`
 
-- `move` can expose `{ to, index }` via `expose:foo` for path reconfig
+- ❌ `move` can expose `{ to, index }` via `expose:foo` for path reconfig
   - ℹ️ so can handle resumed `move` when goto next is "unnatural" i.e. should be skipped
 
 - ✅ BUG: build transpile is converting arrow function to normal function
