@@ -86,6 +86,7 @@
   - ℹ️ but now must write `move npc:rob to:"$( click 2 )"`
 
 - long table could have cuboid base
+  
 - better decals (currently only test ones)
 
 - ✅ try drawing navmesh on floor
@@ -107,7 +108,10 @@
 
 - ❌ hot reload light map
 
-- uniform labelY -> labelOffset
+- ✅ npc: fixed size labels so visible when zoomed out
+- ✅ npc: fix spawnMany labels
+
+- 🚧 npc: uniform labelY -> labelOffset
   - so we can avoid label covering npc while Lie
 
 - ✅ running `direct npc:kate to:$( click 1 ) &` while paused cannot resolve `click 1` until unpause

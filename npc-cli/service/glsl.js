@@ -11,7 +11,7 @@ const humanZeroShader = {
   uniform int labelTriIds[2];
   uniform int selectorTriIds[2];
 
-  uniform float opacity; // 🚧 -> teleportRatio
+  uniform float opacity; // 🔔 means "teleport ratio"
 
   varying float vDotProduct;
   flat varying int triangleId;
@@ -64,7 +64,8 @@ const humanZeroShader = {
       mvPosition = modelMatrix[3]; // translation
       mvPosition.y = labelY;
       mvPosition = viewMatrix * mvPosition;
-      mvPosition.xy += transformed.xy;
+      // mvPosition.xy += transformed.xy;
+      mvPosition.xy += transformed.xy * (length(cameraPosition) / 14.0);
       
     } else {// everything else
 
@@ -156,6 +157,7 @@ const humanZeroShader = {
 
       // 🔔 fix pixelation around edge of text
       if (texel.a < 0.75) discard;
+      texel.a = 0.75; // when labels overlap
 
     } else {// body=1, breath=2, selector=3
 
