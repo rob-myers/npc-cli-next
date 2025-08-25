@@ -714,7 +714,9 @@ export class NpcApi {
           // look further ahead to avoid another npc behind stopping this
           delta.add(point).json,
           // point,
-          offMesh.src,
+          // offMesh.src,
+          offMesh.dst,
+          // this.w.d[offMesh.orig.gdKey].center
           other.api.getPoint(),
           0.3, // sometimes small flicker when idle
         ) === false) {
@@ -1521,8 +1523,8 @@ export class NpcApi {
       this.tryStopOffMesh();
       if (agent.state() === 2) {
         // must teleport before requestMoveTarget when offMesh
+        position.sub(this.base.delta);
         agent.teleport(position); // 🔔 sometimes jerky?
-
         // agent.raw.params.set_separationWeight(1.1)
         // this.base.agentAnim?.set_active(false);
       }
@@ -1603,7 +1605,7 @@ const defaultMaxAcceleration = 10;
  * 🔔 relevant to reachability of arrival distance
  */
 // const defaultSeparationWeight = 0.25;
-const defaultSeparationWeight = 0.25;
+const defaultSeparationWeight = 0.1;
 const defaultIdleSeparationWeight = 0.25;
 const defaultCollisionQueryRange = 2;
 const defaultSlowDownRadius = helper.defaults.radius * 2;
