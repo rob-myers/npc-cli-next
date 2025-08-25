@@ -66,6 +66,15 @@
 
 ### World
 
+- ✅ still seeing yank when one npc closely follows another through doorway
+  - stop when other is slowing down in doorway
+
+- careful about `p=$( npc rob position )` since this is a reference
+  - maybe provide `api.getPosition()`
+
+- support clickable ceiling/walls
+- support unclickable cuboid instance e.g. girder
+
 - ✅ moving camera should cancel `look at:rob` during profile
 
 - ✅ clean up current changes

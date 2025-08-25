@@ -4,7 +4,7 @@ import { deltaAngle } from "maath/misc";
 
 import { Vect, Rect } from "../geom";
 import { defaultDoorCloseMs, wallHeight } from "../service/const";
-import { pause, warn, testNever, jsStringify } from "../service/generic";
+import { pause, warn, testNever } from "../service/generic";
 import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
@@ -638,8 +638,10 @@ export default function useHandleEvents(w) {
 
         if (// traversal same direction, other far enough ahead
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
+          // - prevent jerk other on leave connection
+          && tr.tScaleDst == null
           // - prevent moving thru each other diagonally
-          // - prevent jerking other npc once leave connection
+          // - prevent jerk other on leave connection
           && npc.api.getOtherDoorwayLead(other) >= (tr.nextUnit === null ? 0.5 : 0.4)
         ) {
           continue;
