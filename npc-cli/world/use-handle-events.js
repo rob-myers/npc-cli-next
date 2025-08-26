@@ -639,13 +639,19 @@ export default function useHandleEvents(w) {
 
         const other = w.n[tr.npcKey];
 
+        // 🔔 slow down when another in doorway,
+        // avoids jerk when other slows down in doorway
+        npc.agentAnim?.set_tScale(0.5);
+        offMesh.tScale = 0.5;
+        offMesh.tScaleDst = null;
+
         if (// traversal same direction, other far enough ahead
           tr.orig.srcGrKey === offMesh.orig.srcGrKey
           // - prevent jerk other on leave connection
-          && tr.tScaleDst === null
+          // && tr.tScaleDst === null
           // - prevent moving thru each other diagonally
           // - prevent jerk other on leave connection
-          && npc.api.getOtherDoorwayLead(other) >= (tr.nextUnit === null ? 0.5 : 0.4)
+          && npc.api.getOtherDoorwayLead(other) >= 0.3
         ) {
           continue;
         }
