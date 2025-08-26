@@ -105,19 +105,19 @@ export default function WorldWorkers() {
       filter.excludeFlags = helper.navPolyFlag.unWalkable;
 
       // 🚧 try modify dtObstacleAvoidanceParams
-      // const obsAvoidParams = w.crowd.raw.getObstacleAvoidanceParams(0);
-      // const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = obsAvoidParams;
+      const obsAvoidParams = w.crowd.raw.getObstacleAvoidanceParams(0);
+      const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = obsAvoidParams;
       // info('dtObstacleAvoidanceParams', { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi });
-      // // obsAvoidParams.adaptiveDepth = adaptiveDepth;
-      // // obsAvoidParams.adaptiveDivs = 1;
-      // // obsAvoidParams.adaptiveRings = 0;
-      // // obsAvoidParams.gridSize = gridSize;
-      // // obsAvoidParams.horizTime = horizTime;
-      // // obsAvoidParams.velBias = 0.5;
-      // // obsAvoidParams.weightCurVel = weightCurVel;
-      // // obsAvoidParams.weightSide = weightSide;
-      // // obsAvoidParams.weightToi = weightToi;
-      // w.crowd.raw.setObstacleAvoidanceParams(0, obsAvoidParams);
+      obsAvoidParams.adaptiveDepth = 4;
+      obsAvoidParams.adaptiveDivs = 10;
+      obsAvoidParams.adaptiveRings = 2;
+      // obsAvoidParams.gridSize = gridSize;
+      // obsAvoidParams.horizTime = horizTime;
+      obsAvoidParams.velBias = 0.85;
+      // obsAvoidParams.weightCurVel = weightCurVel;
+      // obsAvoidParams.weightSide = 1;
+      // obsAvoidParams.weightToi = 1;
+      w.crowd.raw.setObstacleAvoidanceParams(0, obsAvoidParams);
       
       w.npc?.restore();
     },

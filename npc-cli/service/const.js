@@ -145,13 +145,15 @@ export const defaultNpcInteractRadius = geomorphGridMeters;
  * - `DT_CROWD_SEPARATION` ~ `4`
  * - `DT_CROWD_OPTIMIZE_VIS` ~ `8`
  * - `DT_CROWD_OPTIMIZE_TOPO` ~ `16`
+ * 
+ * Obstacle avoidance (2) works if we tweak params,  and comment
+ * out code block "// Append neighbour segments as obstacles."
+ * in DetourCrowd.cpp.
+ * 
+ * But even then, it is still jittery.
  */
-// export const defaultAgentUpdateFlags = 1 + 2 + 4;
+
 // export const defaultAgentUpdateFlags = 1 + 2 + 4 + 8 + 16;
-// export const defaultAgentUpdateFlags = 1 + 8 + 16;
-// export const defaultAgentUpdateFlags = 1 + 2 + 4 + 8 + 16;
-// export const defaultAgentUpdateFlags = 1 + 2 + 8 + 16;
-// 🔔 2 causes unwanted slow down near segs e.g. doorways
 export const defaultAgentUpdateFlags = 1 + 4 + 8 + 16;
 
 export const colliderHeight = 1.8;
