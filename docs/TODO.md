@@ -72,13 +72,12 @@
 - ❌ maybe `move` retries doorway failures
 - ✅ BUG `locked-door` firing when it shouldn't
 
-- maybe allow move in doorway when other is slowing but try reduce/expand radius
-  - try to avoid unnecessarily stopping agent i.e. when there's space in front
-  - maybe all other cases of stopping are justified?
+- ✅ BUG: fix rebooting `click meta.floor | moveNpcOnClick path:selected`
+  - ℹ️ hook.js:608 WARN already rebooting process 25: { run util map "${@}"; }
 
-- overall strategy:
+- 🔔 overall strategy:
   - we don't expect arbitrary targets for multiple npcs to work
-  - instead, we'll carefully direct motion so that it does work
+  - instead, we'll carefully direct motion so that it _does_ work
 
 - maybe try to prevent agent target from being too close to door
 

@@ -148,7 +148,12 @@ export async function* map(ct) {
 
   if (isNativeCode === false) {
 
-    while ((datum = await api.read(true)) !== api.eof) {
+    let rejectLoop = () => {};
+    /** In case we're mapping a synchronous function, provide escape hatch if reboot process */
+    const rebootRejecter = new Promise((_, rej) => rejectLoop = rej);
+    api.handleStatus({ cleanups: rejectLoop });
+
+    while ((datum = await Promise.race([api.read(true), rebootRejecter])) !== api.eof) {
       try {
         if (api.isDataChunk(datum) === true) {
           if (isAsync === false) {// fast on chunks

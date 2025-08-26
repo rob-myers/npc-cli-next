@@ -283,9 +283,8 @@ const useStore = create<State>()((set, get): State => ({
       const process = api.getProcess({ sessionKey, pid });
       if (group === true) {
         const { pgid } = process;
-        api.getProcesses(sessionKey, pgid).forEach(
-          p => p.reboot?.apply()
-        );
+        const processes = api.getProcesses(sessionKey, pgid);
+        processes.forEach(p => p.reboot?.apply());
       } else {
         process.reboot?.apply();
       }
