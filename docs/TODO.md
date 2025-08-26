@@ -69,6 +69,19 @@
 - ✅ still seeing yank when one npc closely follows another through doorway
   - stop when other is slowing down in doorway
 
+- ❌ maybe `move` retries doorway failures
+- ✅ BUG `locked-door` firing when it shouldn't
+
+- maybe allow move in doorway when other is slowing but try reduce/expand radius
+  - try to avoid unnecessarily stopping agent i.e. when there's space in front
+  - maybe all other cases of stopping are justified?
+
+- overall strategy:
+  - we don't expect arbitrary targets for multiple npcs to work
+  - instead, we'll carefully direct motion so that it does work
+
+- maybe try to prevent agent target from being too close to door
+
 - careful about `p=$( npc rob position )` since this is a reference
   - maybe provide `api.getPosition()`
 

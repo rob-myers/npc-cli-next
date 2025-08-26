@@ -162,6 +162,47 @@ export default function useHandleEvents(w) {
       // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
       return null;
     },
+    findOtherNearDoorAndBlocking(npc, offMesh) {
+      const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
+      // const gmRoomId = state.npcToRoom.get(npc.key);
+  
+      for (const otherNpcKey of npcsNearbyDoor) {
+        if (otherNpcKey === npc.key) {
+          continue;
+        }
+  
+        const other = w.n[otherNpcKey];
+  
+        if (other.s.target !== null) {
+          // elsewhere, we'll always stop on collide npc with target
+          continue;
+        }
+
+        const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
+          offMesh.src.x, offMesh.src.z,
+          offMesh.dst.x, offMesh.dst.z,
+          other.position.x, other.position.z,
+          0.2,
+        );
+        
+        if (otherIntersectsMainSeg === false) {
+          // other is not close enough to offMesh connection
+          continue;
+        }
+  
+        const door = w.d[offMesh.gdKey];
+        if (geom.lineSegCoordsIntersectsCircle(
+          npc.position.x, npc.position.z,
+          door.center.x, door.center.y,
+          other.position.x, other.position.z,
+          0.4,
+        ) === true) {
+          return otherNpcKey;
+        }
+      }
+  
+      return null;
+    },
     followNpc(npcKey) {
       const npc = w.n[npcKey];
       w.view.followPosition(npc.position, { height: helper.defaults.height });
@@ -461,47 +502,6 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       return npc !== undefined && w.view.dst.look === npc.position;
     },
-    isOtherNearDoorAndBlocking(npc, offMesh) {
-      const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
-      // const gmRoomId = state.npcToRoom.get(npc.key);
-  
-      for (const otherNpcKey of npcsNearbyDoor) {
-        if (otherNpcKey === npc.key) {
-          continue;
-        }
-  
-        const other = w.n[otherNpcKey];
-  
-        if (other.s.target !== null) {
-          // elsewhere, we'll always stop on collide npc with target
-          continue;
-        }
-
-        const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
-          offMesh.src.x, offMesh.src.z,
-          offMesh.dst.x, offMesh.dst.z,
-          other.position.x, other.position.z,
-          0.2,
-        );
-        
-        if (otherIntersectsMainSeg === false) {
-          // other is not close enough to offMesh connection
-          continue;
-        }
-  
-        const door = w.d[offMesh.gdKey];
-        if (geom.lineSegCoordsIntersectsCircle(
-          npc.position.x, npc.position.z,
-          door.center.x, door.center.y,
-          other.position.x, other.position.z,
-          0.4,
-        ) === true) {
-          return true;
-        }
-      }
-  
-      return false;
-    },
     npcCanAccess(npcKey, gdKey) {
       if (state.doorToAccess[gdKey]?.size) {// check special access
         for (const regexDef of state.doorToAccess[gdKey]) {
@@ -542,20 +542,22 @@ export default function useHandleEvents(w) {
     onEnterOffMeshConnection(e, npc) {
       const { offMesh } = e;
       const door = w.door.byKey[offMesh.gdKey];
-
-      // try open closed door
-      if (
-        // 🔔 avoid yank via early-exit
-        state.isOtherNearDoorAndBlocking(npc, offMesh) ||
-        (door.open === false &&
-        state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false)
+      
+      if (// try open closed door
+        door.open === false &&
+        state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
-        //const nextCorner = npc.api.getNextCorner();
         npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.api.getRemainingPath() });
         npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(offMesh.dst));
         return;
       }
-      
+
+      const otherNpcKey = state.findOtherNearDoorAndBlocking(npc, offMesh);
+      if (otherNpcKey !== null) {// 🔔 avoid yank via early-exit
+        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey, rest: npc.api.getRemainingPath() });
+        return;
+      }
+              
       npc.s.lookSecs = 0.2;
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
@@ -979,7 +981,7 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
  * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
- * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => boolean} isOtherNearDoorAndBlocking
+ * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherNearDoorAndBlocking
  * offMesh early-exit-test i.e. test for some other npc which:
  * - is idle and in the way
  * - is very close to main segment of offMesh connection
