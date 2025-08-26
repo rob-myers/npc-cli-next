@@ -614,7 +614,7 @@ export default function useHandleEvents(w) {
         tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0
           ? door.hull === true ? 0.25 : 0.1
           : null,
-        tScaleSecs: 0.5,
+        tScaleSmoothTime: 0.5,
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
@@ -641,6 +641,7 @@ export default function useHandleEvents(w) {
 
         // 🔔 slow down when another in doorway,
         // avoids jerk when other slows down in doorway
+        // 🚧 speed up when all others leave?
         npc.agentAnim?.set_tScale(0.5);
         offMesh.tScale = 0.5;
         offMesh.tScaleDst = null;

@@ -668,7 +668,8 @@ export class NpcApi {
     if (offMesh.seg >= 1 && offMesh.tScaleDst !== null) {
       // - slow down if will stop right after doorway
       // - speed up if changed target while slowing down
-      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSecs, deltaSecs);
+      // 🔔 scale up tScaleSmoothTime makes traversal faster
+      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSmoothTime * 1.5, deltaSecs);
       anim.set_tScale(offMesh.tScale);
     }
 
@@ -968,7 +969,7 @@ export class NpcApi {
     } else if (typeof this.s.offMesh?.tScaleDst === 'number') {
       // speed back up
       this.s.offMesh.tScaleDst = 1;
-      this.s.offMesh.tScaleSecs = 0.1;
+      this.s.offMesh.tScaleSmoothTime = 0.1;
     }
 
     agent.requestMoveTarget(closest);

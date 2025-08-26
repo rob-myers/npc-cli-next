@@ -313,8 +313,8 @@ declare namespace NPC {
     tScale: number;
     /** Destination for `tScale`, non-null only if we need to slow down or speed up. */
     tScaleDst: null | number;
-    /** Duration for tweening `tScale` */
-    tScaleSecs: number;
+    /** Larger values mean the traversal takes less time */
+    tScaleSmoothTime: number;
   };
 
   type dtCrowdAgentAnimation = ReturnType<
