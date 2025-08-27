@@ -15,10 +15,10 @@ export function addStdinToArgs(dataFromStdin: any, args: any[]): any[] {
 }
 
 export function normalizeWhitespace(word: string, trim = true): string[] {
-  if (!word.trim()) {
+  if (word.trim() === '') {
     // Prevent [''].
     return [];
-  } else if (trim) {
+  } else if (trim === true) {
     return word.trim().replace(/[\s]+/g, " ").split(" ");
   }
 

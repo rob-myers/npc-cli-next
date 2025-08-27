@@ -552,12 +552,8 @@ class semanticsServiceClass {
    */
   private async *Expand(node: Sh.Word) {
     if (node.Parts.length > 1) {
-      for (const [index, wordPart] of node.Parts.entries()) {
-        if (wordPart.type === 'Lit' && wordPart.Value === '...' && node.Parts[index + 1]?.type === 'CmdSubst') {
-          wordPart.string = ''; // ignore spread
-        } else {
-          wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
-        }
+      for (const wordPart of node.Parts) {
+        wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
       }
       /** Is last value a parameter/command-expansion AND has trailing whitespace? */
       let lastTrailing = false;
@@ -566,18 +562,18 @@ class semanticsServiceClass {
 
       for (const part of node.Parts) {
         const value = part.string!;
-        const brace = part.type === "Lit" && (part as any).braceExp;
+        const brace = part.type === "Lit" && !!(part as any).braceExp;
 
         if (part.type === "ParamExp" || part.type === "CmdSubst") {
           const vs = normalizeWhitespace(value!, false); // Do not trim
-          if (!vs.length) {
+          if (vs.length === 0) {
             continue;
-          } else if (!values.length || lastTrailing || vs[0].startsWith(" ")) {
+          } else if (values.length === 0 || lastTrailing === true || vs[0].startsWith(" ")) {
             // Freely add, although trim 1st and last
             values.push(...vs.map((x) => x.trim()));
-          } else if (last(values) instanceof Array) {
-            values.push((values.pop() as string[]).map((x) => `${x}${vs[0].trim()}`));
-            values.push(...vs.slice(1).map((x) => x.trim()));
+          } else if (last(values) instanceof Array) {// prev brace exp
+            const value = vs.join(' ').trim();
+            values.push((values.pop() as string[]).map((x) => `${x}${value}`));
           } else {
             // Either `last(vs)` a trailing quote, or it has no trailing space
             // Since vs[0] has no leading space we must join words
@@ -587,11 +583,11 @@ class semanticsServiceClass {
           lastTrailing = last(vs)!.endsWith(" ");
         } else if (values.length === 0 || lastTrailing === true) {
           // Freely add
-          values.push(brace ? value.split(" ") : value);
+          values.push(brace === true ? value.split(" ") : value);
           lastTrailing = false;
         } else if (last(values) instanceof Array) {
           values.push(
-            brace
+            brace === true
               ? (values.pop() as string[]).flatMap((x) => value.split(" ").map((y) => `${x}${y}`))
               : (values.pop() as string[]).map((x) => `${x}${value}`)
           );
@@ -664,17 +660,9 @@ class semanticsServiceClass {
         try {
           const values = device.readAll();
           const wordParts = node.parent?.type === 'Word' || node.parent?.type === 'DblQuoted'  ? node.parent.Parts : [];
-          const prevWord = wordParts[wordParts.indexOf(node) - 1];
-          const spread = prevWord?.type === 'Lit' && prevWord.Value === '...';
 
           if (wordParts.length === 1 && node.parent!.parent?.type === 'Assign') {
             yield expand(values); // When `foo=$( bar )` forward non-string values
-          } else if (spread === true) {
-            yield expand(values
-              .map(x => typeof x === "string" ? x : jsStringify(x))
-              .join("\n")
-              .replace(/\n*$/, "") // remove trailing newlines
-            );
           } else {
              if (values.length > 1) {
              // yield expand(jsStringify(values));
