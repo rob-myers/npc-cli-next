@@ -224,7 +224,7 @@ export default function Debug(props) {
         renderOrder={1}
       >
         <circleGeometry args={[0.08, 8]} />
-        <meshBasicMaterial color="#0f9" opacity={0.5} transparent wireframe={false} />
+        <meshBasicMaterial color="#063" opacity={0.5} transparent wireframe={false} />
       </mesh>
     </group>}
 
