@@ -3328,11 +3328,12 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 0, "y": 0, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 0, 0],
-          "center": {"x": 3, "y": 0.96, "z": 1.5}
+          "bounds2d": {"x": 0.005, "y": 0, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 0.005, 0],
+          "center": {"x": 3.01, "y": 0.96, "z": 1.5}
         },
         {
           "type": "cuboid",
@@ -3344,11 +3345,12 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 9, "y": 0, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 9, 0],
-          "center": {"x": 12, "y": 0.96, "z": 1.5}
+          "bounds2d": {"x": 9.005, "y": 0, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 9.005, 0],
+          "center": {"x": 12.01, "y": 0.96, "z": 1.5}
         },
         {
           "type": "cuboid",
@@ -3360,11 +3362,12 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 15.01, "y": 0, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 15.01, 0],
-          "center": {"x": 18.01, "y": 0.96, "z": 1.5}
+          "bounds2d": {"x": 15.015, "y": 0, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 15.015, 0],
+          "center": {"x": 18.02, "y": 0.96, "z": 1.5}
         },
         {
           "type": "cuboid",
@@ -3376,11 +3379,12 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 24.01, "y": 0, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 24.01, 0],
-          "center": {"x": 27.01, "y": 0.96, "z": 1.5}
+          "bounds2d": {"x": 24.015, "y": 0, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 24.015, 0],
+          "center": {"x": 27.02, "y": 0.96, "z": 1.5}
         },
         {
           "type": "cuboid",
@@ -3392,11 +3396,12 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 9, "y": 27, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 9, 27],
-          "center": {"x": 12, "y": 0.96, "z": 28.5}
+          "bounds2d": {"x": 9.005, "y": 27, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 9.005, 27],
+          "center": {"x": 12.01, "y": 0.96, "z": 28.5}
         },
         {
           "type": "cuboid",
@@ -3408,10 +3413,11 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 15, "y": 27, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 15, 27],
+          "bounds2d": {"x": 15.005, "y": 27, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 15.005, 27],
           "center": {"x": 18, "y": 0.96, "z": 28.5}
         },
         {
@@ -3424,11 +3430,12 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 24.03, "y": 27, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 24.03, 27],
-          "center": {"x": 27.03, "y": 0.96, "z": 28.5}
+          "bounds2d": {"x": 24.035, "y": 27, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 24.035, 27],
+          "center": {"x": 27.04, "y": 0.96, "z": 28.5}
         },
         {
           "type": "cuboid",
@@ -3440,11 +3447,12 @@
             "max-height": true,
             "y": 0.01,
             "h": 1.9,
-            "color": "#ddd"
+            "color": "#777",
+            "outline": 0.4
           },
-          "bounds2d": {"x": 0, "y": 27, "width": 6, "height": 3},
-          "transform": [6, 0, 0, 3, 0, 27],
-          "center": {"x": 3, "y": 0.96, "z": 28.5}
+          "bounds2d": {"x": 0.005, "y": 27, "width": 6, "height": 3},
+          "transform": [6, 0, 0, 3, 0.005, 27],
+          "center": {"x": 3.01, "y": 0.96, "z": 28.5}
         },
         {
           "type": "circle",

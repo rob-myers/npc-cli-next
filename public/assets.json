@@ -230,7 +230,7 @@
     "fresher--025--3x2": {"outputHash": -2073406480, "pngHash": -1324814803},
     "fresher--036--4x2": {"outputHash": 570694497, "pngHash": 633687707},
     "fuel--010--4x2": {
-      "outputHash": 761162345,
+      "outputHash": 1558536595,
       "pngHash": 858873613,
       "obsHashes": [-2106922932]
     },
@@ -13633,7 +13633,7 @@
         },
         {
           "type": "Polygon",
-          "coordinates": [[[6, 0], [6, 3], [0, 3], [0, 0]]],
+          "coordinates": [[[6.005, 0], [6.005, 3], [0.005, 3], [0.005, 0]]],
           "meta": {
             "decor": true,
             "cuboid": true,
@@ -13641,8 +13641,9 @@
             "max-height": true,
             "y": 0,
             "h": -0.1,
-            "color": "#ddd",
-            "transform": [6, 0, 0, 3, 0, 0]
+            "color": "#777",
+            "outline": 0.4,
+            "transform": [6, 0, 0, 3, 0.005, 0]
           }
         }
       ],

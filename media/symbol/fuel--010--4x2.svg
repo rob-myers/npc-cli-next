@@ -49,7 +49,7 @@
   <path d="M 578.992 -19.002 L 620.008 -19.002 L 620.008 1217.99 L 578.992 1217.99 L 578.992 -19.002 Z" style="stroke-width: 3px; stroke-linecap: round; stroke-linejoin: round; fill-opacity: 0.5; fill: rgb(0, 0, 255); transform-origin: 599.5px 599.493px;" transform="matrix(0, 1, -1, 0, 0.000024103687, -0.000003021214)">
     <title>poly ceil fill=#222222</title>
   </path>
-  <use width="1" height="1" style="transform-origin: 0.5px 0.5px;" href="#symbol-0" transform="matrix(1200, 0, 0, 599.999939, 599.5, 299.499969)">
-    <title>decor cuboid fuel max-height y=0 h=-0.1 color=#ddd</title>
+  <use width="1" height="1" style="transform-origin: 0.5px 0.5px;" href="#symbol-0" transform="matrix(1200, 0, 0, 599.999939, 600.5, 299.499969)">
+    <title>decor cuboid fuel max-height y=0 h=-0.1 color=#777 outline=0.4</title>
   </use>
 </svg>
