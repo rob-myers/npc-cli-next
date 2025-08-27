@@ -66,6 +66,13 @@
 
 ### World
 
+- 🔔 overall strategy:
+  - we don't expect arbitrary targets for multiple npcs to work
+  - instead, we'll carefully direct motion so that it _does_ work
+
+- ✅ support clickable ceiling/walls
+  - WorldMenu: xray checkbox 
+
 - ✅ still seeing yank when one npc closely follows another through doorway
   - stop when other is slowing down in doorway
 
@@ -75,9 +82,6 @@
 - ✅ BUG: fix rebooting `click meta.floor | moveNpcOnClick path:selected`
   - ℹ️ hook.js:608 WARN already rebooting process 25: { run util map "${@}"; }
 
-- 🔔 overall strategy:
-  - we don't expect arbitrary targets for multiple npcs to work
-  - instead, we'll carefully direct motion so that it _does_ work
 
 - ✅ prevent agent exit from being too close to door
 
@@ -86,10 +90,12 @@
 - ✅ can tint decor quads
   - meta.color
 
+- ✅ BUG: sh: brace expansion issue
+  - `echo {1..5}$( echo 1; echo 2 )`
+
 - careful about `p=$( npc rob position )` since this is a reference
   - maybe provide `api.getPosition()`
 
-- support clickable ceiling/walls
 - support unclickable cuboid instance e.g. girder
 
 - ✅ moving camera should cancel `look at:rob` during profile

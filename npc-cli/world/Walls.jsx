@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 
 import { Mat, Vect } from "../geom";
-import { instancedMeshName, wallHeight } from "../service/const";
+import { instancedMeshName, wallHeight, xRayOpacity } from "../service/const";
 import { getQuadGeometryXY } from "../service/three";
 import { InstancedWallsMaterial } from "../service/glsl";
 import { geomorph } from "../service/geomorph";
@@ -18,7 +18,7 @@ export default function Walls(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXY(`${w.key}-walls-xy`),
-    opacity: 0.5,
+    opacity: xRayOpacity.walls,
 
     decodeInstanceId(instanceId) {
       // compute gmId, gmData.wallSegs[wallSegsId]
@@ -134,7 +134,7 @@ export default function Walls(props) {
         transparent={transparent}
         opacity={state.opacity}
         opacityCloseDivisor={8}
-        opacityMin={0.3}
+        opacityMin={state.opacity}
       />
     </instancedMesh>
   );

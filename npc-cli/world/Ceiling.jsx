@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 
 import { Mat, Poly } from "../geom";
-import { wallHeight, gmFloorExtraScale, worldToSguScale, sguToWorldScale, instancedMeshName } from "../service/const";
+import { wallHeight, gmFloorExtraScale, worldToSguScale, sguToWorldScale, instancedMeshName, xRayOpacity } from "../service/const";
 import { pause } from "../service/generic";
 import { drawPolygons } from "../service/dom";
 import { getQuadGeometryXZ } from "../service/three";
@@ -20,7 +20,7 @@ export default function Ceiling(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-ceiling-xz`),
-    opacity: 1,
+    opacity: xRayOpacity.ceiling,
 
     async draw() {
       w.menu.measure('ceil.draw');
@@ -95,7 +95,7 @@ export default function Ceiling(props) {
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
     },
-  }), { reset: { opacity: false } });
+  }), { reset: { opacity: true } });
 
   w.ceil = state;
   const { tex } = w.texCeil;
@@ -125,7 +125,7 @@ export default function Ceiling(props) {
         diffuse={[0.5, 0.5, 0.5]}
         objectPickRed={3}
         opacityCloseDivisor={10}
-        opacityMin={0.7}
+        opacityMin={state.opacity}
       />
     </instancedMesh>
   );

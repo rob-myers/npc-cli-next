@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import debounce from "debounce";
 
 import { debug, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
-import { html3DOpacityCssVar, worldViewBgColorCssVar, zIndexTabs, zIndexWorld } from "../service/const";
+import { html3DOpacityCssVar, xRayOpacity, worldViewBgColorCssVar, zIndexTabs, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -38,6 +38,7 @@ export default function WorldMenu(props) {
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
     showEffects: false,
+    xRayEnabled: true,
 
     applyControlsInitValues() {
       /** @param {any} value */
@@ -95,6 +96,12 @@ export default function WorldMenu(props) {
     onChangeShowEffects(e) {
       state.showEffects = e.currentTarget.checked;
       w.view.showEffects({ enabled: state.showEffects });
+      w.update();
+    },
+    onChangeXRayEnabled(e) {
+      state.xRayEnabled = e.currentTarget.checked;
+      w.wall.setOpacity(state.xRayEnabled === true ? xRayOpacity.walls : 1);
+      w.ceil.setOpacity(state.xRayEnabled === true ? xRayOpacity.ceiling : 1)
       w.update();
     },
     onClickLoggerLink(e) {
@@ -222,6 +229,14 @@ export default function WorldMenu(props) {
                 checked={state.showEffects}
               />
             </label>
+            <label>
+              xray
+              <input
+                type="checkbox"
+                onChange={state.onChangeXRayEnabled}
+                checked={state.xRayEnabled}
+              />
+            </label>
           </div>
         </PopUp>
 
@@ -347,7 +362,7 @@ const popUpCss = css`
       display: flex;
       align-items: center;
       gap: 8px;
-      font-family: 'Courier New', Courier, monospace;
+      //font-family: 'Courier New', Courier, monospace;
 
       &:has(> input:disabled) {
         color: #aaa;
@@ -436,16 +451,18 @@ const pausedControlsCss = css`
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
  * @property {boolean} showEffects
+ * @property {boolean} xRayEnabled
  *
  * @property {() => void} applyControlsInitValues
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBgScale
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeShowEffects
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBgScale
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRayEnabled
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
  * @property {() => void} onOverlayPointerUp
