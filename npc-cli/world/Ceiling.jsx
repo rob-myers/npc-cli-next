@@ -53,7 +53,7 @@ export default function Ceiling(props) {
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      drawPolygons(ct, tops.nonHull, ['#001', '#fff9', thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, ['#001', '#888', thickLineWidth]);
       // drawPolygons(ct, tops.nonHull, ['#000', '#001', thickLineWidth]);
       drawPolygons(ct, tops.window, [black, wallsHighlight, thickLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
