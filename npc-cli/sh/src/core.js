@@ -132,7 +132,7 @@ export async function* click(ct) {
           const number = totalClicks - numClicks; // 1, 2, ...
           const decorKey = `click-#${number}`;
           // 🔔 meta.floor induces meta.nav
-          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true }, y: e.position.y });
+          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true, color: '#999' }, y: e.position.y });
           w.decor.rememberInGroup('click', decorKey);
         }
       }

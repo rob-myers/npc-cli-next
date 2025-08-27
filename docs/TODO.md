@@ -81,6 +81,11 @@
 
 - ✅ prevent agent exit from being too close to door
 
+- ✅ BUG: fix constant size npc labels
+
+- ✅ can tint decor quads
+  - meta.color
+
 - careful about `p=$( npc rob position )` since this is a reference
   - maybe provide `api.getPosition()`
 

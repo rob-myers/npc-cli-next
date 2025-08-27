@@ -61,11 +61,14 @@ const humanZeroShader = {
     if (vType == 0) {// label quad
 
       // label quad is above head and faces camera
-      mvPosition = modelMatrix[3]; // translation
+      mvPosition = modelMatrix[3];
       mvPosition.y = labelY;
-      mvPosition = viewMatrix * mvPosition;
-      // mvPosition.xy += transformed.xy;
-      mvPosition.xy += transformed.xy * (length(cameraPosition) / 14.0);
+
+      mvPosition = viewMatrix * mvPosition; // relative to camera
+ 
+      // keep size constant and big enough
+      float scaleUp = max(-mvPosition.z * 0.1, 1.0);
+      mvPosition.xy += transformed.xy * scaleUp;
       
     } else {// everything else
 
