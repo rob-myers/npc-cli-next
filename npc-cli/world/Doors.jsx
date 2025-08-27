@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { damp } from "maath/easing"
 
 import { Mat, Vect } from "../geom";
-import { doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDepth, instancedMeshName, precision, wallOutset } from "../service/const";
+import { connectorEntranceHalfDepth, doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDepth, instancedMeshName, offMeshConnectionHalfDepth, precision, wallOutset } from "../service/const";
 import * as glsl from "../service/glsl";
 import { getBoxGeometry, getColor, getQuadGeometryXY } from "../service/three";
 import { geomorph } from "../service/geomorph";
@@ -92,6 +92,17 @@ export default function Doors(props) {
           // Compute navigable doorway
           // 🔔 align to offMeshConnection depths
           const entrances = door.computeEntrances().map(x => tmpMat1.transformPoint(x).precision(precision).json);
+          const srcEnSeg = { src: entrances[0], dst: entrances[1] };
+          const dstEnSeg = { src: entrances[2], dst: entrances[3] };
+
+          // far exits follow by adding farDelta{Src,Dst}
+          const smallRooms = door.roomIds.map(roomId => roomId === null ? false : gm.rooms[roomId].meta.small === true);
+          const [srcFarScale, dstFarScale] = smallRooms.map(small => (small === true ? 0 : 0.2) + (hull === true
+            ? (offMeshConnectionHalfDepth.hull - connectorEntranceHalfDepth.hull)
+            : (offMeshConnectionHalfDepth.nonHull - connectorEntranceHalfDepth.nonHull)
+          ));
+          const farDeltaSrc = { x: door.normal.x * srcFarScale, y: door.normal.y * srcFarScale };
+          const farDeltaDst = { x: door.normal.x * dstFarScale, y: door.normal.y * dstFarScale };
           
           state.byKey[gdKey] = state.byPos[posKey] = byGmId[doorId] = {
             gdKey, gmId, doorId,
@@ -115,10 +126,8 @@ export default function Doors(props) {
             dir: { x : Math.cos(radians), y: Math.sin(radians) },
             normal: tmpMat1.transformSansTranslate(door.normal.clone()),
             segLength: u.distanceTo(v),
-            entrances: [
-              { src: entrances[0], dst: entrances[1] },
-              { src: entrances[2], dst: entrances[3] },
-            ],
+            entrances: [srcEnSeg, dstEnSeg],
+            farDeltas: [farDeltaSrc, farDeltaDst],
 
             collidePoly,
             collideRect: collidePoly.rect.precision(precision),

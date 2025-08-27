@@ -333,6 +333,8 @@ declare namespace NPC {
     animTmid: number;
     /** Might need to restore this when turnBeforeMove */
     animTmax: number;
+    /** Should we slow down inside the doorway? */
+    slowDownDoorway: boolean;
   }
 
   type Obstacle = {

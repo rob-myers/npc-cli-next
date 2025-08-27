@@ -103,6 +103,11 @@ declare namespace Geomorph {
     segLength: number;
     /** 1st entrance pointed to by `normal` */
     entrances: [Geom.Seg, Geom.Seg];
+    /**
+     * Added to exits (an entrance) to compute "far exit".
+     * They are used to avoid NPCs blocking the door.
+     */
+    farDeltas: [Geom.VectJson, Geom.VectJson];
     /** As wide as door, slightly less deep than doorway. */
     collidePoly: Geom.Poly;
     /** Bounds of `doorway`. */

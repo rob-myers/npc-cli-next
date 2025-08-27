@@ -79,7 +79,7 @@
   - we don't expect arbitrary targets for multiple npcs to work
   - instead, we'll carefully direct motion so that it _does_ work
 
-- maybe try to prevent agent target from being too close to door
+- ✅ prevent agent exit from being too close to door
 
 - careful about `p=$( npc rob position )` since this is a reference
   - maybe provide `api.getPosition()`

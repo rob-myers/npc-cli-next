@@ -179,7 +179,7 @@ export default function useHandleEvents(w) {
         }
 
         const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
-          offMesh.src.x, offMesh.src.z,
+          offMesh.src.x + 0.1 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0.15 * (offMesh.dst.z - offMesh.src.z),
           offMesh.dst.x, offMesh.dst.z,
           other.position.x, other.position.z,
           0.2,
@@ -571,8 +571,8 @@ export default function useHandleEvents(w) {
       const doorEntryDist = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src);
 
       if (
-        Math.abs(deltaAng) > Math.PI/2
-        && doorEntryDist <= 0.5 // avoid early pause e.g. 180deg round corner
+        Math.abs(deltaAng) > Math.PI/2 + 0.2
+        && doorEntryDist <= 0.7 // avoid early pause e.g. 180deg round corner
       ) {
         // look towards door entrance or exit
         const towards = doorEntryDist > 0.1 ? adjusted.src : adjusted.dst;
@@ -588,9 +588,7 @@ export default function useHandleEvents(w) {
        * - It should be `null` iff we intend to slow down to stop inside doorway.
        * - We also want to avoid flicker when target is just round corner of a doorway.
        */
-      const nextUnitNull = (// target is too close
-        tmpVect1.copy(adjusted.dst).distToCoords(npc.lastTarget.x, npc.lastTarget.z) < 0.4
-      );
+      const nextUnitNull = adjusted.slowDownDoorway;
 
       // register adjusted traversal
       npc.s.offMesh = {
@@ -787,6 +785,19 @@ export default function useHandleEvents(w) {
         };
       }
 
+      // we slow down if final target is close to doorway exit,
+      // in which case, we exit further away to avoid blocking the door
+      const slowDownDoorway = (
+        tmpVect1.copy(newDst).distToCoords(npc.lastTarget.x, npc.lastTarget.z) < 0.4
+        && npc.pendingTargets.length === 0
+      );
+      if (slowDownDoorway === true) {
+        const sign = offMesh.aligned === true ? -1 : 1;
+        const farDelta = door.farDeltas[offMesh.aligned === true ? 1 : 0];
+        newDst.x += sign * farDelta.x;
+        newDst.y += sign * farDelta.y;
+      }
+
       // 🤔 could use last known speed and speed up via tScale
       const speed = npc.api.getMaxSpeed();
 
@@ -820,6 +831,7 @@ export default function useHandleEvents(w) {
         nextCorner,
         animTmid: tmid,
         animTmax: tmax,
+        slowDownDoorway,
       };
     },
     removeFromSensors(...npcKeys) {

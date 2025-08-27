@@ -668,8 +668,8 @@ export class NpcApi {
     if (offMesh.seg >= 1 && offMesh.tScaleDst !== null) {
       // - slow down if will stop right after doorway
       // - speed up if changed target while slowing down
-      // 🔔 scale up tScaleSmoothTime makes traversal faster
-      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSmoothTime * 1.5, deltaSecs);
+      // 🔔 scaling up tScaleSmoothTime makes traversal faster
+      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSmoothTime * 1.8, deltaSecs);
       anim.set_tScale(offMesh.tScale);
     }
 
@@ -710,7 +710,7 @@ export class NpcApi {
       const other = this.w.a[nei.idx];
 
       if (other.s.target === null) {
-        const delta = tmpVect1.copy(offMesh.dst).sub(point).normalize(0.4);
+        const delta = tmpVect1.copy(offMesh.dst).sub(point).normalize(0.5);
         if (geom.lineSegIntersectsCircle(
           // look further ahead to avoid another npc behind stopping this
           delta.add(point).json,
@@ -1281,7 +1281,7 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < 0.75) {
+    if (elapsedTime - this.s.slowBegin < 0.85) {
       return; // too short
     }
 
