@@ -120,7 +120,6 @@ export default function Floor(props) {
       drawPolygons(ct, gm.hullDoors.flatMap(x => x.poly), ['#0004', null]);
 
       // decals from gm.decor
-      // 🚧 test decals -> real ones
       const { decor } = w.geomorphs.sheet;
       const decals = gm.decor.filter(x => x.type === 'decal');
       for (const decal of decals) {

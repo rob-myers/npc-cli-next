@@ -95,6 +95,7 @@ export default function Doors(props) {
           const srcEnSeg = { src: entrances[0], dst: entrances[1] };
           const dstEnSeg = { src: entrances[2], dst: entrances[3] };
 
+          // 🤔 saw roomIds not ready?
           // far exits follow by adding farDelta{Src,Dst}
           const smallRooms = door.roomIds.map(roomId => roomId === null ? false : gm.rooms[roomId].meta.small === true);
           const [srcFarScale, dstFarScale] = smallRooms.map(small => (small === true ? 0 : 0.2) + (hull === true

@@ -247,7 +247,9 @@ export default function World(props) {
       if (mapChanged === true || gmsDataChanged === true) {
         state.gmsData?.dispose();
       }
+      
       Object.assign(state, next);
+
       debug({
         prevGeomorphs: !!prevGeomorphs,
         dataChanged,
