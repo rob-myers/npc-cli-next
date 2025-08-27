@@ -704,16 +704,16 @@ export default function Decor(props) {
       ref={state.ref('cuboidInst')}
       args={[state.cuboidGeom, undefined, state.cuboids.length]}
       // frustumCulled={false}
-      renderOrder={-1}
+      renderOrder={1}
       visible={ready}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
       {ready && <instancedFlatMaterial
         key={glsl.InstancedFlatMaterial.key}
         side={THREE.DoubleSide} // fix flipped gm
-        diffuse={[0.4, 0.4, 0.4]}
+        diffuse={[1, 1, 1]}
         objectPickRed={7}
-        opacity={query.status === 'success' ? 1 : 0}
+        // opacity={query.status === 'success' ? 1 : 0}
         quadOutlines
         transparent
       />}

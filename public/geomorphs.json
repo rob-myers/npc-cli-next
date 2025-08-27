@@ -22361,7 +22361,7 @@
             "nav": true,
             "h": 0.5,
             "y": 0,
-            "color": "#888"
+            "color": "#444"
           },
           "bounds2d": {"x": 4.875, "y": 6, "width": 0.75, "height": 0.5},
           "transform": [0.75, 0, 0, 0.5, 4.875, 6],
@@ -22581,7 +22581,7 @@
             "nav": true,
             "h": 0.5,
             "y": 0,
-            "color": "#999"
+            "color": "#555"
           },
           "bounds2d": {"x": 6, "y": 9, "width": 0.5, "height": 0.75},
           "transform": [0.5, 0, 0, 0.75, 6, 9],
@@ -22614,7 +22614,7 @@
             "nav": true,
             "h": 0.5,
             "y": 0,
-            "color": "#888"
+            "color": "#444"
           },
           "bounds2d": {"x": 8.5, "y": 9, "width": 0.5, "height": 0.75},
           "transform": [0.5, 0, 0, 0.75, 8.5, 9],
@@ -22630,7 +22630,7 @@
             "nav": true,
             "h": 0.5,
             "y": 0,
-            "color": "#888"
+            "color": "#444"
           },
           "bounds2d": {"x": 8.5, "y": 11.25, "width": 0.5, "height": 0.75},
           "transform": [0.5, 0, 0, 0.75, 8.5, 11.25],
@@ -22652,13 +22652,14 @@
             "decor": true,
             "cuboid": true,
             "girder": true,
-            "h": 0.11,
-            "y": 1.9,
-            "color": "#888"
+            "h": 0.1,
+            "y": 1.89,
+            "color": "#444",
+            "outline": 0.3
           },
           "bounds2d": {"x": 2.95, "y": 6, "width": 0.1, "height": 3},
           "transform": [0.1, 0, 0, 3, 2.95, 6],
-          "center": {"x": 3, "y": 1.95, "z": 7.5}
+          "center": {"x": 3, "y": 1.94, "z": 7.5}
         },
         {
           "type": "rect",
