@@ -193,8 +193,6 @@ const humanZeroShader = {
 
     if (vType >= 2) {// fade except label and body
       gl_FragColor.a *= opacity;
-    } else if (vType == 1) {// fade and blacken body
-      gl_FragColor *= opacity;
     }
   }
   `,
