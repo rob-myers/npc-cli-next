@@ -523,6 +523,7 @@ export default function useHandleEvents(w) {
       // teleport to prevent ongoing offMesh traversal
       const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
       agent.teleport(npc.position); 
+      agent.requestMoveTarget(npc.position);
     },
     onEnterDoorCollider(e) {// e.type === 'nearby'
       (state.npcToDoors[e.npcKey] ??= { nearby: new Set(), inside: null }).nearby.add(e.gdKey);
