@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg width="300" height="300" viewBox="0 0 300 300" style="filter: none;" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-  <defs>
-    <bx:grid x="0" y="0" width="300" height="300"/>
-  </defs>
-  <rect style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 12px;" x="4.198" y="3.562" width="295.802" height="296.438" rx="0" ry="0"/>
-  <rect style="stroke: rgb(0, 0, 0); fill: rgb(186, 218, 85); fill-opacity: 0.5; stroke-width: 12px;" x="147.457" y="147.129" width="152.543" height="152.871"/>
-</svg>

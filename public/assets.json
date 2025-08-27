@@ -3,7 +3,7 @@
     "101--hull": {"outputHash": -1537734539, "pngHash": 568633107},
     "102--hull": {"outputHash": -1106929025, "pngHash": 184103855},
     "103--hull": {"outputHash": -1589531377, "pngHash": -1937509879},
-    "301--hull": {"outputHash": -1165621201, "pngHash": 787602800},
+    "301--hull": {"outputHash": -1072867355, "pngHash": 787602800},
     "302--hull": {"outputHash": 967391303, "pngHash": -1557128953},
     "303--hull": {"outputHash": 1657774121, "pngHash": -299838577},
     "bed--003--1x1.6": {
@@ -428,29 +428,29 @@
         "width": 132,
         "height": 240
       },
-      "carpet--0": {
-        "carpet": true,
-        "decorImgKey": "carpet--0",
-        "sheetId": 0,
-        "x": 2,
-        "y": 364,
-        "width": 180,
-        "height": 180
-      },
       "screen--1x1": {
         "screen": true,
         "decorImgKey": "screen--1x1",
         "sheetId": 0,
-        "x": 304,
-        "y": 244,
+        "x": 2,
+        "y": 364,
         "width": 120,
         "height": 120
+      },
+      "arrow--0": {
+        "arrow": true,
+        "decorImgKey": "arrow--0",
+        "sheetId": 0,
+        "x": 124,
+        "y": 364,
+        "width": 90,
+        "height": 90
       },
       "icon--warn": {
         "icon": true,
         "decorImgKey": "icon--warn",
         "sheetId": 0,
-        "x": 184,
+        "x": 216,
         "y": 364,
         "width": 84,
         "height": 75
@@ -459,8 +459,8 @@
         "icon": true,
         "decorImgKey": "icon--door-closed",
         "sheetId": 0,
-        "x": 184,
-        "y": 441,
+        "x": 302,
+        "y": 364,
         "width": 77,
         "height": 77
       },
@@ -468,8 +468,8 @@
         "icon": true,
         "decorImgKey": "icon--door-locked",
         "sheetId": 0,
-        "x": 263,
-        "y": 441,
+        "x": 304,
+        "y": 244,
         "width": 77,
         "height": 77
       },
@@ -477,8 +477,8 @@
         "icon": true,
         "decorImgKey": "icon--door-open",
         "sheetId": 0,
-        "x": 342,
-        "y": 366,
+        "x": 438,
+        "y": 2,
         "width": 77,
         "height": 77
       },
@@ -486,8 +486,8 @@
         "icon": true,
         "decorImgKey": "icon--door-unlocked",
         "sheetId": 0,
-        "x": 342,
-        "y": 445,
+        "x": 438,
+        "y": 81,
         "width": 77,
         "height": 77
       },
@@ -495,8 +495,8 @@
         "icon": true,
         "decorImgKey": "icon--doc",
         "sheetId": 0,
-        "x": 270,
-        "y": 366,
+        "x": 438,
+        "y": 160,
         "width": 50,
         "height": 72
       },
@@ -505,7 +505,7 @@
         "decorImgKey": "icon--key-card",
         "sheetId": 0,
         "x": 438,
-        "y": 2,
+        "y": 234,
         "width": 72,
         "height": 48
       },
@@ -513,8 +513,8 @@
         "icon": true,
         "decorImgKey": "icon--#0",
         "sheetId": 0,
-        "x": 438,
-        "y": 52,
+        "x": 383,
+        "y": 284,
         "width": 60,
         "height": 60
       },
@@ -522,8 +522,8 @@
         "icon": true,
         "decorImgKey": "icon--#1",
         "sheetId": 0,
-        "x": 438,
-        "y": 114,
+        "x": 445,
+        "y": 284,
         "width": 60,
         "height": 60
       },
@@ -531,8 +531,8 @@
         "icon": true,
         "decorImgKey": "icon--#10",
         "sheetId": 0,
-        "x": 438,
-        "y": 176,
+        "x": 381,
+        "y": 346,
         "width": 60,
         "height": 60
       },
@@ -540,8 +540,8 @@
         "icon": true,
         "decorImgKey": "icon--#2",
         "sheetId": 0,
-        "x": 438,
-        "y": 238,
+        "x": 443,
+        "y": 346,
         "width": 60,
         "height": 60
       },
@@ -549,8 +549,8 @@
         "icon": true,
         "decorImgKey": "icon--#3",
         "sheetId": 0,
-        "x": 426,
-        "y": 300,
+        "x": 381,
+        "y": 408,
         "width": 60,
         "height": 60
       },
@@ -558,8 +558,8 @@
         "icon": true,
         "decorImgKey": "icon--#4",
         "sheetId": 0,
-        "x": 426,
-        "y": 362,
+        "x": 443,
+        "y": 408,
         "width": 60,
         "height": 60
       },
@@ -567,8 +567,8 @@
         "icon": true,
         "decorImgKey": "icon--#5",
         "sheetId": 0,
-        "x": 421,
-        "y": 424,
+        "x": 2,
+        "y": 486,
         "width": 60,
         "height": 60
       },
@@ -576,8 +576,8 @@
         "icon": true,
         "decorImgKey": "icon--#6",
         "sheetId": 0,
-        "x": 512,
-        "y": 2,
+        "x": 64,
+        "y": 486,
         "width": 60,
         "height": 60
       },
@@ -585,8 +585,8 @@
         "icon": true,
         "decorImgKey": "icon--#7",
         "sheetId": 0,
-        "x": 500,
-        "y": 64,
+        "x": 126,
+        "y": 470,
         "width": 60,
         "height": 60
       },
@@ -594,8 +594,8 @@
         "icon": true,
         "decorImgKey": "icon--#8",
         "sheetId": 0,
-        "x": 500,
-        "y": 126,
+        "x": 188,
+        "y": 470,
         "width": 60,
         "height": 60
       },
@@ -603,8 +603,8 @@
         "icon": true,
         "decorImgKey": "icon--#9",
         "sheetId": 0,
-        "x": 500,
-        "y": 188,
+        "x": 250,
+        "y": 470,
         "width": 60,
         "height": 60
       },
@@ -612,8 +612,8 @@
         "icon": true,
         "decorImgKey": "icon--info",
         "sheetId": 0,
-        "x": 500,
-        "y": 250,
+        "x": 312,
+        "y": 443,
         "width": 60,
         "height": 60
       },
@@ -621,8 +621,8 @@
         "icon": true,
         "decorImgKey": "icon--robot",
         "sheetId": 0,
-        "x": 488,
-        "y": 312,
+        "x": 374,
+        "y": 470,
         "width": 60,
         "height": 60
       },
@@ -630,8 +630,8 @@
         "icon": true,
         "decorImgKey": "icon--white-circle",
         "sheetId": 0,
-        "x": 488,
-        "y": 374,
+        "x": 436,
+        "y": 470,
         "width": 60,
         "height": 60
       },
@@ -639,8 +639,8 @@
         "icon": true,
         "decorImgKey": "icon--square",
         "sheetId": 0,
-        "x": 421,
-        "y": 486,
+        "x": 517,
+        "y": 2,
         "width": 38,
         "height": 58
       },
@@ -648,14 +648,14 @@
         "colour": true,
         "decorImgKey": "colour--white",
         "sheetId": 0,
-        "x": 426,
-        "y": 244,
+        "x": 124,
+        "y": 456,
         "width": 6,
         "height": 6
       }
     },
-    "decorDims": [{"width": 574, "height": 546}],
-    "maxDecorDim": {"width": 574, "height": 546},
+    "decorDims": [{"width": 557, "height": 548}],
+    "maxDecorDim": {"width": 557, "height": 548},
     "obstacle": {
       "bridge--042--8x9 4": {
         "x": 2,
@@ -1451,7 +1451,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 853879071},
-    "imagesHash": 854883114
+    "imagesHash": -213898189
   },
   "skin": {
     "numSheets": {"human-0": 2},
@@ -5853,12 +5853,14 @@
         },
         {
           "type": "Polygon",
-          "coordinates": [[[3.9987, 7], [4, 8.0322], [3.0013, 8.0323], [3, 7]]],
+          "coordinates": [
+            [[8.25, 6.6], [8.2503, 6.85], [8.0003, 6.85], [8, 6.6]]
+          ],
           "meta": {
             "decor": true,
             "decal": true,
-            "img": "carpet--0",
-            "transform": [0.9987, 0, 0.0013, 1.0322, 3, 7]
+            "img": "arrow--0",
+            "transform": [0.25, 0, 0.0003, 0.25, 8, 6.6]
           }
         },
         {
@@ -5873,6 +5875,18 @@
             "color": "#444",
             "outline": 0.3,
             "transform": [0.1, 0, 0, 3, 2.95, 6]
+          }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [
+            [[21.9503, 6.6], [21.95, 6.85], [21.7, 6.85], [21.7003, 6.6]]
+          ],
+          "meta": {
+            "decor": true,
+            "decal": true,
+            "img": "arrow--0",
+            "transform": [-0.25, 0, -0.0003, 0.25, 21.9503, 6.6]
           }
         }
       ],

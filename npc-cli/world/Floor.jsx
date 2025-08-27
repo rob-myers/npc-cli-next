@@ -121,16 +121,16 @@ export default function Floor(props) {
 
       // decals from gm.decor
       // 🚧 test decals -> real ones
-      // const { decor } = w.geomorphs.sheet;
-      // const decals = gm.decor.filter(x => x.type === 'decal');
-      // for (const decal of decals) {
-      //   const rect = decor[decal.meta.img];
-      //   // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
-      //   ct.save();
-      //   ct.transform(...decal.transform);
-      //   ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
-      //   ct.restore();
-      // }
+      const { decor } = w.geomorphs.sheet;
+      const decals = gm.decor.filter(x => x.type === 'decal');
+      for (const decal of decals) {
+        const rect = decor[decal.meta.img];
+        // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
+        ct.save();
+        ct.transform(...decal.transform);
+        ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
+        ct.restore();
+      }
 
     },
     positionInstances() {
