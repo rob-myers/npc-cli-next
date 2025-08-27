@@ -53,8 +53,8 @@ export default function Ceiling(props) {
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      // drawPolygons(ct, tops.nonHull, ['#001', '#fff', thickLineWidth]);
-      drawPolygons(ct, tops.nonHull, ['#000', '#001', thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, ['#001', '#fff9', thickLineWidth]);
+      // drawPolygons(ct, tops.nonHull, ['#000', '#001', thickLineWidth]);
       drawPolygons(ct, tops.window, [black, wallsHighlight, thickLineWidth]);
       drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
       
@@ -95,7 +95,7 @@ export default function Ceiling(props) {
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
     },
-  }), { reset: { opacity: true } });
+  }), { reset: { opacity: false } });
 
   w.ceil = state;
   const { tex } = w.texCeil;
