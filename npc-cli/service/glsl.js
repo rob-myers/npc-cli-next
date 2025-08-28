@@ -67,7 +67,7 @@ const humanZeroShader = {
       mvPosition = viewMatrix * mvPosition; // relative to camera
  
       // keep size constant and big enough
-      float scaleUp = max(-mvPosition.z * 0.1, 1.0);
+      float scaleUp = max(min(-mvPosition.z, 25.0) * 0.1, 1.0);
       mvPosition.xy += transformed.xy * scaleUp;
       
     } else {// everything else
