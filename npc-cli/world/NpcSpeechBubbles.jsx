@@ -150,7 +150,7 @@ export const npcSpeechBubbleCss = css`
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     /* font-weight: lighter; */
     /* font-style: italic; */
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.3);
     background-color: rgba(0, 0, 0, 0.6);
