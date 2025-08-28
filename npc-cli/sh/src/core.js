@@ -31,6 +31,9 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
  * click 5 meta.nav
  * click meta.nav
  * click meta.nav 2
+ * 
+ * # clear decor quads
+ * click clear
  * ```
  * 
  * - Shows number of clicks in decor
@@ -47,6 +50,12 @@ export async function* click(ct) {
       "block", // e.g. `click --block`
     ],
   });
+
+  if (operands[0] === 'clear' && operands.length === 1) {
+    w.decor.removeGroup('click'); // clear UI
+    return;
+  }
+
   if (opts["right"] === false && opts["any"] === false)  {
     opts.left = true; // default to left clicks only
   }
@@ -63,10 +72,6 @@ export async function* click(ct) {
   const totalClicks = numClicks;
   const clickId = isStringInt(operands[0]) || opts.block === true ? api.getUid() : undefined;
   const blocking = clickId !== undefined;
-  
-  if (blocking === true) {// clear UI
-    w.decor.removeGroup('click');
-  }
 
   // support `click meta.nav`
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
@@ -129,9 +134,9 @@ export async function* click(ct) {
         yield output;
 
         if (blocking === true) {
-          const number = totalClicks - numClicks; // 1, 2, ...
-          const decorKey = `click-#${number}`;
-          // 🔔 meta.floor induces meta.nav
+          const number = totalClicks - numClicks; // 1 2 ...
+          const decorKey = `click-#${number}-${clickId}`;
+          // meta.floor induces meta.nav
           createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true, color: '#999' }, y: e.position.y });
           w.decor.rememberInGroup('click', decorKey);
         }

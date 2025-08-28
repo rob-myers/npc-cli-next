@@ -94,9 +94,13 @@
 - ✅ BUG: sh: brace expansion issue
   - `echo {1..5}$( echo 1; echo 2 )`
 
+- ✅ `click` does not auto clear decor quads
+  - support `click clear`
+
+- early exit when another coming other way thru doorway
+
 - careful about `p=$( npc rob position )` since this is a reference
   - maybe provide `api.getPosition()`
-
 
 - ✅ moving camera should cancel `look at:rob` during profile
 
