@@ -9,6 +9,7 @@
 Interactively:
 
 ```sh
+# spawn outside bedroom
 spawn npc:rob at:$( click 1)
 
 narrate the man went to his bedroom

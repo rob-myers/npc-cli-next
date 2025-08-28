@@ -183,7 +183,7 @@
   - ✅ CameraControls React component
   - ✅ Replace MapControls from drei
   - 🚧 CameraControls class
-  - Replace CameraControls from `three-stdlib`
+  - 🚧 Replace CameraControls from `three-stdlib`
 
 - ✅ BUG: PsList: gray always process leaders
   - ℹ️ on mobile not seeing 'resume' for always-tagged process leaders because they aren't resumed
