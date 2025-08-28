@@ -1419,6 +1419,7 @@ export class NpcApi {
     ct.textBaseline = 'top';
     ct.letterSpacing = '1px';
     ct.textRendering = 'optimizeLegibility';
+    ct.lineJoin = 'round';
     const { width } = ct.measureText(label);
     const dx = (skinsLabelsTextureWidth - width)/2;
     const dy = (skinsLabelsTextureHeight - fontHeight)/2;
