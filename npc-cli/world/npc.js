@@ -1415,9 +1415,9 @@ export class NpcApi {
     ct.strokeStyle = 'rgba(20, 20, 20, 1)';
     ct.fillStyle = 'rgba(200, 200, 200, 1)';
     ct.lineWidth = strokeWidth;
-    ct.font = `${fontHeight}px monospace`;
+    ct.font = `${fontHeight}px sans-serif`;
     ct.textBaseline = 'top';
-    ct.letterSpacing = '0px';
+    ct.letterSpacing = '1px';
     ct.textRendering = 'optimizeLegibility';
     const { width } = ct.measureText(label);
     const dx = (skinsLabelsTextureWidth - width)/2;
@@ -1570,7 +1570,7 @@ export class NpcApi {
     
     // Label in model is half below ground with total height `labelHeight`.
     // We'll move it 2.5 * labelHeight above npc's current height.
-    const offsetY = animHeights[act] + (0.5 + 2.5) * labelHeight;
+    const offsetY = 0.05 + animHeights[act] + (0.5 + 2.5) * labelHeight;
     
     // for speech bubble
     this.base.offsetSpeech.y = offsetY;
