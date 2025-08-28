@@ -80,10 +80,6 @@ export async function* click(ct) {
       return; // `click --clear` does not send clicks
     }
   }
-  
-  if (opts.keep !== true && blocking === true) {// clear current color
-    w.decor.removeGroup(clickGroup);
-  }
 
   // support `click meta.nav`
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
@@ -142,6 +138,10 @@ export async function* click(ct) {
       };
 
       if (filter === undefined || filter?.(output)) {
+        if (numClicks === totalClicks && opts.keep !== true && blocking === true) {
+          w.decor.removeGroup(clickGroup); // clear current color
+        }
+
         numClicks--;
         yield output;
 
