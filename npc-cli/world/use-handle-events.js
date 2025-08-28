@@ -162,7 +162,7 @@ export default function useHandleEvents(w) {
       // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
       return null;
     },
-    findOtherNearDoorAndBlocking(npc, offMesh) {
+    findOtherBlockingNearDoor(npc, offMesh) {
       const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
       // const gmRoomId = state.npcToRoom.get(npc.key);
   
@@ -201,6 +201,17 @@ export default function useHandleEvents(w) {
         }
       }
   
+      return null;
+    },
+    findOtherBlockingOppositeDir(offMesh, src, dst) {
+      for (const tr of state.doorToOffMesh[offMesh.gdKey] ?? []) {
+        if (tr.orig.srcGrKey === offMesh.srcGrKey) {
+          continue;
+        }
+        if (state.testOffMeshDisjoint(tr, src, dst) === false) {
+          return tr.npcKey;
+        }
+      }
       return null;
     },
     followNpc(npcKey) {
@@ -553,15 +564,23 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      const otherNpcKey = state.findOtherNearDoorAndBlocking(npc, offMesh);
-      if (otherNpcKey !== null) {// 🔔 avoid yank via early-exit
-        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey, rest: npc.api.getRemainingPath() });
+      // 🔔 avoid yank via early-exit
+      let blockingNpcKey = state.findOtherBlockingNearDoor(npc, offMesh);
+      if (blockingNpcKey !== null) {
+        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() });
         return;
       }
               
       npc.s.lookSecs = 0.2;
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
+
+      // 🔔 avoid yank via early-exit
+      blockingNpcKey = state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst);
+      if (blockingNpcKey !== null) {
+        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() });
+        return;
+      }
 
       // turnBeforeMove when delta angle large enough
       const deltaAng = deltaAngle(
@@ -631,7 +650,7 @@ export default function useHandleEvents(w) {
         if (
           tr.npcKey === e.npcKey
           || tr.seg === 0
-          || state.testOffMeshDisjoint(offMesh, tr) === true
+          || state.testOffMeshDisjoint(offMesh, tr.src, tr.dst) === true
         ) {
           continue;
         }
@@ -892,11 +911,10 @@ export default function useHandleEvents(w) {
     someNpcNearDoor(gdKey) {
       return state.doorToNearbyNpcs[gdKey]?.size > 0;
     },
-    testOffMeshDisjoint(offMesh1, offMesh2) {
+    testOffMeshDisjoint(offMesh1, src, dst, radius = helper.defaults.radius * 0.8) {
       // 🚧 handle diagonal doors
-      const npcRadius = helper.defaults.radius * 0.8;
-      const rect1 = tmpRect1.setFromPoints(offMesh1.src, offMesh1.dst).outset(npcRadius);
-      const rect2 = tmpRect2.setFromPoints(offMesh2.src, offMesh2.dst).outset(npcRadius);
+      const rect1 = tmpRect1.setFromPoints(offMesh1.src, offMesh1.dst).outset(radius);
+      const rect2 = tmpRect2.setFromPoints(src, dst).outset(radius);
       return rect1.intersects(rect2) === false;
     },
     toggleDoor(gdKey, opts = {}) {
@@ -1001,7 +1019,8 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
  * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
- * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherNearDoorAndBlocking
+ * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
+ * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
  * offMesh early-exit-test i.e. test for some other npc which:
  * - is idle and in the way
  * - is very close to main segment of offMesh connection
@@ -1020,8 +1039,10 @@ export default function useHandleEvents(w) {
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
  * @property {(opts: { npcKey: string, words?: string }) => void} say
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
- * @property {(offMesh1: NPC.OffMeshState, offMesh2: NPC.OffMeshState) => boolean} testOffMeshDisjoint
- * Are two offMeshConnection traversals disjoint?
+ * @property {(offMesh: NPC.OffMeshState, src: Geom.VectJson, dst: Geom.VectJson, radius?: number) => boolean} testOffMeshDisjoint
+ * Are these disjoint?
+ * - main `offMesh` segment outset by `radius`
+ * - (`src`, `dst`) outset by `radius`
  * @property {(gdKey: Geomorph.GmDoorKey, opts?: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
  * Returns `true` iff successful.
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; point?: Geom.VectJson; } & Geomorph.ToggleLockOpts) => boolean} toggleLock
