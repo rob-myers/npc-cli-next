@@ -1410,13 +1410,14 @@ export class NpcApi {
     }
 
     const strokeWidth = 8 * skinsLabelScale;
-    const fontHeight = 36 * skinsLabelScale; // permits > 12 chars on OSX Chrome
+    // permits 10 chars on OSX Chrome
+    const fontHeight = 32 * skinsLabelScale;
     ct.strokeStyle = 'rgba(20, 20, 20, 1)';
     ct.fillStyle = 'rgba(200, 200, 200, 1)';
     ct.lineWidth = strokeWidth;
-    ct.font = `${fontHeight}px "Courier New"`;
+    ct.font = `${fontHeight}px monospace`;
     ct.textBaseline = 'top';
-    ct.letterSpacing = '4px';
+    ct.letterSpacing = '0px';
     ct.textRendering = 'optimizeLegibility';
     const { width } = ct.measureText(label);
     const dx = (skinsLabelsTextureWidth - width)/2;

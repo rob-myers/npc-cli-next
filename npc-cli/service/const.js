@@ -369,7 +369,11 @@ export const npcClassToMeta = {
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     modelAnimHeight: {// pre-scale heights
-      Idle: 2.1, Run: 2.1, Walk: 2.1, Lie: 0.5, Sit: 1.6,
+      Idle: 2.1,
+      Run: 2.1,
+      Walk: 2.1,
+      Lie: 0.5,
+      Sit: 1.6,
     },
     modelLabelHeight: 0.25,
     modelUrl: '/3d/human-0.glb',
