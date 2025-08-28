@@ -31,9 +31,9 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
  * click 5 meta.nav
  * click meta.nav
  * click meta.nav 2
- * 
- * # clear decor quads
- * click clear
+ * click --red 3
+ * click --red --keep 3
+ * click --clear
  * ```
  * 
  * - Shows number of clicks in decor
@@ -48,18 +48,15 @@ export async function* click(ct) {
       "long",  // long press only
       "any",   // any permitted
       "block", // e.g. `click --block`
+      "clear", // clear all colours
+      "keep",  // keep clicks of current color
+      // --red, --blue, --green (default black)
     ],
   });
-
-  if (operands[0] === 'clear' && operands.length === 1) {
-    w.decor.removeGroup('click'); // clear UI
-    return;
-  }
 
   if (opts["right"] === false && opts["any"] === false)  {
     opts.left = true; // default to left clicks only
   }
-
   if (!isStringInt(operands[0]) && isStringInt(operands[1])) {
     operands = [operands[1], operands[0]]; // support reverse order `click meta.nav 2`
   }
@@ -72,6 +69,21 @@ export async function* click(ct) {
   const totalClicks = numClicks;
   const clickId = isStringInt(operands[0]) || opts.block === true ? api.getUid() : undefined;
   const blocking = clickId !== undefined;
+
+  const colors = { red: '#c00', green: '#0c0', blue: '#00c',  black: '#999' };
+  const color = opts.red === true ? colors.red : opts.blue === true ? colors.blue : opts.green === true ? colors.green : colors.black;
+  const clickGroup = `click-${color}`;
+
+  if (opts.clear === true) {// clear labels of all colours
+    Object.values(colors).forEach(color => w.decor.removeGroup(`click-${color}`));
+    if (operands.length === 0) {
+      return; // `click --clear` does not send clicks
+    }
+  }
+  
+  if (opts.keep !== true && blocking === true) {// clear current color
+    w.decor.removeGroup(clickGroup);
+  }
 
   // support `click meta.nav`
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
@@ -135,10 +147,10 @@ export async function* click(ct) {
 
         if (blocking === true) {
           const number = totalClicks - numClicks; // 1 2 ...
-          const decorKey = `click-#${number}-${clickId}`;
+          const decorKey = `${clickGroup}-#${number}-${clickId}`;
           // meta.floor induces meta.nav
-          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true, color: '#999' }, y: e.position.y });
-          w.decor.rememberInGroup('click', decorKey);
+          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true, color }, y: e.position.y });
+          w.decor.rememberInGroup(clickGroup, decorKey);
         }
       }
     }
