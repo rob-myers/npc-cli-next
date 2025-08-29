@@ -564,21 +564,17 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      // 🔔 avoid yank via early-exit
-      let blockingNpcKey = state.findOtherBlockingNearDoor(npc, offMesh);
-      if (blockingNpcKey !== null) {
-        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() });
-        return;
-      }
-              
-      npc.s.lookSecs = 0.2;
-
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
 
       // 🔔 avoid yank via early-exit
-      blockingNpcKey = state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst);
+      const blockingNpcKey = (
+        state.findOtherBlockingNearDoor(npc, offMesh)
+        || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
+      );
       if (blockingNpcKey !== null) {
-        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() });
+        // 🚧 remove getEulerAngle
+        const lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(adjusted.dst));
+        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() }, lookAngleDst);
         return;
       }
 

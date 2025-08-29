@@ -709,29 +709,24 @@ export class NpcApi {
       // maybe cancel traversal
       const other = this.w.a[nei.idx];
 
-      if (other.s.target === null) {
-        const delta = tmpVect1.copy(offMesh.dst).sub(point).normalize(0.5);
-        if (geom.lineSegIntersectsCircle(
-          // look further ahead to avoid another npc behind stopping this
-          delta.add(point).json,
-          // point,
-          // offMesh.src,
-          offMesh.dst,
-          // this.w.d[offMesh.orig.gdKey].center
-          other.api.getPoint(),
-          0.3, // sometimes small flicker when idle
-        ) === false) {
-          // 🔔 other idle and "not in the way"
-          continue;
-        }
-      }
-      
       if (other.s.offMesh !== null) {
         const lead = this.getOtherDoorwayLead(other);
         if (lead >= 0.3 || lead <= 0) {
-          // 🔔 other traversing with enough lead
-          continue;
+          continue; // 🔔 other traversing with enough lead
         }
+      }
+
+      const delta = tmpVect1.copy(offMesh.dst).sub(point).normalize(
+        other.s.target === null ? 0.5 : 0
+      );
+      if (geom.lineSegIntersectsCircle(
+        // look further ahead to avoid another npc behind stopping this
+        delta.add(point).json,
+        offMesh.dst,
+        other.api.getPoint(),
+        0.3,
+      ) === false) {
+        continue;
       }
 
       this.stopMoving({
@@ -1490,8 +1485,14 @@ export class NpcApi {
     this.updateLabelOffsets();
   }
 
-  /** @param {NPC.StopReason} reason */
-  stopMoving(reason = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() }) {
+  /**
+   * @param {NPC.StopReason} reason
+   * @param {null | number} lookAngleDst 
+   */
+  stopMoving(
+    reason = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() },
+    lookAngleDst = null,
+  ) {
     const agent = this.base.agent;
 
     if (agent === null || this.s.target === null) {
@@ -1499,7 +1500,7 @@ export class NpcApi {
     }
 
     this.s.lookSecs = lookSecsNoTarget;
-    this.s.lookAngleDst = null;
+    this.s.lookAngleDst = lookAngleDst;
     this.s.slowBegin = null;
     this.s.target = null;
 
