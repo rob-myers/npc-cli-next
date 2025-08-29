@@ -148,10 +148,10 @@ export async function* map(ct) {
 
   if (isNativeCode === false) {
 
-    let rejectLoop = () => {};
-    /** In case we're mapping a synchronous function, provide escape hatch if reboot process */
-    const rebootRejecter = new Promise((_, rej) => rejectLoop = rej);
-    api.handleStatus({ cleanups: rejectLoop });
+    let rejectLoop = /** @param {any} e */ (e) => {};
+    /** In case we're waiting for read, provide escape hatch if reboot process */
+    const rebootRejecter = new Promise((_, reject) => rejectLoop = reject);
+    api.handleStatus({ cleanups() { rejectLoop(api.getKillError()) } });
 
     while ((datum = await Promise.race([api.read(true), rebootRejecter])) !== api.eof) {
       try {
