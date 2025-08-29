@@ -309,11 +309,9 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
 
     if (nei.dist <= (other.s.run === true ? 0.8 : 0.6)) {
       // turn towards "closest neighbour" if they have a target
-      npc.s.lookAngleDst = npc.api.getEulerAngle(
-        geom.clockwiseFromNorth((
-          other.position.z - npc.position.z),
-          (other.position.x - npc.position.x)
-        )
+      npc.s.lookAngleDst = geom.clockwiseFromNorth((
+        other.position.z - npc.position.z),
+        (other.position.x - npc.position.x)
       );
     } else {
       npc.s.lookAngleDst = null;

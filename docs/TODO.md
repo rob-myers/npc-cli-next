@@ -70,6 +70,16 @@
   - we don't expect arbitrary targets for multiple npcs to work
   - instead, we'll carefully direct motion so that it _does_ work
 
+- ✅ lookAngleDst should be clockwise from above
+
+- invert should not apply css filter
+  - checkbox for floor (redraw), decor (shader), cuboids
+  - can specify decor.meta.invert `false` e.g. screen
+  - remove npc shader invert
+
+- remove postprocessing
+  - e.g. slow down on desktop in fullscreen
+
 - ✅ support clickable ceiling/walls
   - WorldMenu: xray checkbox 
 - ❌ support unclickable cuboid instance e.g. girder

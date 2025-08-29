@@ -560,7 +560,7 @@ export default function useHandleEvents(w) {
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
         npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.api.getRemainingPath() });
-        npc.s.lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(offMesh.dst));
+        npc.s.lookAngleDst = npc.api.getLookAngle(offMesh.dst);
         return;
       }
 
@@ -572,8 +572,7 @@ export default function useHandleEvents(w) {
         || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
       );
       if (blockingNpcKey !== null) {
-        // 🚧 remove getEulerAngle
-        const lookAngleDst = npc.api.getEulerAngle(npc.api.getLookAngle(adjusted.dst));
+        const lookAngleDst = npc.api.getLookAngle(adjusted.dst);
         npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() }, lookAngleDst);
         return;
       }

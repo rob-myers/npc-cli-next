@@ -679,7 +679,7 @@ export class NpcApi {
     const dirX = lookAt.x - this.base.position.x;
     const dirY = lookAt.y - this.base.position.z;
     const radians = geom.clockwiseFromNorth(dirY, dirX);
-    this.s.lookAngleDst = this.getEulerAngle(radians);
+    this.s.lookAngleDst = radians;
 
     if (anim.t > anim.tmax - 0.1) {// exit in direction we're looking
       anim.set_unitExitVel(0, Math.cos(radians - Math.PI/2) * anim.tScale);
@@ -803,7 +803,7 @@ export class NpcApi {
       throw new Error(`${'look'}: cannot whilst "${this.s.anim}"`);
     }
 
-    this.s.lookAngleDst = this.getEulerAngle(input);
+    this.s.lookAngleDst = input;
     this.s.lookSecs = ms / 1000;
 
     try {
@@ -1148,7 +1148,8 @@ export class NpcApi {
     this.base.mixer.update(deltaSecs);
 
     if (this.s.lookAngleDst !== null) {
-      if (dampAngle(this.base.rotation, 'y', this.s.lookAngleDst, this.s.lookSecs, deltaSecs, undefined, undefined, 0.01) === false) {
+      const rotYDst = this.getEulerAngle(this.s.lookAngleDst);
+      if (dampAngle(this.base.rotation, 'y', rotYDst, this.s.lookSecs, deltaSecs, undefined, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
       }
@@ -1296,9 +1297,7 @@ export class NpcApi {
   /** @param {NPC.CrowdAgent} agent */
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
-    this.s.lookAngleDst = this.getEulerAngle(
-      geom.clockwiseFromNorth(vel.z, vel.x)
-    );
+    this.s.lookAngleDst = geom.clockwiseFromNorth(vel.z, vel.x);
   }
 
   /**
@@ -1310,9 +1309,7 @@ export class NpcApi {
   onTurnBeforeMove(agent, deltaSecs, turnBeforeMove) {
     const { position } = this.base;
     const { towards } = turnBeforeMove;
-    this.s.lookAngleDst = this.getEulerAngle(
-      geom.clockwiseFromNorth(towards.y - position.z, towards.x - position.x)
-    );
+    this.s.lookAngleDst = geom.clockwiseFromNorth(towards.y - position.z, towards.x - position.x);
 
     const ms = (turnBeforeMove.ms -= deltaSecs * 1000);
     if (ms > 0) {
