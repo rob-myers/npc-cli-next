@@ -21,6 +21,7 @@ export function ContextMenu() {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     baseScale: undefined,
+    dim: { x: 0, y: 2000, width: contextMenuWidthPx, height: undefined, minWidth: 100, minHeight: 80 },
     downAt: null,
     draggable: /** @type {*} */ (null),
     html3d: /** @type {*} */ (null),
@@ -231,9 +232,8 @@ export function ContextMenu() {
       <Draggable
         ref={state.ref('draggable')}
         container={w.view.rootEl}
-        defaultWidth={contextMenuWidthPx}
+        dim={state.dim}
         disabled={state.docked === false}
-        initPos={{ x: 0, y: 2000 }}
         localStorageKey={`contextmenu:dragPos@${w.key}`}
       >
         <div
@@ -455,6 +455,7 @@ export const contextMenuCss = css`
 /**
  * @typedef State
  * @property {undefined | number} baseScale
+ * @property {import('../components/Draggable').Props['dim']} dim
  * @property {boolean} docked
  * @property {import('../components/Draggable').State} draggable
  * @property {import("../components/Html3d").State} html3d

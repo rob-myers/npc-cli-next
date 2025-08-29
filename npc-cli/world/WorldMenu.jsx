@@ -26,10 +26,9 @@ export default function WorldMenu(props) {
   const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
-
     bgScale: 8, // [1..20]
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
-    defaultLoggerWidth: w.smallViewport ? 300 : 500,
+    defaultLoggerDim: { x: 0, y: 0, width: w.smallViewport ? 300 : 500, height: 100, minWidth: 200, minHeight: 80 },
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
@@ -159,10 +158,8 @@ export default function WorldMenu(props) {
         ref={state.ref('draggable')}
         container={w.view.rootEl}
         dragClassName={state.dragClassName}
-        initPos={{ x: 0, y: 0 }}
+        dim={state.defaultLoggerDim}
         localStorageKey={`logger:drag-pos@${w.key}`}
-        defaultWidth={state.defaultLoggerWidth}
-        defaultHeight={100}
       >
         <PopUp
           label="⋯"
@@ -196,7 +193,7 @@ export default function WorldMenu(props) {
             </label>
           </div>
           <div className="checkboxes">
-            <label>
+            <label title="show debug messages">
               debug
               <input
                 type="checkbox"
@@ -204,7 +201,7 @@ export default function WorldMenu(props) {
                 onChange={state.onChangeLoggerLog}
               />
             </label>
-            <label title="tween camera while paused?">
+            <label title="tween camera while paused">
               tween
               <input
                 type="checkbox"
@@ -229,7 +226,7 @@ export default function WorldMenu(props) {
                 checked={state.showEffects}
               />
             </label>
-            <label>
+            <label title="transparent walls & ceiling">
               xray
               <input
                 type="checkbox"
@@ -442,7 +439,7 @@ const pausedControlsCss = css`
  * @typedef State
  * @property {number} bgScale In [1..20]. For background-color scaling.
  * @property {number} brightness [1..20] inducing percentage `100 + 10 * (b - 10)`
- * @property {number} defaultLoggerWidth
+ * @property {import('../components/Draggable').Props['dim']} defaultLoggerDim
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys

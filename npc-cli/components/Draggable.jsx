@@ -9,7 +9,7 @@ import useStateRef from "../hooks/use-state-ref";
 
 /**
  * @type {React.ForwardRefExoticComponent<
- *   React.PropsWithChildren<BaseProps> & React.RefAttributes<State>
+ *   React.PropsWithChildren<Props> & React.RefAttributes<State>
  * >}
  */
 export const Draggable = React.forwardRef(function Draggable(props, ref) {
@@ -25,7 +25,7 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
     },
     dragging: false,
     el: /** @type {*} */ (null),
-    pos: tryLocalStorageGetParsed(props.localStorageKey ?? '') ?? {...props.initPos ?? { x: 0, y: 0 }},
+    pos: tryLocalStorageGetParsed(props.localStorageKey ?? '') ?? { x: props.dim.x, y: props.dim.y },
     resizing: false,
     touchId: /** @type {undefined | number} */ (undefined),
 
@@ -140,10 +140,10 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
       state.persist();
     },
     updateSize(x, y) {
-      state.el.style.width = `${Math.max(80, state.down.width + x)}px`;
-      state.el.style.height = `${Math.max(80, state.down.height + y)}px`;
+      state.el.style.width = `${Math.max(props.dim.minWidth, state.down.width + x)}px`;
+      state.el.style.height = `${Math.max(props.dim.minHeight, state.down.height + y)}px`;
     },
-  }), { deps: [props.container, props.disabled, props.dragClassName, props.localStorageKey] });
+  }), { deps: [props.container, props.dim, props.disabled, props.dragClassName, props.localStorageKey] });
 
   React.useImperativeHandle(ref, () => state, []);
   
@@ -189,8 +189,8 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
 
       style={{
         transform: props.disabled ? undefined : `translate(${state.pos.x}px, ${state.pos.y}px)`,
-        width: props.defaultWidth,
-        height: props.defaultHeight,
+        width: props.dim.width,
+        height: props.dim.height,
       }}
     >
       {props.children}
@@ -204,20 +204,25 @@ export const Draggable = React.forwardRef(function Draggable(props, ref) {
 })
 
 /**
- * @typedef BaseProps
+ * @typedef Props
  * @property {string} [className]
  * @property {HTMLElement} container
  * - So can keep draggable within container.
  * - Now required so we can compute analogy of `offset{Left,Top}`
+ * @property {{
+ *   x: number;
+ *   y: number;
+ *   width?: number;
+ *   height?: number;
+ *   minWidth: number;
+ *   minHeight: number;
+ * }} dim
+ * Initial position, dimension, and min dimension.
  * @property {boolean} [disabled]
  * @property {string} [dragClassName]
  * If defined, can only drag element matching it
- * @property {Geom.VectJson} [initPos]
- * Initial position, usually overridden via localStorage
  * @property {string} [localStorageKey]
  * Where to store the position in local storage
- * @property {number} [defaultWidth]
- * @property {number} [defaultHeight]
  */
 
 /**

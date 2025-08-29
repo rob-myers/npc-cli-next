@@ -187,7 +187,7 @@ const loggerCss = css`
   /* prevent pinch-zoom on mobile */
   touch-action: none;
 
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   
   // 🔔 override textual selection cursor
