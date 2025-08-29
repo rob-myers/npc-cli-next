@@ -84,6 +84,7 @@ export default function Floor(props) {
       ct.lineJoin = 'round';
       ct.lineWidth = w.touchDevice ? 0.05 : 0.05;
       const fillStyle = w.touchDevice ? '#999' : '#ccc';
+      // const fillStyle = w.touchDevice ? '#999' : '#000';
       const strokeStyle = w.touchDevice ? '#4448' : '#4448';
       
       w.nav.toNavTris[gm.key].forEach(([positions, indices]) => {
@@ -127,6 +128,7 @@ export default function Floor(props) {
         // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
         ct.save();
         ct.transform(...decal.transform);
+        // ct.globalCompositeOperation = 'xor';
         ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
         ct.restore();
       }
