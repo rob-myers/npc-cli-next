@@ -76,13 +76,10 @@ export default function WorldMenu(props) {
         w.view.onPausedTick();
       }
     },
-    onChangeInvertColor(e) {
+    async onChangeInvertColor(e) {
       state.invertColor = e.currentTarget.checked;
-      w.view.setCssFilter({ invert: state.invertColor ? '1' : '0' });
-      w.updateTexAux({
-        0: state.invertColor ? [1, 1, 1, 1] : [0, 0, 0, 0], // invert ~ 0th key
-      });
-      w.update();
+      await w.floor.setInverted(state.invertColor);
+      w.update()
     },
     onChangeBgScale(e) {
       state.bgScale = Number(e.currentTarget.value); // [1..20]

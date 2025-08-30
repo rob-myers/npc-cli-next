@@ -19,6 +19,7 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
+    inverted: false,
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -83,9 +84,8 @@ export default function Floor(props) {
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
       ct.lineWidth = w.touchDevice ? 0.05 : 0.05;
-      const fillStyle = w.touchDevice ? '#999' : '#ccc';
-      // const fillStyle = w.touchDevice ? '#999' : '#000';
-      const strokeStyle = w.touchDevice ? '#4448' : '#4448';
+      const fillStyle = state.inverted === true ? '#000' : '#ccc';
+      const strokeStyle = state.inverted === true ? '#4448' : '#4448';
       
       w.nav.toNavTris[gm.key].forEach(([positions, indices]) => {
         for (const index of indices) {
@@ -101,9 +101,12 @@ export default function Floor(props) {
       // draw off mesh connections
       const normal = tmpVect1;
       const halfWidth = 0.01;
+      const edgeFillStyle = state.inverted === true ? '#333' : '#0009';
+      const nodeFillStyle = state.inverted === true ? '#000' : '#fff';
+      const nodeStrokeStyle = state.inverted === true ? '#fff4' : '#000';
       for (const { src, dst } of w.nav.toOffMeshEdges[gm.key]) {
         normal.set(-(dst.y - src.y), dst.x - src.x);
-        ct.fillStyle = '#0009';
+        ct.fillStyle = edgeFillStyle;
         ct.beginPath();
         ct.moveTo(src.x - normal.x * halfWidth, src.y - normal.y * halfWidth);
         ct.lineTo(dst.x - normal.x * halfWidth, dst.y - normal.y * halfWidth);
@@ -111,8 +114,8 @@ export default function Floor(props) {
         ct.moveTo(src.x + normal.x * halfWidth, src.y + normal.y * halfWidth);
         ct.fill();
         ct.lineWidth = 0.02;
-        drawCircle(ct, src, 0.02, ['#fff', '#000']);
-        drawCircle(ct, dst, 0.02, ['#fff', '#000']);
+        drawCircle(ct, src, 0.02, [nodeFillStyle, nodeStrokeStyle]);
+        drawCircle(ct, dst, 0.02, [nodeFillStyle, nodeStrokeStyle]);
       }
 
       // hull doorways
@@ -128,7 +131,9 @@ export default function Floor(props) {
         // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
         ct.save();
         ct.transform(...decal.transform);
-        // ct.globalCompositeOperation = 'xor';
+        if (state.inverted === true) {// 🔔 grayscale decals for invert
+          ct.globalCompositeOperation = 'xor';
+        }
         ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
         ct.restore();
       }
@@ -144,6 +149,10 @@ export default function Floor(props) {
       }
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
+    },
+    async setInverted(invert = !state.inverted) {
+      state.inverted = invert;
+      await state.draw();
     },
   }));
 
@@ -186,6 +195,7 @@ export default function Floor(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
+ * @property {boolean} inverted
  * navTris[seenGmId][tileIndex] is [positions, indices]
  * @property {THREE.BufferGeometry} quad
  
@@ -193,6 +203,7 @@ export default function Floor(props) {
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
+ * @property {(nextInvert: boolean) => Promise<void>} setInverted
  * @property {() => void} positionInstances
  */
 

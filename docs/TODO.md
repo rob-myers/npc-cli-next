@@ -78,10 +78,12 @@
   - ❌ try triggerRadius < outerTriggerRadius technique
     - ✅ detect over outerTriggerRadius
 
-- invert should not apply css filter
-  - checkbox for floor (redraw), decor (shader), cuboids
+- 🚧 invert should not apply css filter
+  - ✅ checkbox for floor (redraw)
+  - 🚧 remove npc shader invert
+  - checkbox inverts decor (shader)
+  - checkbox inverts cuboids (shader)
   - can specify decor.meta.invert `false` e.g. screen
-  - remove npc shader invert
 
 - ✅ remove postprocessing
   - e.g. slow down on desktop in fullscreen
