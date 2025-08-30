@@ -19,6 +19,7 @@ export default function Ceiling(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
+    inverted: false,
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-ceiling-xz`),
     opacity: xRayOpacity.ceiling,
 
@@ -95,6 +96,10 @@ export default function Ceiling(props) {
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
     },
+    setInverted(inverted = !state.inverted) {
+      state.inverted = inverted;
+      w.update();
+    },
   }), { reset: { opacity: false } });
 
   w.ceil = state;
@@ -120,9 +125,10 @@ export default function Ceiling(props) {
         transparent
         atlas={tex}
         alphaTest={0.1}
-        opacity={state.opacity}
         depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
+        invert={state.inverted}
+        opacity={state.opacity}
         objectPickRed={3}
         opacityCloseDivisor={10}
         opacityMin={state.opacity}
@@ -139,6 +145,7 @@ export default function Ceiling(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh} inst
+ * @property {boolean} inverted
  * @property {THREE.BufferGeometry} quad
  * @property {number} opacity
  *
@@ -146,4 +153,5 @@ export default function Ceiling(props) {
  * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {() => void} positionInstances
  * @property {(opacity: number) => void} setOpacity
+ * @property {(nextInverted?: boolean) => void} setInverted
  */

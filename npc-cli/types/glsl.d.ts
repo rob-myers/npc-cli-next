@@ -74,6 +74,7 @@ export interface InstancedAtlasProps {
   alphaTest: number;
   atlas: import('three').DataArrayTexture;
   diffuse: Vector3Input;
+  invert?: boolean;
   objectPick?: boolean;
   objectPickRed?: number;
   opacity?: number;

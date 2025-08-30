@@ -266,13 +266,12 @@ const instancedAtlasShader = {
 
   Frag: /* glsl */`
 
-  uniform bool lit;
-  uniform vec4 litCircle;
   uniform float alphaTest;
-  uniform bool objectPick;
-  uniform int objectPickRed;
   uniform sampler2DArray atlas;
   uniform vec3 diffuse;
+  uniform bool invert;
+  uniform bool objectPick;
+  uniform int objectPickRed;
   uniform float opacity;
   uniform float opacityMin;
 
@@ -301,7 +300,15 @@ const instancedAtlasShader = {
     } else {
       if (texel.a * opacity < alphaTest) discard;
       
-      gl_FragColor = texel * vec4(vColor * diffuse, min(opacity * vOpacityScale, opacityMin));
+      if (invert) {
+        texel.rgb = vec3(1.0) - texel.rgb;
+      }
+
+      gl_FragColor = texel * vec4(
+        vColor * diffuse,
+        // invert ? 1.0 - vColor * diffuse : vColor * diffuse,
+        min(opacity * vOpacityScale, opacityMin)
+      );
     }
 
     #include <logdepthbuf_fragment>
@@ -315,6 +322,7 @@ const instancedAtlasDefaultProps = {
   alphaTest: 0.5,
   atlas: emptyDataArrayTexture,
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  invert: false,
   objectPick: false,
   objectPickRed: 0,
   opacity: 1,
@@ -460,8 +468,11 @@ const instancedFlatShader = {
         || vUv.y <= dy
         || vUv.y >= 1.0 - dy
       ) {
-        // we only invert outlines
-        diffuseColor = vec3(invert ? 1.0 - vOutlineShade : vOutlineShade);
+        if (invert) {// we only invert outlines
+          diffuseColor = vec3((1.0 - vOutlineShade) * 0.7);
+        } else {
+          diffuseColor = vec3(vOutlineShade);
+        }
       }
     }
 
@@ -485,7 +496,6 @@ const instancedFlatDefaultProps = {
   opacity: 1,
   quadOutlines: false,
 };
-
 
 /**
  * Instanced Flat Shading

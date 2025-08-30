@@ -346,6 +346,8 @@ export default function Doors(props) {
         objectPickRed={9}
         side={THREE.DoubleSide} // fix flipped gm
         // transparent opacity={0.6}
+        // quadOutlines
+        // invert
       />}
     </instancedMesh>
   </>;

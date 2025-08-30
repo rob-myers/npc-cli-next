@@ -78,8 +78,9 @@ export default function WorldMenu(props) {
     },
     async onChangeInvertColor(e) {
       state.invertColor = e.currentTarget.checked;
+      await w.floor.setInverted(state.invertColor); // redraw
       w.decor.updateInvert({ cuboids: state.invertColor });
-      await w.floor.setInverted(state.invertColor);
+      w.ceil.setInverted(state.invertColor);
       w.update()
     },
     onChangeBgScale(e) {
