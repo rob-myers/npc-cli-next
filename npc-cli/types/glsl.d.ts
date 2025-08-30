@@ -87,7 +87,6 @@ export type InstancedAtlasKeys = keyof InstancedAtlasProps;
 
 export interface InstancedFlatProps {
   diffuse?: Vector3Input;
-  invert?: boolean;
   /** Assuming model is built of quads, each with uvs covering [0, 1]x[0, 1] */
   quadOutlines?: boolean;
   opacity?: number;

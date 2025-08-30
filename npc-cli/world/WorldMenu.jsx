@@ -82,7 +82,6 @@ export default function WorldMenu(props) {
         w.floor.setInverted(state.invertColor),
         w.ceil.setInverted(state.invertColor),
       ]);
-      w.decor.updateInvert({ cuboids: state.invertColor });
       w.update()
     },
     onChangeBgScale(e) {

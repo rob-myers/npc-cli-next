@@ -28,7 +28,6 @@ export default function Decor(props) {
     cuboids: [],
     cuboidInst: /** @type {*} */ (null),
     group: {},
-    invert: { cuboids: false },
     labels: [],
     labelInst: /** @type {*} */ (null),
     label: {
@@ -590,10 +589,6 @@ export default function Decor(props) {
       state.cuboids = Object.values(state.byKey).filter(geomorph.isDecorCuboid);
       state.quads = Object.values(state.byKey).filter(state.isDecorQuad);
     },
-    updateInvert(partial) {
-      Object.assign(state.invert, partial);
-      w.update();
-    },
   }));
 
   w.decor = state;
@@ -717,7 +712,6 @@ export default function Decor(props) {
         key={glsl.InstancedFlatMaterial.key}
         side={THREE.DoubleSide} // fix flipped gm
         diffuse={[1, 1, 1]}
-        invert={state.invert.cuboids}
         objectPickRed={7}
         // opacity={query.status === 'success' ? 1 : 0}
         quadOutlines
@@ -787,7 +781,6 @@ export default function Decor(props) {
  * @property {number} registeredAt
  * The epoch we last registered; used to force length-preserving updates
  * @property {{ [decorKeysGroupName: string]: string[] }} group
- * @property {{ cuboids: boolean }} invert
  * @property {Geomorph.DecorPoint[]} labels
  * @property {THREE.InstancedMesh} labelInst
  * @property {import("../service/three").LabelsSheetAndTex} label
@@ -829,7 +822,6 @@ export default function Decor(props) {
  * @property {(gmId: number) => void} removeGm
  * @property {(groupName: string) => void} removeGroup
  * @property {() => void} updateDecorLists
- * @property {(partial: Partial<State['invert']>) => void} updateInvert
  */
 
 const centreUnitQuad = new THREE.Matrix4().makeTranslation(-(-0.5), 0, -(-0.5));

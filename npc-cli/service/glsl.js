@@ -422,7 +422,6 @@ const instancedFlatShader = {
   Frag: /*glsl*/`
 
   uniform vec3 diffuse;
-  uniform bool invert;
   uniform bool objectPick;
   uniform int objectPickRed;
   uniform float opacity;
@@ -468,11 +467,7 @@ const instancedFlatShader = {
         || vUv.y <= dy
         || vUv.y >= 1.0 - dy
       ) {
-        if (invert) {// we only invert outlines
-          diffuseColor = vec3((1.0 - vOutlineShade) * 0.7);
-        } else {
-          diffuseColor = vec3(vOutlineShade);
-        }
+        diffuseColor = vec3(vOutlineShade);
       }
     }
 
@@ -488,7 +483,6 @@ const instancedFlatShader = {
 /** @type {Required<import('@/npc-cli/types/glsl').InstancedFlatProps>} */
 const instancedFlatDefaultProps = {
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
-  invert: false,
   // map: null,
   // mapTransform: new THREE.Matrix3(),
   objectPick: false,
