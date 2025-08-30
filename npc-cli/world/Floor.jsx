@@ -83,7 +83,7 @@ export default function Floor(props) {
       // draw nav mesh
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
-      ct.lineWidth = w.touchDevice ? 0.05 : 0.05;
+      ct.lineWidth = w.touchDevice ? 0.05 : 0.025;
       const fillStyle = state.inverted === true ? '#000' : '#ccc';
       const strokeStyle = state.inverted === true ? '#4448' : '#4448';
       
@@ -104,6 +104,7 @@ export default function Floor(props) {
       const edgeFillStyle = state.inverted === true ? '#333' : '#0009';
       const nodeFillStyle = state.inverted === true ? '#000' : '#fff';
       const nodeStrokeStyle = state.inverted === true ? '#fff4' : '#000';
+      ct.lineWidth = 0.02;
       for (const { src, dst } of w.nav.toOffMeshEdges[gm.key]) {
         normal.set(-(dst.y - src.y), dst.x - src.x);
         ct.fillStyle = edgeFillStyle;
@@ -113,7 +114,6 @@ export default function Floor(props) {
         ct.lineTo(dst.x + normal.x * halfWidth, dst.y + normal.y * halfWidth);
         ct.moveTo(src.x + normal.x * halfWidth, src.y + normal.y * halfWidth);
         ct.fill();
-        ct.lineWidth = 0.02;
         drawCircle(ct, src, 0.02, [nodeFillStyle, nodeStrokeStyle]);
         drawCircle(ct, dst, 0.02, [nodeFillStyle, nodeStrokeStyle]);
       }
