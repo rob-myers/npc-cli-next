@@ -414,6 +414,7 @@ const instancedFlatShader = {
   Frag: /*glsl*/`
 
   uniform vec3 diffuse;
+  uniform bool invert;
   uniform bool objectPick;
   uniform int objectPickRed;
   uniform float opacity;
@@ -436,6 +437,16 @@ const instancedFlatShader = {
     #include <logdepthbuf_fragment>
     #include <map_fragment>
 
+    if (objectPick == true) {
+      gl_FragColor = vec4(
+        float(objectPickRed) / 255.0,
+        float((int(vInstanceId) >> 8) & 255) / 255.0,
+        float(int(vInstanceId) & 255) / 255.0,
+        opacity
+      );
+      return;
+    }
+
     float ambientLight = 0.1;
     float normalLight = 0.7;
 
@@ -449,7 +460,8 @@ const instancedFlatShader = {
         || vUv.y <= dy
         || vUv.y >= 1.0 - dy
       ) {
-        diffuseColor = vec3(vOutlineShade);
+        // we only invert outlines
+        diffuseColor = vec3(invert ? 1.0 - vOutlineShade : vOutlineShade);
       }
     }
 
@@ -458,14 +470,6 @@ const instancedFlatShader = {
       opacity
     );
 
-    if (objectPick == true) {
-      gl_FragColor = vec4(
-        float(objectPickRed) / 255.0,
-        float((int(vInstanceId) >> 8) & 255) / 255.0,
-        float(int(vInstanceId) & 255) / 255.0,
-        gl_FragColor.a
-      );
-    }
   }
   `,
 };
@@ -473,6 +477,7 @@ const instancedFlatShader = {
 /** @type {Required<import('@/npc-cli/types/glsl').InstancedFlatProps>} */
 const instancedFlatDefaultProps = {
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
+  invert: false,
   // map: null,
   // mapTransform: new THREE.Matrix3(),
   objectPick: false,
