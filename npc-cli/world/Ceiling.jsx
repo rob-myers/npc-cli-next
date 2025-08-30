@@ -95,16 +95,12 @@ export default function Ceiling(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    setOpacity(opacity) {
-      state.opacity = Math.min(Math.max(0, opacity), 1);
-    },
-    // setInverted(inverted = !state.inverted) {
-    //   state.inverted = inverted;
-    //   w.update();
-    // },
     async setInverted(invert = !state.inverted) {
       state.inverted = invert;
       await state.draw();
+    },
+    setOpacity(opacity) {
+      state.opacity = Math.min(Math.max(0, opacity), 1);
     },
   }), { reset: { opacity: false } });
 
