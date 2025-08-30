@@ -103,7 +103,7 @@ export default function Walls(props) {
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
     },
-  }));
+  }), { reset: { opacity: true }});
 
   w.wall = state;
 
