@@ -47,17 +47,19 @@ export default function Ceiling(props) {
       const { tops, polyDecals } = w.gmsData[gmKey];
       
       // wall/door tops
-      const black = 'black';
+      const nonHullWallsFill = state.inverted ? '#fff' : '#001';
+      const windowsFill = '#000';
+      const broadFill = '#000';
       const grey90 = 'rgb(90, 90, 90)';
       const wallsColor = '#333';
       const wallsHighlight = '#999';
       const thinLineWidth = 0.04;
       const thickLineWidth = 0.06;
 
-      drawPolygons(ct, tops.nonHull, ['#001', '#888', thickLineWidth]);
+      drawPolygons(ct, tops.nonHull, [nonHullWallsFill, '#888', thickLineWidth]);
       // drawPolygons(ct, tops.nonHull, ['#000', '#001', thickLineWidth]);
-      drawPolygons(ct, tops.window, [black, wallsHighlight, thickLineWidth]);
-      drawPolygons(ct, tops.broad, [black, grey90, thinLineWidth]);
+      drawPolygons(ct, tops.window, [windowsFill, wallsHighlight, thickLineWidth]);
+      drawPolygons(ct, tops.broad, [broadFill, grey90, thinLineWidth]);
       
       // drawPolygons(ct, tops.hull, [black, wallsColor, thickLineWidth]); // hull walls and doors
       // drawPolygons(ct, tops.hull, [black, wallsHighlight, thickLineWidth]); // hull walls and doors
@@ -96,9 +98,13 @@ export default function Ceiling(props) {
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
     },
-    setInverted(inverted = !state.inverted) {
-      state.inverted = inverted;
-      w.update();
+    // setInverted(inverted = !state.inverted) {
+    //   state.inverted = inverted;
+    //   w.update();
+    // },
+    async setInverted(invert = !state.inverted) {
+      state.inverted = invert;
+      await state.draw();
     },
   }), { reset: { opacity: false } });
 
@@ -127,7 +133,7 @@ export default function Ceiling(props) {
         alphaTest={0.1}
         depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
-        invert={state.inverted}
+        // invert={state.inverted}
         opacity={state.opacity}
         objectPickRed={3}
         opacityCloseDivisor={10}
