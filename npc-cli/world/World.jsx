@@ -473,4 +473,6 @@ export default function World(props) {
  * Has function `createGmsData` changed?
  * @property {(mutator?: (w: State) => void | Promise<void>) => void} update
  * @property {(partial: Record<number, [number, number, number, number]>) => void} updateTexAux
+ * - Update `1x1xn` auxiliary NPC DataArrayTexture
+ * - Currently unused.
  */

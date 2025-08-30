@@ -94,8 +94,9 @@ const humanZeroShader = {
   // depth is max number of npcs
   uniform sampler2DArray aux;
   
-  // 0 ~ invert ([0, 0, 0, 0] or [1, 1, 1, 1])
-  // ...
+  // currently unused
+  // - 1x1 texture up to some depth
+  // - see below for usage
   uniform sampler2DArray globalAux;
   
   // 🔔 label must be a quad i.e. two triangles
@@ -135,7 +136,8 @@ const humanZeroShader = {
       return;
     }
 
-    bool invert = texture(globalAux, vec3(0.0, 0.0, 0.0)).x == 1.0;
+    // do something when pixel (0, 0) at page 0 has value rgba where r is 1
+    // bool invert = texture(globalAux, vec3(0.0, 0.0, 0.0)).x == 1.0;
 
     // tinting (DataArrayTexture has width 128)
     // tint factor is 0.5
@@ -164,13 +166,9 @@ const humanZeroShader = {
 
     } else {// body=1, breath=2, selector=3
 
-      if (!invert) {
-        // 🌞 flat shading via vDotProduct
-        float ambientLight = 0.15;
-        tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
-      } else {// invert, making selector more visible
-        tint = vec4(vec3(vType == 3 ? 4.0 : 0.8), tint.a);
-      }
+      // 🌞 flat shading via vDotProduct
+      float ambientLight = 0.15;
+      tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
 
       // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
@@ -178,10 +176,6 @@ const humanZeroShader = {
 
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
 
-    }
-
-    if (invert) {
-      texel.xyz = 1.0 - texel.xyz;
     }
 
     gl_FragColor = texel * tint;

@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
+import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
 import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, toV3 } from "../service/three";
 import { helper } from "../service/helper";

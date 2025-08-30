@@ -80,7 +80,7 @@
 
 - 🚧 invert should not apply css filter
   - ✅ checkbox for floor (redraw)
-  - 🚧 remove npc shader invert
+  - ✅ remove npc shader invert
   - checkbox inverts decor (shader)
   - checkbox inverts cuboids (shader)
   - can specify decor.meta.invert `false` e.g. screen
