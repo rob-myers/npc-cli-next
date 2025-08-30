@@ -130,9 +130,9 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         fallbackLayout = resolveLayoutPreset(fallbackLayout);
       }
 
-      if (isTouchDevice()) {// better UX on mobile
-        fallbackLayout = flattenLayout(deepClone(fallbackLayout));
-      }
+      // if (isTouchDevice()) {// better UX on mobile
+      //   fallbackLayout = flattenLayout(deepClone(fallbackLayout));
+      // }
 
       // restore from localStorage if possible
       const layout = useTabs.api.tryRestoreLayout(fallbackLayout);

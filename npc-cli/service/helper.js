@@ -72,11 +72,11 @@ export const helper = {
     ...profileKeys.reduce((agg, profileKey) => {
       agg[`world-tty-${profileKey}`] = [
         [
-          { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
+          { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" }, weight: 2 },
         ],
         [
-          { type: "terminal", filepath: "tty-0", profileKey, env: { WORLD_KEY: "world-0", TABS_API_KEY } },
-          { type: "component", class: "Manage", filepath: "manage-0", props: {} },
+          { type: "terminal", filepath: "tty-0", profileKey, env: { WORLD_KEY: "world-0", TABS_API_KEY }, weight: 1 },
+          { type: "component", class: "Manage", filepath: "manage-0", props: {}, weight: 1 },
         ],
       ];
       return agg;
