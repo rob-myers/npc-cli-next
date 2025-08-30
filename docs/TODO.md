@@ -70,7 +70,13 @@
   - we don't expect arbitrary targets for multiple npcs to work
   - instead, we'll carefully direct motion so that it _does_ work
 
-- ✅ lookAngleDst should be clockwise from above
+- ✅ lookAngleDst should be aligned with `npc.api.getAngle()`
+
+- ✅ small triggerRadius causes bad entry vector
+  - ✅ try fix via larger triggerRadius
+  - ℹ️ not so bad, we could just do this
+  - ❌ try triggerRadius < outerTriggerRadius technique
+    - ✅ detect over outerTriggerRadius
 
 - invert should not apply css filter
   - checkbox for floor (redraw), decor (shader), cuboids
@@ -79,6 +85,10 @@
 
 - remove postprocessing
   - e.g. slow down on desktop in fullscreen
+
+- provide fixed Broadcaster instance i.e. "game events" (vs. world events)
+  - e.g. so when `direct` waits for resolve it sends a message
+  - careful about hot-reloading e.g. put in own file and don't touch
 
 - ✅ support clickable ceiling/walls
   - WorldMenu: xray checkbox 
