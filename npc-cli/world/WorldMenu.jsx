@@ -36,7 +36,6 @@ export default function WorldMenu(props) {
     logger: /** @type {*} */ (null),
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    showEffects: false,
     xRayEnabled: true,
 
     applyControlsInitValues() {
@@ -83,7 +82,6 @@ export default function WorldMenu(props) {
       w.updateTexAux({
         0: state.invertColor ? [1, 1, 1, 1] : [0, 0, 0, 0], // invert ~ 0th key
       });
-      w.view.showEffects({ enabled: state.invertColor ? false : state.showEffects });
       w.update();
     },
     onChangeBgScale(e) {
@@ -91,11 +89,6 @@ export default function WorldMenu(props) {
       const scale = state.bgScale / 20;
       // 🚧 hard-coded
       w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${255 * scale}, ${255 * scale}, ${255 * scale})`);
-    },
-    onChangeShowEffects(e) {
-      state.showEffects = e.currentTarget.checked;
-      w.view.showEffects({ enabled: state.showEffects });
-      w.update();
     },
     onChangeXRayEnabled(e) {
       state.xRayEnabled = e.currentTarget.checked;
@@ -216,14 +209,6 @@ export default function WorldMenu(props) {
                 type="checkbox"
                 onChange={state.onChangeInvertColor}
                 checked={state.invertColor}
-              />
-            </label>
-            <label>
-              fx
-              <input
-                type="checkbox"
-                onChange={state.onChangeShowEffects}
-                checked={state.showEffects}
               />
             </label>
             <label title="transparent walls & ceiling">
@@ -447,7 +432,6 @@ const pausedControlsCss = css`
  * @property {import('../terminal/Logger').State} logger
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
- * @property {boolean} showEffects
  * @property {boolean} xRayEnabled
  *
  * @property {() => void} applyControlsInitValues
@@ -458,7 +442,6 @@ const pausedControlsCss = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeShowEffects
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRayEnabled
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect

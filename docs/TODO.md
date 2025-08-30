@@ -83,7 +83,7 @@
   - can specify decor.meta.invert `false` e.g. screen
   - remove npc shader invert
 
-- remove postprocessing
+- ✅ remove postprocessing
   - e.g. slow down on desktop in fullscreen
 
 - provide fixed Broadcaster instance i.e. "game events" (vs. world events)

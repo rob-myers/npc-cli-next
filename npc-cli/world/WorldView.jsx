@@ -4,7 +4,6 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
-import { EffectComposer, BrightnessContrast, Vignette, Scanline } from '@react-three/postprocessing'
 
 import { debug, entries, keys } from "../service/generic.js";
 import { helper } from "../service/helper";
@@ -49,8 +48,6 @@ export default function WorldView(props) {
     ],
     down: null,
     dst: {}, // tween destinations
-    effects: { enabled: false, darkness: 2 },
-    effectComposer: /** @type {*} */ (null),
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
     fov: 30,
     glOpts: {
@@ -508,11 +505,6 @@ export default function WorldView(props) {
       const nextFilter = state.cssFilter.map(({ key, value }) => `${key}(${value})`).join(' ');
       state.canvas.style.filter = nextFilter; // e.g. brightness(50%)
     },
-    showEffects(partial = { enabled: !state.effects.enabled }) {
-      Object.assign(state.effects, partial);
-      update();
-      w.npc.tickOnceDebug();
-    },
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
         delete state.dst.look;
@@ -663,17 +655,6 @@ export default function WorldView(props) {
       <ContextMenu/>
 
       <NpcSpeechBubbles/>
-
-      <EffectComposer ref={state.ref('effectComposer')}>
-        {state.effects.enabled === true
-          ? <>
-            <BrightnessContrast brightness={-0.22} />
-            <Scanline opacity={0.5} density={1.5} />
-            {/* <Vignette offset={0.2} darkness={1} opacity={1} /> */}
-          </>
-          : <></>
-        }
-      </EffectComposer>
     </Canvas>
   );
 }
@@ -696,8 +677,6 @@ export default function WorldView(props) {
  * @property {() => void} clearTweens
  * @property {() => void} clearTargetDamping
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
- * @property {{ enabled: boolean; darkness: number }} effects
- * @property {import('postprocessing').EffectComposer} effectComposer
  * @property {import('three-stdlib').MapControls & {
  *   sphericalDelta: THREE.Spherical;
  *   zoomToConstant: null | THREE.Vector3;
@@ -765,7 +744,6 @@ export default function WorldView(props) {
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
  * @property {(partial: Partial<Record<'brightness'| 'sepia' | 'invert', string>>) => void} setCssFilter
- * @property {(partial?: Partial<State['effects']>) => void} showEffects
  * @property {() => boolean} stopFollowing
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
