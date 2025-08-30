@@ -116,8 +116,6 @@ w gmRoomGraph.getReachableUpTo g0r2 '(_, depth) => depth === 2' |
 ```sh
 # ensure rob
 spawn npc:rob at:$( click 1 )
-# ensure `npc` command
-source /etc/game.sh
 
 # re-skin rob
 npc rob skin | assign '{ "head-overlay-front": { prefix: "scientist-0" } }'

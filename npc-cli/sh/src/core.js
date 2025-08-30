@@ -1,5 +1,5 @@
 import { isStringInt, removeFirst } from '../../service/generic';
-import { createDecorNumber } from './game';
+import { createDecorNumber } from './dev';
 
 /**
  * @param {NPC.RunArg} ctxt
