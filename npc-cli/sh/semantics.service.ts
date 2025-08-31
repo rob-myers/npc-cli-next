@@ -146,9 +146,18 @@ class semanticsServiceClass {
     }
   
     // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
-    // We escape square brackets for npm module `braces`.
     value = value.replace(/\\(['"\\$`])/g, "$1");
-    return braces(value.replace(/\[/g, "\\[").replace(/\]/g, "\\]"), bracesOpts);
+    
+    if (/[\[\]]/.test(value) === false) {
+      return braces(value, bracesOpts);
+    }
+
+    // Escape square brackets to fix npm module `braces` e.g. [{1..5}]
+    // Unescape afterwards e.g. for `expr [$points]`
+    return braces(
+      value.replace(/\[/g, "\\[").replace(/\]/g, "\\]"),
+      bracesOpts,
+    ).map(x => x.replace(/\\\[/g, "[").replace(/\\\]/g, "]"));
   }
 
   private async *stmts(parent: Sh.ParsedSh, nodes: Sh.Stmt[]) {
@@ -624,8 +633,6 @@ class semanticsServiceClass {
               ? result.values // "$@" empty if `result.values` is
               : [`${output.pop() || ""}${result.values[0] || ""}`, ...result.values.slice(1)])
             );
-          } else if (part.type === "Lit" && part.Value === '...' && node.Parts[index + 1]?.type === "CmdSubst") {
-            // ignore spread
           } else {
             output.push(`${output.pop() || ""}${result.value || ""}`);
           }
