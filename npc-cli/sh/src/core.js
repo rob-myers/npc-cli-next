@@ -279,15 +279,18 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
  * move npc:rob to:$( click 1 )
  * move npc:rob to:"$( click 2 )"
  * move npc:rob to:$( clicks 2 )
- * move npc:rob to:$( clicks 2 ) inLoop
+ * 
+ * while true; do
+ *   move npc:rob to:$( clicks 2 ) ...
+ * done
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string; inLoop?: true } & NPC.MoveOpts} [opts]
+ * @param {{ npcKey: string; '...'?: true } & NPC.MoveOpts} [opts]
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { array: { to: true } })) => {
   const npc = w.npc.getNpc(opts.npcKey);
   let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
-  const arriveAnim = opts.inLoop === true ? false : undefined;
+  const arriveAnim = opts['...'] === true ? false : undefined;
   let abortAwaitResume = /** @param {*} e */ (e) => {};
 
   const handlers = api.handleStatus({

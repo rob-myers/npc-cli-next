@@ -76,6 +76,12 @@
 
 - mobile profiles will include progression via logger ui links
 
+- ✅ keep an agent fixed by making collisionQueryRange less than diameter
+  - 🔔 `npc rada agent.raw.params.set_collisionQueryRange 0.1` fixed
+  - `npc rada agent.raw.params.set_collisionQueryRange 0.47` not fixed
+
+- improve stuck detection when blocked by a fixed agent
+
 - ✅ lookAngleDst should be aligned with `npc.api.getAngle()`
 
 - ✅ small triggerRadius causes bad entry vector

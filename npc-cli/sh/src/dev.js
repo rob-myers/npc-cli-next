@@ -71,16 +71,19 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
  * ```sh
  * direct npc:rob to:"$( click 2 )"
  * direct npc:rob to:$( clicks 2 )
- * direct npc:rob to:$( clicks 2 ) inLoop
+ * 
+ * while true; do
+ *   direct npc:rob to:$( clicks 2 ) ...
+ * done
  * ```
  * @param {NPC.RunArg} ct
- * @param {{ npcKey: string; to: NPC.MoveOpts['to']; inLoop?: true; }} [opts]
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
  */
 export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, { array: { to: true } })) {
   let to = opts.to;
   while (true) {
     try {
-      const arriveAnim = opts.inLoop === true ? false : undefined;
+      const arriveAnim = opts['...'] === true ? false : undefined;
       await move(ct, { npcKey: opts.npcKey, to, arriveAnim });
       break;
     } catch (e) {
