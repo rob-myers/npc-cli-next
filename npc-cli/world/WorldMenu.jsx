@@ -28,11 +28,11 @@ export default function WorldMenu(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     bgScale: 12, // [1..20]
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
+    dark: w.touchDevice,
     defaultLoggerDim: { x: 0, y: 0, width: w.smallViewport ? 300 : 500, height: 100, minWidth: 200, minHeight: 80 },
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
-    invertColor: false,
     logger: /** @type {*} */ (null),
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
@@ -44,7 +44,7 @@ export default function WorldMenu(props) {
       state.onChangeBrightness(toEvent(state.brightness))
       state.onChangeBgScale(toEvent(state.bgScale));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
-      state.onChangeInvertColor(toEvent(state.invertColor));
+      state.onChangeInvertColor(toEvent(state.dark));
     },
     measure(msg) {
       if (state.showDebug === false) {
@@ -77,10 +77,10 @@ export default function WorldMenu(props) {
       }
     },
     async onChangeInvertColor(e) {
-      state.invertColor = e.currentTarget.checked;
+      state.dark = e.currentTarget.checked;
       await Promise.all([// redraw
-        w.floor.setDark(state.invertColor),
-        w.ceil.setDark(state.invertColor),
+        w.floor.setDark(state.dark),
+        w.ceil.setDark(state.dark),
       ]);
       w.update()
     },
@@ -208,7 +208,7 @@ export default function WorldMenu(props) {
               <input
                 type="checkbox"
                 onChange={state.onChangeInvertColor}
-                checked={state.invertColor}
+                checked={state.dark}
               />
             </label>
             <label title="transparent walls & ceiling">
@@ -428,7 +428,7 @@ const pausedControlsCss = css`
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys
- * @property {boolean} invertColor
+ * @property {boolean} dark
  * @property {import('../terminal/Logger').State} logger
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug

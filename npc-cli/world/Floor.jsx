@@ -18,7 +18,7 @@ export default function Floor(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    dark: false,
+    dark: w.touchDevice,
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
@@ -152,9 +152,11 @@ export default function Floor(props) {
       state.inst.computeBoundingSphere();
     },
     async setDark(next = !state.dark) {
-      state.dark = next;
-      await state.draw();
-      w.update();
+      if (next !== state.dark) {
+        state.dark = next;
+        await state.draw();
+        w.update();
+      }
     },
   }));
 
