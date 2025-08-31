@@ -277,13 +277,17 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
  * Supports manual process suspend/resume
  * ```sh
  * move npc:rob to:$( click 1 )
+ * move npc:rob to:"$( click 2 )"
+ * move npc:rob to:$( clicks 2 )
+ * move npc:rob to:$( clicks 2 ) inLoop
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string } & NPC.MoveOpts} [opts]
+ * @param {{ npcKey: string; inLoop?: true } & NPC.MoveOpts} [opts]
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { array: { to: true } })) => {
   const npc = w.npc.getNpc(opts.npcKey);
   let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
+  const arriveAnim = opts.inLoop === true ? false : undefined;
   let abortAwaitResume = /** @param {*} e */ (e) => {};
 
   const handlers = api.handleStatus({
@@ -303,7 +307,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
   try {
     while (true) {
       try {
-        await npc.api.move({ ...opts, to });
+        await npc.api.move({ ...opts, to, arriveAnim });
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {

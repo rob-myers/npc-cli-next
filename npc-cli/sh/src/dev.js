@@ -70,16 +70,17 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
  * Like `move` but on obstruction await resolution, rather than throwing.
  * ```sh
  * direct npc:rob to:"$( click 2 )"
- * direct npc:rob to:"$( click 2 )" in:loop
+ * direct npc:rob to:$( clicks 2 )
+ * direct npc:rob to:$( clicks 2 ) inLoop
  * ```
  * @param {NPC.RunArg} ct
- * @param {{ npcKey: string; to: NPC.MoveOpts['to']; in?: 'loop'; }} [opts]
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to']; inLoop?: true; }} [opts]
  */
 export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, { array: { to: true } })) {
   let to = opts.to;
   while (true) {
     try {
-      const arriveAnim = opts.in === 'loop' ? false : undefined;
+      const arriveAnim = opts.inLoop === true ? false : undefined;
       await move(ct, { npcKey: opts.npcKey, to, arriveAnim });
       break;
     } catch (e) {
