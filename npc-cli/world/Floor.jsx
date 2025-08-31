@@ -18,7 +18,7 @@ export default function Floor(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    dark: w.touchDevice,
+    dark: false,
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
