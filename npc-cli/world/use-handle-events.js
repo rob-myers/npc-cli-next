@@ -181,7 +181,7 @@ export default function useHandleEvents(w) {
         const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
           offMesh.src.x + 0.1 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0.15 * (offMesh.dst.z - offMesh.src.z),
           offMesh.dst.x, offMesh.dst.z,
-          other.position.x, other.position.z,
+          other.point.x, other.point.y,
           0.2,
         );
         
@@ -192,9 +192,9 @@ export default function useHandleEvents(w) {
   
         const door = w.d[offMesh.gdKey];
         if (geom.lineSegCoordsIntersectsCircle(
-          npc.position.x, npc.position.z,
+          npc.point.x, npc.point.y,
           door.center.x, door.center.y,
-          other.position.x, other.position.z,
+          other.point.x, other.point.y,
           0.4,
         ) === true) {
           return otherNpcKey;
@@ -495,8 +495,8 @@ export default function useHandleEvents(w) {
           agent.raw.set_targetReplan(true);
 
           if (e.showNavPath === true) {
-            const path = w.npc.findPath(npc.position, /** @type {THREE.Vector3} */ (npc.s.target));
-            w.debug.setNavPath(path ?? []);
+            const path3d = w.npc.findPath(npc.point, /** @type {Geom.Vect} */ (npc.s.target));
+            w.debug.setNavPath(path3d ?? []);
           }
           break;
         }
@@ -583,7 +583,7 @@ export default function useHandleEvents(w) {
         npc.api.getLookAngle(adjusted.dst),
       );
 
-      const doorEntryDist = tmpVect1.set(npc.position.x, npc.position.z).distanceTo(adjusted.src);
+      const doorEntryDist = npc.point.distanceTo(adjusted.src);
 
       if (
         Math.abs(deltaAng) > Math.PI/2 + 0.2
@@ -618,7 +618,7 @@ export default function useHandleEvents(w) {
         },
 
         initPos: adjusted.initPos,
-        initUnit: tmpVect1.set(adjusted.src.x - npc.position.x, adjusted.src.y - npc.position.z ).normalize().json,
+        initUnit: tmpVect1.set(adjusted.src.x - npc.point.x, adjusted.src.y - npc.point.y ).normalize().json,
         mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
         nextUnit: nextUnitNull === true ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
         tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
@@ -683,10 +683,10 @@ export default function useHandleEvents(w) {
         const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);
 
         for (const otherNpcKey of state.roomToNpcs[gmId][roomId] ?? []) {
-          const { position } = w.n[otherNpcKey];
+          const { point } = w.n[otherNpcKey];
           if (
-            Math.abs(position.x - offMesh.dst.x) < 0.25
-            && Math.abs(position.z - offMesh.dst.y) < 0.25
+            Math.abs(point.x - offMesh.dst.x) < 0.25
+            && Math.abs(point.y - offMesh.dst.y) < 0.25
           ) {
             return state.onBlockedDoorway(npc, otherNpcKey); // STOP
           }
@@ -743,7 +743,7 @@ export default function useHandleEvents(w) {
       }
     },
     overrideOffMeshConnectionAngle(npc, offMesh, door) {
-      const npcPoint = Vect.from(npc.api.getPoint());
+      const npcPoint = npc.point;
       const nextCorner = npc.api.getCornerAfterOffMesh(offMesh);
 
       // Entrances are aligned to offMeshConnections
@@ -803,7 +803,7 @@ export default function useHandleEvents(w) {
       // we slow down if final target is close to doorway exit,
       // in which case, we exit further away to avoid blocking the door
       const slowDownDoorway = (
-        tmpVect1.copy(newDst).distToCoords(npc.lastTarget.x, npc.lastTarget.z) < 0.4
+        npc.lastTarget.distanceTo(newDst) < 0.4
         && npc.pendingTargets.length === 0
       );
       if (slowDownDoorway === true) {
@@ -934,7 +934,8 @@ export default function useHandleEvents(w) {
         return w.door.toggleLockRaw(door, opts);
       }
 
-      if (tmpVect1.copy(opts.point).distanceTo(w.n[opts.npcKey].api.getPoint()) > 1.5) {
+      const npcPoint = w.n[opts.npcKey].point;
+      if (npcPoint.distanceTo(opts.point) > 1.5) {
         return false; // e.g. button not close enough
       }
 
@@ -957,7 +958,7 @@ export default function useHandleEvents(w) {
       }, defaultDoorCloseMs);
     },
     tryPutNpcIntoRoom(npc) {
-      const grId = w.gmGraph.findRoomContaining(npc.api.getPoint(), true);
+      const grId = w.gmGraph.findRoomContaining(npc.point, true);
       if (grId !== null) {
         state.npcToRoom.set(npc.key, grId);
         state.externalNpcs.delete(npc.key);

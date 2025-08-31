@@ -5,7 +5,7 @@ import debounce from "debounce";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
 import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
-import { computeMeshUvMappings, emptyAnimationMixer, toV3 } from "../service/three";
+import { computeMeshUvMappings, emptyAnimationMixer, tmpVectThree1, toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
 import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
@@ -50,15 +50,25 @@ export default function Npcs(props) {
     },
     findPath(src, dst) {// 🔔 agent only uses path as a guide
       const query = w.crowd.navMeshQuery;
-      const { path, success } = query.computePath(src, dst, {
-        filter: w.crowd.getFilter(helper.queryFilterType.respectUnwalkable),
-        halfExtents: { x: 0.1, y: 0.1, z: 0.1 },
-      });
-      if (path.length === 0) {
-        return path;
+      const src3 = toV3(src);
+      const dst3 = toV3(dst);
+
+      const result = query.computePath(
+        src3,
+        dst3,
+        {
+          filter: w.crowd.getFilter(helper.queryFilterType.respectUnwalkable),
+          halfExtents: { x: 0.1, y: 0.1, z: 0.1 },
+        },
+      );
+      if (result.path.length === 0) {
+        return [];
       }
-      if (success === true && tmpVec1.copy(dst).distanceTo(path[path.length - 1]) < 0.1) {
-        return path;
+      if (
+        result.success === true
+        && tmpVectThree1.copy(dst3).distanceTo(result.path[result.path.length - 1]) < 0.1
+      ) {
+        return result.path;
       }
       warn(`${'findPath'} failed: ${JSON.stringify({ src, dst })}`);
       return null;
@@ -397,8 +407,9 @@ export default function Npcs(props) {
       position.y = typeof meta.y === 'number' ? meta.y : 0;
 
       npc.position.copy(position);
+      npc.point.set(position.x, position.z);
       npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
-      npc.lastTarget.copy(position);
+      npc.lastTarget.copy(npc.point);
 
       const forceStartAnim = npc.s.spawns === 0;
       npc.api.startAnimation(meta, forceStartAnim); // 🔔 at.meta.y important
@@ -507,8 +518,9 @@ export default function Npcs(props) {
         
         const npc = npcs[i];
         npc.position.copy(position);
+        npc.point.set(position.x, position.z);
         npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
-        npc.lastTarget.copy(position);
+        npc.lastTarget.copy(npc.point);
         const forceStartAnim = npc.s.spawns === 0;
         npc.api.startAnimation(point.meta ?? {}, forceStartAnim);
 
@@ -663,7 +675,7 @@ export default function Npcs(props) {
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} setupSkins
- * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
+ * @property {(src: NPC.GroundPoint, dst: NPC.GroundPoint) => null | THREE.Vector3Like[]} findPath
  * @property {() => void} forceUpdate
  * @property {(npcKey: string) => NPC.NPC} getNpc
  * @property {() => void} hotReloadNpcs
