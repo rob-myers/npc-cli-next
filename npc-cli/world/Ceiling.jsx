@@ -18,8 +18,8 @@ export default function Ceiling(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    dark: false,
     inst: /** @type {*} */ (null),
-    inverted: false,
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-ceiling-xz`),
     opacity: xRayOpacity.ceiling,
 
@@ -47,8 +47,8 @@ export default function Ceiling(props) {
       const { tops, polyDecals } = w.gmsData[gmKey];
       
       // wall/door tops
-      const nonHullWallsFill = state.inverted ? '#999' : '#001';
-      const nonHullWallsStroke = state.inverted ? '#000' : '#888';
+      const nonHullWallsFill = state.dark ? '#999' : '#001';
+      const nonHullWallsStroke = state.dark ? '#000' : '#888';
       const windowsFill = '#000';
       const broadFill = '#000';
       const grey90 = 'rgb(90, 90, 90)';
@@ -96,9 +96,10 @@ export default function Ceiling(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    async setInverted(invert = !state.inverted) {
-      state.inverted = invert;
+    async setDark(next = !state.dark) {
+      state.dark = next;
       await state.draw();
+      w.update();
     },
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
@@ -130,7 +131,6 @@ export default function Ceiling(props) {
         alphaTest={0.1}
         depthWrite={false}
         diffuse={[0.5, 0.5, 0.5]}
-        // invert={state.inverted}
         opacity={state.opacity}
         objectPickRed={3}
         opacityCloseDivisor={10}
@@ -148,7 +148,7 @@ export default function Ceiling(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh} inst
- * @property {boolean} inverted
+ * @property {boolean} dark
  * @property {THREE.BufferGeometry} quad
  * @property {number} opacity
  *
@@ -156,5 +156,5 @@ export default function Ceiling(props) {
  * @property {(gmKey: Key.Geomorph) => void} drawGm
  * @property {() => void} positionInstances
  * @property {(opacity: number) => void} setOpacity
- * @property {(nextInverted?: boolean) => void} setInverted
+ * @property {(nextInverted?: boolean) => void} setDark
  */

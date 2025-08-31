@@ -70,6 +70,11 @@
   - we don't expect arbitrary targets for multiple npcs to work
   - instead, we'll carefully direct motion so that it _does_ work
 
+- 🚧 rename inverted -> dark
+- dark mode uses filled hull floor
+- mobile using dark mode by default
+- mobile profiles will include progression via logger ui links
+
 - ✅ lookAngleDst should be aligned with `npc.api.getAngle()`
 
 - ✅ small triggerRadius causes bad entry vector

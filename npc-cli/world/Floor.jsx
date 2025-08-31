@@ -18,8 +18,8 @@ export default function Floor(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    dark: false,
     inst: /** @type {*} */ (null),
-    inverted: false,
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -68,14 +68,15 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // hull floor
-      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#ffff', null]);
-      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#666', null]);
+      if (state.dark) {
+        drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#111', null]);
+      }
 
       // drop shadows, avoiding doubling
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
-      drawPolygons(ct, shadowPolys, ['#0004', null]);
+      drawPolygons(ct, shadowPolys, ['#0009', null]);
 
       // wall bases
       drawPolygons(ct, gm.walls, ['#0008', null]);
@@ -83,9 +84,9 @@ export default function Floor(props) {
       // draw nav mesh
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
-      ct.lineWidth = w.touchDevice ? 0.05 : 0.025;
-      const fillStyle = state.inverted === true ? '#000' : '#ccc';
-      const strokeStyle = state.inverted === true ? '#4448' : '#4448';
+      ct.lineWidth = w.touchDevice ? 0.05 : 0.04;
+      const fillStyle = state.dark === true ? '#000' : '#ccc';
+      const strokeStyle = state.dark === true ? '#4448' : '#4448';
       
       w.nav.toNavTris[gm.key].forEach(([positions, indices]) => {
         for (const index of indices) {
@@ -101,9 +102,9 @@ export default function Floor(props) {
       // draw off mesh connections
       const normal = tmpVect1;
       const halfWidth = 0.01;
-      const edgeFillStyle = state.inverted === true ? '#333' : '#0009';
-      const nodeFillStyle = state.inverted === true ? '#000' : '#fff';
-      const nodeStrokeStyle = state.inverted === true ? '#fff4' : '#000';
+      const edgeFillStyle = state.dark === true ? '#333' : '#0009';
+      const nodeFillStyle = state.dark === true ? '#000' : '#fff';
+      const nodeStrokeStyle = state.dark === true ? '#fff4' : '#000';
       ct.lineWidth = 0.02;
       for (const { src, dst } of w.nav.toOffMeshEdges[gm.key]) {
         normal.set(-(dst.y - src.y), dst.x - src.x);
@@ -131,7 +132,7 @@ export default function Floor(props) {
         // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
         ct.save();
         ct.transform(...decal.transform);
-        if (state.inverted === true) {// 🔔 grayscale decals for invert
+        if (state.dark === true) {// 🔔 grayscale decals for invert
           ct.globalCompositeOperation = 'xor';
         }
         ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
@@ -150,9 +151,10 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-    async setInverted(invert = !state.inverted) {
-      state.inverted = invert;
+    async setDark(next = !state.dark) {
+      state.dark = next;
       await state.draw();
+      w.update();
     },
   }));
 
@@ -195,7 +197,7 @@ export default function Floor(props) {
 /**
  * @typedef State
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
- * @property {boolean} inverted
+ * @property {boolean} dark
  * navTris[seenGmId][tileIndex] is [positions, indices]
  * @property {THREE.BufferGeometry} quad
  
@@ -203,7 +205,7 @@ export default function Floor(props) {
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
- * @property {(nextInvert: boolean) => Promise<void>} setInverted
+ * @property {(nextInvert: boolean) => Promise<void>} setDark
  * @property {() => void} positionInstances
  */
 

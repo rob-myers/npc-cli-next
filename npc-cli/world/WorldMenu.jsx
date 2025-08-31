@@ -26,7 +26,7 @@ export default function WorldMenu(props) {
   const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    bgScale: 8, // [1..20]
+    bgScale: 12, // [1..20]
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
     defaultLoggerDim: { x: 0, y: 0, width: w.smallViewport ? 300 : 500, height: 100, minWidth: 200, minHeight: 80 },
     draggable: /** @type {*} */ (null),
@@ -79,8 +79,8 @@ export default function WorldMenu(props) {
     async onChangeInvertColor(e) {
       state.invertColor = e.currentTarget.checked;
       await Promise.all([// redraw
-        w.floor.setInverted(state.invertColor),
-        w.ceil.setInverted(state.invertColor),
+        w.floor.setDark(state.invertColor),
+        w.ceil.setDark(state.invertColor),
       ]);
       w.update()
     },

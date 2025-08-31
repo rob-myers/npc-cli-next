@@ -269,7 +269,6 @@ const instancedAtlasShader = {
   uniform float alphaTest;
   uniform sampler2DArray atlas;
   uniform vec3 diffuse;
-  uniform bool invert;
   uniform bool objectPick;
   uniform int objectPickRed;
   uniform float opacity;
@@ -300,13 +299,8 @@ const instancedAtlasShader = {
     } else {
       if (texel.a * opacity < alphaTest) discard;
       
-      if (invert) {
-        texel.rgb = vec3(1.0) - texel.rgb;
-      }
-
       gl_FragColor = texel * vec4(
         vColor * diffuse,
-        // invert ? 1.0 - vColor * diffuse : vColor * diffuse,
         min(opacity * vOpacityScale, opacityMin)
       );
     }
@@ -322,7 +316,6 @@ const instancedAtlasDefaultProps = {
   alphaTest: 0.5,
   atlas: emptyDataArrayTexture,
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
-  invert: false,
   objectPick: false,
   objectPickRed: 0,
   opacity: 1,
