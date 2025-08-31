@@ -218,6 +218,9 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       w.view.followPosition(npc.position, { height: helper.defaults.height });
     },
+    getGrKey(npcKey) {
+      return state.npcToRoom.get(npcKey)?.grKey;
+    },
     getRaycastIntersection(e, decoded) {// 🚧 move to WorldView
       /** @type {THREE.Mesh} */
       let mesh;
@@ -1009,6 +1012,7 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(npcKey: string) => void} followNpc
+ * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
  * @property {(regexDef: string, ...npcKeys: string[]) => void} grantAccess
  * @property {(e: NPC.Event) => void} handleEvents

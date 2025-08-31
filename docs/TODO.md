@@ -74,6 +74,12 @@
 - ✅ dark mode uses filled hull floor
 - ✅ mobile using dark mode by default
 
+- 🚧 query decor grid
+  - ✅ `npc.api.getRect()` or `npc rob api.getRect`
+  - ✅ `w decor.queryRect $( npc rob api.getRect )`
+  - ✅ `w decor.queryRect $( npc rob api.getRect ) $( w e.getGrKey rob )`
+    - show decor in grid squares intersecting npc's rect
+
 - mobile profiles will include progression via logger ui links
 
 - ✅ keep an agent fixed by making collisionQueryRange less than diameter

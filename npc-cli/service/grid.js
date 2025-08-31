@@ -1,5 +1,5 @@
+import { Rect, Vect } from "../geom";
 import { decorGridSize } from "./const";
-import { tmpVec1 } from "./geom";
 
 /**
  * @param {Geomorph.Decor} item 
@@ -27,25 +27,33 @@ export function coordToDecorGrid(x, y) {
 
 /**
  * - Returns colliders and points intersecting rect
- * - Does not filter by gmRoomId
- * @param {Geom.Rect} rect 
+ * - Can filter by room i.e. `grKey`.
  * @param {Geomorph.DecorGrid} grid
- * @returns {{ [decorKey: string]: Geomorph.Decor }}
+ * @param {Geom.RectJson} rect 
+ * @param {Geomorph.GmRoomKey} [grKey]
+ * @returns {Geomorph.Decor[]}
  */
-export function queryDecorGridIntersect(rect, grid) {
+export function queryDecorGridIntersect(grid, rect, grKey) {
   const decor = /** @type {{ [decorId: string]: Geomorph.Decor }} */ ({});
   const min = coordToDecorGrid(rect.x, rect.y);
   const max = coordToDecorGrid(rect.x + rect.width, rect.y + rect.height);
-  /** @type {Geomorph.DecorGrid[*][*]} */ let tile;
-  for (let i = min.x; i <= max.x; i++)
+  const testRect = tmpRect1.copy(rect);
+
+  for (let i = min.x; i <= max.x; i++) {
     for (let j = min.y; j <= max.y; j++) {
-      grid[i]?.[j].forEach(x =>
-        rect.intersects(x.bounds2d) === true
-        && (decor[x.key] = x)
-      );
+      grid[i]?.[j].forEach(x => {
+        if (testRect.intersects(x.bounds2d) === true) {
+          decor[x.key] = x
+        }
+      });
     }
-  return decor;
-}
+  }
+  
+  return grKey === undefined
+    ? Object.values(decor)
+    : Object.values(decor).filter(({ meta }) => meta.grKey === grKey)
+  ;
+};
 
 /** @type {Set<Geomorph.Decor>} */
 const foundDecor = new Set;
@@ -123,3 +131,6 @@ export function removeFromDecorGrid(d, grid) {
     for (let j = min.y; j <= max.y; j++)
       grid[i][j]?.delete(d);
 }
+
+const tmpRect1 = new Rect();
+const tmpVec1 = new Vect();
