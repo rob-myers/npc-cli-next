@@ -400,15 +400,16 @@ export function toV3(input, precision) {
 
 /**
  * Mutates vector
- * @param {THREE.Vector3} v 
- * @param {number} precision 
+ * @template {{ x: number; y: number; z: number; }} T
+ * @param {T} v 
+ * @param {number} precision
+ * @returns {T}
  */
 export function v3Precision(v, precision = 4) {
-  return v.set(
-    Number(v.x.toPrecision(precision)),
-    Number(v.y.toPrecision(precision)),
-    Number(v.z.toPrecision(precision)),
-  );
+  v.x = Number(v.x.toPrecision(precision));
+  v.y = Number(v.y.toPrecision(precision));
+  v.z = Number(v.z.toPrecision(precision));
+  return v;
 }
 
 export const defaultQuadUvs = [...Array(4)].map(_ => new THREE.Vector2());

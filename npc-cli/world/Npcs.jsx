@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 
-import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig } from "../service/const";
+import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig, precision } from "../service/const";
 import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, tmpVectThree1, toV3 } from "../service/three";
 import { helper } from "../service/helper";
@@ -402,7 +402,7 @@ export default function Npcs(props) {
         });
       }
       
-      const position = toV3(at);
+      const position = toV3(at, precision);
       // 🔔 non-zero height must be set via `meta.y`
       position.y = typeof meta.y === 'number' ? meta.y : 0;
 
@@ -513,7 +513,7 @@ export default function Npcs(props) {
 
       // finish setup all
       for (const [i, point] of groundPoints.entries()) {
-        const position = toV3(point);
+        const position = toV3(point, precision);
         position.y = typeof point.meta?.y === 'number' ? point.meta.y : 0;
         
         const npc = npcs[i];
