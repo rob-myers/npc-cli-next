@@ -57,12 +57,11 @@ They're a natural place to start, but far from the whole story.
   spawn npc:rob at:$( click 1 )
 
   move npc:rob to:$( click 1 )
+  move npc:rob to:"$( click 2 )"
+  move npc:rob to:$( clicks 2 )"
 
   # respawn with skeleton key
-  spawn npc:rob at:$( click 1 ) grant:.
-
-  # waypoint
-  move npc:rob to:"$( click 2 )"
+  spawn npc:rob at:$( click 1 ) granted:.
 
   make npc:rob do:$( click 1 )
 

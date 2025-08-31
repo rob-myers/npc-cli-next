@@ -79,7 +79,7 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
 ```sh
 c=-1; while c+=1; do
-  spawn npc:"rob_${c}" at:$( click 1 ) grant:.
+  spawn npc:"rob_${c}" at:$( click 1 ) granted:.
 done
 
 # much faster version:

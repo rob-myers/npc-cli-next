@@ -1447,7 +1447,7 @@ expr window.document.querySelector'("section")' | log
   - ✅ simplify: no loop, but can:
   - ✅ clean i.e. add to basic behaviour list
 
-- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
+- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) granted:.`
 
 - ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
 
@@ -2158,7 +2158,7 @@ done
 - ✅ fix spawn onto do point
   ```sh
   c=-1; while c+=1; do
-    spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
+    spawn npcKey:"rob_${c}" at:$( click 1 ) granted:.
   done
   ```
 
