@@ -7,22 +7,27 @@ import { decorGridSize } from "./const";
  */
 export function addToDecorGrid(item, grid) {
   const rect = item.bounds2d;
-  const min = coordToDecorGrid(rect.x, rect.y);
-  const max = coordToDecorGrid(rect.x + rect.width, rect.y + rect.height);
+  const [mx, my] = coordToDecorGrid(rect.x, rect.y);
+  const [Mx, My] = coordToDecorGrid(rect.x + rect.width, rect.y + rect.height);
   // const max = coordToDecorGridSupremum(rect.x + rect.width, rect.y + rect.height);
-  item.meta.gridMin = min; // For easy deletion
-  item.meta.gridMax = max;
-  for (let i = min.x; i <= max.x; i++)
-    for (let j = min.y; j <= max.y; j++)
+  // For easy deletion
+  item.meta.gridMin = [mx, my];
+  item.meta.gridMax = [Mx, My];
+  for (let i = mx; i <= Mx; i++)
+    for (let j = my; j <= My; j++)
       ((grid[i] ??= [])[j] ??= new Set()).add(item);
 }
 
 /**
  * @param {number} x
  * @param {number} y
+ * @returns {[x: number, y: number]}
  */
 export function coordToDecorGrid(x, y) {
-  return { x: Math.floor(x / decorGridSize), y: Math.floor(y / decorGridSize) };
+  return [
+    Math.floor(x / decorGridSize),
+    Math.floor(y / decorGridSize),
+  ];
 }
 
 /**
@@ -35,13 +40,13 @@ export function coordToDecorGrid(x, y) {
  */
 export function queryDecorGridIntersect(grid, rect, grKey) {
   const decor = /** @type {{ [decorId: string]: Geomorph.Decor }} */ ({});
-  const min = coordToDecorGrid(rect.x, rect.y);
-  const max = coordToDecorGrid(rect.x + rect.width, rect.y + rect.height);
+  const [mx, my] = coordToDecorGrid(rect.x, rect.y);
+  const [Mx, My] = coordToDecorGrid(rect.x + rect.width, rect.y + rect.height);
   const testRect = tmpRect1.copy(rect);
 
-  for (let i = min.x; i <= max.x; i++) {
-    for (let j = min.y; j <= max.y; j++) {
-      grid[i]?.[j].forEach(x => {
+  for (let i = mx; i <= Mx; i++) {
+    for (let j = my; j <= My; j++) {
+      grid[i]?.[j]?.forEach(x => {
         if (testRect.intersects(x.bounds2d) === true) {
           decor[x.key] = x
         }
@@ -74,12 +79,12 @@ export function queryDecorGridLine(p, q, grid) {
   const dy = Math.sign(tau.y);
 
   /** `p`'s grid coords */
-  const gp = coordToDecorGrid(p.x, p.y);
+  const [gpx, gpy] = coordToDecorGrid(p.x, p.y);
   // /** `q`'s grid coords */
   // const gq = coordToDecorGrid(q.x, q.y);
 
   foundDecor.clear();
-  grid[gp.x]?.[gp.y]?.forEach(d => foundDecor.add(d));
+  grid[gpx]?.[gpy]?.forEach(d => foundDecor.add(d));
   if (dx !== 0 || dy !== 0) {
     /**
      * Those λ ≥ 0 s.t. p + λ.tau on a vertical grid line.
@@ -100,7 +105,7 @@ export function queryDecorGridLine(p, q, grid) {
       ? ((decorGridSize *  1 * Math.ceil( p.y / decorGridSize)) - p.y) / tau.y
       : ((decorGridSize * -1 * Math.ceil(-p.y / decorGridSize)) - p.y) / tau.y;
     
-    let cx = gp.x, cy = gp.y;
+    let cx = gpx, cy = gpy;
 
     do {
       if (lambdaV <= lambdaH) {
@@ -125,10 +130,10 @@ export function queryDecorGridLine(p, q, grid) {
  * @param {Geomorph.DecorGrid} grid 
  */
 export function removeFromDecorGrid(d, grid) {
-  const min = /** @type {Geom.VectJson} */ (d.meta.gridMin);
-  const max = /** @type {Geom.VectJson} */ (d.meta.gridMax);
-  for (let i = min.x; i <= max.x; i++)
-    for (let j = min.y; j <= max.y; j++)
+  const [mx, my] = /** @type {[number, number]} */ (d.meta.gridMin);
+  const [Mx, My] = /** @type {[number, number]} */ (d.meta.gridMax);
+  for (let i = mx; i <= Mx; i++)
+    for (let j = my; j <= My; j++)
       grid[i][j]?.delete(d);
 }
 
