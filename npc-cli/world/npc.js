@@ -1149,6 +1149,9 @@ export class NpcApi {
       if (dampAngle(this.base.rotation, 'y', rotYDst, this.s.lookSecs, deltaSecs, undefined, undefined, 0.01) === false) {
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
+        if ((this.s.anim === 'Walk' || this.s.anim === 'Run') && this.s.target === null) {
+          this.startAnimation('Idle'); // e.g. stop-reason blocked-doorway
+        }
       }
     }
 
@@ -1278,7 +1281,8 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < 0.85) {
+    // if (elapsedTime - this.s.slowBegin < 0.85) {
+    if (elapsedTime - this.s.slowBegin < 0.5) {
       return; // too short
     }
 
@@ -1515,8 +1519,10 @@ export class NpcApi {
       if (typeof this.s.arriveAnim === 'string') {
         this.startAnimation(this.s.arriveAnim);
       }
-    } else {
+    } else if (lookAngleDst === null) {
       this.startAnimation('Idle');
+    } else {// Idle after look
+      this.s.lookSecs = lookSecsNoTarget * .75;
     }
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {

@@ -575,7 +575,7 @@ export default function useHandleEvents(w) {
         || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
       );
       if (blockingNpcKey !== null) {
-        const lookAngleDst = npc.api.getLookAngle(adjusted.dst);
+        const lookAngleDst = npc.api.getLookAngle(adjusted.src);
         npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() }, lookAngleDst);
         return;
       }
