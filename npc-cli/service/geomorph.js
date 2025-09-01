@@ -1,7 +1,7 @@
 import * as htmlparser2 from "htmlparser2";
 import * as THREE from "three";
 
-import { sguToWorldScale, precision, wallOutset, obstacleOutset, hullDoorDepth, doorDepth, decorIconRadius, sguSymbolScaleDown, doorSwitchHeight, doorSwitchDecorImgKey, specialWallMetaKeys, wallHeight, switchDecorQuadScaleUp, connectorEntranceHalfDepth } from "./const";
+import { sguToWorldScale, precision, wallOutset, obstacleOutset, hullDoorDepth, doorDepth, decorIconRadius, sguSymbolScaleDown, doorSwitchHeight, doorSwitchDecorImgKey, specialWallMetaKeys, wallHeight, switchDecorQuadScaleUp, connectorEntranceHalfDepth, decorIconRadiusOutset } from "./const";
 import { Mat, Poly, Rect, Vect } from "../geom";
 import { info, error, warn, debug, safeJsonParse, mapValues, keys, toPrecision, hashJson, tagsToMeta, textToTags, removeDups } from "./generic";
 import { geom, tmpRect1 } from "./geom";
@@ -348,7 +348,7 @@ class GeomorphService {
       return { type: 'circle', ...base, bounds2d: polyRect.json, radius, center };
     } else {// 🔔 fallback to decor point
       const center = poly.center.precision(precision);
-      const radius = decorIconRadius + 2;
+      const radius = decorIconRadius + decorIconRadiusOutset;
       const bounds2d = tmpRect1.set(center.x - radius, center.y - radius, 2 * radius, 2 * radius).precision(precision).json;
       /**
        * meta.direction:

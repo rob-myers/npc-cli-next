@@ -163,6 +163,8 @@ export const decorGridSize = geomorphGridMeters * 2;
 
 export const decorIconRadius = 5 * sguToWorldScale;
 
+export const decorIconRadiusOutset = 2 * sguToWorldScale;
+
 export const fallbackDecorImgKey = {
   /** @type {Key.DecorImg} */
   point: 'icon--info',

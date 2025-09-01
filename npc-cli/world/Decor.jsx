@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 
 import { Poly } from "../geom/poly";
-import { decorGridSize, decorIconRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
+import { decorGridSize, decorIconRadius, decorIconRadiusOutset, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
 import { isDevelopment, pause, removeDups, testNever, toPrecision, warn } from "../service/generic";
 import { geom, tmpMat1, tmpRect1, tmpVec1 } from "../service/geom";
 import { getCanvas } from "../service/dom";
@@ -221,7 +221,7 @@ export default function Decor(props) {
         case 'point':
         default: {
           const center = tmpVec1.copy(def).precision(precision);
-          const radius = decorIconRadius + 2;
+          const radius = decorIconRadius + decorIconRadiusOutset;
           const bounds2d = tmpRect1.set(center.x - radius, center.y - radius, 2 * radius, 2 * radius).precision(precision).json;
 
           if ('img' in def && !helper.isDecorImgKey(def.img)) {
@@ -708,7 +708,7 @@ export default function Decor(props) {
       args={[state.cuboidGeom, undefined, state.cuboids.length]}
       // frustumCulled={false}
       renderOrder={1}
-      visible={ready}
+      visible={ready === true && query.data === true}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
       {ready && <instancedFlatMaterial
@@ -729,7 +729,7 @@ export default function Decor(props) {
       args={[state.quad, undefined, state.quads.length]}
       frustumCulled={false}
       renderOrder={-1}
-      visible={ready}
+      visible={ready === true && query.data === true}
     >
       {/* <meshBasicMaterial color="red" /> */}
       {ready && <instancedAtlasMaterial
