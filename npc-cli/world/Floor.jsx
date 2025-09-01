@@ -2,9 +2,9 @@ import React from "react";
 import * as THREE from "three";
 
 import { Mat, Poly, Vect } from "../geom";
-import { gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
+import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { drawCircle, drawPolygons } from "../service/dom";
+import { drawCircle, drawPolygons, getGridPattern } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
@@ -19,6 +19,7 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     dark: false,
+    grid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(200, 0, 0, 0.5)'),
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
@@ -71,6 +72,12 @@ export default function Floor(props) {
       if (state.dark) {
         drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#111', null]);
       }
+
+      // // grid
+      // ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
+      // ct.fillStyle = state.grid;
+      // ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
+      // ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // drop shadows, avoiding doubling
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
@@ -158,7 +165,7 @@ export default function Floor(props) {
         w.update();
       }
     },
-  }));
+  }), { reset: { grid: false } });
 
   w.floor = state;
 
@@ -198,6 +205,7 @@ export default function Floor(props) {
 
 /**
  * @typedef State
+ * @property {CanvasPattern} grid
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
  * @property {boolean} dark
  * navTris[seenGmId][tileIndex] is [positions, indices]
