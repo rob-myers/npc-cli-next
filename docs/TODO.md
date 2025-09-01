@@ -74,11 +74,19 @@
 - ✅ dark mode uses filled hull floor
 - ✅ mobile using dark mode by default
 
-- 🚧 query decor grid
+- ✅ query decor grid
   - ✅ `npc.api.getRect()` or `npc rob api.getRect`
   - ✅ `w decor.queryRect $( npc rob api.getRect )`
   - ✅ `w decor.queryRect $( npc rob api.getRect ) $( w e.getGrKey rob )`
     - show decor in grid squares intersecting npc's rect
+  - ✅ try queryRect and ensure it makes sense
+    - ℹ️ `w decor.byKey.point[-1_6625,0_01,-1_375]` has bad grid{Min,Max}
+    - ✅ fix: decor point radius extension was still in geomorph coords (far too large)
+    - ✅ `w decor.queryRect $( npc will api.getRect 1 ) $( w e.getGrKey will ) | split meta`
+      - make npc decor test rect larger (1m radius)
+    - ❌ intersection of rectangles bug?
+
+- fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
 
 - mobile profiles will include progression via logger ui links
 
