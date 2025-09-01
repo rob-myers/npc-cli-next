@@ -226,6 +226,11 @@ export class Rect {
       Math.abs(this.cx - (other.x + 0.5 * other.width)) * 2 <= this.width + other.width &&
       Math.abs(this.cy - (other.y + 0.5 * other.height)) * 2 <= this.height + other.height
     );
+    // if (other.x <= this.right && this.x <= other.x + other.width && 
+    //   other.y <= this.bottom && this.y <= other.y + other.height ) {
+    //   return true;
+    // }
+    // return false;
   }
 
   /**
