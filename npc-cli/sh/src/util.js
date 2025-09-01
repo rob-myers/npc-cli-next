@@ -305,12 +305,19 @@ export async function* reduce({ api, args, datum }) {
 }
 
 /**
- * - Split arrays from stdin into items.
- *   - Optionally provide selector we apply pointwise,
- *     e.g. `points | split x`
- * - Split strings by optional separator (default `''`), e.g.
- *   - `split ,` splits by comma
- *   - `split '/\n/'` splits by newlines
+ * Split arrays from stdin into items.
+ * ```sh
+ * expr '[1, 2, 3, 4]' | split
+ * # optional selector applied pointwise,
+ * expr '[{ meta: "foo" }, {meta: "bar" }]' | split meta
+ * ```
+ * Also, split strings by optional separator (default `''`), e.g.
+ * ```sh
+ * # split by comma
+ * echo foo,bar,baz | split ,
+ * # split by whitespace
+ * echo foo   bar   baz | split '/\s+/'
+ * ```
  * @param {NPC.RunArg} ct
  */
 export async function* split({ api, args, datum }) {
