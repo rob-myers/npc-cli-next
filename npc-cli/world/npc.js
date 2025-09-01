@@ -609,12 +609,12 @@ export class NpcApi {
     return helper.defaults.radius;
   }
 
-  getRect() {
+  getRect(radius = this.getRadius()) {
     return new Rect(
-      this.point.x,
-      this.point.y,
-      2 * this.getRadius(),
-      2 * this.getRadius(),
+      this.point.x - radius,
+      this.point.y - radius,
+      2 * radius,
+      2 * radius,
     );
   }
 
