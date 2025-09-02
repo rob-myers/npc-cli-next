@@ -33,22 +33,23 @@ export function coordToDecorGrid(x, y) {
 /**
  * - Returns colliders and points intersecting rect
  * - Can filter by room i.e. `grKey`.
+ * - 🚧 use d.meta.reachRect if exists
  * @param {Geomorph.DecorGrid} grid
  * @param {Geom.RectJson} rect 
  * @param {Geomorph.GmRoomKey} [grKey]
  * @returns {Geomorph.Decor[]}
  */
-export function queryDecorGridIntersect(grid, rect, grKey) {
+export function  queryDecorGridRect(grid, rect, grKey) {
   const decor = /** @type {{ [decorId: string]: Geomorph.Decor }} */ ({});
   const [mx, my] = coordToDecorGrid(rect.x, rect.y);
   const [Mx, My] = coordToDecorGrid(rect.x + rect.width, rect.y + rect.height);
-  const testRect = tmpRect1.copy(rect);
+  const queryRect = tmpRect1.copy(rect);
 
   for (let i = mx; i <= Mx; i++) {
     for (let j = my; j <= My; j++) {
-      grid[`${i},${j}`]?.forEach(x => {
-        if (testRect.intersects(x.bounds2d) === true) {
-          decor[x.key] = x
+      grid[`${i},${j}`]?.forEach(d => {
+        if (queryRect.intersects(d.meta.reachRect ?? d.bounds2d) === true) {
+          decor[d.key] = d
         }
       });
     }
@@ -58,7 +59,7 @@ export function queryDecorGridIntersect(grid, rect, grKey) {
     ? Object.values(decor)
     : Object.values(decor).filter(({ meta }) => meta.grKey === grKey)
   ;
-};
+}
 
 /** @type {Set<Geomorph.Decor>} */
 const foundDecor = new Set;

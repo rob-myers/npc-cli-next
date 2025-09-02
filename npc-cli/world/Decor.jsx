@@ -8,7 +8,7 @@ import { isDevelopment, pause, removeDups, testNever, toPrecision, warn } from "
 import { geom, tmpMat1, tmpRect1, tmpVec1 } from "../service/geom";
 import { getCanvas } from "../service/dom";
 import { geomorph } from "../service/geomorph";
-import { addToDecorGrid, queryDecorGridIntersect, removeFromDecorGrid } from "../service/grid";
+import { addToDecorGrid, queryDecorGridRect, removeFromDecorGrid } from "../service/grid";
 import { createLabelSpriteSheet, getBoxGeometry, getColor, getQuadGeometryXY, getQuadGeometryXZ, getRotAxisMatrix, setRotMatrixAboutPoint, tmpMatFour1 } from "../service/three";
 import * as glsl from "../service/glsl";
 import { helper } from "../service/helper";
@@ -453,7 +453,7 @@ export default function Decor(props) {
       quadInst.computeBoundingSphere();
     },
     queryRect(rect, grKey) {
-      return queryDecorGridIntersect(state.byGrid, rect, grKey);
+      return queryDecorGridRect(state.byGrid, rect, grKey);
     },
     register(ds, removeExisting = true) {
       const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
@@ -814,7 +814,7 @@ export default function Decor(props) {
  * @property {() => void} positionInstances
  * @property {() => void} positionLabels
  * @property {() => void} positionQuads
- * @property {(rect: Geom.RectJson, grKey?: Geomorph.GmRoomKey) => Geomorph.Decor[]} queryRect
+ * @property {(rect: Geom.RectJson, grKey: Geomorph.GmRoomKey) => Geomorph.Decor[]} queryRect
  * @property {(groupName: string, ...decorKeys: string[]) => void} rememberInGroup
  * @property {(...decorKeys: string[]) => void} remove
  * @property {() => void} removeAllInstantiated

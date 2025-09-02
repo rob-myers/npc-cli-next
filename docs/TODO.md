@@ -91,9 +91,12 @@
       - make npc decor test rect larger (1m radius)
     - ❌ intersection of rectangles bug?
 
-- 🚧 query decor grid extended by nearby cuboids?
+- ❌ query decor grid extended by nearby cuboids?
   - would work for bed/chair
   - would need to add cuboid to all tables
+
+- 🚧 precomputed optional `decor.meta.reachRect`
+  - decor cuboid with `meta.reach === true` attaches rect `reachRect` to contained decor points
 
 - fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
 
