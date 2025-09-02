@@ -261,7 +261,10 @@ export class Rect {
     );
   }
 
-  /** @param {any} input */
+  /**
+   * @param {any} input
+   * @returns {input is Geom.RectJson}
+   */
   static isRectJson(input) {
     return input && typeof input.x === 'number' && typeof input.y === 'number' && typeof input.width === 'number' && typeof input.height === 'number';
   }
