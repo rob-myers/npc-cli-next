@@ -4,6 +4,11 @@
 
 ### Site
 
+- maybe start with behaviour/story i.e. go to bed
+  - rather than abstract spawn, move etc.
+
+- mobile profiles will include progression via logger ui links
+
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable
   - ✅ buy presentify
@@ -86,15 +91,18 @@
       - make npc decor test rect larger (1m radius)
     - ❌ intersection of rectangles bug?
 
-- fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
+- 🚧 query decor grid extended by nearby cuboids?
+  - would work for bed/chair
+  - would need to add cuboid to all tables
 
-- mobile profiles will include progression via logger ui links
+- fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
 
 - ✅ keep an agent fixed by making collisionQueryRange less than diameter
   - 🔔 `npc rada agent.raw.params.set_collisionQueryRange 0.1` fixed
   - `npc rada agent.raw.params.set_collisionQueryRange 0.47` not fixed
 
 - improve stuck detection when blocked by a fixed agent
+  - fixed via small collisionQueryRange
 
 - ✅ lookAngleDst should be aligned with `npc.api.getAngle()`
 

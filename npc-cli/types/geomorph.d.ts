@@ -470,11 +470,8 @@ declare namespace Geomorph {
     sheetId: number;
   }>;
 
-  /** 🚧 clarify */
-  type DecorCollidable = Geomorph.DecorCircle | Geomorph.DecorRect;
-
   /** `byGrid[x][y]` */
-  type DecorGrid = Set<Geomorph.Decor>[][];
+  type DecorGrid = { [gridKey: `${number},${number}`]: Set<Geomorph.Decor> };
 
   /** Previously we sorted its groups e.g. "points" */
   type RoomDecor = Set<Geomorph.Decor>;

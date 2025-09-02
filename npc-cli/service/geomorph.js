@@ -811,14 +811,6 @@ class GeomorphService {
 
   /**
    * @param {Geomorph.Decor} d
-   * @returns {d is Geomorph.DecorCollidable}
-   */
-  isDecorCollidable(d) {
-    return d.type === 'circle' || d.type === 'rect';
-  }
-
-  /**
-   * @param {Geomorph.Decor} d
    * @returns {d is Geomorph.DecorCuboid}
    */
   isDecorCuboid(d) {

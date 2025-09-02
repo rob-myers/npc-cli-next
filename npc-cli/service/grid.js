@@ -15,7 +15,7 @@ export function addToDecorGrid(item, grid) {
   item.meta.gridMax = [Mx, My];
   for (let i = mx; i <= Mx; i++)
     for (let j = my; j <= My; j++)
-      ((grid[i] ??= [])[j] ??= new Set()).add(item);
+      (grid[`${i},${j}`] ??= new Set()).add(item);
 }
 
 /**
@@ -46,7 +46,7 @@ export function queryDecorGridIntersect(grid, rect, grKey) {
 
   for (let i = mx; i <= Mx; i++) {
     for (let j = my; j <= My; j++) {
-      grid[i]?.[j]?.forEach(x => {
+      grid[`${i},${j}`]?.forEach(x => {
         if (testRect.intersects(x.bounds2d) === true) {
           decor[x.key] = x
         }
@@ -84,7 +84,7 @@ export function queryDecorGridLine(p, q, grid) {
   // const gq = coordToDecorGrid(q.x, q.y);
 
   foundDecor.clear();
-  grid[gpx]?.[gpy]?.forEach(d => foundDecor.add(d));
+  grid[`${gpx},${gpy}`]?.forEach(d => foundDecor.add(d));
   if (dx !== 0 || dy !== 0) {
     /**
      * Those λ ≥ 0 s.t. p + λ.tau on a vertical grid line.
@@ -115,7 +115,7 @@ export function queryDecorGridLine(p, q, grid) {
         cy += dy; // Hit horizontal 1st, so move vert
         lambdaH += (decorGridSize * dy) / tau.y; // Next horizontal line
       }
-      grid[cx]?.[cy]?.forEach(d => foundDecor.add(d));
+      grid[`${cx},${cy}`]?.forEach(d => foundDecor.add(d));
 
       // 🤔 (cx, cy) may not reach `max` in diagonal case?
       // } while ((cx !== max.x) && (cy !== max.y))
@@ -134,7 +134,7 @@ export function removeFromDecorGrid(d, grid) {
   const [Mx, My] = /** @type {[number, number]} */ (d.meta.gridMax);
   for (let i = mx; i <= Mx; i++)
     for (let j = my; j <= My; j++)
-      grid[i][j]?.delete(d);
+      grid[`${i},${j}`]?.delete(d);
 }
 
 const tmpRect1 = new Rect();

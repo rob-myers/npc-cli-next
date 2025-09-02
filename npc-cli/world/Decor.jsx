@@ -22,7 +22,7 @@ export default function Decor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byKey: {},
-    byGrid: [],
+    byGrid: {},
     byRoom: [],
     cuboidGeom: getBoxGeometry(`${w.key}-decor-cuboid`),
     cuboids: [],
@@ -543,11 +543,8 @@ export default function Decor(props) {
           decorSet.forEach(d => d.src !== undefined && decorSet.delete(d));
         }
       }
-      for (const byY of state.byGrid) {
-        for (const decorSet of byY ?? []) {
-          // array can contain `undefined` (untouched by decor)
-          decorSet?.forEach(d => d.src !== undefined && decorSet.delete(d));
-        }
+      for (const tile of Object.values(state.byGrid)) {
+        tile?.forEach(d => d.src !== undefined && tile.delete(d));
       }
     },
     removeFromRoom(gmId, roomId, ds) {
@@ -572,10 +569,9 @@ export default function Decor(props) {
       const { gridRect } = w.gms[gmId]; // clear gmId's part of the decor grid
       const { x, right, y, bottom } = tmpRect1.copy(gridRect).scale(1 / decorGridSize).integerOrds();
       for (let i = x; i < right; i++) {
-        const inner = state.byGrid[i];
-        if (inner === undefined) continue;
         for (let j = y; j < bottom; j++) {
-          inner[j]?.forEach(d => d.src !== undefined && inner[j].delete(d));
+          const tile = state.byGrid[`${i},${j}`];
+          tile?.forEach(d => d.src !== undefined && tile.delete(d));
         }
       }
     },
