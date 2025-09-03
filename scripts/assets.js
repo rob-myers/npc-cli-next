@@ -236,6 +236,7 @@ info({ opts });
 
   if (!prev.skipMaps) {
     perf('parseMaps', 'parsing maps');
+    assetsJson.maps = {};
     parseMaps(assetsJson, mapBaseNames);
     perf('parseMaps');
   } else {

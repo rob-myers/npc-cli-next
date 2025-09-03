@@ -47,6 +47,12 @@ export const helper = {
   )({
     "small-map-1": true, // default
     "demo-map-1": true,
+    "101-only": true,
+    "102-only": true,
+    "103-only": true,
+    "301-only": true,
+    "302-only": true,
+    "303-only": true,
   }),
 
   /** @type {Record<Key.NpcClass, true>} */

@@ -405,6 +405,12 @@
       "pngHash": 1975320118,
       "obsHashes": [596298591]
     },
+    "101-only": {"outputHash": -1926974489},
+    "102-only": {"outputHash": 1191439929},
+    "103-only": {"outputHash": -484052059},
+    "301-only": {"outputHash": 1311086319},
+    "302-only": {"outputHash": -1602214025},
+    "303-only": {"outputHash": 600632998},
     "demo-map-1": {"outputHash": -208319803},
     "small-map-1": {"outputHash": -944716326}
   },
@@ -19985,6 +19991,36 @@
     }
   },
   "maps": {
+    "101-only": {
+      "key": "101-only",
+      "gms": [{"gmKey": "g-101--multipurpose", "transform": [1, 0, 0, 1, 0, 0]}]
+    },
+    "102-only": {
+      "key": "102-only",
+      "gms": [
+        {"gmKey": "g-102--research-deck", "transform": [1, 0, 0, 1, 0, 0]}
+      ]
+    },
+    "103-only": {
+      "key": "103-only",
+      "gms": [{"gmKey": "g-103--cargo-bay", "transform": [1, 0, 0, 1, 0, 0]}]
+    },
+    "301-only": {
+      "key": "301-only",
+      "gms": [{"gmKey": "g-301--bridge", "transform": [1, 0, 0, 1, 0, 0]}]
+    },
+    "302-only": {
+      "key": "302-only",
+      "gms": [
+        {"gmKey": "g-302--xboat-repair-bay", "transform": [1, 0, 0, 1, 0, 0]}
+      ]
+    },
+    "303-only": {
+      "key": "303-only",
+      "gms": [
+        {"gmKey": "g-303--passenger-deck", "transform": [1, 0, 0, 1, 0, 0]}
+      ]
+    },
     "demo-map-1": {
       "key": "demo-map-1",
       "gms": [
