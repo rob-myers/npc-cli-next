@@ -96,8 +96,8 @@ export default function Floor(props) {
       const fillStyle = state.dark === true ? '#000' : '#ccc';
       const strokeStyle = state.dark === true ? '#4448' : '#4448';
       
-      // 🔔 optional chaining handles change to map with new geomorph keys
-      w.nav.toNavTris[gm.key]?.forEach(([positions, indices]) => {
+      // 🔔 handle early change to map with new geomorph keys
+      (w.nav.toNavTris[gm.key] ?? []).forEach(([positions, indices]) => {
         for (const index of indices) {
           const triVId = index % 3; // 0, 1, 2
           const vertId = indices[index];
@@ -115,7 +115,7 @@ export default function Floor(props) {
       const nodeFillStyle = state.dark === true ? '#000' : '#fff';
       const nodeStrokeStyle = state.dark === true ? '#fff4' : '#000';
       ct.lineWidth = 0.02;
-      for (const { src, dst } of w.nav.toOffMeshEdges[gm.key]) {
+      for (const { src, dst } of w.nav.toOffMeshEdges[gm.key] ?? []) {
         normal.set(-(dst.y - src.y), dst.x - src.x);
         ct.fillStyle = edgeFillStyle;
         ct.beginPath();
