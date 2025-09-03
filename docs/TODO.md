@@ -98,7 +98,7 @@
   - would work for bed/chair
   - would need to add cuboid to all tables
 
-- 🚧 precomputed optional `decor.meta.reachRect`
+- 🚧 decor points/quads may inherit `decor.meta.reachRect` from parent decor
   - ✅ decor cuboid with `meta['apply-reach'] === true` attaches rect tuple `reachRect` to contained decor points
   - ❌ initially attach e.g. `d.meta.reachRectId` then apply `d.meta.reachRect` after instantiation
     - hard to track

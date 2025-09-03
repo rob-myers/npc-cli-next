@@ -19,6 +19,7 @@ export default function Floor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     dark: false,
+    debug: false, // show decor rects
     grid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(200, 0, 0, 0.5)'),
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
@@ -95,7 +96,8 @@ export default function Floor(props) {
       const fillStyle = state.dark === true ? '#000' : '#ccc';
       const strokeStyle = state.dark === true ? '#4448' : '#4448';
       
-      w.nav.toNavTris[gm.key].forEach(([positions, indices]) => {
+      // 🔔 optional chaining handles change to map with new geomorph keys
+      w.nav.toNavTris[gm.key]?.forEach(([positions, indices]) => {
         for (const index of indices) {
           const triVId = index % 3; // 0, 1, 2
           const vertId = indices[index];
@@ -146,6 +148,11 @@ export default function Floor(props) {
         ct.restore();
       }
 
+      // debug decor rects
+      if (state.debug === true) {
+        drawPolygons(ct, gm.decor.filter(x => x.type === 'rect').map(x => Poly.fromRect(x.bounds2d)), [null, '#00f']);
+      }
+
     },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
@@ -165,7 +172,7 @@ export default function Floor(props) {
         w.update();
       }
     },
-  }), { reset: { grid: false } });
+  }), { reset: { grid: false, debug: true } });
 
   w.floor = state;
 
@@ -208,6 +215,7 @@ export default function Floor(props) {
  * @property {CanvasPattern} grid
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
  * @property {boolean} dark
+ * @property {boolean} debug
  * navTris[seenGmId][tileIndex] is [positions, indices]
  * @property {THREE.BufferGeometry} quad
  

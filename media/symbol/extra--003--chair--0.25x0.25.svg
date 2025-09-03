@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 75 75" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+<svg viewBox="0 0 75 75" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
   <defs>
     <bx:grid x="0" y="0" width="300" height="300"/>
     <symbol id="symbol-8" viewBox="0 0 1 1">
@@ -23,14 +23,42 @@
         <title>arrow-head</title>
       </path>
     </pattern>
+    <symbol id="symbol-0" viewBox="0 0 1 1">
+      <title>decor-unit-quad</title>
+      <rect x="-0.000001" y="-0.000003" width="1" height="1" style="fill-opacity: 0.5; fill: rgb(255, 255, 0);">
+        <title>fill</title>
+      </rect>
+      <rect width="1" height="1" style="fill: url('#pattern-1');">
+        <title>pattern</title>
+      </rect>
+    </symbol>
+    <pattern x="0" y="0" width="0.5" height="0.5" patternUnits="userSpaceOnUse" viewBox="0 0 300 300" id="pattern-1">
+      <title>decor-quad-pattern</title>
+      <g transform="matrix(1.056613922119, 0, 0, 1.056620836258, 8.044093132019, -25.138132095337)">
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0);" y="14.196193" x="-7.586937"/>
+        <path d="M 134.37503 0 L 181.695688 23.660329 L 134.37503 47.320661 L 134.37503 0 Z" style="stroke: rgb(0, 0, 0);"/>
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0);" y="298.120113" x="-7.586937"/>
+        <path d="M 134.37503 283.923959 L 181.695688 307.584288 L 134.37503 331.244617 L 134.37503 283.923959 Z" style="stroke: rgb(0, 0, 0);"/>
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: 73.3469px -6.3e-05px;" y="-9.464131" x="2.366032" transform="matrix(0, -1, -1, 0, -80.933799975588, 236.603372341917)"/>
+        <path d="M -31.247306 165.62343 L 16.073355 141.9631 L -31.247306 118.302771 L -31.247306 165.62343 Z" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: -7.58879px 141.961px;" transform="matrix(0, -1, 1, 0, -0.000009560453, 0.000005180922)"/>
+        <rect width="141.961975" height="18.928265" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: 73.3474px 0.000253px;" y="-9.464131" x="2.366032" transform="matrix(0, -1, -1, 0, 202.989607986441, 236.602919754019)"/>
+        <path d="M 252.676102 165.622793 L 299.99676 141.962464 L 252.676102 118.302135 L 252.676102 165.622793 Z" style="stroke: rgb(0, 0, 0); fill: rgb(0, 255, 0); transform-origin: 276.337px 141.96px;" transform="matrix(0, -1, 1, 0, -0.000008448851, 0.000005559184)"/>
+      </g>
+      <defs>
+        <bx:grid x="0" y="0" width="300" height="300"/>
+      </defs>
+    </pattern>
   </defs>
-  <image width="97" height="103" y="-14" style="pointer-events: none;" x="-11.000001" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGEAAABnCAYAAAAQXyy+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAaGVYSWZNTQAqAAAACAAEAQYAAwAAAAEAAgAAARIAAwAAAAEAAQAAASgAAwAAAAEAAgAAh2kABAAAAAEAAAA+AAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAABhoAMABAAAAAEAAABnAAAAAB5KzSYAAALjaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDx0aWZmOkNvbXByZXNzaW9uPjE8L3RpZmY6Q29tcHJlc3Npb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgICAgIDx0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb24+MjwvdGlmZjpQaG90b21ldHJpY0ludGVycHJldGF0aW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+OTc8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpDb2xvclNwYWNlPjE8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjEwMzwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgrE5rJ6AAAEkElEQVR4Ae2d25bbIAxFm/7/P6dhGrJkAtIRQh5fTl9igyRgb2DSPkwff/b989xxuMeOY4WGypjonqBDi38nZzBwzWvFBM4G3QK0gok1xqY/MuDV4G/AvF8ifHr1um0zg9wBfgtrhlNbY/juLX5HARKel5fMHT6jRe8OXwJEmckc9RkpuFTA87m0XHdxjweyrG4q2rh0AKtYmNge0FFyMm6BKIudHE591gpNCzgqeI3EpBSNnzbcpk8rAks4I/QNBfEyIUNjKCqPH0cFIAFXgl8QTQiQZEcsZUz3+W+nlQI6UDKbevZUCVfb/QVu8ARIPz2esr/73J4EVUC3wskbFwooJKb4tRJUpFc8BeqC5zrdIqQEd/LcHI+ThZyCPTaelKDS2WMy6gR+obOuuXzWZ3Aarg0NSXBOAJznscN6a+61KauARUASlIFu11VEOGWYjCjBRNQPAEVAp4ES+oyhvzusEkEJAwmlGfn2pKTLLvVEUIJENfEMnga1cpWgmlIrnLgTAYicBqTOC9OQcZUwRAkOMMw/eseq9UXqmBKODjF7fhG46NwoASUFxAHCulcSJRhwkZ8JRgmzmxJMRL4A4DR8FaSEF5IZcF8k8YavK4kSAHjZVxIlABK8Id6TRQlvwl5wXjFN/OZKooSGzug180qihBH1YLvnZFGCgO0BJ9JmHz9XEiU4EGZdSZTgkOANRU8WJTRkUXBNWuiVEkL41iRTwhqOoSqUEMK3JpkS1nCcrfLzNZUSZvGBecgPekoAYWaGUUImXbA2JYCgMsMoIZMuWJsSQFA1LOPfjyih0v29zycldOAjXys7adNNlNBBl3HldIb5NFHCBwX2kHBKHpSAsU+NooRUvFhxSsA4pUZRQiperDglYJymo5BvWpQwjXddIiWsYzlT6edX81DCDLrFOZSwGOhMOUqYobY4hxIaoMi3mSYl/EoJDoTefzdChVKCQ0JWKCUIsujOFSmRx89vjqSECEYl1yOUEhSQssv780DmWs+U8Cbk2bkWVKD/cxWVWEoAiHlDvEIpASCceRWV4SnhBcG7cwFvWsjmKiqBlKDhmuibEUoJBujsq6gMTwmGBM/OBmK/riJKeBEAwBma/ndH6pgnIVIcmv3Bg/a8jrrH5OB8wtNbtcHAOkPG5kkIr/TEBZBTEBVQ8FBCYJOAAswRKGGACDkFg9S2eXgN1UBKqCScn+ApMAWUYSEJ4IDOZRw7fLTm0j7qa1YECSg5kISm+G1eJWwHfDcfaevzm6hGVRbek6Mhdm2XkBcPLLmapW99EpI2lUtAMSQlmMmJO8fcLVcO6IHntTRvvMfTrDZKoggT3VfAiOVXYNswSjQl1EJJ92otv+tn4LodcYTmryVTBITwj8YQqqAVgCX0RjrTCfmtE1C5aRJKTEjET4HXf5N4tD8B6HIpFjsZqz4jhXah6D05i0CqcJROhJuSvu3yFNtFxnZ6h3vz8IIn7y16ZxFeVmkSauG7yUgTUIBGi19ZRpRN3bDm54qBriJiBQsTeC8gY+AzSclYf4+z2naISbxmOCvuKPNXIVud/wC3E9OpUGxQcwAAAABJRU5ErkJggg==">
+  <image width="97" height="103" y="-14" style="pointer-events: none;" x="-11.000001" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGEAAABnCAYAAAAQXyy+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAaGVYSWZNTQAqAAAACAAEAQYAAwAAAAEAAgAAARIAAwAAAAEAAQAAASgAAwAAAAEAAgAAh2kABAAAAAEAAAA+AAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAABhoAMABAAAAAEAAABnAAAAAB5KzSYAAALjaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDx0aWZmOkNvbXByZXNzaW9uPjE8L3RpZmY6Q29tcHJlc3Npb24+CiAgICAgICAgIDx0aWZmOlJlc29sdXRpb25Vbml0PjI8L3RpZmY6UmVzb2x1dGlvblVuaXQ+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgICAgIDx0aWZmOlBob3RvbWV0cmljSW50ZXJwcmV0YXRpb24+MjwvdGlmZjpQaG90b21ldHJpY0ludGVycHJldGF0aW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+OTc8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpDb2xvclNwYWNlPjE8L2V4aWY6Q29sb3JTcGFjZT4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjEwMzwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgrE5rJ6AAAEkElEQVR4Ae2d25bbIAxFm/7/P6dhGrJkAtIRQh5fTl9igyRgb2DSPkwff/b989xxuMeOY4WGypjonqBDi38nZzBwzWvFBM4G3QK0gok1xqY/MuDV4G/AvF8ifHr1um0zg9wBfgtrhlNbY/juLX5HARKel5fMHT6jRe8OXwJEmckc9RkpuFTA87m0XHdxjweyrG4q2rh0AKtYmNge0FFyMm6BKIudHE591gpNCzgqeI3EpBSNnzbcpk8rAks4I/QNBfEyIUNjKCqPH0cFIAFXgl8QTQiQZEcsZUz3+W+nlQI6UDKbevZUCVfb/QVu8ARIPz2esr/73J4EVUC3wskbFwooJKb4tRJUpFc8BeqC5zrdIqQEd/LcHI+ThZyCPTaelKDS2WMy6gR+obOuuXzWZ3Aarg0NSXBOAJznscN6a+61KauARUASlIFu11VEOGWYjCjBRNQPAEVAp4ES+oyhvzusEkEJAwmlGfn2pKTLLvVEUIJENfEMnga1cpWgmlIrnLgTAYicBqTOC9OQcZUwRAkOMMw/eseq9UXqmBKODjF7fhG46NwoASUFxAHCulcSJRhwkZ8JRgmzmxJMRL4A4DR8FaSEF5IZcF8k8YavK4kSAHjZVxIlABK8Id6TRQlvwl5wXjFN/OZKooSGzug180qihBH1YLvnZFGCgO0BJ9JmHz9XEiU4EGZdSZTgkOANRU8WJTRkUXBNWuiVEkL41iRTwhqOoSqUEMK3JpkS1nCcrfLzNZUSZvGBecgPekoAYWaGUUImXbA2JYCgMsMoIZMuWJsSQFA1LOPfjyih0v29zycldOAjXys7adNNlNBBl3HldIb5NFHCBwX2kHBKHpSAsU+NooRUvFhxSsA4pUZRQiperDglYJymo5BvWpQwjXddIiWsYzlT6edX81DCDLrFOZSwGOhMOUqYobY4hxIaoMi3mSYl/EoJDoTefzdChVKCQ0JWKCUIsujOFSmRx89vjqSECEYl1yOUEhSQssv780DmWs+U8Cbk2bkWVKD/cxWVWEoAiHlDvEIpASCceRWV4SnhBcG7cwFvWsjmKiqBlKDhmuibEUoJBujsq6gMTwmGBM/OBmK/riJKeBEAwBma/ndH6pgnIVIcmv3Bg/a8jrrH5OB8wtNbtcHAOkPG5kkIr/TEBZBTEBVQ8FBCYJOAAswRKGGACDkFg9S2eXgN1UBKqCScn+ApMAWUYSEJ4IDOZRw7fLTm0j7qa1YECSg5kISm+G1eJWwHfDcfaevzm6hGVRbek6Mhdm2XkBcPLLmapW99EpI2lUtAMSQlmMmJO8fcLVcO6IHntTRvvMfTrDZKoggT3VfAiOVXYNswSjQl1EJJ92otv+tn4LodcYTmryVTBITwj8YQqqAVgCX0RjrTCfmtE1C5aRJKTEjET4HXf5N4tD8B6HIpFjsZqz4jhXah6D05i0CqcJROhJuSvu3yFNtFxnZ6h3vz8IIn7y16ZxFeVmkSauG7yUgTUIBGi19ZRpRN3bDm54qBriJiBQsTeC8gY+AzSclYf4+z2naISbxmOCvuKPNXIVud/wC3E9OpUGxQcwAAAABJRU5ErkJggg==">
     <title>extra--003--chair--0.25x0.25</title>
   </image>
   <path d="M -11 3.703125 L -2.467954 -9.022963 L 8.579231 -14 L 59.266434 -14 L 79.316605 4.718639 L 85.999999 22.771185 L 85.999999 57.030594 L 69.470891 80.266361 L 55.017334 89.000008 L 7.327797 89 L -3.95869 83.044205 L -10.999997 74.339592 L -11 3.703125 Z" style="fill: rgb(0, 0, 255); fill-opacity: 0.5;">
     <title>obstacle chair</title>
   </path>
-  <use width="1" height="1" transform="matrix(-20, 0, 0, 20, 26.999998092651, 37)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" xlink:href="#symbol-8">
+  <use width="1" height="1" transform="matrix(-20, 0, 0, 20, 26.999998092651367, 37)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" href="#symbol-8">
     <title>decor do sit chair y=0.01</title>
+  </use>
+  <use width="1" height="1" style="transform-origin: 0px 0px;" href="#symbol-0" transform="matrix(70.503975, 0, 0, 80, 0, 0)">
+    <title>decor cuboid h=0.2 y=-0.2 outline=0.5 apply-reach</title>
   </use>
 </svg>
