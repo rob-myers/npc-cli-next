@@ -57,7 +57,7 @@ function applyReach(item, parent, grid) {
   const [oMx, oMy] = /** @type {[number, number]} */ (parent.meta.gridMax);
   for (let x = omx; x <= oMx; x++)
     for (let y = omy; y <= oMy; y++)
-      grid[`${x},${y}`].add(item);
+      (grid[`${x},${y}`] ??= new Set()).add(item);
   
   item.meta.gridMin = [omx, omy];
   item.meta.gridMax = [oMx, oMy];
