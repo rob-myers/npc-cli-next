@@ -490,7 +490,7 @@ export default function Decor(props) {
       }
 
       Object.values(grouped).forEach(({ meta, add }) =>
-        state.registerInRoom(meta.gmId, meta.roomId, add)
+        state.registerInRoomAndGrid(meta.gmId, meta.roomId, add)
       );
 
       state.updateDecorLists();
@@ -499,7 +499,7 @@ export default function Decor(props) {
       state.registeredAt = Date.now();
       update();
     },
-    registerInRoom(gmId, roomId, ds) {
+    registerInRoomAndGrid(gmId, roomId, ds) {
       const atRoom = state.byRoom[gmId][roomId];
 
       for (const d of ds) {
@@ -801,7 +801,7 @@ export default function Decor(props) {
  * @property {() => void} addQuadUvs
  * @property {() => void} addCuboidAttributes
  * @property {(def: Geomorph.DecorDef) => Geomorph.Decor} create
- * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerInRoom
+ * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerInRoomAndGrid
  * @property {(d: Geomorph.DecorCuboid) => THREE.Matrix4} createCuboidMatrix4
  * @property {(d: Geomorph.DecorPoint | Geomorph.DecorQuad) => THREE.Matrix4} createQuadMatrix4
  * @property {(d: Geomorph.DecorPoint) => THREE.Matrix4} createLabelMatrix4

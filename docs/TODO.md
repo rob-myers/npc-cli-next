@@ -4,8 +4,11 @@
 
 ### Site
 
-- maybe start with behaviour/story i.e. go to bed
+- start with behaviour/story i.e. go to bed
   - rather than abstract spawn, move etc.
+  - more interactive
+    - e.g. detect when npc near bed via `w.decor.queryRect`
+    - e.g. detect when npc can see other npc via raycast (WIP)
 
 - mobile profiles will include progression via logger ui links
 
@@ -96,9 +99,21 @@
   - would need to add cuboid to all tables
 
 - 🚧 precomputed optional `decor.meta.reachRect`
-  - decor cuboid with `meta.reach === true` attaches rect `reachRect` to contained decor points
+  - ✅ decor cuboid with `meta['apply-reach'] === true` attaches rect tuple `reachRect` to contained decor points
+  - ❌ initially attach e.g. `d.meta.reachRectId` then apply `d.meta.reachRect` after instantiation
+    - hard to track
+  - ✅ on add decor point to grid check for super decor with `meta['apply-reach'] === true`
+    - store its bounds as `d.meta.reachRect`
+  - ✅ on add decor with `meta['apply-reach'] === true` go thru points/rects and attach reachRect
+  - ✅ on add decor point/quad intersecting `meta['apply-reach'] === true` attach reachRect
+  - ✅ make docs and keycard reachable via 2 or 3 decor rects
+  - 🚧 add decor cuboids/rects with apply-reach to remaining chairs/toilets/etc
 
 - fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
+
+- support static-geometry raycast in physics.worker
+  - https://www.npmjs.com/package/detect-collisions
+  - per used geomorph key, after transform to local coords
 
 - ✅ keep an agent fixed by making collisionQueryRange less than diameter
   - 🔔 `npc rada agent.raw.params.set_collisionQueryRange 0.1` fixed
