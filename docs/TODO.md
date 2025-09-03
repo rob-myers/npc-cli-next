@@ -98,7 +98,7 @@
   - would work for bed/chair
   - would need to add cuboid to all tables
 
-- 🚧 decor points/quads may inherit `decor.meta.reachRect` from parent decor
+- ✅ decor points/quads may inherit `decor.meta.reachRect` from parent decor
   - ✅ decor cuboid with `meta['apply-reach'] === true` attaches rect tuple `reachRect` to contained decor points
   - ❌ initially attach e.g. `d.meta.reachRectId` then apply `d.meta.reachRect` after instantiation
     - hard to track
@@ -107,13 +107,14 @@
   - ✅ on add decor with `meta['apply-reach'] === true` go thru points/rects and attach reachRect
   - ✅ on add decor point/quad intersecting `meta['apply-reach'] === true` attach reachRect
   - ✅ make docs and keycard reachable via 2 or 3 decor rects
-  - 🚧 add decor cuboids/rects with apply-reach to remaining chairs/toilets/etc
+  - ✅ add decor cuboids/rects with apply-reach to more chairs/toilets/etc
 
-- fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
-
-- support static-geometry raycast in physics.worker
+- 🚧 support raycast (static geometry) in physics.worker
   - https://www.npmjs.com/package/detect-collisions
   - per used geomorph key, after transform to local coords
+
+- fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
+- finish adding decor cuboids/rects with apply-reach to chairs/toilets/etc
 
 - ✅ keep an agent fixed by making collisionQueryRange less than diameter
   - 🔔 `npc rada agent.raw.params.set_collisionQueryRange 0.1` fixed
