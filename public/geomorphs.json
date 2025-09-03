@@ -597,6 +597,176 @@
           "det": 1
         },
         {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {
+            "x": 24.5404,
+            "y": 4.3025,
+            "width": 0.9596,
+            "height": 1.0851
+          },
+          "transform": [0, 1.0851, -0.9596, 0, 25.5, 4.3025],
+          "center": {"x": 25.02, "y": 0.5, "z": 4.85}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {
+            "x": 26.675,
+            "y": 3.7604,
+            "width": 2.4623,
+            "height": 1.4473
+          },
+          "transform": [0, 1.4473, -2.4623, 0, 29.1373, 3.7604],
+          "center": {"x": 27.91, "y": 0.5, "z": 4.48}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {
+            "x": 24.2943,
+            "y": 3.3302,
+            "width": 2.0991,
+            "height": 0.4764
+          },
+          "transform": [0, 0.4764, -2.0991, 0, 26.3934, 3.3302],
+          "center": {"x": 25.34, "y": 0.5, "z": 3.57}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {
+            "x": 0.3309,
+            "y": 4.9149,
+            "width": 1.8948,
+            "height": 0.789
+          },
+          "transform": [0, 0.789, -1.8948, 0, 2.2257, 4.9149],
+          "center": {"x": 1.28, "y": 0.5, "z": 5.31}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {"x": 3, "y": 3.9371, "width": 2.2615, "height": 1.6427},
+          "transform": [0, 1.6427, -2.2615, 0, 5.2615, 3.9371],
+          "center": {"x": 4.13, "y": 0.5, "z": 4.76}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {
+            "x": 0.321,
+            "y": 3.6191,
+            "width": 2.1966,
+            "height": 0.7999
+          },
+          "transform": [0, 0.7999, -2.1966, 0, 2.5176, 3.6191],
+          "center": {"x": 1.42, "y": 0.5, "z": 4.02}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {"x": 0.7116, "y": 24.3795, "width": 4.6, "height": 2.1},
+          "transform": [0, 2.1, -4.6, 0, 5.3116, 24.3795],
+          "center": {"x": 3.01, "y": 0.5, "z": 25.43}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {
+            "x": 24.3201,
+            "y": 24,
+            "width": 2.2672,
+            "height": 2.7009
+          },
+          "transform": [2.2672, 0, 0, 2.701, 24.3201, 24],
+          "center": {"x": 25.45, "y": 0.5, "z": 25.35}
+        },
+        {
+          "type": "cuboid",
+          "key": "",
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "h": 1,
+            "color": "#444",
+            "outline": 0.7,
+            "y": 0
+          },
+          "bounds2d": {
+            "x": 27.2201,
+            "y": 24,
+            "width": 2.2672,
+            "height": 2.7009
+          },
+          "transform": [2.2672, 0, 0, 2.701, 27.2201, 24],
+          "center": {"x": 28.35, "y": 0.5, "z": 25.35}
+        },
+        {
           "type": "quad",
           "key": "",
           "meta": {
