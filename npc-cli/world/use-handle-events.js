@@ -576,7 +576,9 @@ export default function useHandleEvents(w) {
       );
       if (blockingNpcKey !== null) {
         const lookAngleDst = npc.api.getLookAngle(adjusted.src);
-        npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath() }, lookAngleDst);
+        npc.api.stopMoving({
+          type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath()
+        }, lookAngleDst);
         return;
       }
 

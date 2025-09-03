@@ -1182,7 +1182,9 @@ export class NpcApi {
    * @param {import('@recast-navigation/core').CrowdAgent} agent
    */
   onTickAgent(deltaSecs, agent) {
-    const position = v3Precision(agent.position());
+    // 🚧 precision 4 dp too low
+    // const position = v3Precision(agent.position());
+    const position = agent.position();
     const state = agent.state();
 
     this.delta.set(position.x, position.z).sub(this.point);
