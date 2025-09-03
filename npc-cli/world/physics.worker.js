@@ -332,17 +332,49 @@ function createGmColliders(gmIds = state.gms.map((_, gmId) => gmId)) {
  */
 function createGmRayCastSystems(geomorphs) {
   const gmKeys = new Set(state.gms.map(({ key }) => key));
+  
   for (const gmKey of gmKeys) {
+    // construct system per geomorph
     const system = state.gmRayCast[gmKey] ??= new System();
     system.clear();
 
-    // 🚧 detect-collisions per geomorph
+    // Geomorph.Layout not Geomorph.LayoutInstance
     const gm = geomorphs.layout[gmKey];
-    gm.walls.forEach(wall => {
-      const poly = new Polygon(wall.center, wall.outline, { isCentered: true, isStatic: true });
-      system.insert(poly); // 🚧 all at once
-    });
+    const zero = { x: 0, y: 0 };
+
+    gm.walls.forEach((wall, wallId) => system.insert(
+      new Polygon(zero, wall.outline, { isStatic: true, userData: { type: 'wall', wallId } })
+    ));
+    gm.doors.forEach((door, doorId) => system.insert(
+      new Polygon(zero, door.poly.outline, { isStatic: true, userData: { type: 'door', doorId } })
+    ));
+    // 🚧 some obstacles?
+    
+
   }
+
+  // 🚧 test raycast
+  const system = state.gmRayCast['g-301--bridge'];
+  if (system) {
+    const collidedWallResult = system.raycast(
+      { x: 2.13, y: 2.2 },
+      { x: 3.969, y: 2.2 },
+    );
+    const collidedDoorResult = system.raycast(
+      { x: 2.13, y: 2.2 },
+      { x: 2.13, y: 1 },
+    );
+    const noCollisionResult = system.raycast(
+      { x:2.13, y: 2.387 },
+      { x:2.055, y: 3.518 },
+    );
+    console.log({
+      collidedWallResult,
+      collidedDoorResult,
+      noCollisionResult,
+    })
+  }
+
 }
 
 /**
