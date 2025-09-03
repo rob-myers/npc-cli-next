@@ -2,6 +2,8 @@
  * Based on: https://github.com/michealparks/sword
  */
 import RAPIER, { ColliderDesc, RigidBodyType } from '@dimforge/rapier3d-compat';
+import { System, Polygon } from 'detect-collisions';
+
 import { physicsConfig, wallHeight, wallOutset } from '../service/const';
 import { info, warn, debug, testNever, isInsideWebWorker } from "../service/generic";
 import { fetchGeomorphsJson } from '../service/fetch-assets';
@@ -26,6 +28,7 @@ const state = {
   bodyKeyToUid: {},
   bodyUidToKey: {},
 
+  gmRayCast: /** @type {*} */ ({}),
 };
 
 /** @param {MessageEvent<WW.MsgToPhysicsWorker>} e */
@@ -206,6 +209,8 @@ async function setupOrRebuildWorld(msg) {
 
   restoreNpcs(msg.npcs);
 
+  createGmRayCastSystems(geomorphs);
+
   // fire initial collisions
   stepWorld();
 }
@@ -323,6 +328,24 @@ function createGmColliders(gmIds = state.gms.map((_, gmId) => gmId)) {
 }
 
 /**
+ * @param {Geomorph.Geomorphs} geomorphs 
+ */
+function createGmRayCastSystems(geomorphs) {
+  const gmKeys = new Set(state.gms.map(({ key }) => key));
+  for (const gmKey of gmKeys) {
+    const system = state.gmRayCast[gmKey] ??= new System();
+    system.clear();
+
+    // 🚧 detect-collisions per geomorph
+    const gm = geomorphs.layout[gmKey];
+    gm.walls.forEach(wall => {
+      const poly = new Polygon(wall.center, wall.outline, { isCentered: true, isStatic: true });
+      system.insert(poly); // 🚧 all at once
+    });
+  }
+}
+
+/**
  * On worker HMR we need to restore npcs
  * @param {WW.NpcDef[]} npcs 
  */
@@ -434,6 +457,7 @@ if (isInsideWebWorker() === true) {
  * @property {Map<number, WW.PhysicsBodyKey>} bodyHandleToKey
  * @property {Map<WW.PhysicsBodyKey, RAPIER.Collider>} bodyKeyToCollider
  * @property {Map<WW.PhysicsBodyKey, RAPIER.RigidBody>} bodyKeyToBody
+ * @property {{ [gmKey in Key.Geomorph]: System }} gmRayCast
  */
 
 const unitYAxis = /** @type {const} */ ({ x: 0, y: 1, z: 0 });
