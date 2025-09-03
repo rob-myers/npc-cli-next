@@ -78,7 +78,8 @@ export const spriteSheetLabelExtraScale = 5;
 /** Decimal place precision */
 export const precision = 4;
 
-export const wallOutset = 12 * sguToWorldScale;
+// export const wallOutset = 12 * sguToWorldScale;
+export const wallOutset = 10 * sguToWorldScale;
 
 export const obstacleOutset = 8 * sguToWorldScale;
 

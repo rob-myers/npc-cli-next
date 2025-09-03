@@ -403,6 +403,10 @@ expr window.document.querySelector'("section")' | log
 
 ### Dev Env
 
+- HMR on add `decor label=foo`
+- HMR onchange to `decor label=bar`
+- HMR onchange to `decor label=foo narrow-entrances`
+
 - 🚧 BUG: on add decor image i.e. decor spritesheet out-of-sync
   - w.geomorphs.sheet.decor is synced
   - `<Decor>` was not but fixed by editing its query
