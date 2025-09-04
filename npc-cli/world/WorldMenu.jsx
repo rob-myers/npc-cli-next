@@ -108,10 +108,10 @@ export default function WorldMenu(props) {
     onOverlayPointerUp() {
       props.setTabsEnabled(true);
     },
-    say(npcKey, ...parts) {
+    say(name, ...parts) {
       const line = parts.join(' ');
       state.logger.xterm.writeln(
-        `${ansi.BrightGreen}[${ansi.BrightYellow}${ansi.Bold}${npcKey}${ansi.BrightGreen}${ansi.BoldReset}]${ansi.Reset} ${
+        `${ansi.BrightGreen}[${ansi.BrightYellow}${ansi.Bold}${name}${ansi.BrightGreen}${ansi.BoldReset}]${ansi.Reset} ${
           line.replace(globalLoggerLinksRegex, `${ansi.DarkGreen}[${ansi.Blue}$1${ansi.Reset}${ansi.DarkGreen}]${ansi.Reset}`)
         }${ansi.Reset}`
       );
@@ -446,6 +446,7 @@ const pausedControlsCss = css`
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
  * @property {() => void} onOverlayPointerUp
- * @property {(npcKey: string, line: string) => void} say
+ * @property {(name: string, line: string) => void} say
+ * `name` could be an `npcKey` or "narrator"
  * @property {(shouldPrevent: boolean) => void} setPreventDraggable
  */

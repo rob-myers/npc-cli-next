@@ -230,7 +230,12 @@ export async function* mapBasic(ct) {
  * echo {1..5} | narrate
  * ```
  * @param {NPC.RunArg} ct
- * @param {{ words?: string; voice?: string; list?: 'voices' }} [opts]
+ * @param {{
+ *   words?: string;
+ *   voice?: string;
+ *   list?: 'voices';
+ *   onSay?(opts: { words: string; voice?: string; }): void | Promise<void>
+ * }} [opts]
  */
 export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voice' })) {
   
@@ -255,12 +260,14 @@ export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voic
     const voice = opts.voice;
 
     if (words !== '') {
-      yield { voice, text: String(words) };
+      await opts?.onSay?.({ voice, words });
+      yield { voice, text: words };
     }
 
     if (api.isTtyAt(0) === false) {
       let datum;
       while ((datum = await api.read()) !== api.eof) {
+        await opts?.onSay?.({ voice, words: `${datum}` });
         yield { voice, text: `${datum}` };
       }
     }

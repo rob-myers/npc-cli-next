@@ -161,9 +161,10 @@ export default function Tty(props: Props) {
 
       Object.assign(session.etc, props.shFiles);
 
-      // only auto-re-source shell function declaration files,
-      // that have already have been sourced in this session
-      await Promise.all(keys(state.reSource).map(async filename => {
+      // Only auto-re-source shell function declaration files
+      // that have already been sourced in this session
+      // Re-source sequentially to preserve function overriding.
+      for (const filename of keys(state.reSource)) {
         try {
           const src = session.etc[filename];
           await session.ttyShell.sourceExternal(src);  
@@ -177,7 +178,7 @@ export default function Tty(props: Props) {
             state.writeErrorToTty(session.key, `/etc/${filename}: failed to run`, e)
           }
         }
-      }));
+      }
 
       // store original functions too
       Object.assign(session.modules, props.modules);

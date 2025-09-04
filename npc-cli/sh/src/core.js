@@ -1,4 +1,5 @@
 import { isStringInt, removeFirst } from '../../service/generic';
+import * as util from './util';
 import { createDecorNumber } from './dev';
 
 /**
@@ -323,6 +324,23 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
     handlers.dispose();
   }
 }
+
+
+/**
+ * This is `util.narrate` but also logs speech.
+ * @param {NPC.RunArg} ct
+ * @param {Parameters<typeof util.narrate>[1]} [opts]
+ */
+export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })) {
+  yield* util.narrate(ct, {
+    ...opts,
+    async onSay({ voice, words }) {
+      ct.w.menu.say('narrator', words);
+      opts.onSay?.({ voice, words });
+    }
+  });
+}
+
 
 /**
  * ```sh
