@@ -1,6 +1,6 @@
 # never-ending overriding click
 click! () {
-  click --block
+  click --block "$@"
 }
 
 # click which outputs array of clicks
