@@ -930,8 +930,8 @@ export class NpcApi {
       throw new Error(`not navigable: ${jsStringify(to)}`);
     }
 
-    if (this.pendingTargets.length === 0 && this.isNear(closest, 0.35) === true) {
-      this.s.lookSecs = 0.4;
+    if (this.pendingTargets.length === 0 && this.isNear(closest, 0.1) === true) {
+      this.s.lookSecs = 0.2;
       this.s.lookAngleDst = this.getLookAngle(closest)
       return; // avoid close click jerk
     }
@@ -968,8 +968,11 @@ export class NpcApi {
 
     agent.requestMoveTarget(closest);
 
-    const nextAct = this.s.run === true ? 'Run' : 'Walk';
-    this.startAnimation(nextAct);
+    this.startAnimation(
+      this.isNear(closest, 0.35) === true
+        ? 'Idle' // avoid jerk, looks better when turning
+        : this.s.run === true ? 'Run' : 'Walk'
+    );
 
     this.w.events.next({
       key: 'started-moving',
@@ -1503,7 +1506,7 @@ export class NpcApi {
       return;
     }
 
-    this.s.lookSecs = lookSecsNoTarget;
+    this.s.lookSecs = lookAngleDst === null ? lookSecsNoTarget : 0.2;
     this.s.lookAngleDst = lookAngleDst;
     this.s.slowBegin = null;
     this.s.target = null;
@@ -1648,5 +1651,3 @@ export const crowdAgentParams = {
  */
 
 const tmpVect1 = new Vect();
-
-0;
