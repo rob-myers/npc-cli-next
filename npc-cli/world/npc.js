@@ -930,7 +930,9 @@ export class NpcApi {
       throw new Error(`not navigable: ${jsStringify(to)}`);
     }
 
-    if (this.pendingTargets.length === 0 && this.isNear(closest, 0.2) === true) {
+    if (this.pendingTargets.length === 0 && this.isNear(closest, 0.35) === true) {
+      this.s.lookSecs = 0.4;
+      this.s.lookAngleDst = this.getLookAngle(closest)
       return; // avoid close click jerk
     }
 
@@ -966,12 +968,8 @@ export class NpcApi {
 
     agent.requestMoveTarget(closest);
 
-    if (this.pendingTargets.length === 0 && this.isNear(closest, 0.35) === true) {
-      this.startAnimation('Idle'); // avoid jerk on resume move near target
-    } else {
-      const nextAct = this.s.run === true ? 'Run' : 'Walk';
-      this.startAnimation(nextAct);
-    }
+    const nextAct = this.s.run === true ? 'Run' : 'Walk';
+    this.startAnimation(nextAct);
 
     this.w.events.next({
       key: 'started-moving',
@@ -1230,7 +1228,7 @@ export class NpcApi {
       const pendingTarget = this.pendingTargets.shift();
       
       if (pendingTarget === undefined) {
-        this.stopMoving({ type: 'stop-reason', key: 'arrived' });
+        this.stopMoving({ type: 'stop-reason', key: 'arrived' }, this.s.lookAngleDst);
       } else {
         this.base.lastStart.copy(this.point);
         this.s.target = this.base.lastTarget.copy(pendingTarget);
