@@ -16,7 +16,7 @@ import { AStar } from "../pathfinding/AStar";
  *   gluing geomorphs along shared edges.
  * @extends {BaseGraph<Graph.GmGraphNode, Graph.GmGraphEdgeOpts>}
  */
-export class GmGraphClass extends BaseGraph {
+export class GmGraph extends BaseGraph {
 
   /** @type {Geomorph.LayoutInstance[]}  */
   gms;
@@ -117,10 +117,13 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
-   * @param {Geom.VectJson} point
+   * @param {MaybeMeta<Geom.VectJson>} point
    * @returns {number | null} gmId
    */
   findGmIdContaining(point) {
+    if (typeof point.meta?.gmId === 'number') {
+      return point.meta.gmId;
+    }
     return queryGmIdGrid(this.gmIdGrid, point);
   }
   
@@ -216,7 +219,7 @@ export class GmGraphClass extends BaseGraph {
     const doorNodeId = getGmDoorNodeId(gm.num, gm.transform, hullDoorId);
     const doorNode = this.getNode(doorNodeId);
     if (!doorNode) {
-      console.error(`${GmGraphClass.name}: failed to find hull door node: ${doorNodeId}`);
+      console.error(`${GmGraph.name}: failed to find hull door node: ${doorNodeId}`);
       return this.adjRoomCtxt.set(cacheKey, null), null;
     }
     const otherDoorNode = /** @type {undefined | Graph.GmGraphNodeDoor} */ (this.getSuccs(doorNode).find(x => x.type === 'door'));
@@ -316,7 +319,7 @@ export class GmGraphClass extends BaseGraph {
    * @param {boolean} [options.permitErrors]
    */
   static fromGms(gms, { permitErrors } = { permitErrors: false }) {
-    const graph = new GmGraphClass(gms);
+    const graph = new GmGraph(gms);
     /** Index into nodesArray */
     let index = 0;
 

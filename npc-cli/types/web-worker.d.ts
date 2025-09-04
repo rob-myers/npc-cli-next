@@ -50,17 +50,19 @@ declare namespace WW {
   type MsgToPhysicsWorker = (
     | AddNPCs
     | AddColliders
+    | GetDebugData
+    | GetRaycast
     | RemoveBodies
     | RemoveColliders
     | SendNpcPositions
     | SetupPhysicsWorld
-    | { type: 'get-debug-data' }
   );
 
   type MsgFromPhysicsWorker = (
     | WorldSetupResponse
     | NpcCollisionResponse
     | PhysicsDebugDataResponse
+    | RaycastResultResponse
   );
 
   //#region MsgToPhysicsWorker
@@ -108,6 +110,20 @@ declare namespace WW {
     /** Used to fetch public assets from worker */
     baseUrl: string;
   }
+
+  interface GetDebugData {
+    type: 'get-debug-data';
+  }
+
+  interface GetRaycast {
+    type: 'get-raycast';
+    uid: string;
+    src: Geom.VectJson;
+    dst: Geom.VectJson;
+    srcGmId: number;
+    dstGmId: number;
+  }
+
   //#endregion
 
   interface WorldSetupResponse {
@@ -119,6 +135,14 @@ declare namespace WW {
     items: PhysicDebugItem[];
     /** [ux, uy, vx, vy, ...] */
     lines: number[];
+  }
+
+  interface RaycastResultResponse {
+    type: 'raycast-result';
+    uid: string;
+    intersection: null | Geom.VectJson;
+    gmDoorIds: Geomorph.GmDoorId[];
+    // 🚧 ...
   }
 
   interface PhysicDebugItem {

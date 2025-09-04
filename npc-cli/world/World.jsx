@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
 
-import { GmGraphClass } from "../graph/gm-graph";
+import { GmGraph } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
 import { debug, isDevelopment, pause, mapValues, range, entries, hashText } from "../service/generic";
@@ -56,7 +56,7 @@ export default function World(props) {
     events: new Broadcaster(),
     geomorphs: /** @type {*} */ (null),
     gms: [],
-    gmGraph: new GmGraphClass([]),
+    gmGraph: new GmGraph([]),
     gmRoomGraph: new GmRoomGraphClass(),
     hmr: /** @type {*} */ ({}),
     smallViewport: isSmallViewport(),
@@ -195,9 +195,9 @@ export default function World(props) {
       
       // 🔔 if this function changes we'll run the whole query
       const queryFnHash = hashText(queryCache.find({ queryKey: [WORLD_QUERY_FIRST_KEY], exact: false })?.options.queryFn?.toString() ?? '');
-      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr({
+      const { createGmsData: gmsDataChanged, GmGraph: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr({
         createGmsData,
-        GmGraphClass,
+        GmGraph,
         queryFnHash,
       });
       
@@ -228,7 +228,7 @@ export default function World(props) {
       if (mapChanged === true || gmsDataChanged === true || gmGraphChanged === true) {
         await pause();
         state.menu.measure('gmGraph');
-        next.gmGraph = GmGraphClass.fromGms(next.gms, { permitErrors: true });
+        next.gmGraph = GmGraph.fromGms(next.gms, { permitErrors: true });
         state.menu.measure('gmGraph');
         
         await pause();
@@ -399,7 +399,7 @@ export default function World(props) {
  * - A geomorph key is "non-empty" iff `gmsData[gmKey].wallPolyCount` non-zero.
  * @property {{
  *   createGmsData: typeof createGmsData;
- *   GmGraphClass: typeof GmGraphClass;
+ *   GmGraph: typeof GmGraph;
  *   queryFnHash: number;
  * }} hmr
  * Change-tracking for Hot Module Reloading (HMR) only
@@ -459,7 +459,7 @@ export default function World(props) {
  * @property {Geomorph.LayoutInstance[]} gms
  * Aligned to `map.gms`.
  * Only populated for geomorph keys seen in some map.
- * @property {GmGraphClass} gmGraph
+ * @property {GmGraph} gmGraph
  * @property {GmRoomGraphClass} gmRoomGraph
  * @property {import('@recast-navigation/core').Crowd} crowd
  * @property {boolean} smallViewport Was viewport small when we mounted World?

@@ -419,17 +419,28 @@ export const helper = {
   },
 
   /**
-   * Does not create fresh object in case of 2D input.
+   * - Does not create fresh object in case of 2D input.
+   * - Preserves meta
+   * 
    * - `{ x, y, z }` -> `{ x, y: z }`
    * - `THREE.Vector3` -> `{ x, y: z }`
    * - `{ x, y }` -> same object
-   * @param {NPC.GroundPoint} input 
-   * @returns {Geom.VectJson}
+   * @param {MaybeMeta<NPC.GroundPoint>} input 
+   * @returns {MaybeMeta<Geom.VectJson>}
    */
   toXZ(input) {
     // 🚧 careful of hidden consequences
     // return { x: input.x, y: 'z' in input ? input.z : input.y };
-    return 'z' in input ? { x: input.x, y: input.z } : input;
+
+    if ('z' in input) {
+      return {
+        x: input.x,
+        y: input.z,
+        ...(input.meta && { meta: input.meta }),
+      };
+    } else {
+      return input;
+    }
   },
 };
 

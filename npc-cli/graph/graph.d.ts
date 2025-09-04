@@ -138,7 +138,7 @@ declare namespace Graph {
 
   type GmGraphEdgeOpts = BaseEdgeOpts;
 
-  type GmGraph = import("./gm-graph").GmGraphClass;
+  type GmGraph = import("./gm-graph").GmGraph;
 
   /** Given a hull door, the respective ids in adjacent geomorph */
   interface GmAdjRoomCtxt {

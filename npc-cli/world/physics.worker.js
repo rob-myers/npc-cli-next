@@ -98,6 +98,9 @@ async function handleMessages(e) {
     case "get-debug-data":
       sendDebugData();
       break;
+    case "get-raycast":
+      sendRaycastResult(msg);
+      break;
     case "remove-bodies":
     case "remove-colliders": {
       const bodyKeys = msg.type === 'remove-bodies'
@@ -348,31 +351,8 @@ function createGmRayCastSystems(geomorphs) {
     gm.doors.forEach((door, doorId) => system.insert(
       new Polygon(zero, door.poly.outline, { isStatic: true, userData: { type: 'door', doorId } })
     ));
+
     // 🚧 some obstacles?
-    
-
-  }
-
-  // 🚧 test raycast
-  const system = state.gmRayCast['g-301--bridge'];
-  if (system) {
-    const collidedWallResult = system.raycast(
-      { x: 2.13, y: 2.2 },
-      { x: 3.969, y: 2.2 },
-    );
-    const collidedDoorResult = system.raycast(
-      { x: 2.13, y: 2.2 },
-      { x: 2.13, y: 1 },
-    );
-    const noCollisionResult = system.raycast(
-      { x:2.13, y: 2.387 },
-      { x:2.055, y: 3.518 },
-    );
-    console.log({
-      collidedWallResult,
-      collidedDoorResult,
-      noCollisionResult,
-    })
   }
 
 }
@@ -469,7 +449,48 @@ function sendDebugData() {
     type: 'debug-data',
     items: physicsDebugData,
     lines: Array.from(vertices),
-  })
+  });
+}
+
+/**
+ * @param {WW.GetRaycast} msg
+ */
+function sendRaycastResult(msg) {
+  const { src, dst, srcGmId, dstGmId } = msg;
+  
+  let intersection = /** @type {null | Geom.VectJson} */ (null);
+  const gmDoorIds = /** @type {Geomorph.GmDoorId[]} */ ([]);
+  
+  if (srcGmId === dstGmId) {
+    const gm = state.gms[srcGmId];
+    const localSrc = gm.inverseMatrix.transformPoint({...src});
+    const localDst = gm.inverseMatrix.transformPoint({...dst});
+    const result = state.gmRayCast[gm.key].raycast(
+      localSrc,
+      localDst,
+      (body) => {
+        if (body.userData.type === 'door') {
+          const gmDoorId = helper.getGmDoorId(srcGmId, body.userData.doorId);
+          gmDoorIds.push(gmDoorId);
+          return false; // continue past door
+        }
+        return true
+      },
+    );
+    if (result !== undefined) {
+      intersection = gm.matrix.transformPoint(result.point);
+    }
+  } else {
+    // 🚧 generalize thru one or more hull doors
+  }
+
+  selfTyped.postMessage({
+    type: 'raycast-result',
+    uid: msg.uid,
+    intersection,
+    gmDoorIds,
+    // 🚧 ...
+  });
 }
 
 if (isInsideWebWorker() === true) {

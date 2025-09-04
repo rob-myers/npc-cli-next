@@ -2,6 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
+import { uid } from "uid";
 
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig, precision } from "../service/const";
 import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
@@ -30,9 +31,10 @@ export default function Npcs(props) {
     gltfAux: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
     idToKey: new Map(),
-    sheetAux: /** @type {*} */ ({}),
     npc: {},
+    pendingRaycast: /** @type {*} */ ({}),
     physicsPositions: [],
+    sheetAux: /** @type {*} */ ({}),
     showLastNavPath: false, // 🔔 for debug
 
     attachAgent(npc) {
@@ -190,6 +192,31 @@ export default function Npcs(props) {
       state.physicsPositions.length = 0;
     },
     onTickIdleTurn: null,
+    async raycast(src, dst) {
+      const srcGmId = state.findGmIdContaining(src);
+      const dstGmId = state.findGmIdContaining(dst);
+
+      if (srcGmId === null || dstGmId === null) {
+        return { type: 'raycast-result', uid: '', intersection: null, gmDoorIds: [] };
+      }
+
+      const raycastUid = uid();
+
+      w.physics.worker.postMessage({
+        type: 'get-raycast',
+        uid: raycastUid,
+        src: helper.toXZ(src),
+        dst: helper.toXZ(dst),
+        srcGmId,
+        dstGmId,
+      });
+
+      return new Promise(resolve => {
+        state.pendingRaycast[raycastUid] = {
+          resolve,
+        };
+      });
+    },
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
       const animKeys = npcs.map(x => x.s.anim);
@@ -621,10 +648,24 @@ export default function Npcs(props) {
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
 
-  React.useEffect(() => {// hot reload each npc
+  React.useEffect(() => {// hot reload npc + raycast
     if (process.env.NODE_ENV === 'development') {
       state.hotReloadNpcs();
     }
+
+    /** @param {MessageEvent<WW.MsgFromPhysicsWorker>} e */
+    function onPhysicsWorkerMessage({ data: msg }) {
+      if (msg.type === 'raycast-result') {
+        state.pendingRaycast[msg.uid].resolve?.(msg);
+        delete state.pendingRaycast[msg.uid];
+      }
+    };
+    w.physics.worker.addEventListener('message', onPhysicsWorkerMessage);
+
+    return () => {
+      w.physics.worker.removeEventListener('message', onPhysicsWorkerMessage);
+    };
+
   }, []);
   
   React.useEffect(() => {// onchange gltf or sheets
@@ -670,16 +711,14 @@ export default function Npcs(props) {
 /**
  * @typedef State
  * @property {Record<`${number},${number},${number}`, string>} doToNpc
- * Act point to current npc or undefined.
+ * Do point to current npc or undefined.
  * - `${x},${y},${z}` -> npcKey
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
- * //@property {{ [npcKey: string]: Npc }} npc
  * @property {{ [npcKey: string]: NPC.NPC }} npc
- * Custom callback to handle npc slow down.
- * We don't use an event because it can happen too often.
+ * @property {{ [uid: string]: { resolve: (result: WW.RaycastResultResponse) => void } }} pendingRaycast
  * @property {number[]} physicsPositions
  * Format `[npc.bodyUid, npc.position.x, npc.position.y, npc.position.z, ...]`
  * @property {Map<number, string>} idToKey
@@ -717,8 +756,11 @@ export default function Npcs(props) {
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(...points: NPC.GroundPoint[]) => boolean} inSameRoom
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
+ * @property {(src: MaybeMeta<NPC.GroundPoint>, dst: MaybeMeta<NPC.GroundPoint>) => Promise<WW.RaycastResultResponse>} raycast
  * @property {() => void} restore
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckNpc
+ * Custom callback to handle npc slow down.
+ * We don't use an event because it can happen too often.
  * @property {(deltaSecs: number) => void} onTick
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onTickIdleTurn
  * Handle turning of idle npcs e.g. turn towards nearby npcs.

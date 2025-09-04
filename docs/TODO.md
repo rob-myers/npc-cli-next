@@ -106,13 +106,16 @@
   - ✅ add decor cuboids/rects with apply-reach to more chairs/toilets/etc
 
 - 🚧 support raycast (static geometry) in physics.worker
-  - https://www.npmjs.com/package/detect-collisions
-  - per used geomorph key, after transform to local coords
+  - ℹ️ https://www.npmjs.com/package/detect-collisions
+  - ℹ️ per used geomorph key, after transform to local coords
+  - ✅ can send src/dst to physics.worker and receive raycast response
+  - 🚧 support src/dst across distinct geomorphs
 
-- 🚧 move code from gm-graph to useHandleEvents and service/grid
+- ✅ move code from gm-graph to useHandleEvents and service/grid
   - ✅ move grid create/query code into service/grid
   - `w gmGraph.findPath $( click -2 1 ) $( click -2 1 )`
   - `w gmGraph.findPath $( click -2 2 )`
+  - ✅ remove gmGraph.w
 
 - fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
 - finish adding decor cuboids/rects with apply-reach to chairs/toilets/etc
