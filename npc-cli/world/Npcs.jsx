@@ -8,11 +8,11 @@ import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, tak
 import { computeMeshUvMappings, emptyAnimationMixer, tmpVectThree1, toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
+import { geom } from "../service/geom";
 import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { geom, tmpVec1 } from "../service/geom";
 
 /**
  * @param {Props} props
@@ -48,6 +48,9 @@ export default function Npcs(props) {
       }
       return npc.agent;
     },
+    findGmIdContaining(input) {
+      return w.gmGraph.findGmIdContaining(helper.toXZ(input));
+    },
     findPath(src, dst) {// 🔔 agent only uses path as a guide
       const query = w.crowd.navMeshQuery;
       const src3 = toV3(src);
@@ -72,6 +75,21 @@ export default function Npcs(props) {
       }
       warn(`${'findPath'} failed: ${JSON.stringify({ src, dst })}`);
       return null;
+    },
+    findRoomContaining(input, includeDoors = false) {
+      if (helper.isGmRoomId(input.meta) === true) {
+        return { ...input.meta };
+      }
+      const point = helper.toXZ(input);
+      const gmId = state.findGmIdContaining(point);
+      if (typeof gmId === 'number') {
+        const gm = w.gms[gmId];
+        const localPoint = gm.inverseMatrix.transformPoint({ x: point.x, y: point.y });
+        const roomId = w.gmsData.findRoomIdContaining(gm, localPoint, includeDoors);
+        return roomId === null ? null : { gmId, roomId, grKey: helper.getGmRoomKey(gmId, roomId) };
+      } else {
+        return null;
+      }
     },
     forceUpdate() {
       const now = Date.now();
@@ -144,6 +162,19 @@ export default function Npcs(props) {
         // npc.applySkin();
         // npc.applyTint();
       }
+    },
+    inSameRoom(...points) {
+      /** @type {null | Geomorph.GmRoomId} */ let gmRoomId = null;
+      return points.every((point, i) => {
+        const next = this.findRoomContaining(point);
+        if (next === null) {
+          return false;
+        } else if (gmRoomId !== null && gmRoomId.grKey !== next.grKey) {
+          return false;
+        } else {
+          return gmRoomId = next;
+        }
+      });
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
@@ -675,11 +706,16 @@ export default function Npcs(props) {
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} setupSkins
+ * @property {(point: NPC.GroundPoint) => null | number} findGmIdContaining
  * @property {(src: NPC.GroundPoint, dst: NPC.GroundPoint) => null | THREE.Vector3Like[]} findPath
+ * @property {(point: MaybeMeta<NPC.GroundPoint>, includeDoors?: boolean) => null | Geomorph.GmRoomId} findRoomContaining
+ * Technically rooms do not include doors,
+ * but sometimes either adjacent room will do.
  * @property {() => void} forceUpdate
  * @property {(npcKey: string) => NPC.NPC} getNpc
  * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
+ * @property {(...points: NPC.GroundPoint[]) => boolean} inSameRoom
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
  * @property {() => void} restore
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckNpc

@@ -299,22 +299,6 @@ export class GmGraphClass extends BaseGraph {
     return /** @type {Graph.GmGraphNodeDoor} */ (this.getNode(nodeId));
   }
 
-  /** @param {Geom.VectJson[]} points */
-  inSameRoom(...points) {
-    /** @type {null | Geomorph.GmRoomId} */ let gmRoomId;
-    return points.every((point, i) => {
-      const next = this.findRoomContaining(point);
-      if (!next) return false;
-      if (i > 0 && (
-        /** @type {Geomorph.GmRoomId} */ (gmRoomId).gmId !== next.gmId ||
-        /** @type {Geomorph.GmRoomId} */ (gmRoomId).roomId !== next.roomId
-      )) {
-        return false;
-      }
-      return gmRoomId = next;
-    });
-  }
-
   /**
    * A hull door can be sealed either by definition,
    * or by virtue of its position (leaf node in gmGraph)

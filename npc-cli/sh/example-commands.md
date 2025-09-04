@@ -115,6 +115,10 @@ w gmRoomGraph.getReachableUpTo g0r2 '(_, depth) => depth === 2' |
 
 ```sh
 w e.getRoomIdsAdjData '[{ gmId: 0, roomId: 9} ]'
+
+ w npc.findRoomContaining $( click 1 )
+
+ w npc.inSameRoom $( click 2 )
 ```
 
 ### Skinning

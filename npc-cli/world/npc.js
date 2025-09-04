@@ -1003,9 +1003,10 @@ export class NpcApi {
     const src = this.point;
     const meta = at.meta ?? {};
 
+    // 🚧 move this condition "higher up"
     if (// 🔔 permit move between do points in same room, ≤ 3 grids away
       !(src.distanceTo(at) <= geomorphGridMeters * 3)
-      || !this.w.gmGraph.inSameRoom(src, at)
+      || !this.w.npc.inSameRoom(src, at)
       // || !this.w.npc.canSee(src, point, this.getInteractRadius())
     ) {
       throw Error('too far away');
@@ -1093,7 +1094,9 @@ export class NpcApi {
     if (meta.do !== true) {
       throw Error('not doable');
     }
-    if (!this.w.gmGraph.inSameRoom(src, doPoint)) {
+
+    // 🚧 move this condition "higher up"
+    if (!this.w.npc.inSameRoom(src, doPoint)) {
       throw Error('too far away');
     }
 

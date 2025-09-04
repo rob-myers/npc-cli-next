@@ -323,6 +323,15 @@ export const helper = {
   },
 
   /**
+   * 🔔 Given `grKey` assume `gmId`, `roomId` too.
+   * @param {any} input 
+   * @returns {input is Geomorph.GmRoomId}
+   */
+  isGmRoomId(input) {
+    return !!input && typeof input.grKey === 'string';
+  },
+
+  /**
    * @param {string} input 
    * @returns {input is Key.LayoutPreset}
    */
@@ -410,17 +419,18 @@ export const helper = {
   },
 
   /**
-   * Creates fresh object
+   * Does not create fresh object in case of 2D input.
    * - `{ x, y, z }` -> `{ x, y: z }`
    * - `THREE.Vector3` -> `{ x, y: z }`
-   * - `{ x, y }` -> `{ x, y }`
+   * - `{ x, y }` -> same object
    * @param {NPC.GroundPoint} input 
    * @returns {Geom.VectJson}
    */
   toXZ(input) {
-    return { x: input.x, y: 'z' in input ? input.z : input.y };
+    // 🚧 careful of hidden consequences
+    // return { x: input.x, y: 'z' in input ? input.z : input.y };
+    return 'z' in input ? { x: input.x, y: input.z } : input;
   },
-  
 };
 
 /**
