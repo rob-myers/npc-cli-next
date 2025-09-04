@@ -24,17 +24,30 @@ export async function* awaitWorld({ api, home: { WORLD_KEY }, tabs }) {
 
 /**
  * ```sh
+ * # unbounded unblocking left clicks
  * click
+ * # exactly 1 blocking click
  * click 1
+ * # unbounded unblocking right clicks
  * click --right
+ * # unbounded unblocking left/right clicks
  * click --any
+ * # exactly 5 blocking clicks with truthy meta.nav
  * click 5 '({ meta }) => meta.nav'
+ * # ditto
  * click 5 meta.nav
+ * # unbounded unblocking clicks with truthy meta.nav
  * click meta.nav
+ * # exactly 2 blocking clicks with truthy meta.nav
  * click meta.nav 2
+ * # exactly 3 blocking red clicks
  * click --red 3
+ * # exactly 3 blocking red clicks preserving previous red
  * click --red --keep 3
+ * # clear all click labels
  * click --clear
+ * # root 2D instead of 3D
+ * click -2
  * ```
  * 
  * - Shows number of clicks in decor
@@ -47,7 +60,7 @@ export async function* click(ct) {
       "left",  // left clicks only
       "right", // right clicks only
       "long",  // long press only
-      "any",   // any permitted
+      "any",   // left or right permitted
       "block", // e.g. `click --block`
       "clear", // clear all colours
       "keep",  // keep clicks of current color
@@ -61,9 +74,10 @@ export async function* click(ct) {
   if (!isStringInt(operands[0]) && isStringInt(operands[1])) {
     operands = [operands[1], operands[0]]; // support reverse order `click meta.nav 2`
   }
-  if (isStringInt(args[0]) && Number(args[0]) < 0) {
-    return; // check arg: -1 an opt not an operand
-  }
+  // must support `click -2`
+  // if (isStringInt(args[0]) && Number(args[0]) < 0) {
+  //   return; // check arg: -1 an opt not an operand
+  // }
 
   /** Number of clicks remaining */
   let numClicks = isStringInt(operands[0]) ? parseInt(operands[0]) : Number.MAX_SAFE_INTEGER;
@@ -128,13 +142,15 @@ export async function* click(ct) {
   
       /** @type {NPC.ClickOutput} */
       const output = {
-        ...e.position,
+        // 🔔 root can be 2D or 3D
+        ...opts['2'] === true ? e.point : e.position,
         ...e.keys && { keys: e.keys },
         meta: {
           ...e.meta,
           nav: e.meta.floor === true ? w.npc.isPointInNavmesh(e.point) : false,
           // longClick: e.justLongDown,
         },
+        xyz: {...e.position},
         xz: {...e.point},
       };
 
