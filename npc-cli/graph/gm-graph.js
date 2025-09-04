@@ -1,4 +1,4 @@
-import { Mat, Rect, Vect } from "../geom";
+import { Mat, Rect } from "../geom";
 import { BaseGraph, createBaseAstar } from "./base-graph";
 import { sguToWorldScale } from "../service/const";
 import { error } from "../service/generic";
@@ -38,10 +38,6 @@ export class GmGraphClass extends BaseGraph {
    * @type {Map<Graph.GmGraphNodeDoor, Geom.Vect>}
    */
   entry;
-
-  // 🚧 remove
-  /** World component API */
-  w = /** @type {import('../world/World').State}} */ ({});
 
   /**
    * Cache for @see {getAdjacentRoomCtxt}
@@ -116,7 +112,6 @@ export class GmGraphClass extends BaseGraph {
     super.dispose();
     this.gms.length = 0;
     this.entry.clear();
-    this.w = /** @type {*} */ ({});
     this.adjRoomCtxt.clear();
     this.gmIdGrid = {};
   }
@@ -193,27 +188,6 @@ export class GmGraphClass extends BaseGraph {
     }
 
     return gmEdges;
-  }
-
-  /**
-   * 🚧 move to useHandleEvents
-   * 
-   * @param {Geom.VectJson} point
-   * @param {boolean} [includeDoors]
-   * Technically rooms do not include doors,
-   * but sometimes either adjacent room will do.
-   * @returns {null | Geomorph.GmRoomId}
-   */
-  findRoomContaining(point, includeDoors = false) {
-    const gmId = this.findGmIdContaining(point);
-    if (typeof gmId === 'number') {
-      const gm = this.gms[gmId];
-      const localPoint = gm.inverseMatrix.transformPoint(Vect.from(point));
-      const roomId = this.w.gmsData.findRoomIdContaining(gm, localPoint, includeDoors);
-      return roomId === null ? null : { gmId, roomId, grKey: helper.getGmRoomKey(gmId, roomId) };
-    } else {
-      return null;
-    }
   }
 
   /**

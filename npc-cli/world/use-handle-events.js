@@ -1002,7 +1002,7 @@ export default function useHandleEvents(w) {
       }, defaultDoorCloseMs);
     },
     tryPutNpcIntoRoom(npc) {
-      const grId = w.gmGraph.findRoomContaining(npc.point, true);
+      const grId = w.npc.findRoomContaining(npc.point, true);
       if (grId !== null) {
         state.npcToRoom.set(npc.key, grId);
         state.externalNpcs.delete(npc.key);

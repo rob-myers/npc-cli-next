@@ -355,7 +355,7 @@ export default function Npcs(props) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
       
-      const gmRoomId = w.gmGraph.findRoomContaining(point, true);
+      const gmRoomId = state.findRoomContaining(point, true);
       if (gmRoomId === null) {
         throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }

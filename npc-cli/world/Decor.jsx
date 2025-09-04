@@ -318,7 +318,7 @@ export default function Decor(props) {
     ensureGmRoomId(decor) {
       if (!(decor.meta.gmId >= 0 && decor.meta.roomId >= 0)) {
         const decorOrigin = state.getDecorOrigin(decor);
-        const gmRoomId = w.gmGraph.findRoomContaining(decorOrigin);
+        const gmRoomId = w.npc.findRoomContaining(decorOrigin);
         return gmRoomId === null ? null : Object.assign(decor.meta, gmRoomId);
       } else {
         decor.meta.grKey ??= helper.getGmRoomKey(decor.meta.gmId, decor.meta.roomId);

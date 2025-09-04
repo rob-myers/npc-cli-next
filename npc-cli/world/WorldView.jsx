@@ -277,7 +277,7 @@ export default function WorldView(props) {
       const meta = {
         ...decoded,
         ...pickedTypesInSomeRoom[decoded.picked] === true
-          && w.gmGraph.findRoomContaining(helper.toXZ(position), true),
+          && w.npc.findRoomContaining(position, true),
       };
 
       state.lastDown = {
