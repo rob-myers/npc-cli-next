@@ -181,7 +181,6 @@ declare namespace Graph {
       gmId: number;
       roomIds: number[];
       windowIds: number[];
-      closedDoorIds: number[];
     };
   };
 

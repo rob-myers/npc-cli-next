@@ -144,9 +144,8 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
-   * 🚧 move to useHandleEvents findGmGraphPath
-   * 
    * Find geomorph edge path using astar.
+   * 🚧 support optional hull door weights e.g. if locked 
    * @param {Geom.VectJson} src
    * @param {Geom.VectJson} dst 
    */
@@ -163,11 +162,11 @@ export class GmGraphClass extends BaseGraph {
     const gmPath = AStar.search(this, srcNode, dstNode, (nodes) => {
       nodes[srcNode.index].astar.centroid.copy(src);
       nodes[dstNode.index].astar.centroid.copy(dst);
-      // closed hull doors have large cost
-      const { byGmId } = this.w.door;
-      this.gms.forEach((_, gmId) =>
-        this.doorNodeByGmId[gmId].forEach(node => node.astar.cost = byGmId[gmId][node.doorId].open === true ? 1 : 10000)
-      );
+      // // closed hull doors have large cost
+      // const { byGmId } = this.w.door;
+      // this.gms.forEach((_, gmId) =>
+      //   this.doorNodeByGmId[gmId].forEach(node => node.astar.cost = byGmId[gmId][node.doorId].open === true ? 1 : 10000)
+      // );
     });
 
     // convert gmPath to gmEdges
@@ -290,30 +289,32 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
-   * 🚧 if useful move to useHandleEvents
+   * 🚧 move to useHandleEvents
+   * 🚧 e.g. `w gmGraph.getRoomIdsAdjData '[{ gmId: 0, roomId: 9} ]'`
    * 
    * Given ids of rooms in gmGraph, provide "adjacency data".
    * - We do include rooms adjacent via a door or window.
    * - We handle dup roomIds e.g. via double doors.
    * - We don't ensure input roomIds are output.
    *   However they're included if they're adjacent to another such input roomId.
-   * @param {Geomorph.GmRoomId[]} roomIds
-   * @param {boolean} [doorsMustBeOpen]
+   * @param {Geomorph.GmRoomId[]} gmRoomIds
+   * @param {(opts: { gmId: number } & (
+   *   | { type: 'door'; doorId: number }
+   *   | { type: 'window'; windowId: number }
+   * )) => boolean} [canAccess]
    * @returns {Graph.GmRoomsAdjData}
    */
-  getRoomIdsAdjData(roomIds, doorsMustBeOpen = false) {
+  getRoomIdsAdjData(gmRoomIds, canAccess = () => true) {
     const output = /** @type {Graph.GmRoomsAdjData} */ ({});
 
-    for (const { gmId, roomId } of roomIds) {
+    for (const { gmId, roomId } of gmRoomIds) {
       const gm = this.gms[gmId];
       const { roomGraph } = this.w.gmsData[gm.key];
 
-      const openDoorIds = this.w.door.getOpenIds(gmId);
       // Non-hull doors or windows induce an adjacent room
-      !output[gmId] && (output[gmId] = { gmId, roomIds: [], windowIds: [], closedDoorIds: [] });
-      output[gmId].roomIds.push(...roomGraph.getAdjRoomIds(roomId, doorsMustBeOpen ? openDoorIds : undefined));
+      !output[gmId] && (output[gmId] = { gmId, roomIds: [], windowIds: [] });
+      output[gmId].roomIds.push(...roomGraph.getAdjRoomIds(roomId, (opts) => canAccess({ gmId, ...opts })));
       output[gmId].windowIds.push(...roomGraph.getAdjacentWindows(roomId).flatMap(x => gm.windows[x.windowId].meta.frosted ? [] : x.windowId));
-      output[gmId].closedDoorIds.push(...roomGraph.getAdjacentDoors(roomId).flatMap(x => openDoorIds.includes(x.doorId) ? [] : x.doorId));
       // Connected hull doors induce room in another geomorph
       // 🚧 check if hull doors are open?
       // 🚧 currently ignore hull windows 
@@ -322,7 +323,7 @@ export class GmGraphClass extends BaseGraph {
         .filter(({ hullDoorId }) => !this.isHullDoorSealed(gmId, hullDoorId))
         .forEach(({ hullDoorId }) => {
           const ctxt = assertNonNull(this.getAdjacentRoomCtxt(gmId, hullDoorId));
-          !output[ctxt.adjGmId] && (output[ctxt.adjGmId] = { gmId: ctxt.adjGmId, roomIds: [], windowIds: [], closedDoorIds: [] });
+          !output[ctxt.adjGmId] && (output[ctxt.adjGmId] = { gmId: ctxt.adjGmId, roomIds: [], windowIds: [] });
           output[ctxt.adjGmId].roomIds.push(ctxt.adjRoomId);
         });
     }
