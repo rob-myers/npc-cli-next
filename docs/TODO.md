@@ -110,6 +110,7 @@
   - per used geomorph key, after transform to local coords
 
 - 🚧 move code from gm-graph to useHandleEvents and service/grid
+  - ✅ move grid create/query code into service/grid
   - `w gmGraph.findPath $( click -2 1 ) $( click -2 1 )`
   - `w gmGraph.findPath $( click -2 2 )`
 

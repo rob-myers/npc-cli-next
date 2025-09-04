@@ -111,6 +111,12 @@ w gmRoomGraph.getReachableUpTo g0r2 '(_, depth) => depth === 2' |
   split id
 ```
 
+#### Unsorted
+
+```sh
+w e.getRoomIdsAdjData '[{ gmId: 0, roomId: 9} ]'
+```
+
 ### Skinning
 
 ```sh

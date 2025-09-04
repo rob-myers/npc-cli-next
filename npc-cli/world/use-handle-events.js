@@ -4,7 +4,7 @@ import { deltaAngle } from "maath/misc";
 
 import { Vect, Rect } from "../geom";
 import { defaultDoorCloseMs, wallHeight } from "../service/const";
-import { pause, warn, testNever } from "../service/generic";
+import { pause, warn, testNever, removeDups } from "../service/generic";
 import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
@@ -258,6 +258,45 @@ export default function useHandleEvents(w) {
       } else {
         return null;
       }
+    },
+    /**
+     * Given ids of rooms in gmGraph, provide "adjacency data".
+     * - We do include rooms adjacent via a door or window.
+     * - We handle dup roomIds e.g. via double doors.
+     * - We don't ensure input roomIds are output.
+     *   However they're included if they're adjacent to another such input roomId.
+     * @param {Geomorph.GmRoomId[]} gmRoomIds
+     * @param {(opts: { gmId: number } & (
+    *   | { type: 'door'; doorId: number }
+    *   | { type: 'window'; windowId: number }
+    * )) => boolean} [canAccess]
+    * @returns {Graph.GmRoomsAdjData}
+    */
+    getRoomIdsAdjData(gmRoomIds, canAccess = () => true) {
+      const output = /** @type {Graph.GmRoomsAdjData} */ ({});
+
+      for (const { gmId, roomId } of gmRoomIds) {
+        const gm = w.gms[gmId];
+        const { roomGraph } = w.gmsData[gm.key];
+
+        // Non-hull doors or windows induce an adjacent room
+        !output[gmId] && (output[gmId] = { gmId, roomIds: [], windowIds: [] });
+        output[gmId].roomIds.push(...roomGraph.getAdjRoomIds(roomId, (opts) => canAccess({ gmId, ...opts })));
+        output[gmId].windowIds.push(...roomGraph.getAdjacentWindows(roomId).flatMap(x => gm.windows[x.windowId].meta.frosted ? [] : x.windowId));
+        // Connected hull doors induce room in another geomorph
+        // 🔔 ignoring hull windows 
+        const hullDoorIds = roomGraph.getAdjacentHullDoorIds(gm, roomId);
+        hullDoorIds
+          .filter(({ hullDoorId }) => !w.gmGraph.isHullDoorSealed(gmId, hullDoorId))
+          .forEach(({ hullDoorId }) => {
+            const ctxt = /** @type {Graph.GmAdjRoomCtxt} */ (w.gmGraph.getAdjacentRoomCtxt(gmId, hullDoorId));
+            !output[ctxt.adjGmId] && (output[ctxt.adjGmId] = { gmId: ctxt.adjGmId, roomIds: [], windowIds: [] });
+            output[ctxt.adjGmId].roomIds.push(ctxt.adjRoomId);
+          });
+      }
+
+      Object.values(output).forEach(x => x.roomIds = removeDups(x.roomIds));
+      return output;
     },
     grantAccess(regexDef, ...npcKeys) {
       for (const npcKey of npcKeys) {
@@ -1019,6 +1058,10 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string) => void} followNpc
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
+ * @property {(gmRoomIds: Geomorph.GmRoomId[], canAccess?: (opts: { gmId: number } & (
+ *   | { type: 'door'; doorId: number }
+ *   | { type: 'window'; windowId: number }
+ * )) => boolean) => Graph.GmRoomsAdjData} getRoomIdsAdjData
  * @property {(regexDef: string, ...npcKeys: string[]) => void} grantAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
