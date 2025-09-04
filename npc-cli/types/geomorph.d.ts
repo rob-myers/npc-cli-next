@@ -537,4 +537,5 @@ declare namespace Geomorph {
 
   type GmsData = import('../service/create-gms-data').GmsData;
 
+  type GmIdGrid = { [gridKey in `${number},${number}`]: number };
 }

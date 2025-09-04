@@ -1,9 +1,9 @@
 import { Mat, Rect, Vect } from "../geom";
 import { BaseGraph, createBaseAstar } from "./base-graph";
 import { sguToWorldScale } from "../service/const";
-import { assertNonNull, removeDups } from "../service/generic";
+import { assertNonNull, removeDups, error } from "../service/generic";
 import { geom, directionChars, isDirectionChar } from "../service/geom";
-import { error, warn } from "../service/generic";
+import { createGmIdGrid, queryGmIdGrid } from "../service/grid";
 import { helper } from "../service/helper";
 import { AStar } from "../pathfinding/AStar";
 
@@ -11,7 +11,7 @@ import { AStar } from "../pathfinding/AStar";
  * The _Geomorph Graph_, where:
  * - each hull door yields a node
  * - each "original navigation mesh with doors" in a geomorph yields a node (often one-per-geomorph)
- * - a geomorph node is connected to a hull door node iff the geomorph has that hull door
+ * - a geomorph node is connected to a hull door node iff the respective nav mesh has that hull door
  * - a hull door node is connected to another hull door node iff they have been identified by
  *   gluing geomorphs along shared edges.
  * @extends {BaseGraph<Graph.GmGraphNode, Graph.GmGraphEdgeOpts>}
@@ -39,6 +39,7 @@ export class GmGraphClass extends BaseGraph {
    */
   entry;
 
+  // 🚧 remove
   /** World component API */
   w = /** @type {import('../world/World').State}} */ ({});
 
@@ -51,10 +52,10 @@ export class GmGraphClass extends BaseGraph {
 
   /**
    * Given world coordinates `(x, y)` then parent `gmId` is:
-   * `gmIdGrid[`${Math.floor(x / 600)}-${Math.floor(y / 600)}`]`
-   * @type {Map<`${number}-${number}`, number>}
+   * `gmIdGrid[`${Math.floor(x / 600)},${Math.floor(y / 600)}`]`
+   * @type {Geomorph.GmIdGrid}
    */
-  gmIdGrid = new Map();
+  gmIdGrid = {};
 
   /** @param {Geomorph.LayoutInstance[]} gms  */
   constructor(gms) {
@@ -65,11 +66,7 @@ export class GmGraphClass extends BaseGraph {
     this.gmNodeByGmId = gms.reduce((agg, _, gmId) => ({ ...agg, [gmId]: [] }), {});
     this.doorNodeByGmId = gms.reduce((agg, _, gmId) => ({ ...agg, [gmId]: [] }), {});
 
-    this.gms.forEach(({ gridRect: { x: gx, y: gy, right, bottom } }, gmId) => {
-      for (let x = Math.floor(gx / gmIdGridDim); x < Math.floor(right / gmIdGridDim); x++)
-        for (let y = Math.floor(gy / gmIdGridDim); y < Math.floor(bottom / gmIdGridDim); y++)
-          this.gmIdGrid.set(`${x}-${y}`, gmId);
-    });
+    this.gmIdGrid = createGmIdGrid(gms);
   }
 
   /**
@@ -121,7 +118,7 @@ export class GmGraphClass extends BaseGraph {
     this.entry.clear();
     this.w = /** @type {*} */ ({});
     this.adjRoomCtxt.clear();
-    this.gmIdGrid.clear();
+    this.gmIdGrid = {};
   }
 
   /**
@@ -129,7 +126,7 @@ export class GmGraphClass extends BaseGraph {
    * @returns {number | null} gmId
    */
   findGmIdContaining(point) {
-    return this.gmIdGrid.get(`${Math.floor(point.x / gmIdGridDim)}-${Math.floor(point.y / gmIdGridDim)}`) ?? null;
+    return queryGmIdGrid(this.gmIdGrid, point);
   }
   
   /**
@@ -147,6 +144,8 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
+   * 🚧 move to useHandleEvents findGmGraphPath
+   * 
    * Find geomorph edge path using astar.
    * @param {Geom.VectJson} src
    * @param {Geom.VectJson} dst 
@@ -198,6 +197,8 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
+   * 🚧 move to useHandleEvents
+   * 
    * @param {Geom.VectJson} point
    * @param {boolean} [includeDoors]
    * Technically rooms do not include doors,
@@ -289,8 +290,10 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
+   * 🚧 if useful move to useHandleEvents
+   * 
    * Given ids of rooms in gmGraph, provide "adjacency data".
-   * - We do include rooms adjacent via a door or non-frosted window.
+   * - We do include rooms adjacent via a door or window.
    * - We handle dup roomIds e.g. via double doors.
    * - We don't ensure input roomIds are output.
    *   However they're included if they're adjacent to another such input roomId.

@@ -230,7 +230,7 @@ export default function World(props) {
         state.menu.measure('gmGraph');
         next.gmGraph = GmGraphClass.fromGms(next.gms, { permitErrors: true });
         state.menu.measure('gmGraph');
-        next.gmGraph.w = state;
+        next.gmGraph.w = state; // 🚧 remove
         
         await pause();
         state.menu.measure('gmRoomGraph');

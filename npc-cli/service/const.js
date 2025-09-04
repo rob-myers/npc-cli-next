@@ -72,6 +72,8 @@ export const gmHitTestExtraScale = 2;
 
 export const gmLabelHeightSgu = 12;
 
+export const gmIdGridDim = 600 * sguToWorldScale;
+
 /** Higher resolution labels */
 export const spriteSheetLabelExtraScale = 5;
 

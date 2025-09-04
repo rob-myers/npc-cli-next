@@ -94,10 +94,6 @@
       - make npc decor test rect larger (1m radius)
     - ❌ intersection of rectangles bug?
 
-- ❌ query decor grid extended by nearby cuboids?
-  - would work for bed/chair
-  - would need to add cuboid to all tables
-
 - ✅ decor points/quads may inherit `decor.meta.reachRect` from parent decor
   - ✅ decor cuboid with `meta['apply-reach'] === true` attaches rect tuple `reachRect` to contained decor points
   - ❌ initially attach e.g. `d.meta.reachRectId` then apply `d.meta.reachRect` after instantiation
@@ -112,6 +108,10 @@
 - 🚧 support raycast (static geometry) in physics.worker
   - https://www.npmjs.com/package/detect-collisions
   - per used geomorph key, after transform to local coords
+
+- 🚧 move code from gm-graph to useHandleEvents and service/grid
+  - `w gmGraph.findPath $( click -2 1 ) $( click -2 1 )`
+  - `w gmGraph.findPath $( click -2 2 )`
 
 - fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
 - finish adding decor cuboids/rects with apply-reach to chairs/toilets/etc

@@ -1,5 +1,5 @@
 import { Rect, Vect } from "../geom";
-import { decorGridSize } from "./const";
+import { decorGridSize, gmIdGridDim } from "./const";
 
 
 /**
@@ -65,6 +65,22 @@ function applyReach(item, parent, grid) {
 }
 
 /**
+ * @param {Geomorph.LayoutInstance[]} gms 
+ * @returns {Geomorph.GmIdGrid}
+ */
+export function createGmIdGrid(gms) {
+  const gmIdGrid = /** @type {Geomorph.GmIdGrid} */ ({});
+
+  for (const [gmId, { gridRect: { x: gx, y: gy, right, bottom } }] of gms.entries()) {
+    for (let x = Math.floor(gx / gmIdGridDim); x < Math.floor(right / gmIdGridDim); x++)
+      for (let y = Math.floor(gy / gmIdGridDim); y < Math.floor(bottom / gmIdGridDim); y++)
+        gmIdGrid[`${x},${y}`] = gmId;
+  }
+
+  return gmIdGrid;
+}
+
+/**
  * @param {number} x
  * @param {number} y
  * @returns {[x: number, y: number]}
@@ -93,7 +109,7 @@ function findApplyReachContaining(item, tile) {
 /**
  * - Returns colliders and points intersecting rect
  * - Can filter by room i.e. `grKey`.
- * - 🚧 use d.meta.reachRect if exists
+ * - Uses larger `d.meta.reachRect` if exists
  * @param {Geomorph.DecorGrid} grid
  * @param {Geom.RectJson} rect 
  * @param {Geomorph.GmRoomKey} [grKey]
@@ -184,6 +200,16 @@ export function queryDecorGridLine(p, q, grid) {
   }
 
   return Array.from(foundDecor);
+}
+
+/**
+ * Returns `gmId` containing `point` or `null`.
+ * @param {Geomorph.GmIdGrid} grid
+ * @param {Geom.VectJson} point
+ * @returns {number | null} gmId
+ */
+export function queryGmIdGrid(grid, point) {
+  return grid[`${Math.floor(point.x / gmIdGridDim)},${Math.floor(point.y / gmIdGridDim)}`] ?? null;
 }
 
 /**

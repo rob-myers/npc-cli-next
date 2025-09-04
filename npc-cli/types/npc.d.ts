@@ -218,9 +218,10 @@ declare namespace NPC {
     meta: Meta;
   };
 
-  type ClickOutput<T extends Meta = Meta> = import('three').Vector3Like & {
+  type ClickOutput<T extends Meta = Meta> = NPC.GroundPoint & {
     keys?: BasePointerEvent['keys'];
     meta: T;
+    xyz: import('three').Vector3Like;
     xz: Geom.VectJson;
   };
 

@@ -162,6 +162,9 @@ export default function useHandleEvents(w) {
       // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
       return null;
     },
+    findGmIdContaining(point) {
+      return w.gmGraph.findGmIdContaining(point);
+    },
     findOtherBlockingNearDoor(npc, offMesh) {
       const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
       // const gmRoomId = state.npcToRoom.get(npc.key);
@@ -1022,6 +1025,7 @@ export default function useHandleEvents(w) {
  * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
  * @property {(npcKey: string) => boolean} isFollowingNpc
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
+ * @property {(point: Geom.VectJson) => null | number} findGmIdContaining
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
  * offMesh early-exit-test i.e. test for some other npc which:
  * - is idle and in the way
