@@ -455,34 +455,28 @@ function sendDebugData() {
  * @param {WW.GetRaycast} msg
  */
 function sendRaycastResult(msg) {
-  // 🚧 only support a single gmId (multiple supported via main thread)
-
-  const { src, dst, srcGmId, dstGmId } = msg;
+  const { src, dst, gmId } = msg;
   
   let intersection = /** @type {null | Geom.VectJson} */ (null);
   const gmDoorIds = /** @type {Geomorph.GmDoorId[]} */ ([]);
   
-  if (srcGmId === dstGmId) {
-    const gm = state.gms[srcGmId];
-    const localSrc = gm.inverseMatrix.transformPoint({...src});
-    const localDst = gm.inverseMatrix.transformPoint({...dst});
-    const result = state.gmRayCast[gm.key].raycast(
-      localSrc,
-      localDst,
-      (body) => {
-        if (body.userData.type === 'door') {
-          const gmDoorId = helper.getGmDoorId(srcGmId, body.userData.doorId);
-          gmDoorIds.push(gmDoorId);
-          return false; // continue past door
-        }
-        return true
-      },
-    );
-    if (result !== undefined) {
-      intersection = gm.matrix.transformPoint(result.point);
-    }
-  } else {
-    // 🚧 support ray through adjacent geomorphs
+  const gm = state.gms[gmId];
+  const localSrc = gm.inverseMatrix.transformPoint({...src});
+  const localDst = gm.inverseMatrix.transformPoint({...dst});
+  const result = state.gmRayCast[gm.key].raycast(
+    localSrc,
+    localDst,
+    (body) => {
+      if (body.userData.type === 'door') {
+        const gmDoorId = helper.getGmDoorId(gmId, body.userData.doorId);
+        gmDoorIds.push(gmDoorId);
+        return false; // continue past door
+      }
+      return true
+    },
+  );
+  if (result !== undefined) {
+    intersection = gm.matrix.transformPoint(result.point);
   }
 
   selfTyped.postMessage({

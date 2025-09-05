@@ -504,8 +504,8 @@ declare namespace NPC {
   );
 
   type RaycastResult = Pick<WW.RaycastResultResponse, 'intersection' | 'gmDoorIds'> & {
-    /** `false` iff `src` or `dst` are outside any room */
-    success: boolean;
+    /** `true` iff `src` or `dst` are outside any room */
+    error: boolean;
   };
 
   //#region sh js

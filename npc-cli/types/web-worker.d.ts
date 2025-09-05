@@ -120,8 +120,7 @@ declare namespace WW {
     uid: string;
     src: Geom.VectJson;
     dst: Geom.VectJson;
-    srcGmId: number;
-    dstGmId: number;
+    gmId: number;
   }
 
   //#endregion

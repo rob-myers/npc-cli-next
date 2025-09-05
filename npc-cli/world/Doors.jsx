@@ -8,6 +8,7 @@ import * as glsl from "../service/glsl";
 import { getBoxGeometry, getColor, getQuadGeometryXY } from "../service/three";
 import { geomorph } from "../service/geomorph";
 import { helper } from "../service/helper";
+import { geom } from "../service/geom";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 
@@ -145,6 +146,19 @@ export default function Doors(props) {
       // if (adjHull !== null) {
       //   state.cancelClose(state.byGmId[adjHull.adjGmId][adjHull.adjDoorId]);
       // }
+    },
+    computeRayDoorIntersect(src, dst, gdKey) {
+      const door = w.d[gdKey];
+      const lambda = geom.getLineSegsIntersection(
+        src,
+        dst,
+        door.src,
+        door.dst,
+      );
+      return lambda === null ? null : geom.precision({
+        x: src.x + lambda * (dst.x - src.x),
+        y: src.y + lambda * (dst.y - src.y),
+      }, 2);
     },
     decodeInstance(instanceId) {
       let doorId = instanceId;
@@ -375,6 +389,7 @@ export default function Doors(props) {
  * @property {() => void} addUvs
  * @property {() => void} buildLookups
  * @property {(item: Geomorph.DoorState) => void} cancelClose
+ * @property {(src: Geom.VectJson, dst: Geom.VectJson, gmDoorId: Geomorph.GmDoorKey) => null | Geom.VectJson} computeRayDoorIntersect
  * @property {(instanceId: number) => Meta<Geomorph.GmDoorId>} decodeInstance
  * @property {(meta: Geomorph.DoorState) => THREE.Matrix4} getDoorMat
  * @property {(meta: Geomorph.DoorState) => THREE.Matrix4} getLockSigMat

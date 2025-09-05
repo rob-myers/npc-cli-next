@@ -109,9 +109,10 @@
   - ℹ️ https://www.npmjs.com/package/detect-collisions
   - ℹ️ per used geomorph key, after transform to local coords
   - ✅ can send src/dst to physics.worker and receive raycast response
-  - 🚧 support src/dst across adjacent geomorphs
-    - 🚧 physics.worker only supports ray in single geomorph
-    - main thread makes 0, 1 or 2 requests
+  - ✅ support src/dst across adjacent geomorphs
+    - ✅ physics.worker only supports ray in single geomorph
+    - ✅ main thread makes 0, 1 or 2 requests
+  - 🚧 clean
 
 - ✅ move code from gm-graph to useHandleEvents and service/grid
   - ✅ move grid create/query code into service/grid
