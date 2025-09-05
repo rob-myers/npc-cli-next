@@ -495,5 +495,3 @@ function getGmNodeId(gmNumber, transform, navRectId) {
 function getGmDoorNodeId(gmNumber, transform, hullDoorId) {
   return `door-${gmNumber}-[${transform}]--${hullDoorId}`;
 }
-
-const gmIdGridDim = 600 * sguToWorldScale;
