@@ -1234,7 +1234,11 @@ export class NpcApi {
       const pendingTarget = this.pendingTargets.shift();
       
       if (pendingTarget === undefined) {
-        this.stopMoving({ type: 'stop-reason', key: 'arrived' }, this.s.lookAngleDst);
+        this.stopMoving(
+          { type: 'stop-reason', key: 'arrived' },
+          // only finish look when move a short distance
+          this.base.lastStart.distanceTo(this.point) < 0.5 ? this.s.lookAngleDst : null
+        );
       } else {
         this.base.lastStart.copy(this.point);
         this.s.target = this.base.lastTarget.copy(pendingTarget);
