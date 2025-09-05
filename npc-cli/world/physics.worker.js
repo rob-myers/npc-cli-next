@@ -36,7 +36,7 @@ async function handleMessages(e) {
   const msg = e.data;
 
   if (state.world === undefined && msg.type !== 'setup-physics') {
-    return; // Fixes HMR of this file
+    return; // Fix initial HMR of this file
   }
 
   // 🔔 avoid logging 60fps messages
@@ -354,7 +354,6 @@ function createGmRayCastSystems(geomorphs) {
 
     // 🚧 some obstacles?
   }
-
 }
 
 /**
@@ -456,6 +455,8 @@ function sendDebugData() {
  * @param {WW.GetRaycast} msg
  */
 function sendRaycastResult(msg) {
+  // 🚧 only support a single gmId (multiple supported via main thread)
+
   const { src, dst, srcGmId, dstGmId } = msg;
   
   let intersection = /** @type {null | Geom.VectJson} */ (null);
@@ -481,7 +482,7 @@ function sendRaycastResult(msg) {
       intersection = gm.matrix.transformPoint(result.point);
     }
   } else {
-    // 🚧 generalize thru one or more hull doors
+    // 🚧 support ray through adjacent geomorphs
   }
 
   selfTyped.postMessage({
@@ -516,8 +517,8 @@ if (isInsideWebWorker() === true) {
 const unitYAxis = /** @type {const} */ ({ x: 0, y: 1, z: 0 });
 
 /**
- * assumes axis is normalized
- * https://github.com/mrdoob/three.js/blob/c3f685f49d7a747397d44b8f9fedd4fcec792fa7/src/math/Quaternion.js#L275
+ * Assumes axis is normalized
+ * @source https://github.com/mrdoob/three.js/blob/c3f685f49d7a747397d44b8f9fedd4fcec792fa7/src/math/Quaternion.js#L275
  * @param {{ x: number; y: number; z: number }} axis 
  * @param {number} angle radians
  */

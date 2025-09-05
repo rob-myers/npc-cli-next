@@ -193,11 +193,16 @@ export default function Npcs(props) {
     },
     onTickIdleTurn: null,
     async raycast(src, dst) {
-      const srcGmId = state.findGmIdContaining(src);
-      const dstGmId = state.findGmIdContaining(dst);
+      // Both points must reside inside rooms
+      const srcGrId = state.findRoomContaining(src);
+      const dstGrId = state.findRoomContaining(dst);
 
-      if (srcGmId === null || dstGmId === null) {
-        return { type: 'raycast-result', uid: '', intersection: null, gmDoorIds: [] };
+      if (srcGrId === null || dstGrId === null) {
+        return {
+          success: false,
+          intersection: null,
+          gmDoorIds: [],
+        };
       }
 
       const raycastUid = uid();
@@ -207,13 +212,14 @@ export default function Npcs(props) {
         uid: raycastUid,
         src: helper.toXZ(src),
         dst: helper.toXZ(dst),
-        srcGmId,
-        dstGmId,
+        srcGmId: srcGrId.gmId,
+        dstGmId: dstGrId.gmId,
       });
 
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         state.pendingRaycast[raycastUid] = {
           resolve,
+          reject,
         };
       });
     },
@@ -656,7 +662,11 @@ export default function Npcs(props) {
     /** @param {MessageEvent<WW.MsgFromPhysicsWorker>} e */
     function onPhysicsWorkerMessage({ data: msg }) {
       if (msg.type === 'raycast-result') {
-        state.pendingRaycast[msg.uid].resolve?.(msg);
+        state.pendingRaycast[msg.uid]?.resolve({
+          success: true,
+          gmDoorIds: msg.gmDoorIds,
+          intersection: msg.intersection,
+        });
         delete state.pendingRaycast[msg.uid];
       }
     };
@@ -718,7 +728,10 @@ export default function Npcs(props) {
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
  * @property {{ [npcKey: string]: NPC.NPC }} npc
- * @property {{ [uid: string]: { resolve: (result: WW.RaycastResultResponse) => void } }} pendingRaycast
+ * @property {{ [uid: string]: {
+ *   resolve(result: NPC.RaycastResult): void;
+ *   reject(): void;
+ * }}} pendingRaycast
  * @property {number[]} physicsPositions
  * Format `[npc.bodyUid, npc.position.x, npc.position.y, npc.position.z, ...]`
  * @property {Map<number, string>} idToKey
@@ -756,7 +769,7 @@ export default function Npcs(props) {
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(...points: NPC.GroundPoint[]) => boolean} inSameRoom
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
- * @property {(src: MaybeMeta<NPC.GroundPoint>, dst: MaybeMeta<NPC.GroundPoint>) => Promise<WW.RaycastResultResponse>} raycast
+ * @property {(src: MaybeMeta<NPC.GroundPoint>, dst: MaybeMeta<NPC.GroundPoint>) => Promise<NPC.RaycastResult>} raycast
  * @property {() => void} restore
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckNpc
  * Custom callback to handle npc slow down.

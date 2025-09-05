@@ -503,6 +503,11 @@ declare namespace NPC {
     | { key: 'respawned'; }
   );
 
+  type RaycastResult = Pick<WW.RaycastResultResponse, 'intersection' | 'gmDoorIds'> & {
+    /** `false` iff `src` or `dst` are outside any room */
+    success: boolean;
+  };
+
   //#region sh js
   
   type WorldState = import('../world/World').State;

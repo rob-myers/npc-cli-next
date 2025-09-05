@@ -314,6 +314,7 @@ export class GmGraph extends BaseGraph {
   }
 
   /**
+   * Currently main thread only: needs door.roomIds (see below)
    * @param {Geomorph.LayoutInstance[]} gms 
    * @param {object} [options]
    * @param {boolean} [options.permitErrors]
@@ -363,7 +364,7 @@ export class GmGraph extends BaseGraph {
             hullDoorId,
             transform,
             gmInFront,
-            direction, // 🚧 verify values
+            direction,
             sealed: true, // Overwritten below
 
             ...createBaseAstar({
@@ -381,12 +382,13 @@ export class GmGraph extends BaseGraph {
     nodes.forEach(node => {
       if (node.type === 'door') {
         const { matrix, doors } = gms[node.gmId];
-        // console.log('->', node);
+        // 🔔 roomIds are populated in main thread (create-gms-data) via hit canvases
+        // e.g. won't work in a web worker without sending this data over
         const nonNullIndex = doors[node.doorId].roomIds.findIndex(x => x !== null);
         const entry = /** @type {Geom.Vect} */ (doors[node.doorId].entries[nonNullIndex]);
-        if (entry) {
+        if (entry !== undefined) {
           graph.entry.set(node, matrix.transformPoint(entry.clone()));
-        } else if (permitErrors) {
+        } else if (permitErrors === true) {
           error(`door ${node.doorId} lacks entry`);
         } else {
           throw Error(`${node.gmKey}: door ${node.doorId} lacks entry`);
