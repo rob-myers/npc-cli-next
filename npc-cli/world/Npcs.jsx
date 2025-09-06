@@ -195,7 +195,7 @@ export default function Npcs(props) {
     },
     onTickIdleTurn: null,
 
-    async raycast(src, dst) {// 🚧 clean
+    async raycast(src, dst) {
       src = helper.toXZ(src);
       dst = helper.toXZ(dst);
 
@@ -208,47 +208,47 @@ export default function Npcs(props) {
         throw Error(`${'raycast'}: dst must be in a room/doorway ${JSON.stringify({ x: dst.x, y: dst.y })}`);
       }
 
-      const [grKeys, gdKeys] = [[srcGrId.grKey], /** @type {Geomorph.GmDoorKey[]} */ ([])];
+      const [grIds, gdIds] = [/** @type {Geomorph.GmRoomId[]} */ ([]), /** @type {Geomorph.GmDoorId[]} */ ([])];
       let gmId = srcGrId.gmId;
+      let roomId = srcGrId.roomId;
       let hit = /** @type {null | Geom.VectJson} */ (null);
 
       const raycastUid = uid(); // request(s) uid
       let maxAdjGeomorphs = 2;  // detect ray between at most 2 geomorphs
       
       while (maxAdjGeomorphs-- > 0) {
-
+        grIds.push(helper.getGmRoomId(gmId, roomId));
+        
         w.physics.worker.postMessage({ type: 'get-raycast', uid: raycastUid, src, dst, gmId });
-
         const result = await /** @type {Promise<WW.RaycastResultResponse>} */ (
           new Promise((resolve, reject) => state.pendingRaycast[raycastUid] = { resolve, reject })
         );
         
         hit = result.hit;
-
         // check whether ray hit a closed door 1st
-        for (const { gdKey } of result.gmDoorIds) {
-          const door = w.d[gdKey];
+        for (const gdId of result.gmDoorIds) {
+          const door = w.d[gdId.gdKey];
           if (door.open === true) {
-            gdKeys.push(gdKey); // add open door
-            // 🚧 gdKeys
+            gdIds.push(gdId); // track doors and rooms
+            const otherRoomId = door.door.roomIds.find(x => x !== roomId) ?? null;
+            otherRoomId !== null && grIds.push(helper.getGmRoomId(gmId, otherRoomId));
           } else {
-            hit = w.door.computeRayDoorIntersect(src,dst,gdKey) ?? hit;
+            hit = w.door.computeRayDoorIntersect(src, dst, gdId.gdKey) ?? hit;
           }
         }
 
-        const lastGdKey = gdKeys[gdKeys.length - 1];
+        const lastGdId = gdIds[gdIds.length - 1];
 
         if (
           hit !== null // hit something
-          || lastGdKey === undefined // no doors touched
-          || w.d[lastGdKey].hull === false // last open door NOT a hull door
+          || lastGdId === undefined // no doors touched
+          || w.d[lastGdId.gdKey].hull === false // last open door NOT a hull door
         ) {
           break;
         }
 
-        hit = w.door.computeRayDoorIntersect(src, dst, lastGdKey);
-        const doorId = Number(lastGdKey.split('d')[1]); // "g1d2" -> 2
-        const adjCtxt = w.gmGraph.getAdjacentRoomCtxt(gmId, doorId);
+        hit = w.door.computeRayDoorIntersect(src, dst, lastGdId.gdKey);
+        const adjCtxt = w.gmGraph.getAdjacentRoomCtxt(gmId, lastGdId.doorId);
 
         if (
           hit === null // dst in hull doorway (distinct gmId since hull doorways overlap)
@@ -260,9 +260,14 @@ export default function Npcs(props) {
         // next, start from hull door intersection
         src = hit;
         gmId = adjCtxt.adjGmId;
+        roomId = adjCtxt.adjRoomId;
       }
 
-      return { hit, doors: gdKeys, rooms: grKeys };
+      return {
+        hit,
+        doors: gdIds.map(({ gdKey }) => gdKey),
+        rooms: grIds.map(({ grKey }) => grKey),
+      };
     },
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);

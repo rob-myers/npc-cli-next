@@ -105,14 +105,14 @@
   - ✅ make docs and keycard reachable via 2 or 3 decor rects
   - ✅ add decor cuboids/rects with apply-reach to more chairs/toilets/etc
 
-- 🚧 support raycast (static geometry) in physics.worker
+- ✅ support raycast (static geometry) in physics.worker
   - ℹ️ https://www.npmjs.com/package/detect-collisions
   - ℹ️ per used geomorph key, after transform to local coords
   - ✅ can send src/dst to physics.worker and receive raycast response
   - ✅ support src/dst across adjacent geomorphs
     - ✅ physics.worker only supports ray in single geomorph
     - ✅ main thread makes 0, 1 or 2 requests
-  - 🚧 clean
+  - ✅ clean
 
 - ℹ️ kept approach to early-exit doorway
   - avoids jerk when fail to enter while going round a corner and other npc in "sweet spot"
