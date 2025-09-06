@@ -989,14 +989,17 @@ export default function useHandleEvents(w) {
     },
     tryCloseDoor(gmId, doorId, eventMeta) {
       const door = w.door.byGmId[gmId][doorId];
-      w.door.cancelClose(door); // re-open resets timer:
+      w.door.cancelClose(door);
       door.closeTimeoutId = window.setTimeout(() => {
-        if (door.open === true) {
+        if (w.disabled === true) {
+          // do not close whilst paused; recheck in {ms}
+          state.tryCloseDoor(gmId, doorId);
+        } else if (door.open === true) {
           w.door.toggleDoorRaw(door, {
             clear: state.canCloseDoor(door) === true,
           });
           state.tryCloseDoor(gmId, doorId); // recheck in {ms}
-        } else {
+        } else {// closed
           delete door.closeTimeoutId;
         }
       }, defaultDoorCloseMs);

@@ -114,6 +114,9 @@
     - ✅ main thread makes 0, 1 or 2 requests
   - ✅ clean
 
+- ✅ BUG seeing door.open false while paused when it isn't
+  - e.g. `w d.g0d10.open`
+
 - ℹ️ kept approach to early-exit doorway
   - avoids jerk when fail to enter while going round a corner and other npc in "sweet spot"
   - other needs to be very close to doorway
