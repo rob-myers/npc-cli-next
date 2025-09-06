@@ -114,6 +114,16 @@
     - ✅ main thread makes 0, 1 or 2 requests
   - 🚧 clean
 
+- ℹ️ kept approach to early-exit doorway
+  - avoids jerk when fail to enter while going round a corner and other npc in "sweet spot"
+  - other needs to be very close to doorway
+  - npc stops a bit early when heading straight on
+
+- core.js functions
+  - e.g. `cast from:$x to:$y`
+  - e.g. `can see:$x from:$y`
+  - e.g. `may see:$x from:$y` (if doors were all open)
+
 - ✅ move code from gm-graph to useHandleEvents and service/grid
   - ✅ move grid create/query code into service/grid
   - `w gmGraph.findPath $( click -2 1 ) $( click -2 1 )`
@@ -122,6 +132,11 @@
 
 - fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
 - finish adding decor cuboids/rects with apply-reach to chairs/toilets/etc
+
+- tty close + create
+  - `exit` command closes terminal
+  - Cmd + \ opens new terminal with default terminal
+  - can somehow change terminal profile from instead terminal interface (remounts)
 
 - ✅ keep an agent fixed by making collisionQueryRange less than diameter
   - 🔔 `npc rada agent.raw.params.set_collisionQueryRange 0.1` fixed

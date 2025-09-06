@@ -91,12 +91,12 @@ export function createBaseNpc(def, w) {
       arriveAnim: /** @type {false | Key.Anim} */ ('Idle'),
       /** Minimal distance at which npc is consider to have arrived */
       arriveDist: defaultNpcArriveDistance,
-      /** Defined iff npc is at an "act point". */
+      /** Defined iff npc is at a "do point". */
       doMeta: /** @type {null | Meta} */ (null),
       /** Fade duration e.g. during fade spawn */
       fadeSecs: 0.3,
       /**
-       * Text of label above npc, or null if empty.
+       * Text of label above npc, or `null` if empty.
        * This is hidden when the npc has a speech bubble.
        */
       label: /** @type {null | string} */ (null),
@@ -116,19 +116,20 @@ export function createBaseNpc(def, w) {
       opacityDst: /** @type {null | number} */ (null),
       /** Can walk or run */
       run: false,
-      /** Default is blue */
+      /** Npc selector color, default blue */
       selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
-      /** Can tween agent separation weight */
+      /** For tweening agent separation weight */
       separation: /** @type {null | { current: number; dst: number; smoothTime?: Number; }} */ (null),
       /**
        * Time when slowness detected (world timer elapsedTime in seconds).
        * 🤔 Pausing currently resets World timer.
        */
       slowBegin: /** @type {null | number} */ (null),
-      /** Number of spawns. More than 1 means we've respawned. */
+      /** Number of spawns, where more than 1 means we have re-spawned. */
       spawns: 0,
       /** Target during move. */
       target: /** @type {null | Geom.Vect} */ (null),
+      /** For start of offMeshConnections only */
       turnBeforeMove: /** @type {null | { ms: Number; towards: Geom.VectJson }} */ (null),
     },
     
@@ -217,6 +218,31 @@ export class NpcApi {
     this.reject = base.reject;
     this.resolve = base.resolve;
     this.s = base.s;
+  }
+
+  /**
+   * Adjust ongoing move i.e. override `target` and `pendingTargets`.
+   * e.g. `npc rada api.adjustMove $( click 2 )`
+   * @param {NPC.GroundPoint[]} targets
+   */
+  adjustMove(...[target, ...pendingTargets]) {
+    if (this.s.target === null) {
+      throw Error(`${'adjustMove'}: npc has no target`);
+    }
+    if (target === undefined) {
+      return this.stopMoving({ type: 'stop-reason', key: 'arrived' });
+    }
+    
+    target = helper.toXZ(target);
+    pendingTargets = pendingTargets.map(helper.toXZ);
+    if (!helper.isVectJson(target)) {
+      throw Error(`${'adjustMove'}: target must be a point`);
+    }
+    this.s.target = Vect.from(target);
+    this.pendingTargets = pendingTargets.map(Vect.from);
+
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    agent.requestMoveTarget(toV3(target));
   }
 
   /**
@@ -717,7 +743,7 @@ export class NpcApi {
         other.s.target === null ? 0.5 : 0
       );
       if (geom.lineSegIntersectsCircle(
-        // look further ahead to avoid another npc behind stopping this
+        // look further ahead, to avoid "npc behind us" from stopping us
         delta.add(this.point).json,
         offMesh.dst,
         other.point,
@@ -1532,7 +1558,7 @@ export class NpcApi {
     } else if (lookAngleDst === null) {
       this.startAnimation('Idle');
     } else {// Idle after look
-      this.s.lookSecs = lookSecsNoTarget * .75;
+      this.s.lookSecs = 0.3;
     }
 
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
