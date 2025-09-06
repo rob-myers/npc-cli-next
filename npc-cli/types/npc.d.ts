@@ -503,10 +503,12 @@ declare namespace NPC {
     | { key: 'respawned'; }
   );
 
-  type RaycastResult = Pick<WW.RaycastResultResponse, 'intersection' | 'gmDoorIds'> & {
-    /** `true` iff `src` or `dst` are outside any room */
-    error: boolean;
-  };
+  interface RaycastResult {
+    hit: null | Geom.VectJson;
+    doors: Geomorph.GmDoorKey[];
+    /** Alternated with `gdKeys` i.e. `firstGrKey -> firstGdKey ->  ... -> lastGrKey` */
+    rooms: Geomorph.GmRoomKey[];
+  }
 
   //#region sh js
   

@@ -139,9 +139,8 @@ declare namespace WW {
   interface RaycastResultResponse {
     type: 'raycast-result';
     uid: string;
-    intersection: null | Geom.VectJson;
+    hit: null | Geom.VectJson;
     gmDoorIds: Geomorph.GmDoorId[];
-    // 🚧 ...
   }
 
   interface PhysicDebugItem {

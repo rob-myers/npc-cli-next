@@ -457,7 +457,7 @@ function sendDebugData() {
 function sendRaycastResult(msg) {
   const { src, dst, gmId } = msg;
   
-  let intersection = /** @type {null | Geom.VectJson} */ (null);
+  let hit = /** @type {null | Geom.VectJson} */ (null);
   const gmDoorIds = /** @type {Geomorph.GmDoorId[]} */ ([]);
   
   const gm = state.gms[gmId];
@@ -476,15 +476,15 @@ function sendRaycastResult(msg) {
     },
   );
   if (result !== undefined) {
-    intersection = gm.matrix.transformPoint(result.point);
+    // transform back into world coords
+    hit = gm.matrix.transformPoint(result.point);
   }
 
   selfTyped.postMessage({
     type: 'raycast-result',
     uid: msg.uid,
-    intersection,
+    hit: hit,
     gmDoorIds,
-    // 🚧 ...
   });
 }
 

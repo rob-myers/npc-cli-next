@@ -194,6 +194,7 @@ export default function Npcs(props) {
       state.physicsPositions.length = 0;
     },
     onTickIdleTurn: null,
+
     async raycast(src, dst) {// 🚧 clean
       src = helper.toXZ(src);
       dst = helper.toXZ(dst);
@@ -201,95 +202,67 @@ export default function Npcs(props) {
       // Both points must reside in a room or doorway
       const srcGrId = state.findRoomContaining(src, true);
       const dstGrId = state.findRoomContaining(dst, true);
-      if (srcGrId === null || dstGrId === null) {
-        return { error: true, intersection: null, gmDoorIds: [] };
+      if (srcGrId === null) {
+        throw Error(`${'raycast'}: src must be in a room/doorway ${JSON.stringify({ x: src.x, y: src.y })}`);
+      } else if (dstGrId === null) {
+        throw Error(`${'raycast'}: dst must be in a room/doorway ${JSON.stringify({ x: dst.x, y: dst.y })}`);
       }
 
-      let raycastUid = uid();
+      const [grKeys, gdKeys] = [[srcGrId.grKey], /** @type {Geomorph.GmDoorKey[]} */ ([])];
+      let gmId = srcGrId.gmId;
+      let hit = /** @type {null | Geom.VectJson} */ (null);
 
-      w.physics.worker.postMessage({
-        type: 'get-raycast',
-        uid: raycastUid,
-        src,
-        dst,
-        gmId: srcGrId.gmId,
-      });
+      const raycastUid = uid(); // request(s) uid
+      let maxAdjGeomorphs = 2;  // detect ray between at most 2 geomorphs
       
-      const result = await /** @type {Promise<NPC.RaycastResult>} */ (
-        new Promise((resolve, reject) => state.pendingRaycast[raycastUid] = { resolve, reject })
-      );
+      while (maxAdjGeomorphs-- > 0) {
 
-      // fix `result.intersect` via currently closed doors
-      let closedGdId = result.gmDoorIds.find(({ gdKey }) => w.d[gdKey].open === false);
-      if (closedGdId !== undefined) {
-        result.intersection = w.door.computeRayDoorIntersect(
-          src,
-          dst,
-          closedGdId.gdKey,
-        ) ?? result.intersection;
+        w.physics.worker.postMessage({ type: 'get-raycast', uid: raycastUid, src, dst, gmId });
+
+        const result = await /** @type {Promise<WW.RaycastResultResponse>} */ (
+          new Promise((resolve, reject) => state.pendingRaycast[raycastUid] = { resolve, reject })
+        );
+        
+        hit = result.hit;
+
+        // check whether ray hit a closed door 1st
+        for (const { gdKey } of result.gmDoorIds) {
+          const door = w.d[gdKey];
+          if (door.open === true) {
+            gdKeys.push(gdKey); // add open door
+            // 🚧 gdKeys
+          } else {
+            hit = w.door.computeRayDoorIntersect(src,dst,gdKey) ?? hit;
+          }
+        }
+
+        const lastGdKey = gdKeys[gdKeys.length - 1];
+
+        if (
+          hit !== null // hit something
+          || lastGdKey === undefined // no doors touched
+          || w.d[lastGdKey].hull === false // last open door NOT a hull door
+        ) {
+          break;
+        }
+
+        hit = w.door.computeRayDoorIntersect(src, dst, lastGdKey);
+        const doorId = Number(lastGdKey.split('d')[1]); // "g1d2" -> 2
+        const adjCtxt = w.gmGraph.getAdjacentRoomCtxt(gmId, doorId);
+
+        if (
+          hit === null // dst in hull doorway (distinct gmId since hull doorways overlap)
+          || adjCtxt === null // should be unreachable: sealed hull door always closed
+        ) {
+          break;
+        }
+
+        // next, start from hull door intersection
+        src = hit;
+        gmId = adjCtxt.adjGmId;
       }
 
-      const lastSrcGdId = result.gmDoorIds.at(-1);
-
-      if (
-        srcGrId.gmId === dstGrId.gmId    // same geomorph
-        || result.intersection !== null  // intersects src geomorph
-        || lastSrcGdId === undefined     // no doors touched
-      ) {
-        return result;
-      }
-
-      // lastSrcGdId is a hull door, otherwise we'd have intersected a hull wall
-      const hullDoorIntersect = w.door.computeRayDoorIntersect(src, dst, lastSrcGdId.gdKey);
-      if (hullDoorIntersect === null) {
-        return result; // non-intersecting i.e. dst in src geomorph's doorway
-      }
-      
-      const adjCtxt = w.gmGraph.getAdjacentRoomCtxt(srcGrId.gmId, lastSrcGdId.doorId);
-      if (adjCtxt === null) {// should be unreachable: sealed hull door always closed
-        result.intersection = hullDoorIntersect;
-        return result;
-      }
-      
-      // regardless of whether `adjGmId` is `dstGrId.gmId` we continue
-      const { adjGmId } = adjCtxt;
-      w.physics.worker.postMessage({
-        type: 'get-raycast',
-        uid: raycastUid, // re-use?
-        src: hullDoorIntersect,
-        dst,
-        gmId: adjGmId,
-      });
-      
-      const nextResult = await /** @type {Promise<NPC.RaycastResult>} */ (
-        new Promise((resolve, reject) => state.pendingRaycast[raycastUid] = { resolve, reject })
-      );
-      
-      // handle closed doors e.g. hull door aligned to one we just went through
-      closedGdId = nextResult.gmDoorIds.find(({ gdKey }) => w.d[gdKey].open === false);
-      if (closedGdId !== undefined) {
-        nextResult.intersection = w.door.computeRayDoorIntersect(
-          hullDoorIntersect,
-          dst,
-          closedGdId.gdKey,
-        ) ?? nextResult.intersection;
-      }
-
-      const lastDstGdId = nextResult.gmDoorIds.at(-1);
-
-      if (
-        nextResult.intersection !== null  // intersects adjacent geomorph
-        || dstGrId.gmId === adjGmId       // does not intersect "adjacent === dst" geomorph
-        || lastDstGdId === undefined      // dst in doorway before hull door (?)
-      ) {
-        return result; // intersects adjacent geomorph
-      }
-
-      // lastDstGdId is a hull door, otherwise we'd have intersected a hull wall
-      // 🔔 only support raycast up to 2 geomorphs "wide"
-      nextResult.intersection = w.door.computeRayDoorIntersect(src, dst, lastDstGdId.gdKey);
-
-      return nextResult;
+      return { hit, doors: gdKeys, rooms: grKeys };
     },
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
@@ -730,11 +703,7 @@ export default function Npcs(props) {
     /** @param {MessageEvent<WW.MsgFromPhysicsWorker>} e */
     function onPhysicsWorkerMessage({ data: msg }) {
       if (msg.type === 'raycast-result') {
-        state.pendingRaycast[msg.uid]?.resolve({
-          error: false,
-          gmDoorIds: msg.gmDoorIds,
-          intersection: msg.intersection,
-        });
+        state.pendingRaycast[msg.uid]?.resolve(msg);
         delete state.pendingRaycast[msg.uid];
       }
     };
@@ -797,7 +766,7 @@ export default function Npcs(props) {
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
  * @property {{ [npcKey: string]: NPC.NPC }} npc
  * @property {{ [uid: string]: {
- *   resolve(result: NPC.RaycastResult): void;
+ *   resolve(result: WW.RaycastResultResponse): void;
  *   reject(): void;
  * }}} pendingRaycast
  * @property {number[]} physicsPositions
