@@ -204,7 +204,7 @@ export default function WorldMenu(props) {
               />
             </label>
             <label>
-              inv
+              dark
               <input
                 type="checkbox"
                 onChange={state.onChangeInvertColor}
