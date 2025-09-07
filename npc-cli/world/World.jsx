@@ -115,11 +115,14 @@ export default function World(props) {
       }
 
       state.crowd.update(deltaSecs);
+      // const deltaTime = 1 / 60;
+      // const maxSubSteps = 10;
+      // state.crowd.update(deltaTime, deltaSecs, maxSubSteps);
+
       state.npc.onTick(deltaSecs);
       state.door.onTick(deltaSecs);
-      // console.info(state.r3f.gl.info.render);
-
       state.view.onTick(deltaSecs);
+      // console.info(state.r3f.gl.info.render);
     },
     stopTick() {
       cancelAnimationFrame(state.reqAnimId);
