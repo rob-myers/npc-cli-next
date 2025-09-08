@@ -163,25 +163,26 @@ export default function useHandleEvents(w) {
     },
     findOtherBlockingNearDoor(npc, offMesh) {
       const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
-      // const gmRoomId = state.npcToRoom.get(npc.key);
-  
+      const gmRoomId = /** @type {Geomorph.GmRoomId} */ (state.npcToRoom.get(npc.key));
+
       for (const otherNpcKey of npcsNearbyDoor) {
         if (otherNpcKey === npc.key) {
           continue;
         }
-  
+
         const other = w.n[otherNpcKey];
-  
-        if (other.s.target !== null) {
-          // elsewhere, we'll always stop on collide npc with target
+        if (
+          state.npcToRoom.get(other.key)?.grKey !== gmRoomId.grKey // wrong room
+          || other.s.target !== null // handled elsewhere (?)
+        ) {
           continue;
         }
 
         const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
-          offMesh.src.x + 0.1 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0.15 * (offMesh.dst.z - offMesh.src.z),
+          offMesh.src.x + 0.1 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0.1 * (offMesh.dst.z - offMesh.src.z),
           offMesh.dst.x, offMesh.dst.z,
           other.point.x, other.point.y,
-          0.3, // 🚧
+          0.25, // 🚧
         );
         
         if (otherIntersectsMainSeg === false) {
@@ -592,7 +593,7 @@ export default function useHandleEvents(w) {
         return;
       }
     },
-    onEnterOffMeshConnection(e, npc) {
+    onEnterOffMeshConnection(e, npc) {// 🚧 clean
       const { offMesh } = e;
       const door = w.door.byKey[offMesh.gdKey];
       
@@ -613,7 +614,7 @@ export default function useHandleEvents(w) {
       const deltaAng = deltaAngle(npc.api.getAngle(), npc.api.getLookAngle(towards));
       const shouldTurnFirst = (
         Math.abs(deltaAng) > Math.PI/2 + 0.2
-        && doorEntryDist <= 0.7 // avoid early pause e.g. 180deg round corner
+        && doorEntryDist <= 0.3 // avoid early pause e.g. 180deg round corner
       );
 
       if (shouldTurnFirst) {
@@ -640,9 +641,9 @@ export default function useHandleEvents(w) {
 
       // 🔔 avoid yank via early-exit
       const blockingNpcKey = (
-        // state.findOtherBlockingNearDoor(npc, offMesh))
-        // || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
-        state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
+        state.findOtherBlockingNearDoor(npc, offMesh)
+        || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
+        // state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
       );
       if (blockingNpcKey !== null) {
         const lookAngleDst = npc.api.getLookAngle(adjusted.src);
