@@ -375,28 +375,27 @@ export class NpcApi {
     , /** @type {typeof this['m']['toAct']} */ ({}));
   }
 
-  /** @param {Geom.VectJson} target */
-  exitOffMeshFor(target, continueMaxSpeed = true) {// 🚧 clean
-    
+  /**
+   * Exit offMeshConnection optionally continuing at maxSpeed.
+   * The latter is optional e.g. in case we're stationary and turning around.
+   * @param {Geom.VectJson} target
+   */
+  exitOffMeshFor(target, continueMaxSpeed = true) {
     const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
     const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
 
     agentAnim.set_active(false);
     agent.teleport(this.position);
 
-    if (continueMaxSpeed) {// fix speed after teleport
-      const angle = tmpVect1.copy(target).sub(this.point).angle;
+    if (continueMaxSpeed === true) {// fix speed after teleport
+      const angle = this.point.angleTo(target);
       agent.raw.set_vel(0, Math.cos(angle) * this.getMaxSpeed());
       agent.raw.set_vel(2, Math.sin(angle) * this.getMaxSpeed());
     }
     
     agent.raw.set_targetState(1);
-    
     agent.requestMoveTarget(toV3(target));
-
-    // 🚧
     this.setSlowDownRadius(false);
-    // this.s.arriveDist = defaultNpcArriveDistance * 2;
   }
   
   /**
