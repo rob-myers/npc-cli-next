@@ -129,8 +129,6 @@ export function createBaseNpc(def, w) {
       spawns: 0,
       /** Target during move. */
       target: /** @type {null | Geom.Vect} */ (null),
-      /** For start of offMeshConnections only */
-      turnBeforeMove: /** @type {null | { ms: Number; towards: Geom.VectJson }} */ (null),
     },
     
     /** @type {null | NPC.CrowdAgent} */
@@ -221,28 +219,21 @@ export class NpcApi {
   }
 
   /**
-   * Adjust ongoing move i.e. override `target` and `pendingTargets`.
-   * e.g. `npc rada api.adjustMove $( click 2 )`
-   * @param {NPC.GroundPoint[]} targets
+   * Adjust ongoing move... 🚧 currently unused
+   * @param {null | NPC.GroundPoint} target
+   * @param {NPC.GroundPoint[]} pendingTargets
    */
-  adjustMove(...[target, ...pendingTargets]) {
-    if (this.s.target === null) {
-      throw Error(`${'adjustMove'}: npc has no target`);
-    }
-    if (target === undefined) {
-      return this.stopMoving({ type: 'stop-reason', key: 'arrived' });
+  adjustMove(target, ...pendingTargets) {
+    if (target === null) {
+      this.s.target = null;
+    } else {
+      this.s.target = Vect.from(helper.toXZ(target));
+      const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+      agent.requestMoveTarget(toV3(target));
     }
     
-    target = helper.toXZ(target);
     pendingTargets = pendingTargets.map(helper.toXZ);
-    if (!helper.isVectJson(target)) {
-      throw Error(`${'adjustMove'}: target must be a point`);
-    }
-    this.s.target = Vect.from(target);
     this.pendingTargets = pendingTargets.map(Vect.from);
-
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-    agent.requestMoveTarget(toV3(target));
   }
 
   /**
@@ -384,6 +375,30 @@ export class NpcApi {
     , /** @type {typeof this['m']['toAct']} */ ({}));
   }
 
+  /** @param {Geom.VectJson} target */
+  exitOffMeshFor(target, continueMaxSpeed = true) {// 🚧 clean
+    
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
+
+    agentAnim.set_active(false);
+    agent.teleport(this.position);
+
+    if (continueMaxSpeed) {// fix speed after teleport
+      const angle = tmpVect1.copy(target).sub(this.point).angle;
+      agent.raw.set_vel(0, Math.cos(angle) * this.getMaxSpeed());
+      agent.raw.set_vel(2, Math.sin(angle) * this.getMaxSpeed());
+    }
+    
+    agent.raw.set_targetState(1);
+    
+    agent.requestMoveTarget(toV3(target));
+
+    // 🚧
+    this.setSlowDownRadius(false);
+    // this.s.arriveDist = defaultNpcArriveDistance * 2;
+  }
+  
   /**
    * Brace expansion of keys of `this.skin` e.g.
    * > `'head-{front,back}'` -> `['head-front', 'head-back']`
@@ -1032,7 +1047,6 @@ export class NpcApi {
       this.pendingTargets.length = 0;
       this.setSlowDownRadius(true);
       this.tryStopOffMesh(); // when turnBeforeMove
-      this.s.turnBeforeMove = null;
       this.base.numCorners = 0;
     }
   }
@@ -1069,6 +1083,26 @@ export class NpcApi {
         meta,
       },
     );    
+  }
+
+  onArriveTarget() {
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const pendingTarget = this.pendingTargets.shift();
+    
+    if (pendingTarget === undefined) {
+      this.stopMoving(
+        { type: 'stop-reason', key: 'arrived' },
+        // only finish look when move a short distance
+        this.base.lastStart.distanceTo(this.point) < 0.5 ? this.s.lookAngleDst : null
+      );
+    } else {
+      this.base.lastStart.copy(this.point);
+      this.s.target = this.base.lastTarget.copy(pendingTarget);
+      this.base.numCorners = 0;
+      agent.requestMoveTarget(toV3(this.s.target));
+      this.setSlowDownRadius();
+      this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath });
+    }
   }
 
   /**
@@ -1186,10 +1220,14 @@ export class NpcApi {
     if (this.s.lookAngleDst !== null) {
       const rotYDst = this.getEulerAngle(this.s.lookAngleDst);
       if (dampAngle(this.base.rotation, 'y', rotYDst, this.s.lookSecs, deltaSecs, undefined, undefined, 0.01) === false) {
+        // 🚧 move into this.onArriveAngle
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
-        if ((this.s.anim === 'Walk' || this.s.anim === 'Run') && this.s.target === null) {
-          this.startAnimation('Idle'); // e.g. stop-reason blocked-doorway
+
+        if (this.s.target === null && this.pendingTargets.length > 0) {
+          this.onArriveTarget(); // continue pending target
+        } else if (this.s.target === null) {
+          this.startAnimation('Idle'); // go Idle after collision
         }
       }
     }
@@ -1224,15 +1262,15 @@ export class NpcApi {
     // 🚧 precision 4 dp too low
     // const position = v3Precision(agent.position());
     const position = agent.position();
-    const state = agent.state();
+    const agentState = agent.state();
 
     this.delta.set(position.x, position.z).sub(this.point);
     this.position.copy(position);
     this.point.set(position.x, position.z);
 
-    if (state !== this.s.agentState) {
-      this.onChangeAgentState(agent, state);
-      this.s.agentState = state;
+    if (agentState !== this.s.agentState) {
+      this.onChangeAgentState(agent, agentState);
+      this.s.agentState = agentState;
     }
 
     if (this.s.separation !== null) {
@@ -1241,11 +1279,6 @@ export class NpcApi {
 
     if (this.s.offMesh !== null) {
       this.handleOffMeshConnection(deltaSecs, agent, this.s.offMesh);
-
-      if (this.s.turnBeforeMove !== null) {
-        this.onTurnBeforeMove(agent, deltaSecs, this.s.turnBeforeMove);
-      }
-
       return; // Avoid stopMoving whilst offMesh
     }
 
@@ -1266,22 +1299,7 @@ export class NpcApi {
     // 🔔 arriving earlier avoids small loops
     const arriveDist = this.s.arriveDist * (this.pendingTargets.length === 0 ? 1 : 1.5);
     if (distance <= arriveDist) {// Reached target
-      const pendingTarget = this.pendingTargets.shift();
-      
-      if (pendingTarget === undefined) {
-        this.stopMoving(
-          { type: 'stop-reason', key: 'arrived' },
-          // only finish look when move a short distance
-          this.base.lastStart.distanceTo(this.point) < 0.5 ? this.s.lookAngleDst : null
-        );
-      } else {
-        this.base.lastStart.copy(this.point);
-        this.s.target = this.base.lastTarget.copy(pendingTarget);
-        this.base.numCorners = 0;
-        agent.requestMoveTarget(toV3(this.s.target));
-        this.setSlowDownRadius();
-        this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath, });
-      }
+      this.onArriveTarget();
       return;
     }
     
@@ -1348,35 +1366,6 @@ export class NpcApi {
   onTickTurnTarget(agent) {
     const vel = agent.velocity();
     this.s.lookAngleDst = geom.clockwiseFromNorth(vel.z, vel.x);
-  }
-
-  /**
-   * 
-   * @param {NPC.CrowdAgent} agent 
-   * @param {number} deltaSecs 
-   * @param {NonNullable<NPC.NPC['s']['turnBeforeMove']>} turnBeforeMove 
-   */
-  onTurnBeforeMove(agent, deltaSecs, turnBeforeMove) {
-    const { towards } = turnBeforeMove;
-    this.s.lookAngleDst = geom.clockwiseFromNorth(
-      towards.y - this.point.y,
-      towards.x - this.point.x,
-    );
-
-    const ms = (turnBeforeMove.ms -= deltaSecs * 1000);
-    if (ms > 0) {
-      return;
-    }
-
-    // finished turn
-    this.s.turnBeforeMove = null;
-    agent.raw.params.set_maxSpeed(this.getMaxSpeed());
-    if (this.s.offMesh !== null) {
-      const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
-      agentAnim.set_t(0);
-      agentAnim.set_tmid(this.s.offMesh.anim.tmid);
-      agentAnim.set_tmax(this.s.offMesh.anim.tmax);
-    }
   }
 
   /** @param {Error} [error] */
@@ -1594,30 +1583,6 @@ export class NpcApi {
     }
 
     this.w.events.next({ key: 'stopped-moving', npcKey: this.key, reason });
-  }
-
-  /** @param {Geom.VectJson} adjustedSrc */
-  tempLeaveOffMesh(adjustedSrc) {
-    
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-    const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
-
-    agentAnim.set_active(false);
-    agent.teleport(this.position);
-    // fix speed after teleport
-    const angle = tmpVect1.copy(adjustedSrc).sub(this.point).angle;
-    agent.raw.set_vel(0, Math.cos(angle) * this.getMaxSpeed());
-    agent.raw.set_vel(2, Math.sin(angle) * this.getMaxSpeed());
-    
-    agent.raw.set_targetState(1);
-    
-    // 🚧 store previous target for resume
-    agent.requestMoveTarget(toV3(adjustedSrc));
-
-    // 🚧 maybe should slow down if other idle near dst
-    this.setSlowDownRadius(false);
-
-    // this.s.arriveDist = defaultNpcArriveDistance * 2;
   }
 
   tryStopOffMesh() {

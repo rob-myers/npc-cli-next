@@ -46,7 +46,6 @@ export default function useHandleEvents(w) {
       // e.g. npc without access near door
       npc.agentAnim?.set_active(false);
       npc.agentAnim?.set_tScale(1);
-      npc.s.turnBeforeMove = null;
 
       if (npc.s.offMesh === null) {
         return;
@@ -608,14 +607,34 @@ export default function useHandleEvents(w) {
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
 
-      // 🚧 if close enough AND facing correct direction don't leave offMesh
-      // 🚧 replace turnBeforeMove via no target and some pendingTargets
-      // 🚧 put previous target at start of pendingTargets
-      if (npc.point.distanceTo(adjusted.src) > 0.2) {
-        npc.api.tempLeaveOffMesh(adjusted.src);
+      // 🚧
+      const doorEntryDist = npc.point.distanceTo(adjusted.src);
+      const towards = doorEntryDist > 0.5 ? adjusted.src : adjusted.dst;
+      const deltaAng = deltaAngle(npc.api.getAngle(), npc.api.getLookAngle(towards));
+      const shouldTurnFirst = (
+        Math.abs(deltaAng) > Math.PI/2 + 0.2
+        && doorEntryDist <= 0.7 // avoid early pause e.g. 180deg round corner
+      );
+
+      if (shouldTurnFirst) {
         const target = /** @type {Geom.Vect} */ (npc.s.target);
-        npc.s.target = target.clone().copy(adjusted.src);
         npc.pendingTargets.unshift(target);
+
+        npc.api.exitOffMeshFor(npc.position, false);
+        npc.s.lookSecs = 0.2;
+        npc.s.lookAngleDst = npc.api.getLookAngle(towards);
+        npc.s.target = null;
+
+        return;
+      } 
+      
+      if (npc.point.distanceTo(adjusted.src) > 0.2) {
+        
+        const target = /** @type {Geom.Vect} */ (npc.s.target);
+        npc.pendingTargets.unshift(target);
+        npc.api.exitOffMeshFor(adjusted.src);
+        npc.s.target = Vect.from(adjusted.src);
+        
         return;
       }
 
@@ -631,27 +650,6 @@ export default function useHandleEvents(w) {
           type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath()
         }, lookAngleDst);
         return;
-      }
-
-      // turnBeforeMove when delta angle large enough
-      const deltaAng = deltaAngle(
-        npc.api.getAngle(),
-        npc.api.getLookAngle(adjusted.dst),
-      );
-
-      const doorEntryDist = npc.point.distanceTo(adjusted.src);
-
-      if (
-        Math.abs(deltaAng) > Math.PI/2 + 0.2
-        && doorEntryDist <= 0.7 // avoid early pause e.g. 180deg round corner
-      ) {
-        // look towards door entrance or exit
-        const towards = doorEntryDist > 0.1 ? adjusted.src : adjusted.dst;
-        npc.s.turnBeforeMove = { ms: 400, towards };
-        // 🔔 setting as Infinity freezes offMeshConnection
-        const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (npc.agentAnim);
-        agentAnim.set_tmid(Infinity);
-        agentAnim.set_tmax(Infinity);
       }
 
       /**
