@@ -115,7 +115,7 @@ export default function World(props) {
       }
 
       state.crowd.update(deltaSecs);
-      // const deltaTime = 1 / 60;
+      // const deltaTime = 1 / 120;
       // const maxSubSteps = 10;
       // state.crowd.update(deltaTime, deltaSecs, maxSubSteps);
 
