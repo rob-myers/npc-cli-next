@@ -23,6 +23,15 @@ const { fromProfileKey, profileKeys } = (/** @param {Record<Key.Profile, true>} 
  */
 export const helper = {
 
+  /** 🚧 by classKey */
+  defaults: {
+    height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
+    // radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.675,
+    radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.6,
+    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale * 0.9,
+    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale * 1,
+  },
+
   /** @type {Record<Key.ComponentClass, true>} */
   fromComponentClass: {
     HelloWorld: true,
@@ -141,14 +150,6 @@ export const helper = {
     "g-303--passenger-deck": "303--hull",
   },
   
-  /** 🚧 should be by classKey */
-  defaults: {
-    height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
-    radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.675,
-    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale * 0.9,
-    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale * 1,
-  },
-
   /** @type {Record<Key.Anim, true>} */
   fromAnimKey: {
     Idle: true,
