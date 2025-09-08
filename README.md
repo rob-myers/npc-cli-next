@@ -65,6 +65,8 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 1. Avoid deep properties `state.foo.bar` inside `useStateRef` e.g. because they won't be reloaded if `foo` stays same name but `bar` changes to `baz`.
 
+2. Choppy framerate can occur when OS hints "Low Power" (e.g. OSX). Can see 60fps in @react-three/drei Stats yet seems choppier. Does not seem to get fixed when stop "Low Power" without hard refresh. Possible Chrome restart too.
+
 ## Development only routes
 
 These are removed in production via next.config output `export`.
