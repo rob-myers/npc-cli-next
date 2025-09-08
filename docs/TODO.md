@@ -122,6 +122,14 @@
   - other needs to be very close to doorway
   - npc stops a bit early when heading straight on
 
+- ❌ in recastnavigation try two trigger radii
+- ✅ continuous method from offMesh initial seg to another target
+- 🚧 clean up new approach to enter offMeshConnection
+  - ✅ if not close to adjusted.src then "continuously" transition back to non-offMesh state
+    - `requestMoveTarget(adjusted.src)`
+  - ✅ re-trigger offMeshConnection when get "close enough"
+  - 🚧 clean
+
 - core.js functions
   - e.g. `cast from:$x to:$y`
   - e.g. `can see:$x from:$y`

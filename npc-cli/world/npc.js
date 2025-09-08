@@ -516,6 +516,21 @@ export class NpcApi {
   }
 
   /**
+   * Find next off-mesh-connection via lookup
+   * @param {NPC.CrowdAgent} agent
+   * @returns {null | NPC.OffMeshLookupValue}
+   */
+  findNextOffMesh(agent) {
+    const { offMeshLookup } = this.w.nav;
+    return (// find off-mesh-connection via lookup
+      offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(0), agent.raw.get_cornerVerts(2))]
+      ?? offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(3), agent.raw.get_cornerVerts(5))]
+      ?? offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(6), agent.raw.get_cornerVerts(8))]
+      ?? null
+    );
+  }
+
+  /**
    * Convert `rotation.y` into direction npc is facing, using
    * coordinate system "clockwise from north, viewed from above".
    * 
@@ -606,7 +621,7 @@ export class NpcApi {
   }
 
   getMaxSpeed() {
-    // return 0.5;
+    // return 1;
     // return this.def.runSpeed;
     return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
   }
@@ -1062,19 +1077,13 @@ export class NpcApi {
    */
   onChangeAgentState(agent, next) {
     if (next === 2) {// enter offMeshConnection
-      const offMesh = (// find off-mesh-connection via lookup
-        this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(0), agent.raw.get_cornerVerts(2))]
-        ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(3), agent.raw.get_cornerVerts(5))]
-        ?? this.w.nav.offMeshLookup[geom.to2DString(agent.raw.get_cornerVerts(6), agent.raw.get_cornerVerts(8))]
-        ?? null
-      );
-
-      if (offMesh === null) {
+      const offMesh = this.findNextOffMesh(agent);
+      if (offMesh !== null) {// 🔔 set this.s.offMesh
+        this.w.events.next({ key: 'enter-off-mesh', npcKey: this.key, offMesh });
+      } else {
         agent.teleport(this.position);
-        return error(`${this.key}: bailed out of unknown offMeshConnection`);
+        error(`${this.key}: bailed out of unknown offMeshConnection`);
       }
-      // set this.s.offMesh
-      this.w.events.next({ key: 'enter-off-mesh', npcKey: this.key, offMesh });
       return;
     }
     
@@ -1570,8 +1579,7 @@ export class NpcApi {
       }
 
       if (agent.state() === 2) {
-        // must teleport before requestMoveTarget when offMesh
-        // point.sub(this.delta);
+        // MUST teleport before requestMoveTarget when offMesh, else get STUCK
         agent.teleport(this.position); // 🔔 sometimes jerky?
       }
       agent.requestMoveTarget(this.position);
@@ -1586,6 +1594,30 @@ export class NpcApi {
     }
 
     this.w.events.next({ key: 'stopped-moving', npcKey: this.key, reason });
+  }
+
+  /** @param {Geom.VectJson} adjustedSrc */
+  tempLeaveOffMesh(adjustedSrc) {
+    
+    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
+
+    agentAnim.set_active(false);
+    agent.teleport(this.position);
+    // fix speed after teleport
+    const angle = tmpVect1.copy(adjustedSrc).sub(this.point).angle;
+    agent.raw.set_vel(0, Math.cos(angle) * this.getMaxSpeed());
+    agent.raw.set_vel(2, Math.sin(angle) * this.getMaxSpeed());
+    
+    agent.raw.set_targetState(1);
+    
+    // 🚧 store previous target for resume
+    agent.requestMoveTarget(toV3(adjustedSrc));
+
+    // 🚧 maybe should slow down if other idle near dst
+    this.setSlowDownRadius(false);
+
+    // this.s.arriveDist = defaultNpcArriveDistance * 2;
   }
 
   tryStopOffMesh() {

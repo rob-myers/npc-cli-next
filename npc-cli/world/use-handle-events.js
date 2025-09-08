@@ -182,7 +182,7 @@ export default function useHandleEvents(w) {
           offMesh.src.x + 0.1 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0.15 * (offMesh.dst.z - offMesh.src.z),
           offMesh.dst.x, offMesh.dst.z,
           other.point.x, other.point.y,
-          0.2,
+          0.3, // 🚧
         );
         
         if (otherIntersectsMainSeg === false) {
@@ -608,10 +608,22 @@ export default function useHandleEvents(w) {
 
       const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
 
+      // 🚧 if close enough AND facing correct direction don't leave offMesh
+      // 🚧 replace turnBeforeMove via no target and some pendingTargets
+      // 🚧 put previous target at start of pendingTargets
+      if (npc.point.distanceTo(adjusted.src) > 0.2) {
+        npc.api.tempLeaveOffMesh(adjusted.src);
+        const target = /** @type {Geom.Vect} */ (npc.s.target);
+        npc.s.target = target.clone().copy(adjusted.src);
+        npc.pendingTargets.unshift(target);
+        return;
+      }
+
       // 🔔 avoid yank via early-exit
       const blockingNpcKey = (
-        state.findOtherBlockingNearDoor(npc, offMesh)
-        || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
+        // state.findOtherBlockingNearDoor(npc, offMesh))
+        // || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
+        state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
       );
       if (blockingNpcKey !== null) {
         const lookAngleDst = npc.api.getLookAngle(adjusted.src);
