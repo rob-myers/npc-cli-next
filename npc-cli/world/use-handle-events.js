@@ -28,6 +28,37 @@ export default function useHandleEvents(w) {
     pressMenuPrevent: {},
     roomToNpcs: [],
 
+    applyImprovedOffMesh(npc, improved) {
+      const npcPoint = npc.point;
+      const { src: newSrc, dst: newDst } = improved;
+
+
+      // 🤔 could use last known speed and speed up via tScale
+      const speed = npc.api.getMaxSpeed();
+
+      // adjust RecastDetour dtCrowdAgentAnimation
+      const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
+      anim.set_initPos(0, npcPoint.x);
+      anim.set_initPos(2, npcPoint.y);
+      anim.set_startPos(0, newSrc.x);
+      anim.set_startPos(2, newSrc.y);
+      anim.set_endPos(0, newDst.x);
+      anim.set_endPos(2, newDst.y);
+
+      const delta = tmpVect1.copy(newDst).sub(newSrc);
+      const tmid = npcPoint.distanceTo(newSrc) / speed;
+      // const tmax = anim.tmid + (delta.length / speed);
+      const tmax = tmid + (delta.length / speed);
+
+      anim.set_t(0);
+      anim.set_tmid(tmid);
+      anim.set_tmax(tmax);
+
+      delta.normalize();
+      anim.set_unitExitVel(0, delta.x);
+      anim.set_unitExitVel(1, 0);
+      anim.set_unitExitVel(2, delta.y);
+    },
     canCloseDoor(door) {
       const closeNpcs = state.doorToNearbyNpcs[door.gdKey];
       if (closeNpcs === undefined) {
@@ -551,6 +582,88 @@ export default function useHandleEvents(w) {
       }
       await w.view.lookAt(toV3(input), lookAtOpts);
     },
+
+    improveOffMeshSrcDst(npc, offMesh) {
+      const door = w.d[offMesh.gdKey];
+      const npcPoint = npc.point;
+      const nextCorner = npc.api.getCornerAfterOffMesh(offMesh);
+
+      // Entrances are aligned to offMeshConnections
+      // - entrance segment (enSrc, enDst)
+      // - exit segment (exSrc, exDst)
+      // They border the connector joining the rooms.
+      const { src: enSrc, dst: enDst } = door.entrances[offMesh.aligned === true ? 0 : 1];
+      const { src: exSrc, dst: exDst } = door.entrances[offMesh.aligned === true ? 1 : 0];
+
+      // Compute agent segment i.e. npcPoint --> nextCorner
+      // - extend in both directions so intersects with entrance/exit segment
+      // - offMeshConnections are slightly away from doorway 
+      const agSrc = {
+        x: npcPoint.x - (nextCorner.x - npcPoint.x),
+        y: npcPoint.y - (nextCorner.y - npcPoint.y),
+      };
+      const agDst = {
+        x: nextCorner.x + (nextCorner.x - npcPoint.x),
+        y: nextCorner.y + (nextCorner.y - npcPoint.y),
+      };
+
+      const enLambda = geom.getClosestOnSegToSeg(enSrc, enDst, agSrc, agDst);
+      let newSrc = {
+        x: enSrc.x + enLambda * (enDst.x - enSrc.x),
+        y: enSrc.y + enLambda * (enDst.y - enSrc.y),
+      };
+      /** @type {Geom.VectJson} */
+      let newDst;
+
+      // if newSrc --> corner intersects exit segment, use it (avoid turn)
+      const exIota = geom.getLineSegsIntersection(exSrc, exDst, newSrc, nextCorner);
+      
+      if (exIota === null) {
+        const exLambda = geom.getClosestOnSegToSeg(exSrc, exDst, agSrc, agDst);
+        newDst = { 
+          x: exSrc.x + exLambda * (exDst.x - exSrc.x),
+          y: exSrc.y + exLambda * (exDst.y - exSrc.y),
+        };
+        
+        if (exLambda === 0 || exLambda === 1) {// if "turning around corner"
+          // if npcPoint --> newDst intersects entrance segment, use it (avoid turn)
+          const enIota = geom.getLineSegsIntersection(enSrc, enDst, npcPoint, newDst);
+          if (enIota !== null) {
+            newSrc = { 
+              x: enSrc.x + enIota * (enDst.x - enSrc.x),
+              y: enSrc.y + enIota * (enDst.y - enSrc.y),
+            };
+          }
+        }
+      } else {
+        newDst = { 
+          x: exSrc.x + exIota * (exDst.x - exSrc.x),
+          y: exSrc.y + exIota * (exDst.y - exSrc.y),
+        };
+      }
+
+      // 🚧 ok to remember this in `npc.s.improvedOffMesh`?
+      // we slow down if final target is close to doorway exit,
+      // in which case, we exit further away to avoid blocking the door
+      const slowDown = (
+        npc.lastTarget.distanceTo(newDst) < 0.4
+        && npc.pendingTargets.length === 0
+      );
+
+      if (slowDown === true) {
+        const sign = offMesh.aligned === true ? -1 : 1;
+        const farDelta = door.farDeltas[offMesh.aligned === true ? 1 : 0];
+        newDst.x += sign * farDelta.x;
+        newDst.y += sign * farDelta.y;
+      }
+
+      return {
+        src: newSrc,
+        dst: newDst,
+        nextCorner,
+        slowDown,
+      };
+    },
     isFollowingNpc(npcKey) {
       const npc = w.n[npcKey];
       return npc !== undefined && w.view.dst.look === npc.position;
@@ -595,7 +708,7 @@ export default function useHandleEvents(w) {
     },
     onEnterOffMeshConnection(e, npc) {// 🚧 clean
       const { offMesh } = e;
-      const door = w.door.byKey[offMesh.gdKey];
+      const door = w.d[offMesh.gdKey];
       
       if (// try open closed door
         door.open === false &&
@@ -606,11 +719,13 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      const adjusted = state.overrideOffMeshConnectionAngle(npc, offMesh, door);
+      // reuse improvement from (a) shouldTurnFirst, or (b) start too far away
+      const improved = npc.s.offMeshImprove ?? state.improveOffMeshSrcDst(npc, offMesh);
+      npc.s.offMeshImprove = null;
 
-      // 🚧
-      const doorEntryDist = npc.point.distanceTo(adjusted.src);
-      const towards = doorEntryDist > 0.5 ? adjusted.src : adjusted.dst;
+      // 🚧 clean
+      const doorEntryDist = npc.point.distanceTo(improved.src);
+      const towards = doorEntryDist > 0.5 ? improved.src : improved.dst;
       const deltaAng = deltaAngle(npc.api.getAngle(), npc.api.getLookAngle(towards));
       const shouldTurnFirst = (
         Math.abs(deltaAng) > Math.PI/2 + 0.2
@@ -626,56 +741,57 @@ export default function useHandleEvents(w) {
         npc.s.lookAngleDst = npc.api.getLookAngle(towards);
         npc.s.target = null;
 
+        npc.s.offMeshImprove = improved;
         return;
       } 
       
-      if (npc.point.distanceTo(adjusted.src) > 0.2) {
+      if (npc.point.distanceTo(improved.src) > 0.2) {
         
         const target = /** @type {Geom.Vect} */ (npc.s.target);
         npc.pendingTargets.unshift(target);
-        npc.api.exitOffMeshFor(adjusted.src);
-        npc.s.target = Vect.from(adjusted.src);
-        
+        npc.api.exitOffMeshFor(improved.src);
+        npc.s.target = Vect.from(improved.src);
+
+        npc.s.offMeshImprove = improved;
         return;
       }
 
       // 🔔 avoid yank via early-exit
       const blockingNpcKey = (
         state.findOtherBlockingNearDoor(npc, offMesh)
-        || state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
-        // state.findOtherBlockingOppositeDir(offMesh, adjusted.src, adjusted.dst)
+        || state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
+        // state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
       );
       if (blockingNpcKey !== null) {
-        const lookAngleDst = npc.api.getLookAngle(adjusted.src);
+        const lookAngleDst = npc.api.getLookAngle(improved.src);
         npc.api.stopMoving({
           type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath()
         }, lookAngleDst);
         return;
       }
 
+      // enter improved dtCrowdAgentAnimation
+      state.applyImprovedOffMesh(npc, improved);
+
       /**
        * `nextUnit` is desired direction after offMeshConnection.
        * - It should be `null` iff we intend to slow down to stop inside doorway.
        * - We also want to avoid flicker when target is just round corner of a doorway.
        */
-      const nextUnitNull = adjusted.slowDownDoorway;
+      const nextUnitNull = improved.slowDown;
 
-      // register adjusted traversal
+      // register improved traversal
       npc.s.offMesh = {
         npcKey: e.npcKey,
         orig: offMesh,
         seg: 0,
-        src: adjusted.src,
-        dst: adjusted.dst,
-        anim: {
-          tmid: adjusted.animTmid,
-          tmax: adjusted.animTmax,
-        },
+        src: improved.src,
+        dst: improved.dst,
 
-        initPos: adjusted.initPos,
-        initUnit: tmpVect1.set(adjusted.src.x - npc.point.x, adjusted.src.y - npc.point.y ).normalize().json,
-        mainUnit: tmpVect1.set(adjusted.dst.x - adjusted.src.x, adjusted.dst.y - adjusted.src.y).normalize().json,
-        nextUnit: nextUnitNull === true ? null : tmpVect1.set(adjusted.nextCorner.x - adjusted.dst.x, adjusted.nextCorner.y - adjusted.dst.y).normalize().json,
+        initPos: npc.point.json,
+        initUnit: tmpVect1.set(improved.src.x - npc.point.x, improved.src.y - npc.point.y ).normalize().json,
+        mainUnit: tmpVect1.set(improved.dst.x - improved.src.x, improved.dst.y - improved.src.y).normalize().json,
+        nextUnit: nextUnitNull === true ? null : tmpVect1.set(improved.nextCorner.x - improved.dst.x, improved.nextCorner.y - improved.dst.y).normalize().json,
         tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
 
         tScale: 1,
@@ -796,113 +912,6 @@ export default function useHandleEvents(w) {
       if (e.rmb && e.distancePx <= 5) {
         state.showDefaultContextMenu();
       }
-    },
-    overrideOffMeshConnectionAngle(npc, offMesh, door) {
-      const npcPoint = npc.point;
-      const nextCorner = npc.api.getCornerAfterOffMesh(offMesh);
-
-      // Entrances are aligned to offMeshConnections
-      // - entrance segment (enSrc, enDst)
-      // - exit segment (exSrc, exDst)
-      // They border the connector joining the rooms.
-      const { src: enSrc, dst: enDst } = door.entrances[offMesh.aligned === true ? 0 : 1];
-      const { src: exSrc, dst: exDst } = door.entrances[offMesh.aligned === true ? 1 : 0];
-
-      // Compute agent segment i.e. npcPoint --> nextCorner
-      // - extend in both directions so intersects with entrance/exit segment
-      // - offMeshConnections are slightly away from doorway 
-      const agSrc = {
-        x: npcPoint.x - (nextCorner.x - npcPoint.x),
-        y: npcPoint.y - (nextCorner.y - npcPoint.y),
-      };
-      const agDst = {
-        x: nextCorner.x + (nextCorner.x - npcPoint.x),
-        y: nextCorner.y + (nextCorner.y - npcPoint.y),
-      };
-
-      const enLambda = geom.getClosestOnSegToSeg(enSrc, enDst, agSrc, agDst);
-      let newSrc = {
-        x: enSrc.x + enLambda * (enDst.x - enSrc.x),
-        y: enSrc.y + enLambda * (enDst.y - enSrc.y),
-      };
-      /** @type {Geom.VectJson} */
-      let newDst;
-
-      // if newSrc --> corner intersects exit segment, use it (avoid turn)
-      const exIota = geom.getLineSegsIntersection(exSrc, exDst, newSrc, nextCorner);
-      
-      if (exIota === null) {
-        const exLambda = geom.getClosestOnSegToSeg(exSrc, exDst, agSrc, agDst);
-        newDst = { 
-          x: exSrc.x + exLambda * (exDst.x - exSrc.x),
-          y: exSrc.y + exLambda * (exDst.y - exSrc.y),
-        };
-        
-        if (exLambda === 0 || exLambda === 1) {// if "turning around corner"
-          // if npcPoint --> newDst intersects entrance segment, use it (avoid turn)
-          const enIota = geom.getLineSegsIntersection(enSrc, enDst, npcPoint, newDst);
-          if (enIota !== null) {
-            newSrc = { 
-              x: enSrc.x + enIota * (enDst.x - enSrc.x),
-              y: enSrc.y + enIota * (enDst.y - enSrc.y),
-            };
-          }
-        }
-      } else {
-        newDst = { 
-          x: exSrc.x + exIota * (exDst.x - exSrc.x),
-          y: exSrc.y + exIota * (exDst.y - exSrc.y),
-        };
-      }
-
-      // we slow down if final target is close to doorway exit,
-      // in which case, we exit further away to avoid blocking the door
-      const slowDownDoorway = (
-        npc.lastTarget.distanceTo(newDst) < 0.4
-        && npc.pendingTargets.length === 0
-      );
-      if (slowDownDoorway === true) {
-        const sign = offMesh.aligned === true ? -1 : 1;
-        const farDelta = door.farDeltas[offMesh.aligned === true ? 1 : 0];
-        newDst.x += sign * farDelta.x;
-        newDst.y += sign * farDelta.y;
-      }
-
-      // 🤔 could use last known speed and speed up via tScale
-      const speed = npc.api.getMaxSpeed();
-
-      // adjust RecastDetour dtCrowdAgentAnimation
-      const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
-      anim.set_initPos(0, npcPoint.x);
-      anim.set_initPos(2, npcPoint.y);
-      anim.set_startPos(0, newSrc.x);
-      anim.set_startPos(2, newSrc.y);
-      anim.set_endPos(0, newDst.x);
-      anim.set_endPos(2, newDst.y);
-
-      const delta = tmpVect1.copy(newDst).sub(newSrc);
-      const tmid = npcPoint.distanceTo(newSrc) / speed;
-      // const tmax = anim.tmid + (delta.length / speed);
-      const tmax = tmid + (delta.length / speed);
-
-      anim.set_t(0);
-      anim.set_tmid(tmid);
-      anim.set_tmax(tmax);
-
-      delta.normalize();
-      anim.set_unitExitVel(0, delta.x);
-      anim.set_unitExitVel(1, 0);
-      anim.set_unitExitVel(2, delta.y);
-
-      return {
-        initPos: npcPoint.json,
-        src: newSrc,
-        dst: newDst,
-        nextCorner,
-        animTmid: tmid,
-        animTmax: tmax,
-        slowDownDoorway,
-      };
     },
     removeFromSensors(...npcKeys) {
       for (const npcKey of npcKeys) {
@@ -1062,10 +1071,16 @@ export default function useHandleEvents(w) {
  * @property {{[roomId: number]: Set<string>}[]} roomToNpcs
  * The "inverse" of npcToRoom i.e. `roomToNpc[gmId][roomId]` is a set of `npcKey`s
  *
+ * @property {(npc: NPC.NPC, improved: NPC.ImprovedOffMeshSrcDst) => void} applyImprovedOffMesh
  * @property {(door: Geomorph.DoorState) => boolean} canCloseDoor
  * @property {(npc: NPC.NPC) => void} clearOffMesh
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
+ * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
+ * offMesh early-exit-test i.e. test for some other npc which:
+ * - is idle and in the way
+ * - is very close to main segment of offMesh connection
+ * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
  * @property {(npcKey: string) => void} followNpc
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
@@ -1076,13 +1091,9 @@ export default function useHandleEvents(w) {
  * @property {(regexDef: string, ...npcKeys: string[]) => void} grantAccess
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
- * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
+ * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => NPC.ImprovedOffMeshSrcDst} improveOffMeshSrcDst
  * @property {(npcKey: string) => boolean} isFollowingNpc
- * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
- * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
- * offMesh early-exit-test i.e. test for some other npc which:
- * - is idle and in the way
- * - is very close to main segment of offMesh connection
+ * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
  * @property {(npc: NPC.NPC, otherNpcKey: string) => void} onBlockedDoorway
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
@@ -1090,7 +1101,6 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
- * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue, door: Geomorph.DoorState) => NPC.OverrideOffMeshResult} overrideOffMeshConnectionAngle
  * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.
  * @property {(...npcKeys: string[]) => void} removeFromSensors
  * @property {() => void} showDefaultContextMenu

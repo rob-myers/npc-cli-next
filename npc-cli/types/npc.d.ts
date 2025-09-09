@@ -285,16 +285,6 @@ declare namespace NPC {
     src: Geom.VectJson;
     /** Adjusted offMeshConnection dst */
     dst: Geom.VectJson;
-    /**
-     * An offMeshConnection traversal will be initially paused if the
-     * npc's direction is not "aligned".
-     * 
-     * This is achieved via:
-     * > `agentAnim.tmid === agentAnim.tmax === Infinity`.
-     *
-     * and we record the correct values for restore later.
-     */
-    anim: { tmid: number; tmax: number; };
 
     /** Unit vector from "initial npc position" to "adjusted src" */
     initUnit: Geom.VectJson;
@@ -322,20 +312,11 @@ declare namespace NPC {
     import('@recast-navigation/core').Crowd['raw']['getAgentAnimation']
   >;
 
-  /** Provided after `dtAgentAnimation` has been re-configured */
-  interface OverrideOffMeshResult {
-    initPos: Geom.VectJson;
-    /** Adjusted src */
+  interface ImprovedOffMeshSrcDst {
     src: Geom.VectJson;
-    /** Adjusted dst */
     dst: Geom.VectJson;
     nextCorner: Geom.VectJson;
-    /** Might need to restore this when turnBeforeMove */
-    animTmid: number;
-    /** Might need to restore this when turnBeforeMove */
-    animTmax: number;
-    /** Should we slow down inside the doorway? */
-    slowDownDoorway: boolean;
+    slowDown: boolean;
   }
 
   type Obstacle = {

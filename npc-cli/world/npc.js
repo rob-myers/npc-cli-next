@@ -114,6 +114,13 @@ export function createBaseNpc(def, w) {
       opacity: 1,
       /** Desired opacity */
       opacityDst: /** @type {null | number} */ (null),
+      /**
+       * Once an offMeshConnection is detected and improved we needn't follow it
+       * immediately e.g. we would lose agent separation whilst moving along 1st segment.
+       * If we need to turn around on spot, or we're not close enough to offMeshConnection src,
+       * we store the improvement here, for use once we're closer.
+       */
+      offMeshImprove: /** @type {null | NPC.ImprovedOffMeshSrcDst} */ (null),
       /** Can walk or run */
       run: false,
       /** Npc selector color, default blue */
@@ -674,16 +681,13 @@ export class NpcApi {
   }
 
   getRemainingPath() {
-    if (this.s.target === null) {
-      warn(`${'getRemainingPath'}: ${this.key}: npc.s.target is null`);
-      return this.pendingTargets.map(x => x.json);
-    }
-    // else if (this.pendingTargets.length > 0 && this.isNearTarget() === true) {
-    //   return this.pendingTargets.map(helper.toXZ);
-    // }
-    else {
-      return [this.s.target].concat(this.pendingTargets).map(x => x.json);
-    }
+    return (
+      this.s.target === null ? [] : [this.s.target]
+    ).concat(this.pendingTargets).map(x => x.json);
+  }
+
+  getTarget() {
+    return this.pendingTargets.at(-1) ?? this.s.target ?? null;
   }
 
   /**
@@ -1540,6 +1544,7 @@ export class NpcApi {
     this.s.lookAngleDst = lookAngleDst;
     this.s.slowBegin = null;
     this.s.target = null;
+    this.s.offMeshImprove = null;
 
     agent.raw.params.set_maxSpeed(this.getMaxSpeed() * 0.75);
     agent.raw.params.set_maxAcceleration(defaultMaxAcceleration);
