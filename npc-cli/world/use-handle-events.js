@@ -575,14 +575,6 @@ export default function useHandleEvents(w) {
         }
       }
     },
-    async lookAt(input, lookAtOpts = {}) {
-      if (typeof input === 'string') {// npcKey
-        input = w.n[input].position;
-        lookAtOpts.height = helper.defaults.height;
-      }
-      await w.view.lookAt(toV3(input), lookAtOpts);
-    },
-
     improveOffMeshSrcDst(npc, offMesh) {
       const door = w.d[offMesh.gdKey];
       const npcPoint = npc.point;
@@ -668,6 +660,13 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       return npc !== undefined && w.view.dst.look === npc.position;
     },
+    async lookAt(input, lookAtOpts = {}) {
+      if (typeof input === 'string') {// npcKey
+        input = w.n[input].position;
+        lookAtOpts.height = helper.defaults.height;
+      }
+      await w.view.lookAt(toV3(input), lookAtOpts);
+    },
     npcCanAccess(npcKey, gdKey) {
       if (state.doorToAccess[gdKey]?.size) {// check special access
         for (const regexDef of state.doorToAccess[gdKey]) {
@@ -710,7 +709,8 @@ export default function useHandleEvents(w) {
       const { offMesh } = e;
       const door = w.d[offMesh.gdKey];
       
-      if (// try open closed door
+      // cancel if cannot open door
+      if (
         door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
@@ -803,7 +803,9 @@ export default function useHandleEvents(w) {
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
 
-      w.door.toggleDoorRaw(door, { open: true, access: true }); // force open door (open longer)
+      // force open door (open longer)
+      w.door.toggleDoorRaw(door, { open: true, access: true });
+
       if (door.hull === true) {// sync other door
         const adj = w.gmGraph.getAdjacentRoomCtxt(door.gmId, door.doorId);
         adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
@@ -1074,7 +1076,6 @@ export default function useHandleEvents(w) {
  * @property {(npc: NPC.NPC, improved: NPC.ImprovedOffMeshSrcDst) => void} applyImprovedOffMesh
  * @property {(door: Geomorph.DoorState) => boolean} canCloseDoor
  * @property {(npc: NPC.NPC) => void} clearOffMesh
- * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
  * offMesh early-exit-test i.e. test for some other npc which:
@@ -1092,8 +1093,10 @@ export default function useHandleEvents(w) {
  * @property {(e: NPC.Event) => void} handleEvents
  * @property {(e: Extract<NPC.Event, { npcKey?: string }>) => void} handleNpcEvents
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => NPC.ImprovedOffMeshSrcDst} improveOffMeshSrcDst
+ * Compute improved offMeshConnection src/dst, leading to a more natural walking angle.
  * @property {(npcKey: string) => boolean} isFollowingNpc
  * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
+ * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(npc: NPC.NPC, otherNpcKey: string) => void} onBlockedDoorway
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
@@ -1101,12 +1104,11 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
- * Improve offMeshConnection by varying src/dst, leading to a more natural walking angle.
  * @property {(...npcKeys: string[]) => void} removeFromSensors
- * @property {() => void} showDefaultContextMenu
- * Default context menu, unless clicked on an npc
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
  * @property {(opts: { npcKey: string, words?: string }) => void} say
+ * @property {() => void} showDefaultContextMenu
+ * Default context menu, unless clicked on an npc
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
  * @property {(offMesh: NPC.OffMeshState, src: Geom.VectJson, dst: Geom.VectJson, radius?: number) => boolean} testOffMeshDisjoint
  * Are these disjoint?
