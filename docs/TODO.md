@@ -125,12 +125,11 @@
 - ❌ in recastnavigation try two trigger radii
 - ✅ continuous method from offMesh initial seg to another target
 
-- 🚧 clean up new approach to enter offMeshConnection
+- ✅ clean up new approach to enter offMeshConnection
   - ✅ if not close to adjusted.src then "continuously" transition back to non-offMesh state
     - `requestMoveTarget(adjusted.src)`
   - ✅ re-trigger offMeshConnection when get "close enough"
   - ✅ replace turnBeforeMove with null target and pendingTargets
-  - ...
 
 - core.js functions
   - e.g. `cast from:$x to:$y`

@@ -1,6 +1,5 @@
 import React from "react";
 import * as THREE from "three";
-import { deltaAngle } from "maath/misc";
 
 import { Vect, Rect } from "../geom";
 import { defaultDoorCloseMs, wallHeight } from "../service/const";
@@ -31,7 +30,6 @@ export default function useHandleEvents(w) {
     applyImprovedOffMesh(npc, improved) {
       const npcPoint = npc.point;
       const { src: newSrc, dst: newDst } = improved;
-
 
       // 🤔 could use last known speed and speed up via tScale
       const speed = npc.api.getMaxSpeed();
@@ -634,7 +632,8 @@ export default function useHandleEvents(w) {
         };
       }
 
-      // 🚧 ok to remember this in `npc.s.improvedOffMesh`?
+      // 🚧 issue with `slowDown` caching in npc.s.offMeshImprove
+      
       // we slow down if final target is close to doorway exit,
       // in which case, we exit further away to avoid blocking the door
       const slowDown = (
@@ -705,7 +704,7 @@ export default function useHandleEvents(w) {
         return;
       }
     },
-    onEnterOffMeshConnection(e, npc) {// 🚧 clean
+    onEnterOffMeshConnection(e, npc) {
       const { offMesh } = e;
       const door = w.d[offMesh.gdKey];
       
@@ -719,49 +718,51 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      // reuse improvement from (a) shouldTurnFirst, or (b) start too far away
+      // improve offMesh by aligning src/dst to agent
+      // 🔔 reuse if prev turn-on-spot or start-too-far-away
       const improved = npc.s.offMeshImprove ?? state.improveOffMeshSrcDst(npc, offMesh);
       npc.s.offMeshImprove = null;
 
-      // 🚧 clean
-      const doorEntryDist = npc.point.distanceTo(improved.src);
-      const towards = doorEntryDist > 0.5 ? improved.src : improved.dst;
-      const deltaAng = deltaAngle(npc.api.getAngle(), npc.api.getLookAngle(towards));
-      const shouldTurnFirst = (
-        Math.abs(deltaAng) > Math.PI/2 + 0.2
-        && doorEntryDist <= 0.3 // avoid early pause e.g. 180deg round corner
+      const entryDist = npc.point.distanceTo(improved.src);
+      const target = /** @type {Geom.Vect} */ (npc.s.target);
+      const turnOnSpot = (
+        entryDist <= 0.3 // avoid early turn-on-spot e.g. 180° round corner
+        && Math.abs(npc.api.getAngleTo(improved.dst)) > Math.PI/2 + 0.2
       );
 
-      if (shouldTurnFirst) {
-        const target = /** @type {Geom.Vect} */ (npc.s.target);
-        npc.pendingTargets.unshift(target);
+      if (turnOnSpot === true) {
+        npc.api.adjustTargets(
+          null, // npc.s.target := null
+          target,
+          ...npc.pendingTargets,
+        );
 
         npc.api.exitOffMeshFor(npc.position, false);
         npc.s.lookSecs = 0.2;
-        npc.s.lookAngleDst = npc.api.getLookAngle(towards);
-        npc.s.target = null;
-
+        npc.s.lookAngleDst = npc.api.getLookAngle(improved.dst);
         npc.s.offMeshImprove = improved;
         return;
       } 
       
-      if (npc.point.distanceTo(improved.src) > 0.2) {
+      if (entryDist > 0.2) {// too far away
+        npc.api.adjustTargets(
+          Vect.from(improved.src),
+          target,
+          ...npc.pendingTargets,
+        );
         
-        const target = /** @type {Geom.Vect} */ (npc.s.target);
-        npc.pendingTargets.unshift(target);
         npc.api.exitOffMeshFor(improved.src);
-        npc.s.target = Vect.from(improved.src);
-
         npc.s.offMeshImprove = improved;
         return;
       }
 
-      // 🔔 avoid yank via early-exit
       const blockingNpcKey = (
+        // prevent pass-through other around door corner
         state.findOtherBlockingNearDoor(npc, offMesh)
+        // avoid yank via early-exit
         || state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
-        // state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
       );
+
       if (blockingNpcKey !== null) {
         const lookAngleDst = npc.api.getLookAngle(improved.src);
         npc.api.stopMoving({
@@ -770,7 +771,7 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      // enter improved dtCrowdAgentAnimation
+      // 🔔 enter agent-aligned dtCrowdAgentAnimation
       state.applyImprovedOffMesh(npc, improved);
 
       /**

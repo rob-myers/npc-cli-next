@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 import { damp, dampAngle } from "maath/easing";
+import { deltaAngle } from "maath/misc";
 import braces from "braces";
 
 import { Rect, Vect } from '../geom';
@@ -226,19 +227,13 @@ export class NpcApi {
   }
 
   /**
-   * Adjust ongoing move... 🚧 currently unused
+   * - Adjust `npc.s.target` and `npc.pendingTargets`.
+   * - One should also `requestMoveTarget` if current target changed.
    * @param {null | NPC.GroundPoint} target
    * @param {NPC.GroundPoint[]} pendingTargets
    */
-  adjustMove(target, ...pendingTargets) {
-    if (target === null) {
-      this.s.target = null;
-    } else {
-      this.s.target = Vect.from(helper.toXZ(target));
-      const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-      agent.requestMoveTarget(toV3(target));
-    }
-    
+  adjustTargets(target, ...pendingTargets) {
+    this.s.target = target === null ? null : Vect.from(helper.toXZ(target));
     pendingTargets = pendingTargets.map(helper.toXZ);
     this.pendingTargets = pendingTargets.map(Vect.from);
   }
@@ -563,6 +558,11 @@ export class NpcApi {
   getAngle() {
     /* return geom.radRange(Math.PI - this.base.rotation.y); */
     return Math.PI - this.base.rotation.y;
+  }
+
+  /** @param {NPC.GroundPoint} point */
+  getAngleTo(point) {
+    return deltaAngle(this.getAngle(), this.getLookAngle(point));
   }
 
   /**
