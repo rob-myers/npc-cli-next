@@ -307,7 +307,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
 export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { array: { to: true } })) => {
   const npc = w.npc.getNpc(opts.npcKey);
   let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
-  const arriveAnim = opts['...'] === true ? false : undefined;
+  const arriveAnim = opts['...'] === true ? false : opts.arriveAnim;
   let abortAwaitResume = /** @param {*} e */ (e) => {};
 
   const handlers = api.handleStatus({
