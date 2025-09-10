@@ -32,7 +32,7 @@
   }
 
   get length() {
-    return Math.sqrt(this.x * this.x + this.y * this.y);
+    return Math.hypot(this.x, this.y);
   }
 
   get lengthSquared() {
@@ -88,7 +88,7 @@
    * @param {Geom.VectJson} q 
    */
   static distanceBetween(p, q) {
-    return Math.sqrt((q.x - p.x) ** 2 + (q.y - p.y) ** 2);
+    return Math.hypot(q.x - p.x, q.y - p.y);
   }
   
   /** @param {Geom.VectJson} p */

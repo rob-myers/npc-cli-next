@@ -493,7 +493,7 @@ class geomServiceClass {
 
     const dx = x - xx;
     const dy = y - yy;
-    const dst = Math.sqrt(dx * dx + dy * dy);
+    const dst = Math.hypot(dx, dy);
 
     return { dst, x: xx, y: yy };
   }

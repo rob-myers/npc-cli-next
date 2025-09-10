@@ -306,7 +306,7 @@ export default function Decor(props) {
         
         if (d.meta.tilt === true) {
           const [a, b] = d.transform
-          const vecLen = Math.sqrt(a ** 2 + b ** 2); // remove scale to get local x unit vector
+          const vecLen = Math.hypot(a, b); // remove scale to get local x unit vector
           const rotMat = getRotAxisMatrix(a / vecLen, 0, b / vecLen, 90);
           setRotMatrixAboutPoint(rotMat, d.center.x, d.meta.y, d.center.y);
           mat4.premultiply(rotMat); // 🔔 premultiply means post-rotate
