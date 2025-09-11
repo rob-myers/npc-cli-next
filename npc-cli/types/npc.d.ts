@@ -488,6 +488,7 @@ declare namespace NPC {
 
   interface RaycastResult {
     hit: null | Geom.VectJson;
+    hitDoor: null | Geomorph.GmDoorKey;
     doors: Geomorph.GmDoorKey[];
     /** Alternated with `gdKeys` i.e. `firstGrKey -> firstGdKey ->  ... -> lastGrKey` */
     rooms: Geomorph.GmRoomKey[];

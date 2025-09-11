@@ -212,6 +212,7 @@ export default function Npcs(props) {
       let gmId = srcGrId.gmId;
       let roomId = srcGrId.roomId;
       let hit = /** @type {null | Geom.VectJson} */ (null);
+      let hitDoor = /** @type {null | Geomorph.GmDoorKey} */ (null);
 
       const raycastUid = uid(); // request(s) uid
       let maxAdjGeomorphs = 2;  // detect ray between at most 2 geomorphs
@@ -233,7 +234,10 @@ export default function Npcs(props) {
             const otherRoomId = door.door.roomIds.find(x => x !== roomId) ?? null;
             otherRoomId !== null && grIds.push(helper.getGmRoomId(gmId, otherRoomId));
           } else {
+            // `null` if ray intersects door rect but not door seg (ends in doorway)
             hit = w.door.computeRayDoorIntersect(src, dst, gdId.gdKey) ?? hit;
+            if (hit !== null) hitDoor = gdId.gdKey;
+            break;
           }
         }
 
@@ -247,6 +251,7 @@ export default function Npcs(props) {
           break;
         }
 
+        // check open hull door intersect
         hit = w.door.computeRayDoorIntersect(src, dst, lastGdId.gdKey);
         const adjCtxt = w.gmGraph.getAdjacentRoomCtxt(gmId, lastGdId.doorId);
 
@@ -265,6 +270,7 @@ export default function Npcs(props) {
 
       return {
         hit,
+        hitDoor,
         doors: gdIds.map(({ gdKey }) => gdKey),
         rooms: grIds.map(({ grKey }) => grKey),
       };
