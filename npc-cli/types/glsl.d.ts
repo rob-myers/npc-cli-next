@@ -49,6 +49,7 @@ export interface HumanZeroMaterialProps {
   aux: import('three').DataArrayTexture;
   globalAux: import('three').DataArrayTexture;
 
+  dark: boolean;
   diffuse: Vector3Input;
   label: import('three').DataArrayTexture;
   labelY: number;

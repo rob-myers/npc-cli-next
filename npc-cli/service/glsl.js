@@ -104,6 +104,7 @@ const humanZeroShader = {
   uniform int labelTriIds[2];
   uniform vec4 labelUvRect4;
 
+  uniform bool dark;
   uniform vec3 diffuse;
   uniform float opacity;
   uniform bool objectPick;
@@ -176,6 +177,10 @@ const humanZeroShader = {
 
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
 
+      if (dark && vType == 2) {// invert breath/shadow when dark
+        texel.xyz = 1.0 - texel.xyz;
+      }
+
     }
 
     gl_FragColor = texel * tint;
@@ -196,6 +201,7 @@ const humanZeroShader = {
 const humanZeroMaterialDefaultProps = {
   atlas: emptyDataArrayTexture,
   aux: emptyDataArrayTexture,
+  dark: false,
   globalAux: emptyDataArrayTexture,
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
   label: emptyDataArrayTexture,

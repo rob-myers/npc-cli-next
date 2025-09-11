@@ -44,7 +44,7 @@ export default function WorldMenu(props) {
       state.onChangeBrightness(toEvent(state.brightness))
       state.onChangeBgScale(toEvent(state.bgScale));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
-      state.onChangeInvertColor(toEvent(state.dark));
+      state.onChangeDark(toEvent(state.dark));
     },
     measure(msg) {
       if (state.showDebug === false) {
@@ -76,18 +76,19 @@ export default function WorldMenu(props) {
         w.view.onPausedTick();
       }
     },
-    async onChangeInvertColor(e) {
+    async onChangeDark(e) {
       state.dark = e.currentTarget.checked;
       await Promise.all([// redraw
         w.floor.setDark(state.dark),
         w.ceil.setDark(state.dark),
       ]);
+      w.npc.dark = state.dark;
+      w.npc.forceUpdate();
       w.update()
     },
     onChangeBgScale(e) {
       state.bgScale = Number(e.currentTarget.value); // [1..20]
       const scale = state.bgScale / 20;
-      // 🚧 hard-coded
       w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${255 * scale}, ${255 * scale}, ${255 * scale})`);
     },
     onChangeXRayEnabled(e) {
@@ -207,7 +208,7 @@ export default function WorldMenu(props) {
               dark
               <input
                 type="checkbox"
-                onChange={state.onChangeInvertColor}
+                onChange={state.onChangeDark}
                 checked={state.dark}
               />
             </label>
@@ -440,7 +441,7 @@ const pausedControlsCss = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBgScale
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeDark
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRayEnabled
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink

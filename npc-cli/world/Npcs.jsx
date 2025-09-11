@@ -26,6 +26,7 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
+    dark: false,
     doToNpc: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
@@ -768,10 +769,11 @@ export default function Npcs(props) {
 
 /**
  * @typedef State
+ * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
+ * @property {boolean} dark
  * @property {Record<`${number},${number},${number}`, string>} doToNpc
  * Do point to current npc or undefined.
  * - `${x},${y},${z}` -> npcKey
- * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
@@ -856,7 +858,7 @@ export default function Npcs(props) {
  * @param {NPCProps} props 
  */
 function NPC({ npc }) {
-  const { bones, mesh } = npc.m;
+  const { m: { bones, mesh }, w } = npc;
 
   return (
     <group
@@ -891,12 +893,13 @@ function NPC({ npc }) {
       
         <humanZeroMaterial
           key={HumanZeroMaterial.key}
-          atlas={npc.w.texSkin.tex}
-          aux={npc.w.texNpcAux.tex}
-          globalAux={npc.w.texAux.tex}
+          atlas={w.texSkin.tex}
+          aux={w.texNpcAux.tex}
+          globalAux={w.texAux.tex}
           
-          diffuse={[1, 1, 1]}
-          label={npc.w.texNpcLabel.tex}
+          dark={w.npc.dark}
+          diffuse={npcDiffuse}
+          label={w.texNpcLabel.tex}
           labelY={npc.s.labelY}
           opacity={npc.s.opacity}
           transparent
@@ -925,4 +928,4 @@ const MemoizedNPC = React.memo(NPC);
 useGLTF.preload(Object.values(npcClassToMeta).map(x => x.modelUrl));
 
 const smallHalfExtent = 0.001;
-const tmpVect1 = new Vect();
+const npcDiffuse = /** @type {[number, number, number]} */ ([1, 1, 1]);
