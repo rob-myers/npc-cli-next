@@ -78,12 +78,12 @@ export default function WorldMenu(props) {
     },
     async onChangeDark(e) {
       state.dark = e.currentTarget.checked;
+      w.npc.dark = state.dark;
+      w.npc.forceUpdate();
       await Promise.all([// redraw
         w.floor.setDark(state.dark),
         w.ceil.setDark(state.dark),
       ]);
-      w.npc.dark = state.dark;
-      w.npc.forceUpdate();
       w.update()
     },
     onChangeBgScale(e) {
