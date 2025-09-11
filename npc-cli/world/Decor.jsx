@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 
 import { Poly } from "../geom/poly";
-import { decorGridSize, decorIconRadius, decorIconRadiusOutset, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
+import { decorGridSize, decorIconRadius, decorIconRadiusOutset, defaultDecorQueryRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
 import { isDevelopment, pause, removeDups, testNever, toPrecision, warn } from "../service/generic";
 import { geom, tmpMat1, tmpRect1, tmpVec1 } from "../service/geom";
 import { getCanvas } from "../service/dom";
@@ -452,6 +452,11 @@ export default function Decor(props) {
       }
       quadInst.computeBoundingSphere();
     },
+    query(center, radius = defaultDecorQueryRadius, grKey) {
+      center = helper.toXZ(center);
+      const rect = { x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2 };
+      return queryDecorGridRect(state.byGrid, rect, grKey);
+    },
     queryRect(rect, grKey) {
       return queryDecorGridRect(state.byGrid, rect, grKey);
     },
@@ -814,7 +819,8 @@ export default function Decor(props) {
  * @property {() => void} positionInstances
  * @property {() => void} positionLabels
  * @property {() => void} positionQuads
- * @property {(rect: Geom.RectJson, grKey: Geomorph.GmRoomKey) => Geomorph.Decor[]} queryRect
+ * @property {(center: NPC.GroundPoint, radius?: number, grKey?: Geomorph.GmRoomKey) => Geomorph.Decor[]} query
+ * @property {(rect: Geom.RectJson, grKey?: Geomorph.GmRoomKey) => Geomorph.Decor[]} queryRect
  * @property {(groupName: string, ...decorKeys: string[]) => void} rememberInGroup
  * @property {(...decorKeys: string[]) => void} remove
  * @property {() => void} removeAllInstantiated

@@ -165,6 +165,8 @@ export const colliderHeight = 1.8;
 /** In meters, or equivalently 2 grid squares */
 export const decorGridSize = geomorphGridMeters * 2;
 
+export const defaultDecorQueryRadius = 0.5;
+
 export const decorIconRadius = 5 * sguToWorldScale;
 
 export const decorIconRadiusOutset = 2 * sguToWorldScale;
