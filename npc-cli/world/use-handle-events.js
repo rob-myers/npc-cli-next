@@ -792,9 +792,10 @@ export default function useHandleEvents(w) {
         initPos: npc.point.json,
         initUnit: tmpVect1.set(improved.src.x - npc.point.x, improved.src.y - npc.point.y ).normalize().json,
         mainUnit: tmpVect1.set(improved.dst.x - improved.src.x, improved.dst.y - improved.src.y).normalize().json,
-        nextUnit: nextUnitNull === true ? null : tmpVect1.set(improved.nextCorner.x - improved.dst.x, improved.nextCorner.y - improved.dst.y).normalize().json,
+        nextUnit: nextUnitNull === true ? null : tmpVect1.copy(improved.nextCorner).sub(improved.dst).normalize().json,
         tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
 
+        // 🚧 clean
         tScale: 1,
         tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0
           ? door.hull === true ? 0.25 : 0.1

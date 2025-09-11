@@ -752,7 +752,7 @@ export class NpcApi {
    */
   handlePreOffMeshCollision(agent, offMesh) {
     const nneis  = agent.raw.nneis;
-    /** @type {dtCrowdNeighbour} */ let nei;
+    /** @type {NPC.CrowdNeighbour} */ let nei;
     // 🔔 if too small, can be jerky on collide after offMeshConnection begins
     const closeDist = preOffMeshCloseDist * (this.s.run === true ? 2 : 1);
 
@@ -1336,7 +1336,9 @@ export class NpcApi {
    * @param {NPC.CrowdAgent} agent 
    */
   onTickDetectStuck(deltaSecs, agent) {
-    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
+    // 🔔 avoid "snap" on transition to maxSpeed onenter offMeshConnection
+    const pendingOffMesh = this.s.offMeshImprove !== null;
+    const smallDist = (pendingOffMesh ? 0.75 : 0.3) * agent.raw.desiredSpeed * deltaSecs;
 
     if (
       Math.abs(this.delta.x) > smallDist
@@ -1347,8 +1349,7 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    // if (elapsedTime - this.s.slowBegin < 0.85) {
-    if (elapsedTime - this.s.slowBegin < 0.5) {
+    if (elapsedTime - this.s.slowBegin < (pendingOffMesh ? 0.1 : 0.5)) {
       return; // too short
     }
 
@@ -1678,10 +1679,6 @@ export const crowdAgentParams = {
  * @typedef {ReturnType<
  *  import('@recast-navigation/core').Crowd['raw']['getAgentAnimation']
  * >} dtCrowdAgentAnimation
- */
-
-/**
- * @typedef {import('@recast-navigation/wasm').default.dtCrowdNeighbour} dtCrowdNeighbour
  */
 
 const tmpVect1 = new Vect();

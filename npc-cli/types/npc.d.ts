@@ -241,6 +241,8 @@ declare namespace NPC {
   type FloorOffMeshEdges = {[gmKey in Key.Geomorph]: { src: Geom.VectJson; dst: Geom.VectJson; }[]};
 
   type CrowdAgent = import("@recast-navigation/core").CrowdAgent;
+  
+  type CrowdNeighbour = import('@recast-navigation/wasm').default.dtCrowdNeighbour;
 
   type SrcToOffMeshLookup = {
     [xz2DString: `${number},${number}`]: OffMeshLookupValue;
