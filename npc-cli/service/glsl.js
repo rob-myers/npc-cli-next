@@ -178,7 +178,7 @@ const humanZeroShader = {
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
 
       if (dark && vType == 2) {// invert breath/shadow when dark
-        texel.xyz = 1.0 - texel.xyz;
+        texel.xyz = vec3(0.8, 0.8, 0.7);
       }
 
     }
