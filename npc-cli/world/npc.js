@@ -1337,8 +1337,7 @@ export class NpcApi {
    */
   onTickDetectStuck(deltaSecs, agent) {
     // 🔔 avoid "snap" onenter offMeshConnection at maxSpeed 
-    const pendingOffMesh = this.s.offMeshImprove !== null && (agent.raw.neis.dist < this.getRadius() || this.s.run === true);
-    const smallDist = (pendingOffMesh === true ? 0.75 : 0.3) * agent.raw.desiredSpeed * deltaSecs;
+    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
 
     if (
       Math.abs(this.delta.x) > smallDist
@@ -1349,7 +1348,7 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    const longEnoughSecs = pendingOffMesh === true ? 0.15 : 0.5;
+    const longEnoughSecs = 0.3;
 
     if (elapsedTime - this.s.slowBegin < longEnoughSecs) {
       return; // too short
