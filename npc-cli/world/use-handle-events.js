@@ -571,6 +571,14 @@ export default function useHandleEvents(w) {
           }
           break;
         }
+        case "stopped-moving": {
+          if (state.npcToDoors[e.npcKey]?.nearby.size > 0) {
+            // 🔔 try mitigate jerk onenter offMesh at maxSpeed
+            const npc = w.n[e.npcKey];
+            npc.agent?.raw.params.set_separationWeight(0.75);
+          }
+          break;
+        }
       }
     },
     improveOffMeshSrcDst(npc, offMesh) {
