@@ -186,7 +186,8 @@ const humanZeroShader = {
     gl_FragColor = texel * tint;
     #include <logdepthbuf_fragment>
 
-    if (gl_FragColor.a < 0.01) {
+    if (gl_FragColor.a < 0.2) {
+      // 🔔 fix ordering relative to doors e.g. robot-1 head-overlay
       discard; // comment out to debug label dimensions
     }
 
