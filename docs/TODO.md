@@ -79,6 +79,9 @@
 - ✅ fix stuck detection when pendingOffMesh
   - i.e. only force stop when another is being pushed into
 
+- ✅ try fix "separation jolt" onenter offMesh
+  - seems sufficient to recompute improved offMesh
+
 - `ray from:$x to:$y`
   - `ray as:bool from:$x to:$y`
   - `ray as:point from:$x to:$y`

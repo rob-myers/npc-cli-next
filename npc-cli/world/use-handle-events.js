@@ -727,9 +727,8 @@ export default function useHandleEvents(w) {
       }
 
       // improve offMesh by aligning src/dst to agent
-      // 🔔 reuse if prev turn-on-spot or start-too-far-away
-      const improved = npc.s.offMeshImprove ?? state.improveOffMeshSrcDst(npc, offMesh);
-      npc.s.offMeshImprove = null;
+      // 🔔 we do not reuse on turn-on-spot or start-too-far-away, to avoid yank when other blocks
+      const improved = state.improveOffMeshSrcDst(npc, offMesh);
 
       const entryDist = npc.point.distanceTo(improved.src);
       const target = /** @type {Geom.Vect} */ (npc.s.target);
@@ -738,6 +737,10 @@ export default function useHandleEvents(w) {
         && Math.abs(npc.api.getAngleTo(improved.dst)) > Math.PI/2 + 0.2
       );
 
+      /**
+       * Once an offMeshConnection is detected and improved we needn't follow it
+       * immediately e.g. we would lose agent separation whilst moving along 1st segment.
+       */
       if (turnOnSpot === true) {
         npc.api.adjustTargets(
           null, // npc.s.target := null
@@ -748,10 +751,8 @@ export default function useHandleEvents(w) {
         npc.api.exitOffMeshFor(npc.position, false);
         npc.s.lookSecs = 0.2;
         npc.s.lookAngleDst = npc.api.getLookAngle(improved.dst);
-        npc.s.offMeshImprove = improved;
         return;
       } 
-      
       if (entryDist > 0.2) {// too far away
         npc.api.adjustTargets(
           Vect.from(improved.src),
@@ -760,7 +761,6 @@ export default function useHandleEvents(w) {
         );
         
         npc.api.exitOffMeshFor(improved.src);
-        npc.s.offMeshImprove = improved;
         return;
       }
 
