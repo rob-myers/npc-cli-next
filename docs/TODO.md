@@ -74,6 +74,20 @@
 
 ### World
 
+- ✅ `w.npc.raycast` provides `hitDoor: null | Geomorph.GmDoorKey`
+
+- ✅ fix stuck detection when pendingOffMesh
+  - i.e. only force stop when another is being pushed into
+
+- `ray from:$x to:$y`
+  - `ray as:bool from:$x to:$y`
+  - `ray as:point from:$x to:$y`
+- `near to:$p`
+  - `near to:rob in:2 meta`
+  - `near to:rob in:room`
+
+- collapse npc.base somehow?
+
 - 🔔 overall strategy:
   - we don't expect arbitrary targets for multiple npcs to work
   - instead, we'll carefully direct motion so that it _does_ work

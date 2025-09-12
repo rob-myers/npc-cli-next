@@ -1336,9 +1336,9 @@ export class NpcApi {
    * @param {NPC.CrowdAgent} agent 
    */
   onTickDetectStuck(deltaSecs, agent) {
-    // 🔔 avoid "snap" on transition to maxSpeed onenter offMeshConnection
-    const pendingOffMesh = this.s.offMeshImprove !== null;
-    const smallDist = (pendingOffMesh ? 0.75 : 0.3) * agent.raw.desiredSpeed * deltaSecs;
+    // 🔔 avoid "snap" onenter offMeshConnection at maxSpeed 
+    const pendingOffMesh = this.s.offMeshImprove !== null && (agent.raw.neis.dist < this.getRadius() || this.s.run === true);
+    const smallDist = (pendingOffMesh === true ? 0.75 : 0.3) * agent.raw.desiredSpeed * deltaSecs;
 
     if (
       Math.abs(this.delta.x) > smallDist
@@ -1349,7 +1349,9 @@ export class NpcApi {
     
     const { elapsedTime } = this.w.timer;
     this.s.slowBegin ??= elapsedTime;
-    if (elapsedTime - this.s.slowBegin < (pendingOffMesh ? 0.1 : 0.5)) {
+    const longEnoughSecs = pendingOffMesh === true ? 0.15 : 0.5;
+
+    if (elapsedTime - this.s.slowBegin < longEnoughSecs) {
       return; // too short
     }
 
