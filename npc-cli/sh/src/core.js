@@ -245,6 +245,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
 }
 
 /**
+ * Make npc _do_ something (`do` is a shell keyword)
  * ```sh
  * make npc:rob do:$( click 1 )
  * ```
@@ -341,7 +342,6 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
   }
 }
 
-
 /**
  * This is `util.narrate` but also logs speech.
  * @param {NPC.RunArg} ct
@@ -357,6 +357,32 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
   });
 }
 
+/**
+ * ```sh
+ * ray from:$( click 1 ) to:$( click 1 )
+ * ray from:kate to:will
+ * ray test from:kate to:will
+ * ray point from:kate to:will
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {NPC.GroundPoint | string} opts.src
+ * @param {NPC.GroundPoint | string} opts.dst
+ * @param {boolean} [opts.test] Output boolean.
+ * @param {boolean} [opts.point] Output point.
+ */
+export async function ray({ api, args, w }, opts = api.jsArg(args, { from: 'src', to: 'dst' })) {
+  const src = typeof opts.src === 'string' ? w.npc.getNpc(opts.src).point : opts.src;
+  const dst = typeof opts.dst === 'string' ? w.npc.getNpc(opts.dst).point : opts.dst;
+  const result = await w.npc.raycast(src, dst);
+  if (opts.test === true) {
+    return result.hit === null;
+  } else if (opts.point === true) {
+    return result.hit;
+  } else {
+    return result;
+  }
+}
 
 /**
  * ```sh

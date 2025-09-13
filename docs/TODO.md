@@ -82,10 +82,11 @@
 - ✅ try fix "separation jolt" onenter offMesh
   - seems sufficient to recompute improved offMesh
 
-- `ray from:$x to:$y`
-  - `ray as:bool from:$x to:$y`
-  - `ray as:point from:$x to:$y`
-- `near to:$p`
+- ✅ `ray from:$x to:$y`
+  - `ray test from:$x to:$y`
+  - `ray point from:$x to:$y`
+
+- 🚧 `near to:$p`
   - `near to:rob in:2 meta`
   - `near to:rob in:room`
 

@@ -952,7 +952,7 @@ class geomServiceClass {
    * @param {Geom.VectJson} vectJson 
    * @param {number} precision 
    */
-  precision(vectJson, precision = 4) {
+  precision2d(vectJson, precision = 4) {
     vectJson.x = Number(vectJson.x.toFixed(precision));
     vectJson.y = Number(vectJson.y.toFixed(precision));
     return vectJson;

@@ -155,7 +155,7 @@ export default function Doors(props) {
         door.src,
         door.dst,
       );
-      return lambda === null ? null : geom.precision({
+      return lambda === null ? null : geom.precision2d({
         x: src.x + lambda * (dst.x - src.x),
         y: src.y + lambda * (dst.y - src.y),
       }, 2);

@@ -270,7 +270,7 @@ export default function Npcs(props) {
       }
 
       return {
-        hit,
+        hit: hit === null ? null : geom.precision2d(hit, 2),
         hitDoor,
         doors: gdIds.map(({ gdKey }) => gdKey),
         rooms: grIds.map(({ grKey }) => grKey),
