@@ -60,18 +60,20 @@ export async function* filter(ct) {
 }
 
 /**
- * Combines map (singleton), filter (empty array) and split (of arrays)
+ * - Combines map (singleton), filter (empty array) and split (of arrays)
+ * - Supports chunks
+ * 
  * ```sh
- * seq 10 | flatMap 'x => [...Array(x)].map((_, i) => i)'
- * { range 10; range 20; } | flatMap 'x => x'
+ * seq 5 | flatMap 'x => [...Array(x)].map((_, i) => i)'
+ * { range 5; range 10; } | flatMap 'x => x'
+ * expr '{ items: [1, 2, 3] }' | flatMap items
  * ```
- * - ℹ️ supports chunks
  * @param {NPC.RunArg} ct
  */
 export async function* flatMap(ct) {
   let { api, args, datum } = ct;
   let result;
-  const func = Function(`return ${args[0]}`)();
+  const func = api.generateSelector(api.parseJsArg(args[0]));
   while ((datum = await api.read(true)) !== api.eof) {
     if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.flatMap((x) => func(x, ct)));
     else if (Array.isArray((result = func(datum, ct)))) yield* result;
