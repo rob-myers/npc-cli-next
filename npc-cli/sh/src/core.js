@@ -358,25 +358,34 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
 }
 
 /**
+ * Default radius is 0.5 meters.
+ * ```sh
+ * nearby to:$( click 1 )
+ * nearby to:$( click 1 ) within:1
+ * nearby meta to:rob
+ * nearby meta to:$( click 1 ) where:bed
+ * nearby meta to:$( click 1 ) where:'m => m.bed'
+ * ```
  * 
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {NPC.GroundPoint | string} opts.to Must be inside a room.
  * @param {number} [opts.within]
  * @param {boolean} [opts.meta]
+ * @param {string | ((d: any) => any)} [opts.where]
  */
-export function near({ api, args, w }, opts = api.jsArg(args, {})) {
+export function nearby({ api, args, w }, opts = api.jsArg(args, {})) {
   const to = typeof opts.to === 'string' ? w.npc.getNpc(opts.to).point : opts.to;
   const gmRoomId = w.npc.findRoomContaining(to);
   if (gmRoomId === null) {
     return [];
   }
-  const result = w.decor.query(to, opts.within ?? 0.5, gmRoomId.grKey);
-  if (opts.meta === true) {
-    return result.map(x => x.meta);
-  } else {
-    return result;
-  }
+  
+  const decors = w.decor.query(to, opts.within ?? 0.5, gmRoomId.grKey);
+  const id = /** @param {any} x */ (x) => x;
+  const selector = opts.where !== undefined ? api.generateSelector(opts.where) : id;
+
+  return decors.map(opts.meta === true ? x => x.meta : id).filter(selector);
 }
 
 /**

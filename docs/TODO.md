@@ -4,11 +4,11 @@
 
 ### Site
 
-- start with behaviour/story i.e. go to bed
-  - rather than abstract spawn, move etc.
-  - more interactive
-    - e.g. detect when npc near bed via `w.decor.queryRect`
-    - e.g. detect when npc can see other npc via raycast (WIP)
+- 🚧 towards start with behaviour/story
+  - ℹ️ rather than abstract spawn, move etc.
+  - ℹ️ more interactive
+  - detect when npc near bed via `nearby`
+  - detect when npc can see other via `ray`
 
 - mobile profiles will include progression via logger ui links
 
@@ -86,9 +86,9 @@
   - `ray test from:$x to:$y`
   - `ray point from:$x to:$y`
 
-- ✅ `near to:$p`
+- ✅ `nearby to:$p`
   - ✅ restricted to room containing `to`
-  - ✅ `near meta to:rob within:2`
+  - ✅ `nearby meta to:rob within:2`
 
 - collapse npc.base somehow?
 
