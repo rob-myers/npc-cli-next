@@ -740,23 +740,10 @@ export default function useHandleEvents(w) {
         || angleTooLarge === true
       ) {
 
-        let newTarget = /** @type {null | Geom.VectJson} */ (null);
-        let pendingTargets = /** @type {Geom.VectJson[]} */ ([]);
-
-        if (entryTooFar === true) {
-          if (angleTooLarge === true) {
-            newTarget = null; // turn on spot
-            pendingTargets = [improved.src, target, ...npc.pendingTargets];
-          } else {
-            newTarget = improved.src;
-            pendingTargets = [target, ...npc.pendingTargets];
-          }
-        } else {// only angleTooLarge true (we're close to entry)
-          newTarget = null;
-          pendingTargets = [target, ...npc.pendingTargets];
-        }
-
-        npc.api.adjustTargets(newTarget, ...pendingTargets);
+        // know either !angleTooLarge or entryTooFar
+        // 🔔 if entryTooFar && angleTooFar don't use improved.src yet
+        const newTarget = angleTooLarge === true ? null : improved.src;
+        npc.api.adjustTargets(newTarget, target, ...npc.pendingTargets);
 
         if (newTarget !== null) {
           npc.api.exitOffMeshFor(newTarget);
