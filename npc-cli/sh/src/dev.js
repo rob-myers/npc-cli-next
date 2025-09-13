@@ -203,14 +203,12 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  * @param {number} [opts.close] Max distance from navigable permitted
  */
-export function moveNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
-  const [npcKey] = ct.api.get([opts.npcKeyPath]);
-  const npc = ct.w.n[npcKey];
+export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  const npc = w.n[npcKey];
   if (npc) {
     npc.s.run = input.keys?.includes("shift") ?? false;
-    npc.api.move({ to: input, close: opts.close ?? 0.5 }).catch((e) => {
-      // console.log(e);
-    }); // can override
+    npc.api.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {});
   }
 }
 
