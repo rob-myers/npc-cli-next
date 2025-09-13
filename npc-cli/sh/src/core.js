@@ -378,14 +378,15 @@ export function nearby({ api, args, w }, opts = api.jsArg(args, {})) {
   const to = typeof opts.to === 'string' ? w.npc.getNpc(opts.to).point : opts.to;
   const gmRoomId = w.npc.findRoomContaining(to);
   if (gmRoomId === null) {
-    return [];
+    throw Error('opts.to must be inside a room');
   }
   
   const decors = w.decor.query(to, opts.within ?? 0.5, gmRoomId.grKey);
   const id = /** @param {any} x */ (x) => x;
   const selector = opts.where !== undefined ? api.generateSelector(opts.where) : id;
+  const items = decors.map(opts.meta === true ? x => x.meta : id).filter(selector);
 
-  return decors.map(opts.meta === true ? x => x.meta : id).filter(selector);
+  return { count: items.length, items };
 }
 
 /**
