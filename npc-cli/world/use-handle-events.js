@@ -575,7 +575,7 @@ export default function useHandleEvents(w) {
           if (state.npcToDoors[e.npcKey]?.nearby.size > 0) {
             // 🔔 try mitigate jerk onenter offMesh at maxSpeed
             const npc = w.n[e.npcKey];
-            npc.agent?.raw.params.set_separationWeight(0.75);
+            npc.agent?.raw.params.set_separationWeight(0.5);
           }
           break;
         }
@@ -727,40 +727,47 @@ export default function useHandleEvents(w) {
       }
 
       // improve offMesh by aligning src/dst to agent
-      // 🔔 we do not reuse on turn-on-spot or start-too-far-away, to avoid yank when other blocks
+      // 🔔 do not reuse from earlier else yank when other blocks
       const improved = state.improveOffMeshSrcDst(npc, offMesh);
+      const target = /** @type {Geom.Vect} */ (npc.s.target);
 
       const entryDist = npc.point.distanceTo(improved.src);
-      const target = /** @type {Geom.Vect} */ (npc.s.target);
-      const turnOnSpot = (
-        entryDist <= 0.3 // avoid early turn-on-spot e.g. 180° round corner
-        && Math.abs(npc.api.getAngleTo(improved.dst)) > Math.PI/2 + 0.2
-      );
+      const entryTooFar = entryDist > 0.2;
+      const angleTooLarge = Math.abs(npc.api.getAngleTo(improved.dst)) > Math.PI/2 + 0.2;
 
-      /**
-       * Once an offMeshConnection is detected and improved we needn't follow it
-       * immediately e.g. we would lose agent separation whilst moving along 1st segment.
-       */
-      if (turnOnSpot === true) {
-        npc.api.adjustTargets(
-          null, // npc.s.target := null
-          target,
-          ...npc.pendingTargets,
-        );
+      if (
+        entryTooFar === true
+        || angleTooLarge === true
+      ) {
 
-        npc.api.exitOffMeshFor(npc.position, false);
-        npc.s.lookSecs = 0.2;
-        npc.s.lookAngleDst = npc.api.getLookAngle(improved.dst);
-        return;
-      } 
-      if (entryDist > 0.2) {// too far away
-        npc.api.adjustTargets(
-          Vect.from(improved.src),
-          target,
-          ...npc.pendingTargets,
-        );
-        
-        npc.api.exitOffMeshFor(improved.src);
+        let newTarget = /** @type {null | Geom.VectJson} */ (null);
+        let pendingTargets = /** @type {Geom.VectJson[]} */ ([]);
+
+        if (entryTooFar === true) {
+          if (angleTooLarge === true) {
+            newTarget = null; // turn on spot
+            pendingTargets = [improved.src, target, ...npc.pendingTargets];
+          } else {
+            newTarget = improved.src;
+            pendingTargets = [target, ...npc.pendingTargets];
+          }
+        } else {// only angleTooLarge true (we're close to entry)
+          newTarget = null;
+          pendingTargets = [target, ...npc.pendingTargets];
+        }
+
+        npc.api.adjustTargets(newTarget, ...pendingTargets);
+
+        if (newTarget !== null) {
+          npc.api.exitOffMeshFor(newTarget);
+        } else {
+          npc.api.exitOffMeshFor(npc.position, false);
+          npc.s.lookSecs = 0.2;
+          npc.s.lookAngleDst = npc.api.getLookAngle(
+            entryTooFar === true ? improved.src : improved.dst
+          );
+        }
+
         return;
       }
 
