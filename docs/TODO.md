@@ -86,9 +86,9 @@
   - `ray test from:$x to:$y`
   - `ray point from:$x to:$y`
 
-- 🚧 `near to:$p`
-  - `near to:rob in:2 meta`
-  - `near to:rob in:room`
+- ✅ `near to:$p`
+  - ✅ restricted to room containing `to`
+  - ✅ `near meta to:rob within:2`
 
 - collapse npc.base somehow?
 

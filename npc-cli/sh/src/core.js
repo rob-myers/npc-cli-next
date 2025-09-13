@@ -302,7 +302,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
  *   move npc:rob to:$( clicks 2 ) ...
  * done
  * ```
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; '...'?: true } & NPC.MoveOpts} [opts]
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { array: { to: true } })) => {
@@ -355,6 +355,28 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
       opts.onSay?.({ voice, words });
     }
   });
+}
+
+/**
+ * 
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {NPC.GroundPoint | string} opts.to Must be inside a room.
+ * @param {number} [opts.within]
+ * @param {boolean} [opts.meta]
+ */
+export function near({ api, args, w }, opts = api.jsArg(args, {})) {
+  const to = typeof opts.to === 'string' ? w.npc.getNpc(opts.to).point : opts.to;
+  const gmRoomId = w.npc.findRoomContaining(to);
+  if (gmRoomId === null) {
+    return [];
+  }
+  const result = w.decor.query(to, opts.within ?? 0.5, gmRoomId.grKey);
+  if (opts.meta === true) {
+    return result.map(x => x.meta);
+  } else {
+    return result;
+  }
 }
 
 /**

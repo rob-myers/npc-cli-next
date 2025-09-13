@@ -4,7 +4,6 @@ import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
 import { uid } from "uid";
 
-import { Vect } from "../geom";
 import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig, precision } from "../service/const";
 import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
 import { computeMeshUvMappings, emptyAnimationMixer, tmpVectThree1, toV3 } from "../service/three";
