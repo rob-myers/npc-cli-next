@@ -1,6 +1,5 @@
 import type { ITerminalOptions, Terminal } from "@xterm/xterm";
 import debounce from "debounce";
-import { highlight, PrismJSTerminalOpts } from "prismjs-terminal";
 
 import { ansi } from "./const";
 import { formatMessage } from "./util";
@@ -622,14 +621,14 @@ export class ttyXtermClass {
             line: `<${other.tagName.toLowerCase()}>`,
           }]);
         } else {
-          // const stringified = jsStringify(other).slice(-this.maxStringifyLength);
-          // const highlighted = `${ansi.BrightYellow}${stringified}${ansi.Reset}`;
+          const stringified = jsStringify(other).slice(-this.maxStringifyLength);
+          const highlighted = `${ansi.BrightYellow}${stringified}${ansi.Reset}`;
 
           // prismjs-terminal syntax highlighting
-          const highlighted = highlight(
-            jsStringify(other).slice(-this.maxStringifyLength),
-            highlightOptions,
-          );
+          // const highlighted = highlight(
+          //   jsStringify(other).slice(-this.maxStringifyLength),
+          //   highlightOptions,
+          // );
           this.queueCommands([{
             key: "line",
             line: `${highlighted}${ansi.Reset}`,
@@ -1022,10 +1021,3 @@ type XtermOutputCommand =
       key: "prompt";
       prompt: string;
     };
-
-const highlightOptions: PrismJSTerminalOpts = {
-  language: 'javascript',
-  // customTheme is provided in patch of prismjs-terminal
-  theme: 'customTheme',
-  padding: 0,
-};

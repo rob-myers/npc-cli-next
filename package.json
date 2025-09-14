@@ -79,7 +79,6 @@
     "patch-package": "^8.0.0",
     "poly2tri": "^1.5.0",
     "polygon-clipping": "^0.15.7",
-    "prismjs-terminal": "^1.2.3",
     "react": "^19.0.0",
     "react-beforeunload": "^2.6.0",
     "react-dom": "^19.0.0",
