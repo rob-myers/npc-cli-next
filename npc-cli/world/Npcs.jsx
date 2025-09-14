@@ -207,6 +207,11 @@ export default function Npcs(props) {
       } else if (dstGrId === null) {
         throw Error(`${'raycast'}: dst must be in a room/doorway ${JSON.stringify({ x: dst.x, y: dst.y })}`);
       }
+      
+      if (Math.abs(src.x - dst.x) < 0.01 && Math.abs(src.y - dst.y) < 0.01) {
+        // avoid 'detect-collisions' throw on zero-length rays
+        return { hit: null, gmDoorIds: [], rooms: [srcGrId.grKey], doors: [], hitDoor: null };
+      }
 
       const [grIds, gdIds] = [/** @type {Geomorph.GmRoomId[]} */ ([]), /** @type {Geomorph.GmDoorId[]} */ ([])];
       let gmId = srcGrId.gmId;
