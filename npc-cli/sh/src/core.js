@@ -376,7 +376,7 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
  * @param {boolean} [opts.meta]
  * @param {string | ((d: any) => any)} [opts.where]
  */
-export function nearby({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
+export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
   const to = typeof opts.to === 'string' ? w.npc.getNpc(opts.to).point : opts.to;
   if (helper.isVectJson(to) === false) {
     throw Error('opts.to must be a point');
