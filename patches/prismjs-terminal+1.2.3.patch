@@ -1,0 +1,158 @@
+diff --git a/node_modules/prismjs-terminal/dist/index.js b/node_modules/prismjs-terminal/dist/index.js
+index 33d8257..e96af50 100644
+--- a/node_modules/prismjs-terminal/dist/index.js
++++ b/node_modules/prismjs-terminal/dist/index.js
+@@ -1,8 +1,8 @@
+ // TODO: start stack with [`language-${lang}`]
+ import chalk from 'chalk';
+-import { readFileSync } from 'fs';
+-import { readFile } from 'fs/promises';
+-import { parse } from 'path';
++// import { readFileSync } from 'fs';
++// import { readFile } from 'fs/promises';
++// import { parse } from 'path';
+ import Prism from 'prismjs';
+ import stringLength from 'string-length';
+ // primary use is to highlight ts/js programs, call
+@@ -57,7 +57,8 @@ const applyStyles = (content, tag, stack, t) => {
+     return content;
+ };
+ const trimTrailingCR = (c) => c.endsWith('\n') ? c.substring(0, c.length - 1) : c;
+-const blockStyle = (code, c, { minWidth = 0, maxWidth = process.stdout.columns || 80, padding = 1, lineNumbers = false, }) => {
++// const blockStyle = (code, c, { minWidth = 0, maxWidth = process.stdout.columns || 80, padding = 1, lineNumbers = false, }) => {
++const blockStyle = (code, c, { minWidth = 0, maxWidth = 80, padding = 1, lineNumbers = false, }) => {
+     const lines = trimTrailingCR(code).split('\n');
+     const lens = [];
+     let max = minWidth;
+@@ -79,7 +80,8 @@ const blockStyle = (code, c, { minWidth = 0, maxWidth = process.stdout.columns |
+                 : '');
+         lines[i] = l + lines[i] + r;
+     }
+-    code = lines.join('\n') + '\n';
++    // code = lines.join('\n') + '\n';
++    code = lines.join('\n');
+     return applyStyles(code, '_', [], c);
+ };
+ /**
+@@ -94,47 +96,47 @@ export const highlight = (code, { language = 'tsx', theme = 'moria', minWidth, m
+     const c = compileTheme(t);
+     return blockStyle(stringify(Prism.tokenize(code, Prism.languages[language]), c), c, { minWidth, maxWidth, padding, lineNumbers });
+ };
+-const detectLanguage = (filename) => {
+-    const { ext } = parse(filename);
+-    switch (ext) {
+-        case '.ts':
+-        case '.mts':
+-        case '.cts':
+-            return 'typescript';
+-        case '.js':
+-        case '.cjs':
+-        case '.mjs':
+-            return 'javascript';
+-        case '.htm':
+-            return 'html';
+-        case '':
+-        case '.':
+-            throw new Error('could not detect language for file: ' + filename);
+-        default:
+-            // cross our fingers, I guess
+-            return ext.substring(1);
+-    }
+-};
+-/**
+- * Read the filename provided, and highlight its code. If a language is not
+- * provided in the opts, it will attempt to infer from the filename.
+- */
+-export const highlightFile = async (filename, opts = {}) => {
+-    if (!opts.language)
+-        opts.language = detectLanguage(filename);
+-    return highlight(await readFile(filename, 'utf8'), opts);
+-};
+-/**
+- * Read the filename provided, and highlight its code. If a language is not
+- * provided in the opts, it will attempt to infer from the filename.
+- *
+- * Synchronous {@link highlightFile}
+- */
+-export const highlightFileSync = (filename, opts = {}) => {
+-    if (!opts.language)
+-        opts.language = detectLanguage(filename);
+-    return highlight(readFileSync(filename, 'utf8'), opts);
+-};
++// const detectLanguage = (filename) => {
++//     const { ext } = parse(filename);
++//     switch (ext) {
++//         case '.ts':
++//         case '.mts':
++//         case '.cts':
++//             return 'typescript';
++//         case '.js':
++//         case '.cjs':
++//         case '.mjs':
++//             return 'javascript';
++//         case '.htm':
++//             return 'html';
++//         case '':
++//         case '.':
++//             throw new Error('could not detect language for file: ' + filename);
++//         default:
++//             // cross our fingers, I guess
++//             return ext.substring(1);
++//     }
++// };
++// /**
++//  * Read the filename provided, and highlight its code. If a language is not
++//  * provided in the opts, it will attempt to infer from the filename.
++//  */
++// export const highlightFile = async (filename, opts = {}) => {
++//     if (!opts.language)
++//         opts.language = detectLanguage(filename);
++//     return highlight(await readFile(filename, 'utf8'), opts);
++// };
++// /**
++//  * Read the filename provided, and highlight its code. If a language is not
++//  * provided in the opts, it will attempt to infer from the filename.
++//  *
++//  * Synchronous {@link highlightFile}
++//  */
++// export const highlightFileSync = (filename, opts = {}) => {
++//     if (!opts.language)
++//         opts.language = detectLanguage(filename);
++//     return highlight(readFileSync(filename, 'utf8'), opts);
++// };
+ const stringify = (tok, theme, stack = []) => {
+     if (typeof tok === 'string')
+         return tok;
+diff --git a/node_modules/prismjs-terminal/dist/themes/custom-theme.js b/node_modules/prismjs-terminal/dist/themes/custom-theme.js
+new file mode 100644
+index 0000000..bc2b6aa
+--- /dev/null
++++ b/node_modules/prismjs-terminal/dist/themes/custom-theme.js
+@@ -0,0 +1,6 @@
++import chalk from 'chalk';
++
++export const theme = {
++    _: chalk.yellowBright,
++    punctuation: chalk.hex('#93CDFF'),
++};
+diff --git a/node_modules/prismjs-terminal/dist/themes/index.d.ts b/node_modules/prismjs-terminal/dist/themes/index.d.ts
+index 0787c13..2765575 100644
+--- a/node_modules/prismjs-terminal/dist/themes/index.d.ts
++++ b/node_modules/prismjs-terminal/dist/themes/index.d.ts
+@@ -37,3 +37,5 @@ export { theme as prismDark } from './prism-dark.js';
+  */
+ export { theme as plain } from './plain.js';
+ //# sourceMappingURL=index.d.ts.map
++
++export { theme as customTheme } from './custom-theme.js';
+diff --git a/node_modules/prismjs-terminal/dist/themes/index.js b/node_modules/prismjs-terminal/dist/themes/index.js
+index a92acd5..4d1bdb1 100644
+--- a/node_modules/prismjs-terminal/dist/themes/index.js
++++ b/node_modules/prismjs-terminal/dist/themes/index.js
+@@ -37,3 +37,5 @@ export { theme as prismDark } from './prism-dark.js';
+  */
+ export { theme as plain } from './plain.js';
+ //# sourceMappingURL=index.js.map
++
++export { theme as customTheme } from './custom-theme.js';
+\ No newline at end of file
