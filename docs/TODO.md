@@ -74,6 +74,8 @@
 
 ### World
 
+- ✅ ANSI syntax highlighting when output JS value in TTY
+
 - ✅ `w.npc.raycast` provides `hitDoor: null | Geomorph.GmDoorKey`
 
 - ✅ fix stuck detection when pendingOffMesh
