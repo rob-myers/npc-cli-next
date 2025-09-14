@@ -335,7 +335,7 @@ export default function Decor(props) {
       const base = {
         key: '', // computed below
         meta: { ...d.meta, gmId }, // 🔔 must not mutate d.meta
-        bounds2d: tmpRect1.copy(d.bounds2d).applyMatrix(gm.matrix).json,
+        bounds2d: tmpRect1.copy(d.bounds2d).applyMatrix(gm.matrix).precision(precision).json,
         src: gm.key,
       };
 
