@@ -91,6 +91,7 @@
     "rxjs": "^7.8.1",
     "safe-stable-stringify": "^2.5.0",
     "shiki": "^3.4.2",
+    "sugar-high": "^0.7.5",
     "svg-path-parser": "^1.1.0",
     "swiper": "^11.2.10",
     "three": "^0.174.0",

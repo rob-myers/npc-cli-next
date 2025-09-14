@@ -1,6 +1,7 @@
 import type { ITerminalOptions, Terminal } from "@xterm/xterm";
 import debounce from "debounce";
 
+import { jsStringify, testNever, warn } from "../service/generic";
 import { ansi } from "./const";
 import { formatMessage } from "./util";
 import {
@@ -12,7 +13,7 @@ import {
   isDataChunk,
   isProxy,
 } from "./io";
-import { jsStringify, testNever, warn } from "../service/generic";
+import { highlight } from "./highlight";
 
 /**
  * Wraps xtermjs `Terminal`.
@@ -622,13 +623,13 @@ export class ttyXtermClass {
           }]);
         } else {
           const stringified = jsStringify(other).slice(-this.maxStringifyLength);
-          const highlighted = `${ansi.BrightYellow}${stringified}${ansi.Reset}`;
+          // const highlighted = `${ansi.BrightYellow}${stringified}${ansi.Reset}`;
 
-          // prismjs-terminal syntax highlighting
-          // const highlighted = highlight(
-          //   jsStringify(other).slice(-this.maxStringifyLength),
-          //   highlightOptions,
-          // );
+          // syntax highlighting based on cli-high
+          const highlighted = highlight(
+            jsStringify(other).slice(-this.maxStringifyLength),
+            { showLineNumbers: false, }
+          );
           this.queueCommands([{
             key: "line",
             line: `${highlighted}${ansi.Reset}`,
