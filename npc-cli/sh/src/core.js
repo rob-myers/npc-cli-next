@@ -387,7 +387,7 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
     throw Error('opts.to must be inside a room');
   }
   
-  const defaultRadius = 0.75;
+  const defaultRadius = 0.5;
   const decors = w.decor.query(to, opts.within ?? defaultRadius, gmRoomId.grKey);
   const id = /** @param {any} x */ (x) => x;
   const selector = opts.where !== undefined ? api.generateSelector(opts.where) : id;
