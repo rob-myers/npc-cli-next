@@ -74,6 +74,15 @@
 
 ### World
 
+- ✅ kill process on any thrown error
+  - previously we killed on non-zero exit-code
+  - but this would require special behaviour for `||`, `test`, `false`
+- ✅ can `break` while loop
+  - `while true; do echo foo; break; **done**`
+  - support multiple e.g. `break 2`
+- ✅ can `continue` while loop
+  - `while true; do echo foo; continue; echo bar; done`
+
 - ✅ ANSI syntax highlighting when output JS value in TTY
 
 - ✅ `w.npc.raycast` provides `hitDoor: null | Geomorph.GmDoorKey`

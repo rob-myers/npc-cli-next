@@ -30,7 +30,6 @@ class semanticsServiceClass {
   private async *assignVars(node: Sh.CallExpr) {
     for (const assign of node.Assigns) {
       yield* this.Assign(assign);
-      this.handleChildExitCode(assign);
     }
   }
 
@@ -58,49 +57,25 @@ class semanticsServiceClass {
     }
   }
 
-  /**
-   * This implements `set -e` i.e.
-   * throw if `exitCode` is defined and non-zero.
-   */
-  private handleChildExitCode(node: Sh.ParsedSh) {
-    if (node.exitCode === undefined) {
-      // 🔔 should never happen, but better not to assume it is an error
-      return warn(`node.exitCode undefined: ${srcService.src(node)} in ${getProcess(node.meta).src}`);
-    }
-    if (node.exitCode !== 0) {// set -e
-      node.meta.childExit = true;
-      throw killError(node.meta, node.exitCode);
-    }
-  }
-
   private handleShError(node: Sh.ParsedSh, e: any, prefix?: string) {
     if (e instanceof ProcessError) {
       // Rethrow unless returning from a shell function
       return handleProcessError(node, e);
     }
     
-    // We do not rethrow
+    // Non-blocking write to stderr
     const message = [prefix, e.message].filter(Boolean).join(": ");
-    
-    if (e instanceof ShError) {
-      ttyError(`ShError: ${node.meta.sessionKey}: ${message} (${e.exitCode})`);
-      node.exitCode = e.exitCode;
-    } else {
-      ttyError(`Internal ShError: ${node.meta.sessionKey}: ${message}`);
-      ttyError(e);
-      node.exitCode = 2;
-    }
-
-    // write to stderr
     const device = useSession.api.resolve(2, node.meta);
     if (device !== undefined) {
-      const lines = message.split(/\r?\n/); // 🔔 non-blocking promise:
-      device.writeData(`${
-        lines.map(line => formatMessage(line, 'error')).join('\n')
-      }${ansi.Reset}`)
+      const lines = message.split(/\r?\n/);
+      device.writeData(`${lines.map(line => formatMessage(line, 'error')).join('\n')}${ansi.Reset}`);
     } else {
-      ttyError(`ShError: ${node.meta.sessionKey}: stderr does not exist`);
+      ttyError(`${node.meta.sessionKey}: pid ${node.meta.pid}: stderr does not exist`, message);
     }
+
+    // Kill process in line with `set -e`
+    node.exitCode = e.exitCode;
+    throw killError(node.meta, e.exitCode);
   }
 
   handleTopLevelProcessError(e: ProcessError) {
@@ -109,7 +84,7 @@ class semanticsServiceClass {
       useSession.api.kill(e.sessionKey, [e.pid], { GROUP: true, SIGINT: true });
       session.lastExit.fg = e.exitCode ?? 1;
     } else {
-      return ttyError(`session not found: ${e.sessionKey}`);
+      ttyError(`session not found: ${e.sessionKey}`);
     }
   }
 
@@ -165,7 +140,6 @@ class semanticsServiceClass {
     for (const node of nodes) {
       try {
         yield* sem.Stmt(node);
-        this.handleChildExitCode(node);
       } finally {
         parent.exitCode = node.exitCode;
         useSession.api.setLastExitCode(node.meta, node.exitCode);
@@ -257,19 +231,8 @@ class semanticsServiceClass {
         break;
       }
       case "||": {
-        const stackIndex = node.meta.stack.length;
         for (const stmt of stmts) {
-          try {
-            yield* sem.Stmt(stmt);
-          } catch (e) {
-            if (e instanceof ProcessError && node.meta.childExit === true) {
-              // 🔔 ignore kill errors due to `set -e`
-              // we reset stack to avoid huge error messages
-              stmt.meta.stack.splice(stackIndex, stmt.meta.stack.length - stackIndex);
-            } else {
-              throw e;
-            }
-          }
+          yield* sem.Stmt(stmt);
           if (!(node.exitCode = stmt.exitCode)) {
             break;
           }
@@ -526,7 +489,6 @@ class semanticsServiceClass {
         if (arg.Name !== null) {
           process.localVar[arg.Name.Value] = undefined;
           yield* this.Assign(arg);
-          this.handleChildExitCode(arg);
         }
       }
 
@@ -941,7 +903,13 @@ class semanticsServiceClass {
         break;
       }
 
-      yield* this.stmts(node, Do);
+      try {
+        yield* this.stmts(node, Do);
+      } catch (e) {// support `continue`
+        if (!(e instanceof ProcessError && e.skip === true)) {
+          throw e;
+        }
+      }
     }
   }
 }

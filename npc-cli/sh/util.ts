@@ -101,20 +101,28 @@ export class ProcessError extends Error {
     public sessionKey: string,
     public exitCode?: number,
     /** If defined, the number of ancestral processes to terminate */
-    public depth?: number
+    public depth?: number,
+    /** If true, skip current iteration */
+    public skip?: boolean,
   ) {
     super(code);
     Object.setPrototypeOf(this, ProcessError.prototype);
   }
 }
 
-export function killError(meta: Pick<Sh.BaseMeta, "sessionKey" | "pid"> | ProcessMeta, exitCode?: number, depth?: number) {
+export function killError(
+  meta: Pick<Sh.BaseMeta, "sessionKey" | "pid"> | ProcessMeta,
+  exitCode?: number,
+  depth?: number,
+  skip?: boolean,
+) {
   return new ProcessError(
     SigEnum.SIGKILL,
     "pid" in meta ? meta.pid : meta.key,
     meta.sessionKey,
     exitCode ?? 130,
-    depth
+    depth,
+    skip,
   );
 }
 

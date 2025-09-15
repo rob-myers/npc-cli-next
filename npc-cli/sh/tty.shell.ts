@@ -450,7 +450,7 @@ export class ttyShellClass implements Device {
       if (e instanceof ProcessError) {
         semanticsService.handleTopLevelProcessError(e);
       } else {
-        error("unexpected error propagated to tty.shell", e);
+        ttyError("unexpected error propagated to tty.shell", e);
       }
       this.prompt("$");
     } finally {

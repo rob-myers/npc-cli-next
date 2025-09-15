@@ -23,6 +23,8 @@ const commandKeys = {
   array: true,
   /** Object.assign of parsed JS or variable-values */
   assign: true,
+  /** Break loop(s) */
+  break: true,
   /** Change current key prefix */
   cd: true,
   /**
@@ -32,6 +34,8 @@ const commandKeys = {
    * ```
    */
   choice: true,
+  /** Skip iteration(s) */
+  continue: true,
   /** List function definitions */
   declare: true,
   /** Output arguments as space-separated string */
@@ -124,6 +128,13 @@ class cmdServiceClass {
         }
         break;
       }
+      case "break": {
+        const depth = parseInt(args[0] || '1');
+        if (!Number.isFinite(depth)) {
+          throw new ShError('numeric argument required', 2);
+        }
+        throw killError(meta, 0, depth);
+      }
       case "cd": {
         if (args.length > 1) {
           throw new ShError(
@@ -174,6 +185,9 @@ class cmdServiceClass {
             yield* this.choice(meta, datum);
         }
         break;
+      }
+      case "continue": {
+        throw killError(meta, 0, undefined, true);
       }
       case "declare": {// 🔔 see DeclClause
         const { opts, operands } = getOpts(args, {
@@ -498,16 +512,12 @@ class cmdServiceClass {
         break;
       }
       case "return": {
-        let exitCode = parseInt(args[0] || '0');
+        const exitCode = parseInt(args[0] || '0');
         if (!Number.isFinite(exitCode)) {
-          useSession.api.writeMsg(meta.sessionKey, `return: numeric argument required`, "error");
-          exitCode = 2;
+          throw new ShError('numeric argument required', 2);
         }
-        throw killError(
-          meta,
-          Number.isInteger(exitCode) ? exitCode : useSession.api.getLastExitCode(meta),
-          1 // Terminate parent e.g. a shell function
-        );
+        // Terminate parent e.g. a shell function
+        throw killError(meta, exitCode, 1);
       }
       case "rm": {
         const { opts, operands } = getOpts(args, {
@@ -535,7 +545,6 @@ class cmdServiceClass {
         break;
       }
       /**
-       * e.g.
        * ```sh
        * run '({ api:{read} }) { yield "foo"; yield await read(); }'
        * run game move npcKey:rob to:$( click 1 )
