@@ -98,8 +98,12 @@ export async function* click(ct) {
   }
 
   // support `click meta.nav`
+  // support `click '({ meta }, ct) => meta.nav && ct.home.myTest'`
   const filterDef = isStringInt(operands[0]) ? operands[1] : operands[0];
-  const filter = filterDef !== undefined ? api.generateSelector(api.parseFnOrStr(filterDef), []) : undefined;
+  const filter = filterDef !== undefined
+    ? api.generateSelector(api.parseFnOrStr(filterDef), [ct])
+    : undefined
+  ;
 
   /** @type {import('@/npc-cli/service/broadcaster').BasicSubscription} */
   let eventsSub;
