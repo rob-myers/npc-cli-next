@@ -57,6 +57,8 @@ export class ttyXtermClass {
   historyEnabled = true;
   cleanups = [] as (() => void)[];
   maxStringifyLength = 2 * scrollback * 100;
+  /** sugar-high can be slow for strings of length `maxStringifyLength`  */
+  maxHighlightLength = 2 * 50 * 100;
 
   get active() {
     return this.xterm.buffer.active;
@@ -622,11 +624,12 @@ export class ttyXtermClass {
             line: `<${other.tagName.toLowerCase()}>`,
           }]);
         } else {
-          // const stringified = jsStringify(other).slice(-this.maxStringifyLength);
-          // const highlighted = `${ansi.BrightYellow}${stringified}${ansi.Reset}`;
-
-          // syntax highlighting based on cli-high
-          const highlighted = highlight(jsStringify(other).slice(-this.maxStringifyLength));
+          const stringifiedTail = jsStringify(other).slice(-this.maxStringifyLength);
+          const highlighted = stringifiedTail.length > this.maxHighlightLength
+            ? `${ansi.Yellow}${stringifiedTail}`
+            // syntax highlighting based on cli-high
+            : highlight(stringifiedTail.slice(-this.maxHighlightLength))
+          ;
           this.queueCommands([{
             key: "line",
             line: `${highlighted}${ansi.Reset}`,
