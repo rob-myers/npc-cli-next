@@ -497,9 +497,9 @@ export default function useHandleEvents(w) {
             state.onExitDoorCollider(e);
           }
           break;
-        case "enter-off-mesh": // enter init segment
+        case "try-off-mesh": // enter init segment
           npc.s.slowBegin = null;
-          state.onEnterOffMeshConnection(e, npc);
+          state.onTryOffMeshConnection(e, npc);
           break;
         case "enter-off-mesh-main": // enter main segment
           state.onEnterOffMeshConnectionMain(e, npc);
@@ -712,7 +712,108 @@ export default function useHandleEvents(w) {
         return;
       }
     },
-    onEnterOffMeshConnection(e, npc) {
+    onEnterOffMeshConnectionMain(e, npc) {// maybe cancel
+      const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
+
+      for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
+        if (
+          tr.npcKey === e.npcKey
+          || tr.seg === 0
+          || state.testOffMeshDisjoint(offMesh, tr.src, tr.dst) === true
+        ) {
+          continue;
+        }
+
+        const other = w.n[tr.npcKey];
+
+        // 🔔 slow down when another in doorway,
+        // avoids jerk when other slows down in doorway
+        // 🚧 speed up when all others leave?
+        npc.agentAnim?.set_tScale(0.5);
+        offMesh.tScale = 0.5;
+        offMesh.tScaleDst = null;
+
+        if (// traversal same direction, other far enough ahead
+          tr.orig.srcGrKey === offMesh.orig.srcGrKey
+          // - prevent jerk other on leave connection
+          // && tr.tScaleDst === null
+          // - prevent moving thru each other diagonally
+          // - prevent jerk other on leave connection
+          && npc.api.getOtherDoorwayLead(other) >= 0.3
+        ) {
+          continue;
+        }
+
+        state.onBlockedDoorway(npc, tr.npcKey); // STOP
+
+        // 🔔 Wrap to fix bizarre TurboPack error i.e.
+        // helper not defined after loop
+        if (true) {
+          return;
+        }
+      }
+
+      if (offMesh.orig.dstRoomMeta.small === true) {// small room
+        const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);
+
+        for (const otherNpcKey of state.roomToNpcs[gmId][roomId] ?? []) {
+          const { point } = w.n[otherNpcKey];
+          if (
+            Math.abs(point.x - offMesh.dst.x) < 0.25
+            && Math.abs(point.y - offMesh.dst.y) < 0.25
+          ) {
+            return state.onBlockedDoorway(npc, otherNpcKey); // STOP
+          }
+        }
+      }
+
+      w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(offMesh.orig.srcGrKey) });
+    },
+    onExitDoorCollider(e) {// e.type === 'nearby'
+      const door = w.door.byKey[e.gdKey];
+
+      state.npcToDoors[e.npcKey].nearby.delete(e.gdKey);
+      const closeNpcs = state.doorToNearbyNpcs[e.gdKey];
+      closeNpcs.delete(e.npcKey);
+
+      // ℹ️ try close door under conditions
+      if (door.open === true) {
+        return;
+      } else if (door.locked === true) {
+        state.tryCloseDoor(door.gmId, door.doorId)
+      } else if (door.auto === true && closeNpcs.size === 0) {
+        // if auto and none nearby, try close 
+        state.tryCloseDoor(door.gmId, door.doorId);
+      }
+    },
+    onExitOffMeshConnection(e, npc) {
+      state.clearOffMesh(npc);
+      
+      if (npc.agent === null || npc.s.target === null) {
+        // e.g. npc without access near door
+        // e.g. npc collided near door
+        return; 
+      }
+
+      const offMesh = e.offMesh;
+      const { dstGrKey } = offMesh.orig;
+
+      if (
+        offMesh.nextUnit === null // target too close to offMesh.dst
+        && npc.pendingTargets.length === 0 // no other targets
+        && offMesh.tScaleDst !== 1 // not speeding up after changing target
+      ) {
+        npc.api.stopMoving({ type: 'stop-reason', key: 'arrived' });
+      }
+
+      w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...helper.getGmRoomId(dstGrKey) });
+    },
+    onPointerUpMenuDesktop(e) {
+      if (e.rmb && e.distancePx <= 5) {
+        state.showDefaultContextMenu();
+      }
+    },
+    onTryOffMeshConnection(e, npc) {
       const { offMesh } = e;
       const door = w.d[offMesh.gdKey];
       
@@ -728,6 +829,7 @@ export default function useHandleEvents(w) {
 
       // improve offMesh by aligning src/dst to agent
       // 🔔 do not reuse from earlier else yank when other blocks
+      // 🚧 only need to compute improved.src if do not enter-off-mesh yet
       const improved = state.improveOffMeshSrcDst(npc, offMesh);
       const target = /** @type {Geom.Vect} */ (npc.s.target);
 
@@ -814,110 +916,8 @@ export default function useHandleEvents(w) {
         const adj = w.gmGraph.getAdjacentRoomCtxt(door.gmId, door.doorId);
         adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
       }
-    },
-    onEnterOffMeshConnectionMain(e, npc) {// maybe cancel
-      const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
 
-      for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
-        if (
-          tr.npcKey === e.npcKey
-          || tr.seg === 0
-          || state.testOffMeshDisjoint(offMesh, tr.src, tr.dst) === true
-        ) {
-          continue;
-        }
-
-        const other = w.n[tr.npcKey];
-
-        // 🔔 slow down when another in doorway,
-        // avoids jerk when other slows down in doorway
-        // 🚧 speed up when all others leave?
-        npc.agentAnim?.set_tScale(0.5);
-        offMesh.tScale = 0.5;
-        offMesh.tScaleDst = null;
-
-        if (// traversal same direction, other far enough ahead
-          tr.orig.srcGrKey === offMesh.orig.srcGrKey
-          // - prevent jerk other on leave connection
-          // && tr.tScaleDst === null
-          // - prevent moving thru each other diagonally
-          // - prevent jerk other on leave connection
-          && npc.api.getOtherDoorwayLead(other) >= 0.3
-        ) {
-          continue;
-        }
-
-        state.onBlockedDoorway(npc, tr.npcKey); // STOP
-
-        // 🔔 Wrap to fix bizarre TurboPack error i.e.
-        // helper not defined after loop
-        if (true) {
-          return;
-        }
-      }
-
-      if (offMesh.orig.dstRoomMeta.small === true) {// small room
-        const { gmId, roomId } = helper.getGmRoomId(offMesh.orig.dstGrKey);
-
-        for (const otherNpcKey of state.roomToNpcs[gmId][roomId] ?? []) {
-          const { point } = w.n[otherNpcKey];
-          if (
-            Math.abs(point.x - offMesh.dst.x) < 0.25
-            && Math.abs(point.y - offMesh.dst.y) < 0.25
-          ) {
-            return state.onBlockedDoorway(npc, otherNpcKey); // STOP
-          }
-        }
-      }
-
-      w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(offMesh.orig.srcGrKey) });
-    },
-    onExitDoorCollider(e) {// e.type === 'nearby'
-      const door = w.door.byKey[e.gdKey];
-
-      state.npcToDoors[e.npcKey].nearby.delete(e.gdKey);
-      const closeNpcs = state.doorToNearbyNpcs[e.gdKey];
-      closeNpcs.delete(e.npcKey);
-
-      // ℹ️ try close door under conditions
-      if (door.open === true) {
-        return;
-      } else if (door.locked === true) {
-        state.tryCloseDoor(door.gmId, door.doorId)
-      } else if (door.auto === true && closeNpcs.size === 0) {
-        // if auto and none nearby, try close 
-        state.tryCloseDoor(door.gmId, door.doorId);
-      }
-    },
-    onExitOffMeshConnection(e, npc) {
-      const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
-
-      state.clearOffMesh(npc);
-      
-      if (npc.agent === null || npc.s.target === null) {
-        // e.g. npc without access near door
-        // e.g. npc collided near door
-        return; 
-      }
-
-      if (
-        offMesh.nextUnit === null // target too close to offMesh.dst
-        && npc.pendingTargets.length === 0 // no other targets
-        && offMesh.tScaleDst !== 1 // not speeding up after changing target
-      ) {
-        npc.api.stopMoving({ type: 'stop-reason', key: 'arrived' });
-      } else if (e.offMesh.dstRoomMeta.small !== true) {
-        if (npc.s.run === true) {
-          npc.api.startAnimation('Run');
-        }
-      }
-
-      w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...helper.getGmRoomId(e.offMesh.dstGrKey) });
-    },
-    onPointerUpMenuDesktop(e) {
-      if (e.rmb && e.distancePx <= 5) {
-        state.showDefaultContextMenu();
-      }
+      w.events.next({ key: 'enter-off-mesh', npcKey: npc.key, offMesh: npc.s.offMesh });
     },
     removeFromSensors(...npcKeys) {
       for (const npcKey of npcKeys) {
@@ -1103,11 +1103,11 @@ export default function useHandleEvents(w) {
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(npc: NPC.NPC, otherNpcKey: string) => void} onBlockedDoorway
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider
- * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh' }>, npc: NPC.NPC) => void} onEnterOffMeshConnection
  * @property {(e: Extract<NPC.Event, { key: 'enter-off-mesh-main' }>, npc: NPC.NPC) => void} onEnterOffMeshConnectionMain
  * @property {(e: Extract<NPC.Event, { key: 'exit-collider'; type: 'nearby' }>) => void} onExitDoorCollider
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
+ * @property {(e: Extract<NPC.Event, { key: 'try-off-mesh' }>, npc: NPC.NPC) => void} onTryOffMeshConnection
  * @property {(...npcKeys: string[]) => void} removeFromSensors
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
  * @property {(opts: { npcKey: string, words?: string }) => void} say

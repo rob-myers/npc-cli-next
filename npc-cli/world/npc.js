@@ -1108,8 +1108,8 @@ export class NpcApi {
   onChangeAgentState(agent, next) {
     if (next === 2) {// enter offMeshConnection
       const offMesh = this.findNextOffMesh(agent);
-      if (offMesh !== null) {// 🔔 set this.s.offMesh
-        this.w.events.next({ key: 'enter-off-mesh', npcKey: this.key, offMesh });
+      if (offMesh !== null) {
+        this.w.events.next({ key: 'try-off-mesh', npcKey: this.key, offMesh });
       } else {
         agent.teleport(this.position);
         error(`${this.key}: bailed out of unknown offMeshConnection`);
@@ -1119,7 +1119,7 @@ export class NpcApi {
     
     if (this.s.agentState === 2) {// exit offMeshConnection
       if (this.s.offMesh !== null) {
-        this.w.events.next({ key: 'exit-off-mesh', npcKey: this.key, offMesh: this.s.offMesh.orig  });
+        this.w.events.next({ key: 'exit-off-mesh', npcKey: this.key, offMesh: this.s.offMesh  });
       } else {
         // cancelled offMeshConnection before reaching main segment
         // warn(`${this.key}: exited offMeshConnection but this.s.offMesh already null`);

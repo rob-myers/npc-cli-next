@@ -162,9 +162,10 @@ declare namespace NPC {
     | { key: "nav-updated" }
     | { key: 'contextmenu-link'; linkKey: string }
     | { key: 'clear-off-mesh'; npcKey: string; }
-    | { key: 'enter-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
+    | { key: 'try-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
+    | { key: 'enter-off-mesh'; npcKey: string; offMesh: NPC.OffMeshState }
     | { key: 'enter-off-mesh-main'; npcKey: string }
-    | { key: 'exit-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
+    | { key: 'exit-off-mesh'; npcKey: string; offMesh: NPC.OffMeshState }
     | { key: 'logger-link'; npcKey: string; } & NPC.LoggerLinkEvent
     | { key: 'speech'; npcKey: string; speech: string }
     | { key: 'controls-start' }
