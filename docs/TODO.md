@@ -7,8 +7,27 @@
 - 🚧 towards start with behaviour/story
   - ℹ️ rather than abstract spawn, move etc.
   - ℹ️ more interactive
-  - detect when npc near bed via `nearby`
-  - detect when npc can see other via `ray`
+  - ✅ detect when npc near bed via `near`
+    - `near npc:rob where:bed`
+  - ✅ detect when npc can see other via `ray`
+    - `ray test from:rob to:will`
+  - 🚧 can move AND when near bed log something
+```sh
+import demoClickToMove from demo
+awaitWorld
+
+spawn npc:rob at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' as:soldier-0 granted:.
+
+permitMove=true
+click '({ meta }, ct) => meta.nav && ct.home.permitMove' |
+  demoClickToMove npc:rob &
+
+# 🚧
+events '({ key, reason }) => key === "stopped-moving" && reason.key === "arrived"' |
+  while take 1; do
+    near npc:rob where:bed
+  done
+```
 
 - mobile profiles will include progression via logger ui links
 
