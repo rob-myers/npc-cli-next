@@ -314,6 +314,14 @@ export async function* reduce({ api, args, datum }) {
 }
 
 /**
+ * Like `take` but outputs nothing.
+ * @param {NPC.RunArg} ct
+ */
+export async function* sink(ct) {
+  for await (const _ of take(ct));
+}
+
+/**
  * Split arrays from stdin into items.
  * ```sh
  * expr '[1, 2, 3, 4]' | split

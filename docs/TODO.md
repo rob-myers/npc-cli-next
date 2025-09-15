@@ -24,7 +24,7 @@ click '({ meta }, ct) => meta.nav && ct.home.permitMove' |
 
 # 🚧
 events '({ key, reason }) => key === "stopped-moving" && reason.key === "arrived"' |
-  while take 1; do
+  while sink 1; do
     near npc:rob where:bed
   done
 ```
