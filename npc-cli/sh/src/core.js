@@ -1,7 +1,7 @@
-import { isStringInt, removeFirst } from '../../service/generic';
+import { isStringInt, removeFirst } from '@/npc-cli/service/generic';
+import { helper } from '@/npc-cli/service/helper';
 import * as util from './util';
 import { createDecorNumber } from './dev';
-import { helper } from '@/npc-cli/service/helper';
 
 /**
  * @param {NPC.RunArg} ctxt
@@ -360,13 +360,13 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
 
 /**
  * ```sh
- * nearby to:$( click 1 )
- * nearby to:$( click 1 ) within:1
- * nearby meta to:rob
- * nearby meta to:$( click 1 ) where:bed
- * nearby meta to:$( click 1 ) where:'m => m.bed'
- * nearby npc:rob
- * nearby npc:rob | flatMap items
+ * near to:$( click 1 )
+ * near to:$( click 1 ) within:1
+ * near meta to:rob
+ * near meta to:$( click 1 ) where:bed
+ * near meta to:$( click 1 ) where:'m => m.bed'
+ * near npc:rob
+ * near npc:rob | flatMap items
  * ```
  * 
  * @param {NPC.RunArg} ct
@@ -401,6 +401,7 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
  * ray from:kate to:will
  * ray test from:kate to:will
  * ray point from:kate to:will
+ * ray from:rob to:rob
  * ```
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
