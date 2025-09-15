@@ -243,7 +243,7 @@ export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voic
   
   if (opts.list === 'voices') {// List available voices
     yield* window.speechSynthesis.getVoices().map(
-      ({ name, lang }) => `${name} (${ansi.BrightYellow}${lang}${ansi.White})`
+      ({ name, lang }) => `${name} (${ansi.YellowBright}${lang}${ansi.White})`
     );
     return;
   }

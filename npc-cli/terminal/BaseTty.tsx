@@ -40,6 +40,8 @@ export const BaseTty = React.forwardRef<State, Props>(function BaseTty(props: Pr
       fontSize: 16,
       cursorBlink: true,
       fontFamily: "'Courier New', Courier, monospace",
+      // lineHeight: 1.2,
+      // letterSpacing: 2,
       // rendererType: "canvas",
       // mobile: can select single word via long press
       rightClickSelectsWord: true,

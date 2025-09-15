@@ -54,8 +54,8 @@ const svgContents = `
 fs.writeFileSync(filepath, svgContents);
 
 info(`created ${filepath}`)
-info(`now goto ${ansi.Blue}./npc-cli/service/const.js${ansi.Reset} and add this to ${ansi.BrightYellow}fromSymbolKey${ansi.Reset}:
-${ansi.BrightGreen}'${symbolName}': true,${ansi.Reset}`);
+info(`now goto ${ansi.Blue}./npc-cli/service/const.js${ansi.Reset} and add this to ${ansi.YellowBright}fromSymbolKey${ansi.Reset}:
+${ansi.GreenBright}'${symbolName}': true,${ansi.Reset}`);
 
 /** @param {number} svgUnits */
 function svgToGmUnits(svgUnits) {

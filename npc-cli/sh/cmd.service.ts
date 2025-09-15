@@ -222,7 +222,7 @@ class cmdServiceClass {
           for (const [key, value] of Object.entries(vars)) {
             if (prefixes && !prefixes.some((x) => key.startsWith(x))) continue;
             yield `${ansi.Blue}${key}${ansi.Reset}=${
-              typeof value === "string" ? ansi.White : ansi.BrightYellow
+              typeof value === "string" ? ansi.White : ansi.YellowBright
             }${jsStringify(value).slice(-xterm.maxStringifyLength)}${ansi.Reset}`;
           }
         }
@@ -439,7 +439,7 @@ class cmdServiceClass {
               : keys.map((x) => obj[x]?.constructor?.name || (obj[x] === null ? "null" : "undefined"))
             ;
             const metasWidth = Math.max(...metas.map((x) => x.length));
-            items = keys.map((x, i) => `${ansi.BrightYellow}${metas[i].padEnd(metasWidth)}${ansi.White} ${x}${ansi.Reset}`);
+            items = keys.map((x, i) => `${ansi.YellowBright}${metas[i].padEnd(metasWidth)}${ansi.White} ${x}${ansi.Reset}`);
           } else if (opts[1]) {
             items = keys;
           } else {
@@ -478,7 +478,7 @@ class cmdServiceClass {
         function getProcessLine(p: ProcessMeta) {
           const info = [p.key, p.ppid, p.pgid].map(x => `${x}`.padEnd(5)).join(' ');
           const ptagPreviews = opts.s === true ? [] : getPtagsPreview(p.ptags);
-          const tagsOrEmpty = `${ansi.BrightYellow}${opts.s === true ? jsStringify(p.ptags) : `${ptagPreviews.join('')}${ptagPreviews.length > 0 ? ' ' : ''}`}${ansi.Reset}`;
+          const tagsOrEmpty = `${ansi.YellowBright}${opts.s === true ? jsStringify(p.ptags) : `${ptagPreviews.join('')}${ptagPreviews.length > 0 ? ' ' : ''}`}${ansi.Reset}`;
           const oneLineSrcOrEmpty = opts.s === false ? truncateOneLine(p.src.trimStart(), 30) : '';
           const oneLineSrcColour = p.status === ProcessStatus.Suspended ? statusColour[p.status] : '';
           const line = `${statusColour[p.status]}${info}${ansi.Reset}${tagsOrEmpty}${oneLineSrcColour}${oneLineSrcOrEmpty}`;

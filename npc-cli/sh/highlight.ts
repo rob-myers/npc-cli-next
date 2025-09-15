@@ -5,51 +5,10 @@
 import { tokenize } from 'sugar-high'
 import { ansi } from "./const";
 
-export interface HighlightOptions {
-  showLineNumbers?: boolean
-}
-export function highlight(code: string, options: HighlightOptions = { showLineNumbers: false }) {
+export function highlight(code: string) {
   const tokens = tokenize(code)
-
-  const lines: string[] = []
-  let i = 1
-  const lineTokens: Array<[number, string]> = []
-
-  function flushLine(tokens: Array<[number, string]>) {
-    lines.push(
-      tokens
-        .map(([type, value]) => {
-          switch (type) {
-            // case 0: // identifier
-            //   // return chalk.pink(value)
-            //   return ansi.Purple + value
-            // case 1: // keyword
-            //   return ansi.Grey + value
-            // case 2: // string
-            //   return ansi.Grey + value
-            // case 3: // Class, number and null
-            //   return ansi.BrightYellow + value
-            // case 4: // property
-            //   // return chalk.pink(value)
-            //   return ansi.Purple + value
-            // case 5: // entity
-            //   return ansi.Purple + value
-            // case 6: // jsx literals
-            //   // return chalk.whiteSecondary(value)
-            //   return ansi.White + value
-            case 7: // sign
-              // return ansi.Grey + value
-              return ansi.Blue + value + ansi.Reset;
-            // case 8: // comment
-            //   return ansi.DarkGrey + value
-            default:
-              // return value
-              return ansi.BrightYellow + value
-          }
-        })
-        .join(''),
-    )
-  }
+  const lines = [] as string[];
+  const lineTokens = [] as [number, string][];
 
   for (const token of tokens) {
     const [type, value] = token
@@ -61,7 +20,7 @@ export function highlight(code: string, options: HighlightOptions = { showLineNu
         for (let j = 0; j < lines.length; j++) {
           lineTokens.push([type, lines[j]])
           if (j < lines.length - 1) {
-            flushLine(lineTokens)
+            lines.push(getLineFromTokens(lineTokens));
             lineTokens.length = 0
           }
         }
@@ -70,12 +29,47 @@ export function highlight(code: string, options: HighlightOptions = { showLineNu
       }
     } else {
       lineTokens.push([type, ''])
-      flushLine(lineTokens)
+      lines.push(getLineFromTokens(lineTokens));
       lineTokens.length = 0
     }
   }
 
-  if (lineTokens.length > 0) flushLine(lineTokens)
+  if (lineTokens.length > 0) lines.push(getLineFromTokens(lineTokens));
 
-  return lines.join('\n')
+  return ansi.Hex323232Bg + lines.join('\n')
+}
+
+function getLineFromTokens(tokens: [number, string][]) {
+  return tokens.map(([type, value]) => getCharsFromToken([type, value])).join('');
+}
+
+function getCharsFromToken([type, value]: [number, string]) {
+  // console.log(type, value);
+  switch (type) {
+    // case 0: // identifier
+    //   // return chalk.pink(value)
+    //   return ansi.Purple + value
+    // case 1: // keyword
+    //   return ansi.Grey + value
+    // case 2: // string
+    //   return ansi.Grey + value
+    // case 3: // Class, number and null
+    //   return ansi.BrightYellow + value
+    // case 4: // property
+    //   // return chalk.pink(value)
+    //   return ansi.Purple + value
+    // case 5: // entity
+    //   return ansi.Purple + value
+    // case 6: // jsx literals
+    //   // return chalk.whiteSecondary(value)
+    //   return ansi.White + value
+    case 7: // sign
+      // return ansi.Grey + value
+      return ansi.Blue + value + ansi.BoldReset;
+    // case 8: // comment
+    //   return ansi.DarkGrey + value
+    default:
+      // return value
+      return ansi.Yellow + value
+  }
 }

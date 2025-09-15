@@ -51,7 +51,7 @@ export default function WorldMenu(props) {
         return;
       } else if (msg in state.durationKeys) {
         const durationMs = (performance.now() - state.durationKeys[msg]).toFixed(1);
-        state.logger?.xterm.writeln(`${msg} ${ansi.BrightYellow}${durationMs}${ansi.Reset}`);
+        state.logger?.xterm.writeln(`${msg} ${ansi.YellowBright}${durationMs}${ansi.Reset}`);
         debug(`measure: ${msg} (${durationMs}ms)`);
         delete state.durationKeys[msg];
       } else {
@@ -112,8 +112,8 @@ export default function WorldMenu(props) {
     say(name, ...parts) {
       const line = parts.join(' ');
       state.logger.xterm.writeln(
-        `${ansi.BrightGreen}[${ansi.BrightYellow}${ansi.Bold}${name}${ansi.BrightGreen}${ansi.BoldReset}]${ansi.Reset} ${
-          line.replace(globalLoggerLinksRegex, `${ansi.DarkGreen}[${ansi.Blue}$1${ansi.Reset}${ansi.DarkGreen}]${ansi.Reset}`)
+        `${ansi.GreenBright}[${ansi.YellowBright}${ansi.Bold}${name}${ansi.GreenBright}${ansi.BoldReset}]${ansi.Reset} ${
+          line.replace(globalLoggerLinksRegex, `${ansi.GreenDark}[${ansi.Blue}$1${ansi.Reset}${ansi.GreenDark}]${ansi.Reset}`)
         }${ansi.Reset}`
       );
       state.logger.xterm.scrollToBottom();
