@@ -359,12 +359,13 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
 }
 
 /**
+ * Provides nearby decor.meta.
  * ```sh
  * near to:$( click 1 )
  * near to:$( click 1 ) within:1
- * near meta to:rob
- * near meta to:$( click 1 ) where:bed
- * near meta to:$( click 1 ) where:'m => m.bed'
+ * near decor to:rob
+ * near decor to:$( click 1 ) where:bed
+ * near to:$( click 1 ) where:'m => m.bed'
  * near npc:rob
  * near npc:rob | flatMap items
  * ```
@@ -373,7 +374,7 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
  * @param {object} [opts]
  * @param {NPC.GroundPoint | string} opts.to Must be inside a room.
  * @param {number} [opts.within]
- * @param {boolean} [opts.meta]
+ * @param {boolean} [opts.decor] provide entire decor rather than decor.meta
  * @param {string | ((d: any) => any)} [opts.where]
  */
 export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
@@ -390,7 +391,7 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
   const decors = w.decor.query(to, opts.within ?? defaultRadius, gmRoomId.grKey);
   const id = /** @param {any} x */ (x) => x;
   const selector = opts.where !== undefined ? api.generateSelector(opts.where) : id;
-  const items = decors.map(opts.meta === true ? x => x.meta : id).filter(selector);
+  const items = decors.map(opts.decor === true ? id : x => x.meta).filter(selector);
 
   return { count: items.length, items };
 }
