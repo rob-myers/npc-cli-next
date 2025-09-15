@@ -122,7 +122,7 @@
     <use width="150.0117950439453" height="150.0117950439453" transform="matrix(1, 0, 0, 1, 404, 0)" href="#symbol-0">
       <title>extra--001--fresher--0.5x0.5 y=0.6</title>
     </use>
-    <use width="150" height="150" transform="matrix(1, 0, 0, 1, 225, 0.000003950121026718989)" style="" href="#symbol-1">
+    <use width="150" height="150" transform="matrix(1, 0, 0, 1, 225, 0.00000395012148146634)" style="" href="#symbol-1">
       <title>extra--002--fresher--0.5x0.5 y=0.4</title>
     </use>
     <use width="450" height="225" transform="matrix(0, 1, 1, 0, -62.93123245239258, 435.04913330078125)" style="transform-origin: 225px 112.5px;" href="#symbol-3">
@@ -177,10 +177,10 @@
   <use width="1" height="1" transform="matrix(30, 0, 0, 30, 304.5, 1214.5)" style="transform-origin: 0.5px 0.5px;" href="#symbol-4">
     <title>decor quad switch</title>
   </use>
-  <use width="1" height="1" style="opacity: 0.5;" href="#symbol-5" transform="matrix(50.016235, 0, 0, 131.292465, 274.991882, 0.000008)">
+  <use width="1" height="1" style="opacity: 0.5;" href="#symbol-5" transform="matrix(50.0162353515625, 0, 0, 131.29246520996094, 274.99188232421875, 0.000008000000889296643)">
     <title>decor cuboid h=0.4-.01 color=#000</title>
   </use>
-  <use width="1" height="1" style="opacity: 0.5;" href="#symbol-5" transform="matrix(50.016235, 0, 0, 91.053642, 454.991882, 0.000008)">
-    <title>decor cuboid h=0.4-.01 color=#999 outline=0.7</title>
+  <use width="1" height="1" style="opacity: 0.5;" href="#symbol-5" transform="matrix(50.0162353515625, 0, 0, 91.05364227294922, 454.99188232421875, 0.000008000000889296643)">
+    <title>decor cuboid h=0.4-.01 color=#999</title>
   </use>
 </svg>

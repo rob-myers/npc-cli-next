@@ -374,7 +374,7 @@
     "stateroom--019--2x3": {"outputHash": -529139179, "pngHash": 464993285},
     "stateroom--020--2x3": {"outputHash": 1946496398, "pngHash": 987326316},
     "stateroom--035--2x3": {"outputHash": -377432395, "pngHash": -866865591},
-    "stateroom--036--2x4": {"outputHash": -1628995467, "pngHash": 1301313076},
+    "stateroom--036--2x4": {"outputHash": 798163524, "pngHash": 1301313076},
     "table--004--1.2x2.4": {
       "outputHash": -1436806979,
       "pngHash": 1027833859,
@@ -19554,7 +19554,6 @@
             "cuboid": true,
             "h": 0.39,
             "color": "#999",
-            "outline": 0.7,
             "transform": [0.2501, 0, 0, 0.4553, 2.275, 0]
           }
         }
