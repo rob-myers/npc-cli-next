@@ -688,17 +688,27 @@ class semanticsServiceClass {
       }
       itStartMs = Date.now();
 
-      if ('expanded' in item) {// previously expanded
-        useSession.api.setVar(node.meta, varName, item.expanded);
-        yield* this.stmts(node, Do);
-      } else {// aggregate expanded
+      if (!('expanded' in item)) {// aggregate expanded
         const expanded = await this.lastExpanded(this.Expand(item));
         items.unshift(...expanded.values.map(x => parseJsArg(x)).flatMap(
           // handle $( range 5 ) is "[0, 1, 2, 3, 4]"
           x => Array.isArray(x) ? x.map(y => ({ expanded: y })) : { expanded: x }
         ));
-        itStartMs = -1; // assume at least one value added to `items`
+        // itStartMs = -1;
+        continue;
       }
+
+      try {
+        useSession.api.setVar(node.meta, varName, item.expanded);
+        yield* this.stmts(node, Do);
+      } catch (e) {// support `continue`
+        if (!(e instanceof ProcessError && e.skip === true)) {
+          throw e;
+        }
+        // speeding up continue means large loops cannot be terminated
+        // itStartMs -= itMinLengthMs;
+      }
+
     }
 
   }

@@ -229,6 +229,9 @@ for x in {a..h..2} {5..1}; do
   x
 done
 
+for x in $( sleep 1; echo foo ) $( sleep 1; echo bar); do
+  x
+done
 
 c=5; while test $c; do
   c
