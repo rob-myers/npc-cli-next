@@ -190,6 +190,46 @@ export default function useHandleEvents(w) {
       // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
       return null;
     },
+    findOtherBlockingNearDoor(npc, offMesh) {
+      const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
+      const gmRoomId = /** @type {Geomorph.GmRoomId} */ (state.npcToRoom.get(npc.key));
+
+      for (const otherNpcKey of npcsNearbyDoor) {
+        if (otherNpcKey === npc.key) {
+          continue;
+        }
+
+        const other = w.n[otherNpcKey];
+        if (
+          state.npcToRoom.get(other.key)?.grKey !== gmRoomId.grKey // wrong room
+          || other.s.target !== null // handled elsewhere (?)
+        ) {
+          continue;
+        }
+
+        const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
+          offMesh.src.x, offMesh.src.z,
+          offMesh.dst.x, offMesh.dst.z,
+          other.point.x, other.point.y,
+          0.25,
+        );
+        
+        if (otherIntersectsMainSeg === false) {
+          continue; // other is not close enough to offMesh connection
+        }
+  
+        if (geom.lineSegCoordsIntersectsCircle(
+          npc.point.x, npc.point.y,
+          offMesh.src.x, offMesh.src.z,
+          other.point.x, other.point.y,
+          .25,
+        ) === true) {
+          return otherNpcKey;
+        }
+      }
+  
+      return null;
+    },
     findOtherBlockingOppositeDir(offMesh, src, dst) {
       for (const tr of state.doorToOffMesh[offMesh.gdKey] ?? []) {
         if (tr.orig.srcGrKey === offMesh.srcGrKey) {
@@ -819,9 +859,10 @@ export default function useHandleEvents(w) {
       }
 
       const blockingNpcKey = (
+        // prevent pass-through other around door corner
+        state.findOtherBlockingNearDoor(npc, offMesh)
         // avoid yank via early-exit
-        state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
-        // 🔔 we permit some pass-through when coming around corner (avoid complexity)
+        || state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
       );
 
       if (blockingNpcKey !== null) {
@@ -1038,6 +1079,10 @@ export default function useHandleEvents(w) {
  * @property {(door: Geomorph.DoorState) => boolean} canCloseDoor
  * @property {(npc: NPC.NPC) => void} clearOffMesh
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
+ * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
+ * offMesh early-exit-test i.e. test for some other npc which:
+ * - is idle and in the way
+ * - is very close to main segment of offMesh connection
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
  * @property {(npcKey: string) => void} followNpc
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
