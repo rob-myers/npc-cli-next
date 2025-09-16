@@ -32,7 +32,7 @@ export default function useHandleEvents(w) {
       const { src: newSrc, dst: newDst } = improved;
 
       // 🤔 could use last known speed and speed up via tScale
-      const speed = npc.api.getMaxSpeed();
+      const speed = npc.getMaxSpeed();
 
       // adjust RecastDetour dtCrowdAgentAnimation
       const anim = /** @type {import("./npc").dtCrowdAgentAnimation} */ (npc.agentAnim);
@@ -456,7 +456,7 @@ export default function useHandleEvents(w) {
             if (npc.s.spawns === 1) {// 1st spawn
               const { x, y, z } = npc.position;
               workerNpcs.push({ npcKey, position: { x, y, z } });
-              npc.api.setLabel(npcKey);
+              npc.setLabel(npcKey);
             }
           }
           break;
@@ -529,7 +529,7 @@ export default function useHandleEvents(w) {
               type: 'add-npcs',
               npcs: [{ npcKey: e.npcKey, position: { x, y, z } }],
             });
-            npc.api.setLabel(e.npcKey);
+            npc.setLabel(e.npcKey);
           } else {// Respawn
             const prevGrId = state.npcToRoom.get(npc.key);
             if (prevGrId !== undefined) {
@@ -582,7 +582,7 @@ export default function useHandleEvents(w) {
     improveOffMeshSrcDst(npc, offMesh) {
       const door = w.d[offMesh.gdKey];
       const npcPoint = npc.point;
-      const nextCorner = npc.api.getCornerAfterOffMesh(offMesh);
+      const nextCorner = npc.getCornerAfterOffMesh(offMesh);
 
       // Entrances are aligned to offMeshConnections
       // - entrance segment (enSrc, enDst)
@@ -689,7 +689,7 @@ export default function useHandleEvents(w) {
       return false;
     },
     onBlockedDoorway(npc, otherNpcKey) {
-      npc.api.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey, rest: npc.api.getRemainingPath() });
+      npc.stopMoving({ type: 'stop-reason', key: 'blocked-doorway', otherNpcKey, rest: npc.getRemainingPath() });
       // teleport to prevent ongoing offMesh traversal
       const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
       agent.teleport(npc.position); 
@@ -737,7 +737,7 @@ export default function useHandleEvents(w) {
           // && tr.tScaleDst === null
           // - prevent moving thru each other diagonally
           // - prevent jerk other on leave connection
-          && npc.api.getOtherDoorwayLead(other) >= 0.3
+          && npc.getOtherDoorwayLead(other) >= 0.3
         ) {
           continue;
         }
@@ -801,7 +801,7 @@ export default function useHandleEvents(w) {
         && npc.pendingTargets.length === 0 // no other targets
         && offMesh.tScaleDst !== 1 // not speeding up after changing target
       ) {
-        npc.api.stopMoving({ type: 'stop-reason', key: 'arrived' });
+        npc.stopMoving({ type: 'stop-reason', key: 'arrived' });
       }
 
       w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...helper.getGmRoomId(dstGrKey) });
@@ -820,8 +820,8 @@ export default function useHandleEvents(w) {
         door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
-        npc.api.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.api.getRemainingPath() });
-        npc.s.lookAngleDst = npc.api.getLookAngle(offMesh.dst);
+        npc.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.getRemainingPath() });
+        npc.s.lookAngleDst = npc.getLookAngle(offMesh.dst);
         return;
       }
 
@@ -833,7 +833,7 @@ export default function useHandleEvents(w) {
 
       const entryDist = npc.point.distanceTo(improved.src);
       const entryTooFar = entryDist > 0.2;
-      const angleTooLarge = Math.abs(npc.api.getAngleTo(improved.dst)) > Math.PI/2 + 0.2;
+      const angleTooLarge = Math.abs(npc.getAngleTo(improved.dst)) > Math.PI/2 + 0.2;
 
       if (
         entryTooFar === true
@@ -843,14 +843,14 @@ export default function useHandleEvents(w) {
         // know either !angleTooLarge or entryTooFar
         // 🔔 if entryTooFar && angleTooFar don't use improved.src yet
         const newTarget = angleTooLarge === true ? null : improved.src;
-        npc.api.adjustTargets(newTarget, target, ...npc.pendingTargets);
+        npc.adjustTargets(newTarget, target, ...npc.pendingTargets);
 
         if (newTarget !== null) {
-          npc.api.exitOffMeshFor(newTarget);
+          npc.exitOffMeshFor(newTarget);
         } else {
-          npc.api.exitOffMeshFor(npc.position, false);
+          npc.exitOffMeshFor(npc.position, false);
           npc.s.lookSecs = 0.2;
-          npc.s.lookAngleDst = npc.api.getLookAngle(
+          npc.s.lookAngleDst = npc.getLookAngle(
             entryTooFar === true ? improved.src : improved.dst
           );
         }
@@ -866,9 +866,9 @@ export default function useHandleEvents(w) {
       );
 
       if (blockingNpcKey !== null) {
-        const lookAngleDst = npc.api.getLookAngle(improved.src);
-        npc.api.stopMoving({
-          type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.api.getRemainingPath()
+        const lookAngleDst = npc.getLookAngle(improved.src);
+        npc.stopMoving({
+          type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.getRemainingPath()
         }, lookAngleDst);
         return;
       }
@@ -895,7 +895,7 @@ export default function useHandleEvents(w) {
         initUnit: tmpVect1.set(improved.src.x - npc.point.x, improved.src.y - npc.point.y ).normalize().json,
         mainUnit: tmpVect1.set(improved.dst.x - improved.src.x, improved.dst.y - improved.src.y).normalize().json,
         nextUnit: nextUnitNull === true ? null : tmpVect1.copy(improved.nextCorner).sub(improved.dst).normalize().json,
-        tToDist: npc.api.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
+        tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
 
         // 🚧 clean
         tScale: 1,
@@ -943,7 +943,7 @@ export default function useHandleEvents(w) {
       const startSaying = speechWithLinks !== '';
       
       const npc = w.n[npcKey];
-      npc.api.showLabel(!startSaying);
+      npc.showLabel(!startSaying);
 
       if (startSaying === true) {
         cm.speech = speechSansLinks;

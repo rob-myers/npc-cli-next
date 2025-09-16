@@ -82,7 +82,7 @@ export const demoCameraWASD = ({ w }) => {
 export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
   const npc = w.npc.getNpc(opts.npcKey);
   // catch permits override and ignores points too far from nav
-  npc.api.move({ to: input, close: 0.5 }).catch(() => {});
+  npc.move({ to: input, close: 0.5 }).catch(() => {});
 }
 
 /**

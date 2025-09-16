@@ -190,9 +190,9 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
   const npc = w.n[npcKey];
   if (!npc) return;
   if (input.meta.floor === true && !npc.s.doMeta) {
-    npc.api.look(input).catch(() => {});
+    npc.look(input).catch(() => {});
   } else {// act or stop acting
-    await npc.api.make({ do: input }).catch(() => {});
+    await npc.make({ do: input }).catch(() => {});
   }
 }
 
@@ -208,7 +208,7 @@ export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, {
   const npc = w.n[npcKey];
   if (npc) {
     npc.s.run = input.keys?.includes("shift") ?? false;
-    npc.api.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {});
+    npc.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {});
   }
 }
 
@@ -234,10 +234,10 @@ export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args,
   const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
   api.set(opts.npcKeyPath, nextNpcKey);
   const nextNpc = w.npc.getNpc(nextNpcKey); // must
-  nextNpc.api.showSelector(true);
+  nextNpc.showSelector(true);
   
   if (npcKey !== nextNpcKey) {
-    w.n[npcKey]?.api.showSelector(false); // maybe
+    w.n[npcKey]?.showSelector(false); // maybe
   }
 }
 

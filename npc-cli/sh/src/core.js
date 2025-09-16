@@ -269,16 +269,16 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
 
   const handlers = api.handleStatus({
     cleanups() {
-      npc.api.rejectMove(Error('cancelled'));
-      npc.api.rejectFade(Error('cancelled'));
-      npc.api.rejectTurn(Error('cancelled'));
+      npc.rejectMove(Error('cancelled'));
+      npc.rejectFade(Error('cancelled'));
+      npc.rejectTurn(Error('cancelled'));
       abortAwaitResume(Error('cancelled'));
     },
     onSuspends(byPtags) {
       if (!byPtags && npc.s.doMeta !== opts.do.meta) {
-        npc.api.rejectMove(Error('manual-pause'));
-        npc.api.rejectFade(Error('manual-pause'));
-        npc.api.rejectTurn(Error('manual-pause'));
+        npc.rejectMove(Error('manual-pause'));
+        npc.rejectFade(Error('manual-pause'));
+        npc.rejectTurn(Error('manual-pause'));
       }
       return true;
     },
@@ -287,7 +287,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
   try {
     while (true) {
       try {
-        await npc.api.make({ do: opts.do });
+        await npc.make({ do: opts.do });
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {
@@ -323,13 +323,13 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
 
   const handlers = api.handleStatus({
     cleanups() {
-      npc.api.rejectMove(Error('cancelled'));
+      npc.rejectMove(Error('cancelled'));
       abortAwaitResume(Error('cancelled'));
     },
     onSuspends(byPtags) {
       if (!byPtags) {
-        to = npc.api.getRemainingPath();
-        npc.api.rejectMove(Error('manual-pause'));
+        to = npc.getRemainingPath();
+        npc.rejectMove(Error('manual-pause'));
       }
       return true;
     },
@@ -338,7 +338,7 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
   try {
     while (true) {
       try {
-        await npc.api.move({ ...opts, to, arriveAnim });
+        await npc.move({ ...opts, to, arriveAnim });
         break;
       } catch (e) {
         if (!(e instanceof Error && e.message === 'manual-pause')) {
@@ -479,7 +479,7 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'np
  * w gmGraph.findRoomContaining $( click -2 1 )
  * click 1 | w npc.findRoomContaining -
  * echo image/webp | w view.openSnapshot - 50
- * click 1 | w n.rob.api.look - 500
+ * click 1 | w n.rob.look - 500
  * ```
  *
  * - can always `ctrl-c`, even without cleaning up ongoing computations

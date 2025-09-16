@@ -109,7 +109,7 @@ w n.rob.applySkin
 w n.rob.resetSkin
 
 # pass from Vector3 to Vect for an internal function which only supports the latter
-click -2 | w n.rob.api.getLookAngle -
+click -2 | w n.rob.getLookAngle -
 
 w view.controls | assign '{minDistance:1}'
 

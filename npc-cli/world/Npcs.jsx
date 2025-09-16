@@ -10,7 +10,7 @@ import { computeMeshUvMappings, emptyAnimationMixer, tmpVectThree1, toV3 } from 
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
 import { geom } from "../service/geom";
-import { createNpcRoot, NpcApi, crowdAgentParams, createNpc } from "./npc";
+import { crowdAgentParams, NpcApi } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -123,48 +123,51 @@ export default function Npcs(props) {
       }
     },
     hotReloadNpcs() {
+      // Do not create new npc instances, but rather mutate existing ones,
+      // thereby avoiding stale references in ongoing code
+
       const npcs = Object.values(state.npc);
       let hmrKeys = /**
         * @type {undefined | {
-        *  add: (keyof NPC.BaseNPC)[];
+        *  add: (keyof ClassSansMethods<NPC.NPC>)[];
         *  del: (keyof NPC.NPC)[];
-        *  s: { add: (keyof NPC.BaseNPC['s'])[]; del: (keyof NPC.NPC['s'])[]; }
+        *  s: {
+        *    add: (keyof NPC.NPC['s'])[];
+        *    del: (keyof NPC.NPC['s'])[];
+        *  }
         * }}
         **/ (undefined);
 
       for (const npc of npcs) {
-        const base = createNpcRoot(npc.def, w);
+        const instance = new NpcApi(npc.def, w);
 
         // copy in new from `base`, delete old from `npc`, also for `s`
         // 🤔 we don't support type-change (should overwrite with base[x])
         if (hmrKeys === undefined) {
           // only compute keys to add/delete once
           hmrKeys = {
-            add: keys(base).filter(x => !(x in npc) && Object.assign(npc, { [x]: base[x] })),
-            del: keys(npc).filter(x => !(x in base) && delete npc[x]),
+            add: keys({...instance}).filter(x => !(x in npc) && Object.assign(npc, { [x]: instance[x] })),
+            del: keys(npc).filter(x => !(x in instance) && delete npc[x]),
             s: {
-              add: keys(base.s).filter(x => !(x in npc.s) && Object.assign(npc.s, { [x]: base.s[x] })),
-              del: keys(npc.s).filter(x => !(x in base.s) && delete npc.s[x]),
+              add: keys(instance.s).filter(x => !(x in npc.s) && Object.assign(npc.s, { [x]: instance.s[x] })),
+              del: keys(npc.s).filter(x => !(x in instance.s) && delete npc.s[x]),
             },
           };
         } else {
-          hmrKeys.add.forEach(x => Object.assign(npc, { [x]: base[x] }));
+          hmrKeys.add.forEach(x => Object.assign(npc, { [x]: instance[x] }));
           hmrKeys.del.forEach(x => delete npc[x]);
-          hmrKeys.s.add.forEach(x => Object.assign(npc.s, { [x]: base.s[x] }));
-          hmrKeys.s.del = keys(npc.s).filter(x => !(x in base.s) && delete npc.s[x])
+          hmrKeys.s.add.forEach(x => Object.assign(npc.s, { [x]: instance.s[x] }));
+          hmrKeys.s.del = keys(npc.s).filter(x => !(x in instance.s) && delete npc.s[x])
         }
 
-        npc.api = new NpcApi(npc, w); // replace NpcApi
+        Object.setPrototypeOf(npc, Object.getPrototypeOf(instance));
+
         npc.epochMs = Date.now(); // invalidate React.Memo
         if (npc.agent !== null) {// avoid stale ref
           state.byAgId[npc.agent.agentIndex] = npc;
         }
         // track npc class meta
         npc.m.scale = npcClassToMeta[npc.def.classKey].scale;
-
-        // 🚧 needed?
-        // npc.applySkin();
-        // npc.applyTint();
       }
     },
     inSameRoom(...points) {
@@ -187,7 +190,7 @@ export default function Npcs(props) {
     },
     onStuckNpc: null,
     onTick(deltaSecs) {
-      Object.values(state.npc).forEach(npc => npc.api.onTick(deltaSecs, state.physicsPositions));
+      Object.values(state.npc).forEach(npc => npc.onTick(deltaSecs, state.physicsPositions));
       // 🔔 Float32Array caused issues i.e. decode failed
       const positions = new Float64Array(state.physicsPositions);
       w.physics.worker.postMessage({ type: 'send-npc-positions', positions}, [positions.buffer]);
@@ -292,9 +295,9 @@ export default function Npcs(props) {
         const agent = state.attachAgent(npc);
         const closest = state.getClosestNavigable(npc.position);
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
-          npc.api.startAnimation(animKeys[i]);
+          npc.startAnimation(animKeys[i]);
         } else if (npc.s.target !== null) {
-          npc.api.move({ to: npc.api.getRemainingPath() });
+          npc.move({ to: npc.getRemainingPath() });
         } else {// pin them to current position
           agent.requestMoveTarget(npc.position);
         }
@@ -303,7 +306,7 @@ export default function Npcs(props) {
     remove(...npcKeys) {
       const npcs = npcKeys.map(x => state.npc[x]).filter(Boolean);
       for (const npc of npcs) {
-        npc.api.cancel('removed'); // rejects promises
+        npc.cancel('removed'); // rejects promises
         state.removeAgent(npc);
         
         delete state.npc[npc.key];
@@ -472,14 +475,14 @@ export default function Npcs(props) {
       if (npc !== undefined) {
         
         // Respawn
-        npc.api.cancel('respawned');
+        npc.cancel('respawned');
         npc.epochMs = Date.now();
         npc.s.lookAngleDst = null;
 
         npc.def = {
           key: opts.npcKey,
           uid: npc.def.uid,
-          angle: opts.angle ?? npc.api.getAngle(), // prev angle fallback
+          angle: opts.angle ?? npc.getAngle(), // prev angle fallback
           classKey: opts.classKey ?? npc.def.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
@@ -491,7 +494,7 @@ export default function Npcs(props) {
       } else {
         
         // Spawn
-        npc = state.npc[opts.npcKey] = createNpc({
+        npc = state.npc[opts.npcKey] = new NpcApi({
           key: opts.npcKey,
           uid: takeFirst(state.freeId),
           angle: opts.angle ?? Math.PI/2, // default face along x axis
@@ -501,7 +504,7 @@ export default function Npcs(props) {
         }, w);
         state.idToKey.set(npc.def.uid, opts.npcKey);
 
-        npc.api.initialize(state.gltf[npc.def.classKey]);
+        npc.initialize(state.gltf[npc.def.classKey]);
       }
 
       state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
@@ -513,7 +516,7 @@ export default function Npcs(props) {
       if (opts.as !== undefined) {
         // 🔔 opts.skin keys may be brace-expansions (normalized by applySkin)
         Object.assign(npc.skin, opts.as);
-        npc.api.applySkin();
+        npc.applySkin();
       }
 
       if (npc.s.spawns === 0) {
@@ -529,11 +532,11 @@ export default function Npcs(props) {
 
       npc.position.copy(position);
       npc.point.set(position.x, position.z);
-      npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
+      npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(npc.point);
 
       const forceStartAnim = npc.s.spawns === 0;
-      npc.api.startAnimation(meta, forceStartAnim); // 🔔 at.meta.y important
+      npc.startAnimation(meta, forceStartAnim); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
         if (attachAgent === true) {
@@ -591,7 +594,7 @@ export default function Npcs(props) {
         let npc = state.npc[npcKey];
         
         if (npc === undefined) {// spawn
-          npc = state.npc[npcKey] = createNpc({
+          npc = state.npc[npcKey] = new NpcApi({
             key: npcKey,
             uid: freeId,
             angle: angles[i],
@@ -601,17 +604,17 @@ export default function Npcs(props) {
           }, w);
 
           state.idToKey.set(npc.def.uid, npcKey);
-          npc.api.initialize(state.gltf[npc.def.classKey]);
+          npc.initialize(state.gltf[npc.def.classKey]);
         } else {// respawn
           state.freeId.add(freeId); // put it back
-          npc.api.cancel('respawned');
+          npc.cancel('respawned');
           npc.epochMs = Date.now();
           npc.s.lookAngleDst = null;
   
           npc.def = {
             key: npcKey,
             uid: npc.def.uid,
-            angle: npc.api.getAngle(), // prev angle fallback
+            angle: npc.getAngle(), // prev angle fallback
             classKey: npc.def.classKey,
             runSpeed: helper.defaults.runSpeed,
             walkSpeed: helper.defaults.walkSpeed,
@@ -640,10 +643,10 @@ export default function Npcs(props) {
         const npc = npcs[i];
         npc.position.copy(position);
         npc.point.set(position.x, position.z);
-        npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
+        npc.rotation.y = npc.getEulerAngle(npc.def.angle);
         npc.lastTarget.copy(npc.point);
         const forceStartAnim = npc.s.spawns === 0;
-        npc.api.startAnimation(point.meta ?? {}, forceStartAnim);
+        npc.startAnimation(point.meta ?? {}, forceStartAnim);
 
         // attach/detach agents
         const doMeta = doMetas[i];
@@ -740,7 +743,7 @@ export default function Npcs(props) {
 
       // reinitialize if changed meshes
       if (npc.m.animations !== state.gltf[npc.def.classKey].animations) {
-        npc.api.initialize(state.gltf[npc.def.classKey]);
+        npc.initialize(state.gltf[npc.def.classKey]);
         npc.mixer = emptyAnimationMixer; // overwritten on remount
         npc.epochMs = Date.now(); // invalidate cache
       }
@@ -867,7 +870,7 @@ function NPC({ npc }) {
   return (
     <group
       key={npc.key}
-      ref={npc.api.onMount.bind(npc.api)}
+      ref={npc.onMount.bind(npc)}
       scale={npc.m.scale}
       // dispose={null}
     >

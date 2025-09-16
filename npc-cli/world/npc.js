@@ -12,211 +12,160 @@ import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMateri
 import { helper } from '../service/helper';
 import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
 
-/**
- * @param {NPC.NPCDef} def 
- * @param {import('./World').State} w 
- * @returns {NPC.NPC}
- */
-export function createNpc(def, w) {
-  const npc = createNpcRoot(def, w);
-  const api = new NpcApi(npc, w);
-  return Object.assign(npc, { api });
-}
-
-/**
- * @param {NPC.NPCDef} def 
- * @param {import('./World').State} w 
- */
-export function createNpcRoot(def, w) {
-
-  const bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics);
-
-  return {
-    /** @type {string} User specified e.g. `rob` */
-    key: def.key,
-    /** @type {NPC.NPCDef} Initial definition */
-    def,
-    /** @type {number} When we (re)spawned */
-    epochMs: Date.now(),
-    /** @type {number} Physics body identifier i.e. `hashText(key)` */
-    bodyUid,
-    
-    /** @type {NPC.Model} Model */
-    m: {
-      animations: [],
-      bones: [],
-      group: /** @type {*} */ (null),
-      material: /** @type {*} */ ({}),
-      mesh: /** @type {*} */ ({}),
-      scale: 1,
-      toAct: /** @type {*} */ ({}),
-    },
-    
-    mixer: emptyAnimationMixer,
-    /** Shortcut to `this.m.group.position` */
-    position: tmpVectThree1,
-    /** Point on ground i.e. `(this.position.x, this.position.z)` */
-    point: new Vect(),
-    /** Shortcut to `this.m.group.rotation` */
-    rotation: tmpEulerThree,
-    /** Difference between last position */
-    delta: new Vect(),
-  
-    /**
-     * Amounts to "uv re-mapping".
-     * 
-     * - Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
-     *   where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
-     * - We overwrite this object.
-     */
-    skin: /** @type {NPC.SkinReMap} */ ({}),
-  
-    /**
-     * Tint skin parts.
-     * - We overwrite this object.
-     */
-    tint: /** @type {NPC.SkinTint} */ ({
-      selector: [1, 1, 1, 0],
-    }),
-  
-    /** Shortcut to `this.w.npc.gltfAux[this.def.classKey]` */
-    gltfAux: /** @type {NPC.GltfAux} */ ({}),
-  
-    /** State */
-    s: {
-      /** Driven by CrowdAgent.state */
-      agentState: /** @type {null | number} */ (null),
-      /** Current animation key. */
-      anim: /** @type {Key.Anim} */ ('Idle'),
-      /** Animation to play on arrival or none if `false` (e.g. continuous loop) */
-      arriveAnim: /** @type {false | Key.Anim} */ ('Idle'),
-      /** Minimal distance at which npc is consider to have arrived */
-      arriveDist: defaultNpcArriveDistance,
-      /** Defined iff npc is at a "do point". */
-      doMeta: /** @type {null | Meta} */ (null),
-      /** Fade duration e.g. during fade spawn */
-      fadeSecs: 0.3,
-      /**
-       * Text of label above npc, or `null` if empty.
-       * This is hidden when the npc has a speech bubble.
-       */
-      label: /** @type {null | string} */ (null),
-      /** Height of label above npc */
-      labelY: 0,
-      /** Desired look angle (`rotation.y`) */
-      lookAngleDst: /** @type {null | number} */ (null),
-      /** Look duration e.g. during move or look */
-      lookSecs: lookSecsNoTarget,
-      /** An offMeshConnection traversal */
-      offMesh: /** @type {null | NPC.OffMeshState} */ (null),
-      /** Prevent `move` until after this, otherwise repeated offMesh can force its way through  */
-      offMeshCoolDown: 0,
-      /** Opacity e.g. during fade */
-      opacity: 1,
-      /** Desired opacity */
-      opacityDst: /** @type {null | number} */ (null),
-      /** Can walk or run */
-      run: false,
-      /** Npc selector color, default blue */
-      selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
-      /** For tweening agent separation weight */
-      separation: /** @type {null | { current: number; dst: number; smoothTime?: Number; }} */ (null),
-      /**
-       * Time when slowness detected (world timer elapsedTime in seconds).
-       * 🤔 Pausing currently resets World timer.
-       */
-      slowBegin: /** @type {null | number} */ (null),
-      /** Number of spawns, where more than 1 means we have re-spawned. */
-      spawns: 0,
-      /** Target during move. */
-      target: /** @type {null | Geom.Vect} */ (null),
-    },
-    
-    /** @type {null | NPC.CrowdAgent} */
-    agent: null,
-    /** @type {null | dtCrowdAgentAnimation} */
-    agentAnim: null,
-    
-    /** Last starting position. */
-    lastStart: new Vect(),
-    /** Current target (if moving), last set one (if not) */
-    lastTarget: new Vect(),
-    /** Number of corners left whilst moving */
-    numCorners: 0,
-  
-    /** ContextMenu has different position when `this.s.act` is `Lie` */
-    offsetMenu: new THREE.Vector3(),
-    offsetSpeech: new THREE.Vector3(),
-  
-    /**
-     * For continuous motion between multiple targets.
-     * @type {Geom.Vect[]}
-     */
-    pendingTargets: [],
-
-    resolve: {
-      fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-      move: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-      separate: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-      spawn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-      turn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
-    },
-  
-    reject: {
-      fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
-      move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
-      separate: /** @type {undefined | ((error: any) => void)} */ (undefined),
-      // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
-      turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
-    },
-
-    w,
-  };
-}
-
-/**
- * @typedef {ReturnType<typeof createNpcRoot>} BaseNPC
- */
-
+/** AKA `NPC.NPC` */
 export class NpcApi {
 
-  /** @type {NPC.NPC} */ base;
+  /** @type {string} User specified e.g. `rob` */
+  key;
+  /** @type {NPC.NPCDef} Initial definition */
+  def;
+  /** @type {number} When we (re)spawned */
+  epochMs = Date.now();
+  /** @type {number} Physics body identifier i.e. `hashText(key)` */
+  bodyUid;
+
+  /** @type {NPC.Model} Model */
+  m = {
+    animations: [],
+    bones: [],
+    group: /** @type {*} */ (null),
+    material: /** @type {*} */ ({}),
+    mesh: /** @type {*} */ ({}),
+    scale: 1,
+    toAct: /** @type {*} */ ({}),
+  };
+
+  mixer = emptyAnimationMixer;
+  /** Shortcut to `this.m.group.position` */
+  position = tmpVectThree1;
+  /** Point on ground i.e. `(this.position.x, this.position.z)` */
+  point = new Vect();
+  /** Shortcut to `this.m.group.rotation` */
+  rotation = tmpEulerThree;
+  /** Difference between last position */
+  delta = new Vect();
+
+  /**
+   * Amounts to "uv re-mapping".
+   * 
+   * - Given `skinPartKey` e.g. `"head-overlay-front"` we provide a prefix e.g. `"confused"`,
+   *   where `"confused_head-overlay-front"` exists in the respective skin's uvMap.
+   * - We overwrite this object.
+   */
+  skin = /** @type {NPC.SkinReMap} */ ({});
+
+  /**
+   * Tint skin parts.
+   * - We overwrite this object.
+   */
+  tint = /** @type {NPC.SkinTint} */ ({
+    selector: [1, 1, 1, 0],
+  });
+
+  /** Shortcut to `this.w.npc.gltfAux[this.def.classKey]` */
+  gltfAux = /** @type {NPC.GltfAux} */ ({});
+
+  /** State */
+  s = {
+    /** Driven by CrowdAgent.state */
+    agentState: /** @type {null | number} */ (null),
+    /** Current animation key. */
+    anim: /** @type {Key.Anim} */ ('Idle'),
+    /** Animation to play on arrival or none if `false` (e.g. continuous loop) */
+    arriveAnim: /** @type {false | Key.Anim} */ ('Idle'),
+    /** Minimal distance at which npc is consider to have arrived */
+    arriveDist: defaultNpcArriveDistance,
+    /** Defined iff npc is at a "do point". */
+    doMeta: /** @type {null | Meta} */ (null),
+    /** Fade duration e.g. during fade spawn */
+    fadeSecs: 0.3,
+    /**
+     * Text of label above npc, or `null` if empty.
+     * This is hidden when the npc has a speech bubble.
+     */
+    label: /** @type {null | string} */ (null),
+    /** Height of label above npc */
+    labelY: 0,
+    /** Desired look angle (`rotation.y`) */
+    lookAngleDst: /** @type {null | number} */ (null),
+    /** Look duration e.g. during move or look */
+    lookSecs: lookSecsNoTarget,
+    /** An offMeshConnection traversal */
+    offMesh: /** @type {null | NPC.OffMeshState} */ (null),
+    /** Prevent `move` until after this, otherwise repeated offMesh can force its way through  */
+    offMeshCoolDown: 0,
+    /** Opacity e.g. during fade */
+    opacity: 1,
+    /** Desired opacity */
+    opacityDst: /** @type {null | number} */ (null),
+    /** Can walk or run */
+    run: false,
+    /** Npc selector color, default blue */
+    selectorTint: /** @type {[number, number, number]} */ ([0, 0, 1]),
+    /** For tweening agent separation weight */
+    separation: /** @type {null | { current: number; dst: number; smoothTime?: Number; }} */ (null),
+    /**
+     * Time when slowness detected (world timer elapsedTime in seconds).
+     * 🤔 Pausing currently resets World timer.
+     */
+    slowBegin: /** @type {null | number} */ (null),
+    /** Number of spawns, where more than 1 means we have re-spawned. */
+    spawns: 0,
+    /** Target during move. */
+    target: /** @type {null | Geom.Vect} */ (null),
+  };
+
+  /** @type {null | NPC.CrowdAgent} */
+  agent = null;
+  /** @type {null | dtCrowdAgentAnimation} */
+  agentAnim = null;
   
-  //#region shortcuts for unchanging references
-  /** @type {string} */ key;
-  /** @type {NPC.NPCDef} */ def;
-  /** @type {Geom.Vect} */ delta;
-  /** @type {BaseNPC['m']} */ m;
-  /** @type {Geom.Vect[]} */ pendingTargets;
-  /** @type {Geom.Vect} */ point;
-  /** @type {THREE.Vector3} */ position;
-  /** @type {BaseNPC['reject']} */ reject;
-  /** @type {BaseNPC['resolve']} */ resolve;
-  /** @type {BaseNPC['s']} */ s;
-  //#endregion
+  /** Last starting position. */
+  lastStart = new Vect();
+  /** Current target (if moving), last set one (if not) */
+  lastTarget = new Vect();
+  /** Number of corners left whilst moving */
+  numCorners = 0;
+
+  /** ContextMenu has different position when `this.s.act` is `Lie` */
+  offsetMenu = new THREE.Vector3();
+  offsetSpeech = new THREE.Vector3();
+
+  /**
+   * For continuous motion between multiple targets.
+   * @type {Geom.Vect[]}
+   */
+  pendingTargets = [];
+
+  resolve = {
+    fade: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+    move: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+    separate: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+    spawn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+    turn: /** @type {undefined | ((value?: any) => void)} */ (undefined),
+  };
+
+  reject = {
+    fade: /** @type {undefined | ((error: any) => void)} */ (undefined),
+    move: /** @type {undefined | ((error: NPC.StopReason | Error) => void)} */ (undefined),
+    separate: /** @type {undefined | ((error: any) => void)} */ (undefined),
+    // spawn: /** @type {undefined | ((error: any) => void)} */ (undefined),
+    turn: /** @type {undefined | ((error: any) => void)} */ (undefined),
+  };
 
   /** @type {import('./World').State} World API */
   w;
 
   /**
-   * @param {BaseNPC} base
+   * @param {NPC.NPCDef} def
    * @param {import('./World').State} w
    */
-  constructor(base, w) {
-    // we'll attach `this` as `base.api` later
-    this.base = /** @type {NPC.NPC} */ (base);
+  constructor(def, w) {
     this.w = w;
-    
-    this.def = base.def;
-    this.delta = base.delta;
-    this.key = base.key;
-    this.m = base.m;
-    this.pendingTargets = base.pendingTargets;
-    this.point = base.point;
-    this.position = base.position;
-    this.reject = base.reject;
-    this.resolve = base.resolve;
-    this.s = base.s;
+
+    this.key = def.key;
+    this.def = def;
+    this.bodyUid = addBodyKeyUidRelation(npcToBodyKey(this.key), w.physics)
   }
 
   /**
@@ -232,7 +181,7 @@ export class NpcApi {
   }
 
   /**
-   * Apply uv re-mapping to `this.base.skin`.
+   * Apply uv re-mapping to `this.skin`.
    * - 1st row of pixels
    * - one pixel per triangle
    */
@@ -262,7 +211,7 @@ export class NpcApi {
 
     for (const [triangleId, { uvRectKey, skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
-      const target = this.base.skin[skinPartKey];
+      const target = this.skin[skinPartKey];
       
       // alpha encodes if skin part rendered during objectPick
       data[offset + 3] = skinPartKey in hideInObjectPick ? 0 : 1;
@@ -323,8 +272,8 @@ export class NpcApi {
     const defaultPixel = [1, 1, 1, 1];
     for (const [triangleId, { skinPartKey }] of triToKey.entries()) {
       const offset = 4 * triangleId;
-      if (skinPartKey in this.base.tint) {
-        data.set(/** @type {number[]} */ (this.base.tint[skinPartKey]), offset);
+      if (skinPartKey in this.tint) {
+        data.set(/** @type {number[]} */ (this.tint[skinPartKey]), offset);
       } else {
         data.set(defaultPixel, offset);
       }
@@ -360,12 +309,12 @@ export class NpcApi {
   }
 
   ensureAnimationMixer() {
-    if (this.base.mixer !== emptyAnimationMixer) {
+    if (this.mixer !== emptyAnimationMixer) {
       return;
     }
-    this.base.mixer = new THREE.AnimationMixer(this.m.group);
+    this.mixer = new THREE.AnimationMixer(this.m.group);
     this.m.toAct = this.m.animations.reduce((agg, a) => helper.isAnimKey(a.name)
-      ? (agg[a.name] = this.base.mixer.clipAction(a), agg)
+      ? (agg[a.name] = this.mixer.clipAction(a), agg)
       : (warn(`ignored unexpected animation: ${a.name}`), agg)
     , /** @type {typeof this['m']['toAct']} */ ({}));
   }
@@ -376,8 +325,8 @@ export class NpcApi {
    * @param {Geom.VectJson} target
    */
   exitOffMeshFor(target, continueMaxSpeed = true) {
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
-    const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.base.agentAnim);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
+    const agentAnim = /** @type {NPC.dtCrowdAgentAnimation} */ (this.agentAnim);
 
     agentAnim.set_active(false);
     agent.teleport(this.position);
@@ -401,7 +350,7 @@ export class NpcApi {
    * - We ignore unresolved expansions (they needn't be errors).
    */
   expandSkin() {
-    const lookup = this.base.skin;
+    const lookup = this.skin;
     const pending = /** @type {typeof lookup} */ ({});
     const { sheetAux } = this.w.npc;
 
@@ -430,7 +379,7 @@ export class NpcApi {
       }
     }
 
-    this.base.skin = pending;
+    this.skin = pending;
   }
 
   /**
@@ -440,7 +389,7 @@ export class NpcApi {
    * - Later keys override earlier ones.
    */
   expandTint() {
-    const lookup = this.base.tint;
+    const lookup = this.tint;
     const pending = /** @type {typeof lookup} */ ({});
 
     for (const k of keys(lookup)) {
@@ -457,7 +406,7 @@ export class NpcApi {
       }
     }
 
-    this.base.tint = pending;
+    this.tint = pending;
   }
 
   /** @param {NPC.GroundPoint[]} pendingTargets  */
@@ -549,8 +498,8 @@ export class NpcApi {
    *   180° offset to get "direction npc is facing"
    */
   getAngle() {
-    /* return geom.radRange(Math.PI - this.base.rotation.y); */
-    return Math.PI - this.base.rotation.y;
+    /* return geom.radRange(Math.PI - this.rotation.y); */
+    return Math.PI - this.rotation.y;
   }
 
   /** @param {NPC.GroundPoint} point */
@@ -563,7 +512,7 @@ export class NpcApi {
    * @param {NPC.OffMeshLookupValue} offMesh
    */
   getCornerAfterOffMesh(offMesh) {
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
     // try to use 3rd point but sometimes must use 4th
     const x = agent.raw.get_cornerVerts(6 + 0);
     const y = agent.raw.get_cornerVerts(6 + 2);
@@ -601,7 +550,7 @@ export class NpcApi {
    * @returns {Geom.VectJson}
    */
   getFurtherAlongOffMesh(offMesh, extraDistance) {
-    const anim = /** @type {dtCrowdAgentAnimation} */ (this.base.agentAnim);
+    const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
     const dstT = anim.t + (extraDistance / offMesh.tToDist);
     if (dstT < anim.tmid) {// look at 'init' seg
       return {
@@ -641,7 +590,7 @@ export class NpcApi {
   }
 
   getNextCorner() {
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
     const offset = agent.state() === 2 ? 6 : 0;
     return {// agent.corners() empty while offMeshConnection
       x: agent.raw.get_cornerVerts(offset + 0),
@@ -706,7 +655,7 @@ export class NpcApi {
       this.handlePreOffMeshCollision(agent, offMesh);
     }
 
-    const anim = /** @type {dtCrowdAgentAnimation} */ (this.base.agentAnim);
+    const anim = /** @type {dtCrowdAgentAnimation} */ (this.agentAnim);
 
     if (offMesh.seg === 0 && anim.t > anim.tmid) {
       offMesh.seg = 1;
@@ -820,14 +769,14 @@ export class NpcApi {
     this.applySkin();
     this.applyTint();
 
-    this.base.gltfAux = this.w.npc.gltfAux[this.def.classKey];
+    this.gltfAux = this.w.npc.gltfAux[this.def.classKey];
   }
 
   /**
    * @param {NPC.GroundPoint} [groundPoint]
    * @param {number} [nearDistance]
    */
-  isNear(groundPoint = this.base.lastTarget, nearDistance = nearTargetDistance) {
+  isNear(groundPoint = this.lastTarget, nearDistance = nearTargetDistance) {
     const y = 'z' in groundPoint ? groundPoint.z : groundPoint.y;
     return (
       Math.abs(groundPoint.x - this.point.x) < nearDistance
@@ -940,7 +889,7 @@ export class NpcApi {
    * @param {NPC.MoveOpts} opts
    */
   async move(opts) {
-    const { agent } = this.base;
+    const { agent } = this;
 
     if (agent === null) {
       throw new Error(`npc lacks agent: ${this.key}`);
@@ -1002,10 +951,10 @@ export class NpcApi {
     agent.raw.params.set_separationWeight(defaultSeparationWeight);
     agent.raw.params.set_queryFilterType(helper.queryFilterType.respectUnwalkable);
     agent.raw.params.set_radius((this.s.run ? 1.5 : 1) * helper.defaults.radius);
-    this.base.agentAnim?.set_tScale(1);
+    this.agentAnim?.set_tScale(1);
 
-    this.base.lastStart.copy(this.point);
-    this.s.target = this.base.lastTarget.set(closest.x, closest.z);
+    this.lastStart.copy(this.point);
+    this.s.target = this.lastTarget.set(closest.x, closest.z);
 
     if (this.tryStopOffMesh() === true) {
       agent.teleport(this.position);
@@ -1043,7 +992,7 @@ export class NpcApi {
       this.pendingTargets.length = 0;
       this.setSlowDownRadius(true);
       this.tryStopOffMesh(); // when turnBeforeMove
-      this.base.numCorners = 0;
+      this.numCorners = 0;
     }
   }
 
@@ -1082,19 +1031,19 @@ export class NpcApi {
   }
 
   onArriveTarget() {
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
     const pendingTarget = this.pendingTargets.shift();
     
     if (pendingTarget === undefined) {
       this.stopMoving(
         { type: 'stop-reason', key: 'arrived' },
         // only finish look when move a short distance
-        this.base.lastStart.distanceTo(this.point) < 0.5 ? this.s.lookAngleDst : null
+        this.lastStart.distanceTo(this.point) < 0.5 ? this.s.lookAngleDst : null
       );
     } else {
-      this.base.lastStart.copy(this.point);
-      this.s.target = this.base.lastTarget.copy(pendingTarget);
-      this.base.numCorners = 0;
+      this.lastStart.copy(this.point);
+      this.s.target = this.lastTarget.copy(pendingTarget);
+      this.numCorners = 0;
       agent.requestMoveTarget(toV3(this.s.target));
       this.setSlowDownRadius();
       this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath });
@@ -1133,7 +1082,7 @@ export class NpcApi {
    * @param {number} numCorners
    */
   onChangeNumCorners(agent, numCorners) {// 🚧 unused
-    this.base.numCorners = numCorners;
+    this.numCorners = numCorners;
     if (this.s.offMesh !== null) {
       return;
     }
@@ -1193,15 +1142,15 @@ export class NpcApi {
     if (group !== null) {
       this.m.group = group;
       // Setup shortcut
-      this.base.position = this.position = group.position;
-      this.base.rotation = group.rotation;
+      this.position = this.position = group.position;
+      this.rotation = group.rotation;
       // Resume `w.npc.spawn`
       this.resolve.spawn?.();
       // Ensure non-empty animation mixer
       this.ensureAnimationMixer();
     } else {
       this.m.group = emptyGroup;
-      this.base.position = tmpVectThree1;
+      this.position = tmpVectThree1;
     }
   }
 
@@ -1211,11 +1160,11 @@ export class NpcApi {
    * Format `[..., bodyUid_i, x_i, y_i, z_i, ...]` for physics.worker
    */
   onTick(deltaSecs, positions) {
-    this.base.mixer.update(deltaSecs);
+    this.mixer.update(deltaSecs);
 
     if (this.s.lookAngleDst !== null) {
       const rotYDst = this.getEulerAngle(this.s.lookAngleDst);
-      if (dampAngle(this.base.rotation, 'y', rotYDst, this.s.lookSecs, deltaSecs, undefined, undefined, 0.01) === false) {
+      if (dampAngle(this.rotation, 'y', rotYDst, this.s.lookSecs, deltaSecs, undefined, undefined, 0.01) === false) {
         // 🚧 move into this.onArriveAngle
         this.s.lookAngleDst = null;
         this.resolve.turn?.();
@@ -1236,7 +1185,7 @@ export class NpcApi {
       this.setUniform('opacity', this.s.opacity);
     }
 
-    const { agent } = this.base;
+    const { agent } = this;
 
     if (agent === null) {
       return;
@@ -1246,7 +1195,7 @@ export class NpcApi {
 
     if (agent.raw.dvel !== 0 || this.s.offMesh !== null) {
       const { x, y, z } = this.position;
-      positions.push(this.base.bodyUid, x, y, z);
+      positions.push(this.bodyUid, x, y, z);
     }
   }
 
@@ -1279,7 +1228,7 @@ export class NpcApi {
     }
 
     if (this.s.target === null) {
-      this.w.npc.onTickIdleTurn?.(this.base, agent);
+      this.w.npc.onTickIdleTurn?.(this, agent);
       return;
     }
 
@@ -1288,7 +1237,7 @@ export class NpcApi {
     const distance = this.s.target.distanceTo(this.point);
 
     const numCorners = agent.raw.get_ncorners();
-    if (numCorners !== this.base.numCorners) {
+    if (numCorners !== this.numCorners) {
       this.onChangeNumCorners(agent, numCorners);
     }
 
@@ -1356,7 +1305,7 @@ export class NpcApi {
         rest: this.getRemainingPath(),
       });
     } else {
-      this.w.npc.onStuckNpc?.(this.base, agent);
+      this.w.npc.onStuckNpc?.(this, agent);
     }
   }
 
@@ -1382,7 +1331,7 @@ export class NpcApi {
   }
 
   resetSkin() {
-    this.base.skin = {};
+    this.skin = {};
     this.applySkin();
   }
 
@@ -1390,8 +1339,8 @@ export class NpcApi {
     /** @type {Partial<Record<Key.SkinPart, true>>} */
     const remember = { 'breath': true, 'label': true, 'selector': true, }
     
-    for (const skinPartKey of keys(this.base.tint)) {
-      !(skinPartKey in remember) && delete this.base.tint[skinPartKey];
+    for (const skinPartKey of keys(this.tint)) {
+      !(skinPartKey in remember) && delete this.tint[skinPartKey];
     }
 
     this.applyTint();
@@ -1405,7 +1354,7 @@ export class NpcApi {
   async separate(separationWeight, smoothTime = 0.2) {
     this.reject.separate?.(Error('separate-again'));
     try {
-      const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+      const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
       this.s.separation = {
         current: agent.raw.params.get_separationWeight(),
         dst: separationWeight,
@@ -1467,7 +1416,7 @@ export class NpcApi {
    */
   setSlowDownRadius(enabled = this.pendingTargets.length === 0 && this.s.arriveAnim !== false) {
     const slowDownRadius = enabled === true ? defaultSlowDownRadius : 0.05;
-    const agent = /** @type {NPC.CrowdAgent} */ (this.base.agent);
+    const agent = /** @type {NPC.CrowdAgent} */ (this.agent);
     agent.raw.params.set_slowDownRadius(slowDownRadius);
   }
 
@@ -1483,7 +1432,7 @@ export class NpcApi {
    * @param {boolean} shouldShow
    */
   showLabel(shouldShow) {
-    (this.base.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
+    (this.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
     this.applyTint();
   }
 
@@ -1491,8 +1440,8 @@ export class NpcApi {
    * Also tints selector via @see {s.selectorColor}
    * @param {boolean} shouldShow
    */
-  showSelector(shouldShow = this.base.tint.selector?.[3] === 1 ? false : true) {
-    this.base.tint.selector = [...this.s.selectorTint, shouldShow ? 1 : 0];
+  showSelector(shouldShow = this.tint.selector?.[3] === 1 ? false : true) {
+    this.tint.selector = [...this.s.selectorTint, shouldShow ? 1 : 0];
     this.applyTint();
     // this.w.view.ensureRender();
   }
@@ -1516,7 +1465,7 @@ export class NpcApi {
 
     this.s.anim = input;
     const meta = npcClassToMeta[this.def.classKey];
-    this.base.mixer.timeScale = meta.timeScale[input] ?? 1;
+    this.mixer.timeScale = meta.timeScale[input] ?? 1;
 
     this.updateLabelOffsets();
   }
@@ -1529,7 +1478,7 @@ export class NpcApi {
     reason = { type: 'stop-reason', key: 'stopped', rest: this.getRemainingPath() },
     lookAngleDst = null,
   ) {
-    const agent = this.base.agent;
+    const agent = this.agent;
 
     if (agent === null || this.s.target === null) {
       return;
@@ -1560,9 +1509,9 @@ export class NpcApi {
     if (this.s.offMesh === null || this.s.offMesh.seg === 0) {
       this.tryStopOffMesh();
 
-      if (this.point.distanceTo(this.base.lastStart) < 0.05) {
+      if (this.point.distanceTo(this.lastStart) < 0.05) {
         // reset small motions
-        this.position.copy(toV3(this.base.lastStart));
+        this.position.copy(toV3(this.lastStart));
       }
 
       if (agent.state() === 2) {
@@ -1584,7 +1533,7 @@ export class NpcApi {
   }
 
   tryStopOffMesh() {
-    const { agentAnim } = this.base;
+    const { agentAnim } = this;
 
     // 🔔 offMeshConnection can happen when `this.s.offMesh === null`
     // e.g. when npc without access is close to door
@@ -1605,22 +1554,22 @@ export class NpcApi {
 
   updateLabelOffsets() {
     const { anim: act } = this.s;
-    const { animHeights, labelHeight } = this.base.gltfAux;
+    const { animHeights, labelHeight } = this.gltfAux;
     
     // Label in model is half below ground with total height `labelHeight`.
     // We'll move it 2.5 * labelHeight above npc's current height.
     const offsetY = 0.05 + animHeights[act] + (0.5 + 2.5) * labelHeight;
     
     // for speech bubble
-    this.base.offsetSpeech.y = offsetY;
+    this.offsetSpeech.y = offsetY;
 
     if (act === 'Lie') {
       // 🚧 fix label too
       // fix contextmenu position
       const clockwiseFromEast = this.getAngle() - Math.PI/2;
-      this.base.offsetMenu.set(0.5 * Math.cos(clockwiseFromEast), 0, 0.5 * Math.sin(clockwiseFromEast));      
+      this.offsetMenu.set(0.5 * Math.cos(clockwiseFromEast), 0, 0.5 * Math.sin(clockwiseFromEast));      
     } else {
-      this.base.offsetMenu.set(0, 0, 0);
+      this.offsetMenu.set(0, 0, 0);
     }
 
     // 🚧 labelY -> labelOffset

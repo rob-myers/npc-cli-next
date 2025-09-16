@@ -96,11 +96,14 @@ events '({ key, reason, npcKey }) =>
 
 ### World
 
-- 🚧 try collapse npc.api and npc.api.base whilst preserving reference across HMR
+- ✅ try collapse npc.api and npc.api.base whilst preserving reference across HMR
+  - try `Object.setPrototypeOf(npc, Object.getPrototypeOf(npcApiInst))`
 
 - improve stationary npc support
   - e.g. `npc rada agent.raw.params.set_collisionQueryRange 0.1`
-  - temp change collision query range when other offMesh intersects?
+  - if close to door, then door must be "extra" locked
+  - maybe indicate graphically
+  - maybe prevent offMesh traversal if other side has stationary npc
 
 - ✅ kill process on any thrown error
   - previously we killed on non-zero exit-code

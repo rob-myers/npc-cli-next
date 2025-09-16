@@ -1,7 +1,6 @@
 declare namespace NPC {
 
-  type NPC = BaseNPC & { api: import('../world/npc').NpcApi };
-  type BaseNPC = import('../world/npc').BaseNPC;
+  type NPC = import('../world/npc').NpcApi;
 
   interface NPCDef {
     /** User specified e.g. `rob` */
