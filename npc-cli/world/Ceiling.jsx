@@ -18,7 +18,7 @@ export default function Ceiling(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    dark: false,
+    dark: w.touchDevice,
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-ceiling-xz`),
     opacity: xRayOpacity.ceiling,
