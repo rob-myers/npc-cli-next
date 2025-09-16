@@ -143,6 +143,7 @@ export default function Decor(props) {
       /** @type {Geomorph.Decor} */ let d;
       const meta = /** @type {Meta<Geomorph.GmRoomId>} */ (def.meta ?? {});
       meta.decor = true;
+      meta.decorKey = def.key;
 
       switch (def.type) {
         case 'circle': {
@@ -165,7 +166,7 @@ export default function Decor(props) {
             type: 'cuboid',
             key: def.key,
             meta: Object.assign(meta, { cuboid: true, h: def.height3d, y: def.baseY }),
-            bounds2d: poly.rect.precision(precision).json,
+            bounds2d: poly.rect.precision(2).json,
             center: geom.toPrecisionV3({ x: center2d.x, y: def.baseY + def.height3d/2, z: center2d.y }),
             transform,
           };
@@ -198,9 +199,9 @@ export default function Decor(props) {
               img: def.img,
               y: def.y3d,
             }),
-            bounds2d: poly.rect.precision(precision).json,
+            bounds2d: poly.rect.precision(2).json,
             transform,
-            center: poly.center.precision(3).json,
+            center: poly.center.precision(2).json,
             det: matrix.a * matrix.d - matrix.b * matrix.c,
           };
           break;
@@ -213,7 +214,7 @@ export default function Decor(props) {
             meta: Object.assign(meta, { rect: true }),
             bounds2d: poly.rect.json,
             points: poly.outline.map(x => x.json),
-            center: poly.center.precision(3).json,
+            center: poly.center.precision(2).json,
             angle: def.angle ?? 0,
           };
           break;
@@ -335,7 +336,7 @@ export default function Decor(props) {
       const base = {
         key: '', // computed below
         meta: { ...d.meta, gmId }, // 🔔 must not mutate d.meta
-        bounds2d: tmpRect1.copy(d.bounds2d).applyMatrix(gm.matrix).precision(precision).json,
+        bounds2d: tmpRect1.copy(d.bounds2d).applyMatrix(gm.matrix).precision(2).json,
         src: gm.key,
       };
 
@@ -393,7 +394,9 @@ export default function Decor(props) {
         default:
           throw testNever(d);
       }
+
       instance.key = geomorph.getDerivedDecorKey(instance);
+      instance.meta.decorKey = instance.key;
       return /** @type {typeof d} */ (instance);
     },
     /** @returns {d is Geomorph.DecorPoint | Geomorph.DecorQuad} */
@@ -461,7 +464,8 @@ export default function Decor(props) {
       return queryDecorGridRect(state.byGrid, rect, grKey);
     },
     register(ds, removeExisting = true) {
-      const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
+      const addable = ds.filter((d) =>
+        state.ensureGmRoomId(d) !== null ||
         void warn(`decor "${d.key}" cannot be added: not in any room`, d)
       );
 
