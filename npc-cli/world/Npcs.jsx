@@ -10,7 +10,7 @@ import { computeMeshUvMappings, emptyAnimationMixer, tmpVectThree1, toV3 } from 
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
 import { geom } from "../service/geom";
-import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
+import { createNpcRoot, NpcApi, crowdAgentParams, createNpc } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -133,7 +133,7 @@ export default function Npcs(props) {
         **/ (undefined);
 
       for (const npc of npcs) {
-        const base = createBaseNpc(npc.def, w);
+        const base = createNpcRoot(npc.def, w);
 
         // copy in new from `base`, delete old from `npc`, also for `s`
         // 🤔 we don't support type-change (should overwrite with base[x])

@@ -18,16 +18,16 @@ import { addBodyKeyUidRelation, npcToBodyKey } from '../service/rapier';
  * @returns {NPC.NPC}
  */
 export function createNpc(def, w) {
-  const baseNpc = createBaseNpc(def, w);
-  const api = new NpcApi(baseNpc, w);
-  return Object.assign(baseNpc, { api });
+  const npc = createNpcRoot(def, w);
+  const api = new NpcApi(npc, w);
+  return Object.assign(npc, { api });
 }
 
 /**
  * @param {NPC.NPCDef} def 
  * @param {import('./World').State} w 
  */
-export function createBaseNpc(def, w) {
+export function createNpcRoot(def, w) {
 
   const bodyUid = addBodyKeyUidRelation(npcToBodyKey(def.key), w.physics);
 
@@ -175,7 +175,7 @@ export function createBaseNpc(def, w) {
 }
 
 /**
- * @typedef {ReturnType<typeof createBaseNpc>} BaseNPC
+ * @typedef {ReturnType<typeof createNpcRoot>} BaseNPC
  */
 
 export class NpcApi {
@@ -1649,6 +1649,8 @@ const defaultMaxAcceleration = 10;
 const defaultSeparationWeight = 0.1;
 const defaultIdleSeparationWeight = 0.25;
 const defaultCollisionQueryRange = helper.defaults.radius * 8;
+// const defaultCollisionQueryRange = helper.defaults.radius * 4;
+// const defaultCollisionQueryRange = 0.1;
 const defaultSlowDownRadius = helper.defaults.radius * 2;
 
 const preOffMeshCloseDist = helper.defaults.radius;

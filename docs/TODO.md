@@ -14,18 +14,21 @@
   - 🚧 can move AND when near bed log something
 ```sh
 import demoClickToMove from demo
-awaitWorld
 
-spawn npc:rob at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' as:soldier-0 granted:.
+spawn npc:rob at:'{x:2.5, y:3*1.5+0.2}' as:soldier-0 granted:.
 
 permitMove=true
-click '({ meta }, ct) => meta.nav && ct.home.permitMove' |
+click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
   demoClickToMove npc:rob &
 
-# 🚧
-events '({ key, reason }) => key === "stopped-moving" && reason.key === "arrived"' |
+events '({ key, reason, npcKey }) =>
+    key === "stopped-moving" && reason.key === "arrived" && npcKey === "rob"
+  ' |
   while sink 1; do
-    near npc:rob where:bed
+    near npc:rob where:bed | map '({ count, items }) => {
+      // 🚧 log links to w.menu.logger
+      if (count) return "near bed";
+    }'
   done
 ```
 
@@ -93,6 +96,12 @@ events '({ key, reason }) => key === "stopped-moving" && reason.key === "arrived
 
 ### World
 
+- 🚧 try collapse npc.api and npc.api.base whilst preserving reference across HMR
+
+- improve stationary npc support
+  - e.g. `npc rada agent.raw.params.set_collisionQueryRange 0.1`
+  - temp change collision query range when other offMesh intersects?
+
 - ✅ kill process on any thrown error
   - previously we killed on non-zero exit-code
   - but this would require special behaviour for `||`, `test`, `false`
@@ -119,8 +128,6 @@ events '({ key, reason }) => key === "stopped-moving" && reason.key === "arrived
 - ✅ `nearby to:$p`
   - ✅ restricted to room containing `to`
   - ✅ `nearby meta to:rob within:2`
-
-- collapse npc.base somehow?
 
 - 🔔 overall strategy:
   - we don't expect arbitrary targets for multiple npcs to work
