@@ -129,24 +129,24 @@ spawn npc:rob at:$( click 1 )
 
 # re-skin rob
 npc rob skin | assign '{ "head-overlay-front": { prefix: "scientist-0" } }'
-npc rob api.applySkin
+npc rob applySkin
 # and again
 npc rob skin | assign '{ "head-{,overlay-}front": { prefix: "suit-0" } }'
-npc rob api.applySkin
+npc rob applySkin
 # and again
 npc rob skin | assign $( w npc.resolveSkin ,,suit-0, )
-npc rob api.applySkin
+npc rob applySkin
 
 # tint rob
 npc rob tint | assign '{ "body-{front,back,left,right,top,bottom}": [0.25, 0.25, 0.25, 1] }'
-npc rob api.applyTint
+npc rob applyTint
 # and again
 npc rob skin | assign '{ "head-overlay-{front,back,left,right,top,bottom}": [1, 0, 0, 1] }'
-npc rob api.applyTint
+npc rob applyTint
 ```
 
 ```sh
-npc rob api.setLabel "foo bar"
+npc rob setLabel "foo bar"
 ```
 
 ### Access

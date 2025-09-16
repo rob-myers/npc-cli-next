@@ -19,7 +19,7 @@ gm() {
 
 # Select/invoke npc api
 # Usage: npc {npcKey} [selector]
-# Examples: `npc rob`, `npc rob api.showSelector true`
+# Examples: `npc rob`, `npc rob showSelector true`
 npc() {
   local npcKey="${1}" selector="${2:-x=>x}"
   shift 2
