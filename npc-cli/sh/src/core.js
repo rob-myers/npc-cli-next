@@ -89,6 +89,7 @@ export async function* click(ct) {
   const colors = { red: '#c00', green: '#0c0', blue: '#00c',  black: '#999' };
   const color = opts.red === true ? colors.red : opts.blue === true ? colors.blue : opts.green === true ? colors.green : colors.black;
   const clickGroup = `click-${color}`;
+  const decorOffset = opts.keep === true ? w.decor.group[clickGroup]?.length ?? 0 : 0;
 
   if (opts.clear === true) {// clear labels of all colours
     Object.values(colors).forEach(color => w.decor.removeGroup(`click-${color}`));
@@ -171,7 +172,13 @@ export async function* click(ct) {
           const number = totalClicks - numClicks; // 1 2 ...
           const decorKey = `${clickGroup}-#${number}-${clickId}`;
           // meta.floor induces meta.nav
-          createDecorNumber(ct, { decorKey, at: output, number, meta: { floor: true, color }, y: e.position.y });
+          createDecorNumber(ct, {
+            decorKey,
+            at: output,
+            number: number + decorOffset,
+            meta: { floor: true, color },
+            y: e.position.y,
+          });
           w.decor.rememberInGroup(clickGroup, decorKey);
         }
       }
@@ -401,30 +408,33 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
 }
 
 /**
+ * Test whether a ray hits walls or closed doors.
+ * - Point available via `ray point`
+ * - Detail available via `ray detail`
  * ```sh
  * ray from:$( click 1 ) to:$( click 1 )
  * ray from:kate to:will
- * ray test from:kate to:will
  * ray point from:kate to:will
+ * ray detail from:kate to:will
  * ray from:rob to:rob
  * ```
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {NPC.GroundPoint | string} opts.src
  * @param {NPC.GroundPoint | string} opts.dst
- * @param {boolean} [opts.test] Output boolean.
  * @param {boolean} [opts.point] Output point.
+ * @param {boolean} [opts.detail] Output detailed result.
  */
 export async function ray({ api, args, w }, opts = api.jsArg(args, { from: 'src', to: 'dst' })) {
   const src = typeof opts.src === 'string' ? w.npc.getNpc(opts.src).point : opts.src;
   const dst = typeof opts.dst === 'string' ? w.npc.getNpc(opts.dst).point : opts.dst;
   const result = await w.npc.raycast(src, dst);
-  if (opts.test === true) {
-    return result.hit === null;
-  } else if (opts.point === true) {
+  if (opts.point === true) {
     return result.hit;
-  } else {
+  } else if (opts.detail === true) {
     return result;
+  } else {
+    return result.hit === null;
   }
 }
 
