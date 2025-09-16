@@ -384,7 +384,7 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
  * @param {object} [opts]
  * @param {NPC.GroundPoint | string} opts.to `npcKey` or point inside a room.
  * @param {number} [opts.within]
- * @param {string | ((d: Geomorph.Decor['meta']) => any)} [opts.where]
+ * @param {string | ((meta: Geomorph.Decor['meta']) => any)} [opts.where]
  * @returns {{ count: number; items: Geomorph.Decor['meta'][] }}
  */
 export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
@@ -399,7 +399,7 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
   
   const defaultRadius = 0.5;
   const decors = w.decor.query(to, opts.within ?? defaultRadius, gmRoomId.grKey);
-  const id = /** @param {Geomorph.Decor['meta']} d */ (d) => d;
+  const id = /** @param {Geomorph.Decor['meta']} meta */ (meta) => meta;
   const selector = opts.where !== undefined ? api.generateSelector(opts.where) : id;
   const items = decors.map(x => x.meta).filter(selector);
 

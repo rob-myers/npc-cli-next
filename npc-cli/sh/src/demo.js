@@ -113,7 +113,7 @@ export async function* demoSelectPolys({ w }) {
 /**
  * Bound to a particular npcKey.
  * ```sh
- * click meta.floor | demoClickToMove npc:rob
+ * events | demoGotoBedChoices npc:rob
  * ```
  * @param {NPC.Event} e
  * @param {NPC.RunArg} ct
@@ -135,8 +135,9 @@ export function demoGotoBedChoices(e, ct, opts = ct.api.jsArg(ct.args, { npc: 'n
   });
 
   if (result.count > 0) {
+    // 🚧 define Geomorph.DecorMeta
     // 🚧 log clickable link
-    ct.w.menu.log(...result.items.map(meta => `bed at ${jsStringify(meta.doPoint)} height ${meta.y}`))
+    ct.w.menu.log(...result.items.map(meta => `[goto bed] at ${jsStringify(meta.doPoint)} height ${meta.y}`))
   }
 }
 
