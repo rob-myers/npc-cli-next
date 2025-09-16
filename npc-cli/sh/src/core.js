@@ -369,11 +369,12 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
 
 /**
  * Provides nearby decor.meta.
+ * - Parent decor can be identified via `meta.decorKey`.
  * ```sh
  * near to:$( click 1 )
  * near to:$( click 1 ) within:1
- * near decor to:rob
- * near decor to:$( click 1 ) where:bed
+ * near to:rob
+ * near to:$( click 1 ) where:bed
  * near to:$( click 1 ) where:'m => m.bed'
  * near npc:rob
  * near npc:rob | flatMap items
@@ -381,10 +382,10 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
  * 
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
- * @param {NPC.GroundPoint | string} opts.to Must be inside a room.
+ * @param {NPC.GroundPoint | string} opts.to `npcKey` or point inside a room.
  * @param {number} [opts.within]
- * @param {boolean} [opts.decor] provide entire decor rather than decor.meta
- * @param {string | ((d: any) => any)} [opts.where]
+ * @param {string | ((d: Geomorph.Decor['meta']) => any)} [opts.where]
+ * @returns {{ count: number; items: Geomorph.Decor['meta'][] }}
  */
 export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
   const to = typeof opts.to === 'string' ? w.npc.get(opts.to).point : opts.to;
@@ -398,9 +399,9 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
   
   const defaultRadius = 0.5;
   const decors = w.decor.query(to, opts.within ?? defaultRadius, gmRoomId.grKey);
-  const id = /** @param {any} x */ (x) => x;
+  const id = /** @param {Geomorph.Decor['meta']} d */ (d) => d;
   const selector = opts.where !== undefined ? api.generateSelector(opts.where) : id;
-  const items = decors.map(opts.decor === true ? id : x => x.meta).filter(selector);
+  const items = decors.map(x => x.meta).filter(selector);
 
   return { count: items.length, items };
 }
