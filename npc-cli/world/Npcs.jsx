@@ -114,7 +114,7 @@ export default function Npcs(props) {
       warn(`${'getClosestNavigable'} failed: ${JSON.stringify(p)}`);
       return null;
     },
-    getNpc(npcKey) {
+    get(npcKey) {
       const npc = state.npc[npcKey];
       if (npc === undefined) {
         throw Error(`npc "${npcKey}" does not exist`);
@@ -821,7 +821,7 @@ export default function Npcs(props) {
  * Technically rooms do not include doors,
  * but sometimes either adjacent room will do.
  * @property {() => void} forceUpdate
- * @property {(npcKey: string) => NPC.NPC} getNpc
+ * @property {(npcKey: string) => NPC.NPC} get
  * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
  * @property {(...points: NPC.GroundPoint[]) => boolean} inSameRoom

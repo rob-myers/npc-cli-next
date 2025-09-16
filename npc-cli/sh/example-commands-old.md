@@ -672,7 +672,7 @@ multiSpawn
 click 1 | run '({ api, w: { npcs } }) {
   const point = await api.read()
   for (const npcKey in npcs.npc) {
-    const npc = npcs.getNpc(npcKey);
+    const npc = npcs.get(npcKey);
     npc.lookAt(point, { ms: 500 });
   }
 }'
@@ -682,7 +682,7 @@ while true; do
   click 1 | run '({ api, w: { npcs } }) {
     const point = await api.read()
     for (const npcKey in npcs.npc) {
-      const npc = npcs.getNpc(npcKey);
+      const npc = npcs.get(npcKey);
       npc.walk(point, point);
     }
   }'

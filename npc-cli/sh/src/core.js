@@ -263,7 +263,7 @@ export async function* look({ api, args, w }, opts = api.jsArg(args)) {
  * @param {{ npcKey: string } & NPC.DoOpts} [opts]
  */
 export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
-  const npc = w.npc.getNpc(opts.npcKey);
+  const npc = w.npc.get(opts.npcKey);
 
   let abortAwaitResume = /** @param {*} e */ (e) => {};
 
@@ -316,7 +316,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
  * @param {{ npcKey: string; '...'?: true } & NPC.MoveOpts} [opts]
  */
 export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }, { array: { to: true } })) => {
-  const npc = w.npc.getNpc(opts.npcKey);
+  const npc = w.npc.get(opts.npcKey);
   let to = Array.isArray(opts.to) ? opts.to.slice() : [opts.to];
   const arriveAnim = opts['...'] === true ? false : opts.arriveAnim;
   let abortAwaitResume = /** @param {*} e */ (e) => {};
@@ -387,7 +387,7 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
  * @param {string | ((d: any) => any)} [opts.where]
  */
 export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
-  const to = typeof opts.to === 'string' ? w.npc.getNpc(opts.to).point : opts.to;
+  const to = typeof opts.to === 'string' ? w.npc.get(opts.to).point : opts.to;
   if (helper.isVectJson(to) === false) {
     throw Error('opts.to must be a point');
   }
@@ -424,8 +424,8 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
  * @param {boolean} [opts.detail] Output detailed result.
  */
 export async function ray({ api, args, w }, opts = api.jsArg(args, { from: 'src', to: 'dst' })) {
-  const src = typeof opts.src === 'string' ? w.npc.getNpc(opts.src).point : opts.src;
-  const dst = typeof opts.dst === 'string' ? w.npc.getNpc(opts.dst).point : opts.dst;
+  const src = typeof opts.src === 'string' ? w.npc.get(opts.src).point : opts.src;
+  const dst = typeof opts.dst === 'string' ? w.npc.get(opts.dst).point : opts.dst;
   const result = await w.npc.raycast(src, dst);
   if (opts.point === true) {
     return result.hit;

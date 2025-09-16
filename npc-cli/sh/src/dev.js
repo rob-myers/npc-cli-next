@@ -233,7 +233,7 @@ export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args,
   
   const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
   api.set(opts.npcKeyPath, nextNpcKey);
-  const nextNpc = w.npc.getNpc(nextNpcKey); // must
+  const nextNpc = w.npc.get(nextNpcKey); // must
   nextNpc.showSelector(true);
   
   if (npcKey !== nextNpcKey) {
