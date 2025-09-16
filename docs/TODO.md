@@ -13,7 +13,7 @@
     - `ray test from:rob to:will`
   - 🚧 can move AND when near bed log something
 ```sh
-import demoClickToMove from demo
+import demoClickToMove demoGotoBedChoices from demo
 
 spawn npc:rob at:'{x:2.5, y:3*1.5+0.2}' as:soldier-0 granted:.
 
@@ -21,16 +21,12 @@ permitMove=true
 click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
   demoClickToMove npc:rob &
 
-events '({ key, reason, npcKey }) =>
-    key === "stopped-moving" && reason.key === "arrived" && npcKey === "rob"
-  ' |
-  while sink 1; do
-    near npc:rob where:bed | map '({ count, items }) => {
-      // 🚧 log links to w.menu.logger
-      if (count) return "near bed";
-    }'
-  done
+events | demoGotoBedChoices npc:rob
 ```
+
+- ✅ decor.meta has decorKey
+- ✅ `near` only outputs meta
+  - avoids confusion regarding return type and type of `opts.where`
 
 - mobile profiles will include progression via logger ui links
 

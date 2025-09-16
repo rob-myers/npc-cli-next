@@ -1,7 +1,9 @@
 import { deltaAngle } from "maath/misc";
 import { Mat } from "@/npc-cli/geom";
+import { jsStringify } from "@/npc-cli/service/generic";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from "@/npc-cli/service/geom";
+import { near } from "./core";
 
 /**
  * @param {NPC.RunArg} ct
@@ -76,7 +78,7 @@ export const demoCameraWASD = ({ w }) => {
  * click meta.floor | demoClickToMove npc:rob
  * ```
  * @param {NPC.ClickOutput} input
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  * @param {{ npcKey: string }} [opts]
  */
 export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
@@ -108,10 +110,41 @@ export async function* demoSelectPolys({ w }) {
   w.debug.selectNavPolys(...polyRefs); // display via debug
 }
 
+/**
+ * Bound to a particular npcKey.
+ * ```sh
+ * click meta.floor | demoClickToMove npc:rob
+ * ```
+ * @param {NPC.Event} e
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string }} [opts]
+ */
+
+export function demoGotoBedChoices(e, ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+  if (!(
+    e.key === 'stopped-moving'
+    && e.npcKey === opts.npcKey
+    && e.reason.key === 'arrived'
+  )) {
+    return; 
+  }
+
+  const result = near(ct, {
+    to: opts.npcKey,
+    where(meta) { return meta.bed && meta.doPoint },
+  });
+
+  if (result.count > 0) {
+    // 🚧 log clickable link
+    ct.w.menu.log(...result.items.map(meta => `bed at ${jsStringify(meta.doPoint)} height ${meta.y}`))
+  }
+}
+
 const tmpMat1 = new Mat();
 
 export const meta = {
   map: {
     demoClickToMove,
+    demoGotoBedChoices,
   },
 };

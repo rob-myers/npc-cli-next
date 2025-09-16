@@ -46,6 +46,11 @@ export default function WorldMenu(props) {
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
       state.onChangeDark(toEvent(state.dark));
     },
+    log(...lines) {
+      for (const line of lines) {
+        state.logger.xterm.writeln(line);
+      }
+    },
     measure(msg) {
       if (state.showDebug === false) {
         return;
@@ -436,6 +441,7 @@ const pausedControlsCss = css`
  * @property {boolean} xRayEnabled
  *
  * @property {() => void} applyControlsInitValues
+ * @property {(...lines: string[]) => void} log
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBgScale

@@ -2,11 +2,9 @@ import React from "react";
 import * as THREE from "three";
 import { css } from "@emotion/react";
 import cx from "classnames";
-import { stringify as javascriptStringify } from 'javascript-stringify';
-import debounce from "debounce";
 
 import { zIndexWorld } from "../service/const";
-import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
+import { jsStringify, tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { WorldContext } from "./world-context";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
@@ -55,7 +53,7 @@ export function ContextMenu() {
       });
       state.kvs = Object.entries(meta ?? {}).flatMap(([k, v]) => {
         if (skip[k] === true) return [];
-        const vStr = v === true ? '' : typeof v === 'string' ? v : javascriptStringify(v) ?? '';
+        const vStr = v === true ? '' : typeof v === 'string' ? v : jsStringify(v) ?? '';
         return { k, v: vStr, length: k.length + (vStr === '' ? 0 : 1) + vStr.length };
       // }).sort((a, b) => a.length < b.length ? -1 : 1);
       }); // sorting destroys tag precedence
