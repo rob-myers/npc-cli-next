@@ -222,8 +222,6 @@ declare namespace NPC {
   type ClickOutput<T extends Meta = Meta> = NPC.GroundPoint & {
     keys?: BasePointerEvent['keys'];
     meta: T;
-    xyz: import('three').Vector3Like;
-    xz: Geom.VectJson;
   };
 
   type TiledCacheResult = import('@recast-navigation/core').ImportTileCacheResult;

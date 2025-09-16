@@ -156,8 +156,6 @@ export async function* click(ct) {
           nav: e.meta.floor === true ? w.npc.isPointInNavmesh(e.point) : false,
           // longClick: e.justLongDown,
         },
-        xyz: {...e.position},
-        xz: {...e.point},
       };
 
       if (filter === undefined || filter?.(output)) {
@@ -478,8 +476,8 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'np
  * w 'x => x.crowd'
  * w crowd
  * w e.toggleDoor g0d0
- * w gmGraph.findRoomContaining $( click 1 | map xz )
- * click 1 | map xz | w gmGraph.findRoomContaining -
+ * w gmGraph.findRoomContaining $( click -2 1 )
+ * click 1 | w npc.findRoomContaining -
  * echo image/webp | w view.openSnapshot - 50
  * click 1 | w n.rob.api.look - 500
  * ```
@@ -493,7 +491,7 @@ export async function* w(ct) {
   const { api, args, w } = ct;
 
   // support piped inputs via hyphen args -
-  // e.g. `click 1 | map xz | w gmGraph.findRoomContaining -`
+  // e.g. `click 1 | w npc.findRoomContaining -`
   const stdinInputChar = "-";
   const readStdin = args.slice(1).some(arg => arg === stdinInputChar);
   

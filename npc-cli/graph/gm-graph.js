@@ -1,6 +1,5 @@
 import { Mat, Rect } from "../geom";
 import { BaseGraph, createBaseAstar } from "./base-graph";
-import { sguToWorldScale } from "../service/const";
 import { error } from "../service/generic";
 import { geom, directionChars, isDirectionChar } from "../service/geom";
 import { createGmIdGrid, queryGmIdGrid } from "../service/grid";
