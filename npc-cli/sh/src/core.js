@@ -361,7 +361,7 @@ export async function* narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })
   yield* util.narrate(ct, {
     ...opts,
     async onSay({ voice, words }) {
-      ct.w.menu.say('narrator', words);
+      ct.w.menu.say('vo', words); // "vo" means "voice over"
       opts.onSay?.({ voice, words });
     }
   });
