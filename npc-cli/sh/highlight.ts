@@ -6,41 +6,8 @@ import { tokenize } from 'sugar-high'
 import { ansi } from "./const";
 
 export function highlight(code: string) {
-  const tokens = tokenize(code)
-  const lines = [] as string[];
-  const lineTokens = [] as [number, string][];
-
-  for (const token of tokens) {
-    const [type, value] = token
-    // Skip "break" tokens
-    if (type !== 9) {
-      // Divide multi-line token into multi-line code
-      if (value.includes('\n')) {
-        const lines = value.split('\n')
-        for (let j = 0; j < lines.length; j++) {
-          lineTokens.push([type, lines[j]])
-          if (j < lines.length - 1) {
-            lines.push(getLineFromTokens(lineTokens));
-            lineTokens.length = 0
-          }
-        }
-      } else {
-        lineTokens.push(token)
-      }
-    } else {
-      lineTokens.push([type, ''])
-      lines.push(getLineFromTokens(lineTokens));
-      lineTokens.length = 0
-    }
-  }
-
-  if (lineTokens.length > 0) lines.push(getLineFromTokens(lineTokens));
-
-  return ansi.Hex323232Bg + lines.join('\n')
-}
-
-function getLineFromTokens(tokens: [number, string][]) {
-  return tokens.map(([type, value]) => getCharsFromToken([type, value])).join('');
+  const tokens = tokenize(code);
+  return ansi.Hex323232Bg + tokens.map(getCharsFromToken).join('');
 }
 
 function getCharsFromToken([type, value]: [number, string]) {
