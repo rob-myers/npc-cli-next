@@ -225,7 +225,9 @@ export async function* mapBasic(ct) {
  * ```sh
  * # list available voices (device dependent)
  * narrate list:voices
+ * 
  * # use different voices
+ * narrate hi everyone voice:Aaron
  * narrate {1..10} as:'Bad News'
  * narrate {a..z} as:'Google UK English Female'
  * narrate words:"$( echo {1..5} )"
@@ -258,8 +260,11 @@ export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voic
 
   try {
     // 🔔 `narrate foo bar words:baz` say "baz"
-    const words = opts.words ?? args.join(' ');
+    const words = opts.words ?? args.filter(x => x in opts).join(' ');
     const voice = opts.voice;
+
+    // try fix intermittent loss of first word
+    yield { voice, text: ' ' };
 
     if (words !== '') {
       await opts?.onSay?.({ voice, words });
