@@ -447,12 +447,8 @@ export async function ray({ api, args, w }, opts = api.jsArg(args, { from: 'src'
  * @param {{ npcKey: string; say: string; words?: string; operands?: string[] }} [opts]
  */
 export const say = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
-  if (opts.words) {
-    w.e.say({ npcKey: opts.npcKey, words: opts.words });
-  } else {
-    const words = args.filter(x => !x.startsWith('npc:')).join(' ');
-    w.e.say({ npcKey: opts.npcKey, words });
-  }
+  const words = opts.words ?? args.filter(x => x in opts).join(' ');
+  w.e.say({ npcKey: opts.npcKey, words });
 }
 
 /**
