@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { npcSpeechBubbleOpacityCssVar, speechBubbleBaseScale } from './NpcSpeechBubbles';
 
-/**
- * 🔔 Avoid `foo = (...bar) => baz` because incompatible with our approach to class HMR.
- */
 export class SpeechBubbleApi {
 
   baseScale = /** @type {undefined | number} */ (speechBubbleBaseScale);
+  /** @type {string} */
+  selectElName;
+
   /** For violating React.memo */
   epochMs = 0;
   
@@ -17,7 +17,7 @@ export class SpeechBubbleApi {
   tracked = /** @type {undefined | import('../components/Html3d').TrackedObject3D} */ (undefined);
   offset = { x: 0, y: 0, z: 0 };
 
-  /** @type {BubbleOption[]} */
+  /** @type {string[]} */
   options = [];
   /** Can hide non-empty options */
   hideOptions = false;
@@ -30,6 +30,7 @@ export class SpeechBubbleApi {
   constructor(key, w) {
     /** @type {string} */
     this.key = key;
+    this.selectElName = `${key}-bubble-options`;
     /** @type {import('./World').State} */
     this.w = w;
   }
@@ -63,10 +64,20 @@ export class SpeechBubbleApi {
     this.html3d.rootDiv.style.setProperty(npcSpeechBubbleOpacityCssVar, `${opacityDst}`);
   }
 
-  /** @param {BubbleOption[] | ((prev: BubbleOption[]) => BubbleOption[])} input */
-  setOptions(input) {
-    this.options = typeof input === 'function' ? input(this.options) : input;
+  /**
+   * ```js
+   * // e.g.
+   * setOptions('foo', 'bar')
+   * setOptions(opts => [...opts, 'baz'])
+   * ```
+   * @param {...string | ((prev: string[]) => string[])} inputs
+   */
+  setOptions(...inputs) {
+    this.options = inputs.flatMap(input =>
+      typeof input === 'function' ? input(this.options) : input
+    );
     this.update();
+    return this.options;
   }
 
   /**
@@ -81,7 +92,3 @@ export class SpeechBubbleApi {
 }
 
 function noop() {};
-
-/**
- * @typedef {{ key: string; label: string; }} BubbleOption
- */

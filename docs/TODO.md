@@ -19,13 +19,19 @@
   - ✅ refactor speech bubble api with options
   - ✅ move item.visible to bubble.visible
   - ✅ label should hide before bubble shows (while paused)
-  - 🚧 can toggle `<select>` visible
-  - can show without saying anything in logger
+  - ✅ can change options
+    - `w bubble.setOptions rob foo bar baz`
+    - `w bubble.setOptions rob` clears
+  - ✅ can toggle `<select>` visible
+    - `w bubble.setHideOptions rob`
+    - `w bubble.setHideOptions rob true`
   - select option triggers event
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 
 - 🚧 BUG: if change target while turning around before offMesh then old target used
+
+- can choose default voice in WorldMenu
 
 ```sh
 import demoClickToMove demoGotoBedChoices from demo
