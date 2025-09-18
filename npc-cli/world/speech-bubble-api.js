@@ -5,19 +5,22 @@ import { npcSpeechBubbleOpacityCssVar, speechBubbleBaseScale } from './NpcSpeech
  * 🔔 Avoid `foo = (...bar) => baz` because incompatible with our approach to class HMR.
  */
 export class SpeechBubbleApi {
+
   baseScale = /** @type {undefined | number} */ (speechBubbleBaseScale);
   /** For violating React.memo */
   epochMs = 0;
   
+  /** @type {import('../components/Html3d').State} */
+  html3d = /** @type {*} */ (null);
+  
   position = new THREE.Vector3();
   tracked = /** @type {undefined | import('../components/Html3d').TrackedObject3D} */ (undefined);
   offset = { x: 0, y: 0, z: 0 };
-  
-  /** @type {import('../components/Html3d').State} */
-  html3d = /** @type {*} */ (null);
 
-  /** @type {{ key: string; label: string; }[]} */
+  /** @type {BubbleOption[]} */
   options = [];
+  /** Can hide non-empty options */
+  hideOptions = false;
   visible = true;
 
   /**
@@ -42,6 +45,12 @@ export class SpeechBubbleApi {
     this.html3dRef(null);
   }
 
+  /** @param {React.WheelEvent} e */
+  forwardWheelEvents = (e) => {
+    e.stopPropagation();
+    this.w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
+  }
+
   /** @param {null | import('../components/Html3d').State} html3d */
   html3dRef(html3d) {
     html3d !== null
@@ -52,6 +61,12 @@ export class SpeechBubbleApi {
   /** @param {number} opacityDst */
   setOpacity(opacityDst) {
     this.html3d.rootDiv.style.setProperty(npcSpeechBubbleOpacityCssVar, `${opacityDst}`);
+  }
+
+  /** @param {BubbleOption[] | ((prev: BubbleOption[]) => BubbleOption[])} input */
+  setOptions(input) {
+    this.options = typeof input === 'function' ? input(this.options) : input;
+    this.update();
   }
 
   /**
@@ -66,3 +81,7 @@ export class SpeechBubbleApi {
 }
 
 function noop() {};
+
+/**
+ * @typedef {{ key: string; label: string; }} BubbleOption
+ */

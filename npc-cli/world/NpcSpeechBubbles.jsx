@@ -25,10 +25,6 @@ export default function NpcSpeechBubbles() {
     ensure(npcKey) {
       return state.lookup[npcKey] ??= new SpeechBubbleApi(npcKey, w);
     },
-    forwardWheelEvents(e) {
-      e.stopPropagation();
-      w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
-    },
     toFront(npcKey) {
       const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
       if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
@@ -58,7 +54,6 @@ export default function NpcSpeechBubbles() {
       key={cm.key}
       cm={cm}
       epochMs={cm.epochMs}
-      forwardWheelEvents={state.forwardWheelEvents}
     />
   );
 }
@@ -69,14 +64,13 @@ export default function NpcSpeechBubbles() {
  * @property {(...npcKeys: string[]) => void} delete
  * @property {(npcKey: string) => SpeechBubbleApi} ensure
  * @property {{ [npcKey: string]: SpeechBubbleApi }} lookup
- * @property {(e: React.WheelEvent) => void} forwardWheelEvents
  * @property {(npcKey: string) => void} toFront
  */
 
 /**
  * @param {ContextMenuProps} props
  */
-function NpcSpeechBubble({ cm, forwardWheelEvents }) {
+function NpcSpeechBubble({ cm }) {
 
   cm.update = useUpdate();
 
@@ -102,7 +96,7 @@ function NpcSpeechBubble({ cm, forwardWheelEvents }) {
       </div>
       <div
         className="actions"
-        onWheel={forwardWheelEvents}
+        onWheel={cm.forwardWheelEvents}
       >
         <select name={`${cm.key}-actions`}>
           <option value="">{`[action]`}</option>
@@ -116,7 +110,6 @@ function NpcSpeechBubble({ cm, forwardWheelEvents }) {
 /**
  * @typedef ContextMenuProps
  * @property {SpeechBubbleApi} cm
- * @property {(e: React.WheelEvent) => void} forwardWheelEvents
  */
 
 /** @type {React.MemoExoticComponent<(props: ContextMenuProps & { epochMs: number }) => React.JSX.Element>} */
