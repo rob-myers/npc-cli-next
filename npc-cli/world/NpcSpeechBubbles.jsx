@@ -115,7 +115,9 @@ function NpcSpeechBubble({ bubble }) {
           onChange={bubble.onChangeSelect.bind(bubble)}
           value="" // fixed value
         >
-          <option value="">do</option>
+          <option value="">
+            ⋯
+          </option>
           {bubble.options.map((option) =>
             <option key={option} value={option}>{option}</option>
           )}
@@ -193,13 +195,16 @@ export const npcSpeechBubbleCss = css`
     select {
       pointer-events: all;
       text-align: center;
-      /* appearance: none; */
+      /** 🔔 fix safari */
+      text-align-last: center;
+      appearance: none;
+      width: 48px;
+
       background-color: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.3);
       color: white;
       font-size: 1.2rem;
       font-weight: 300;
-      font-family: 'Courier New', Courier, monospace;
     }
   }
 `;
