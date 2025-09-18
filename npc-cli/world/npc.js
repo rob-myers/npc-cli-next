@@ -585,7 +585,6 @@ export class NpcApi {
 
   getMaxSpeed() {
     // return 1;
-    // return this.def.runSpeed;
     return this.s.run === true ? this.def.runSpeed : this.def.walkSpeed;
   }
 
@@ -1407,6 +1406,19 @@ export class NpcApi {
     ct.fillText(label, dx + strokeWidth, dy + strokeWidth);
 
     this.w.texNpcLabel.updateIndex(this.def.uid);
+  }
+
+  setRun(next = !this.s.run) {
+    if (next === this.s.run) {
+      return;
+    }
+    this.s.run = next;
+    if (next === true && this.s.anim === 'Walk') {
+      this.startAnimation('Run');
+    } else if (next === false && this.s.anim === 'Run') {
+      this.startAnimation('Walk');
+    }
+    this.agent?.raw.params.set_maxSpeed(this.getMaxSpeed());
   }
 
   /**

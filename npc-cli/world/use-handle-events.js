@@ -496,8 +496,6 @@ export default function useHandleEvents(w) {
         };
       }
 
-      // 🚧 issue with `slowDown` caching in npc.s.offMeshImprove
-      
       // we slow down if final target is close to doorway exit,
       // in which case, we exit further away to avoid blocking the door
       const slowDown = (
@@ -685,13 +683,15 @@ export default function useHandleEvents(w) {
 
       // improve offMesh by aligning src/dst to agent
       // 🔔 do not reuse from earlier else yank when other blocks
-      // 🚧 only need to compute improved.src if do not enter-off-mesh yet
+      // 🚧 avoid computing improved.dst when only need improved.src
       const improved = state.improveOffMeshSrcDst(npc, offMesh);
       const target = /** @type {Geom.Vect} */ (npc.s.target);
 
       const entryDist = npc.point.distanceTo(improved.src);
       const entryTooFar = entryDist > 0.2;
       const angleTooLarge = Math.abs(npc.getAngleTo(improved.dst)) > Math.PI/2 + 0.2;
+
+      npc.setRun(false); // do not run through doorways
 
       if (
         entryTooFar === true
