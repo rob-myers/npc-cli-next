@@ -28,6 +28,7 @@
   - ✅ select option triggers event
     - ✅ do not change current option
     - ✅ new event type
+  - 🚧 can show options without saying anything in logger
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 

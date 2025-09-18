@@ -91,6 +91,8 @@ function NpcSpeechBubble({ bubble }) {
     setTimeout(bubble.update);
   }, []);
 
+  const hideActions = bubble.options.length === 0 || bubble.hideOptions === true;
+
   return (
     <Html3d
       ref={bubble.html3dRef.bind(bubble)}
@@ -102,26 +104,28 @@ function NpcSpeechBubble({ bubble }) {
       tracked={bubble.tracked ?? null}
       visible={bubble.visible}
     >
-      <div className="speech">
-        <span className="npc-key">{bubble.speech ? `${bubble.key} ` : undefined}</span>
-        {bubble.speech}
-      </div>
-      <div
-        className={cx("actions", { hidden: bubble.options.length === 0 || bubble.hideOptions === true })}
-        onWheel={bubble.forwardWheelEvents.bind(bubble)}
-      >
-        <select
-          name={bubble.selectElName}
-          onChange={bubble.onChangeSelect.bind(bubble)}
-          value="" // fixed value
+      <div className="centered-container">
+        <div className="speech">
+          <span className="npc-key">{bubble.speech ? `${bubble.key} ` : undefined}</span>
+          {bubble.speech}
+        </div>
+        <div
+          className={cx("actions", { hidden: hideActions })}
+          onWheel={bubble.forwardWheelEvents.bind(bubble)}
         >
-          <option value="">
-            ⋯
-          </option>
-          {bubble.options.map((option) =>
-            <option key={option} value={option}>{option}</option>
-          )}
-        </select>
+          <select
+            name={bubble.selectElName}
+            onChange={bubble.onChangeSelect.bind(bubble)}
+            value="" // fixed value
+          >
+            <option value="">
+              ⋯
+            </option>
+            {bubble.options.map((option) =>
+              <option key={option} value={option}>{option}</option>
+            )}
+          </select>
+        </div>
       </div>
     </Html3d>
   );
@@ -162,6 +166,12 @@ export const npcSpeechBubbleCss = css`
     opacity: var(${npcSpeechBubbleOpacityCssVar});
     transition: opacity 300ms;
   }
+
+  .centered-container {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+  }
   
   .speech {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -186,7 +196,6 @@ export const npcSpeechBubbleCss = css`
   }
   
   .npc-key {
-    /* font-weight: lighter; */
     font-style: italic;
     color: #ff9;
   }
@@ -198,10 +207,11 @@ export const npcSpeechBubbleCss = css`
       /** 🔔 fix safari */
       text-align-last: center;
       appearance: none;
-      width: 48px;
+      width: 32px;
 
       background-color: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 0;
+      /* border: 1px solid rgba(255, 255, 255, 0.3); */
       color: white;
       font-size: 1.2rem;
       font-weight: 300;
