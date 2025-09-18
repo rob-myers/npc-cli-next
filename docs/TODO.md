@@ -5,7 +5,7 @@
 ### Site
 
 - 🚧 towards start with behaviour/story
-  - ℹ️ rather than abstract spawn, move etc.
+  - ℹ️ rather than abstract spawn,**** move etc.
   - ℹ️ more interactive
   - ✅ detect when npc near bed via `near`
     - `near npc:rob where:bed`
@@ -28,7 +28,8 @@
   - ✅ select option triggers event
     - ✅ do not change current option
     - ✅ new event type
-  - 🚧 can show options without saying anything in logger
+  - ✅ can show options without saying anything in logger
+  - 🚧 measureText bubble npc.key
   - wrapper for `w bubble.setOptions rob`
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide

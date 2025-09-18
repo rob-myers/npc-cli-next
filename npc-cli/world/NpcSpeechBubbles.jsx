@@ -111,29 +111,25 @@ function NpcSpeechBubble({ bubble }) {
       tracked={bubble.tracked ?? null}
       visible={bubble.visible}
     >
-      <div className="centered-container">
-        <div className="speech">
-          <span className="npc-key">{bubble.key}</span>
-          &nbsp;
-          {bubble.speech ?? undefined}
-        </div>
-        <div
+      <div className="speech">
+        <select
           className={cx("actions", { hidden: hideActions })}
           onWheel={bubble.forwardWheelEvents.bind(bubble)}
+          name={bubble.selectElName}
+          onChange={bubble.onChangeSelect.bind(bubble)}
+          value="" // fixed value
         >
-          <select
-            name={bubble.selectElName}
-            onChange={bubble.onChangeSelect.bind(bubble)}
-            value="" // fixed value
-          >
-            <option value="">
-              ⋯
+          <option value="">
+            {bubble.key}
+          </option>
+          {bubble.options.map((option) =>
+            <option key={option} value={option}>
+              do{' '}{option}
             </option>
-            {bubble.options.map((option) =>
-              <option key={option} value={option}>{option}</option>
-            )}
-          </select>
-        </div>
+          )}
+        </select>
+        &nbsp;
+        {bubble.speech ?? undefined}
       </div>
     </Html3d>
   );
@@ -152,7 +148,8 @@ export const speechBubbleBaseScale = 4;
 export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
 export const npcSpeechBubbleCss = css`
-  --speech-bubble-width: 400px;
+  
+  --speech-bubble-width: 300px;
 
   position: absolute;
   top: -16px;
@@ -175,54 +172,40 @@ export const npcSpeechBubbleCss = css`
     transition: opacity 300ms;
   }
 
-  .centered-container {
-    display: flex;
-    flex-direction: column;
-    align-items: end;
-  }
-  
   .speech {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 1.6rem;
 
     color: rgba(255, 255, 255, 0.8);
-    /* border: 1px solid rgba(255, 255, 255, 0.3); */
+    border: 1px solid rgba(255, 255, 255, 0.3);
     background-color: rgba(0, 0, 0, 0.4);
-    /* letter-spacing: 2px; */
     line-height: 1.4;
     padding: 0px 8px;
     text-shadow: 2px 0px black;
     
     display: -webkit-box;
     justify-content: center;
-    -webkit-line-clamp: 2;
     /* -webkit-line-clamp: 1; */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical; 
     overflow: hidden;
     
     text-align: center;
   }
   
-  .npc-key {
+  select.actions {
+    pointer-events: all;
+    cursor: pointer;
+    text-align: center;
+    /** 🔔 fix safari */
+    text-align-last: center;
+    appearance: none;
+    /* 🚧 measure npcKey */
+    width: 48px;
+    
     font-style: italic;
     color: #ff9;
-  }
-
-  .actions {
-    select {
-      pointer-events: all;
-      text-align: center;
-      /** 🔔 fix safari */
-      text-align-last: center;
-      appearance: none;
-      width: 32px;
-
-      background-color: rgba(0, 0, 0, 0.4);
-      border-radius: 0;
-      /* border: 1px solid rgba(255, 255, 255, 0.3); */
-      color: white;
-      font-size: 1.2rem;
-      font-weight: 300;
-    }
+    background-color: rgba(0, 0, 0, 0);
+    /* border: 1px solid rgba(255, 255, 255, 0.3); */
   }
 `;
