@@ -1,12 +1,11 @@
 import * as THREE from 'three';
-import { npcSpeechBubbleOpacityCssVar } from './NpcSpeechBubbles';
+import { npcSpeechBubbleOpacityCssVar, speechBubbleBaseScale } from './NpcSpeechBubbles';
 
 /**
  * 🔔 Avoid `foo = (...bar) => baz` because incompatible with our approach to class HMR.
  */
 export class SpeechBubbleApi {
-
-  baseScale = /** @type {undefined | number} */ (undefined);
+  baseScale = /** @type {undefined | number} */ (speechBubbleBaseScale);
   /** For violating React.memo */
   epochMs = 0;
   

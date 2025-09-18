@@ -794,10 +794,12 @@ export default function useHandleEvents(w) {
       }
 
       const bubble = w.bubble.ensure(npcKey);
+      
       const speechWithLinks = words ?? '';
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
       const startSaying = speechWithLinks !== '';
       const npc = w.n[npcKey];
+      bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
       
       npc.showLabel(!startSaying);
       w.update(); // render while paused

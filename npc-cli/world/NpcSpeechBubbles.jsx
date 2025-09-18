@@ -23,17 +23,7 @@ export default function NpcSpeechBubbles() {
       update();
     },
     ensure(npcKey) {
-      if (!(npcKey in w.n)) {
-        throw Error(`npc not found: "${npcKey}"`);
-      }
-      const item = state.lookup[npcKey] ??= new SpeechBubbleApi(npcKey, w);
-      item.visible = true;
-      
-      const npc = w.n[npcKey];
-      item.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
-      item.baseScale = speechBubbleBaseScale; // speech bubble always scaled
-      update();
-      return item;
+      return state.lookup[npcKey] ??= new SpeechBubbleApi(npcKey, w);
     },
     forwardWheelEvents(e) {
       e.stopPropagation();
@@ -132,7 +122,7 @@ function NpcSpeechBubble({ cm, forwardWheelEvents }) {
 /** @type {React.MemoExoticComponent<(props: ContextMenuProps & { epochMs: number }) => React.JSX.Element>} */
 const MemoizedSpeechBubble = React.memo(NpcSpeechBubble);
 
-const speechBubbleBaseScale = 4;
+export const speechBubbleBaseScale = 4;
 
 export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
