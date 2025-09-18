@@ -17,13 +17,18 @@ export class SpeechBubbleApi {
   /** @type {import('../components/Html3d').State} */
   html3d = /** @type {*} */ (null);
 
+  /** @type {{ key: string; label: string; }[]} */
+  options = [];
+
   /**
    * @param {string} key
    * @param {import('./World').State} w
    */
   constructor(key, w) {
-    /** @type {string} */ this.key = key;
-    /** @type {import('./World').State} */ this.w = w;
+    /** @type {string} */
+    this.key = key;
+    /** @type {import('./World').State} */
+    this.w = w;
   }
 
   /** @type {string | undefined} */

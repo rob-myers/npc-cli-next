@@ -520,7 +520,8 @@ export default function useHandleEvents(w) {
           if (w.cm.tracked !== undefined && w.cm.tracked.npcKey === npc.key) {
             w.cm.setNonDockedOpacity(e.opacityDst);
           }
-          w.bubble.lookup[npc.key]?.setOpacity(e.opacityDst);
+          const bubble = w.bubble.lookup[npc.key];
+          bubble?.cm.setOpacity(e.opacityDst);
           break;
         case "spawned": {
           if (npc.s.spawns === 1) {// 1st spawn
@@ -922,27 +923,23 @@ export default function useHandleEvents(w) {
     revokeAccess(regexDef, npcKey) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
-    say({ npcKey, words}) {// ensure/change/delete
+    say({ npcKey, words }) {// ensure/change/delete
       if (typeof words !== 'string') {
         throw Error('opts.words must be a string');
       }
 
-      const cm = w.bubble.get(npcKey) || w.bubble.create(npcKey);
+      const { cm } = w.bubble.ensure(npcKey);
       const speechWithLinks = words ?? '';
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
-
-      /** Otherwise, stop saying */
       const startSaying = speechWithLinks !== '';
-      
       const npc = w.n[npcKey];
+      
       npc.showLabel(!startSaying);
-
-      if (startSaying === true) {
-        cm.speech = speechSansLinks;
-        cm.update();
-      } else {
-        w.bubble.delete(npcKey);
-      }
+      w.update(); // render while paused
+      
+      cm.speech = startSaying === true ? speechSansLinks : undefined;
+      w.bubble.setVisible(npcKey, startSaying);
+      cm.update();
 
       w.events.next({ key: 'speech', npcKey, speech: speechWithLinks });
     },

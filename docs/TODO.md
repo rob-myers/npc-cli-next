@@ -12,6 +12,21 @@
   - ✅ detect when npc can see other via `ray`
     - `ray test from:rob to:will`
   - 🚧 can move AND when near bed log something
+  - use narrator
+
+- 🚧 integrate speech bubble select
+  - ✅ speech bubble has select ui
+  - ✅ refactor speech bubble api with options
+  - 🚧 move item.visible to cm.visible
+  - 🚧 label should hide before bubble shows (while paused)
+  - can toggle visible
+  - can show without saying anything in logger
+  - select option triggers event
+  - test integration with `demoGotoBedChoices`
+    - e.g. only show when arrived near bed, else hide
+
+- 🚧 BUG: if change target while turning around before offMesh then old target used
+
 ```sh
 import demoClickToMove demoGotoBedChoices from demo
 
@@ -154,7 +169,7 @@ events | demoGotoBedChoices npc:rob
     - hard to track
   - ✅ on add decor point to grid check for super decor with `meta['apply-reach'] === true`
     - store its bounds as `d.meta.reachRect`
-  - ✅ on add decor with `meta['apply-reach'] === true` go thru points/rects and attach reachRect
+  - ✅ on add decor with `meta['apply-reach'] === true` go through points/rects and attach reachRect
   - ✅ on add decor point/quad intersecting `meta['apply-reach'] === true` attach reachRect
   - ✅ make docs and keycard reachable via 2 or 3 decor rects
   - ✅ add decor cuboids/rects with apply-reach to more chairs/toilets/etc

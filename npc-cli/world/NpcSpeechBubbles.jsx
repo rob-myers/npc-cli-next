@@ -15,35 +15,42 @@ export default function NpcSpeechBubbles() {
   const state = useStateRef(/** @returns {State} */ () => ({
     lookup: {},
     lastFront: '',
-    create(npcKey) {// assumes non-existent
-      if (npcKey in w.n) {
-        const cm = state.lookup[npcKey] = new SpeechBubbleApi(npcKey, w);
-        const npc = w.n[npcKey];
-        cm.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
-        cm.baseScale = speechBubbleBaseScale; // speech bubble always scaled
-        update();
-        return cm;
-      } else {
-        throw Error(`NpcSpeechBubbles.create: npc not found: "${npcKey}"`);
-      }
-    },
     delete(...npcKeys) {
       for (const npcKey of npcKeys) {
-        if (npcKey === 'default') {
-          continue; // cannot delete default context menu
-        }
-        state.lookup[npcKey]?.setTracked();
+        state.lookup[npcKey]?.cm.dispose();
         delete state.lookup[npcKey];
       }
       update();
     },
-    get(npcKey) {
-      return /** @type {SpeechBubbleApi} */ (state.lookup[npcKey]);
+    ensure(npcKey) {
+      if (!(npcKey in w.n)) {
+        throw Error(`npc not found: "${npcKey}"`);
+      }
+      const item = state.lookup[npcKey] ??= {
+        cm: new SpeechBubbleApi(npcKey, w),
+        visible: true,
+      };
+      item.visible = true;
+      
+      const npc = w.n[npcKey];
+      item.cm.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
+      item.cm.baseScale = speechBubbleBaseScale; // speech bubble always scaled
+      update();
+      return item;
+    },
+    forwardWheelEvents(e) {
+      e.stopPropagation();
+      w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
+    },
+    setVisible(npcKey, visible) {
+      state.lookup[npcKey].visible = visible;
+      update();
     },
     toFront(npcKey) {
-      const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
+      const prev = state.lookup[state.lastFront];
+      const prevBubbleDiv = prev?.cm.html3d.rootDiv;
       if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
-      const bubbleDiv = state.lookup[npcKey].html3d.rootDiv;
+      const bubbleDiv = state.lookup[npcKey].cm.html3d.rootDiv;
       bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
       state.lastFront = npcKey;
     },
@@ -52,19 +59,24 @@ export default function NpcSpeechBubbles() {
   w.bubble = state;
 
   React.useMemo(() => {// HMR
-    process.env.NODE_ENV === 'development' && Object.values(state.lookup).forEach(cm => {
-      state.lookup[cm.key] = Object.assign(new SpeechBubbleApi(cm.key, w), {...cm});
-      cm.dispose();
-    });
+    if (process.env.NODE_ENV === 'development') {
+      for (const item of Object.values(state.lookup)) {
+        // copy new properties and prototype over
+        const newInstance = new SpeechBubbleApi(item.cm.key, w);
+        Object.assign(item.cm, { ...newInstance }, { ...item.cm });
+        Object.setPrototypeOf(item.cm, Object.getPrototypeOf(newInstance));
+      }
+    }
   }, []);
 
   const update = useUpdate();
 
-  return Object.values(state.lookup).map(cm =>
+  return Object.values(state.lookup).filter(({ visible }) => visible).map(({ cm }) =>
     <MemoizedSpeechBubble
       key={cm.key}
       cm={cm}
       epochMs={cm.epochMs}
+      forwardWheelEvents={state.forwardWheelEvents}
     />
   );
 }
@@ -72,18 +84,24 @@ export default function NpcSpeechBubbles() {
 /**
  * @typedef State
  * @property {string} lastFront npcKey
- * @property {{ [npcKey: string]: SpeechBubbleApi }} lookup
- *
- * @property {(npcKey: string) => void} toFront
- * @property {(npcKey: string) => SpeechBubbleApi} create Add speech bubble for specific npc
  * @property {(...npcKeys: string[]) => void} delete
- * @property {(npcKey: string) => SpeechBubbleApi} get
+ * @property {(npcKey: string) => BubbleWithState} ensure
+ * @property {{ [npcKey: string]: BubbleWithState }} lookup
+ * @property {(e: React.WheelEvent) => void} forwardWheelEvents
+ * @property {(npcKey: string, visible: boolean) => void} setVisible
+ * @property {(npcKey: string) => void} toFront
+ */
+
+/**
+ * @typedef BubbleWithState
+ * @property {SpeechBubbleApi} cm
+ * @property {boolean} visible
  */
 
 /**
  * @param {ContextMenuProps} props
  */
-function NpcSpeechBubble({ cm }) {
+function NpcSpeechBubble({ cm, forwardWheelEvents }) {
 
   cm.update = useUpdate();
 
@@ -101,11 +119,20 @@ function NpcSpeechBubble({ cm }) {
       position={cm.position}
       r3f={cm.w.r3f}
       tracked={cm.tracked ?? null}
-      visible
+      visible={!!cm.speech} // 🚧 cm.visible
     >
       <div className="speech">
-        <span className="npc-key">{cm.speech === '' ? '' : `${cm.key} `}</span>
+        <span className="npc-key">{cm.speech ? `${cm.key} ` : undefined}</span>
         {cm.speech}
+      </div>
+      <div
+        className="actions"
+        onWheel={forwardWheelEvents}
+      >
+        <select name={`${cm.key}-actions`}>
+          <option value="">{`[action]`}</option>
+          {cm.options.map(({ key, label }) => <option key={key} value={key}>{label}</option>)}
+        </select>
       </div>
     </Html3d>
   );
@@ -114,6 +141,7 @@ function NpcSpeechBubble({ cm }) {
 /**
  * @typedef ContextMenuProps
  * @property {SpeechBubbleApi} cm
+ * @property {(e: React.WheelEvent) => void} forwardWheelEvents
  */
 
 /** @type {React.MemoExoticComponent<(props: ContextMenuProps & { epochMs: number }) => React.JSX.Element>} */
@@ -127,18 +155,20 @@ export const npcSpeechBubbleCss = css`
   --speech-bubble-width: 400px;
 
   position: absolute;
-  top: 0;
+  top: -16px;
   left: calc(-1/2 * var(--speech-bubble-width));
   transform-origin: 0 0;
   
   pointer-events: none;
   background: transparent !important;
 
-  
   > div {
     transform-origin: calc(+1/2 * var(--speech-bubble-width)) 0;
     width: var(--speech-bubble-width);
+    
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     
     opacity: var(${npcSpeechBubbleOpacityCssVar});
@@ -148,12 +178,11 @@ export const npcSpeechBubbleCss = css`
   .speech {
     /* font-family: 'Courier New', Courier, monospace; */
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    /* font-weight: lighter; */
-    /* font-style: italic; */
-    font-size: 1.8rem;
+    font-size: 1.6rem;
+
     color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(0, 0, 0, 0.6);
+    /* border: 1px solid rgba(255, 255, 255, 0.3); */
+    background-color: rgba(0, 0, 0, 0.4);
     /* letter-spacing: 2px; */
     line-height: 1.4;
     padding: 0px 8px;
@@ -162,15 +191,28 @@ export const npcSpeechBubbleCss = css`
     display: -webkit-box;
     justify-content: center;
     -webkit-line-clamp: 2;
+    /* -webkit-line-clamp: 1; */
     -webkit-box-orient: vertical; 
     overflow: hidden;
     
     text-align: center;
   }
-
+  
   .npc-key {
-    font-weight: lighter;
+    /* font-weight: lighter; */
     font-style: italic;
     color: #ff9;
+  }
+
+  .actions {
+    select {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+      pointer-events: all;
+      font-size: 1.2rem;
+      font-weight: 300;
+      text-align: center;
+      /* appearance: none; */
+    }
   }
 `;
