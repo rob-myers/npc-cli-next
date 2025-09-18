@@ -1,15 +1,11 @@
 import * as THREE from 'three';
-import { npcSpeechBubbleOpacityCssVar, speechBubbleBaseScale } from './NpcSpeechBubbles';
+import { npcSpeechBubbleOpacityCssVar } from './NpcSpeechBubbles';
 
 /**
  * 🔔 Avoid function-valued properties: our HMR strategy doesn't handle them,
  * in particular they won't be overwritten when the function is changed.
  */
 export class SpeechBubbleApi {
-
-  baseScale = /** @type {undefined | number} */ (speechBubbleBaseScale);
-  /** @type {string} */
-  selectElName;
 
   /** For violating React.memo */
   epochMs = 0;
@@ -21,11 +17,17 @@ export class SpeechBubbleApi {
   tracked = /** @type {undefined | import('../components/Html3d').TrackedObject3D} */ (undefined);
   offset = { x: 0, y: 0, z: 0 };
 
-  /** @type {string[]} */
-  options = [];
   /** Can hide non-empty options */
   hideOptions = false;
-  visible = true;
+  options = /** @type {string[]} */ ([]);
+  speech = /** @type {string | null} */ (null);
+
+  get visible() {
+    return (
+      this.speech !== null
+      || (this.hideOptions === false && this.options.length > 0) 
+    );
+  }
 
   /**
    * @param {string} key
@@ -34,13 +36,11 @@ export class SpeechBubbleApi {
   constructor(key, w) {
     /** @type {string} */
     this.key = key;
-    this.selectElName = `${key}-bubble-options`;
     /** @type {import('./World').State} */
     this.w = w;
+    /** @type {string} */
+    this.selectElName = `${key}-bubble-options`;
   }
-
-  /** @type {string | undefined} */
-  speech = undefined;
 
   dispose() {
     this.tracked = undefined;
@@ -106,6 +106,11 @@ export class SpeechBubbleApi {
 
   update = noop
 
+  updateNpcLabel() {// shown iff this isn't
+    const npc = this.w.n[this.key];
+    npc.showLabel(!this.visible);
+    this.w.update(); // render while paused
+  }
 }
 
 function noop() {};

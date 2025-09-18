@@ -23,8 +23,11 @@ export default function NpcSpeechBubbles() {
       }
       update();
     },
-    ensure(npcKey) {
-      return state.lookup[npcKey] ??= new SpeechBubbleApi(npcKey, w);
+    ensure(npcKey) {// ensure exists and is tracking npc
+      const bubble = state.lookup[npcKey] ??= new SpeechBubbleApi(npcKey, w);
+      const npc = w.n[npcKey];
+      bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
+      return bubble;
     },
     setHideOptions(npcKey, next = !state.lookup[npcKey].hideOptions) {
       const bubble = state.lookup[npcKey];
@@ -32,7 +35,11 @@ export default function NpcSpeechBubbles() {
       bubble.update();
     },
     setOptions(npcKey, ...inputs) {
-      return state.ensure(npcKey).setOptions(...inputs);
+      const bubble = state.ensure(npcKey);
+      const options = bubble.setOptions(...inputs);
+      bubble.updateNpcLabel();
+      update();
+      return options;
     },
     toFront(npcKey) {
       const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
@@ -97,7 +104,7 @@ function NpcSpeechBubble({ bubble }) {
     <Html3d
       ref={bubble.html3dRef.bind(bubble)}
       css={npcSpeechBubbleCss}
-      baseScale={bubble.baseScale}
+      baseScale={speechBubbleBaseScale}
       offset={bubble.offset}
       position={bubble.position}
       r3f={bubble.w.r3f}
@@ -106,8 +113,9 @@ function NpcSpeechBubble({ bubble }) {
     >
       <div className="centered-container">
         <div className="speech">
-          <span className="npc-key">{bubble.speech ? `${bubble.key} ` : undefined}</span>
-          {bubble.speech}
+          <span className="npc-key">{bubble.key}</span>
+          &nbsp;
+          {bubble.speech ?? undefined}
         </div>
         <div
           className={cx("actions", { hidden: hideActions })}

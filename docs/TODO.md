@@ -29,6 +29,7 @@
     - ✅ do not change current option
     - ✅ new event type
   - 🚧 can show options without saying anything in logger
+  - wrapper for `w bubble.setOptions rob`
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 

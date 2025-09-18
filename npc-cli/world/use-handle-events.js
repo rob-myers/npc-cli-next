@@ -788,24 +788,17 @@ export default function useHandleEvents(w) {
     revokeAccess(regexDef, npcKey) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
-    say({ npcKey, words }) {// ensure/change/delete
+    say({ npcKey, words }) {
       if (typeof words !== 'string') {
         throw Error('opts.words must be a string');
       }
 
-      const bubble = w.bubble.ensure(npcKey);
-      
-      const speechWithLinks = words ?? '';
+      const speechWithLinks = (words ?? '').trim();
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
-      const startSaying = speechWithLinks !== '';
-      const npc = w.n[npcKey];
-      bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
       
-      npc.showLabel(!startSaying);
-      w.update(); // render while paused
-      
-      bubble.speech = startSaying === true ? speechSansLinks : undefined;
-      bubble.visible = startSaying;
+      const bubble = w.bubble.ensure(npcKey);
+      bubble.speech = speechSansLinks ?? null;
+      bubble.updateNpcLabel();
       bubble.update();
 
       w.events.next({ key: 'speech', npcKey, speech: speechWithLinks });
