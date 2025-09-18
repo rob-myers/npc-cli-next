@@ -2,12 +2,12 @@ import React from "react";
 import * as THREE from "three";
 
 import { Vect, Rect } from "../geom";
-import { defaultDoorCloseMs, wallHeight } from "../service/const";
-import { pause, warn, testNever, removeDups } from "../service/generic";
+import { defaultDoorCloseMs } from "../service/const";
+import { pause, warn, removeDups } from "../service/generic";
 import { geom } from "../service/geom";
 import { globalLoggerLinksRegex } from "../terminal/Logger";
 import { npcToBodyKey } from "../service/rapier";
-import { getTempInstanceMesh, toV3 } from "../service/three";
+import { toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import useStateRef from "../hooks/use-state-ref";
 
@@ -90,106 +90,6 @@ export default function useHandleEvents(w) {
       state.doorToOffMesh[orig.gdKey] = state.doorToOffMesh[orig.gdKey].filter(x => x.npcKey !== npc.key);
       (state.npcToDoors[npc.key] ??= { inside: null, nearby: new Set() }).inside = null;
     },
-    decodeObjectPick(r, g, b, a) {
-      if (r === 1) {// wall
-        const instanceId = (g << 8) + b;
-        const decoded = w.wall.decodeInstanceId(instanceId);
-        return {
-          picked: 'wall',
-          ...decoded,
-          instanceId,
-        };
-      }
-
-      if (r === 2) {// floor
-        const instanceId = (g << 8) + b;
-        return {
-          picked: 'floor',
-          gmId: instanceId,
-          floor: true,
-          instanceId,
-        };
-      }
-
-      if (r === 3) {// ceiling
-        const instanceId = (g << 8) + b;
-        return {
-          picked: 'ceiling',
-          gmId: instanceId,
-          ceiling: true,
-          height: wallHeight,
-          instanceId,
-        };
-      }
-
-      if (r === 4) {// door
-        const instanceId = (g << 8) + b;
-        const decoded = w.door.decodeInstance(instanceId);
-        return {
-          picked: 'door',
-          door: true,
-          ...decoded,
-          instanceId,
-        };
-      }
-
-      if (r === 5) {// decor quad
-        const instanceId = (g << 8) + b;
-        const quad = w.decor.quads[instanceId];
-        return {
-          picked: 'quad',
-          ...quad.meta,
-          instanceId,
-        };
-      }
-
-      if (r === 6) {// obstacle
-        const instanceId = (g << 8) + b;
-        const decoded = w.obs.decodeInstanceId(instanceId);
-        return {
-          picked: 'obstacle',
-          obstacle: true,
-          ...decoded,
-          instanceId,
-        };
-      }
-
-      if (r === 7) {// decor cuboid
-        const instanceId = (g << 8) + b;
-        const cuboid = w.decor.cuboids[instanceId];
-        return {
-          picked: 'cuboid',
-          ...cuboid.meta,
-          instanceId,
-        };
-      }
-
-      if (r === 8) {// npc
-        const npcUid = (g << 8) + b;
-        const npcKey = w.npc.idToKey.get(npcUid);
-        return {
-          picked: 'npc',
-          npcKey,
-          npcUid,
-          npc: true,
-          instanceId: npcUid, // not really an instance
-        };
-      }
-
-      if (r === 9) {// lock-light
-        const instanceId = (g << 8) + b;
-        const decoded = w.door.decodeInstance(instanceId);
-        return {
-          picked: 'lock-light',
-          'lock-light': true,
-          ...decoded,
-          instanceId,
-        };
-      }
-
-      // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
-      return null;
-    },
     findOtherBlockingNearDoor(npc, offMesh) {
       const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
       const gmRoomId = /** @type {Geomorph.GmRoomId} */ (state.npcToRoom.get(npc.key));
@@ -247,41 +147,6 @@ export default function useHandleEvents(w) {
     },
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
-    },
-    getRaycastIntersection(e, decoded) {// 🚧 move to WorldView
-      /** @type {THREE.Mesh} */
-      let mesh;
-
-      // handle fractional device pixel ratio e.g. 2.625 on Pixel
-      const glPixelRatio = w.r3f.gl.getPixelRatio();
-      const { left, top } = (/** @type {HTMLElement} */ (e.target)).getBoundingClientRect();
-
-      const normalizedDeviceCoords = new THREE.Vector2(
-        -1 + 2 * (((e.clientX - left) * glPixelRatio) / w.view.canvas.width),
-        +1 - 2 * (((e.clientY - top) * glPixelRatio) / w.view.canvas.height),
-      );
-      w.view.raycaster.setFromCamera(normalizedDeviceCoords, w.r3f.camera);
-
-      switch (decoded.picked) {
-        case 'floor': mesh = getTempInstanceMesh(w.floor.inst, decoded.instanceId); break;
-        case 'wall': mesh = getTempInstanceMesh(w.wall.inst, decoded.instanceId); break;
-        case 'npc': mesh = w.n[decoded.npcKey].m.mesh; break;
-        case 'door': mesh = getTempInstanceMesh(w.door.inst, decoded.instanceId); break;
-        case 'quad': mesh = getTempInstanceMesh(w.decor.quadInst, decoded.instanceId); break;
-        case 'obstacle': mesh = getTempInstanceMesh(w.obs.inst, decoded.instanceId); break;
-        case 'ceiling': mesh = getTempInstanceMesh(w.ceil.inst, decoded.instanceId); break;
-        case 'cuboid': mesh = getTempInstanceMesh(w.decor.cuboidInst, decoded.instanceId); break;
-        case 'lock-light': mesh = getTempInstanceMesh(w.door.lockSigInst, decoded.instanceId); break;
-        default: throw testNever(decoded.picked);
-      }
-
-      const [intersection] = w.view.raycaster.intersectObject(mesh);
-
-      if (intersection !== undefined) {
-        return { intersection, mesh }; // provide temp mesh
-      } else {
-        return null;
-      }
     },
     /**
      * Given ids of rooms in gmGraph, provide "adjacency data".
@@ -1067,7 +932,6 @@ export default function useHandleEvents(w) {
  * @property {(npc: NPC.NPC, improved: NPC.ImprovedOffMeshSrcDst) => void} applyImprovedOffMesh
  * @property {(door: Geomorph.DoorState) => boolean} canCloseDoor
  * @property {(npc: NPC.NPC) => void} clearOffMesh
- * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
  * offMesh early-exit-test i.e. test for some other npc which:
  * - is idle and in the way
@@ -1075,7 +939,6 @@ export default function useHandleEvents(w) {
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
  * @property {(npcKey: string) => void} followNpc
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
- * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
  * @property {(gmRoomIds: Geomorph.GmRoomId[], canAccess?: (opts: { gmId: number } & (
  *   | { type: 'door'; doorId: number }
  *   | { type: 'window'; windowId: number }
