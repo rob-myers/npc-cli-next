@@ -17,9 +17,9 @@
 - 🚧 integrate speech bubble select
   - ✅ speech bubble has select ui
   - ✅ refactor speech bubble api with options
-  - 🚧 move item.visible to cm.visible
-  - 🚧 label should hide before bubble shows (while paused)
-  - can toggle visible
+  - ✅ move item.visible to bubble.visible
+  - ✅ label should hide before bubble shows (while paused)
+  - 🚧 can toggle `<select>` visible
   - can show without saying anything in logger
   - select option triggers event
   - test integration with `demoGotoBedChoices`

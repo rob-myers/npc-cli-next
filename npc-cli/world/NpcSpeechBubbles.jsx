@@ -17,7 +17,7 @@ export default function NpcSpeechBubbles() {
     lastFront: '',
     delete(...npcKeys) {
       for (const npcKey of npcKeys) {
-        state.lookup[npcKey]?.cm.dispose();
+        state.lookup[npcKey]?.dispose();
         delete state.lookup[npcKey];
       }
       update();
@@ -26,15 +26,12 @@ export default function NpcSpeechBubbles() {
       if (!(npcKey in w.n)) {
         throw Error(`npc not found: "${npcKey}"`);
       }
-      const item = state.lookup[npcKey] ??= {
-        cm: new SpeechBubbleApi(npcKey, w),
-        visible: true,
-      };
+      const item = state.lookup[npcKey] ??= new SpeechBubbleApi(npcKey, w);
       item.visible = true;
       
       const npc = w.n[npcKey];
-      item.cm.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
-      item.cm.baseScale = speechBubbleBaseScale; // speech bubble always scaled
+      item.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
+      item.baseScale = speechBubbleBaseScale; // speech bubble always scaled
       update();
       return item;
     },
@@ -42,15 +39,10 @@ export default function NpcSpeechBubbles() {
       e.stopPropagation();
       w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
     },
-    setVisible(npcKey, visible) {
-      state.lookup[npcKey].visible = visible;
-      update();
-    },
     toFront(npcKey) {
-      const prev = state.lookup[state.lastFront];
-      const prevBubbleDiv = prev?.cm.html3d.rootDiv;
+      const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
       if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
-      const bubbleDiv = state.lookup[npcKey].cm.html3d.rootDiv;
+      const bubbleDiv = state.lookup[npcKey].html3d.rootDiv;
       bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
       state.lastFront = npcKey;
     },
@@ -62,16 +54,16 @@ export default function NpcSpeechBubbles() {
     if (process.env.NODE_ENV === 'development') {
       for (const item of Object.values(state.lookup)) {
         // copy new properties and prototype over
-        const newInstance = new SpeechBubbleApi(item.cm.key, w);
-        Object.assign(item.cm, { ...newInstance }, { ...item.cm });
-        Object.setPrototypeOf(item.cm, Object.getPrototypeOf(newInstance));
+        const tempNewItem = new SpeechBubbleApi(item.key, w);
+        Object.assign(item, { ...tempNewItem }, { ...item });
+        Object.setPrototypeOf(item, Object.getPrototypeOf(tempNewItem));
       }
     }
   }, []);
 
   const update = useUpdate();
 
-  return Object.values(state.lookup).filter(({ visible }) => visible).map(({ cm }) =>
+  return Object.values(state.lookup).filter(({ visible }) => visible).map((cm) =>
     <MemoizedSpeechBubble
       key={cm.key}
       cm={cm}
@@ -85,17 +77,10 @@ export default function NpcSpeechBubbles() {
  * @typedef State
  * @property {string} lastFront npcKey
  * @property {(...npcKeys: string[]) => void} delete
- * @property {(npcKey: string) => BubbleWithState} ensure
- * @property {{ [npcKey: string]: BubbleWithState }} lookup
+ * @property {(npcKey: string) => SpeechBubbleApi} ensure
+ * @property {{ [npcKey: string]: SpeechBubbleApi }} lookup
  * @property {(e: React.WheelEvent) => void} forwardWheelEvents
- * @property {(npcKey: string, visible: boolean) => void} setVisible
  * @property {(npcKey: string) => void} toFront
- */
-
-/**
- * @typedef BubbleWithState
- * @property {SpeechBubbleApi} cm
- * @property {boolean} visible
  */
 
 /**
@@ -119,7 +104,7 @@ function NpcSpeechBubble({ cm, forwardWheelEvents }) {
       position={cm.position}
       r3f={cm.w.r3f}
       tracked={cm.tracked ?? null}
-      visible={!!cm.speech} // 🚧 cm.visible
+      visible={cm.visible}
     >
       <div className="speech">
         <span className="npc-key">{cm.speech ? `${cm.key} ` : undefined}</span>

@@ -386,7 +386,7 @@ export default function useHandleEvents(w) {
             w.cm.setNonDockedOpacity(e.opacityDst);
           }
           const bubble = w.bubble.lookup[npc.key];
-          bubble?.cm.setOpacity(e.opacityDst);
+          bubble?.setOpacity(e.opacityDst);
           break;
         case "spawned": {
           if (npc.s.spawns === 1) {// 1st spawn
@@ -793,7 +793,7 @@ export default function useHandleEvents(w) {
         throw Error('opts.words must be a string');
       }
 
-      const { cm } = w.bubble.ensure(npcKey);
+      const bubble = w.bubble.ensure(npcKey);
       const speechWithLinks = words ?? '';
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
       const startSaying = speechWithLinks !== '';
@@ -802,9 +802,9 @@ export default function useHandleEvents(w) {
       npc.showLabel(!startSaying);
       w.update(); // render while paused
       
-      cm.speech = startSaying === true ? speechSansLinks : undefined;
-      w.bubble.setVisible(npcKey, startSaying);
-      cm.update();
+      bubble.speech = startSaying === true ? speechSansLinks : undefined;
+      bubble.visible = startSaying;
+      bubble.update();
 
       w.events.next({ key: 'speech', npcKey, speech: speechWithLinks });
     },

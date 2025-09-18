@@ -19,6 +19,7 @@ export class SpeechBubbleApi {
 
   /** @type {{ key: string; label: string; }[]} */
   options = [];
+  visible = true;
 
   /**
    * @param {string} key
