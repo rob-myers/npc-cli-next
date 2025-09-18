@@ -797,7 +797,7 @@ export default function useHandleEvents(w) {
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
       
       const bubble = w.bubble.ensure(npcKey);
-      bubble.speech = speechSansLinks ?? null;
+      bubble.speech = speechSansLinks || null;
       bubble.updateNpcLabel();
       bubble.update();
 
