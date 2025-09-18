@@ -106,14 +106,18 @@ function NpcSpeechBubble({ bubble }) {
         {bubble.speech}
       </div>
       <div
-        className={cx("actions", {
-          hidden: bubble.options.length === 0 || bubble.hideOptions === true,
-        })}
+        className={cx("actions", { hidden: bubble.options.length === 0 || bubble.hideOptions === true })}
         onWheel={bubble.forwardWheelEvents}
       >
-        <select name={bubble.selectElName}>
-          <option value="">{`do`}</option>
-          {bubble.options.map((option) => <option key={option} value={option}>{option}</option>)}
+        <select
+          name={bubble.selectElName}
+          onChange={bubble.onChangeSelect}
+          value="" // fixed value
+        >
+          <option value="">do</option>
+          {bubble.options.map((option) =>
+            <option key={option} value={option}>{option}</option>
+          )}
         </select>
       </div>
     </Html3d>

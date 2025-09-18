@@ -46,7 +46,10 @@ export class SpeechBubbleApi {
     this.html3dRef(null);
   }
 
-  /** @param {React.WheelEvent} e */
+  /**
+   * Use arrow function to avoid `.bind(bubble)`.
+   * @param {React.WheelEvent} e
+   */
   forwardWheelEvents = (e) => {
     e.stopPropagation();
     this.w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
@@ -57,6 +60,19 @@ export class SpeechBubbleApi {
     html3d !== null
       ? this.html3d = html3d // @ts-ignore
       : delete this.html3d;
+  }
+
+  /**
+   * Use arrow function to avoid `.bind(bubble)`.
+   * @param {React.ChangeEvent<HTMLSelectElement>} e
+   */
+  onChangeSelect = (e) => {
+    const selected = e.currentTarget.value;
+    if (selected === '') {
+      return;
+    }
+    // 🚧
+    console.log({selected});
   }
 
   /** @param {number} opacityDst */
