@@ -170,6 +170,7 @@ declare namespace NPC {
     | { key: 'controls-start' }
     | { key: 'controls-end' }
     | { key: 'fade-npc'; npcKey: string; opacityDst: number }
+    | { key: 'select-option'; npcKey: string; option: string }
     // ...
   );
 

@@ -47,11 +47,12 @@ export default function NpcSpeechBubbles() {
 
   React.useMemo(() => {// HMR
     if (process.env.NODE_ENV === 'development') {
-      for (const item of Object.values(state.lookup)) {
-        // copy new properties and prototype over
-        const tempNewItem = new SpeechBubbleApi(item.key, w);
-        Object.assign(item, { ...tempNewItem }, { ...item });
-        Object.setPrototypeOf(item, Object.getPrototypeOf(tempNewItem));
+      for (const bubble of Object.values(state.lookup)) {
+        // copy over (a) new properties, (b) prototype
+        // assuming there are no function-valued properties (they won't be overwritten)
+        const tempBubble = new SpeechBubbleApi(bubble.key, w);
+        Object.assign(bubble, { ...tempBubble }, { ...bubble });
+        Object.setPrototypeOf(bubble, Object.getPrototypeOf(tempBubble));
       }
     }
   }, []);
@@ -107,11 +108,11 @@ function NpcSpeechBubble({ bubble }) {
       </div>
       <div
         className={cx("actions", { hidden: bubble.options.length === 0 || bubble.hideOptions === true })}
-        onWheel={bubble.forwardWheelEvents}
+        onWheel={bubble.forwardWheelEvents.bind(bubble)}
       >
         <select
           name={bubble.selectElName}
-          onChange={bubble.onChangeSelect}
+          onChange={bubble.onChangeSelect.bind(bubble)}
           value="" // fixed value
         >
           <option value="">do</option>

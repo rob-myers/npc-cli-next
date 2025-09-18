@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { npcSpeechBubbleOpacityCssVar, speechBubbleBaseScale } from './NpcSpeechBubbles';
 
+/**
+ * 🔔 Avoid function-valued properties: our HMR strategy doesn't handle them,
+ * in particular they won't be overwritten when the function is changed.
+ */
 export class SpeechBubbleApi {
 
   baseScale = /** @type {undefined | number} */ (speechBubbleBaseScale);
@@ -47,10 +51,9 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * Use arrow function to avoid `.bind(bubble)`.
    * @param {React.WheelEvent} e
    */
-  forwardWheelEvents = (e) => {
+  forwardWheelEvents(e) {
     e.stopPropagation();
     this.w.view.canvas.dispatchEvent(new WheelEvent(e.nativeEvent.type, e.nativeEvent));
   }
@@ -63,16 +66,14 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * Use arrow function to avoid `.bind(bubble)`.
    * @param {React.ChangeEvent<HTMLSelectElement>} e
    */
-  onChangeSelect = (e) => {
+  onChangeSelect(e) {
     const selected = e.currentTarget.value;
     if (selected === '') {
       return;
     }
-    // 🚧
-    console.log({selected});
+    this.w.events.next({ key: 'select-option', npcKey: this.key, option: selected });
   }
 
   /** @param {number} opacityDst */
