@@ -7,30 +7,30 @@ import { SpeechBubbleApi } from "./speech-bubble-api";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import { Html3d } from "../components/Html3d";
-import { PopUp, popUpContentClassName } from "../components/PopUp";
+import { PopUp, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 
 export default function NpcSpeechBubbles() {
 
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    lookup: {},
+    byKey: {},
     lastFront: '',
     delete(...npcKeys) {
       for (const npcKey of npcKeys) {
-        state.lookup[npcKey]?.dispose();
-        delete state.lookup[npcKey];
+        state.byKey[npcKey]?.dispose();
+        delete state.byKey[npcKey];
       }
       update();
     },
     ensure(npcKey) {// ensure exists and is tracking npc
-      const bubble = state.lookup[npcKey] ??= new SpeechBubbleApi(npcKey, w);
+      const bubble = state.byKey[npcKey] ??= new SpeechBubbleApi(npcKey, w);
       const npc = w.n[npcKey];
       bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
       return bubble;
     },
-    setHideOptions(npcKey, next = !state.lookup[npcKey].hideOptions) {
-      const bubble = state.lookup[npcKey];
+    setHideOptions(npcKey, next = !state.byKey[npcKey].hideOptions) {
+      const bubble = state.byKey[npcKey];
       bubble.hideOptions = next;
       bubble.update();
     },
@@ -42,19 +42,20 @@ export default function NpcSpeechBubbles() {
       return options;
     },
     toFront(npcKey) {
-      const prevBubbleDiv = state.lookup[state.lastFront]?.html3d.rootDiv;
+      const prevBubbleDiv = state.byKey[state.lastFront]?.html3d.rootDiv;
       if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
-      const bubbleDiv = state.lookup[npcKey].html3d.rootDiv;
+      const bubbleDiv = state.byKey[npcKey].html3d.rootDiv;
       bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
       state.lastFront = npcKey;
     },
   }));
 
   w.bubble = state;
+  w.b = state.byKey;
 
   React.useMemo(() => {// HMR
     if (process.env.NODE_ENV === 'development') {
-      for (const bubble of Object.values(state.lookup)) {
+      for (const bubble of Object.values(state.byKey)) {
         // copy over (a) new properties, (b) prototype
         // assuming there are no function-valued properties (they won't be overwritten)
         const tempBubble = new SpeechBubbleApi(bubble.key, w);
@@ -66,7 +67,7 @@ export default function NpcSpeechBubbles() {
 
   const update = useUpdate();
 
-  return Object.values(state.lookup).filter(({ visible }) => visible).map((bubble) =>
+  return Object.values(state.byKey).filter(({ visible }) => visible).map((bubble) =>
     <MemoizedSpeechBubble
       key={bubble.key}
       bubble={bubble}
@@ -80,7 +81,7 @@ export default function NpcSpeechBubbles() {
  * @property {string} lastFront npcKey
  * @property {(...npcKeys: string[]) => void} delete
  * @property {(npcKey: string) => SpeechBubbleApi} ensure
- * @property {{ [npcKey: string]: SpeechBubbleApi }} lookup
+ * @property {{ [npcKey: string]: SpeechBubbleApi }} byKey
  * @property {(npcKey: string, shouldHide?: boolean) => void} setHideOptions
  * @property {(npcKey: string, ...inputs: (string | ((prev: string[]) => string[]))[]) => string[]} setOptions
  * @property {(npcKey: string) => void} toFront
@@ -106,12 +107,13 @@ function NpcSpeechBubble({ bubble }) {
       offset={bubble.offset}
       position={bubble.position}
       r3f={bubble.w.r3f}
-      tracked={bubble.tracked ?? null}
+      tracked={bubble.tracked}
       visible={bubble.visible}
     >
       <div className="speech">
         <span className="npc-key">
           <PopUp // invisible but clickable
+            ref={bubble.popUpRef.bind(bubble)}
             label={<span className="npc-key">{bubble.key}</span>}
             css={popUpCss}
             width={100}
@@ -199,6 +201,10 @@ export const popUpCss = css`
   /* border: 1px solid red; */
   .npc-key {
     visibility: hidden;
+  }
+  
+  .${popUpButtonClassName} {
+    outline: none;
   }
 
   .${popUpContentClassName} {

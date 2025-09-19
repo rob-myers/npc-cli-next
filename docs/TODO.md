@@ -34,6 +34,9 @@
 
 - 🚧 integrate PopUp over npcKey in NpcSpeechBubble
   - ✅ implement PopUp UI over npcKey
+  - ✅ can programmatically open PopUp
+    - `w bubble.byKey.rob.popUp.open`
+    - `w b.rob.popUp.open`
   - 🚧 replace bubble.options (string[]) with bubble.thought (string)
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide

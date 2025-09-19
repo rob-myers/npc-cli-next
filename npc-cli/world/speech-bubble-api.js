@@ -12,9 +12,11 @@ export class SpeechBubbleApi {
   
   /** @type {import('../components/Html3d').State} */
   html3d = /** @type {*} */ (null);
+  /** @type {import('../components/PopUp').State} */
+  popUp = /** @type {*} */ (null);
   
   position = new THREE.Vector3();
-  tracked = /** @type {undefined | import('../components/Html3d').TrackedObject3D} */ (undefined);
+  tracked = /** @type {null | import('../components/Html3d').TrackedObject3D} */ (null);
   offset = { x: 0, y: 0, z: 0 };
 
   /** Can hide non-empty options */
@@ -43,7 +45,7 @@ export class SpeechBubbleApi {
   }
 
   dispose() {
-    this.tracked = undefined;
+    this.tracked = null;
     this.update = noop;
     // @ts-ignore
     this.w = null;
@@ -60,9 +62,11 @@ export class SpeechBubbleApi {
 
   /** @param {null | import('../components/Html3d').State} html3d */
   html3dRef(html3d) {
-    html3d !== null
-      ? this.html3d = html3d // @ts-ignore
-      : delete this.html3d;
+    if (html3d !== null) {
+      this.html3d = html3d;
+    } else {// @ts-ignore
+      delete this.html3d;
+    }
   }
 
   /**
@@ -74,6 +78,15 @@ export class SpeechBubbleApi {
       return;
     }
     this.w.events.next({ key: 'select-option', npcKey: this.key, option: selected });
+  }
+
+  /** @param {null | import('@/npc-cli/components/PopUp').State} popUp */
+  popUpRef(popUp) {
+    if (popUp !== null) {
+      this.popUp = popUp;
+    } else {// @ts-ignore
+      delete this.popUp;
+    }
   }
 
   /** @param {number} opacityDst */
@@ -98,7 +111,7 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * @param {import('../components/Html3d').TrackedObject3D} [tracked] 
+   * @param {import('../components/Html3d').TrackedObject3D} tracked
    */
   setTracked(tracked) {
     this.tracked = tracked;

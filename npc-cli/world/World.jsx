@@ -96,6 +96,7 @@ export default function World(props) {
     n: {}, // w.npc.npc
     a: {}, // w.npc.byAgId
     d: {}, // w.door.byKey
+    b: {}, // w.bubble.byKey
 
     isReady(connectorKey) {
       const ready = state.crowd !== null && state.decor?.queryStatus === 'success';
@@ -446,6 +447,8 @@ export default function World(props) {
  * Shortcut for `w.npc.byAgId`
  * @property {import("./Doors").State['byKey']} d
  * Shortcut for `w.door.byKey`
+ * @property {import("./NpcSpeechBubbles").State['byKey']} b
+ * Shortcut for `w.bubble.byKey`
  * @property {import('./ContextMenu').State} cm
  *
  * @property {HTMLImageElement[]} decorImgs For decal drawing on floor

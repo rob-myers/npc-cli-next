@@ -385,7 +385,7 @@ export default function useHandleEvents(w) {
           if (w.cm.tracked !== undefined && w.cm.tracked.npcKey === npc.key) {
             w.cm.setNonDockedOpacity(e.opacityDst);
           }
-          const bubble = w.bubble.lookup[npc.key];
+          const bubble = w.bubble.byKey[npc.key];
           bubble?.setOpacity(e.opacityDst);
           break;
         case "spawned": {
