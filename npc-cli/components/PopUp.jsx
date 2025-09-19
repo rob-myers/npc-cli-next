@@ -54,9 +54,8 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
         state.open(props.width);
       }
     },
-    open(width) {
+    open(width = props.width ?? defaultInfoWidthPx) {
       state.opened = true;
-
       const container = state.bubble.closest(`[${popUpRootDataAttribute}]`) ?? document.documentElement;
       const containerRect = container.getBoundingClientRect();
       const rect = state.icon.getBoundingClientRect();
@@ -66,15 +65,14 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       const pixelsAbove = rect.y - containerRect.y;
       const pixelsBelow = containerRect.bottom - rect.bottom;
       state.top = pixelsBelow < pixelsAbove;
-
       
       // 🚧 infer or parameterize `24`
       const root = /** @type {HTMLElement} */ (state.bubble.parentElement);
       root.style.setProperty('--info-arrow-delta-x', `${state.left ? 24 : 12}px`);
 
       const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
-      width = maxWidthAvailable < (width ?? defaultInfoWidthPx) ? maxWidthAvailable : width;
-      width && root.style.setProperty('--info-width', `${width}px`);
+      width = Math.min(width, maxWidthAvailable);
+      root.style.setProperty('--info-width', `${width}px`);
 
       state.icon.focus();
       props.onChange?.(state.opened);
