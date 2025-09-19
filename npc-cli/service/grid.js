@@ -61,7 +61,7 @@ function applyReach(item, parent, grid) {
   
   item.meta.gridMin = [omx, omy];
   item.meta.gridMax = [oMx, oMy];
-  item.meta.reachRect = tmpRect1.copy(parent.bounds2d).precision(2).json;
+  item.meta.reachRect = tmpRect1.copy(parent.bounds2d).precision(2).tuple;
 }
 
 /**
@@ -124,7 +124,11 @@ export function queryDecorGridRect(grid, rect, grKey) {
   for (let i = mx; i <= Mx; i++) {
     for (let j = my; j <= My; j++) {
       grid[`${i},${j}`]?.forEach(d => {
-        if (queryRect.intersects(d.meta.reachRect ?? d.bounds2d) === true) {
+        if (
+          Array.isArray(d.meta.reachRect)
+            ? queryRect.intersectsArgs(.../** @type {[number, number, number, number]} */ (d.meta.reachRect))
+            : queryRect.intersects(d.bounds2d)
+          ) {
           decor[d.key] = d
         }
       });

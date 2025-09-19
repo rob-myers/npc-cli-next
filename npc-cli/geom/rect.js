@@ -109,6 +109,10 @@ export class Rect {
     return new Vect(this.x + this.width, this.y);
   }
 
+  get tuple() {
+    return /** @type {const} */ ([this.x, this.y, this.width, this.height]);
+  }
+
   static get zero() {
     return new Rect(0, 0, 0, 0);
   }
