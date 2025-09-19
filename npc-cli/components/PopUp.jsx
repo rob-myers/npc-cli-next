@@ -86,6 +86,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
     <div
       css={rootPopupCss}
       className={cx("pop-up", props.className, { open: state.opened })}
+      onWheel={props.onWheel}
     >
       <button
         ref={state.ref('icon')}
@@ -122,6 +123,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
  * @property {React.ReactNode} [label]
  * @property {number} [width]
  * @property {(willOpen: boolean) => void} [onChange]
+ * @property {(e: React.WheelEvent) => void} [onWheel]
  */
 
 /**

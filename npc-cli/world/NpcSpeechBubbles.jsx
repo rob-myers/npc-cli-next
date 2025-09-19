@@ -95,8 +95,7 @@ function NpcSpeechBubble({ bubble: b }) {
   b.update = useUpdate();
 
   React.useEffect(() => {
-    // Extra initial render e.g. for speak while paused
-    setTimeout(b.update);
+    setTimeout(b.update); // Extra render e.g. for speak while paused
   }, []);
 
   const thoughts = Object.values(b.thought);
@@ -116,8 +115,9 @@ function NpcSpeechBubble({ bubble: b }) {
         <div className="npc-key">
           <PopUp // invisible but clickable
             ref={b.popUpRef.bind(b)}
-            label={<span className="npc-key">{b.key}</span>}
             css={popUpCss}
+            label={<span className="npc-key">{b.key}</span>}
+            onWheel={b.forwardWheelEvents.bind(b)}
             width={100}
           >
             <div css={thoughtsCss}>
@@ -126,6 +126,7 @@ function NpcSpeechBubble({ bubble: b }) {
               )}
             </div>
           </PopUp>
+
           {b.key}
         </div>
         &nbsp;
@@ -228,7 +229,7 @@ const popUpCss = css`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.75);
   }
 
   --info-arrow-color: #fff9;
