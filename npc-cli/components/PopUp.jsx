@@ -121,7 +121,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
  * @typedef Props
  * @property {number} [arrowDeltaX]
  * @property {string} [className]
- * @property {string} [label]
+ * @property {React.ReactNode} [label]
  * @property {number} [width]
  * @property {(willOpen: boolean) => void} [onChange]
  */
