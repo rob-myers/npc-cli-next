@@ -82,6 +82,37 @@ export async function* flatMap(ct) {
 }
 
 /**
+ * List global variables
+ * @source https://stackoverflow.com/a/49069050/2917822
+ * 
+ * Relevant for `expr` e.g.
+ * ```sh
+ * expr 'foo = 42'
+ * expr foo # outputs number 42
+ * expr 'delete foo'
+ * expr foo # outputs string "foo"
+ * ```
+ */
+export function* globals() {
+  document.body.appendChild(
+    document.createElement('div')
+  ).innerHTML='<iframe id="globals-temp-iframe" style="display:none"></iframe>';
+
+  const keys = /** @type {string[]} */ ([]);
+  for (let key in window) {
+    if (!(key in window.frames[window.frames.length-1]) && String(Number(key)) !== key) {
+      keys.push(key);
+    }
+  }
+  
+  document.body.removeChild(
+    /** @type {HTMLElement} */ (document.getElementById('globals-temp-iframe')?.parentNode)
+  );
+  
+  yield* keys;
+}
+
+/**
  * ```sh
  * # initially logs args, then stdin.
  * log $foo bar

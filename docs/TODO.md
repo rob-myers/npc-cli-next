@@ -37,13 +37,16 @@
   - ✅ can programmatically open PopUp
     - `w bubble.byKey.rob.popUp.open`
     - `w b.rob.popUp.open`
-  - 🚧 replace bubble.options (string[]) with bubble.thought (string)
+  - 🚧 add bubble.thought (string)
+    - e.g. `some [foo] thought` where `[foo]` becomes link
+  - 🚧 remove bubble.options
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 
 - 🚧 BUG: if change target while turning around before offMesh then old target used
 
-- issue when set `foo = () => 42` in chrome devtool and then tried `w bubble.setOptions rob foo bar baz`
+- ✅ issue when set `foo = () => 42` in chrome devtool and then tried `w bubble.setOptions rob foo bar baz`
+  - cannot fix, but can provide util `globals` which lists the current global variables
 
 - can choose default voice in WorldMenu
 
