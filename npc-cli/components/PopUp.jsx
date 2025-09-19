@@ -177,27 +177,6 @@ const rootPopupCss = css`
     /* text-align: center; */
     white-space: nowrap;
     
-    .${popUpContentClassName} {
-      min-height: 60px;
-      position: absolute;
-      width: var(--info-width);
-
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 300ms;
-      white-space: normal;
-    
-      background-color: black;
-      color: white;
-      border: 1px solid var(--info-border-color);
-    
-      a {
-        color: #dd0;
-      }
-      code {
-        font-size: inherit;
-      }
-    }
     .arrow {
       visibility: hidden;
       opacity: 0;
@@ -239,6 +218,28 @@ const rootPopupCss = css`
       .${popUpContentClassName}, .arrow {
         top: 2px;
       }
+    }
+  }
+
+  .${popUpContentClassName} {
+    /* min-height: 60px; */
+    position: absolute;
+    width: var(--info-width);
+
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 300ms;
+    white-space: normal;
+  
+    background-color: black;
+    color: white;
+    border: 1px solid var(--info-border-color);
+  
+    a {
+      color: #dd0;
+    }
+    code {
+      font-size: inherit;
     }
   }
 
