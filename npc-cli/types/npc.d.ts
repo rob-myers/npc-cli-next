@@ -493,6 +493,22 @@ declare namespace NPC {
     rooms: Geomorph.GmRoomKey[];
   }
 
+  /**
+   * ```js
+   * {
+   *   key: 'bedtime',
+   *   def: 'get in [low bed] or [high bed]',
+   *   parts: ['get in', ['low bed'], 'or', ['high bed']]
+   * }
+   * ```
+   */
+  interface BubbleThought {
+    key: string;
+    def: string;
+    /** Parsed `def` i.e. words "foo" or links [foo](foo) */
+    parts: (string | [string])[];
+  }
+
   //#region sh js
   
   type WorldState = import('../world/World').State;

@@ -37,8 +37,10 @@
   - ✅ can programmatically open PopUp
     - `w bubble.byKey.rob.popUp.open`
     - `w b.rob.popUp.open`
-  - 🚧 add bubble.thought (string)
-    - e.g. `some [foo] thought` where `[foo]` becomes link
+  - ✅ add bubble.thought
+    - e.g. `get in [high bed] or [low bed]` where `[foo]` becomes link
+    - `w b.rob.think bedtime get in '[high bed]' or '[low bed]'`
+    - `w b.rob.forget bedtime`
   - 🚧 remove bubble.options
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide

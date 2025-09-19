@@ -20,9 +20,10 @@ export class SpeechBubbleApi {
   offset = { x: 0, y: 0, z: 0 };
 
   /** Can hide non-empty options */
-  hideOptions = false;
-  options = /** @type {string[]} */ ([]);
+  hideOptions = false; // 🚧 remove
+  options = /** @type {string[]} */ ([]); // 🚧 remove
   speech = /** @type {string | null} */ (null);
+  thought = /** @type {{ [key: string]: NPC.BubbleThought }} */ ({});
 
   get visible() {
     return (
@@ -50,6 +51,14 @@ export class SpeechBubbleApi {
     // @ts-ignore
     this.w = null;
     this.html3dRef(null);
+  }
+
+  /**
+   * @param {string} thoughtKey 
+   */
+  forget(thoughtKey) {
+    delete this.thought[thoughtKey];
+    this.update();
   }
 
   /**
@@ -122,6 +131,20 @@ export class SpeechBubbleApi {
     const npc = this.w.n[this.key];
     npc.showLabel(!this.visible);
     this.w.update(); // render while paused
+  }
+
+  /**
+   * Add thought
+   * @param {string} thoughtKey 
+   * @param {...string} parts
+   */
+  think(thoughtKey, ...parts) {
+    this.thought[thoughtKey] = {
+      key: thoughtKey,
+      def: parts.join(' '),
+      parts: parts.map(x => x.startsWith('[') ? [x.slice(1, -1)] : x),
+    };
+    this.update();
   }
 
   update = noop

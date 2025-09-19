@@ -90,43 +90,60 @@ export default function NpcSpeechBubbles() {
 /**
  * @param {SpeechBubbleProps} props
  */
-function NpcSpeechBubble({ bubble }) {
+function NpcSpeechBubble({ bubble: b }) {
 
-  bubble.update = useUpdate();
+  b.update = useUpdate();
 
   React.useEffect(() => {
     // Extra initial render e.g. for speak while paused
-    setTimeout(bubble.update);
+    setTimeout(b.update);
   }, []);
+
+  const thoughts = Object.values(b.thought);
 
   return (
     <Html3d
-      ref={bubble.html3dRef.bind(bubble)}
+      ref={b.html3dRef.bind(b)}
       css={npcSpeechBubbleCss}
       baseScale={speechBubbleBaseScale}
-      offset={bubble.offset}
-      position={bubble.position}
-      r3f={bubble.w.r3f}
-      tracked={bubble.tracked}
-      visible={bubble.visible}
+      offset={b.offset}
+      position={b.position}
+      r3f={b.w.r3f}
+      tracked={b.tracked}
+      visible={b.visible}
     >
       <div className="speech">
-        <span className="npc-key">
+        <div className="npc-key">
           <PopUp // invisible but clickable
-            ref={bubble.popUpRef.bind(bubble)}
-            label={<span className="npc-key">{bubble.key}</span>}
+            ref={b.popUpRef.bind(b)}
+            label={<span className="npc-key">{b.key}</span>}
             css={popUpCss}
             width={100}
           >
-            🚧
+            <div css={thoughtsCss}>
+              {thoughts.map((thought) =>
+                <Thought key={thought.key} thought={thought} />
+              )}
+            </div>
           </PopUp>
-          {bubble.key}
-        </span>
+          {b.key}
+        </div>
         &nbsp;
-        {bubble.speech ?? undefined}
+        {b.speech ?? undefined}
       </div>
     </Html3d>
   );
+}
+
+/** @param {{ thought: NPC.BubbleThought }} props */
+function Thought({ thought }) {
+  return (
+    <div className="thought">
+      {thought.parts.map(x =>
+        Array.isArray(x) ? <button key={x[0]}>{x[0]}</button> : <span key={x}>{x}</span>
+      )}
+    </div>
+  )
 }
 
 /**
@@ -141,7 +158,7 @@ export const speechBubbleBaseScale = 4;
 
 export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
-export const npcSpeechBubbleCss = css`
+const npcSpeechBubbleCss = css`
   
   --speech-bubble-width: 300px;
 
@@ -166,6 +183,12 @@ export const npcSpeechBubbleCss = css`
     transition: opacity 300ms;
   }
 
+  .npc-key {
+    display: inline-block;
+    font-style: italic;
+    color: #ff9;
+  }
+
   .speech {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 1.4rem;
@@ -186,15 +209,9 @@ export const npcSpeechBubbleCss = css`
     
     text-align: center;
   }
-  
-  .npc-key {
-    display: inline-block;
-    font-style: italic;
-    color: #ff9;
-  }
 `;
 
-export const popUpCss = css`
+const popUpCss = css`
   position: absolute;
   pointer-events: all;
   
@@ -211,5 +228,30 @@ export const popUpCss = css`
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  --info-arrow-color: #fff9;
+`;
+
+const thoughtsCss = css`
+  display: flex;
+  flex-direction: column;
+
+  padding: 4px;
+
+  .thought {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 2px;
+    font-size: 0.75rem;
+  
+    button {
+      display: inline-block;
+      color: #99f;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
   }
 `;
