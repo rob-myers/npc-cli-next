@@ -1,13 +1,13 @@
 import React from "react";
 import { css } from "@emotion/react";
-import cx from "classnames";
 
+import { zIndexWorld } from "../service/const";
 import { WorldContext } from "./world-context";
 import { SpeechBubbleApi } from "./speech-bubble-api";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import { Html3d } from "../components/Html3d";
-import { zIndexWorld } from "../service/const";
+import { PopUp, popUpContentClassName } from "../components/PopUp";
 
 export default function NpcSpeechBubbles() {
 
@@ -37,7 +37,7 @@ export default function NpcSpeechBubbles() {
     setOptions(npcKey, ...inputs) {
       const bubble = state.ensure(npcKey);
       const options = bubble.setOptions(...inputs);
-      bubble.updateNpcLabel();
+      bubble.syncNpcLabel();
       update();
       return options;
     },
@@ -98,8 +98,6 @@ function NpcSpeechBubble({ bubble }) {
     setTimeout(bubble.update);
   }, []);
 
-  const hideActions = bubble.options.length === 0 || bubble.hideOptions === true;
-
   return (
     <Html3d
       ref={bubble.html3dRef.bind(bubble)}
@@ -112,22 +110,16 @@ function NpcSpeechBubble({ bubble }) {
       visible={bubble.visible}
     >
       <div className="speech">
-        <select
-          className={cx("actions", { hidden: hideActions })}
-          onWheel={bubble.forwardWheelEvents.bind(bubble)}
-          name={bubble.selectElName}
-          onChange={bubble.onChangeSelect.bind(bubble)}
-          value="" // fixed value
-        >
-          <option value="">
-            {bubble.key}
-          </option>
-          {bubble.options.map((option) =>
-            <option key={option} value={option}>
-              do{' '}{option}
-            </option>
-          )}
-        </select>
+        <span className="npc-key">
+          <PopUp // invisible but clickable
+            label={<span className="npc-key">{bubble.key}</span>}
+            css={popUpCss}
+            width={100}
+          >
+            🚧
+          </PopUp>
+          {bubble.key}
+        </span>
         &nbsp;
         {bubble.speech ?? undefined}
       </div>
@@ -174,7 +166,7 @@ export const npcSpeechBubbleCss = css`
 
   .speech {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
 
     color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -193,19 +185,25 @@ export const npcSpeechBubbleCss = css`
     text-align: center;
   }
   
-  select.actions {
-    pointer-events: all;
-    cursor: pointer;
-    text-align: center;
-    /** 🔔 fix safari */
-    text-align-last: center;
-    appearance: none;
-    /* 🚧 measure npcKey */
-    width: 48px;
-    
+  .npc-key {
+    display: inline-block;
     font-style: italic;
     color: #ff9;
-    background-color: rgba(0, 0, 0, 0);
-    /* border: 1px solid rgba(255, 255, 255, 0.3); */
+  }
+`;
+
+export const popUpCss = css`
+  position: absolute;
+  pointer-events: all;
+  
+  /* border: 1px solid red; */
+  .npc-key {
+    visibility: hidden;
+  }
+
+  .${popUpContentClassName} {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 `;

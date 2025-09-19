@@ -14,7 +14,7 @@
   - 🚧 can move AND when near bed log something
   - use narrator
 
-- 🚧 integrate speech bubble select
+- ❌ integrate speech bubble select
   - ✅ speech bubble has select ui
   - ✅ refactor speech bubble api with options
   - ✅ move item.visible to bubble.visible
@@ -29,8 +29,12 @@
     - ✅ do not change current option
     - ✅ new event type
   - ✅ can show options without saying anything in logger
-  - 🚧 measureText bubble npc.key
-  - wrapper for `w bubble.setOptions rob`
+  - ❌ measureText bubble npc.key
+  - ❌ wrapper for `w bubble.setOptions rob`
+
+- 🚧 integrate PopUp over npcKey in NpcSpeechBubble
+  - ✅ implement PopUp UI over npcKey
+  - 🚧 replace bubble.options (string[]) with bubble.thought (string)
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 

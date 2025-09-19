@@ -104,13 +104,14 @@ export class SpeechBubbleApi {
     this.tracked = tracked;
   }
 
-  update = noop
-
-  updateNpcLabel() {// shown iff this isn't
+  /** Show label iff this isn't shown */
+  syncNpcLabel() {
     const npc = this.w.n[this.key];
     npc.showLabel(!this.visible);
     this.w.update(); // render while paused
   }
+
+  update = noop
 }
 
 function noop() {};

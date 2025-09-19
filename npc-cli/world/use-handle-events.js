@@ -798,7 +798,7 @@ export default function useHandleEvents(w) {
       
       const bubble = w.bubble.ensure(npcKey);
       bubble.speech = speechSansLinks || null;
-      bubble.updateNpcLabel();
+      bubble.syncNpcLabel();
       bubble.update();
 
       w.events.next({ key: 'speech', npcKey, speech: speechWithLinks });
