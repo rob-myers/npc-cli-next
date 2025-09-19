@@ -42,6 +42,10 @@
     - `w b.rob.think bedtime get in '[high bed]' or '[low bed]'`
     - `w b.rob.forget bedtime`
   - 🚧 remove bubble.options
+  - ✅ handle empty thoughts
+  - ✅ can force popup to be left + bottom
+    - looks better when no speech
+  - 🚧 can see thoughts without saying anything
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 

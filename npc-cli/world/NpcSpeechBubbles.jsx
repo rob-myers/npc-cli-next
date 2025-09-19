@@ -113,19 +113,23 @@ function NpcSpeechBubble({ bubble: b }) {
     >
       <div className="speech">
         <div className="npc-key">
-          <PopUp // invisible but clickable
-            ref={b.popUpRef.bind(b)}
-            css={popUpCss}
-            label={<span className="npc-key">{b.key}</span>}
-            onWheel={b.forwardWheelEvents.bind(b)}
-            width={100}
-          >
-            <div css={thoughtsCss}>
-              {thoughts.map((thought) =>
-                <Thought key={thought.key} thought={thought} />
-              )}
-            </div>
-          </PopUp>
+          {thoughts.length > 0 && (
+            <PopUp // invisible but clickable
+              ref={b.popUpRef.bind(b)}
+              css={popUpCss}
+              label={<span className="npc-key">{b.key}</span>}
+              left
+              onWheel={b.forwardWheelEvents.bind(b)}
+              top={false}
+              width={140}
+            >
+              <div css={thoughtsCss}>
+                {thoughts.map((thought) =>
+                  <Thought key={thought.key} thought={thought} />
+                )}
+              </div>
+            </PopUp>
+          )}
 
           {b.key}
         </div>
@@ -192,7 +196,7 @@ const npcSpeechBubbleCss = css`
 
   .speech {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
 
     color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -238,21 +242,21 @@ const popUpCss = css`
 const thoughtsCss = css`
   display: flex;
   flex-direction: column;
-
-  padding: 4px;
+  gap: 8px;
+  padding: 8px;
 
   .thought {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    gap: 2px;
-    font-size: 0.75rem;
+    gap: 4px;
+    font-size: 1rem;
   
-    button {
-      display: inline-block;
-      color: #99f;
-      text-decoration: underline;
-      white-space: nowrap;
-    }
+  }
+  .thought button {
+    display: inline-block;
+    color: #99f;
+    text-decoration: underline;
+    white-space: nowrap;
   }
 `;

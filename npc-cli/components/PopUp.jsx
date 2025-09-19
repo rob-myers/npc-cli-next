@@ -61,10 +61,10 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       const rect = state.icon.getBoundingClientRect();
       const pixelsOnRight = containerRect.right - rect.right;
       const pixelsOnLeft = rect.x - containerRect.x;
-      state.left = pixelsOnRight < pixelsOnLeft;
+      state.left = props.left ?? pixelsOnRight < pixelsOnLeft;
       const pixelsAbove = rect.y - containerRect.y;
       const pixelsBelow = containerRect.bottom - rect.bottom;
-      state.top = pixelsBelow < pixelsAbove;
+      state.top = props.top ?? pixelsBelow < pixelsAbove;
       
       // 🚧 infer or parameterize `24`
       const root = /** @type {HTMLElement} */ (state.bubble.parentElement);
@@ -78,7 +78,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       props.onChange?.(state.opened);
       update();
     },
-  }), { deps: [props.onChange, props.width] });
+  }), { deps: [props.onChange, props.width, props.top, props.left] });
 
   React.useImperativeHandle(ref, () => state, []);
 
@@ -121,6 +121,8 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
  * @property {number} [arrowDeltaX]
  * @property {string} [className]
  * @property {React.ReactNode} [label]
+ * @property {boolean} [left] or right
+ * @property {boolean} [top] or bottom
  * @property {number} [width]
  * @property {(willOpen: boolean) => void} [onChange]
  * @property {(e: React.WheelEvent) => void} [onWheel]
@@ -176,7 +178,6 @@ const rootPopupCss = css`
     
     font-size: 0.95rem;
     font-style: normal;
-    /* text-align: center; */
     white-space: nowrap;
     
     .arrow {
