@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import cx from 'classnames';
+import { pause } from '../service/generic';
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
 
@@ -23,8 +24,9 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       state.opened = false;
       state.left = false;
       state.bubble.style.removeProperty('--bubble-width');
+      state.setOpacity(0);
       props.onChange?.(state.opened);
-      update();
+      pause(300).then(update);
     },
     onKeyDown(e) {
       if (e.code === 'Space') {
@@ -75,10 +77,16 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       width = Math.min(width, maxWidthAvailable);
       root.style.setProperty('--bubble-width', `${width}px`);
 
+      state.setOpacity(1);
+
       state.icon.focus();
       props.onChange?.(state.opened);
       update();
     },
+    setOpacity(opacityDst) {
+      this.bubble.style.setProperty(popUpBubbleOpacityCssVar, `${opacityDst}`);
+    }
+
   }), { deps: [props.onChange, props.width, props.top, props.left, props.deltaArrowLeft] });
 
   React.useImperativeHandle(ref, () => state, []);
@@ -144,6 +152,8 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
  * @property {(e: React.PointerEvent) => void} onPointerDownIcon
  * @property {(e: React.PointerEvent) => void} onPointerUpIcon
  * @property {(width?: number | undefined) => void} open
+ * @property {(opacityDst: number) => void} setOpacity
+ * Set bubble opacity
  */
 
 
@@ -156,11 +166,13 @@ export const popUpBubbleClassName = 'pop-up-bubble';
 export const popUpContentClassName = 'pop-up-content';
 
 export const popUpBubbleArrowColorCssVar = '--bubble-arrow-color';
+const popUpBubbleOpacityCssVar = '--bubble-opacity';
 
 const rootPopupCss = css`
   --top-offset: 16px;
   --side-offset: 16px;
 
+  ${popUpBubbleOpacityCssVar}: 1;
   ${popUpBubbleArrowColorCssVar}: #999f;
   --bubble-arrow-delta-x: 0px; /* set above */
   --bubble-arrow-height: 20px;
@@ -178,7 +190,8 @@ const rootPopupCss = css`
     /** Prevents bubble span from wrapping to next line? */
     display: inline-block;
     
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 300ms ease-in-out;
+    opacity: var(${popUpBubbleOpacityCssVar});
 
     font-size: 0.95rem;
     font-style: normal;

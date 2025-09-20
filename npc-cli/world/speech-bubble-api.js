@@ -19,17 +19,13 @@ export class SpeechBubbleApi {
   tracked = /** @type {null | import('../components/Html3d').TrackedObject3D} */ (null);
   offset = { x: 0, y: 0, z: 0 };
 
-  /** Can hide non-empty options */
-  hideOptions = false; // 🚧 remove
-  options = /** @type {string[]} */ ([]); // 🚧 remove
   speech = /** @type {string | null} */ (null);
   thought = /** @type {{ [key: string]: NPC.BubbleThought }} */ ({});
+  /** `Object.values(this.thought)` */
+  thoughts = /** @type {NPC.BubbleThought[]} */ ([]);
 
   get visible() {
-    return (
-      this.speech !== null
-      || (this.hideOptions === false && this.options.length > 0) 
-    );
+    return this.speech !== null || this.thoughts.length > 0;
   }
 
   /**
@@ -58,6 +54,8 @@ export class SpeechBubbleApi {
    */
   forget(thoughtKey) {
     delete this.thought[thoughtKey];
+    this.thoughts = Object.values(this.thought);
+    this.syncNpcLabel();
     this.update();
   }
 
@@ -104,27 +102,11 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * ```js
-   * // e.g.
-   * setOptions('foo', 'bar')
-   * setOptions(opts => [...opts, 'baz'])
-   * ```
-   * @param {...string | ((prev: string[]) => string[])} inputs
-   */
-  setOptions(...inputs) {
-    this.options = inputs.flatMap(input =>
-      typeof input === 'function' ? input(this.options) : input
-    );
-    this.update();
-    return this.options;
-  }
-
-  /**
    * Set PopUp opacity
    * @param {number} opacityDst
    */
   setThoughtOpacity(opacityDst) {
-    this.popUp.bubble.style.setProperty('opacity', `${opacityDst}`);
+    this.popUp.setOpacity(opacityDst);
   }
 
   /**
@@ -158,6 +140,7 @@ export class SpeechBubbleApi {
         return acc;
       }, /** @type {(string | [string])[]} */ ([])),
     };
+    this.thoughts = Object.values(this.thought);
     this.update();
   }
 

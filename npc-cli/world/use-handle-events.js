@@ -145,6 +145,10 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       w.view.followPosition(npc.position, { height: helper.defaults.height });
     },
+    forget(npcKey, thoughtKey) {
+      const bubble = w.bubble.byKey[npcKey];
+      bubble?.forget(thoughtKey);
+    },
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
     },
@@ -224,7 +228,7 @@ export default function useHandleEvents(w) {
           if (w.view.isPointerEventDrag(e) === true) {
             return;
           }
-          state.showDefaultContextMenu();
+          state.showContextMenu();
           break;
         }
         case "nav-updated": {
@@ -432,11 +436,11 @@ export default function useHandleEvents(w) {
           }
 
           // hide thoughts whilst moving
-          w.b[npc.key]?.setThoughtOpacity(0);
+          // w.b[npc.key]?.setThoughtOpacity(0);
           break;
         }
         case "stopped-moving": {
-          w.b[npc.key]?.setThoughtOpacity(1);
+          // w.b[npc.key]?.setThoughtOpacity(1);
           break;
         }
       }
@@ -668,7 +672,7 @@ export default function useHandleEvents(w) {
     },
     onPointerUpMenuDesktop(e) {
       if (e.rmb && e.distancePx <= 5) {
-        state.showDefaultContextMenu();
+        state.showContextMenu();
       }
     },
     onTryOffMeshConnection(e, npc) {
@@ -807,7 +811,7 @@ export default function useHandleEvents(w) {
 
       w.events.next({ key: 'speech', npcKey, speech: speechWithLinks });
     },
-    showDefaultContextMenu() {
+    showContextMenu() {
       const { lastDown } = w.view;
       if (lastDown === undefined) {
         return;
@@ -832,6 +836,12 @@ export default function useHandleEvents(w) {
       const rect1 = tmpRect1.setFromPoints(offMesh1.src, offMesh1.dst).outset(radius);
       const rect2 = tmpRect2.setFromPoints(src, dst).outset(radius);
       return rect1.intersects(rect2) === false;
+    },
+    think(npcKey, thoughtKey, ...parts) {
+      const bubble = w.bubble.ensure(npcKey);
+      bubble.think(thoughtKey, ...parts);
+      bubble.syncNpcLabel();
+      w.bubble.update();
     },
     toggleDoor(gdKey, opts = {}) {
       const door = w.door.byKey[gdKey];
@@ -937,6 +947,7 @@ export default function useHandleEvents(w) {
  * - is very close to main segment of offMesh connection
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
  * @property {(npcKey: string) => void} followNpc
+ * @property {(npcKey: string, thoughtKey: string) => void} forget
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(gmRoomIds: Geomorph.GmRoomId[], canAccess?: (opts: { gmId: number } & (
  *   | { type: 'door'; doorId: number }
@@ -960,13 +971,14 @@ export default function useHandleEvents(w) {
  * @property {(...npcKeys: string[]) => void} removeFromSensors
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
  * @property {(opts: { npcKey: string, words?: string }) => void} say
- * @property {() => void} showDefaultContextMenu
+ * @property {() => void} showContextMenu
  * Default context menu, unless clicked on an npc
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
  * @property {(offMesh: NPC.OffMeshState, src: Geom.VectJson, dst: Geom.VectJson, radius?: number) => boolean} testOffMeshDisjoint
  * Are these disjoint?
  * - main `offMesh` segment outset by `radius`
  * - (`src`, `dst`) outset by `radius`
+ * @property {(npcKey: string, thoughtKey: string, ...parts: string[]) => void} think
  * @property {(gdKey: Geomorph.GmDoorKey, opts?: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
  * Returns `true` iff successful.
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; point?: Geom.VectJson; } & Geomorph.ToggleLockOpts) => boolean} toggleLock

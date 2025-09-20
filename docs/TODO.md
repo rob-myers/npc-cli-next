@@ -41,11 +41,17 @@
     - e.g. `get in [high bed] or [low bed]` where `[foo]` becomes link
     - `w b.rob.think bedtime get in '[high bed]' or '[low bed]'`
     - `w b.rob.forget bedtime`
-  - 🚧 remove bubble.options
   - ✅ handle empty thoughts
   - ✅ can force popup to be left + bottom
     - looks better when no speech
-  - 🚧 can see thoughts without saying anything
+  - ✅ can see thoughts without saying anything
+    - `w e.think rob myThought should I [do] this?`
+    - `w e.forget rob myThought`
+  - ✅ remove bubble.options
+  - ✅ open/close popup fades in/out
+  - 🚧 remove thought fade: use open/close instead
+  - 🚧 do not auto close popup when `started-moving`, otherwise it will close while paused and about to move
+  - 🚧 click thought link causes event (rename `select-option`)
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 

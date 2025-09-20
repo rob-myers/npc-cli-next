@@ -13,6 +13,8 @@ export default function NpcSpeechBubbles() {
 
   const w = React.useContext(WorldContext);
 
+  const update = useUpdate();
+
   const state = useStateRef(/** @returns {State} */ () => ({
     byKey: {},
     lastFront: '',
@@ -29,18 +31,6 @@ export default function NpcSpeechBubbles() {
       bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
       return bubble;
     },
-    setHideOptions(npcKey, next = !state.byKey[npcKey].hideOptions) {
-      const bubble = state.byKey[npcKey];
-      bubble.hideOptions = next;
-      bubble.update();
-    },
-    setOptions(npcKey, ...inputs) {
-      const bubble = state.ensure(npcKey);
-      const options = bubble.setOptions(...inputs);
-      bubble.syncNpcLabel();
-      update();
-      return options;
-    },
     toFront(npcKey) {
       const prevBubbleDiv = state.byKey[state.lastFront]?.html3d.rootDiv;
       if (prevBubbleDiv) prevBubbleDiv.style.zIndex = '';
@@ -48,6 +38,7 @@ export default function NpcSpeechBubbles() {
       bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
       state.lastFront = npcKey;
     },
+    update,
   }));
 
   w.bubble = state;
@@ -65,8 +56,6 @@ export default function NpcSpeechBubbles() {
     }
   }, []);
 
-  const update = useUpdate();
-
   return Object.values(state.byKey).filter(({ visible }) => visible).map((bubble) =>
     <MemoizedSpeechBubble
       key={bubble.key}
@@ -82,9 +71,8 @@ export default function NpcSpeechBubbles() {
  * @property {(...npcKeys: string[]) => void} delete
  * @property {(npcKey: string) => SpeechBubbleApi} ensure
  * @property {{ [npcKey: string]: SpeechBubbleApi }} byKey
- * @property {(npcKey: string, shouldHide?: boolean) => void} setHideOptions
- * @property {(npcKey: string, ...inputs: (string | ((prev: string[]) => string[]))[]) => string[]} setOptions
  * @property {(npcKey: string) => void} toFront
+ * @property {() => void} update
  */
 
 /**
@@ -97,8 +85,6 @@ function NpcSpeechBubble({ bubble: b }) {
   React.useEffect(() => {
     setTimeout(b.update); // Extra render e.g. for speak while paused
   }, []);
-
-  const thoughts = Object.values(b.thought);
 
   return (
     <Html3d
@@ -113,7 +99,7 @@ function NpcSpeechBubble({ bubble: b }) {
     >
       <div className="speech">
         <div className="npc-key">
-          {thoughts.length > 0 && (
+          {b.thoughts.length > 0 && (
             <PopUp // invisible but clickable
               ref={b.popUpRef.bind(b)}
               css={popUpCss}
@@ -125,7 +111,7 @@ function NpcSpeechBubble({ bubble: b }) {
               width={140}
             >
               <div css={thoughtsCss}>
-                {thoughts.map((thought) =>
+                {b.thoughts.map((thought) =>
                   <Thought key={thought.key} thought={thought} />
                 )}
               </div>
