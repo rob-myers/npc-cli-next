@@ -1169,6 +1169,7 @@ export class NpcApi {
         this.resolve.turn?.();
 
         if (this.s.target === null && this.pendingTargets.length > 0) {
+          this.startAnimation('Walk'); // start walking again
           this.onArriveTarget(); // continue pending target
         } else if (this.s.target === null) {
           this.startAnimation('Idle'); // go Idle after collision

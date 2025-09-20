@@ -712,6 +712,7 @@ export default function useHandleEvents(w) {
           npc.exitOffMeshFor(newTarget);
         } else {
           npc.exitOffMeshFor(npc.position, false);
+          npc.startAnimation('Idle');
           npc.s.lookSecs = 0.2;
           npc.s.lookAngleDst = npc.getLookAngle(
             entryDist > 0.05 ? improved.src : improved.dst
