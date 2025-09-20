@@ -11,7 +11,7 @@ import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import { Draggable } from "../components/Draggable";
-import { PopUp, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
+import { PopUp, popUpBubbleArrowColorCssVar, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 import { globalLoggerLinksRegex, Logger } from "../terminal/Logger";
 import TouchIndicator from "./TouchIndicator";
 import { CentredSpinner } from "../components/Spinner";
@@ -243,12 +243,6 @@ export default function WorldMenu(props) {
   </>;
 }
 
-const defaultLoggerHeightPx = 40;
-const defaultLoggerWidthPx = 200;
-/** Must be a factor of default height */
-const loggerHeightDelta = 20;
-const defaultLoggerWidthDelta = 40;
-
 const loggerAndPopUpCss = css`
   position: absolute;
   left: 0;
@@ -279,7 +273,7 @@ const popUpCss = css`
   // cover Logger scrollbars
   z-index: ${zIndexWorld.loggerPopUp};
   
-  --info-arrow-color: #338;
+  ${popUpBubbleArrowColorCssVar}: #338;
 
   position: absolute;
   right: 0;

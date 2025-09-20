@@ -7,7 +7,7 @@ import { SpeechBubbleApi } from "./speech-bubble-api";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import { Html3d } from "../components/Html3d";
-import { PopUp, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
+import { PopUp, popUpBubbleArrowColorCssVar, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 
 export default function NpcSpeechBubbles() {
 
@@ -237,7 +237,7 @@ const popUpCss = css`
     background-color: rgba(0, 0, 0, 0.75);
   }
 
-  --info-arrow-color: #0009;
+  ${popUpBubbleArrowColorCssVar}: #0009;
 `;
 
 const thoughtsCss = css`

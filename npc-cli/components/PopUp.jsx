@@ -22,7 +22,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
     close() {
       state.opened = false;
       state.left = false;
-      state.bubble.style.removeProperty('--info-width');
+      state.bubble.style.removeProperty('--bubble-width');
       props.onChange?.(state.opened);
       update();
     },
@@ -67,13 +67,13 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       state.top = props.top ?? pixelsBelow < pixelsAbove;
       
       const root = /** @type {HTMLElement} */ (state.bubble.parentElement);
-      root.style.setProperty('--info-arrow-delta-x', `${
+      root.style.setProperty('--bubble-arrow-delta-x', `${
         state.left === true ? (props.deltaArrowLeft ?? 24) : 12
       }px`);
 
       const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
       width = Math.min(width, maxWidthAvailable);
-      root.style.setProperty('--info-width', `${width}px`);
+      root.style.setProperty('--bubble-width', `${width}px`);
 
       state.icon.focus();
       props.onChange?.(state.opened);
@@ -155,17 +155,17 @@ export const popUpButtonClassName = 'pop-up-button';
 export const popUpBubbleClassName = 'pop-up-bubble';
 export const popUpContentClassName = 'pop-up-content';
 
+export const popUpBubbleArrowColorCssVar = '--bubble-arrow-color';
 
 const rootPopupCss = css`
   --top-offset: 16px;
   --side-offset: 16px;
 
-  --info-arrow-color: #999999ff;
-  /* set above */
-  --info-arrow-delta-x: 0px;
-  --info-arrow-height: 20px;
-  --info-border-color: #ffffff55;;
-  --info-width: ${defaultInfoWidthPx}px;
+  ${popUpBubbleArrowColorCssVar}: #999f;
+  --bubble-arrow-delta-x: 0px; /* set above */
+  --bubble-arrow-height: 20px;
+  --bubble-border-color: #ffffff55;
+  --bubble-width: ${defaultInfoWidthPx}px;
 
   .${popUpButtonClassName} {
     cursor: pointer;
@@ -194,32 +194,32 @@ const rootPopupCss = css`
 
     &.left {
       .${popUpContentClassName} {
-        left: calc(-1 * var(--info-width) - 2 * var(--info-arrow-delta-x));
+        left: calc(-1 * var(--bubble-width) - 2 * var(--bubble-arrow-delta-x));
       }
       .arrow {
         top: 0;
-        left: calc(-2 * var(--info-arrow-delta-x));
+        left: calc(-2 * var(--bubble-arrow-delta-x));
         border-top: 10px solid transparent;
         border-bottom: 10px solid transparent;
-        border-left: 10px solid var(--info-arrow-color);
+        border-left: 10px solid var(--bubble-arrow-color);
       }
     }
 
     &.right {
       .${popUpContentClassName} {
-        left: calc(var(--info-arrow-delta-x) - 2px);
+        left: calc(var(--bubble-arrow-delta-x) - 2px);
       }
       .arrow {
         top: 0;
         left: 0;
         border-top: 10px solid transparent;
         border-bottom: 10px solid transparent;
-        border-right: 10px solid var(--info-arrow-color);
+        border-right: 10px solid var(--bubble-arrow-color);
       }
     }
 
     &.top .${popUpContentClassName} {
-      bottom: calc(-1 * var(--info-arrow-height));
+      bottom: calc(-1 * var(--bubble-arrow-height));
     }
     &.bottom {
       .${popUpContentClassName}, .arrow {
@@ -231,7 +231,7 @@ const rootPopupCss = css`
   .${popUpContentClassName} {
     /* min-height: 60px; */
     position: absolute;
-    width: var(--info-width);
+    width: var(--bubble-width);
 
     visibility: hidden;
     opacity: 0;
@@ -240,7 +240,7 @@ const rootPopupCss = css`
   
     background-color: black;
     color: white;
-    border: 1px solid var(--info-border-color);
+    border: 1px solid var(--bubble-border-color);
   
     a {
       color: #dd0;
