@@ -56,7 +56,8 @@
   - ✅ click thought link causes event `click-thought`
   - ✅ thoughts can be 'disabled' e.g. to avoid flicking bubble on/off
   - ✅ disabled thoughts can be deleted
-  - 🚧 fade on close bubble e.g. on delete only thought
+  - ❌ fade on close bubble e.g. on delete only thought
+  - ✅ on close bubble remove disabled?
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 

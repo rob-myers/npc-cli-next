@@ -27,9 +27,10 @@ export default function NpcSpeechBubbles() {
       update();
     },
     ensure(npcKey) {// ensure exists and is tracking npc
+      const npc = w.npc.get(npcKey);
       const bubble = state.byKey[npcKey] ??= new SpeechBubbleApi(npcKey, w);
-      const npc = w.n[npcKey];
       bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
+      update();
       return bubble;
     },
     toFront(npcKey) {
@@ -39,7 +40,6 @@ export default function NpcSpeechBubbles() {
       bubbleDiv.style.zIndex = `${zIndexWorld.baseSpeechBubble + 10}`;
       state.lastFront = npcKey;
     },
-    update,
   }));
 
   w.bubble = state;
@@ -57,7 +57,7 @@ export default function NpcSpeechBubbles() {
     }
   }, []);
 
-  return Object.values(state.byKey).filter(({ visible }) => visible).map((bubble) =>
+  return Object.values(state.byKey).map((bubble) =>
     <MemoizedSpeechBubble
       key={bubble.key}
       bubble={bubble}
@@ -73,7 +73,6 @@ export default function NpcSpeechBubbles() {
  * @property {(npcKey: string) => SpeechBubbleApi} ensure
  * @property {{ [npcKey: string]: SpeechBubbleApi }} byKey
  * @property {(npcKey: string) => void} toFront
- * @property {() => void} update
  */
 
 /**
@@ -96,31 +95,31 @@ function NpcSpeechBubble({ bubble: b }) {
       position={b.position}
       r3f={b.w.r3f}
       tracked={b.tracked}
-      visible={b.visible}
+      visible
     >
       <div className="speech">
         <div className="npc-key">
-          {b.thoughts.length > 0 && (
-            <PopUp // invisible but clickable
-              ref={b.popUpRef.bind(b)}
-              css={popUpCss}
-              deltaArrowLeft={28}
-              label={<span className="npc-key">{b.key}</span>}
-              left
-              onWheel={b.forwardWheelEvents.bind(b)}
-              top={false}
-              width={140}
+          <PopUp // invisible but clickable
+            ref={b.popUpRef.bind(b)}
+            css={popUpCss}
+            deltaArrowLeft={28}
+            label={<span className="npc-key">{b.key}</span>}
+            left
+            onWheel={b.forwardWheelEvents.bind(b)}
+            onChange={b.onPopUpChange.bind(b)}
+            top={false}
+            width={140}
+          >
+            <div
+              css={thoughtsCss}
+              onClick={b.onClickThoughts.bind(b)}
             >
-              <div
-                css={thoughtsCss}
-                onClick={b.onClickThoughts.bind(b)}
-              >
-                {b.thoughts.map((thought) =>
-                  <Thought key={thought.key} thought={thought} />
-                )}
-              </div>
-            </PopUp>
-          )}
+              {b.thoughts.map((thought) =>
+                <Thought key={thought.key} thought={thought} />
+              )}
+              {b.thoughts.length === 0 && <>...</>}
+            </div>
+          </PopUp>
 
           {b.key}
         </div>

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { npcSpeechBubbleOpacityCssVar } from './NpcSpeechBubbles';
+import { pause } from '../service/generic';
 
 /**
  * 🔔 Avoid function-valued properties: our HMR strategy doesn't handle them,
@@ -23,11 +24,7 @@ export class SpeechBubbleApi {
   thought = /** @type {{ [key: string]: NPC.BubbleThought }} */ ({});
   /** `Object.values(this.thought)` */
   thoughts = /** @type {NPC.BubbleThought[]} */ ([]);
-
-  get visible() {
-    return this.speech !== null || this.thoughts.length > 0;
-  }
-
+  
   /**
    * @param {string} key
    * @param {import('./World').State} w
@@ -41,6 +38,16 @@ export class SpeechBubbleApi {
     this.selectElName = `${key}-bubble-options`;
   }
 
+  /**
+   * Forgetting disables the thought, it does not remove it.
+   * @param {string} thoughtKey 
+   */
+  deleteThought(thoughtKey) {
+    delete this.thought[thoughtKey];
+    this.thoughts = Object.values(this.thought);
+    this.update();
+  }
+
   dispose() {
     this.tracked = null;
     this.update = noop;
@@ -50,20 +57,15 @@ export class SpeechBubbleApi {
   }
 
   /**
+   * Forgetting disables the thought, it does not remove it.
    * @param {string} thoughtKey 
    */
-  forget(thoughtKey, force = false) {
+  forget(thoughtKey) {
     const thought = this.thought[thoughtKey];
-    if (thought === undefined) {
-      return;
-    } else if (force) {
-      delete this.thought[thoughtKey];
-      this.thoughts = Object.values(this.thought);
-      this.syncNpcLabel();
-    } else {
+    if (thought !== undefined) {
       thought.disabled = true;
+      this.update();
     }
-    this.update();
   }
 
   /**
@@ -93,13 +95,22 @@ export class SpeechBubbleApi {
 
     const { deleteThoughtKey } = e.target.dataset;
     if (deleteThoughtKey !== undefined) {
-      this.forget(deleteThoughtKey, true);
+      this.deleteThought(deleteThoughtKey);
       return;
     }
 
     const { thoughtKey, buttonKey } = e.target.dataset;
     if (thoughtKey !== undefined && buttonKey !== undefined) {
       this.w.events.next({ key: 'click-thought', npcKey: this.key, thoughtKey, buttonKey });
+    }
+  }
+
+  /** @param {boolean} willOpen */
+  onPopUpChange(willOpen) {
+    if (willOpen === false) {
+      this.thoughts.forEach(t => t.disabled && delete this.thought[t.key]);
+      this.thoughts = Object.values(this.thought);
+      pause(300).then(this.update);
     }
   }
 
@@ -117,18 +128,18 @@ export class SpeechBubbleApi {
     this.html3d.rootDiv.style.setProperty(npcSpeechBubbleOpacityCssVar, `${opacityDst}`);
   }
 
+  /** @param {null | string} speech */
+  setSpeech(speech) {
+    this.speech = speech;
+    this.epochMs = Date.now();
+    this.update();
+  }
+
   /**
    * @param {import('../components/Html3d').TrackedObject3D} tracked
    */
   setTracked(tracked) {
     this.tracked = tracked;
-  }
-
-  /** Show label iff this isn't shown */
-  syncNpcLabel() {
-    const npc = this.w.n[this.key];
-    npc.showLabel(!this.visible);
-    this.w.update(); // render while paused
   }
 
   /**

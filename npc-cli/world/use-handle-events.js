@@ -145,9 +145,9 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       w.view.followPosition(npc.position, { height: helper.defaults.height });
     },
-    forget(npcKey, thoughtKey, force = false) {
+    forget(npcKey, thoughtKey) {
       const bubble = w.bubble.byKey[npcKey];
-      bubble?.forget(thoughtKey, force);
+      bubble?.forget(thoughtKey);
     },
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
@@ -798,13 +798,12 @@ export default function useHandleEvents(w) {
         throw Error('opts.words must be a string');
       }
 
+      const bubble = w.bubble.ensure(npcKey);
       const speechWithLinks = (words ?? '').trim();
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
-      
-      const bubble = w.bubble.ensure(npcKey);
-      bubble.speech = speechSansLinks || null;
-      bubble.syncNpcLabel();
-      bubble.update();
+      bubble.setSpeech(speechSansLinks || null);
+
+      w.n[npcKey].showLabel(false);
 
       w.events.next({ key: 'speech', npcKey, speech: speechWithLinks });
     },
@@ -837,8 +836,7 @@ export default function useHandleEvents(w) {
     think(npcKey, thoughtKey, ...parts) {
       const bubble = w.bubble.ensure(npcKey);
       bubble.think(thoughtKey, ...parts);
-      bubble.syncNpcLabel();
-      w.bubble.update();
+      w.n[npcKey].showLabel(false);
     },
     toggleDoor(gdKey, opts = {}) {
       const door = w.door.byKey[gdKey];

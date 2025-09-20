@@ -1446,6 +1446,7 @@ export class NpcApi {
   showLabel(shouldShow) {
     (this.tint.label ??= [1, 1, 1, 1])[3] = shouldShow ? 1 : 0;
     this.applyTint();
+    this.w.view.ensureRender();
   }
 
   /**
