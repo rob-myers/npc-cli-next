@@ -279,6 +279,8 @@ const popUpCss = css`
   // cover Logger scrollbars
   z-index: ${zIndexWorld.loggerPopUp};
   
+  --info-arrow-color: #338;
+
   position: absolute;
   right: 0;
 

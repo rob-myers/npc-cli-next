@@ -117,6 +117,7 @@ function NpcSpeechBubble({ bubble: b }) {
             <PopUp // invisible but clickable
               ref={b.popUpRef.bind(b)}
               css={popUpCss}
+              deltaArrowLeft={28}
               label={<span className="npc-key">{b.key}</span>}
               left
               onWheel={b.forwardWheelEvents.bind(b)}
@@ -236,7 +237,7 @@ const popUpCss = css`
     background-color: rgba(0, 0, 0, 0.75);
   }
 
-  --info-arrow-color: #fff9;
+  --info-arrow-color: #0009;
 `;
 
 const thoughtsCss = css`
