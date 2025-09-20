@@ -145,9 +145,9 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       w.view.followPosition(npc.position, { height: helper.defaults.height });
     },
-    forget(npcKey, thoughtKey) {
+    forget(npcKey, thoughtKey, force = false) {
       const bubble = w.bubble.byKey[npcKey];
-      bubble?.forget(thoughtKey);
+      bubble?.forget(thoughtKey, force);
     },
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
@@ -945,6 +945,8 @@ export default function useHandleEvents(w) {
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
  * @property {(npcKey: string) => void} followNpc
  * @property {(npcKey: string, thoughtKey: string) => void} forget
+ * - By default we set thought disabled.
+ * - On `force` we delete the thought.
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(gmRoomIds: Geomorph.GmRoomId[], canAccess?: (opts: { gmId: number } & (
  *   | { type: 'door'; doorId: number }

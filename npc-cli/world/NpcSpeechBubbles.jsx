@@ -1,5 +1,6 @@
 import React from "react";
 import { css } from "@emotion/react";
+import cx from "classnames";
 
 import { zIndexWorld } from "../service/const";
 import { WorldContext } from "./world-context";
@@ -110,7 +111,10 @@ function NpcSpeechBubble({ bubble: b }) {
               top={false}
               width={140}
             >
-              <div css={thoughtsCss}>
+              <div
+                css={thoughtsCss}
+                onClick={b.onClickThoughts.bind(b)}
+              >
                 {b.thoughts.map((thought) =>
                   <Thought key={thought.key} thought={thought} />
                 )}
@@ -130,9 +134,26 @@ function NpcSpeechBubble({ bubble: b }) {
 /** @param {{ thought: NPC.BubbleThought }} props */
 function Thought({ thought }) {
   return (
-    <p className="thought">
+    <p className={cx("thought", thought.disabled ? 'disabled' : undefined )}>
       {thought.parts.map(part =>
-        Array.isArray(part) ? <button key={part[0]}>{part[0]}</button> : part
+        Array.isArray(part)
+          ? <button
+              key={part[0]}
+              data-thought-key={thought.key}
+              data-button-key={part[1] ?? part[0]}
+              disabled={thought.disabled}
+            >
+              {part[0]}
+            </button>
+          : part
+      )}
+      {thought.disabled === true && (
+        <button
+          data-delete-thought-key={thought.key}
+          className="delete"
+        >
+          x
+        </button>
       )}
     </p>
   )
@@ -239,5 +260,15 @@ const thoughtsCss = css`
     text-decoration: underline;
     white-space: nowrap;
     padding: 0 4px;
+  }
+  .thought.disabled {
+    color: #999;
+    button {
+      color: #999;
+    }
+    button.delete {
+      color: #f99;
+      text-decoration: none;
+    }
   }
 `;

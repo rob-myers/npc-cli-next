@@ -52,10 +52,17 @@ export class SpeechBubbleApi {
   /**
    * @param {string} thoughtKey 
    */
-  forget(thoughtKey) {
-    delete this.thought[thoughtKey];
-    this.thoughts = Object.values(this.thought);
-    this.syncNpcLabel();
+  forget(thoughtKey, force = false) {
+    const thought = this.thought[thoughtKey];
+    if (thought === undefined) {
+      return;
+    } else if (force) {
+      delete this.thought[thoughtKey];
+      this.thoughts = Object.values(this.thought);
+      this.syncNpcLabel();
+    } else {
+      thought.disabled = true;
+    }
     this.update();
   }
 
@@ -77,14 +84,23 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * @param {React.ChangeEvent<HTMLSelectElement>} e
+   * @param {React.MouseEvent} e
    */
-  onChangeSelect(e) {
-    const selected = e.currentTarget.value;
-    if (selected === '') {
+  onClickThoughts(e) {
+    if (!(e.target instanceof HTMLButtonElement)) {
       return;
     }
-    this.w.events.next({ key: 'select-option', npcKey: this.key, option: selected });
+
+    const { deleteThoughtKey } = e.target.dataset;
+    if (deleteThoughtKey !== undefined) {
+      this.forget(deleteThoughtKey, true);
+      return;
+    }
+
+    const { thoughtKey, buttonKey } = e.target.dataset;
+    if (thoughtKey !== undefined && buttonKey !== undefined) {
+      this.w.events.next({ key: 'click-thought', npcKey: this.key, thoughtKey, buttonKey });
+    }
   }
 
   /** @param {null | import('@/npc-cli/components/PopUp').State} popUp */

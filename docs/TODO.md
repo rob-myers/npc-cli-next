@@ -53,11 +53,16 @@
   - ✅ open/close popup fades in/out
   - ✅ do not auto close popup when `started-moving`, otherwise it will close while paused and about to move
   - ✅ remove thought fade: use open/close instead
-  - 🚧 click thought link causes event (rename `select-option`)
+  - ✅ click thought link causes event `click-thought`
+  - ✅ thoughts can be 'disabled' e.g. to avoid flicking bubble on/off
+  - ✅ disabled thoughts can be deleted
+  - 🚧 fade on close bubble e.g. on delete only thought
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
 
 - 🚧 BUG: if change target while turning around before offMesh then old target used
+
+- Broadcaster -> AsyncIterator inside JS function (not shell)
 
 - ✅ issue when set `foo = () => 42` in chrome devtool and then tried `w bubble.setOptions rob foo bar baz`
   - cannot fix, but can provide util `globals` which lists the current global variables

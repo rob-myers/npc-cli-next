@@ -170,7 +170,7 @@ declare namespace NPC {
     | { key: 'controls-start' }
     | { key: 'controls-end' }
     | { key: 'fade-npc'; npcKey: string; opacityDst: number }
-    | { key: 'select-option'; npcKey: string; option: string }
+    | { key: 'click-thought'; npcKey: string; thoughtKey: string; buttonKey: string; }
     // ...
   );
 
@@ -498,7 +498,7 @@ declare namespace NPC {
    * {
    *   key: 'bedtime',
    *   def: 'get in [low bed] or [high bed]',
-   *   parts: ['get in', ['low bed'], 'or', ['high bed']]
+   *   parts: ['get in', ['low bed'], 'or', ['high bed']],
    * }
    * ```
    */
@@ -506,7 +506,9 @@ declare namespace NPC {
     key: string;
     def: string;
     /** Parsed `def` i.e. words "foo" or links [foo](foo) */
-    parts: (string | [string])[];
+    parts: (string | string[])[];
+    /** Rather than deleting we can disable a thought e.g. to avoid flicker */
+    disabled?: boolean;
   }
 
   //#region sh js
