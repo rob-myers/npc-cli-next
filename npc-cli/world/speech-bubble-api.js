@@ -120,6 +120,14 @@ export class SpeechBubbleApi {
   }
 
   /**
+   * Set PopUp opacity
+   * @param {number} opacityDst
+   */
+  setThoughtOpacity(opacityDst) {
+    this.popUp.bubble.style.setProperty('opacity', `${opacityDst}`);
+  }
+
+  /**
    * @param {import('../components/Html3d').TrackedObject3D} tracked
    */
   setTracked(tracked) {

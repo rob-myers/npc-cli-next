@@ -421,11 +421,8 @@ export default function useHandleEvents(w) {
           }
           break;
         case "started-moving": {
-          /**
-           * 🔔 avoid initial incorrect offMeshConnection traversal, by
-           *   replanning immediately before 1st updateRequestMoveTarget.
-           * 🚧 better fix e.g. inside Recast-Detour
-           */
+          // 🔔 avoid initially incorrect offMeshConnection traversal, by
+          // replanning immediately before 1st updateRequestMoveTarget.
           const agent = /** @type {NPC.CrowdAgent} */ (npc.agent);
           agent.raw.set_targetReplan(true);
 
@@ -433,6 +430,13 @@ export default function useHandleEvents(w) {
             const path3d = w.npc.findPath(npc.point, /** @type {Geom.Vect} */ (npc.s.target));
             w.debug.setNavPath(path3d ?? []);
           }
+
+          // hide thoughts whilst moving
+          w.b[npc.key]?.setThoughtOpacity(0);
+          break;
+        }
+        case "stopped-moving": {
+          w.b[npc.key]?.setThoughtOpacity(1);
           break;
         }
       }
