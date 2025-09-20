@@ -703,22 +703,22 @@
     </g>
     <g transform="matrix(1, 0, 0, 1, 864, 0)" style="filter: url(&quot;#saturate-filter-2&quot;);">
       <title>soldier-0_head-overlay</title>
-      <rect width="128" height="128" style="fill: none;" x="512" y="416">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="416">
         <title>front</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="640" y="416">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="416">
         <title>back</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" y="544" x="512">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="512">
         <title>left</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="640" y="544">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="544">
         <title>right</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="512" y="672">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="672">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="640" y="672">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
         <title>bottom</title>
       </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAN0lEQVQYGWNkAAJ9K53/IPr3zz8gCg6unb3ByAKThImCBGFsEM0CItB1gsRggAUmia4TpmAw0ADRiBN6IXkVxQAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated;">
