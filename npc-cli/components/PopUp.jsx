@@ -66,9 +66,10 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       const pixelsBelow = containerRect.bottom - rect.bottom;
       state.top = props.top ?? pixelsBelow < pixelsAbove;
       
-      // 🚧 infer or parameterize `24`
       const root = /** @type {HTMLElement} */ (state.bubble.parentElement);
-      root.style.setProperty('--info-arrow-delta-x', `${state.left ? 24 : 12}px`);
+      root.style.setProperty('--info-arrow-delta-x', `${
+        state.left === true ? (props.deltaArrowLeft ?? 24) : 12
+      }px`);
 
       const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
       width = Math.min(width, maxWidthAvailable);
@@ -78,7 +79,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       props.onChange?.(state.opened);
       update();
     },
-  }), { deps: [props.onChange, props.width, props.top, props.left] });
+  }), { deps: [props.onChange, props.width, props.top, props.left, props.deltaArrowLeft] });
 
   React.useImperativeHandle(ref, () => state, []);
 
@@ -118,8 +119,8 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
 
 /**
  * @typedef Props
- * @property {number} [arrowDeltaX]
  * @property {string} [className]
+ * @property {number} [deltaArrowLeft]
  * @property {React.ReactNode} [label]
  * @property {boolean} [left] or right
  * @property {boolean} [top] or bottom
@@ -131,9 +132,9 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
 /**
  * @typedef State
  * @property {boolean} top or bottom
- * @property {HTMLSpanElement} bubble
+ * @property {HTMLDivElement} bubble
  * @property {boolean} opened
- * @property {HTMLSpanElement} icon
+ * @property {HTMLButtonElement} icon
  * @property {null | Geom.VectJson} iconDownAt
  * @property {boolean} left or right
  * @property {boolean} preventToggle
@@ -160,6 +161,7 @@ const rootPopupCss = css`
   --side-offset: 16px;
 
   --info-arrow-color: #999999ff;
+  /* set above */
   --info-arrow-delta-x: 0px;
   --info-arrow-height: 20px;
   --info-border-color: #ffffff55;;
@@ -176,6 +178,8 @@ const rootPopupCss = css`
     /** Prevents bubble span from wrapping to next line? */
     display: inline-block;
     
+    transition: opacity 0.3s ease-in-out;
+
     font-size: 0.95rem;
     font-style: normal;
     white-space: nowrap;
