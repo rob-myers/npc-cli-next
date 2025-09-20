@@ -102,14 +102,6 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * Set PopUp opacity
-   * @param {number} opacityDst
-   */
-  setThoughtOpacity(opacityDst) {
-    this.popUp.setOpacity(opacityDst);
-  }
-
-  /**
    * @param {import('../components/Html3d').TrackedObject3D} tracked
    */
   setTracked(tracked) {
@@ -134,7 +126,7 @@ export class SpeechBubbleApi {
       def: parts.join(' '),
       // e.g. ['get in', ['bed'], 'right now']
       parts: parts.reduce((acc, x) => {
-        if (x.startsWith('[')) acc.push([x.slice(1, -1)]);
+        if (x.startsWith('[') && x.endsWith(']')) acc.push([x.slice(1, -1)]);
         else if (typeof acc.at(-1) === 'string') acc[acc.length - 1] += ` ${x}`;
         else acc.push(x);
         return acc;

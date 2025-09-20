@@ -435,12 +435,9 @@ export default function useHandleEvents(w) {
             w.debug.setNavPath(path3d ?? []);
           }
 
-          // hide thoughts whilst moving
-          // w.b[npc.key]?.setThoughtOpacity(0);
           break;
         }
         case "stopped-moving": {
-          // w.b[npc.key]?.setThoughtOpacity(1);
           break;
         }
       }

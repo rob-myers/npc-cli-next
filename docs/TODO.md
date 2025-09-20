@@ -47,10 +47,12 @@
   - ✅ can see thoughts without saying anything
     - `w e.think rob myThought should I [do] this?`
     - `w e.forget rob myThought`
+    - `w e.think rob bed '[top bunk]' or '[bottom]' ?`
+    - 🔔 basic parsing e.g. `w e.think rob foo [bar baz]` won't work
   - ✅ remove bubble.options
   - ✅ open/close popup fades in/out
-  - 🚧 remove thought fade: use open/close instead
-  - 🚧 do not auto close popup when `started-moving`, otherwise it will close while paused and about to move
+  - ✅ do not auto close popup when `started-moving`, otherwise it will close while paused and about to move
+  - ✅ remove thought fade: use open/close instead
   - 🚧 click thought link causes event (rename `select-option`)
   - test integration with `demoGotoBedChoices`
     - e.g. only show when arrived near bed, else hide
