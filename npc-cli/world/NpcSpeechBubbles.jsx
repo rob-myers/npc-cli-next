@@ -143,11 +143,11 @@ function NpcSpeechBubble({ bubble: b }) {
 /** @param {{ thought: NPC.BubbleThought }} props */
 function Thought({ thought }) {
   return (
-    <div className="thought">
-      {thought.parts.map(x =>
-        Array.isArray(x) ? <button key={x[0]}>{x[0]}</button> : <span key={x}>{x}</span>
+    <p className="thought">
+      {thought.parts.map(part =>
+        Array.isArray(part) ? <button key={part[0]}>{part[0]}</button> : part
       )}
-    </div>
+    </p>
   )
 }
 
@@ -244,19 +244,13 @@ const thoughtsCss = css`
   flex-direction: column;
   gap: 8px;
   padding: 8px;
+  font-size: 1rem;
 
-  .thought {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 4px;
-    font-size: 1rem;
-  
-  }
   .thought button {
     display: inline-block;
     color: #99f;
     text-decoration: underline;
     white-space: nowrap;
+    padding: 0 4px;
   }
 `;

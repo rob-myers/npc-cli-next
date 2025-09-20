@@ -142,7 +142,13 @@ export class SpeechBubbleApi {
     this.thought[thoughtKey] = {
       key: thoughtKey,
       def: parts.join(' '),
-      parts: parts.map(x => x.startsWith('[') ? [x.slice(1, -1)] : x),
+      // e.g. ['get in', ['bed'], 'right now']
+      parts: parts.reduce((acc, x) => {
+        if (x.startsWith('[')) acc.push([x.slice(1, -1)]);
+        else if (typeof acc.at(-1) === 'string') acc[acc.length - 1] += ` ${x}`;
+        else acc.push(x);
+        return acc;
+      }, /** @type {(string | [string])[]} */ ([])),
     };
     this.update();
   }
