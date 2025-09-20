@@ -120,8 +120,8 @@ function NpcSpeechBubble({ bubble: b }) {
 
           {b.key}
         </div>
-        &nbsp;
-        {b.speech ?? undefined}
+        
+        {b.speech ? <>&nbsp;{b.speech}</> : undefined}
       </div>
     </Html3d>
   );
@@ -163,7 +163,7 @@ const npcSpeechBubbleCss = css`
   background: transparent !important;
 
   > div {
-    transform-origin: calc(+1/2 * var(--speech-bubble-width)) 0;
+    /* transform-origin: calc(+1/2 * var(--speech-bubble-width)) 0; */
     width: var(--speech-bubble-width);
     
     display: flex;
