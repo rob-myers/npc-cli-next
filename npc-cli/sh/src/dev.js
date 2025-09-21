@@ -2,8 +2,7 @@ import { Mat, Vect } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from '@/npc-cli/service/geom';
 import { ansi } from "../const";
-import { pause } from "./util";
-import { move } from "./game";
+import { move } from "./core";
 
 /**
  * @param {NPC.RunArg} ct
@@ -65,6 +64,41 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
     meta: opts.meta,
     y3d: (opts.y ?? 0) + 0.001, // below npc selector
   });
+}
+
+/**
+ * Like `move` but on obstruction await resolution, rather than throwing.
+ * ```sh
+ * direct npc:rob to:"$( click 2 )"
+ * direct npc:rob to:$( clicks 2 )
+ * 
+ * while true; do
+ *   direct npc:rob to:$( clicks 2 ) ...
+ * done
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
+ */
+export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, { array: { to: true } })) {
+  let to = opts.to;
+  while (true) {
+    try {
+      const arriveAnim = opts['...'] === true ? false : undefined;
+      await move(ct, { npcKey: opts.npcKey, to, arriveAnim });
+      break;
+    } catch (e) {
+      if (!helper.isStopReason(e) || !('rest' in e)) {
+        throw e; // e.g. reboot; respawn or remove
+      }
+      to = e.rest;
+      // on paused interrupt, avoid resuming twice
+      if (!(e.key === 'move-again' && ct.api.isPaused())) {
+        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset} awaiting resolution...`;
+      }
+      ct.api.pause();
+      await ct.api.awaitResume();
+    }
+  }
 }
 
 /**
@@ -155,39 +189,10 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (!npc) return;
-  if (input.meta.floor === true && !npc.s.actMeta) {
-    npc.api.look(input).catch(() => {});
+  if (input.meta.floor === true && !npc.doMeta) {
+    npc.look(input).catch(() => {});
   } else {// act or stop acting
-    await npc.api.make({ do: input }).catch(() => {});
-  }
-}
-
-/**
- * Like `move` but on obstruction await resolution, rather than throwing.
- * ```sh
- * direct npc:rob to:"$( click 2 )"
- * ```
- * @param {NPC.RunArg} ct
- * @param {{ npcKey: string; to: NPC.MoveOpts['to']; }} [opts]
- */
-export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
-  let to = opts.to;
-  while (true) {
-    try {
-      await move(ct, { npcKey: opts.npcKey, to, s: { arriveDist: 0.1 } });
-      break;
-    } catch (e) {
-      if (!helper.isStopReason(e) || !('rest' in e)) {
-        throw e; // e.g. reboot; respawn or remove
-      }
-      to = e.rest;
-      // on paused interrupt, avoid resuming twice
-      if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset}: awaiting resolution...`;
-      }
-      ct.api.pause();
-      await ct.api.awaitResume();
-    }
+    await npc.make({ do: input }).catch(() => {});
   }
 }
 
@@ -202,8 +207,8 @@ export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, {
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (npc) {
-    npc.s.run = input.keys?.includes("shift") ?? false;
-    npc.api.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {}); // can override
+    npc.run = input.keys?.includes("shift") ?? false;
+    npc.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {});
   }
 }
 
@@ -213,7 +218,7 @@ export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, {
  */
 export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)) => {
   w.e.pressMenuPrevent.preventMenuOnActOrFloor = (meta) => (
-    meta.act === true || meta.floor === true
+    meta.do === true || meta.floor === true
   );
 }
 
@@ -228,11 +233,11 @@ export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args,
   
   const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
   api.set(opts.npcKeyPath, nextNpcKey);
-  const nextNpc = w.npc.getNpc(nextNpcKey); // must
-  nextNpc.api.showSelector(true);
+  const nextNpc = w.npc.get(nextNpcKey); // must
+  nextNpc.showSelector(true);
   
   if (npcKey !== nextNpcKey) {
-    w.n[npcKey]?.api.showSelector(false); // maybe
+    w.n[npcKey]?.showSelector(false); // maybe
   }
 }
 
@@ -300,20 +305,18 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
     const nei = agent.raw.get_neis(0);
     const other = w.a[nei.idx];
 
-    if (other.s.target === null) {
+    if (other.target === null) {
       return;
     }
 
-    if (nei.dist <= (other.s.run === true ? 0.8 : 0.6)) {
+    if (nei.dist <= (other.run === true ? 0.8 : 0.6)) {
       // turn towards "closest neighbour" if they have a target
-      npc.s.lookAngleDst = npc.api.getEulerAngle(
-        geom.clockwiseFromNorth((
-          other.position.z - npc.position.z),
-          (other.position.x - npc.position.x)
-        )
+      npc.lookAngleDst = geom.clockwiseFromNorth(
+        other.point.y - npc.point.y,
+        other.point.x - npc.point.x
       );
     } else {
-      npc.s.lookAngleDst = null;
+      npc.lookAngleDst = null;
     }
 
   };
@@ -330,13 +333,13 @@ export function toggleOnDoor({ meta }, { w }) {
 /**
  * 
  * ```sh
- * tour npc:rob to:"$( click 5 )"
- * tour npc:rob to:"$( click 5 | sponge )"
- * tour npc:rob to:"$( points )"
+ * tour npc:rob to:"$( click 3 )"
+ * tour npc:rob to:"[$( click 3 )]"
+ * tour npc:rob to:"$( clicks 2 ) $( clicks 2 )"
  * 
- * tour npc:rob to:"$( [] $( points ) )"
- * nestedPoints=$( [] $( click 1 ) $( click 2 ) $( click 1 ) )
- * tour npc:rob to:$( nestedPoints )
+ * points=$( click 4 )
+ * tour npc:rob to:"$( points )"
+ * tour npc:rob to:"[$( points )]"
  * ```
  * 
  * - `opts.pause` in seconds, default `0.8`

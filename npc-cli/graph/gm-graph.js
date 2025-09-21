@@ -1,21 +1,21 @@
-import { Mat, Rect, Vect } from "../geom";
+import { Mat, Rect } from "../geom";
 import { BaseGraph, createBaseAstar } from "./base-graph";
-import { sguToWorldScale } from "../service/const";
-import { assertNonNull, removeDups } from "../service/generic";
+import { error } from "../service/generic";
 import { geom, directionChars, isDirectionChar } from "../service/geom";
-import { error, warn } from "../service/generic";
+import { createGmIdGrid, queryGmIdGrid } from "../service/grid";
 import { helper } from "../service/helper";
 import { AStar } from "../pathfinding/AStar";
 
 /**
- * The _Geomorph Graph_,
- * - where each hull door yields a node
- * - where each navigation mesh in a geomorph yields a node (often one-per-geomorph)
- * - where a geomorph is connected to a hull door iff the geomorph has that hull door
- * - where a hull door is connected to another hull door iff they have been identified
+ * The _Geomorph Graph_, where:
+ * - each hull door yields a node
+ * - each "original navigation mesh with doors" in a geomorph yields a node (often one-per-geomorph)
+ * - a geomorph node is connected to a hull door node iff the respective nav mesh has that hull door
+ * - a hull door node is connected to another hull door node iff they have been identified by
+ *   gluing geomorphs along shared edges.
  * @extends {BaseGraph<Graph.GmGraphNode, Graph.GmGraphEdgeOpts>}
  */
-export class GmGraphClass extends BaseGraph {
+export class GmGraph extends BaseGraph {
 
   /** @type {Geomorph.LayoutInstance[]}  */
   gms;
@@ -38,9 +38,6 @@ export class GmGraphClass extends BaseGraph {
    */
   entry;
 
-  /** World component API */
-  w = /** @type {import('../world/World').State}} */ ({});
-
   /**
    * Cache for @see {getAdjacentRoomCtxt}
    * 🤔 could precompute?
@@ -50,10 +47,10 @@ export class GmGraphClass extends BaseGraph {
 
   /**
    * Given world coordinates `(x, y)` then parent `gmId` is:
-   * `gmIdGrid[`${Math.floor(x / 600)}-${Math.floor(y / 600)}`]`
-   * @type {Map<`${number}-${number}`, number>}
+   * `gmIdGrid[`${Math.floor(x / 600)},${Math.floor(y / 600)}`]`
+   * @type {Geomorph.GmIdGrid}
    */
-  gmIdGrid = new Map();
+  gmIdGrid = {};
 
   /** @param {Geomorph.LayoutInstance[]} gms  */
   constructor(gms) {
@@ -64,11 +61,7 @@ export class GmGraphClass extends BaseGraph {
     this.gmNodeByGmId = gms.reduce((agg, _, gmId) => ({ ...agg, [gmId]: [] }), {});
     this.doorNodeByGmId = gms.reduce((agg, _, gmId) => ({ ...agg, [gmId]: [] }), {});
 
-    this.gms.forEach(({ gridRect: { x: gx, y: gy, right, bottom } }, gmId) => {
-      for (let x = Math.floor(gx / gmIdGridDim); x < Math.floor(right / gmIdGridDim); x++)
-        for (let y = Math.floor(gy / gmIdGridDim); y < Math.floor(bottom / gmIdGridDim); y++)
-          this.gmIdGrid.set(`${x}-${y}`, gmId);
-    });
+    this.gmIdGrid = createGmIdGrid(gms);
   }
 
   /**
@@ -118,17 +111,19 @@ export class GmGraphClass extends BaseGraph {
     super.dispose();
     this.gms.length = 0;
     this.entry.clear();
-    this.w = /** @type {*} */ ({});
     this.adjRoomCtxt.clear();
-    this.gmIdGrid.clear();
+    this.gmIdGrid = {};
   }
 
   /**
-   * @param {Geom.VectJson} point
+   * @param {MaybeMeta<Geom.VectJson>} point
    * @returns {number | null} gmId
    */
   findGmIdContaining(point) {
-    return this.gmIdGrid.get(`${Math.floor(point.x / gmIdGridDim)}-${Math.floor(point.y / gmIdGridDim)}`) ?? null;
+    if (typeof point.meta?.gmId === 'number') {
+      return point.meta.gmId;
+    }
+    return queryGmIdGrid(this.gmIdGrid, point);
   }
   
   /**
@@ -147,6 +142,7 @@ export class GmGraphClass extends BaseGraph {
 
   /**
    * Find geomorph edge path using astar.
+   * 🚧 support optional hull door weights e.g. if locked 
    * @param {Geom.VectJson} src
    * @param {Geom.VectJson} dst 
    */
@@ -163,11 +159,11 @@ export class GmGraphClass extends BaseGraph {
     const gmPath = AStar.search(this, srcNode, dstNode, (nodes) => {
       nodes[srcNode.index].astar.centroid.copy(src);
       nodes[dstNode.index].astar.centroid.copy(dst);
-      // closed hull doors have large cost
-      const { byGmId } = this.w.door;
-      this.gms.forEach((_, gmId) =>
-        this.doorNodeByGmId[gmId].forEach(node => node.astar.cost = byGmId[gmId][node.doorId].open === true ? 1 : 10000)
-      );
+      // // closed hull doors have large cost
+      // const { byGmId } = this.w.door;
+      // this.gms.forEach((_, gmId) =>
+      //   this.doorNodeByGmId[gmId].forEach(node => node.astar.cost = byGmId[gmId][node.doorId].open === true ? 1 : 10000)
+      // );
     });
 
     // convert gmPath to gmEdges
@@ -197,25 +193,6 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
-   * @param {Geom.VectJson} point
-   * @param {boolean} [includeDoors]
-   * Technically rooms do not include doors,
-   * but sometimes either adjacent room will do.
-   * @returns {null | Geomorph.GmRoomId}
-   */
-  findRoomContaining(point, includeDoors = false) {
-    const gmId = this.findGmIdContaining(point);
-    if (typeof gmId === 'number') {
-      const gm = this.gms[gmId];
-      const localPoint = gm.inverseMatrix.transformPoint(Vect.from(point));
-      const roomId = this.w.gmsData.findRoomIdContaining(gm, localPoint, includeDoors);
-      return roomId === null ? null : { gmId, roomId, grKey: helper.getGmRoomKey(gmId, roomId) };
-    } else {
-      return null;
-    }
-  }
-
-  /**
    * @param {Graph.GmGraphNode} node 
    */
   getAdjacentDoor(node) {
@@ -239,9 +216,9 @@ export class GmGraphClass extends BaseGraph {
 
     const gm = this.gms[gmId];
     const doorNodeId = getGmDoorNodeId(gm.num, gm.transform, hullDoorId);
-    const doorNode = this.getNodeById(doorNodeId);
+    const doorNode = this.getNode(doorNodeId);
     if (!doorNode) {
-      console.error(`${GmGraphClass.name}: failed to find hull door node: ${doorNodeId}`);
+      console.error(`${GmGraph.name}: failed to find hull door node: ${doorNodeId}`);
       return this.adjRoomCtxt.set(cacheKey, null), null;
     }
     const otherDoorNode = /** @type {undefined | Graph.GmGraphNodeDoor} */ (this.getSuccs(doorNode).find(x => x.type === 'door'));
@@ -288,46 +265,6 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
-   * Given ids of rooms in gmGraph, provide "adjacency data".
-   * - We do include rooms adjacent via a door or non-frosted window.
-   * - We handle dup roomIds e.g. via double doors.
-   * - We don't ensure input roomIds are output.
-   *   However they're included if they're adjacent to another such input roomId.
-   * @param {Geomorph.GmRoomId[]} roomIds
-   * @param {boolean} [doorsMustBeOpen]
-   * @returns {Graph.GmRoomsAdjData}
-   */
-  getRoomIdsAdjData(roomIds, doorsMustBeOpen = false) {
-    const output = /** @type {Graph.GmRoomsAdjData} */ ({});
-
-    for (const { gmId, roomId } of roomIds) {
-      const gm = this.gms[gmId];
-      const { roomGraph } = this.w.gmsData[gm.key];
-
-      const openDoorIds = this.w.door.getOpenIds(gmId);
-      // Non-hull doors or windows induce an adjacent room
-      !output[gmId] && (output[gmId] = { gmId, roomIds: [], windowIds: [], closedDoorIds: [] });
-      output[gmId].roomIds.push(...roomGraph.getAdjRoomIds(roomId, doorsMustBeOpen ? openDoorIds : undefined));
-      output[gmId].windowIds.push(...roomGraph.getAdjacentWindows(roomId).flatMap(x => gm.windows[x.windowId].meta.frosted ? [] : x.windowId));
-      output[gmId].closedDoorIds.push(...roomGraph.getAdjacentDoors(roomId).flatMap(x => openDoorIds.includes(x.doorId) ? [] : x.doorId));
-      // Connected hull doors induce room in another geomorph
-      // 🚧 check if hull doors are open?
-      // 🚧 currently ignore hull windows 
-      const hullDoorIds = roomGraph.getAdjacentHullDoorIds(gm, roomId);
-      hullDoorIds
-        .filter(({ hullDoorId }) => !this.isHullDoorSealed(gmId, hullDoorId))
-        .forEach(({ hullDoorId }) => {
-          const ctxt = assertNonNull(this.getAdjacentRoomCtxt(gmId, hullDoorId));
-          !output[ctxt.adjGmId] && (output[ctxt.adjGmId] = { gmId: ctxt.adjGmId, roomIds: [], windowIds: [], closedDoorIds: [] });
-          output[ctxt.adjGmId].roomIds.push(ctxt.adjRoomId);
-        });
-    }
-
-    Object.values(output).forEach(x => x.roomIds = removeDups(x.roomIds));
-    return output;
-  }
-
-  /**
    * Get door node by `hullDoorId`.
    * @param {number} gmId 
    * @param {number} hullDoorId 
@@ -335,23 +272,7 @@ export class GmGraphClass extends BaseGraph {
   getDoorNodeById(gmId, hullDoorId) {
     const gm = this.gms[gmId];
     const nodeId = getGmDoorNodeId(gm.num, gm.transform, hullDoorId);
-    return /** @type {Graph.GmGraphNodeDoor} */ (this.getNodeById(nodeId));
-  }
-
-  /** @param {Geom.VectJson[]} points */
-  inSameRoom(...points) {
-    /** @type {null | Geomorph.GmRoomId} */ let gmRoomId;
-    return points.every((point, i) => {
-      const next = this.findRoomContaining(point);
-      if (!next) return false;
-      if (i > 0 && (
-        /** @type {Geomorph.GmRoomId} */ (gmRoomId).gmId !== next.gmId ||
-        /** @type {Geomorph.GmRoomId} */ (gmRoomId).roomId !== next.roomId
-      )) {
-        return false;
-      }
-      return gmRoomId = next;
-    });
+    return /** @type {Graph.GmGraphNodeDoor} */ (this.getNode(nodeId));
   }
 
   /**
@@ -392,12 +313,13 @@ export class GmGraphClass extends BaseGraph {
   }
 
   /**
+   * Currently main thread only: needs door.roomIds (see below)
    * @param {Geomorph.LayoutInstance[]} gms 
    * @param {object} [options]
    * @param {boolean} [options.permitErrors]
    */
   static fromGms(gms, { permitErrors } = { permitErrors: false }) {
-    const graph = new GmGraphClass(gms);
+    const graph = new GmGraph(gms);
     /** Index into nodesArray */
     let index = 0;
 
@@ -441,7 +363,7 @@ export class GmGraphClass extends BaseGraph {
             hullDoorId,
             transform,
             gmInFront,
-            direction, // 🚧 verify values
+            direction,
             sealed: true, // Overwritten below
 
             ...createBaseAstar({
@@ -459,12 +381,13 @@ export class GmGraphClass extends BaseGraph {
     nodes.forEach(node => {
       if (node.type === 'door') {
         const { matrix, doors } = gms[node.gmId];
-        // console.log('->', node);
+        // 🔔 roomIds are populated in main thread (create-gms-data) via hit canvases
+        // e.g. won't work in a web worker without sending this data over
         const nonNullIndex = doors[node.doorId].roomIds.findIndex(x => x !== null);
         const entry = /** @type {Geom.Vect} */ (doors[node.doorId].entries[nonNullIndex]);
-        if (entry) {
+        if (entry !== undefined) {
           graph.entry.set(node, matrix.transformPoint(entry.clone()));
-        } else if (permitErrors) {
+        } else if (permitErrors === true) {
           error(`door ${node.doorId} lacks entry`);
         } else {
           throw Error(`${node.gmKey}: door ${node.doorId} lacks entry`);
@@ -523,7 +446,7 @@ export class GmGraphClass extends BaseGraph {
           // console.info('hull door to hull door:', srcItem, hullDoorId, '==>', dstItem, dstHullDoorId)
           const dstDoorNodeId = getGmDoorNodeId(dstGm.num, dstGm.transform, dstHullDoorId);
           // NOTE door nodes with global edges are not sealed
-          /** @type {Graph.GmGraphNodeDoor} */ (graph.getNodeById(srcDoorNodeId)).sealed = false;
+          /** @type {Graph.GmGraphNodeDoor} */ (graph.getNode(srcDoorNodeId)).sealed = false;
           return { src: srcDoorNodeId, dst: dstDoorNodeId };
         } else {
           return [];
@@ -571,5 +494,3 @@ function getGmNodeId(gmNumber, transform, navRectId) {
 function getGmDoorNodeId(gmNumber, transform, hullDoorId) {
   return `door-${gmNumber}-[${transform}]--${hullDoorId}`;
 }
-
-const gmIdGridDim = 600 * sguToWorldScale;

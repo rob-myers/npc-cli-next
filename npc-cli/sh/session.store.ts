@@ -77,7 +77,7 @@ const useStore = create<State>()((set, get): State => ({
               ...persisted.var,
               ...deepClone(env),
             },
-            jsFunc: {} as any,
+            modules: {} as any,
             nextPid: 0,
             process: {},
             lastBg: 0,
@@ -283,9 +283,8 @@ const useStore = create<State>()((set, get): State => ({
       const process = api.getProcess({ sessionKey, pid });
       if (group === true) {
         const { pgid } = process;
-        api.getProcesses(sessionKey, pgid).forEach(
-          p => p.reboot?.apply()
-        );
+        const processes = api.getProcesses(sessionKey, pgid);
+        processes.forEach(p => p.reboot?.apply());
       } else {
         process.reboot?.apply();
       }
@@ -524,7 +523,7 @@ export interface Session {
     /** `processApi[key]` is `processApi.getCached(var[CACHE_SHORTCUTS[key]])` */
     CACHE_SHORTCUTS?: { [key: string]: string };
   };
-  jsFunc: import('../terminal/TtyWithFunctions').TtyJsModules;
+  modules: import('../terminal/TtyWithFunctions').TtyJsModules;
 
   nextPid: number;
   /** Last exit code: */
@@ -568,8 +567,10 @@ export interface ProcessMeta {
    */
   cleanups: ((SIGINT?: boolean) => void)[];
   /**
-   * Processes with src `run {moduleName} {fnName} ...` can be rebooted,
-   * to avoid stale JavaScript on hot module reload.
+   * Processes with src:
+   * > `run {moduleKey} {fnKey} ...`
+   * 
+   * can be rebooted, to avoid stale JavaScript on hot module reload.
    */
   reboot?: {
     apply(): void;

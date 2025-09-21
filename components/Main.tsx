@@ -19,7 +19,9 @@ export default function Main(props: React.PropsWithChildren) {
     const scrollEl = rootRef.current!
     const headerLink = scrollEl.querySelector('header > a') as HTMLAnchorElement;
     const fadeTitleOnScroll = throttle(300, () => {
-      headerLink.style.opacity = String(Math.max(0.2, 1 - 4 * (scrollEl.scrollTop / scrollEl.scrollHeight)));
+      const opacity = Math.max(0, 1 - 32 * (scrollEl.scrollTop / scrollEl.scrollHeight));
+      headerLink.style.opacity = `${opacity}`;
+      headerLink.style.pointerEvents =  opacity > 0.2 ? 'all' : 'none';
     });
     scrollEl.addEventListener('scroll', fadeTitleOnScroll);
     return () => scrollEl.removeEventListener('scroll', fadeTitleOnScroll);
@@ -106,8 +108,8 @@ const mainHeaderCss = css`
     transition: opacity 300ms;
     color: #444;
     text-decoration: none;
-    font-weight: bold;
     text-shadow: 0 1px #fff, -0 -1px #fff, 1px 0 #fff, -1px 0 #fff;
+    pointer-events: all;
   }
   
   @media (min-width: ${afterBreakpoint}) {
@@ -125,22 +127,26 @@ const mainHeaderCss = css`
     pointer-events: all;
     background-color: #fff;
     a {
-      pointer-events: all;
       opacity: 1 !important;
-    }
+    pointer-events: all !important;
+  }
   }
 `;
 
 const mainMainCss = css`
-  /* 🚧 dark mode issue */
   background-color: #fff;
   padding-top: 2rem;
+  font-size: large;
 
   @media (min-width: ${afterBreakpoint}) {
     flex: 1;
     min-width: var(--main-min-width-desktop);
     margin: 0 1rem;
     padding: 2rem 4rem 6rem 4rem;
+  }
+
+  h1 + h2 {
+    margin-top: 0;
   }
 `;
 

@@ -47,7 +47,7 @@ export default function PsList() {
           useSession.api.kill(state.sessionKey, [pid], { GROUP: true, CONT: true });
           break;
         case 'reboot': {
-          useSession.api.reboot(state.sessionKey, pid);
+          useSession.api.reboot(state.sessionKey, pid, true);
           break;
         }
         default:

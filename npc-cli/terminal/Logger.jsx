@@ -99,16 +99,13 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
     xterm.open(state.container);
     state.fitAddon.fit();
     
-    // state.container.style.width = `${props.initDim[0]}px`;
-    // state.container.style.height = `${props.initDim[1]}px`;
-
     return () => {
       state.contents = state.serializeAddon.serialize();
       state.xterm.dispose();
     };
   }, [state.container]);
 
-  React.useLayoutEffect(() => {
+  React.useLayoutEffect(() => {// Links
     if (state.container === null) {
       return;
     }
@@ -142,9 +139,7 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
       urlRegex: loggerLinksRegex,
     }));
 
-    return () => {
-      state.linksAddon.dispose();
-    };
+    return () => state.linksAddon.dispose();
   }, [state.container, props.onClickLink]);
 
   const [measureLoggerRef, bounds] = useMeasure(({ debounce: 0 }));
@@ -162,7 +157,6 @@ export const Logger = React.forwardRef(function Logger(props, ref) {
 /**
  * @typedef Props
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLink
- * @property {[width: number, height: number]} initDim
  */
 
 /**
@@ -193,7 +187,7 @@ const loggerCss = css`
   /* prevent pinch-zoom on mobile */
   touch-action: none;
 
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   
   // 🔔 override textual selection cursor

@@ -1,5 +1,7 @@
 import type { ITerminalOptions, Terminal } from "@xterm/xterm";
 import debounce from "debounce";
+
+import { jsStringify, testNever, warn } from "../service/generic";
 import { ansi } from "./const";
 import { formatMessage } from "./util";
 import {
@@ -11,7 +13,7 @@ import {
   isDataChunk,
   isProxy,
 } from "./io";
-import { jsStringify, testNever, warn } from "../service/generic";
+import { highlight } from "./highlight";
 
 /**
  * Wraps xtermjs `Terminal`.
@@ -55,6 +57,8 @@ export class ttyXtermClass {
   historyEnabled = true;
   cleanups = [] as (() => void)[];
   maxStringifyLength = 2 * scrollback * 100;
+  /** sugar-high can be slow for strings of length `maxStringifyLength`  */
+  maxHighlightLength = 2 * 50 * 100;
 
   get active() {
     return this.xterm.buffer.active;
@@ -110,7 +114,7 @@ export class ttyXtermClass {
       unregisterWriters();
     });
     // user indication after xterm has loaded but session hasn't
-    this.xterm.writeln(`${ansi.Italic}${ansi.BrightWhite}Loading...${ansi.Reset}`);
+    this.xterm.writeln(`${ansi.Italic}${ansi.WhiteBright}Loading...${ansi.Reset}`);
   }
 
   /**
@@ -536,7 +540,7 @@ export class ttyXtermClass {
       return this.queueCommands(commands);
     } else if (msg === null) {
       this.session.rememberLastValue(null);
-      return this.queueCommands([{ key: "line", line: `${ansi.BrightYellow}null${ansi.Reset}` }]);
+      return this.queueCommands([{ key: "line", line: `${ansi.YellowBright}null${ansi.Reset}` }]);
     } else if (msg === undefined) {
       return;
     } else if (isProxy(msg)) {
@@ -544,7 +548,7 @@ export class ttyXtermClass {
       return this.queueCommands([
         {
           key: "line",
-          line: `${ansi.BrightYellow}${jsStringify({ ...msg }).slice(-this.maxStringifyLength)}${
+          line: `${ansi.YellowBright}${jsStringify({ ...msg }).slice(-this.maxStringifyLength)}${
             ansi.Reset
           }`,
         },
@@ -620,11 +624,15 @@ export class ttyXtermClass {
             line: `<${other.tagName.toLowerCase()}>`,
           }]);
         } else {
-          const stringified = jsStringify(other);
-          // const stringified = jsStringify(other).replaceAll('\n', '\n\r');
+          const stringifiedTail = jsStringify(other).slice(-this.maxStringifyLength);
+          const highlighted = stringifiedTail.length > this.maxHighlightLength
+            ? `${ansi.Yellow}${stringifiedTail}`
+            // syntax highlighting based on cli-high
+            : highlight(stringifiedTail.slice(-this.maxHighlightLength))
+          ;
           this.queueCommands([{
             key: "line",
-            line: `${ansi.BrightYellow}${stringified.slice(-this.maxStringifyLength)}${ansi.Reset}`,
+            line: `${highlighted}${ansi.Reset}`,
           }]);
           this.session.rememberLastValue(other);
         }

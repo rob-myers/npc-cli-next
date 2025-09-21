@@ -290,9 +290,11 @@ export function createLabelSpriteSheet(labels, sheet, { fontHeight }) {
   // Create sprite-sheet
   const canvas = /** @type {HTMLCanvasElement} */ (sheet.tex.image);
   const ct = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
+  ct.clearRect(0, 0, canvas.width, canvas.height);
   ct.font = `${fontHeight}px 'Courier new'`;
+  ct.letterSpacing = '12px';
 
-  const strokeWidth = 5;
+  const strokeWidth = 8;
 
   const rects = labels.map(label => ({
     width: ct.measureText(label).width + 2 * strokeWidth,
@@ -318,11 +320,12 @@ export function createLabelSpriteSheet(labels, sheet, { fontHeight }) {
   }
   ct.clearRect(0, 0, bin.width, bin.height);
   // ct.strokeStyle = ct.fillStyle = 'white';
-  ct.strokeStyle = 'black';
-  ct.fillStyle = 'white';
+  ct.font = `${fontHeight}px 'Verdana'`;
   ct.lineWidth = strokeWidth;
-  ct.font = `${fontHeight}px 'Courier new'`;
   ct.textBaseline = 'top';
+  ct.fillStyle = 'white';
+  ct.strokeStyle = 'black';
+  ct.letterSpacing = '12px';
   bin.rects.forEach(rect => {
     ct.strokeText(rect.data.label, rect.x + strokeWidth, rect.y + strokeWidth);
     ct.fillText(rect.data.label, rect.x + strokeWidth, rect.y + strokeWidth);
@@ -397,15 +400,16 @@ export function toV3(input, precision) {
 
 /**
  * Mutates vector
- * @param {THREE.Vector3} v 
- * @param {number} precision 
+ * @template {{ x: number; y: number; z: number; }} T
+ * @param {T} v 
+ * @param {number} precision
+ * @returns {T}
  */
 export function v3Precision(v, precision = 4) {
-  return v.set(
-    Number(v.x.toPrecision(precision)),
-    Number(v.y.toPrecision(precision)),
-    Number(v.z.toPrecision(precision)),
-  );
+  v.x = Number(v.x.toPrecision(precision));
+  v.y = Number(v.y.toPrecision(precision));
+  v.z = Number(v.z.toPrecision(precision));
+  return v;
 }
 
 export const defaultQuadUvs = [...Array(4)].map(_ => new THREE.Vector2());

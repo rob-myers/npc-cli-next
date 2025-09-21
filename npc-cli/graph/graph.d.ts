@@ -30,7 +30,7 @@ declare namespace Graph {
     reset(): void;
     hasNode(node: Node): boolean;
     isConnected(src: Node, dst: Node): boolean;
-    getNodeById(nodeid: string): Node | null;
+    getNode(nodeid: string): Node | null;
 
     plainJson(): GraphJson<Node, EdgeOpts>;
     plainFrom(json: GraphJson<Node, EdgeOpts>): this;
@@ -138,7 +138,7 @@ declare namespace Graph {
 
   type GmGraphEdgeOpts = BaseEdgeOpts;
 
-  type GmGraph = import("./gm-graph").GmGraphClass;
+  type GmGraph = import("./gm-graph").GmGraph;
 
   /** Given a hull door, the respective ids in adjacent geomorph */
   interface GmAdjRoomCtxt {
@@ -181,7 +181,6 @@ declare namespace Graph {
       gmId: number;
       roomIds: number[];
       windowIds: number[];
-      closedDoorIds: number[];
     };
   };
 

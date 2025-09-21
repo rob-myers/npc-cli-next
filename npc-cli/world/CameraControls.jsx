@@ -5,6 +5,7 @@ import { shallow } from "zustand/shallow";
 // import { MapControls as MapControlsImpl } from 'three-stdlib'
 // 🚧 we've patched drei three-stdlib
 import { MapControls as MapControlsImpl } from 'node_modules/@react-three/drei/node_modules/three-stdlib'
+import { isTouchDevice } from "../service/dom";
 
 /**
  * Based on:
@@ -55,6 +56,8 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
 
   useFrame(() => controls.update(), -1);
 
+  const isTouch = isTouchDevice();
+
   return (
     <primitive
       ref={ref}
@@ -65,8 +68,8 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
       zoomToCursor
       minAzimuthAngle={-Infinity}
       maxAzimuthAngle={+Infinity}
-      minPolarAngle={Math.PI * 0}
-      maxPolarAngle={Math.PI * 1/3}
+      minPolarAngle={0}
+      maxPolarAngle={isTouch ? Math.PI * 1/6 : Math.PI * 1/4}
       minDistance={props.minDistance} // target could be ground or npc head
       maxDistance={props.maxDistance}
       panSpeed={2}

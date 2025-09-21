@@ -31,6 +31,6 @@
                 <title>obstacle</title>
         </path>
         <use width="1" height="1" transform="matrix(0, -20, -20, 0, 74.5, 154.5)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" href="#symbol-8">
-                <title>decor act stand y=0</title>
+                <title>decor do stand y=0</title>
         </use>
 </svg>

@@ -22,6 +22,8 @@ export const zIndexWorld = /** @type {const} */ ({
 
   /** Inside ContextMenu */
   popUpInContextMenu: 1,
+
+  baseSpeechBubble: 70,
 });
 
 /** @type {import('@xterm/xterm').ITheme} */
@@ -70,13 +72,16 @@ export const gmHitTestExtraScale = 2;
 
 export const gmLabelHeightSgu = 12;
 
+export const gmIdGridDim = 600 * sguToWorldScale;
+
 /** Higher resolution labels */
 export const spriteSheetLabelExtraScale = 5;
 
 /** Decimal place precision */
 export const precision = 4;
 
-export const wallOutset = 12 * sguToWorldScale;
+// export const wallOutset = 12 * sguToWorldScale;
+export const wallOutset = 10 * sguToWorldScale;
 
 export const obstacleOutset = 8 * sguToWorldScale;
 
@@ -103,9 +108,9 @@ export const hullDoorDepth = 40 * sguToWorldScale * sguSymbolScaleDown;
 /** Depth of doorway along line walking through door */
 export const doorDepth = 20 * sguToWorldScale * sguSymbolScaleDown;
 
-export const doorLockedColor = 'rgb(255, 230, 230)';
+export const doorLockedColor = 'rgb(240, 220, 220)';
 
-export const doorUnlockedColor = 'rgb(230, 255, 230)';
+export const doorUnlockedColor = 'rgb(220, 240, 220)';
 
 /** @type {Key.NpcClass} */
 export const defaultClassKey = 'human-0';
@@ -127,7 +132,7 @@ export const glbFadeOut = {
  * @type {Record<Key.Anim, Record<Key.Anim, number>>}
  */
  export const glbFadeIn = {
-    Idle: { Idle: 0, Run: 0.2, Walk: 0.2, Sit: 0.1, Lie: 0 },
+    Idle: { Idle: 0, Run: 0.05, Walk: 0.05, Sit: 0.1, Lie: 0 },
     Lie: { Idle: 0, Run: 0, Walk: 0, Sit: 0, Lie: 0 },
     Run: { Idle: 0.15, Run: 0, Walk: 0.1, Sit: 0.2, Lie: 0 },
     Sit: { Idle: 0.1, Run: 0.1, Walk: 0.1, Sit: 0, Lie: 0 },
@@ -143,19 +148,28 @@ export const defaultNpcInteractRadius = geomorphGridMeters;
  * - `DT_CROWD_SEPARATION` ~ `4`
  * - `DT_CROWD_OPTIMIZE_VIS` ~ `8`
  * - `DT_CROWD_OPTIMIZE_TOPO` ~ `16`
+ * 
+ * Obstacle avoidance (2) works if we tweak params,  and comment
+ * out code block "// Append neighbour segments as obstacles."
+ * in DetourCrowd.cpp.
+ * 
+ * But even then, it is still jittery.
  */
-// export const defaultAgentUpdateFlags = 1 + 2 + 4;
+
 // export const defaultAgentUpdateFlags = 1 + 2 + 4 + 8 + 16;
-// export const defaultAgentUpdateFlags = 1 + 8 + 16;
-// 🔔 remove 2 to avoid wobbles due to offMeshConnection
 export const defaultAgentUpdateFlags = 1 + 4 + 8 + 16;
+// export const defaultAgentUpdateFlags = 4;
 
 export const colliderHeight = 1.8;
 
 /** In meters, or equivalently 2 grid squares */
 export const decorGridSize = geomorphGridMeters * 2;
 
+export const defaultDecorQueryRadius = 0.5;
+
 export const decorIconRadius = 5 * sguToWorldScale;
+
+export const decorIconRadiusOutset = 2 * sguToWorldScale;
 
 export const fallbackDecorImgKey = {
   /** @type {Key.DecorImg} */
@@ -189,6 +203,7 @@ export const doorSwitchDecorImgKey = /** @type {const} */ ('icon--square');
 
 /** Aligned to media/decor/{key}.svg */
 export const fromDecorImgKey = /** @type {const} */ ({// 🔔 must extend when adding new decor
+  'arrow--0': true,
   'colour--white': true,
   'door--hull': true,
   'door--standard': true,
@@ -341,6 +356,7 @@ export const fromSymbolKey = /** @type {const} */ ({// 🔔 must extend when add
   "extra--018--table-0.25x0.25": true,
   "extra--019--table-0.5x2": true,
   "extra--020--table-2x0.66": true,
+  'extra--021--screen--0.1x0.5': true,
 });
 
 /**
@@ -361,7 +377,11 @@ export const npcClassToMeta = {
     materialName: 'human-0-material',
     meshName: 'human-0-mesh',
     modelAnimHeight: {// pre-scale heights
-      Idle: 2.1, Run: 2.1, Walk: 2.1, Lie: 0.5, Sit: 1.6,
+      Idle: 2.1,
+      Run: 2.1,
+      Walk: 2.1,
+      Lie: 0.5,
+      Sit: 1.6,
     },
     modelLabelHeight: 0.25,
     modelUrl: '/3d/human-0.glb',
@@ -369,7 +389,7 @@ export const npcClassToMeta = {
     modelHeight: 2.2, // 🚧 measure in Blender
     modelRadius: 0.5,
     runSpeed: 4,
-    scale: 0.65,
+    scale: 0.7,
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
     walkSpeed: 2.5,
   },
@@ -462,10 +482,12 @@ export const skinsTextureDimension = 2048;
  */
 export const skinsUvsTextureWidth = 128;
 
+export const skinsLabelScale = 2;
+
 /** Max width (pixels) of any label */
-export const skinsLabelsTextureWidth = 200;
+export const skinsLabelsTextureWidth = (200) * skinsLabelScale;
 /** Max height (pixels) of any label */
-export const skinsLabelsTextureHeight = 200 / 4;
+export const skinsLabelsTextureHeight = (200 / 4) * skinsLabelScale;
 
 /**
  * Works for `24px Monospace` on OSX Chrome/Safari/Firefox
@@ -473,7 +495,7 @@ export const skinsLabelsTextureHeight = 200 / 4;
  */
 export const npcLabelMaxChars = 12;
 
-export const defaultNpcArriveDistance = 0.08;
+export const defaultNpcArriveDistance = 0.1;
 
 /** Should be less than closest points in two distinct rooms */
 export const nearTargetDistance = 0.5;
@@ -484,3 +506,10 @@ export const texAuxDepth = 256;
 export const TABS_API_KEY = /** @type {const} */ ('tabs_api_key');
 
 export const html3DOpacityCssVar = '--html-3d-opacity';
+
+export const worldViewBgColorCssVar = '--world-view-background-color';
+
+export const xRayOpacity = {
+  walls: 0.4,
+  ceiling: 0.7,
+};

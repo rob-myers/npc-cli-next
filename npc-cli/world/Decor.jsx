@@ -3,12 +3,12 @@ import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 
 import { Poly } from "../geom/poly";
-import { decorGridSize, decorIconRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
+import { decorGridSize, decorIconRadius, decorIconRadiusOutset, defaultDecorQueryRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
 import { isDevelopment, pause, removeDups, testNever, toPrecision, warn } from "../service/generic";
 import { geom, tmpMat1, tmpRect1, tmpVec1 } from "../service/geom";
 import { getCanvas } from "../service/dom";
 import { geomorph } from "../service/geomorph";
-import { addToDecorGrid, removeFromDecorGrid } from "../service/grid";
+import { addToDecorGrid, queryDecorGridRect, removeFromDecorGrid } from "../service/grid";
 import { createLabelSpriteSheet, getBoxGeometry, getColor, getQuadGeometryXY, getQuadGeometryXZ, getRotAxisMatrix, setRotMatrixAboutPoint, tmpMatFour1 } from "../service/three";
 import * as glsl from "../service/glsl";
 import { helper } from "../service/helper";
@@ -22,7 +22,7 @@ export default function Decor(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byKey: {},
-    byGrid: [],
+    byGrid: {},
     byRoom: [],
     cuboidGeom: getBoxGeometry(`${w.key}-decor-cuboid`),
     cuboids: [],
@@ -143,6 +143,7 @@ export default function Decor(props) {
       /** @type {Geomorph.Decor} */ let d;
       const meta = /** @type {Meta<Geomorph.GmRoomId>} */ (def.meta ?? {});
       meta.decor = true;
+      meta.decorKey = def.key;
 
       switch (def.type) {
         case 'circle': {
@@ -165,7 +166,7 @@ export default function Decor(props) {
             type: 'cuboid',
             key: def.key,
             meta: Object.assign(meta, { cuboid: true, h: def.height3d, y: def.baseY }),
-            bounds2d: poly.rect.precision(precision).json,
+            bounds2d: poly.rect.precision(2).json,
             center: geom.toPrecisionV3({ x: center2d.x, y: def.baseY + def.height3d/2, z: center2d.y }),
             transform,
           };
@@ -198,9 +199,9 @@ export default function Decor(props) {
               img: def.img,
               y: def.y3d,
             }),
-            bounds2d: poly.rect.precision(precision).json,
+            bounds2d: poly.rect.precision(2).json,
             transform,
-            center: poly.center.precision(3).json,
+            center: poly.center.precision(2).json,
             det: matrix.a * matrix.d - matrix.b * matrix.c,
           };
           break;
@@ -213,7 +214,7 @@ export default function Decor(props) {
             meta: Object.assign(meta, { rect: true }),
             bounds2d: poly.rect.json,
             points: poly.outline.map(x => x.json),
-            center: poly.center.precision(3).json,
+            center: poly.center.precision(2).json,
             angle: def.angle ?? 0,
           };
           break;
@@ -221,7 +222,7 @@ export default function Decor(props) {
         case 'point':
         default: {
           const center = tmpVec1.copy(def).precision(precision);
-          const radius = decorIconRadius + 2;
+          const radius = decorIconRadius + decorIconRadiusOutset;
           const bounds2d = tmpRect1.set(center.x - radius, center.y - radius, 2 * radius, 2 * radius).precision(precision).json;
 
           if ('img' in def && !helper.isDecorImgKey(def.img)) {
@@ -236,7 +237,7 @@ export default function Decor(props) {
               point: true,
               y: def.y3d,
               ...def.img !== undefined && { img: def.img },
-              ...meta.act === true && { actPoint: {...center} },
+              ...meta.do === true && { doPoint: {...center} },
             }),
             bounds2d,
             x: center.x,
@@ -261,11 +262,12 @@ export default function Decor(props) {
     },
     createLabelMatrix4(d) {
       const { width, height } = state.label.lookup[d.meta.label];
-      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale) * 0.7;
+      // scale down after earlier scale up in fontSize
+      const scale = sguToWorldScale * (1 / spriteSheetLabelExtraScale) * 0.25;
       const transform = [width * scale, 0, 0, height * scale, d.x, d.y];
       return tmpMatFour1.set(
         transform[0], 0, 0, transform[4],
-        0, transform[3], 0, 1, // 🚧 remove hard-coding
+        0, transform[3], 0, 2.2, // 🚧 remove hard-coded height
         0, 0, 1, transform[5],
         0, 0, 0, 1
       );
@@ -305,7 +307,7 @@ export default function Decor(props) {
         
         if (d.meta.tilt === true) {
           const [a, b] = d.transform
-          const vecLen = Math.sqrt(a ** 2 + b ** 2); // remove scale to get local x unit vector
+          const vecLen = Math.hypot(a, b); // remove scale to get local x unit vector
           const rotMat = getRotAxisMatrix(a / vecLen, 0, b / vecLen, 90);
           setRotMatrixAboutPoint(rotMat, d.center.x, d.meta.y, d.center.y);
           mat4.premultiply(rotMat); // 🔔 premultiply means post-rotate
@@ -317,7 +319,7 @@ export default function Decor(props) {
     ensureGmRoomId(decor) {
       if (!(decor.meta.gmId >= 0 && decor.meta.roomId >= 0)) {
         const decorOrigin = state.getDecorOrigin(decor);
-        const gmRoomId = w.gmGraph.findRoomContaining(decorOrigin);
+        const gmRoomId = w.npc.findRoomContaining(decorOrigin);
         return gmRoomId === null ? null : Object.assign(decor.meta, gmRoomId);
       } else {
         decor.meta.grKey ??= helper.getGmRoomKey(decor.meta.gmId, decor.meta.roomId);
@@ -334,7 +336,7 @@ export default function Decor(props) {
       const base = {
         key: '', // computed below
         meta: { ...d.meta, gmId }, // 🔔 must not mutate d.meta
-        bounds2d: tmpRect1.copy(d.bounds2d).applyMatrix(gm.matrix).json,
+        bounds2d: tmpRect1.copy(d.bounds2d).applyMatrix(gm.matrix).precision(2).json,
         src: gm.key,
       };
 
@@ -366,8 +368,8 @@ export default function Decor(props) {
           instance.x = toPrecision(instance.x);
           instance.y = toPrecision(instance.y);
           instance.meta.orient = orient; // update `meta` too
-          if (base.meta.act === true) {
-            instance.meta.actPoint = { x: instance.x, y: instance.y };
+          if (base.meta.do === true) {
+            instance.meta.doPoint = { x: instance.x, y: instance.y };
           }
           break;
         }
@@ -378,6 +380,7 @@ export default function Decor(props) {
           };
           break;
         case "quad":
+        case "decal":
           instance = { ...d, .../** @type {Geomorph.DecorQuad}} */ (base),
             center: gm.matrix.transformPoint({ ...d.center }),
             transform: tmpMat1.setMatrixValue(gm.matrix).preMultiply(d.transform).toArray(),
@@ -391,15 +394,17 @@ export default function Decor(props) {
         default:
           throw testNever(d);
       }
+
       instance.key = geomorph.getDerivedDecorKey(instance);
+      instance.meta.decorKey = instance.key;
       return /** @type {typeof d} */ (instance);
     },
     /** @returns {d is Geomorph.DecorPoint | Geomorph.DecorQuad} */
-    isDecorQuad(d) {
+    isDecorQuad(d) {// 🚧 clean and rename
       return d.type === 'point' && (
         typeof d.meta.img === 'string'
         // these fallback to icon--info
-        || d.meta.act === true || d.meta.button === true
+        || d.meta.do === true || d.meta.button === true
       ) || d.type === 'quad' && (
         typeof d.meta.img === 'string' 
       );
@@ -450,8 +455,17 @@ export default function Decor(props) {
       }
       quadInst.computeBoundingSphere();
     },
+    query(center, radius = defaultDecorQueryRadius, grKey) {
+      center = helper.toXZ(center);
+      const rect = { x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2 };
+      return queryDecorGridRect(state.byGrid, rect, grKey);
+    },
+    queryRect(rect, grKey) {
+      return queryDecorGridRect(state.byGrid, rect, grKey);
+    },
     register(ds, removeExisting = true) {
-      const addable = ds.filter((d) => state.ensureGmRoomId(d) !== null ||
+      const addable = ds.filter((d) =>
+        state.ensureGmRoomId(d) !== null ||
         void warn(`decor "${d.key}" cannot be added: not in any room`, d)
       );
 
@@ -485,7 +499,7 @@ export default function Decor(props) {
       }
 
       Object.values(grouped).forEach(({ meta, add }) =>
-        state.registerInRoom(meta.gmId, meta.roomId, add)
+        state.registerInRoomAndGrid(meta.gmId, meta.roomId, add)
       );
 
       state.updateDecorLists();
@@ -494,7 +508,7 @@ export default function Decor(props) {
       state.registeredAt = Date.now();
       update();
     },
-    registerInRoom(gmId, roomId, ds) {
+    registerInRoomAndGrid(gmId, roomId, ds) {
       const atRoom = state.byRoom[gmId][roomId];
 
       for (const d of ds) {
@@ -538,11 +552,8 @@ export default function Decor(props) {
           decorSet.forEach(d => d.src !== undefined && decorSet.delete(d));
         }
       }
-      for (const byY of state.byGrid) {
-        for (const decorSet of byY ?? []) {
-          // array can contain `undefined` (untouched by decor)
-          decorSet?.forEach(d => d.src !== undefined && decorSet.delete(d));
-        }
+      for (const tile of Object.values(state.byGrid)) {
+        tile?.forEach(d => d.src !== undefined && tile.delete(d));
       }
     },
     removeFromRoom(gmId, roomId, ds) {
@@ -567,10 +578,9 @@ export default function Decor(props) {
       const { gridRect } = w.gms[gmId]; // clear gmId's part of the decor grid
       const { x, right, y, bottom } = tmpRect1.copy(gridRect).scale(1 / decorGridSize).integerOrds();
       for (let i = x; i < right; i++) {
-        const inner = state.byGrid[i];
-        if (inner === undefined) continue;
         for (let j = y; j < bottom; j++) {
-          inner[j]?.forEach(d => d.src !== undefined && inner[j].delete(d));
+          const tile = state.byGrid[`${i},${j}`];
+          tile?.forEach(d => d.src !== undefined && tile.delete(d));
         }
       }
     },
@@ -597,6 +607,7 @@ export default function Decor(props) {
       'decor',
       w.key,
       w.hash.mapDecor,
+      w.hash.sheets,
     ],
 
     async queryFn() {
@@ -608,7 +619,7 @@ export default function Decor(props) {
       const prev = state.seenHash ?? {};
       const next = w.hash;
       const mapChanged = prev.map !== next.map;
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale;
+      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale * 2;
 
       state.labels = w.gms.flatMap((gm, gmId) => gm.labels.map(d => state.instantiateDecor(d, gmId, gm)));
       createLabelSpriteSheet(
@@ -666,7 +677,7 @@ export default function Decor(props) {
     refetchOnWindowFocus: false,
     retry: false, // fix dup invokes
     gcTime: 0,
-    // throwOnError: true,
+    throwOnError: isDevelopment(),
     networkMode: isDevelopment() ? 'always' : 'online',
   });
 
@@ -682,7 +693,14 @@ export default function Decor(props) {
     } else if (query.data === false && query.isRefetching === false) {
       query.refetch(); // hmr
     }
-  }, [query.data, state.cuboids.length, state.quads.length, labels.length, state.registeredAt]);
+    
+  }, [
+    query.data,
+    state.cuboids.length,
+    state.quads.length,
+    labels.length,
+    state.registeredAt,
+  ]);
 
   const update = useUpdate();
   const ready = !!state.seenHash;
@@ -694,16 +712,16 @@ export default function Decor(props) {
       ref={state.ref('cuboidInst')}
       args={[state.cuboidGeom, undefined, state.cuboids.length]}
       // frustumCulled={false}
-      renderOrder={-1}
-      visible={ready}
+      renderOrder={1}
+      visible={ready === true && query.data === true}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
       {ready && <instancedFlatMaterial
         key={glsl.InstancedFlatMaterial.key}
         side={THREE.DoubleSide} // fix flipped gm
-        diffuse={[0.4, 0.4, 0.4]}
+        diffuse={[1, 1, 1]}
         objectPickRed={7}
-        opacity={query.status === 'success' ? 1 : 0}
+        // opacity={query.status === 'success' ? 1 : 0}
         quadOutlines
         transparent
       />}
@@ -716,14 +734,14 @@ export default function Decor(props) {
       args={[state.quad, undefined, state.quads.length]}
       frustumCulled={false}
       renderOrder={-1}
-      visible={ready}
+      visible={ready === true && query.data === true}
     >
       {/* <meshBasicMaterial color="red" /> */}
       {ready && <instancedAtlasMaterial
         key={glsl.InstancedAtlasMaterial.key}
-        alphaTest={0.5}
-        diffuse={[0.5, 0.5, 0.5]}
         atlas={w.texDecor.tex}
+        alphaTest={0.5}
+        diffuse={[0.7, 0.7, 0.7]}
         objectPickRed={5}
         opacity={query.status === 'success' ? 1 : 0}
         side={THREE.DoubleSide}
@@ -737,7 +755,7 @@ export default function Decor(props) {
       ref={state.ref('labelInst')}
       args={[state.labelQuad, undefined, labels.length]}
       frustumCulled={false}
-      renderOrder={2}
+      renderOrder={4}
     >
       {/* <meshBasicMaterial color="red" /> */}
       <instancedLabelsMaterial
@@ -746,7 +764,7 @@ export default function Decor(props) {
         map={state.label.tex}
         transparent
         opacity={0.5}
-        diffuse={new THREE.Vector3(0.8, 0.8, 1)}
+        diffuse={new THREE.Vector3(1, 1, 1)}
       />
     </instancedMesh>
   </>;
@@ -792,7 +810,7 @@ export default function Decor(props) {
  * @property {() => void} addQuadUvs
  * @property {() => void} addCuboidAttributes
  * @property {(def: Geomorph.DecorDef) => Geomorph.Decor} create
- * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerInRoom
+ * @property {(gmId: number, roomId: number, decors: Geomorph.Decor[]) => void} registerInRoomAndGrid
  * @property {(d: Geomorph.DecorCuboid) => THREE.Matrix4} createCuboidMatrix4
  * @property {(d: Geomorph.DecorPoint | Geomorph.DecorQuad) => THREE.Matrix4} createQuadMatrix4
  * @property {(d: Geomorph.DecorPoint) => THREE.Matrix4} createLabelMatrix4
@@ -805,6 +823,8 @@ export default function Decor(props) {
  * @property {() => void} positionInstances
  * @property {() => void} positionLabels
  * @property {() => void} positionQuads
+ * @property {(center: NPC.GroundPoint, radius?: number, grKey?: Geomorph.GmRoomKey) => Geomorph.Decor[]} query
+ * @property {(rect: Geom.RectJson, grKey?: Geomorph.GmRoomKey) => Geomorph.Decor[]} queryRect
  * @property {(groupName: string, ...decorKeys: string[]) => void} rememberInGroup
  * @property {(...decorKeys: string[]) => void} remove
  * @property {() => void} removeAllInstantiated

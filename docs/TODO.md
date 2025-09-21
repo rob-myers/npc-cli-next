@@ -4,6 +4,28 @@
 
 ### Site
 
+- 🚧 towards start with behaviour/story
+  - ℹ️ rather than abstract spawn,**** move etc.
+  - ℹ️ more interactive
+  - ✅ detect when npc near bed via `near`
+    - `near npc:rob where:bed`
+  - ✅ detect when npc can see other via `ray`
+    - `ray test from:rob to:will`
+  - 🚧 can move AND when near bed log something
+  - use narrator
+
+```sh
+import demoClickToMove demoGotoBedChoices from demo
+
+spawn npc:rob at:'{x:2.5, y:3*1.5+0.2}' as:soldier-0 granted:.
+
+permitMove=true
+click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
+  demoClickToMove npc:rob &
+
+events | demoGotoBedChoices npc:rob
+```
+
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable
   - ✅ buy presentify
@@ -66,6 +88,316 @@
 
 ### World
 
+- ✅ BUG: if change target while turning around before offMesh then old target used
+
+- ✅ collapse `npc.s.*` -> `npc.*`
+
+- ✅ move `w.e.think` to `think` via core.js
+  - `think npc:rob of:bed '[top bunk]' or [bottom] ?`
+- ✅ merge `w.e.forget` into `think`
+  - `think npc:rob of:bed` forgets
+- ✅ can `w e.removeBubble rob`
+
+- Broadcaster -> AsyncIterator inside JS function (not shell)
+
+- can choose default voice in WorldMenu
+  
+- review HMR of skins, model, map, symbols
+  - time box to 1hr
+
+- ❌ integrate speech bubble select
+  - ✅ speech bubble has select ui
+  - ✅ refactor speech bubble api with options
+  - ✅ move item.visible to bubble.visible
+  - ✅ label should hide before bubble shows (while paused)
+  - ✅ can change options
+    - `w bubble.setOptions rob foo bar baz`
+    - `w bubble.setOptions rob` clears
+  - ✅ can toggle `<select>` visible
+    - `w bubble.setHideOptions rob`
+    - `w bubble.setHideOptions rob true`
+  - ✅ select option triggers event
+    - ✅ do not change current option
+    - ✅ new event type
+  - ✅ can show options without saying anything in logger
+  - ❌ measureText bubble npc.key
+  - ❌ wrapper for `w bubble.setOptions rob`
+
+- ✅ integrate PopUp over npcKey in NpcSpeechBubble
+  - ✅ implement PopUp UI over npcKey
+  - ✅ can programmatically open PopUp
+    - `w bubble.byKey.rob.popUp.open`
+    - `w b.rob.popUp.open`
+  - ✅ add bubble.thought
+    - e.g. `get in [high bed] or [low bed]` where `[foo]` becomes link
+    - `think of:bedtime npc:rob get in '[high bed]' or '[low bed]'`
+    - `w b.rob.forget bedtime`
+  - ✅ handle empty thoughts
+  - ✅ can force popup to be left + bottom
+    - looks better when no speech
+  - ✅ can see thoughts without saying anything
+    - `w e.think rob myThought should I [do] this?`
+    - `w e.forget rob myThought`
+    - `w e.think rob bed '[top bunk]' or '[bottom]' ?`
+    - 🔔 basic parsing e.g. `w e.think rob foo [bar baz]` won't work
+  - ✅ remove bubble.options
+  - ✅ open/close popup fades in/out
+  - ✅ do not auto close popup when `started-moving`, otherwise it will close while paused and about to move
+  - ✅ remove thought fade: use open/close instead
+  - ✅ click thought link causes event `click-thought`
+  - ✅ thoughts can be 'disabled' e.g. to avoid flicking bubble on/off
+  - ✅ disabled thoughts can be deleted
+  - ❌ fade on close bubble e.g. on delete only thought
+  - ✅ on close bubble remove disabled?
+
+- ✅ issue when set `foo = () => 42` in chrome devtool and then tried `w bubble.setOptions rob foo bar baz`
+  - cannot fix, but can provide util `globals` which lists the current global variables
+
+
+- ✅ decor.meta has decorKey
+- ✅ `near` only outputs meta
+  - avoids confusion regarding return type and type of `opts.where`
+
+
+- ✅ try collapse npc.api and npc.api.base whilst preserving reference across HMR
+  - try `Object.setPrototypeOf(npc, Object.getPrototypeOf(npcApiInst))`
+
+- improve stationary npc support
+  - e.g. `npc rada agent.raw.params.set_collisionQueryRange 0.1`
+  - if close to door, then door must be "extra" locked
+  - maybe indicate graphically
+  - maybe prevent offMesh traversal if other side has stationary npc
+
+- ✅ kill process on any thrown error
+  - previously we killed on non-zero exit-code
+  - but this would require special behaviour for `||`, `test`, `false`
+- ✅ can `break` while loop
+  - `while true; do echo foo; break; **done**`
+  - support multiple e.g. `break 2`
+- ✅ can `continue` while loop
+  - `while true; do echo foo; continue; echo bar; done`
+
+- ✅ ANSI syntax highlighting when output JS value in TTY
+
+- ✅ `w.npc.raycast` provides `hitDoor: null | Geomorph.GmDoorKey`
+
+- ✅ fix stuck detection when pendingOffMesh
+  - i.e. only force stop when another is being pushed into
+
+- ✅ try fix "separation jolt" onenter offMesh
+  - seems sufficient to recompute improved offMesh
+
+- ✅ `ray from:$x to:$y`
+  - `ray test from:$x to:$y`
+  - `ray point from:$x to:$y`
+
+- ✅ `nearby to:$p`
+  - ✅ restricted to room containing `to`
+  - ✅ `nearby meta to:rob within:2`
+
+- 🔔 overall strategy:
+  - we don't expect arbitrary targets for multiple npcs to work
+  - instead, we'll carefully direct motion so that it _does_ work
+
+- ✅ rename inverted -> dark
+- ✅ dark mode uses filled hull floor
+- ✅ mobile using dark mode by default
+
+- ✅ query decor grid
+  - ✅ `npc.api.getRect()` or `npc rob api.getRect`
+  - ✅ `w decor.queryRect $( npc rob api.getRect )`
+  - ✅ `w decor.queryRect $( npc rob api.getRect ) $( w e.getGrKey rob )`
+    - show decor in grid squares intersecting npc's rect
+  - ✅ try queryRect and ensure it makes sense
+    - ℹ️ `w decor.byKey.point[-1_6625,0_01,-1_375]` has bad grid{Min,Max}
+    - ✅ fix: decor point radius extension was still in geomorph coords (far too large)
+    - ✅ `w decor.queryRect $( npc will api.getRect 1 ) $( w e.getGrKey will ) | split meta`
+      - make npc decor test rect larger (1m radius)
+    - ❌ intersection of rectangles bug?
+
+- ✅ decor points/quads may inherit `decor.meta.reachRect` from parent decor
+  - ✅ decor cuboid with `meta['apply-reach'] === true` attaches rect tuple `reachRect` to contained decor points
+  - ❌ initially attach e.g. `d.meta.reachRectId` then apply `d.meta.reachRect` after instantiation
+    - hard to track
+  - ✅ on add decor point to grid check for super decor with `meta['apply-reach'] === true`
+    - store its bounds as `d.meta.reachRect`
+  - ✅ on add decor with `meta['apply-reach'] === true` go through points/rects and attach reachRect
+  - ✅ on add decor point/quad intersecting `meta['apply-reach'] === true` attach reachRect
+  - ✅ make docs and keycard reachable via 2 or 3 decor rects
+  - ✅ add decor cuboids/rects with apply-reach to more chairs/toilets/etc
+
+- ✅ support raycast (static geometry) in physics.worker
+  - ℹ️ https://www.npmjs.com/package/detect-collisions
+  - ℹ️ per used geomorph key, after transform to local coords
+  - ✅ can send src/dst to physics.worker and receive raycast response
+  - ✅ support src/dst across adjacent geomorphs
+    - ✅ physics.worker only supports ray in single geomorph
+    - ✅ main thread makes 0, 1 or 2 requests
+  - ✅ clean
+
+- ✅ BUG seeing door.open false while paused when it isn't
+  - e.g. `w d.g0d10.open`
+
+- ℹ️ kept approach to early-exit doorway
+  - avoids jerk when fail to enter while going round a corner and other npc in "sweet spot"
+  - other needs to be very close to doorway
+  - npc stops a bit early when heading straight on
+
+- ❌ in recastnavigation try two trigger radii
+- ✅ continuous method from offMesh initial seg to another target
+
+- ✅ clean up new approach to enter offMeshConnection
+  - ✅ if not close to adjusted.src then "continuously" transition back to non-offMesh state
+    - `requestMoveTarget(adjusted.src)`
+  - ✅ re-trigger offMeshConnection when get "close enough"
+  - ✅ replace turnBeforeMove with null target and pendingTargets
+
+- core.js functions
+  - e.g. `cast from:$x to:$y`
+  - e.g. `can see:$x from:$y`
+  - e.g. `may see:$x from:$y` (if doors were all open)
+
+- ✅ move code from gm-graph to useHandleEvents and service/grid
+  - ✅ move grid create/query code into service/grid
+  - `w gmGraph.findPath $( click -2 1 ) $( click -2 1 )`
+  - `w gmGraph.findPath $( click -2 2 )`
+  - ✅ remove gmGraph.w
+
+- fix decor precision e.g. seeing keys like `point[-1_4540000000000002,0_41,2_3577]`
+- finish adding decor cuboids/rects with apply-reach to chairs/toilets/etc
+
+- tty close + create
+  - `exit` command closes terminal
+  - Cmd + \ opens new terminal with default terminal
+  - can somehow change terminal profile from instead terminal interface (remounts)
+
+- ✅ keep an agent fixed by making collisionQueryRange less than diameter
+  - 🔔 `npc rada agent.raw.params.set_collisionQueryRange 0.1` fixed
+  - `npc rada agent.raw.params.set_collisionQueryRange 0.47` not fixed
+
+- improve stuck detection when blocked by a fixed agent
+  - fixed via small collisionQueryRange
+
+- ✅ lookAngleDst should be aligned with `npc.api.getAngle()`
+
+- ✅ small triggerRadius causes bad entry vector
+  - ✅ try fix via larger triggerRadius
+  - ℹ️ not so bad, we could just do this
+  - ❌ try triggerRadius < outerTriggerRadius technique
+    - ✅ detect over outerTriggerRadius
+
+- ✅ invert should not apply css filter
+  - ✅ checkbox for floor (redraw)
+  - ✅ remove npc shader invert
+  - ✅ checkbox inverts cuboids (shader)
+  - ✅ checkbox inverts ceiling (shader)
+  - ❌ can specify decor.meta.invert `false` e.g. screen
+
+- ✅ remove postprocessing
+  - e.g. slow down on desktop in fullscreen
+
+- provide fixed Broadcaster instance i.e. "game events" (vs. world events)
+  - e.g. so when `direct` waits for resolve it sends a message
+  - careful about hot-reloading e.g. put in own file and don't touch
+
+- ✅ support clickable ceiling/walls
+  - WorldMenu: xray checkbox 
+- ❌ support unclickable cuboid instance e.g. girder
+
+- ✅ still seeing yank when one npc closely follows another through doorway
+  - stop when other is slowing down in doorway
+
+- ❌ maybe `move` retries doorway failures
+- ✅ BUG `locked-door` firing when it shouldn't
+
+- ✅ BUG: fix rebooting `click meta.floor | moveNpcOnClick path:selected`
+  - ℹ️ hook.js:608 WARN already rebooting process 25: { run util map "${@}"; }
+
+
+- ✅ prevent agent exit from being too close to door
+
+- ✅ BUG: fix constant size npc labels
+
+- ✅ can tint decor quads
+  - meta.color
+
+- ✅ BUG: sh: brace expansion issue
+  - `echo {1..5}$( echo 1; echo 2 )`
+
+- ✅ `click` does not auto clear decor quads
+  - support `click clear`
+
+- ✅ early exit when another coming other way through doorway
+
+- careful about `p=$( npc rob position )` since this is a reference
+  - maybe provide `api.getPosition()`
+
+- ✅ moving camera should cancel `look at:rob` during profile
+
+- ✅ clean up current changes
+  - drop vignette again
+
+- ✅ remove lights
+- ✅ fix pixelated npc labels
+- ✅ new symbol for screen (cuboid + quad)
+
+- ✅ move `narrate` from builtin into `util.js`
+  - ℹ️ we want to write js scripts involving it
+  - ✅ `narrate2` has functionality of `narrate`
+
+- ✅ can redirect node inside processApi
+
+- ✅ change `echo $( echo foo; echo bar )` to `foo bar`
+  - ℹ️ currently `["foo", "bar"]` which is incompatible with brace expansion
+  - ℹ️ but now must write `move npc:rob to:"$( click 2 )"`
+
+- long table could have cuboid base
+  
+- better decals (currently only test ones)
+
+- ✅ try drawing navmesh on floor
+  - ✅ try style where only navMesh and decals shown
+  - ✅ precompute by splitting it into "first occurrence of geomorph"
+
+- ✅ try basic carpet textures drawn on floor (so they're lit)
+  - ❌ layout.decals, symbol.decals
+  - ✅ remove layout.decals etc.
+  - ✅ `decor decal` yields decor like quad but not drawn by `<Decor>`
+  - ✅ `decor decal` drawn on floor
+
+- ❌ continuous move loop by feeding in pending targets?
+  - instead we avoided teleport which broke smoothness
+
+- ✅ clean arriveAnim
+
+- ✅ fix change mapKey
+
+- ❌ hot reload light map
+
+- ✅ npc: fixed size labels so visible when zoomed out
+- ✅ npc: fix spawnMany labels
+
+- 🚧 npc: uniform labelY -> labelOffset
+  - so we can avoid label covering npc while Lie
+
+- ✅ running `direct npc:kate to:$( click 1 ) &` while paused cannot resolve `click 1` until unpause
+  - ℹ️ confusing but a not bug
+  - ✅ could `direct npc:kate to:$( ptags always; click 1 ) &`
+  - ✅ ui button when Tabs disabled to set background processes initially unpaused
+  - ℹ️ example where you wouldn't want this: `{ sleep 5; ...; } &`
+
+
+- ✅ rethink `source` files naming
+  - ✅ `import` builtin can import individual functions
+  - ✅ `import` builtin can rename import
+  - ℹ️ can use `import`in future to refine/augment source
+  - ❌ `map` should be a builtin
+    - want to avoid duplicating `run` process-rebooting,
+      so we'll continue letting `run` run `map`
+  - ✅ files util, core, game, demo (no suffix _1)
+
+- ✅ act points -> do points
+
 - ✅ refactor ptags
   - ✅ ptags builtin
   - ✅ session.ptags
@@ -81,7 +413,7 @@
   - ✅ CameraControls React component
   - ✅ Replace MapControls from drei
   - 🚧 CameraControls class
-  - Replace CameraControls from `three-stdlib`
+  - 🚧 Replace CameraControls from `three-stdlib`
 
 - ✅ BUG: PsList: gray always process leaders
   - ℹ️ on mobile not seeing 'resume' for always-tagged process leaders because they aren't resumed
@@ -100,9 +432,9 @@
   - `move` became too ugly
 - ✅ BUG: `move` when target is just beyond doorway
 
-- `meta.act` -> `meta.do` and `meta.actPoint` -> `meta.doPoint`
+- ✅ `meta.act` -> `meta.do` and `meta.actPoint` -> `meta.doPoint`
 
-- `move` can expose `{ to, index }` via `expose:foo` for path reconfig
+- ❌ `move` can expose `{ to, index }` via `expose:foo` for path reconfig
   - ℹ️ so can handle resumed `move` when goto next is "unnatural" i.e. should be skipped
 
 - ✅ BUG: build transpile is converting arrow function to normal function
@@ -168,7 +500,7 @@ expr window.document.querySelector'("section")' | log
 - ✅ fade ContextMenu and SpeechBubble (as before) on World resize
   - needed again because we now debounce render
 
-- BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
+- ✅ BUG: sit on chair, get off it, right click decor point: its meta should not be mutated
 
 - can scroll ContextMenu on mobile
   - on hold i.e. user can resize instead
@@ -225,6 +557,10 @@ expr window.document.querySelector'("section")' | log
   - ctrl + w while multiple input: goes back a line (need repro)
 
 ### Dev Env
+
+- HMR on add `decor label=foo`
+- HMR onchange to `decor label=bar`
+- HMR onchange to `decor label=foo narrow-entrances`
 
 - 🚧 BUG: on add decor image i.e. decor spritesheet out-of-sync
   - w.geomorphs.sheet.decor is synced
@@ -1311,7 +1647,7 @@ expr window.document.querySelector'("section")' | log
   - ✅ simplify: no loop, but can:
   - ✅ clean i.e. add to basic behaviour list
 
-- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) grant:.`
+- ✅ `spawn` can specify access e.g. `spawn npcKey:rob at:$( click 1 ) granted:.`
 
 - ✅ sh: support `click {filter}` (currently only `click {n} {filter}`)
 
@@ -2022,7 +2358,7 @@ done
 - ✅ fix spawn onto do point
   ```sh
   c=-1; while c+=1; do
-    spawn npcKey:"rob_${c}" at:$( click 1 ) grant:.
+    spawn npcKey:"rob_${c}" at:$( click 1 ) granted:.
   done
   ```
 
@@ -2072,7 +2408,7 @@ done
 
 - ✅ rename meta.do -> meta.act
   - ℹ️ because `do` is reserved word (loop construct)
-  - ✅ svg: decor do -> decor act
+  - ✅ svg: decor do -> decor do
   - ✅ meta.doPoint -> meta.actPoint
   - ✅ js changes e.g. api.do -> api.act
   - ✅ cli changes

@@ -24,12 +24,13 @@ export default function Card(props) {
 
 const rootCss = css`
   margin: 32px 0;
-  padding: 24px 48px;
+  padding: 4px 48px;
   border-left: 4px solid #dde;
   position: relative;
-
+  
   @media(max-width: ${breakpoint}) {
-    padding: 8px 32px;
+    padding: 0 32px;
+    margin: 48px 0;
   }
 `;
 

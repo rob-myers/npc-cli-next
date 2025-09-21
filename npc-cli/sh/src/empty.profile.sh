@@ -1,2 +1,2 @@
 # this profile is empty
-# maybe `source` a file in `ls /etc`
+# you could `source` a file in `ls /etc`

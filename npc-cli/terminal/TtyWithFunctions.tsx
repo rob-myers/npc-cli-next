@@ -12,6 +12,7 @@ import * as modules from '../sh/modules';
  */
 import * as scripts from '../sh/scripts';
 
+import jsFunctionToShellFunction from "../sh/js-to-shell-function";
 import Tty, { type Props as TtyProps } from "./Tty";
 
 /**
@@ -25,14 +26,14 @@ export default function TtyWithFunctions(props: Props) {
     <Tty
       key={props.profileKey}
       {...props}
-      jsFunc={modules}
+      modules={modules}
       shFiles={shellFunctionFiles}
       profile={profiles[props.profileKey]}
     />
   );
 }
 
-interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'jsFunc'> {
+interface Props extends Omit<TtyProps, 'shFiles' | 'profile' | 'modules'> {
   profileKey: Key.Profile;
 }
 
@@ -45,7 +46,8 @@ type TtyJsModuleKey = keyof TtyJsModules;
 export type EtcBasename = FileKeyToEtcBasename<(
   | keyof typeof scripts
   | TtyJsModuleKey
-)>
+)>;
+
 type FileKeyToEtcBasename<S extends string> = S extends `${infer T}Sh`
   ? `${T}.sh`
   : `${S}.js.sh`;
@@ -59,57 +61,15 @@ const shellFunctionFiles = {
   ...Object.entries(modules).reduce((agg, [moduleKey, module]) => ({ ...agg,
     [`${moduleKey}.js.sh`]: Object.entries(module).flatMap(
       // exclude non-function exports
-      ([fnKey, fn]) => typeof fn === 'function' ? jsFunctionToShellFunction(
-        moduleKey as TtyJsModuleKey,
+      ([fnKey, fn]) => typeof fn === 'function' ? jsFunctionToShellFunction({
+        modules,
+        moduleKey,
         fnKey,
-        fn as TtyJsFuncType,
-      ) : [],
+        fn,
+      }) : [],
     ).join('\n\n'),
   }), {} as Record<EtcBasename, string>),
 
 };
 
 export type TtyEtcFiles = typeof shellFunctionFiles;
-
-function jsFunctionToShellFunction(
-  moduleKey: keyof typeof modules,
-  fnKey: string,
-  fn: TtyJsFuncType,
-) {
-  const generatorConstructorNames = [
-    'AsyncGeneratorFunction',
-    'GeneratorFunction',
-  ];
-
-  const jsModule = modules[moduleKey] as ModuleMaybeMeta;
-  // check value since name can be different in build
-  const isMapFunc = Object.values(jsModule.meta?.map ?? {}).some(x => x === fn);
-
-  return `${fnKey}() ${
-    generatorConstructorNames.includes(fn.constructor.name)
-      // function* foo { bar }
-      // async function* foo { bar }
-      ? `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
-      /**
-       * A non-generator JS function should be `map`d
-       * if `module.meta` exists and it is listed.
-       *
-       * 🔔 SWC sometimes transpiles arrow functions to functions,
-       *  so we can't distinguish based on arrow functions vs functions.
-       */
-      : isMapFunc
-        ? `{\n  map ${moduleKey} ${fnKey} "$@"\n}`
-        : `{\n  run ${moduleKey} ${fnKey} "$@"\n}`
-  }`;
-}
-
-type ModuleMaybeMeta = {
-  meta?: {
-    map: Meta;
-  };
-};
-
-type TtyJsFuncType = (
-  | ((arg: NPC.RunArg) => any)
-  | ((input: any, arg: NPC.RunArg) => any)
-);

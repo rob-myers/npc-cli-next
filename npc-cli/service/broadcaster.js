@@ -7,7 +7,7 @@
 export class Broadcaster {
 
   /**
-   * These listeners never invokehttp://localhost:3000/blog/index `next`.
+   * These listeners never invoke `next`.
    * This avoids events occurring "out of order" due to recursive `next` invocations.
    */
   listeners = /** @type {((value: T) => void)[]} */ ([]);

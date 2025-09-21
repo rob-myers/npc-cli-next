@@ -161,11 +161,13 @@ export default function Tty(props: Props) {
 
       Object.assign(session.etc, props.shFiles);
 
-      // only auto-re-source shell function declaration files,
-      // that have already have been sourced in this session
-      await Promise.all(keys(state.reSource).map(async filename => {
+      // Only auto-re-source shell function declaration files
+      // that have already been sourced in this session
+      // Re-source sequentially to preserve function overriding.
+      for (const filename of keys(state.reSource)) {
         try {
-          await session.ttyShell.sourceFuncDeclarations(filename);  
+          const src = session.etc[filename];
+          await session.ttyShell.sourceExternal(src);  
         } catch (e: any) {
           if (typeof e?.$type === 'string') {// mvdan.cc/sh/v3/syntax.ParseError
             const fileContents = props.shFiles[filename];
@@ -176,10 +178,10 @@ export default function Tty(props: Props) {
             state.writeErrorToTty(session.key, `/etc/${filename}: failed to run`, e)
           }
         }
-      }));
+      }
 
       // store original functions too
-      Object.assign(session.jsFunc, props.jsFunc);
+      Object.assign(session.modules, props.modules);
     },
     writeErrorToTty(sessionKey: string, message: string, origError: any) {
       useSession.api.writeMsg(sessionKey, `${message} (see console)`, 'error');
@@ -187,7 +189,7 @@ export default function Tty(props: Props) {
       error(origError);
     },
   }), {
-    deps: [props.shFiles],
+    deps: [props.shFiles, props.modules],
   });
 
   state.disabled = props.disabled;
@@ -199,7 +201,7 @@ export default function Tty(props: Props) {
     }
 
     // if disabled, suspend spawned bg processes sans process tag 'always'
-    session.ttyShell.suspendNonInteractive = !!props.disabled;
+    session.ttyShell.disabled = !!props.disabled;
     
     if (props.disabled === true) {
       // avoid initial pause: something was spawned
@@ -254,7 +256,7 @@ export default function Tty(props: Props) {
   }, [
     state.base.session,
     ...Object.entries(props.shFiles).flatMap(x => x),
-    ...Object.entries(props.jsFunc).flatMap(x => x),
+    ...Object.entries(props.modules).flatMap(x => x),
   ]);
 
   React.useEffect(() => {// sync ~/PROFILE
@@ -313,7 +315,7 @@ export interface Props extends BaseTabProps {
    * All js functions which induce shell functions.
    * They are partitioned by "fileKey".
    */
-  jsFunc: import('./TtyWithFunctions').TtyJsModules;
+  modules: import('./TtyWithFunctions').TtyJsModules;
   /**
    * All shell files (*.sh and *.js.sh).
    * They are spread into `/etc`.

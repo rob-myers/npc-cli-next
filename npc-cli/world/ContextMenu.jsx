@@ -2,11 +2,9 @@ import React from "react";
 import * as THREE from "three";
 import { css } from "@emotion/react";
 import cx from "classnames";
-import { stringify as javascriptStringify } from 'javascript-stringify';
-import debounce from "debounce";
 
 import { zIndexWorld } from "../service/const";
-import { tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
+import { jsStringify, tryLocalStorageGetParsed, tryLocalStorageSet, warn } from "../service/generic";
 import { WorldContext } from "./world-context";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
@@ -21,6 +19,7 @@ export function ContextMenu() {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     baseScale: undefined,
+    dim: { x: 0, y: 2000, width: contextMenuWidthPx, height: undefined, minWidth: 100, minHeight: 80 },
     downAt: null,
     draggable: /** @type {*} */ (null),
     html3d: /** @type {*} */ (null),
@@ -54,7 +53,7 @@ export function ContextMenu() {
       });
       state.kvs = Object.entries(meta ?? {}).flatMap(([k, v]) => {
         if (skip[k] === true) return [];
-        const vStr = v === true ? '' : typeof v === 'string' ? v : javascriptStringify(v) ?? '';
+        const vStr = v === true ? '' : typeof v === 'string' ? v : jsStringify(v) ?? '';
         return { k, v: vStr, length: k.length + (vStr === '' ? 0 : 1) + vStr.length };
       // }).sort((a, b) => a.length < b.length ? -1 : 1);
       }); // sorting destroys tag precedence
@@ -231,9 +230,8 @@ export function ContextMenu() {
       <Draggable
         ref={state.ref('draggable')}
         container={w.view.rootEl}
-        defaultWidth={contextMenuWidthPx}
+        dim={state.dim}
         disabled={state.docked === false}
-        initPos={{ x: 0, y: 2000 }}
         localStorageKey={`contextmenu:dragPos@${w.key}`}
       >
         <div
@@ -370,7 +368,7 @@ export const contextMenuCss = css`
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
     border-radius: 0 8px 8px 8px;
     border: 1px solid #333;
     padding: 4px;
@@ -455,6 +453,7 @@ export const contextMenuCss = css`
 /**
  * @typedef State
  * @property {undefined | number} baseScale
+ * @property {import('../components/Draggable').Props['dim']} dim
  * @property {boolean} docked
  * @property {import('../components/Draggable').State} draggable
  * @property {import("../components/Html3d").State} html3d

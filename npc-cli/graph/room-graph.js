@@ -67,21 +67,25 @@ export class RoomGraphClass extends BaseGraph {
 
   /** @param {number} doorId */
   getDoorNode(doorId) {
-    return /** @type {Graph.RoomGraphNodeDoor} */ (this.getNodeById(`door-${doorId}`));
+    return /** @type {Graph.RoomGraphNodeDoor} */ (this.getNode(`door-${doorId}`));
   }
 
   /**
    * Given room id, find all rooms reachable via a single window or (open) door.
    * - Does not include `roomId`.
-   * - Empty iff `openDoorIds` truthy and has no door in `roomId`
+   * - Can specify accessible doors/windows.
    * @param {number} roomId
-   * @param {number[]} [openDoorIds]
+   * @param {(opts: (
+  *   | { type: 'door'; doorId: number }
+  *   | { type: 'window'; windowId: number }
+  * )) => boolean} [canAccess]
    */
-  getAdjRoomIds(roomId, openDoorIds) {
+  getAdjRoomIds(roomId, canAccess = () => true) {
     return this.getSuccs(this.nodesArray[roomId]).flatMap((adjNode) => {
       if (
-        adjNode.type === 'door' && (!openDoorIds || openDoorIds.includes(adjNode.doorId))
-        || adjNode.type === 'window'
+        adjNode.type === 'door' && canAccess({ type: 'door', doorId: adjNode.doorId }) === true
+        ||
+        adjNode.type === 'window' && canAccess({ type: 'window', windowId: adjNode.windowId }) === true
       ) {
         return (this.getOtherRoom(adjNode, roomId)?.roomId)??[];
       } else {
@@ -110,7 +114,7 @@ export class RoomGraphClass extends BaseGraph {
 
   /** @param {number} windowIndex */
   getWindowNode(windowIndex) {
-    return /** @type {Graph.RoomGraphNodeWindow} */ (this.getNodeById(`window-${windowIndex}`));
+    return /** @type {Graph.RoomGraphNodeWindow} */ (this.getNode(`window-${windowIndex}`));
   }
 
   /**

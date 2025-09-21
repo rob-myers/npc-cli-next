@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as THREE from "three";
 import { Timer } from "three-stdlib";
 
-import { GmGraphClass } from "../graph/gm-graph";
+import { GmGraph } from "../graph/gm-graph";
 import { GmRoomGraphClass } from "../graph/gm-room-graph";
 import { floorTextureDimension, maxNumberOfNpcs, skinsLabelsTextureHeight, skinsLabelsTextureWidth, skinsTextureDimension, skinsUvsTextureWidth, texAuxDepth } from "../service/const";
 import { debug, isDevelopment, pause, mapValues, range, entries, hashText } from "../service/generic";
@@ -56,16 +56,17 @@ export default function World(props) {
     events: new Broadcaster(),
     geomorphs: /** @type {*} */ (null),
     gms: [],
-    gmGraph: new GmGraphClass([]),
+    gmGraph: new GmGraph([]),
     gmRoomGraph: new GmRoomGraphClass(),
     hmr: /** @type {*} */ ({}),
     smallViewport: isSmallViewport(),
     touchDevice: isTouchDevice(),
 
+    decorImgs: [],
+
     // 🔔 hmr issue when initial width = height = 0
     texAux: new TexArray({ ctKey: 'aux', type: THREE.FloatType, numTextures: texAuxDepth, width: 1, height: 1 }),
     texFloor: new TexArray({ ctKey: 'floor-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
-    texFloorLight: new TexArray({ ctKey: 'floor-light-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texCeil: new TexArray({ ctKey: 'ceil-tex', numTextures: 1, width: floorTextureDimension, height: floorTextureDimension }),
     texDecor: new TexArray({ ctKey: 'decor-tex', numTextures: 1, width: 0, height: 0 }),
     texObs: new TexArray({ ctKey: 'obstacle-tex', numTextures: 1, width: 0, height: 0 }),
@@ -95,6 +96,7 @@ export default function World(props) {
     n: {}, // w.npc.npc
     a: {}, // w.npc.byAgId
     d: {}, // w.door.byKey
+    b: {}, // w.bubble.byKey
 
     isReady(connectorKey) {
       const ready = state.crowd !== null && state.decor?.queryStatus === 'success';
@@ -114,11 +116,14 @@ export default function World(props) {
       }
 
       state.crowd.update(deltaSecs);
+      // const deltaTime = 1 / 120;
+      // const maxSubSteps = 10;
+      // state.crowd.update(deltaTime, deltaSecs, maxSubSteps);
+
       state.npc.onTick(deltaSecs);
       state.door.onTick(deltaSecs);
-      // console.info(state.r3f.gl.info.render);
-
       state.view.onTick(deltaSecs);
+      // console.info(state.r3f.gl.info.render);
     },
     stopTick() {
       cancelAnimationFrame(state.reqAnimId);
@@ -184,7 +189,8 @@ export default function World(props) {
         next.hash.mapDecor !== state.hash.mapDecor // 🔔 needed for meta.roomId in computeGmData
       );
 
-      if (mapChanged === true) {
+      // also update gms if e.g. unsorted unused polygon added
+      if (dataChanged === true || mapChanged === true) {
         const mapDef = next.geomorphs.map[next.mapKey];
         next.gms = mapDef.gms.map(({ gmKey, transform }, gmId) => 
           geomorph.computeLayoutInstance(next.geomorphs.layout[gmKey], gmId, transform)
@@ -193,9 +199,9 @@ export default function World(props) {
       
       // 🔔 if this function changes we'll run the whole query
       const queryFnHash = hashText(queryCache.find({ queryKey: [WORLD_QUERY_FIRST_KEY], exact: false })?.options.queryFn?.toString() ?? '');
-      const { createGmsData: gmsDataChanged, GmGraphClass: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr({
+      const { createGmsData: gmsDataChanged, GmGraph: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr({
         createGmsData,
-        GmGraphClass,
+        GmGraph,
         queryFnHash,
       });
       
@@ -218,7 +224,6 @@ export default function World(props) {
       if (mapChanged === true) {
         const dimension = floorTextureDimension;
         state.texFloor.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
-        state.texFloorLight.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texCeil.resize({ width: dimension, height: dimension, numTextures: next.gmsData.seenGmKeys.length });
         state.texVs.floor++; // e.g. fix edit const.js
         state.texVs.ceiling++;
@@ -227,9 +232,8 @@ export default function World(props) {
       if (mapChanged === true || gmsDataChanged === true || gmGraphChanged === true) {
         await pause();
         state.menu.measure('gmGraph');
-        next.gmGraph = GmGraphClass.fromGms(next.gms, { permitErrors: true });
+        next.gmGraph = GmGraph.fromGms(next.gms, { permitErrors: true });
         state.menu.measure('gmGraph');
-        next.gmGraph.w = state;
         
         await pause();
         state.menu.measure('gmRoomGraph');
@@ -246,7 +250,9 @@ export default function World(props) {
       if (mapChanged === true || gmsDataChanged === true) {
         state.gmsData?.dispose();
       }
+      
       Object.assign(state, next);
+
       debug({
         prevGeomorphs: !!prevGeomorphs,
         dataChanged,
@@ -266,6 +272,11 @@ export default function World(props) {
         sheet: { decorDims, maxDecorDim, obstacleDims, maxObstacleDim },
         skin,
       } = state.geomorphs;
+
+      // We also store decor images for floor decals
+      state.decorImgs = await Promise.all(
+        decorDims.map((_, i) => imageLoader.loadAsync(getDecorSheetUrl(i)))
+      );
 
       for (const { src, dim, texArray, invert } of [
         {
@@ -347,16 +358,16 @@ export default function World(props) {
       <WorldView disabled={props.disabled} stats>
         {state.geomorphs && (
           <group>
-            <React.Suspense>
-              {state.crowd !== null && <>
+            {state.crowd !== null && <>
+              <Floor />
+              <Ceiling />
+              <React.Suspense>
                 <Decor />
                 <Npcs />
-                <Debug />
-              </>}
-            </React.Suspense>
-            <Floor />
+              </React.Suspense>
+              <Debug />
+            </>}
             <group visible={state.crowd !== null}>
-              <Ceiling />
               <Walls />
               <Doors />
               <Obstacles />
@@ -385,14 +396,14 @@ export default function World(props) {
  * @typedef State
  * @property {`world-${number}`} key This is `props.worldKey` and never changes
  * @property {boolean} disabled
- * @property {string} mapKey
+ * @property {Key.Map} mapKey
  * @property {Geomorph.GeomorphsHash} hash
  * @property {Geomorph.GmsData} gmsData
  * Data determined by `w.gms` or a `Key.Geomorph`.
  * - A geomorph key is "non-empty" iff `gmsData[gmKey].wallPolyCount` non-zero.
  * @property {{
  *   createGmsData: typeof createGmsData;
- *   GmGraphClass: typeof GmGraphClass;
+ *   GmGraph: typeof GmGraph;
  *   queryFnHash: number;
  * }} hmr
  * Change-tracking for Hot Module Reloading (HMR) only
@@ -409,6 +420,8 @@ export default function World(props) {
  *   offMeshDefs: import("recast-navigation").OffMeshConnectionParams[];
  *   offMeshLookup: NPC.SrcToOffMeshLookup;
  *   doorToOffMesh: NPC.DoorToOffMeshLookup;
+ *   toNavTris: NPC.FloorNavTris;
+ *   toOffMeshEdges: NPC.FloorOffMeshEdges;
  * } & NPC.TiledCacheResult} nav
  * @property {{ worker: WW.PhysicsWorker; rebuilds: number; } & import("../service/rapier").PhysicsBijection} physics
  *
@@ -434,13 +447,16 @@ export default function World(props) {
  * Shortcut for `w.npc.byAgId`
  * @property {import("./Doors").State['byKey']} d
  * Shortcut for `w.door.byKey`
+ * @property {import("./NpcSpeechBubbles").State['byKey']} b
+ * Shortcut for `w.bubble.byKey`
  * @property {import('./ContextMenu').State} cm
+ *
+ * @property {HTMLImageElement[]} decorImgs For decal drawing on floor
  *
  * @property {TexArray} texAux
  * @property {TexArray} texCeil
  * @property {TexArray} texDecor
  * @property {TexArray} texFloor
- * @property {TexArray} texFloorLight
  * @property {TexArray} texObs
  * @property {TexArray} texSkin skin texels, one pre skin
  * @property {TexArray} texNpcAux uv re-mapping and skin tinting, one per npc
@@ -449,7 +465,7 @@ export default function World(props) {
  * @property {Geomorph.LayoutInstance[]} gms
  * Aligned to `map.gms`.
  * Only populated for geomorph keys seen in some map.
- * @property {GmGraphClass} gmGraph
+ * @property {GmGraph} gmGraph
  * @property {GmRoomGraphClass} gmRoomGraph
  * @property {import('@recast-navigation/core').Crowd} crowd
  * @property {boolean} smallViewport Was viewport small when we mounted World?
@@ -462,4 +478,6 @@ export default function World(props) {
  * Has function `createGmsData` changed?
  * @property {(mutator?: (w: State) => void | Promise<void>) => void} update
  * @property {(partial: Record<number, [number, number, number, number]>) => void} updateTexAux
+ * - Update `1x1xn` auxiliary NPC DataArrayTexture
+ * - Currently unused.
  */

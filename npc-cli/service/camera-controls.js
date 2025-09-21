@@ -1,11 +1,11 @@
 // import { EventDispatcher } from "node_modules/@react-three/drei/node_modules/three-stdlib/controls/EventDispatcher";
 import * as THREE from "three";
-import { EventDispatcher, PerspectiveCamera } from "three";
+import { EventDispatcher, PerspectiveCamera, TOUCH } from "three";
 import { deltaAngle } from "maath/misc";
 
 
 /**
- * 🚧
+ * 🚧 needs testing
  * Based on:
  * > https://github.com/pmndrs/three-stdlib/blob/main/src/controls/OrbitControls.ts
  */
@@ -58,6 +58,11 @@ export class CameraControls extends EventDispatcher {
   spherical = new THREE.Spherical();
   sphericalDelta = new THREE.Spherical();
 
+  ray = new THREE.Ray();
+  plane = new THREE.Plane();
+  TILT_LIMIT = Math.cos(70 * (Math.PI / 180));
+  EPS = 1e-6;
+
   STATE = {
     NONE: -1,
     ROTATE: 0,
@@ -76,10 +81,13 @@ export class CameraControls extends EventDispatcher {
     dollyStart: new THREE.Vector2(),
     dollyDirection: new THREE.Vector3(),
     lastPosition: new THREE.Vector3(),
+    lastQuaternion: new THREE.Quaternion(),
     mouse: new THREE.Vector2(),
     offset: new THREE.Vector3(),
+    panOffset: new THREE.Vector3(),
     panStart: new THREE.Vector2(),
     rotateStart: new THREE.Vector2(),
+    scale: 1,
     up: new THREE.Vector3(0, 1, 0),
     zoomingToCursor: false,
   };
@@ -87,11 +95,13 @@ export class CameraControls extends EventDispatcher {
   pointers = /** @type {PointerEvent[]} */ ([]);
   pointerPositions = /** @type {{ [key: string]: THREE.Vector2 }} */ ({})
 
+  fixedAngle = false;
+  zoomToConstant = /** @type {null | THREE.Vector3} */ (null);
+
   //#region MapControls
   /** if false, pan orthogonal to world-space direction camera.up */
   screenSpacePanning = false; // pan orthogonal to world-space direction camera.up
   
-  // 🚧 remove
   touches = {
     // ONE: THREE.TOUCH.ROTATE,
     ONE: THREE.TOUCH.PAN,
@@ -134,6 +144,11 @@ export class CameraControls extends EventDispatcher {
     this.domElement.addEventListener('pointercancel', this.onPointerUp);
     this.domElement.addEventListener('wheel', this.onMouseWheel);
   }
+  
+  /** @param {number} dist */
+  clampDistance(dist) {
+    return Math.max(this.minDistance, Math.min(this.maxDistance, dist));
+  }
 
   dispose() {
     this.domElement.style.touchAction = 'auto'; // 🚧
@@ -143,6 +158,16 @@ export class CameraControls extends EventDispatcher {
     this.domElement.removeEventListener('wheel', this.onMouseWheel);
     this.domElement.ownerDocument.removeEventListener('pointermove', this.onPointerMove);
     this.domElement.ownerDocument.removeEventListener('pointerup', this.onPointerUp);
+  }
+
+  /** @param {number} dollyScale */
+  dollyIn(dollyScale) {
+    this.scale = this.scale * dollyScale;
+  }
+
+  /** @param {number} dollyScale */
+  dollyOut(dollyScale) {
+    this.scale = this.scale / dollyScale;
   }
 
   getAzimuthalAngle() {
@@ -155,6 +180,10 @@ export class CameraControls extends EventDispatcher {
 
   getPolarAngle() {
     return this.spherical.phi;
+  }
+
+  getZoomScale() {
+    return Math.pow(0.95, this.zoomSpeed);
   }
 
   /** @param {MouseEvent} event */
@@ -171,6 +200,92 @@ export class CameraControls extends EventDispatcher {
   /** @param {MouseEvent} event */
   handleMouseDownRotate(event) {
     this.u.rotateStart.set(event.clientX, event.clientY);
+  }
+
+  /** @param {WheelEvent} event */
+  handleMouseWheel(event) {
+    this.updateMouseParameters(event);
+    const zoomScale = this.getZoomScale();
+    if (event.deltaY < 0) {
+      this.dollyIn(zoomScale);
+    } else if (event.deltaY > 0) {
+      this.dollyOut(zoomScale);
+    }
+    this.update();
+  }
+
+  handleTouchStartDollyRotate() {
+    if (this.enableZoom === true) {
+      this.handleTouchStartDolly();
+    }
+    if (this.enableRotate === true) {
+      this.handleTouchStartRotate();
+    }
+  }
+
+  handleTouchStartDollyPan() {
+    if (this.enableZoom === true) {
+      this.handleTouchStartDolly();
+    }
+    if (this.enablePan === true) {
+      this.handleTouchStartPan();
+    }
+  }
+
+  handleTouchStartDolly() {
+    const dx = this.pointers[0].pageX - this.pointers[1].pageX;
+    const dy = this.pointers[0].pageY - this.pointers[1].pageY;
+    const distance = Math.hypot(dx, dy);
+    this.u.dollyStart.set(0, distance);
+  }
+
+  handleTouchStartPan() {
+    if (this.pointers.length == 1) {
+      this.u.panStart.set(this.pointers[0].pageX, this.pointers[0].pageY);
+    } else {
+      const x = 0.5 * (this.pointers[0].pageX + this.pointers[1].pageX);
+      const y = 0.5 * (this.pointers[0].pageY + this.pointers[1].pageY);
+      this.u.panStart.set(x, y);
+    }
+  }
+
+  handleTouchStartRotate() {
+    if (this.pointers.length == 1) {
+      this.u.rotateStart.set(this.pointers[0].pageX, this.pointers[0].pageY);
+    } else {
+      const x = 0.5 * (this.pointers[0].pageX + this.pointers[1].pageX);
+      const y = 0.5 * (this.pointers[0].pageY + this.pointers[1].pageY);
+      this.u.rotateStart.set(x, y);
+    }
+  }
+
+  handleZoomToCursor() {
+    let newRadius = null;
+    const prevRadius = this.u.offset.length();
+    newRadius = this.clampDistance(prevRadius * this.scale);
+    const radiusDelta = prevRadius - newRadius;
+
+    if (this.zoomToConstant !== null) {// 🔔
+      this.u.dollyDirection.copy(this.zoomToConstant).sub(this.object.position).normalize();
+    }
+
+    this.object.position.addScaledVector(this.u.dollyDirection, radiusDelta);
+    this.object.updateMatrixWorld();
+
+    if (newRadius !== null) {
+      if (this.screenSpacePanning === true) {
+        this.target.set(0, 0, -1).transformDirection(this.object.matrix).multiplyScalar(newRadius).add(this.object.position);
+      } else {
+        this.ray.origin.copy(this.object.position);
+        this.ray.direction.set(0, 0, -1).transformDirection(this.object.matrix);
+        if (Math.abs(this.object.up.dot(this.ray.direction)) < this.TILT_LIMIT) {
+          this.object.lookAt(this.target);
+        } else {
+          this.plane.setFromNormalAndCoplanarPoint(this.object.up, this.target);
+          this.ray.intersectPlane(this.plane, this.target);
+        }
+      }
+    }
   }
 
   /** @param {MouseEvent} event */
@@ -232,10 +347,21 @@ export class CameraControls extends EventDispatcher {
 
   /** @param {WheelEvent} event */
   onMouseWheel(event) {
-    if (this.enabled === false) return;
+    if (
+      this.enabled === false
+      || this.enableZoom === false
+      || !(
+        this.state === this.STATE.NONE
+        || this.state === this.STATE.TOUCH_DOLLY_PAN
+      )
+    ) {
+      return;
+    }
     event.preventDefault();
 
-    // 🚧
+    this.dispatchEvent(startEvent);
+    this.handleMouseWheel(event);
+    this.dispatchEvent(endEvent);
   }
 
   /** @param {PointerEvent} event */
@@ -258,23 +384,93 @@ export class CameraControls extends EventDispatcher {
 
   /** @param {PointerEvent} event */
   onPointerMove(event) {
-    if (this.enabled === false) return;
- 
-    // 🚧
+    if (this.enabled === false) {
+      return;
+    }
+
+    if (this.pointers.length === 0) {
+      this.domElement.ownerDocument.addEventListener('pointermove', this.onPointerMove);
+      this.domElement.ownerDocument.addEventListener('pointerup', this.onPointerUp);
+    }
+
+    this.addPointer(event);
+    if (event.pointerType === 'touch') {
+      this.onTouchStart(event);
+    } else {
+      this.onMouseDown(event);
+    }
   }
 
   /** @param {PointerEvent} event */
   onPointerUp(event) {
-    if (this.enabled === false) return;
+    if (this.enabled === false) {
+      return;
+    }
+
+    this.removePointer(event);
+
+    if (this.pointers.length === 0) {
+      this.domElement.releasePointerCapture(event.pointerId);
+      this.domElement.ownerDocument.removeEventListener('pointermove', this.onPointerMove)
+      this.domElement.ownerDocument.removeEventListener('pointerup', this.onPointerUp)
+    }
     
-    // 🚧
+    this.dispatchEvent(endEvent);
+    this.state = this.STATE.NONE;
   }
 
   /** @param {PointerEvent} event */
   onTouchStart(event) {
     this.trackPointer(event)
 
-    // 🚧
+    if (this.pointers.length === 1) {
+      switch (this.touches.ONE) {
+        case TOUCH.ROTATE:
+          if (this.enableRotate === true) {
+            this.handleTouchStartRotate();
+            this.state = this.STATE.TOUCH_ROTATE;
+          }
+          break;
+        case TOUCH.PAN:
+          if (this.enablePan === true) {
+            this.handleTouchStartPan();
+            this.state = this.STATE.TOUCH_PAN;
+          }
+          break;
+        default:
+      }
+      
+      this.dispatchEvent(startEvent);
+    } else if (this.pointers.length === 2) {
+      switch (this.touches.TWO) {
+        case TOUCH.ROTATE:
+          if (this.enableRotate === true) {
+            this.handleTouchStartDollyRotate();
+            this.state = this.STATE.TOUCH_DOLLY_ROTATE;
+          }
+          break;
+        case TOUCH.PAN:
+          if (this.enablePan === true) {
+            this.handleTouchStartDollyPan();
+            this.state = this.STATE.TOUCH_DOLLY_PAN;
+          }
+          break;
+        default:
+      }
+
+      this.dispatchEvent(startEvent);
+    } else {
+      this.state = this.STATE.NONE;
+    }
+  }
+
+  /** @param {PointerEvent} event */
+  removePointer(event) {
+    delete this.pointerPositions[event.pointerId];
+    const pointerIndex = this.pointers.findIndex(p => p.pointerId === event.pointerId);
+    if (pointerIndex !== -1) {
+      this.pointers.splice(pointerIndex, 1);
+    }
   }
 
   reset() {
@@ -334,8 +530,67 @@ export class CameraControls extends EventDispatcher {
     this.spherical.theta += this.sphericalDelta.theta * this.dampingFactor;
     this.spherical.phi += this.sphericalDelta.phi * this.dampingFactor;
 
-    // 🚧 
     // restrict theta to be between desired limits
+    let min = this.fixedAngle === true ? this.minAzimuthAngle : this.getAzimuthalAngle();
+    let max = this.fixedAngle === true ? this.maxAzimuthAngle : this.getAzimuthalAngle();
+    if (isFinite(min) && isFinite(max)) {
+      if (min < -Math.PI) min += twoPI;
+      else if (min > Math.PI) min -= twoPI;
+      if (max < -Math.PI) max += twoPI;
+      else if (max > Math.PI) max -= twoPI;
+
+      if (min <= max) {
+        this.spherical.theta = Math.max(min, Math.min(max, this.spherical.theta));
+      } else {
+        this.spherical.theta = this.spherical.theta > (min + max) / 2 ? Math.max(min, this.spherical.theta) : Math.min(max, this.spherical.theta);
+      }
+    }
+
+    // restrict phi to be between desired limits
+    this.spherical.phi = this.fixedAngle === false
+      ? Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.spherical.phi))
+      : this.getPolarAngle()
+    ;
+    this.spherical.makeSafe();
+
+    this.target.addScaledVector(this.u.panOffset, this.dampingFactor);
+
+    if (this.zoomToCursor === true && this.u.zoomingToCursor === true) {
+      this.spherical.radius = this.clampDistance(this.spherical.radius);
+    } else {
+      this.spherical.radius = this.clampDistance(this.spherical.radius * this.u.scale);
+    }
+
+    this.u.offset.setFromSpherical(this.spherical);
+    position.copy(this.target).add(this.u.offset);
+
+    if (this.object.matrixAutoUpdate === false) {
+      this.object.updateMatrix();
+    }
+    this.object.lookAt(this.target);
+
+    this.sphericalDelta.theta *= 1 - this.dampingFactor;
+    this.sphericalDelta.phi *= 1 - this.dampingFactor;
+    this.u.panOffset.multiplyScalar(1 - this.dampingFactor);
+
+    if (this.zoomToCursor === true && this.u.zoomingToCursor === true) {
+      this.handleZoomToCursor();
+    }
+
+    this.u.scale = 1;
+    this.u.zoomingToCursor = false;
+
+    if (
+      this.u.lastPosition.distanceToSquared(this.object.position) > this.EPS
+      || 8 * (1 - this.u.lastQuaternion.dot(this.object.quaternion)) > this.EPS
+    ) {
+      this.dispatchEvent(changeEvent);
+      this.u.lastPosition.copy(this.object.position);
+      this.u.lastQuaternion.copy(this.object.quaternion);
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -343,6 +598,9 @@ export class CameraControls extends EventDispatcher {
    * @param {MouseEvent} event
    */
   updateMouseParameters(event) {
+    if (!this.zoomToCursor) {
+      return;
+    }
     this.u.zoomingToCursor = true;
     const { left, top, width, height } = this.domElement.getBoundingClientRect();
     this.u.mouse.set(
@@ -358,6 +616,8 @@ export class CameraControls extends EventDispatcher {
   }
 }
 
-const startEvent = { type: 'start' };
-const endEvent = { type: 'end' };
-const changeEvent = { type: 'change' };
+const startEvent = /** @type {const} */ ({ type: 'start' });
+const endEvent = /** @type {const} */ ({ type: 'end' });
+const changeEvent = /** @type {const} */ ({ type: 'change' });
+
+const twoPI = 2 * Math.PI;

@@ -11,7 +11,7 @@ const humanZeroShader = {
   uniform int labelTriIds[2];
   uniform int selectorTriIds[2];
 
-  uniform float opacity; // 🚧 -> teleportRatio
+  uniform float opacity; // 🔔 means "teleport ratio"
 
   varying float vDotProduct;
   flat varying int triangleId;
@@ -45,7 +45,7 @@ const humanZeroShader = {
       vType = 3; // selector
     } else {
       vType = 1; // body
-      vHeightShade = min(max(pow(position.y / labelY, 2.) + 0.1, 0.4), 1.0);
+      vHeightShade = min(max(pow(position.y / labelY, 1.) + 0.1, 0.4), 1.0);
     }
     
     vec3 transformed = vec3(position);
@@ -61,10 +61,14 @@ const humanZeroShader = {
     if (vType == 0) {// label quad
 
       // label quad is above head and faces camera
-      mvPosition = modelMatrix[3]; // translation
+      mvPosition = modelMatrix[3];
       mvPosition.y = labelY;
-      mvPosition = viewMatrix * mvPosition;
-      mvPosition.xy += transformed.xy;
+
+      mvPosition = viewMatrix * mvPosition; // relative to camera
+ 
+      // keep size constant and big enough
+      float scaleUp = max(min(-mvPosition.z, 25.0) * 0.1, 1.0);
+      mvPosition.xy += transformed.xy * scaleUp;
       
     } else {// everything else
 
@@ -90,8 +94,9 @@ const humanZeroShader = {
   // depth is max number of npcs
   uniform sampler2DArray aux;
   
-  // 0 ~ invert ([0, 0, 0, 0] or [1, 1, 1, 1])
-  // ...
+  // currently unused
+  // - 1x1 texture up to some depth
+  // - see below for usage
   uniform sampler2DArray globalAux;
   
   // 🔔 label must be a quad i.e. two triangles
@@ -99,6 +104,7 @@ const humanZeroShader = {
   uniform int labelTriIds[2];
   uniform vec4 labelUvRect4;
 
+  uniform bool dark;
   uniform vec3 diffuse;
   uniform float opacity;
   uniform bool objectPick;
@@ -131,7 +137,8 @@ const humanZeroShader = {
       return;
     }
 
-    bool invert = texture(globalAux, vec3(0.0, 0.0, 0.0)).x == 1.0;
+    // do something when pixel (0, 0) at page 0 has value rgba where r is 1
+    // bool invert = texture(globalAux, vec3(0.0, 0.0, 0.0)).x == 1.0;
 
     // tinting (DataArrayTexture has width 128)
     // tint factor is 0.5
@@ -154,15 +161,15 @@ const humanZeroShader = {
         )
       );
 
+      // 🔔 fix pixelation around edge of text
+      if (texel.a < 0.75) discard;
+      texel.a = 0.75; // when labels overlap
+
     } else {// body=1, breath=2, selector=3
 
-      if (!invert) {
-        // 🌞 flat shading via vDotProduct
-        float ambientLight = 0.15;
-        tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
-      } else {// invert, making selector more visible
-        tint = vec4(vec3(vType == 3 ? 4.0 : 0.8), tint.a);
-      }
+      // 🌞 flat shading via vDotProduct
+      float ambientLight = 0.15;
+      tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
 
       // skinning
       vec4 uvOffset = texture(aux, vec3(float(triangleId) / 128.0, 0.0, uid));
@@ -170,23 +177,22 @@ const humanZeroShader = {
 
       texel = texture(atlas, vec3(vUv.x + uvOffset.x, vUv.y + uvOffset.y, atlasId));
 
-    }
+      if (dark && vType == 2) {// black breath/shadow when dark
+        texel.xyz = vec3(0.0);
+      }
 
-    if (invert) {
-      texel.xyz = 1.0 - texel.xyz;
     }
 
     gl_FragColor = texel * tint;
     #include <logdepthbuf_fragment>
 
-    if (gl_FragColor.a < 0.01) {
+    if (gl_FragColor.a < 0.2) {
+      // 🔔 fix ordering relative to doors e.g. robot-1 head-overlay
       discard; // comment out to debug label dimensions
     }
 
     if (vType >= 2) {// fade except label and body
       gl_FragColor.a *= opacity;
-    } else if (vType == 1) {// fade and blacken body
-      gl_FragColor *= opacity;
     }
   }
   `,
@@ -196,6 +202,7 @@ const humanZeroShader = {
 const humanZeroMaterialDefaultProps = {
   atlas: emptyDataArrayTexture,
   aux: emptyDataArrayTexture,
+  dark: false,
   globalAux: emptyDataArrayTexture,
   diffuse: new THREE.Vector3(1, 0.9, 0.6),
   label: emptyDataArrayTexture,
@@ -266,13 +273,11 @@ const instancedAtlasShader = {
 
   Frag: /* glsl */`
 
-  uniform bool lit;
-  uniform vec4 litCircle;
   uniform float alphaTest;
-  uniform bool objectPick;
-  uniform int objectPickRed;
   uniform sampler2DArray atlas;
   uniform vec3 diffuse;
+  uniform bool objectPick;
+  uniform int objectPickRed;
   uniform float opacity;
   uniform float opacityMin;
 
@@ -301,7 +306,10 @@ const instancedAtlasShader = {
     } else {
       if (texel.a * opacity < alphaTest) discard;
       
-      gl_FragColor = texel * vec4(vColor * diffuse, min(opacity * vOpacityScale, opacityMin));
+      gl_FragColor = texel * vec4(
+        vColor * diffuse,
+        min(opacity * vOpacityScale, opacityMin)
+      );
     }
 
     #include <logdepthbuf_fragment>
@@ -436,6 +444,16 @@ const instancedFlatShader = {
     #include <logdepthbuf_fragment>
     #include <map_fragment>
 
+    if (objectPick == true) {
+      gl_FragColor = vec4(
+        float(objectPickRed) / 255.0,
+        float((int(vInstanceId) >> 8) & 255) / 255.0,
+        float(int(vInstanceId) & 255) / 255.0,
+        opacity
+      );
+      return;
+    }
+
     float ambientLight = 0.1;
     float normalLight = 0.7;
 
@@ -458,14 +476,6 @@ const instancedFlatShader = {
       opacity
     );
 
-    if (objectPick == true) {
-      gl_FragColor = vec4(
-        float(objectPickRed) / 255.0,
-        float((int(vInstanceId) >> 8) & 255) / 255.0,
-        float(int(vInstanceId) & 255) / 255.0,
-        gl_FragColor.a
-      );
-    }
   }
   `,
 };
@@ -480,7 +490,6 @@ const instancedFlatDefaultProps = {
   opacity: 1,
   quadOutlines: false,
 };
-
 
 /**
  * Instanced Flat Shading
@@ -534,9 +543,6 @@ const instancedFloorShader = {
 
   Frag: /* glsl */`
 
-    uniform sampler2DArray lightAtlas;
-    uniform bool showLights;
-
     uniform float alphaTest;
     uniform sampler2DArray atlas;
     uniform vec3 diffuse;
@@ -558,7 +564,8 @@ const instancedFloorShader = {
 
       //#region object-pick 
       if (objectPick == true) {
-        if (texel.a < alphaTest) discard;
+        // 🔔 treat floor as non-transparent...
+        // if (texel.a < alphaTest) discard;
 
         gl_FragColor = vec4(
           float(objectPickRed) / 255.0,
@@ -574,14 +581,9 @@ const instancedFloorShader = {
       //#endregion
 
       if (texel.a * opacity < alphaTest) discard;
-      
-      if (showLights == true) {
-        vec4 lightTexel = texture(lightAtlas, vec3(vUv, vTextureId));
-        float lighter = clamp(3.5 * lightTexel.w, 1.0, 3.0);
-        gl_FragColor = texel * vec4(vColor * diffuse * lighter, opacity) * 0.8;
-      } else {
-        gl_FragColor = texel * vec4(vColor * diffuse, opacity) * 2.0;
-      }
+
+      // 🔔 reduce opacity
+      gl_FragColor = texel * vec4(vColor * diffuse, opacity * .7);
       #include <logdepthbuf_fragment>
       
     }
@@ -592,8 +594,6 @@ const instancedFloorShader = {
 /** @type {Required<import('@/npc-cli/types/glsl').InstancedFloorProps>} */
 const instancedFloorDefaultProps = {
   ...instancedAtlasDefaultProps,
-  lightAtlas: emptyDataArrayTexture,
-  showLights: false,
 };
 
 /**
@@ -653,9 +653,6 @@ const instancedLabelsShader = {
 
   void main() {
     gl_FragColor = texture2D(map, vUv) * vec4(vColor * diffuse, opacity);
-    if (gl_FragColor.a < 0.1) {
-      discard;
-    }
     #include <logdepthbuf_fragment>
   }
   `,

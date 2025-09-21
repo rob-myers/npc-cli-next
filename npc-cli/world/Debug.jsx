@@ -21,6 +21,7 @@ export default function Debug(props) {
     navMeshShown: false,
     navPath: /** @type {*} */ (null),
     origNavPolyShown: false,
+    originShown: false,
     offMeshConnections: /** @type {*} */ (null),
     pick: null,
     physicsLines: new THREE.BufferGeometry(),
@@ -28,7 +29,7 @@ export default function Debug(props) {
     staticCollidersShown: false,
     staticColliders: [],
 
-    ensureNavPoly(gmKey) {
+    ensureOrigNavPoly(gmKey) {
       if (!w.gmsData[gmKey].navPoly) {
         const layout = w.geomorphs.layout[gmKey];
         // Fix normals for recast/detour -- triangulation ordering?
@@ -139,6 +140,10 @@ export default function Debug(props) {
       state.navMeshShown = shouldShow;
       w.update();
     },
+    showOrigin(shouldShow = !state.originShown) {
+      state.originShown = shouldShow;
+      w.update();
+    },
     showOrigNavPoly(shouldShow = !state.origNavPolyShown) {
       state.origNavPolyShown = shouldShow;
       w.update();
@@ -185,7 +190,7 @@ export default function Debug(props) {
   }, [state.staticCollidersShown, w.physics.rebuilds]);
 
   React.useEffect(() => {// original navMesh
-    w.gms.forEach(gm => state.ensureNavPoly(gm.key));
+    w.gms.forEach(gm => state.ensureOrigNavPoly(gm.key));
     w.update();
   }, [state.origNavPolyShown]);
 
@@ -197,6 +202,7 @@ export default function Debug(props) {
       name="origin"
       scale={[0.025, 1, 0.025]}
       position={[0, 0.5 - 0.001, 0]}
+      visible={state.originShown}
     >
       <boxGeometry args={[1, 1, 1]} />
       <meshBasicMaterial color="red" />
@@ -215,10 +221,10 @@ export default function Debug(props) {
       <mesh
         position={[0.01, 0, 0]}
         rotation={[Math.PI / 8, Math.PI/2, 0]}
-        renderOrder={1}
+        renderOrder={2}
       >
         <circleGeometry args={[0.08, 8]} />
-        <meshBasicMaterial color="#0f9" opacity={0.5} transparent wireframe={false} />
+        <meshBasicMaterial color="#063" opacity={0.5} transparent wireframe={false} />
       </mesh>
     </group>}
 
@@ -247,6 +253,7 @@ export default function Debug(props) {
           key={`${gm.key} ${gmId} ${gm.transform}`}
           matrix={gm.mat4}
           matrixAutoUpdate={false}
+          renderOrder={-2}
         >
           <mesh
             name="orig-nav-poly"
@@ -283,6 +290,7 @@ export default function Debug(props) {
  * @property {NavMeshHelper} navMesh
  * @property {OffMeshConnectionsHelper} offMeshConnections
  * @property {boolean} origNavPolyShown
+ * @property {boolean} originShown
  * @property {boolean} navMeshShown
  * @property {THREE.Group} navPath
  * @property {null | THREE.BufferGeometry} selectedNavPolys
@@ -290,34 +298,36 @@ export default function Debug(props) {
  * @property {(WW.PhysicDebugItem & { parsedKey: WW.PhysicsParsedBodyKey })[]} staticColliders
  * @property {null | NPC.DownData} pick
  * @property {THREE.BufferGeometry} physicsLines
- * @property {(gmKey: Key.Geomorph) => void} ensureNavPoly
+ * @property {(gmKey: Key.Geomorph) => void} ensureOrigNavPoly
  * @property {(e: MessageEvent<WW.MsgFromPhysicsWorker>) => void} onPhysicsDebugData
  * @property {(path: THREE.Vector3Like[]) => void} setNavPath
  * @property {(...polyIds: number[]) => void} selectNavPolys
  * https://github.com/isaac-mason/recast-navigation-js/blob/bb3e49af3f4ff274afe84341d4c51a9f5fac609c/apps/navmesh-website/src/features/recast/export/nav-mesh-to-gltf.ts#L31
  * @property {(downData?: NPC.DownData) => void} setPickIndicator
  * @property {(shouldShow?: boolean) => void} showNavMesh
+ * @property {(shouldShow?: boolean) => void} showOrigin
  * @property {(shouldShow?: boolean) => void} showOrigNavPoly
  * @property {(shouldShow?: boolean) => void} showStaticColliders
  */
 
 const origNavPolyMaterial = new THREE.MeshBasicMaterial({
   side: THREE.FrontSide,
-  color: "yellow",
-  wireframe: true,
+  color: "#888",
+  // wireframe: true,
   transparent: true,
   opacity: 0.8,
 });
 
 const navPolyMaterial = new THREE.MeshBasicMaterial({
   wireframe: true,
-  color: "#7f7",
+  // color: "#3f3",
+  color: "#343434",
   transparent: true,
   opacity: 1,
 });
 
 const offMeshLineMaterial = new THREE.LineBasicMaterial({
-  color: "#ff7",
+  color: "#335",
 });
 
 const selectedNavPolysMaterial = new THREE.MeshBasicMaterial({
@@ -337,7 +347,7 @@ const MemoizedStaticColliders = React.memo(StaticColliders);
  * @param {{ staticColliders: State['staticColliders']; w: import('./World').State }} props
  */
 function StaticColliders({ staticColliders, w }) {
-  return staticColliders.map(({ parsedKey, position, userData }) => {
+  return staticColliders.map(({ parsedKey, position, userData }, i) => {
 
     if (userData.type === 'cylinder') {
       return (
@@ -359,8 +369,8 @@ function StaticColliders({ staticColliders, w }) {
     if (userData.type === 'cuboid') {
       return (
         <mesh
-          geometry={boxGeometry}
-          position={[position.x, colliderHeight / 2, position.z]}
+          geometry={boxGeometry} // fix z-fighting
+          position={[position.x, (colliderHeight / 2) + i * 0.0001, position.z]}
           scale={[userData.width, colliderHeight, userData.depth]}
           rotation={[0, userData.angle, 0]}
           renderOrder={toColliderMeta[parsedKey[0]]?.renderOrder ?? 3}

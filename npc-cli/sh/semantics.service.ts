@@ -1,15 +1,15 @@
 import { uid } from "uid";
+import braces from "braces";
 
 import { ansi, ProcessTag } from "./const";
 import type * as Sh from "./parse";
-import { jsStringify, last, pause, safeJsonParse, tagsToMeta, textToTags, warn } from "../service/generic";
+import { jsStringify, last, pause, safeJsonParse, warn } from "../service/generic";
 import { parseJsArg } from "../service/generic";
 import useSession, { ProcessStatus } from "./session.store";
 import {
   killError,
   expand,
   Expanded,
-  literal,
   matchFuncFormat,
   normalizeWhitespace,
   ProcessError,
@@ -19,6 +19,7 @@ import {
   handleProcessError,
   ttyError,
   formatMessage,
+  bracesOpts,
 } from "./util";
 import { cmdService, isTtyAt, getProcess, preProcessWrite } from "./cmd.service";
 import { srcService } from "./parse";
@@ -29,7 +30,6 @@ class semanticsServiceClass {
   private async *assignVars(node: Sh.CallExpr) {
     for (const assign of node.Assigns) {
       yield* this.Assign(assign);
-      this.handleChildExitCode(assign);
     }
   }
 
@@ -57,49 +57,25 @@ class semanticsServiceClass {
     }
   }
 
-  /**
-   * This implements `set -e`.
-   * - throw if `exitCode` is defined and non-zero.
-   * - use exitCode `130 + non-zero exitCode` so can ignore in `||`
-   */
-  private handleChildExitCode(node: Sh.ParsedSh) {
-    if (node.exitCode === undefined) {
-      // 🔔 should never happen, but better not to assume it is an error
-      return warn(`node.exitCode undefined: ${srcService.src(node)} in ${getProcess(node.meta).src}`);
-    }
-    if (node.exitCode !== 0) {// set -e
-      throw killError(node.meta, 130 + node.exitCode);
-    }
-  }
-
   private handleShError(node: Sh.ParsedSh, e: any, prefix?: string) {
     if (e instanceof ProcessError) {
       // Rethrow unless returning from a shell function
       return handleProcessError(node, e);
     }
     
-    // We do not rethrow
+    // Non-blocking write to stderr
     const message = [prefix, e.message].filter(Boolean).join(": ");
-    
-    if (e instanceof ShError) {
-      ttyError(`ShError: ${node.meta.sessionKey}: ${message} (${e.exitCode})`);
-      node.exitCode = e.exitCode;
-    } else {
-      ttyError(`Internal ShError: ${node.meta.sessionKey}: ${message}`);
-      ttyError(e);
-      node.exitCode = 2;
-    }
-
-    // write to stderr
     const device = useSession.api.resolve(2, node.meta);
     if (device !== undefined) {
-      const lines = message.split(/\r?\n/); // 🔔 non-blocking promise:
-      device.writeData(`${
-        lines.map(line => formatMessage(line, 'error')).join('\n')
-      }${ansi.Reset}`)
+      const lines = message.split(/\r?\n/);
+      device.writeData(`${lines.map(line => formatMessage(line, 'error')).join('\n')}${ansi.Reset}`);
     } else {
-      ttyError(`ShError: ${node.meta.sessionKey}: stderr does not exist`);
+      ttyError(`${node.meta.sessionKey}: pid ${node.meta.pid}: stderr does not exist`, message);
     }
+
+    // Kill process in line with `set -e`
+    node.exitCode = e.exitCode;
+    throw killError(node.meta, e.exitCode);
   }
 
   handleTopLevelProcessError(e: ProcessError) {
@@ -108,7 +84,7 @@ class semanticsServiceClass {
       useSession.api.kill(e.sessionKey, [e.pid], { GROUP: true, SIGINT: true });
       session.lastExit.fg = e.exitCode ?? 1;
     } else {
-      return ttyError(`session not found: ${e.sessionKey}`);
+      ttyError(`session not found: ${e.sessionKey}`);
     }
   }
 
@@ -118,12 +94,52 @@ class semanticsServiceClass {
     return lastExpanded!;
   }
 
+  private literal({ Value, parent }: Sh.Lit): string[] {
+    if (!parent) {
+      throw Error(`Literal must have parent`);
+    }
+    /**
+     * Remove at most one '\\\n'; can arise interactively in quotes,
+     * see https://github.com/mvdan/sh/issues/321.
+     */
+    let value = Value.replace(/\\\n/, "");
+  
+    if (parent.type === "DblQuoted") {
+      // Double quotes: interpret ", \, $, `, no brace-expansion.
+      return [value.replace(/\\(["\\$`])/g, "$1")];
+    } else if (parent.type === "TestClause") {
+      // [[ ... ]]: interpret everything, no brace-expansion.
+      return [value.replace(/\\(.|$)/g, "$1")];
+    } else if (parent.type === "Redirect") {
+      // Redirection (e.g. here-doc): interpret everything, no brace-expansion.
+      return [value.replace(/\\(.|$)/g, "$1")];
+    }
+  
+    // support basic tilde expansion ~ or ~/foo
+    if (value[0] === '~' && (value.length === 1 || value[1] === '/')) {
+      value = value.replace('~', '/home');
+    }
+  
+    // Otherwise interpret ', ", \, $, ` and apply brace-expansion.
+    value = value.replace(/\\(['"\\$`])/g, "$1");
+    
+    if (/[\[\]]/.test(value) === false) {
+      return braces(value, bracesOpts);
+    }
+
+    // Escape square brackets to fix npm module `braces` e.g. [{1..5}]
+    // Unescape afterwards e.g. for `expr [$points]`
+    return braces(
+      value.replace(/\[/g, "\\[").replace(/\]/g, "\\]"),
+      bracesOpts,
+    ).map(x => x.replace(/\\\[/g, "[").replace(/\\\]/g, "]"));
+  }
+
   private async *stmts(parent: Sh.ParsedSh, nodes: Sh.Stmt[]) {
     parent.exitCode = 0;
     for (const node of nodes) {
       try {
         yield* sem.Stmt(node);
-        this.handleChildExitCode(node);
       } finally {
         parent.exitCode = node.exitCode;
         useSession.api.setLastExitCode(node.meta, node.exitCode);
@@ -215,19 +231,8 @@ class semanticsServiceClass {
         break;
       }
       case "||": {
-        const stackIndex = node.meta.stack.length;
         for (const stmt of stmts) {
-          try {
-            yield* sem.Stmt(stmt);
-          } catch (e) {
-            if (e instanceof ProcessError && e.exitCode! >= 131) {
-              // 🔔 ignore kill errors due to `set -e`
-              // we reset stack to avoid huge error messages
-              stmt.meta.stack.splice(stackIndex, stmt.meta.stack.length - stackIndex);
-            } else {
-              throw e;
-            }
-          }
+          yield* sem.Stmt(stmt);
           if (!(node.exitCode = stmt.exitCode)) {
             break;
           }
@@ -344,7 +349,7 @@ class semanticsServiceClass {
         try {
           // Try to `get` things instead
           for (const arg of args) {
-            const result = cmdService.get(node.meta, [arg]);
+            const result = cmdService.get(node, [arg]);
             node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
             if (result[0] !== undefined) {
               yield* result; // defined, or invoked defined-valued function
@@ -384,6 +389,9 @@ class semanticsServiceClass {
           // syntax.LangBash only
           case "DeclClause":
             generator = this.DeclClause(node);
+            break;
+          case "ForClause":
+            generator = this.ForClause(node);
             break;
           case "FuncDecl":
             generator = this.FuncDecl(node);
@@ -481,7 +489,6 @@ class semanticsServiceClass {
         if (arg.Name !== null) {
           process.localVar[arg.Name.Value] = undefined;
           yield* this.Assign(arg);
-          this.handleChildExitCode(arg);
         }
       }
 
@@ -516,12 +523,8 @@ class semanticsServiceClass {
    */
   private async *Expand(node: Sh.Word) {
     if (node.Parts.length > 1) {
-      for (const [index, wordPart] of node.Parts.entries()) {
-        if (wordPart.type === 'Lit' && wordPart.Value === '...' && node.Parts[index + 1]?.type === 'CmdSubst') {
-          wordPart.string = ''; // ignore spread
-        } else {
-          wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
-        }
+      for (const wordPart of node.Parts) {
+        wordPart.string = (await this.lastExpanded(sem.ExpandPart(wordPart))).value;
       }
       /** Is last value a parameter/command-expansion AND has trailing whitespace? */
       let lastTrailing = false;
@@ -530,18 +533,18 @@ class semanticsServiceClass {
 
       for (const part of node.Parts) {
         const value = part.string!;
-        const brace = part.type === "Lit" && (part as any).braceExp;
+        const brace = part.type === "Lit" && !!(part as any).braceExp;
 
         if (part.type === "ParamExp" || part.type === "CmdSubst") {
           const vs = normalizeWhitespace(value!, false); // Do not trim
-          if (!vs.length) {
+          if (vs.length === 0) {
             continue;
-          } else if (!values.length || lastTrailing || vs[0].startsWith(" ")) {
+          } else if (values.length === 0 || lastTrailing === true || vs[0].startsWith(" ")) {
             // Freely add, although trim 1st and last
             values.push(...vs.map((x) => x.trim()));
-          } else if (last(values) instanceof Array) {
-            values.push((values.pop() as string[]).map((x) => `${x}${vs[0].trim()}`));
-            values.push(...vs.slice(1).map((x) => x.trim()));
+          } else if (last(values) instanceof Array) {// prev brace exp
+            const value = vs.join(' ').trim();
+            values.push((values.pop() as string[]).map((x) => `${x}${value}`));
           } else {
             // Either `last(vs)` a trailing quote, or it has no trailing space
             // Since vs[0] has no leading space we must join words
@@ -551,11 +554,11 @@ class semanticsServiceClass {
           lastTrailing = last(vs)!.endsWith(" ");
         } else if (values.length === 0 || lastTrailing === true) {
           // Freely add
-          values.push(brace ? value.split(" ") : value);
+          values.push(brace === true ? value.split(" ") : value);
           lastTrailing = false;
         } else if (last(values) instanceof Array) {
           values.push(
-            brace
+            brace === true
               ? (values.pop() as string[]).flatMap((x) => value.split(" ").map((y) => `${x}${y}`))
               : (values.pop() as string[]).map((x) => `${x}${value}`)
           );
@@ -592,8 +595,6 @@ class semanticsServiceClass {
               ? result.values // "$@" empty if `result.values` is
               : [`${output.pop() || ""}${result.values[0] || ""}`, ...result.values.slice(1)])
             );
-          } else if (part.type === "Lit" && part.Value === '...' && node.Parts[index + 1]?.type === "CmdSubst") {
-            // ignore spread
           } else {
             output.push(`${output.pop() || ""}${result.value || ""}`);
           }
@@ -602,7 +603,7 @@ class semanticsServiceClass {
         return;
       }
       case "Lit": {
-        const literals = literal(node);
+        const literals = this.literal(node);
         // 🔔 HACK: pass `braceExp` to *Expand
         literals.length > 1 && Object.assign(node, { braceExp: true });
         yield expand(literals);
@@ -628,22 +629,15 @@ class semanticsServiceClass {
         try {
           const values = device.readAll();
           const wordParts = node.parent?.type === 'Word' || node.parent?.type === 'DblQuoted'  ? node.parent.Parts : [];
-          const prevWord = wordParts[wordParts.indexOf(node) - 1];
-          const spread = prevWord?.type === 'Lit' && prevWord.Value === '...';
 
           if (wordParts.length === 1 && node.parent!.parent?.type === 'Assign') {
             yield expand(values); // When `foo=$( bar )` forward non-string values
-          } else if (spread === true) {
-            yield expand(values
-              .map(x => typeof x === "string" ? x : jsStringify(x))
-              .join("\n")
-              .replace(/\n*$/, "") // remove trailing newlines
-            );
           } else {
-             if (values.length > 1) {// expand jsStringified array when multiple values
-              yield expand(jsStringify(values));
+             if (values.length > 1) {
+             // yield expand(jsStringify(values));
+              yield expand(values.map(x => typeof x === 'string' ? x : jsStringify(x)));
             } else if (typeof values[0] === 'string') {
-              yield expand(values[0].replace(/\n*$/, ""));
+              yield expand(values[0].replace(/\n*$/, ''));
             } else {
               yield expand(jsStringify(values[0]));
             }
@@ -667,6 +661,56 @@ class semanticsServiceClass {
 
   File(node: Sh.File) {
     return sem.stmts(node, node.Stmts);
+  }
+
+  private async *ForClause(node: Sh.ForClause) {
+    
+    if (node.Select === true) {
+      throw new ShError("not implemented", 2);
+    }
+
+    if (node.Loop.type === 'CStyleLoop') {
+      throw new ShError("not implemented", 2);
+    }
+
+    const { Loop, Do } = node;
+    
+    let itStartMs = -1, itLengthMs = 0;
+
+    const varName = Loop.Name.Value;
+    const items = Loop.Items.slice() as (typeof Loop.Items[0] | { expanded: any })[];
+    let item: typeof items[0] | undefined;
+
+    while (item = items.shift()) {
+      // Force iteration to take at least `itMinLengthMs` milliseconds
+      if ((itLengthMs = Date.now() - itStartMs) < itMinLengthMs) {
+        await cmdService.sleep(node.meta, (itMinLengthMs - itLengthMs) / 1000);
+      }
+      itStartMs = Date.now();
+
+      if (!('expanded' in item)) {// aggregate expanded
+        const expanded = await this.lastExpanded(this.Expand(item));
+        items.unshift(...expanded.values.map(x => parseJsArg(x)).flatMap(
+          // handle $( range 5 ) is "[0, 1, 2, 3, 4]"
+          x => Array.isArray(x) ? x.map(y => ({ expanded: y })) : { expanded: x }
+        ));
+        // itStartMs = -1;
+        continue;
+      }
+
+      try {
+        useSession.api.setVar(node.meta, varName, item.expanded);
+        yield* this.stmts(node, Do);
+      } catch (e) {// support `continue`
+        if (!(e instanceof ProcessError && e.skip === true)) {
+          throw e;
+        }
+        // speeding up continue means large loops cannot be terminated
+        // itStartMs -= itMinLengthMs;
+      }
+
+    }
+
   }
 
   private async *FuncDecl(node: Sh.FuncDecl) {
@@ -712,7 +756,7 @@ class semanticsServiceClass {
     if (Repl !== null) {
       // ${_/foo/bar/baz}
       const origParam = reconstructReplParamExp(Repl);
-      const result = cmdService.get(node.meta, [origParam]);
+      const result = cmdService.get(node, [origParam]);
       node.exitCode = result.length > 0 && result.every((x) => x === undefined) ? 1 : 0;
       yield expand(jsStringify(result[0]));
     } else if (Excl || Length || Slice) {
@@ -869,7 +913,13 @@ class semanticsServiceClass {
         break;
       }
 
-      yield* this.stmts(node, Do);
+      try {
+        yield* this.stmts(node, Do);
+      } catch (e) {// support `continue`
+        if (!(e instanceof ProcessError && e.skip === true)) {
+          throw e;
+        }
+      }
     }
   }
 }

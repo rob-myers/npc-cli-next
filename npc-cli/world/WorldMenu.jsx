@@ -5,13 +5,13 @@ import { createPortal } from "react-dom";
 import debounce from "debounce";
 
 import { debug, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
-import { html3DOpacityCssVar, zIndexTabs, zIndexWorld } from "../service/const";
+import { html3DOpacityCssVar, xRayOpacity, worldViewBgColorCssVar, zIndexTabs, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import { Draggable } from "../components/Draggable";
-import { PopUp, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
+import { PopUp, popUpBubbleArrowColorCssVar, popUpBubbleClassName, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
 import { globalLoggerLinksRegex, Logger } from "../terminal/Logger";
 import TouchIndicator from "./TouchIndicator";
 import { CentredSpinner } from "../components/Spinner";
@@ -26,35 +26,37 @@ export default function WorldMenu(props) {
   const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
-
+    bgScale: 12, // [1..20]
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
+    dark: false,
+    defaultLoggerDim: { x: 0, y: 0, width: w.smallViewport ? 300 : 500, height: 100, minWidth: 200, minHeight: 80 },
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
-    invertColor: false,
     logger: /** @type {*} */ (null),
-    // 🚧 set before unload
-    loggerHeight: tryLocalStorageGetParsed(`logger:height@${w.key}`) ?? (defaultLoggerHeightPx) / loggerHeightDelta,
-    loggerWidth: tryLocalStorageGetParsed(`logger:width@${w.key}`) ?? (defaultLoggerWidthPx) / defaultLoggerWidthDelta,
-    loggerWidthDelta: defaultLoggerWidthDelta,
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    xRayOpacity: 13, // [1..20]
+    xRayEnabled: true,
 
     applyControlsInitValues() {
       /** @param {any} value */
       const toEvent = (value) => /** @type {React.ChangeEvent<HTMLInputElement>} */ ({ currentTarget: { value, checked: value } });
       state.onChangeBrightness(toEvent(state.brightness))
-      state.onChangeXRay(toEvent(state.xRayOpacity));
+      state.onChangeBgScale(toEvent(state.bgScale));
       state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
-      state.onChangeInvertColor(toEvent(state.invertColor));
+      state.onChangeDark(toEvent(state.dark));
+    },
+    log(...lines) {
+      for (const line of lines) {
+        state.logger.xterm.writeln(line);
+      }
     },
     measure(msg) {
       if (state.showDebug === false) {
         return;
       } else if (msg in state.durationKeys) {
         const durationMs = (performance.now() - state.durationKeys[msg]).toFixed(1);
-        state.logger?.xterm.writeln(`${msg} ${ansi.BrightYellow}${durationMs}${ansi.Reset}`);
+        state.logger?.xterm.writeln(`${msg} ${ansi.YellowBright}${durationMs}${ansi.Reset}`);
         debug(`measure: ${msg} (${durationMs}ms)`);
         delete state.durationKeys[msg];
       } else {
@@ -79,18 +81,25 @@ export default function WorldMenu(props) {
         w.view.onPausedTick();
       }
     },
-    onChangeInvertColor(e) {
-      state.invertColor = e.currentTarget.checked;
-      w.view.setCssFilter({ invert: state.invertColor ? '1' : '0' });
-      w.updateTexAux({
-        0: state.invertColor ? [1, 1, 1, 1] : [0, 0, 0, 0], // invert ~ 0th key
-      });
-      w.update();
+    async onChangeDark(e) {
+      state.dark = e.currentTarget.checked;
+      w.npc.dark = state.dark;
+      w.npc.forceUpdate();
+      await Promise.all([// redraw
+        w.floor.setDark(state.dark),
+        w.ceil.setDark(state.dark),
+      ]);
+      w.update()
     },
-    onChangeXRay(e) {
-      state.xRayOpacity = Number(e.currentTarget.value);
-      w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity((state.xRayOpacity / 20))
+    onChangeBgScale(e) {
+      state.bgScale = Number(e.currentTarget.value); // [1..20]
+      const scale = state.bgScale / 20;
+      w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${255 * scale}, ${255 * scale}, ${255 * scale})`);
+    },
+    onChangeXRayEnabled(e) {
+      state.xRayEnabled = e.currentTarget.checked;
+      w.wall.setOpacity(state.xRayEnabled === true ? xRayOpacity.walls : 1);
+      w.ceil.setOpacity(state.xRayEnabled === true ? xRayOpacity.ceiling : 1)
       w.update();
     },
     onClickLoggerLink(e) {
@@ -105,11 +114,11 @@ export default function WorldMenu(props) {
     onOverlayPointerUp() {
       props.setTabsEnabled(true);
     },
-    say(npcKey, ...parts) {
+    say(name, ...parts) {
       const line = parts.join(' ');
       state.logger.xterm.writeln(
-        `${ansi.BrightGreen}[${ansi.BrightYellow}${ansi.Bold}${npcKey}${ansi.BrightGreen}${ansi.BoldReset}]${ansi.Reset} ${
-          line.replace(globalLoggerLinksRegex, `${ansi.DarkGreen}[${ansi.Blue}$1${ansi.Reset}${ansi.DarkGreen}]${ansi.Reset}`)
+        `${ansi.GreenBright}[${ansi.YellowBright}${ansi.Bold}${name}${ansi.GreenBright}${ansi.BoldReset}]${ansi.Reset} ${
+          line.replace(globalLoggerLinksRegex, `${ansi.GreenDark}[${ansi.Blue}$1${ansi.Reset}${ansi.GreenDark}]${ansi.Reset}`)
         }${ansi.Reset}`
       );
       state.logger.xterm.scrollToBottom();
@@ -118,24 +127,13 @@ export default function WorldMenu(props) {
       state.preventDraggable = !!shouldPrevent;
       update();
     },
-    toggleXRay() {
-      state.xRayOpacity = state.xRayOpacity < 20 ? 20 : 10;
-      w.wall.setOpacity(state.xRayOpacity / 20);
-      w.ceil.setOpacity(state.xRayOpacity / 20);
-
-      /** @type {HTMLInputElement} */ (// reflect in range
-        state.draggable.el.querySelector('input.change-x-ray')
-      ).value = `${state.xRayOpacity}`;
-      
-      w.update();
-    },
   }));
 
   w.menu = state;
 
   React.useEffect(() => {
-    w.crowd && state.applyControlsInitValues();
-  }, [w.crowd]);
+    w.npc !== null && state.applyControlsInitValues();
+  }, [w.npc]);
 
   React.useLayoutEffect(() => {
     const showHtml3dsAfter300ms = debounce(() => 
@@ -152,17 +150,6 @@ export default function WorldMenu(props) {
 
   return <>
 
-    {w.disabled === true && (
-      <div css={pausedControlsCss}>
-        <button
-          onClick={state.toggleXRay}
-          className={state.xRayOpacity < 20 ? 'text-green' : undefined}
-        >
-          x-ray
-        </button>
-    </div>
-    )}
-
     {w.view.rootEl !== null && createPortal(
       <Draggable
         css={loggerAndPopUpCss}
@@ -170,10 +157,8 @@ export default function WorldMenu(props) {
         ref={state.ref('draggable')}
         container={w.view.rootEl}
         dragClassName={state.dragClassName}
-        initPos={{ x: 0, y: 0 }}
+        dim={state.defaultLoggerDim}
         localStorageKey={`logger:drag-pos@${w.key}`}
-        defaultWidth={400}
-        defaultHeight={100}
       >
         <PopUp
           label="⋯"
@@ -184,13 +169,15 @@ export default function WorldMenu(props) {
             <label>
               <input
                 type="range"
-                className="change-x-ray"
+                className="scale-bg-color"
                 min={1}
                 max={20}
-                defaultValue={state.xRayOpacity}
-                onChange={state.onChangeXRay}
+                defaultValue={state.bgScale}
+                onChange={state.onChangeBgScale}
               />
-              <div>🫥</div>
+              <div>
+                ⏰
+              </div>
             </label>
             <label>
               <input
@@ -205,7 +192,7 @@ export default function WorldMenu(props) {
             </label>
           </div>
           <div className="checkboxes">
-            <label>
+            <label title="show debug messages">
               debug
               <input
                 type="checkbox"
@@ -213,7 +200,7 @@ export default function WorldMenu(props) {
                 onChange={state.onChangeLoggerLog}
               />
             </label>
-            <label title="tween camera while paused?">
+            <label title="tween camera while paused">
               tween
               <input
                 type="checkbox"
@@ -223,11 +210,19 @@ export default function WorldMenu(props) {
               />
             </label>
             <label>
-              invert
+              dark
               <input
                 type="checkbox"
-                onChange={state.onChangeInvertColor}
-                checked={state.invertColor}
+                onChange={state.onChangeDark}
+                checked={state.dark}
+              />
+            </label>
+            <label title="transparent walls & ceiling">
+              xray
+              <input
+                type="checkbox"
+                onChange={state.onChangeXRayEnabled}
+                checked={state.xRayEnabled}
               />
             </label>
           </div>
@@ -236,10 +231,6 @@ export default function WorldMenu(props) {
         <Logger
           ref={state.ref('logger')}
           onClickLink={state.onClickLoggerLink}
-          initDim={[
-            state.loggerWidth * state.loggerWidthDelta,
-            state.loggerHeight * loggerHeightDelta,
-          ]}
         />
       </Draggable>,
       w.view.rootEl,
@@ -251,12 +242,6 @@ export default function WorldMenu(props) {
 
   </>;
 }
-
-const defaultLoggerHeightPx = 40;
-const defaultLoggerWidthPx = 800;
-/** Must be a factor of default height */
-const loggerHeightDelta = 20;
-const defaultLoggerWidthDelta = 40;
 
 const loggerAndPopUpCss = css`
   position: absolute;
@@ -288,11 +273,15 @@ const popUpCss = css`
   // cover Logger scrollbars
   z-index: ${zIndexWorld.loggerPopUp};
   
+  ${popUpBubbleArrowColorCssVar}: #338;
+
+  position: absolute;
+  right: 0;
+
   .${popUpButtonClassName} {
     color: #8888ff;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-width: 1px 0 0 1px;
-    background: black;
+    background: #000a;
     padding: 2px 12px;
     text-decoration: underline;
     padding: 0 20px 8px 20px;
@@ -357,7 +346,7 @@ const popUpCss = css`
       display: flex;
       align-items: center;
       gap: 8px;
-      font-family: 'Courier New', Courier, monospace;
+      //font-family: 'Courier New', Courier, monospace;
 
       &:has(> input:disabled) {
         color: #aaa;
@@ -435,31 +424,32 @@ const pausedControlsCss = css`
 
 /**
  * @typedef State
+ * @property {number} bgScale In [1..20]. For background-color scaling.
  * @property {number} brightness [1..20] inducing percentage `100 + 10 * (b - 10)`
+ * @property {import('../components/Draggable').Props['dim']} defaultLoggerDim
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys
- * @property {boolean} invertColor
+ * @property {boolean} dark
  * @property {import('../terminal/Logger').State} logger
- * @property {number} loggerHeight
- * @property {number} loggerWidth
- * @property {number} loggerWidthDelta
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
- * @property {number} xRayOpacity In [1..20]
+ * @property {boolean} xRayEnabled
  *
  * @property {() => void} applyControlsInitValues
+ * @property {(...lines: string[]) => void} log
  * @property {(msg: string) => void} measure
  * Measure durations by sending same `msg` twice.
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBgScale
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeInvertColor
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeDark
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRay
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRayEnabled
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
  * @property {(connectorKey: string) => void} onConnect
  * @property {() => void} onOverlayPointerUp
- * @property {(npcKey: string, line: string) => void} say
+ * @property {(name: string, line: string) => void} say
+ * `name` could be an `npcKey` or "narrator"
  * @property {(shouldPrevent: boolean) => void} setPreventDraggable
- * @property {() => void} toggleXRay
  */

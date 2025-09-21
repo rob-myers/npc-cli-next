@@ -2,6 +2,8 @@
  * Based on: https://github.com/michealparks/sword
  */
 import RAPIER, { ColliderDesc, RigidBodyType } from '@dimforge/rapier3d-compat';
+import { System, Polygon } from 'detect-collisions';
+
 import { physicsConfig, wallHeight, wallOutset } from '../service/const';
 import { info, warn, debug, testNever, isInsideWebWorker } from "../service/generic";
 import { fetchGeomorphsJson } from '../service/fetch-assets';
@@ -26,6 +28,7 @@ const state = {
   bodyKeyToUid: {},
   bodyUidToKey: {},
 
+  gmRayCast: /** @type {*} */ ({}),
 };
 
 /** @param {MessageEvent<WW.MsgToPhysicsWorker>} e */
@@ -33,7 +36,7 @@ async function handleMessages(e) {
   const msg = e.data;
 
   if (state.world === undefined && msg.type !== 'setup-physics') {
-    return; // Fixes HMR of this file
+    return; // Fix initial HMR of this file
   }
 
   // 🔔 avoid logging 60fps messages
@@ -94,6 +97,9 @@ async function handleMessages(e) {
       break;
     case "get-debug-data":
       sendDebugData();
+      break;
+    case "get-raycast":
+      sendRaycastResult(msg);
       break;
     case "remove-bodies":
     case "remove-colliders": {
@@ -205,6 +211,8 @@ async function setupOrRebuildWorld(msg) {
   createGmColliders();
 
   restoreNpcs(msg.npcs);
+
+  createGmRayCastSystems(geomorphs);
 
   // fire initial collisions
   stepWorld();
@@ -323,6 +331,32 @@ function createGmColliders(gmIds = state.gms.map((_, gmId) => gmId)) {
 }
 
 /**
+ * @param {Geomorph.Geomorphs} geomorphs 
+ */
+function createGmRayCastSystems(geomorphs) {
+  const gmKeys = new Set(state.gms.map(({ key }) => key));
+  
+  for (const gmKey of gmKeys) {
+    // construct system per geomorph
+    const system = state.gmRayCast[gmKey] ??= new System();
+    system.clear();
+
+    // Geomorph.Layout not Geomorph.LayoutInstance
+    const gm = geomorphs.layout[gmKey];
+    const zero = { x: 0, y: 0 };
+
+    gm.walls.forEach((wall, wallId) => system.insert(
+      new Polygon(zero, wall.outline, { isStatic: true, userData: { type: 'wall', wallId } })
+    ));
+    gm.doors.forEach((door, doorId) => system.insert(
+      new Polygon(zero, door.poly.outline, { isStatic: true, userData: { type: 'door', doorId } })
+    ));
+
+    // 🚧 some obstacles?
+  }
+}
+
+/**
  * On worker HMR we need to restore npcs
  * @param {WW.NpcDef[]} npcs 
  */
@@ -414,7 +448,44 @@ function sendDebugData() {
     type: 'debug-data',
     items: physicsDebugData,
     lines: Array.from(vertices),
-  })
+  });
+}
+
+/**
+ * @param {WW.GetRaycast} msg
+ */
+function sendRaycastResult(msg) {
+  const { src, dst, gmId } = msg;
+  
+  let hit = /** @type {null | Geom.VectJson} */ (null);
+  const gmDoorIds = /** @type {Geomorph.GmDoorId[]} */ ([]);
+  
+  const gm = state.gms[gmId];
+  const localSrc = gm.inverseMatrix.transformPoint({...src});
+  const localDst = gm.inverseMatrix.transformPoint({...dst});
+  const result = state.gmRayCast[gm.key].raycast(
+    localSrc,
+    localDst,
+    (body) => {
+      if (body.userData.type === 'door') {
+        const gmDoorId = helper.getGmDoorId(gmId, body.userData.doorId);
+        gmDoorIds.push(gmDoorId);
+        return false; // continue past door
+      }
+      return true
+    },
+  );
+  if (result !== undefined) {
+    // transform back into world coords
+    hit = gm.matrix.transformPoint(result.point);
+  }
+
+  selfTyped.postMessage({
+    type: 'raycast-result',
+    uid: msg.uid,
+    hit: hit,
+    gmDoorIds,
+  });
 }
 
 if (isInsideWebWorker() === true) {
@@ -434,13 +505,14 @@ if (isInsideWebWorker() === true) {
  * @property {Map<number, WW.PhysicsBodyKey>} bodyHandleToKey
  * @property {Map<WW.PhysicsBodyKey, RAPIER.Collider>} bodyKeyToCollider
  * @property {Map<WW.PhysicsBodyKey, RAPIER.RigidBody>} bodyKeyToBody
+ * @property {{ [gmKey in Key.Geomorph]: System }} gmRayCast
  */
 
 const unitYAxis = /** @type {const} */ ({ x: 0, y: 1, z: 0 });
 
 /**
- * assumes axis is normalized
- * https://github.com/mrdoob/three.js/blob/c3f685f49d7a747397d44b8f9fedd4fcec792fa7/src/math/Quaternion.js#L275
+ * Assumes axis is normalized
+ * @source https://github.com/mrdoob/three.js/blob/c3f685f49d7a747397d44b8f9fedd4fcec792fa7/src/math/Quaternion.js#L275
  * @param {{ x: number; y: number; z: number }} axis 
  * @param {number} angle radians
  */

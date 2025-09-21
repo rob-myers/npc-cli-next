@@ -10,9 +10,9 @@ export const nav = {
   collapsedRem: 4,
   collapsedWidth: `${4}rem`,
   expandedRem: 15,
-  expandedWidth: `${13}rem`,
+  expandedWidth: `${12}rem`,
   menuItemRem: 3.5,
-  menuItem: `${3.5}rem`,
+  menuItem: `${4}rem`,
   titleMarginTop: `${0.5}rem`,
 } as const;
 

@@ -14,6 +14,8 @@ export default function createGmsData() {
     ...mapValues(helper.toGmNum, (_, gmKey) => ({ ...emptyGmData, gmKey })),
     /** Total number of doors, each being a single quad (🔔 may change):  */
     doorCount: 0,
+    /** Geomorph key to first geomorph instance. Technically only defined for `seenGmKeys` */
+    gmKeyToFirst: /** @type {Record<Key.Geomorph, Geomorph.LayoutInstance>} */ ({}),
     /** Total number of obstacles, each being a single quad:  */
     obstaclesCount: 0,
     /** This induces the floor/ceil texture array ordering */
@@ -73,8 +75,9 @@ export default function createGmsData() {
       gmData.hitCtxt.canvas.height = bounds.height;
       gmsData.drawHitCanvas(gm);
       
-      // compute `connector.roomIds` before `roomGraph`
-      // 🔔 technically can avoid recompute when only gmsDataChanged
+      // 🔔 compute `connector.roomIds` before `roomGraph` and `gmGraph`
+      // - thus have to compute offMeshConnection defs in main thread, not nav.worker
+      // - technically can avoid recompute when only gmsDataChanged
       await pause(); 
       for (const connector of gm.doors) {
         connector.roomIds = /** @type {[number | null, number | null]} */ (connector.entries.map(
@@ -112,6 +115,10 @@ export default function createGmsData() {
       gmsData.obstaclesCount = gms.reduce((sum, { obstacles }) => sum + obstacles.length, 0);
       gmsData.wallPolySegCounts = gms.map(({ key: gmKey }) =>
         gmsData[gmKey].wallPolySegCounts.reduce((sum, count) => sum + count, 0),
+      );
+      gmsData.gmKeyToFirst = gms.reduce(
+        (agg, gm) => (agg[gm.key] ??= gm, agg),
+        /** @type {Record<Key.Geomorph, Geomorph.LayoutInstance>} */ ({}),
       );
     },
 

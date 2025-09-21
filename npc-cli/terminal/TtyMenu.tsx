@@ -5,6 +5,7 @@ import { tryLocalStorageGet, tryLocalStorageGetParsed, tryLocalStorageSet } from
 import { localStorageKey, zIndexTabs } from "../service/const";
 import { isTouchDevice } from "../service/dom";
 import type { Session } from "../sh/session.store";
+import { spawnBgPausedDefault } from "../sh/const";
 import useSession from "../sh/session.store";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -13,6 +14,11 @@ export default function TtyMenu(props: Props) {
   const update = useUpdate();
 
   const state = useStateRef(() => ({
+    /**
+     * Given `props.disabled`, should interactively spawned
+     * background processes also start paused?
+     */
+    spawnBgPaused: spawnBgPausedDefault,
     touchMenuOpen: true,
     xterm: props.session.ttyShell.xterm,
 
@@ -59,6 +65,11 @@ export default function TtyMenu(props: Props) {
       // on mobile avoid close keyboard
       state.xterm.xterm.focus();
     },
+    setSpawnBgPaused(next = !state.spawnBgPaused) {
+      state.spawnBgPaused = next;
+      props.session.ttyShell.spawnBgPaused = state.spawnBgPaused;
+      update();
+    },
     toggleTouchMenu() {
       const next = !state.touchMenuOpen;
       state.touchMenuOpen = next;
@@ -98,14 +109,22 @@ export default function TtyMenu(props: Props) {
         <div className="toggle" onClick={state.toggleTouchMenu}>
           {state.touchMenuOpen ? ">" : "<"}
         </div>
-        {props.canContOrStop !== undefined && (
+        {props.canContOrStop != null && (
           <div
             className="cont-or-stop-interactive"
             onClick={state.contOrStopInteractive}
+            title={props.canContOrStop === 'CONT' ? 'resume interactive' : 'pause interactive'}
           >
             {props.canContOrStop}
           </div>
         )}
+        {props.disabled && <div
+          className={cx("spawn-background-paused", { disabled: !state.spawnBgPaused })}
+          onClick={state.setSpawnBgPaused.bind(null, undefined)}
+          title={state.spawnBgPaused ? 'spawning background paused' : 'spawning background unpaused'}
+        >
+          BG
+        </div>}
       </div>
       
       <div className="touch-menu">
@@ -204,7 +223,7 @@ const menuCss = css`
       border: none;
     }
     
-    .cont-or-stop-interactive {
+    .cont-or-stop-interactive, .spawn-background-paused {
       width: 32px;
       display: flex;
       align-items: center;
@@ -215,9 +234,18 @@ const menuCss = css`
       padding: 8px 0;
       border: none;
       color: #0f0b;
+      background-color: rgba(0, 0, 0, 0.5);
       font-weight: 600;
       font-size: 0.6rem;
       letter-spacing: 2px;
+    }
+
+    .spawn-background-paused {
+      padding-top: 4px;
+      color: #777;
+    }
+    .spawn-background-paused.disabled {
+      color: #cc6;
     }
   }
 

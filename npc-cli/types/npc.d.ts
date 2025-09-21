@@ -1,7 +1,6 @@
 declare namespace NPC {
 
-  type NPC = BaseNPC & { api: import('../world/npc').NpcApi };
-  type BaseNPC = import('../world/npc').BaseNPC;
+  type NPC = import('../world/npc').NpcApi;
 
   interface NPCDef {
     /** User specified e.g. `rob` */
@@ -91,14 +90,15 @@ declare namespace NPC {
      */
     at: MaybeMeta<NPC.GroundPoint>;
     /** Position to look towards (overrides `angle`) */
-    look?: NPC.GroundPoint;
-    /** Overrides `at?.meta` e.g. because `meta.actPoint.meta` is not serializable */
+    facing?: NPC.GroundPoint;
+    /** Overrides `at?.meta` e.g. because `meta.doPoint.meta` is not serializable */
     meta?: Meta;
     /**
+     * Skin to apply.
      * - `string` for skin shortcuts e.g. `soldier-0` or `soldier-0/-///`
      * - object permits brace-expansion of keys.
      */
-    skin?: string | Record<string, SkinReMapValue>;
+    as?: string | Record<string, SkinReMapValue>;
   }
 
   interface SpawnManyOpts {
@@ -120,13 +120,13 @@ declare namespace NPC {
     // | PointerMoveEvent
     | { key: "disabled" }
     | { key: "enabled" }
-    | { key: "npc-internal"; npcKey: string; event: "cancelled" | "paused" | "resumed" }
+    // | { key: "npc-internal"; npcKey: string; event: "cancelled" | "paused" | "resumed" }
     | { key: "spawned"; npcKey: string; gmRoomId: Geomorph.GmRoomId }
     | { key: "spawned-many"; npcKeys: string[] }
     | { key: "started-moving"; npcKey: string; showNavPath: boolean }
     | { key: "continued-moving"; npcKey: string; showNavPath: boolean }
     | { key: "stopped-moving"; npcKey: string; reason: NPC.StopReason }
-    | { key: "removed-npc"; npcKey: string }
+    | { key: "removed-npcs"; npcKeys: string[] }
     | { key: "enter-doorway"; npcKey: string } & Geomorph.GmDoorId
     | { key: "exit-doorway"; npcKey: string } & Geomorph.GmDoorId
     | { key: "enter-room"; npcKey: string } & Geomorph.GmRoomId
@@ -161,14 +161,16 @@ declare namespace NPC {
     | { key: "nav-updated" }
     | { key: 'contextmenu-link'; linkKey: string }
     | { key: 'clear-off-mesh'; npcKey: string; }
-    | { key: 'enter-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
+    | { key: 'try-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
+    | { key: 'enter-off-mesh'; npcKey: string; offMesh: NPC.OffMeshState }
     | { key: 'enter-off-mesh-main'; npcKey: string }
-    | { key: 'exit-off-mesh'; npcKey: string; offMesh: NPC.OffMeshLookupValue }
+    | { key: 'exit-off-mesh'; npcKey: string; offMesh: NPC.OffMeshState }
     | { key: 'logger-link'; npcKey: string; } & NPC.LoggerLinkEvent
     | { key: 'speech'; npcKey: string; speech: string }
     | { key: 'controls-start' }
     | { key: 'controls-end' }
     | { key: 'fade-npc'; npcKey: string; opacityDst: number }
+    | { key: 'click-thought'; npcKey: string; thoughtKey: string; buttonKey: string; }
     // ...
   );
 
@@ -217,10 +219,9 @@ declare namespace NPC {
     meta: Meta;
   };
 
-  type ClickOutput<T extends Meta = Meta> = import('three').Vector3Like & {
+  type ClickOutput<T extends Meta = Meta> = NPC.GroundPoint & {
     keys?: BasePointerEvent['keys'];
     meta: T;
-    xz: Geom.VectJson;
   };
 
   type TiledCacheResult = import('@recast-navigation/core').ImportTileCacheResult;
@@ -235,7 +236,12 @@ declare namespace NPC {
     }[];
   }
 
+  type FloorNavTris = {[gmKey in Key.Geomorph]: [number[], number[]][]};
+  type FloorOffMeshEdges = {[gmKey in Key.Geomorph]: { src: Geom.VectJson; dst: Geom.VectJson; }[]};
+
   type CrowdAgent = import("@recast-navigation/core").CrowdAgent;
+  
+  type CrowdNeighbour = import('@recast-navigation/wasm').default.dtCrowdNeighbour;
 
   type SrcToOffMeshLookup = {
     [xz2DString: `${number},${number}`]: OffMeshLookupValue;
@@ -280,16 +286,6 @@ declare namespace NPC {
     src: Geom.VectJson;
     /** Adjusted offMeshConnection dst */
     dst: Geom.VectJson;
-    /**
-     * An offMeshConnection traversal will be initially paused if the
-     * npc's direction is not "aligned".
-     * 
-     * This is achieved via:
-     * > `agentAnim.tmid === agentAnim.tmax === Infinity`.
-     *
-     * and we record the correct values for restore later.
-     */
-    anim: { tmid: number; tmax: number; };
 
     /** Unit vector from "initial npc position" to "adjusted src" */
     initUnit: Geom.VectJson;
@@ -305,24 +301,23 @@ declare namespace NPC {
      * the two segments
      */
     tToDist: number;
+    /** Used for tweening and then applied via `dtAgentAnimation.set_tScale` */
+    tScale: number;
+    /** Destination for `tScale`, non-null only if we need to slow down or speed up. */
+    tScaleDst: null | number;
+    /** Larger values mean the traversal takes less time */
+    tScaleSmoothTime: number;
   };
 
   type dtCrowdAgentAnimation = ReturnType<
     import('@recast-navigation/core').Crowd['raw']['getAgentAnimation']
   >;
 
-  /** Provided after `dtAgentAnimation` has been re-configured */
-  interface OverrideOffMeshResult {
-    initPos: Geom.VectJson;
-    /** Adjusted src */
+  interface ImprovedOffMeshSrcDst {
     src: Geom.VectJson;
-    /** Adjusted dst */
     dst: Geom.VectJson;
     nextCorner: Geom.VectJson;
-    /** Might need to restore this when turnBeforeMove */
-    animTmid: number;
-    /** Might need to restore this when turnBeforeMove */
-    animTmax: number;
+    slowDown: boolean;
   }
 
   type Obstacle = {
@@ -464,20 +459,15 @@ declare namespace NPC {
 
   interface MoveOpts {
     to: GroundPoint | GroundPoint[];
+    arriveAnim?: false | Key.Anim;
     /** How far away may we look for a navigable point? */
     close?: number; 
-    /** Can overwrite state initially. */
-    s?: Partial<Pick<NPC.NPC['s'], (
-      | 'arriveDist'
-    )>>;
-    /**
-     * Show possible path of agent path (only a guide).
-     */
+    /** Show possible path of agent path (only a guide). */
     debugPath?: boolean;
   }
 
-  interface ActOpts {
-    do: WithMeta<GroundPoint, { act?: true; actPoint?: Geom.VectJson; y?: number }>;
+  interface DoOpts {
+    do: WithMeta<GroundPoint, { do?: true; doPoint?: Geom.VectJson; y?: number }>;
   }
 
   type StopReason = { type: 'stop-reason'; } & (
@@ -489,10 +479,37 @@ declare namespace NPC {
       | { key: 'move-again'; }
       | { key: 'stopped'; }
       | { key: 'stuck'; nearTarget: boolean; }
+      | { key: 'too-many-moves'; }
     )
     | { key: 'removed'; }
     | { key: 'respawned'; }
   );
+
+  interface RaycastResult {
+    hit: null | Geom.VectJson;
+    hitDoor: null | Geomorph.GmDoorKey;
+    doors: Geomorph.GmDoorKey[];
+    /** Alternated with `gdKeys` i.e. `firstGrKey -> firstGdKey ->  ... -> lastGrKey` */
+    rooms: Geomorph.GmRoomKey[];
+  }
+
+  /**
+   * ```js
+   * {
+   *   key: 'bedtime',
+   *   def: 'get in [low bed] or [high bed]',
+   *   parts: ['get in', ['low bed'], 'or', ['high bed']],
+   * }
+   * ```
+   */
+  interface BubbleThought {
+    key: string;
+    def: string;
+    /** Parsed `def` i.e. words "foo" or links [foo](foo) */
+    parts: (string | string[])[];
+    /** Rather than deleting we can disable a thought e.g. to avoid flicker */
+    disabled?: boolean;
+  }
 
   //#region sh js
   

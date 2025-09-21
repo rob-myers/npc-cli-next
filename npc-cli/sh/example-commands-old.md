@@ -142,7 +142,7 @@ w npc.spawn '{ npcKey: "rob", point: '$( click 1 )' }' >/dev/null
 
 ```sh
 # two agents "rob" and "will" in untransformed 301
-# assume npc.s.run is false for both
+# assume npc.run is false for both
 
 p=$( expr '{"x":1.703,"y":0,"z":3.672,"meta":{"picked":"floor","gmId":0,"floor":true,"instanceId":0,"roomId":1,"grKey":"g0r1","nav":true},"xz":{"x":1.703,"y":3.672}}' )
 q=$( expr '{x:2.298,y:0,z:3.315,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:1,grKey:"g0r1",nav:true},xz:{x:2.298,y:3.315}}' )
@@ -416,7 +416,7 @@ bar/x
 
 ```sh
 # get roomGraph nodes ≤ 4 edges away from $roomId
-gm 0 "gm => gm.roomGraph.getReachableUpto($roomId, (_ , depth) => depth > 4)"
+gm 0 "gm => gm.roomGraph.getReachableUpTo($roomId, (_ , depth) => depth > 4)"
 ```
 
 ## Demo
@@ -672,7 +672,7 @@ multiSpawn
 click 1 | run '({ api, w: { npcs } }) {
   const point = await api.read()
   for (const npcKey in npcs.npc) {
-    const npc = npcs.getNpc(npcKey);
+    const npc = npcs.get(npcKey);
     npc.lookAt(point, { ms: 500 });
   }
 }'
@@ -682,7 +682,7 @@ while true; do
   click 1 | run '({ api, w: { npcs } }) {
     const point = await api.read()
     for (const npcKey in npcs.npc) {
-      const npc = npcs.getNpc(npcKey);
+      const npc = npcs.get(npcKey);
       npc.walk(point, point);
     }
   }'

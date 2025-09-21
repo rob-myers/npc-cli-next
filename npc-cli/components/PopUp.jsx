@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import cx from 'classnames';
+import { pause } from '../service/generic';
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
 
@@ -22,9 +23,10 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
     close() {
       state.opened = false;
       state.left = false;
-      state.bubble.style.removeProperty('--info-width');
+      state.bubble.style.removeProperty('--bubble-width');
+      state.setOpacity(0);
       props.onChange?.(state.opened);
-      update();
+      pause(300).then(update);
     },
     onKeyDown(e) {
       if (e.code === 'Space') {
@@ -54,33 +56,38 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
         state.open(props.width);
       }
     },
-    open(width) {
+    open(width = props.width ?? defaultInfoWidthPx) {
       state.opened = true;
-
       const container = state.bubble.closest(`[${popUpRootDataAttribute}]`) ?? document.documentElement;
       const containerRect = container.getBoundingClientRect();
       const rect = state.icon.getBoundingClientRect();
       const pixelsOnRight = containerRect.right - rect.right;
       const pixelsOnLeft = rect.x - containerRect.x;
-      state.left = pixelsOnRight < pixelsOnLeft;
+      state.left = props.left ?? pixelsOnRight < pixelsOnLeft;
       const pixelsAbove = rect.y - containerRect.y;
       const pixelsBelow = containerRect.bottom - rect.bottom;
-      state.top = pixelsBelow < pixelsAbove;
-
+      state.top = props.top ?? pixelsBelow < pixelsAbove;
       
-      // 🚧 infer or parameterize `24`
       const root = /** @type {HTMLElement} */ (state.bubble.parentElement);
-      root.style.setProperty('--info-arrow-delta-x', `${state.left ? 24 : 12}px`);
+      root.style.setProperty('--bubble-arrow-delta-x', `${
+        state.left === true ? (props.deltaArrowLeft ?? 24) : 12
+      }px`);
 
       const maxWidthAvailable = Math.max(pixelsOnLeft, pixelsOnRight);
-      width = maxWidthAvailable < (width ?? defaultInfoWidthPx) ? maxWidthAvailable : width;
-      width && root.style.setProperty('--info-width', `${width}px`);
+      width = Math.min(width, maxWidthAvailable);
+      root.style.setProperty('--bubble-width', `${width}px`);
+
+      state.setOpacity(1);
 
       state.icon.focus();
       props.onChange?.(state.opened);
       update();
     },
-  }), { deps: [props.onChange, props.width] });
+    setOpacity(opacityDst) {
+      this.bubble.style.setProperty(popUpBubbleOpacityCssVar, `${opacityDst}`);
+    }
+
+  }), { deps: [props.onChange, props.width, props.top, props.left, props.deltaArrowLeft] });
 
   React.useImperativeHandle(ref, () => state, []);
 
@@ -88,6 +95,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
     <div
       css={rootPopupCss}
       className={cx("pop-up", props.className, { open: state.opened })}
+      onWheel={props.onWheel}
     >
       <button
         ref={state.ref('icon')}
@@ -119,19 +127,22 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
 
 /**
  * @typedef Props
- * @property {number} [arrowDeltaX]
  * @property {string} [className]
- * @property {string} [label]
+ * @property {number} [deltaArrowLeft]
+ * @property {React.ReactNode} [label]
+ * @property {boolean} [left] or right
+ * @property {boolean} [top] or bottom
  * @property {number} [width]
  * @property {(willOpen: boolean) => void} [onChange]
+ * @property {(e: React.WheelEvent) => void} [onWheel]
  */
 
 /**
  * @typedef State
  * @property {boolean} top or bottom
- * @property {HTMLSpanElement} bubble
+ * @property {HTMLDivElement} bubble
  * @property {boolean} opened
- * @property {HTMLSpanElement} icon
+ * @property {HTMLButtonElement} icon
  * @property {null | Geom.VectJson} iconDownAt
  * @property {boolean} left or right
  * @property {boolean} preventToggle
@@ -141,6 +152,8 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
  * @property {(e: React.PointerEvent) => void} onPointerDownIcon
  * @property {(e: React.PointerEvent) => void} onPointerUpIcon
  * @property {(width?: number | undefined) => void} open
+ * @property {(opacityDst: number) => void} setOpacity
+ * Set bubble opacity
  */
 
 
@@ -152,16 +165,19 @@ export const popUpButtonClassName = 'pop-up-button';
 export const popUpBubbleClassName = 'pop-up-bubble';
 export const popUpContentClassName = 'pop-up-content';
 
+export const popUpBubbleArrowColorCssVar = '--bubble-arrow-color';
+const popUpBubbleOpacityCssVar = '--bubble-opacity';
 
 const rootPopupCss = css`
   --top-offset: 16px;
   --side-offset: 16px;
 
-  --info-arrow-color: #999999ff;
-  --info-arrow-delta-x: 0px;
-  --info-arrow-height: 20px;
-  --info-border-color: #ffffff55;;
-  --info-width: ${defaultInfoWidthPx}px;
+  ${popUpBubbleOpacityCssVar}: 1;
+  ${popUpBubbleArrowColorCssVar}: #999f;
+  --bubble-arrow-delta-x: 0px; /* set above */
+  --bubble-arrow-height: 20px;
+  --bubble-border-color: #ffffff55;
+  --bubble-width: ${defaultInfoWidthPx}px;
 
   .${popUpButtonClassName} {
     cursor: pointer;
@@ -174,32 +190,13 @@ const rootPopupCss = css`
     /** Prevents bubble span from wrapping to next line? */
     display: inline-block;
     
+    transition: opacity 300ms ease-in-out;
+    opacity: var(${popUpBubbleOpacityCssVar});
+
     font-size: 0.95rem;
     font-style: normal;
-    /* text-align: center; */
     white-space: nowrap;
     
-    .${popUpContentClassName} {
-      min-height: 60px;
-      position: absolute;
-      width: var(--info-width);
-
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 300ms;
-      white-space: normal;
-    
-      background-color: black;
-      color: white;
-      border: 1px solid var(--info-border-color);
-    
-      a {
-        color: #dd0;
-      }
-      code {
-        font-size: inherit;
-      }
-    }
     .arrow {
       visibility: hidden;
       opacity: 0;
@@ -210,37 +207,59 @@ const rootPopupCss = css`
 
     &.left {
       .${popUpContentClassName} {
-        left: calc(-1 * var(--info-width) - 2 * var(--info-arrow-delta-x));
+        left: calc(-1 * var(--bubble-width) - 2 * var(--bubble-arrow-delta-x));
       }
       .arrow {
         top: 0;
-        left: calc(-2 * var(--info-arrow-delta-x));
+        left: calc(-2 * var(--bubble-arrow-delta-x));
         border-top: 10px solid transparent;
         border-bottom: 10px solid transparent;
-        border-left: 10px solid var(--info-arrow-color);
+        border-left: 10px solid var(--bubble-arrow-color);
       }
     }
 
     &.right {
       .${popUpContentClassName} {
-        left: calc(var(--info-arrow-delta-x) - 2px);
+        left: calc(var(--bubble-arrow-delta-x) - 2px);
       }
       .arrow {
         top: 0;
         left: 0;
         border-top: 10px solid transparent;
         border-bottom: 10px solid transparent;
-        border-right: 10px solid var(--info-arrow-color);
+        border-right: 10px solid var(--bubble-arrow-color);
       }
     }
 
     &.top .${popUpContentClassName} {
-      bottom: calc(-1 * var(--info-arrow-height));
+      bottom: calc(-1 * var(--bubble-arrow-height));
     }
     &.bottom {
       .${popUpContentClassName}, .arrow {
         top: 2px;
       }
+    }
+  }
+
+  .${popUpContentClassName} {
+    /* min-height: 60px; */
+    position: absolute;
+    width: var(--bubble-width);
+
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 300ms;
+    white-space: normal;
+  
+    background-color: black;
+    color: white;
+    border: 1px solid var(--bubble-border-color);
+  
+    a {
+      color: #dd0;
+    }
+    code {
+      font-size: inherit;
     }
   }
 

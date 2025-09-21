@@ -1,3 +1,4 @@
+import { ansi } from '../const';
 import { stripAnsi, ttyError } from "../util";
 
 /**
@@ -59,23 +60,56 @@ export async function* filter(ct) {
 }
 
 /**
- * Combines map (singleton), filter (empty array) and split (of arrays)
+ * - Combines map (singleton), filter (empty array) and split (of arrays)
+ * - Supports chunks
+ * 
  * ```sh
- * seq 10 | flatMap 'x => [...Array(x)].map((_, i) => i)'
- * { range 10; range 20; } | flatMap 'x => x'
+ * seq 5 | flatMap 'x => [...Array(x)].map((_, i) => i)'
+ * { range 5; range 10; } | flatMap 'x => x'
+ * expr '{ items: [1, 2, 3] }' | flatMap items
  * ```
- * - ℹ️ supports chunks
  * @param {NPC.RunArg} ct
  */
 export async function* flatMap(ct) {
   let { api, args, datum } = ct;
   let result;
-  const func = Function(`return ${args[0]}`)();
+  const func = api.generateSelector(api.parseJsArg(args[0]));
   while ((datum = await api.read(true)) !== api.eof) {
     if (api.isDataChunk(datum)) yield api.dataChunk(datum.items.flatMap((x) => func(x, ct)));
     else if (Array.isArray((result = func(datum, ct)))) yield* result;
     else yield result;
   }
+}
+
+/**
+ * List global variables
+ * @source https://stackoverflow.com/a/49069050/2917822
+ * 
+ * Relevant for `expr` e.g.
+ * ```sh
+ * expr 'foo = 42'
+ * expr foo # outputs number 42
+ * expr 'delete foo'
+ * expr foo # outputs string "foo"
+ * ```
+ */
+export function* globals() {
+  document.body.appendChild(
+    document.createElement('div')
+  ).innerHTML='<iframe id="globals-temp-iframe" style="display:none"></iframe>';
+
+  const keys = /** @type {string[]} */ ([]);
+  for (let key in window) {
+    if (!(key in window.frames[window.frames.length-1]) && String(Number(key)) !== key) {
+      keys.push(key);
+    }
+  }
+  
+  document.body.removeChild(
+    /** @type {HTMLElement} */ (document.getElementById('globals-temp-iframe')?.parentNode)
+  );
+  
+  yield* keys;
 }
 
 /**
@@ -147,7 +181,12 @@ export async function* map(ct) {
 
   if (isNativeCode === false) {
 
-    while ((datum = await api.read(true)) !== api.eof) {
+    let rejectLoop = /** @param {any} e */ (e) => {};
+    /** In case we're waiting for read, provide escape hatch if reboot process */
+    const rebootRejecter = new Promise((_, reject) => rejectLoop = reject);
+    api.handleStatus({ cleanups() { rejectLoop(api.getKillError()) } });
+
+    while ((datum = await Promise.race([api.read(true), rebootRejecter])) !== api.eof) {
       try {
         if (api.isDataChunk(datum) === true) {
           if (isAsync === false) {// fast on chunks
@@ -214,6 +253,70 @@ export async function* mapBasic(ct) {
 }
 
 /**
+ * ```sh
+ * # list available voices (device dependent)
+ * narrate list:voices
+ * 
+ * # use different voices
+ * narrate hi everyone voice:Aaron
+ * narrate {1..10} as:'Bad News'
+ * narrate {a..z} as:'Google UK English Female'
+ * narrate words:"$( echo {1..5} )"
+ * echo {1..5} | narrate
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{
+ *   words?: string;
+ *   voice?: string;
+ *   list?: 'voices';
+ *   onSay?(opts: { words: string; voice?: string; }): void | Promise<void>
+ * }} [opts]
+ */
+export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voice' })) {
+  
+  if (opts.list === 'voices') {// List available voices
+    yield* window.speechSynthesis.getVoices().map(
+      ({ name, lang }) => `${name} (${ansi.YellowBright}${lang}${ansi.White})`
+    );
+    return;
+  }
+  
+  const handlers = api.handleStatus({
+    cleanups() { window.speechSynthesis.cancel(); },
+    onResumes() { window.speechSynthesis.resume(); return true; },
+    onSuspends() { window.speechSynthesis.pause(); return true; }
+  });
+  
+  api.redirect({ 1: '/dev/voice' });
+
+  try {
+    // 🔔 `narrate foo bar words:baz` say "baz"
+    const words = opts.words ?? args.filter(x => x in opts).join(' ');
+    const voice = opts.voice;
+
+    // try fix intermittent loss of first word
+    yield { voice, text: ' ' };
+
+    if (words !== '') {
+      await opts?.onSay?.({ voice, words });
+      yield { voice, text: words };
+    }
+
+    if (api.isTtyAt(0) === false) {
+      let datum;
+      while ((datum = await api.read()) !== api.eof) {
+        await opts?.onSay?.({ voice, words: `${datum}` });
+        yield { voice, text: `${datum}` };
+      }
+    }
+
+  } finally {
+    handlers.dispose();
+  }
+  
+}
+
+/**
  * @param {NPC.RunArg} ct
  */
 export async function pause(ct) {
@@ -247,21 +350,40 @@ export async function* reduce({ api, args, datum }) {
 }
 
 /**
+ * Like `take` but outputs nothing.
+ * @param {NPC.RunArg} ct
+ */
+export async function* sink(ct) {
+  for await (const _ of take(ct));
+}
+
+/**
  * Split arrays from stdin into items.
- * Split strings by optional separator (default `''`), e.g.
- * - `split ,` splits by comma
- * - `split '/\n/'` splits by newlines
+ * ```sh
+ * expr '[1, 2, 3, 4]' | split
+ * # optional selector applied pointwise,
+ * expr '[{ meta: "foo" }, {meta: "bar" }]' | split meta
+ * ```
+ * Also, split strings by optional separator (default `''`), e.g.
+ * ```sh
+ * # split by comma
+ * echo foo,bar,baz | split ,
+ * # split by whitespace
+ * echo foo   bar   baz | split '/\s+/'
+ * ```
  * @param {NPC.RunArg} ct
  */
 export async function* split({ api, args, datum }) {
-  let arg = api.parseJsArg( args[0] || "");
+  const splitStringArg = api.parseJsArg(args[0] || '');
+  const selectorArg = api.generateSelector(api.parseFnOrStr(args[0] || ''), args.slice(1));
+
   while ((datum = await api.read()) !== api.eof) {
     if (datum instanceof Array) {
       // yield* datum
-      yield api.dataChunk(datum);
+      yield api.dataChunk(args.length >= 1 ? datum.map(selectorArg) : datum);
     } else if (typeof datum === "string") {
       // yield* datum.split(arg)
-      yield api.dataChunk(datum.split(arg));
+      yield api.dataChunk(datum.split(splitStringArg));
     } else if (datum instanceof Set) {
       yield api.dataChunk(Array.from(datum));
     }

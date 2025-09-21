@@ -23,6 +23,15 @@ const { fromProfileKey, profileKeys } = (/** @param {Record<Key.Profile, true>} 
  */
 export const helper = {
 
+  /** 🚧 by classKey */
+  defaults: {
+    height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
+    // radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.675,
+    radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.6,
+    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale * 0.9,
+    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale * 1,
+  },
+
   /** @type {Record<Key.ComponentClass, true>} */
   fromComponentClass: {
     HelloWorld: true,
@@ -47,6 +56,12 @@ export const helper = {
   )({
     "small-map-1": true, // default
     "demo-map-1": true,
+    "101-only": true,
+    "102-only": true,
+    "103-only": true,
+    "301-only": true,
+    "302-only": true,
+    "303-only": true,
   }),
 
   /** @type {Record<Key.NpcClass, true>} */
@@ -72,11 +87,11 @@ export const helper = {
     ...profileKeys.reduce((agg, profileKey) => {
       agg[`world-tty-${profileKey}`] = [
         [
-          { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" } },
+          { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" }, weight: 2 },
         ],
         [
-          { type: "terminal", filepath: "tty-0", profileKey, env: { WORLD_KEY: "world-0", TABS_API_KEY } },
-          { type: "component", class: "Manage", filepath: "manage-0", props: {} },
+          { type: "terminal", filepath: "tty-0", profileKey, env: { WORLD_KEY: "world-0", TABS_API_KEY }, weight: 1 },
+          { type: "component", class: "Manage", filepath: "manage-0", props: {}, weight: 1 },
         ],
       ];
       return agg;
@@ -135,14 +150,6 @@ export const helper = {
     "g-303--passenger-deck": "303--hull",
   },
   
-  /** 🚧 should be by classKey */
-  defaults: {
-    height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
-    radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.75,
-    runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale,
-    walkSpeed: npcClassToMeta[defaultClassKey].walkSpeed * npcClassToMeta[defaultClassKey].scale,
-  },
-
   /** @type {Record<Key.Anim, true>} */
   fromAnimKey: {
     Idle: true,
@@ -317,6 +324,15 @@ export const helper = {
   },
 
   /**
+   * 🔔 Given `grKey` assume `gmId`, `roomId` too.
+   * @param {any} input 
+   * @returns {input is Geomorph.GmRoomId}
+   */
+  isGmRoomId(input) {
+    return !!input && typeof input.grKey === 'string';
+  },
+
+  /**
    * @param {string} input 
    * @returns {input is Key.LayoutPreset}
    */
@@ -404,17 +420,29 @@ export const helper = {
   },
 
   /**
-   * Creates fresh object
+   * - Does not create fresh object in case of 2D input.
+   * - Preserves meta
+   * 
    * - `{ x, y, z }` -> `{ x, y: z }`
    * - `THREE.Vector3` -> `{ x, y: z }`
-   * - `{ x, y }` -> `{ x, y }`
-   * @param {NPC.GroundPoint} input 
-   * @returns {Geom.VectJson}
+   * - `{ x, y }` -> same object
+   * @param {MaybeMeta<NPC.GroundPoint>} input 
+   * @returns {MaybeMeta<Geom.VectJson>}
    */
   toXZ(input) {
-    return { x: input.x, y: 'z' in input ? input.z : input.y };
+    // 🚧 careful of hidden consequences
+    // return { x: input.x, y: 'z' in input ? input.z : input.y };
+
+    if ('z' in input) {
+      return {
+        x: input.x,
+        y: input.z,
+        ...(input.meta && { meta: input.meta }),
+      };
+    } else {
+      return input;
+    }
   },
-  
 };
 
 /**

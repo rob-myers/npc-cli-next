@@ -1,16 +1,16 @@
-source /etc/{util,game}.sh
-source /etc/{util,game}.js.sh
-source /etc/{game_1,demo_1}.js.sh
+source /etc/{util,core}.sh
+source /etc/{util,core,dev}.js.sh
+import demoCameraWASD from demo
 
 awaitWorld
 
-spawn npc:rob skin:soldier-0 at:'{ x: 2.5 * 1.5, y: 5 * 1.5 + 0.2 }' grant:.
-spawn npc:will skin:scientist-0 at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' grant:.
-spawn npc:kate skin:medic-0 at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' grant:.
-spawn npc:suit skin:suit-0 at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' grant:.
-spawn npc:rada angle:Math.PI skin:robot-1 at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' grant:.
+spawn npc:rob at:'{x:6.5, y:5}' as:soldier-0 granted:. angle:Math.PI
+spawn npc:will at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' as:scientist-0 granted:. angle:Math.PI
+spawn npc:kate at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' as:medic-0 granted:. angle:Math.PI
+spawn npc:suit at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' as:suit-0 granted:. angle:Math.PI
+spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math.PI
 
-npc rob api.showSelector true
+npc rob showSelector true
 selected="rob"
 
 ptags always; click meta.npcKey |
@@ -34,5 +34,5 @@ ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
 
+w view.tween '{ polar: Math.PI/4 }'
 look at:rob
-zoom distance:12

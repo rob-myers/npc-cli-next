@@ -19,3 +19,10 @@ type CamelToKebab<S extends string> = S extends `${infer T}${infer U}`
     ? `${Uncapitalize<T>}${CamelToKebab<U>}`
     : `${Uncapitalize<T>}-${CamelToKebab<U>}`
   : '';
+
+/**
+ * https://stackoverflow.com/q/59368321/2917822
+ */
+type ClassSansMethods<T> = Pick<T, {
+  [Key in keyof T]: T[Key] extends (..._: any) => any ? never : Key
+}[keyof T]>;

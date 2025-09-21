@@ -2,17 +2,18 @@ import React from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import debounce from "debounce";
+import { uid } from "uid";
 
-import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta } from "../service/const";
+import { defaultClassKey, maxNumberOfNpcs, npcClassToMeta, physicsConfig, precision } from "../service/const";
 import { entries, isDevelopment, jsStringify, keys, mapValues, pause, range, takeFirst, warn } from "../service/generic";
-import { computeMeshUvMappings, emptyAnimationMixer, toV3 } from "../service/three";
+import { computeMeshUvMappings, emptyAnimationMixer, tmpVectThree1, toV3 } from "../service/three";
 import { helper } from "../service/helper";
 import { HumanZeroMaterial } from "../service/glsl";
-import { createBaseNpc, NpcApi, crowdAgentParams, createNpc } from "./npc";
+import { geom } from "../service/geom";
+import { crowdAgentParams, NpcApi } from "./npc";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-import { geom, tmpVec1 } from "../service/geom";
 
 /**
  * @param {Props} props
@@ -24,44 +25,75 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
-    actToNpc: {},
+    dark: false,
+    doToNpc: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
     gltfAux: /** @type {*} */ ({}),
     group: /** @type {*} */ (null),
     idToKey: new Map(),
-    sheetAux: /** @type {*} */ ({}),
     npc: {},
+    pendingRaycast: /** @type {*} */ ({}),
     physicsPositions: [],
+    sheetAux: /** @type {*} */ ({}),
     showLastNavPath: false, // 🔔 for debug
 
     attachAgent(npc) {
       if (npc.agent === null) {
-        npc.agent = npc.w.crowd.addAgent(npc.position, {
+        npc.agent = w.crowd.addAgent(npc.position, {
           ...crowdAgentParams,
-          maxSpeed: npc.s.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
+          maxSpeed: npc.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
           queryFilterType: helper.queryFilterType.respectUnwalkable,
         });
-        npc.agentAnim = npc.w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
+        npc.agentAnim = w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
 
         state.byAgId[npc.agent.agentIndex] = npc;
       }
       return npc.agent;
     },
+    findGmIdContaining(input) {
+      return w.gmGraph.findGmIdContaining(helper.toXZ(input));
+    },
     findPath(src, dst) {// 🔔 agent only uses path as a guide
       const query = w.crowd.navMeshQuery;
-      const { path, success } = query.computePath(src, dst, {
-        filter: w.crowd.getFilter(helper.queryFilterType.respectUnwalkable),
-        halfExtents: { x: 0.1, y: 0.1, z: 0.1 },
-      });
-      if (path.length === 0) {
-        return path;
+      const src3 = toV3(src);
+      const dst3 = toV3(dst);
+
+      const result = query.computePath(
+        src3,
+        dst3,
+        {
+          filter: w.crowd.getFilter(helper.queryFilterType.respectUnwalkable),
+          halfExtents: { x: 0.1, y: 0.1, z: 0.1 },
+        },
+      );
+      if (result.path.length === 0) {
+        return [];
       }
-      if (success === true && tmpVec1.copy(dst).distanceTo(path[path.length - 1]) < 0.1) {
-        return path;
+      if (
+        result.success === true
+        && tmpVectThree1.copy(dst3).distanceTo(result.path[result.path.length - 1]) < 0.1
+      ) {
+        return result.path;
       }
       warn(`${'findPath'} failed: ${JSON.stringify({ src, dst })}`);
       return null;
+    },
+    findRoomContaining(input, includeDoors = false) {
+      if (helper.isGmRoomId(input.meta) === true) {
+        // 🔔 existing input.meta overrides includeDoors `false`
+        return { ...input.meta };
+      }
+      const point = helper.toXZ(input);
+      const gmId = state.findGmIdContaining(point);
+      if (typeof gmId === 'number') {
+        const gm = w.gms[gmId];
+        const localPoint = gm.inverseMatrix.transformPoint({ x: point.x, y: point.y });
+        const roomId = w.gmsData.findRoomIdContaining(gm, localPoint, includeDoors);
+        return roomId === null ? null : { gmId, roomId, grKey: helper.getGmRoomKey(gmId, roomId) };
+      } else {
+        return null;
+      }
     },
     forceUpdate() {
       const now = Date.now();
@@ -82,7 +114,7 @@ export default function Npcs(props) {
       warn(`${'getClosestNavigable'} failed: ${JSON.stringify(p)}`);
       return null;
     },
-    getNpc(npcKey) {
+    get(npcKey) {
       const npc = state.npc[npcKey];
       if (npc === undefined) {
         throw Error(`npc "${npcKey}" does not exist`);
@@ -91,49 +123,55 @@ export default function Npcs(props) {
       }
     },
     hotReloadNpcs() {
+      // Do not create new npc instances, but rather mutate existing ones,
+      // thereby avoiding stale references in ongoing code
+
       const npcs = Object.values(state.npc);
       let hmrKeys = /**
         * @type {undefined | {
-        *  add: (keyof NPC.BaseNPC)[];
+        *  add: (keyof ClassSansMethods<NPC.NPC>)[];
         *  del: (keyof NPC.NPC)[];
-        *  s: { add: (keyof NPC.BaseNPC['s'])[]; del: (keyof NPC.NPC['s'])[]; }
         * }}
         **/ (undefined);
 
       for (const npc of npcs) {
-        const base = createBaseNpc(npc.def, w);
+        const instance = new NpcApi(npc.def, w);
 
         // copy in new from `base`, delete old from `npc`, also for `s`
         // 🤔 we don't support type-change (should overwrite with base[x])
         if (hmrKeys === undefined) {
           // only compute keys to add/delete once
           hmrKeys = {
-            add: keys(base).filter(x => !(x in npc) && Object.assign(npc, { [x]: base[x] })),
-            del: keys(npc).filter(x => !(x in base) && delete npc[x]),
-            s: {
-              add: keys(base.s).filter(x => !(x in npc.s) && Object.assign(npc.s, { [x]: base.s[x] })),
-              del: keys(npc.s).filter(x => !(x in base.s) && delete npc.s[x]),
-            },
+            add: keys({...instance}).filter(x => !(x in npc) && Object.assign(npc, { [x]: instance[x] })),
+            del: keys(npc).filter(x => !(x in instance) && delete npc[x]),
           };
         } else {
-          hmrKeys.add.forEach(x => Object.assign(npc, { [x]: base[x] }));
+          hmrKeys.add.forEach(x => Object.assign(npc, { [x]: instance[x] }));
           hmrKeys.del.forEach(x => delete npc[x]);
-          hmrKeys.s.add.forEach(x => Object.assign(npc.s, { [x]: base.s[x] }));
-          hmrKeys.s.del = keys(npc.s).filter(x => !(x in base.s) && delete npc.s[x])
         }
 
-        npc.api = new NpcApi(npc, w); // replace NpcApi
+        Object.setPrototypeOf(npc, Object.getPrototypeOf(instance));
+
         npc.epochMs = Date.now(); // invalidate React.Memo
         if (npc.agent !== null) {// avoid stale ref
           state.byAgId[npc.agent.agentIndex] = npc;
         }
         // track npc class meta
         npc.m.scale = npcClassToMeta[npc.def.classKey].scale;
-
-        // 🚧 needed?
-        // npc.applySkin();
-        // npc.applyTint();
       }
+    },
+    inSameRoom(...points) {
+      /** @type {null | Geomorph.GmRoomId} */ let gmRoomId = null;
+      return points.every((point, i) => {
+        const next = this.findRoomContaining(point);
+        if (next === null) {
+          return false;
+        } else if (gmRoomId !== null && gmRoomId.grKey !== next.grKey) {
+          return false;
+        } else {
+          return gmRoomId = next;
+        }
+      });
     },
     isPointInNavmesh(input) {
       const v3 = toV3(input);
@@ -142,16 +180,102 @@ export default function Npcs(props) {
     },
     onStuckNpc: null,
     onTick(deltaSecs) {
-      Object.values(state.npc).forEach(npc => npc.api.onTick(deltaSecs, state.physicsPositions));
+      Object.values(state.npc).forEach(npc => npc.onTick(deltaSecs, state.physicsPositions));
       // 🔔 Float32Array caused issues i.e. decode failed
       const positions = new Float64Array(state.physicsPositions);
       w.physics.worker.postMessage({ type: 'send-npc-positions', positions}, [positions.buffer]);
       state.physicsPositions.length = 0;
     },
     onTickIdleTurn: null,
+
+    async raycast(src, dst) {
+      src = helper.toXZ(src);
+      dst = helper.toXZ(dst);
+
+      // Both points must reside in a room or doorway
+      const srcGrId = state.findRoomContaining(src, true);
+      const dstGrId = state.findRoomContaining(dst, true);
+      if (srcGrId === null) {
+        throw Error(`${'raycast'}: src must be in a room/doorway ${JSON.stringify({ x: src.x, y: src.y })}`);
+      } else if (dstGrId === null) {
+        throw Error(`${'raycast'}: dst must be in a room/doorway ${JSON.stringify({ x: dst.x, y: dst.y })}`);
+      }
+      
+      if (Math.abs(src.x - dst.x) < 0.01 && Math.abs(src.y - dst.y) < 0.01) {
+        // avoid 'detect-collisions' throw on zero-length rays
+        return { hit: null, gmDoorIds: [], rooms: [srcGrId.grKey], doors: [], hitDoor: null };
+      }
+
+      const [grIds, gdIds] = [/** @type {Geomorph.GmRoomId[]} */ ([]), /** @type {Geomorph.GmDoorId[]} */ ([])];
+      let gmId = srcGrId.gmId;
+      let roomId = srcGrId.roomId;
+      let hit = /** @type {null | Geom.VectJson} */ (null);
+      let hitDoor = /** @type {null | Geomorph.GmDoorKey} */ (null);
+
+      const raycastUid = uid(); // request(s) uid
+      let maxAdjGeomorphs = 2;  // detect ray between at most 2 geomorphs
+      
+      while (maxAdjGeomorphs-- > 0) {
+        grIds.push(helper.getGmRoomId(gmId, roomId));
+        
+        w.physics.worker.postMessage({ type: 'get-raycast', uid: raycastUid, src, dst, gmId });
+        const result = await /** @type {Promise<WW.RaycastResultResponse>} */ (
+          new Promise((resolve, reject) => state.pendingRaycast[raycastUid] = { resolve, reject })
+        );
+        
+        hit = result.hit;
+        // check whether ray hit a closed door 1st
+        for (const gdId of result.gmDoorIds) {
+          const door = w.d[gdId.gdKey];
+          if (door.open === true) {
+            gdIds.push(gdId); // track doors and rooms
+            const otherRoomId = door.door.roomIds.find(x => x !== roomId) ?? null;
+            otherRoomId !== null && grIds.push(helper.getGmRoomId(gmId, otherRoomId));
+          } else {
+            // `null` if ray intersects door rect but not door seg (ends in doorway)
+            hit = w.door.computeRayDoorIntersect(src, dst, gdId.gdKey) ?? hit;
+            if (hit !== null) hitDoor = gdId.gdKey;
+            break;
+          }
+        }
+
+        const lastGdId = gdIds[gdIds.length - 1];
+
+        if (
+          hit !== null // hit something
+          || lastGdId === undefined // no doors touched
+          || w.d[lastGdId.gdKey].hull === false // last open door NOT a hull door
+        ) {
+          break;
+        }
+
+        // check open hull door intersect
+        hit = w.door.computeRayDoorIntersect(src, dst, lastGdId.gdKey);
+        const adjCtxt = w.gmGraph.getAdjacentRoomCtxt(gmId, lastGdId.doorId);
+
+        if (
+          hit === null // dst in hull doorway (distinct gmId since hull doorways overlap)
+          || adjCtxt === null // should be unreachable: sealed hull door always closed
+        ) {
+          break;
+        }
+
+        // next, start from hull door intersection
+        src = hit;
+        gmId = adjCtxt.adjGmId;
+        roomId = adjCtxt.adjRoomId;
+      }
+
+      return {
+        hit: hit === null ? null : geom.precision2d(hit, 2),
+        hitDoor,
+        doors: gdIds.map(({ gdKey }) => gdKey),
+        rooms: grIds.map(({ grKey }) => grKey),
+      };
+    },
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
-      const animKeys = npcs.map(x => x.s.anim);
+      const animKeys = npcs.map(x => x.anim);
       npcs.forEach(npc => state.removeAgent(npc));
 
       w.crowd.update(w.timer.getFixedDelta());
@@ -161,48 +285,43 @@ export default function Npcs(props) {
         const agent = state.attachAgent(npc);
         const closest = state.getClosestNavigable(npc.position);
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
-          npc.api.startAnimation(animKeys[i]);
-        } else if (npc.s.target !== null) {
-          npc.api.move({ to: npc.api.getRemainingPath() });
+          npc.startAnimation(animKeys[i]);
+        } else if (npc.target !== null) {
+          npc.move({ to: npc.getRemainingPath() });
         } else {// pin them to current position
           agent.requestMoveTarget(npc.position);
         }
       }
     },
     remove(...npcKeys) {
-      try {
-        for (const npcKey of npcKeys) {
-          const npc = state.getNpc(npcKey); // throw if n'exist pas
-          npc.api.cancel('removed'); // rejects promises
-          state.removeAgent(npc);
-          
-          delete state.npc[npcKey];
-          state.freeId.add(npc.def.uid);
-          state.idToKey.delete(npc.def.uid);
-          if (npc.s.actMeta !== null) {
-            const { actPoint, y } = npc.s.actMeta;
-            delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
-          }
-
-          w.events.next({ key: 'removed-npc', npcKey });
+      const npcs = npcKeys.map(x => state.npc[x]).filter(Boolean);
+      for (const npc of npcs) {
+        npc.cancel('removed'); // rejects promises
+        state.removeAgent(npc);
+        
+        delete state.npc[npc.key];
+        state.freeId.add(npc.def.uid);
+        state.idToKey.delete(npc.def.uid);
+        if (npc.doMeta !== null) {
+          const { doPoint, y } = npc.doMeta;
+          delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
         }
-      } finally {
-        update();
       }
+      w.events.next({ key: 'removed-npcs', npcKeys: npcs.map(x => x.key) });
     },
     removeAgent(npc) {
       if (npc.agent !== null) {
-        npc.w.crowd.removeAgent(npc.agent.agentIndex);
+        w.crowd.removeAgent(npc.agent.agentIndex);
         
         delete state.byAgId[npc.agent.agentIndex];
         npc.agent = null;
         npc.agentAnim = null;
-        npc.s.offMesh = null;
+        npc.offMesh = null;
       }
     },
     resolveSkin(shortcut) {// order: head,head-overlay,body,body-overlay
       const parts = shortcut.split(',');
-      const head = parts[0];
+      const head = parts[0] || undefined;
       const fallback = parts.length === 1 ? head : undefined;
       const headOverlay = parts.length > 1 && (parts[1] || parts[0]) || fallback;
       const body = parts.length > 2 && (parts[2] || parts[0] || parts[1]) || fallback;
@@ -214,21 +333,21 @@ export default function Npcs(props) {
         ...bodyOverlay !== undefined && { "body-overlay-{front,back,left,right,top,bottom}": { prefix: bodyOverlay} },
       };
     },
-    setActMeta(npcKey, actMeta) {
+    setDoMeta(npcKey, doMeta) {
       const npc = w.n[npcKey];
 
-      if (npc.s.actMeta !== null) {
-        const { actPoint, y } = npc.s.actMeta;
-        delete state.actToNpc[`${actPoint.x},${y ?? 0},${actPoint.y}`];
+      if (npc.doMeta !== null) {
+        const { doPoint, y } = npc.doMeta;
+        delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
       }
 
-      if (actMeta === null) {
-        npc.s.actMeta = null;
+      if (doMeta === null) {
+        npc.doMeta = null;
       } else {
-        const { actPoint, y } = actMeta;
-        const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
-        state.actToNpc[key] = npcKey;
-        npc.s.actMeta = actMeta;
+        const { doPoint, y } = doMeta;
+        const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+        state.doToNpc[key] = npcKey;
+        npc.doMeta = doMeta;
       }
     },
     setupSkins() {
@@ -305,26 +424,26 @@ export default function Npcs(props) {
         throw Error(`opts.npcKey must have length ≤ 10`);
       }
       
-      if (helper.isVectJson(opts.look) === true) {
-        opts.look = helper.toXZ(opts.look);
-        opts.angle = geom.clockwiseFromNorth(opts.look.y - point.y, opts.look.x - point.x);
+      if (helper.isVectJson(opts.facing) === true) {
+        opts.facing = helper.toXZ(opts.facing);
+        opts.angle = geom.clockwiseFromNorth(opts.facing.y - point.y, opts.facing.x - point.x);
       }
 
       const dstNav = meta.nav === true || state.isPointInNavmesh(point);
       const attachAgent = dstNav;
 
-      if (dstNav === false && meta.act !== true) {
-        throw Error(`not navigable nor actable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
+      if (dstNav === false && meta.do !== true) {
+        throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
       }
       
-      const gmRoomId = w.gmGraph.findRoomContaining(point, true);
+      const gmRoomId = state.findRoomContaining(point, true);
       if (gmRoomId === null) {
         throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }
 
-      state.validateActMeta(meta.act === true ? meta : null);
+      state.validateDoMeta(meta.do === true ? meta : null);
       
       let npc = state.npc[opts.npcKey];
 
@@ -335,7 +454,7 @@ export default function Npcs(props) {
       // prevent look e.g. if will Lie
       const nextAnimKey = helper.getAnimKeyFromMeta(meta);
       if (helper.canAnimKeyLook(nextAnimKey) === false) {
-        opts.angle = opts.look = undefined;
+        opts.angle = opts.facing = undefined;
       }
 
       opts.angle ??= typeof meta.orient === 'number'
@@ -343,15 +462,17 @@ export default function Npcs(props) {
         : undefined
       ;
 
-      if (npc !== undefined) {// Respawn
-        npc.api.cancel('respawned');
+      if (npc !== undefined) {
+        
+        // Respawn
+        npc.cancel('respawned');
         npc.epochMs = Date.now();
-        npc.s.lookAngleDst = null;
+        npc.lookAngleDst = null;
 
         npc.def = {
           key: opts.npcKey,
           uid: npc.def.uid,
-          angle: opts.angle ?? npc.api.getAngle(), // prev angle fallback
+          angle: opts.angle ?? npc.getAngle(), // prev angle fallback
           classKey: opts.classKey ?? npc.def.classKey ?? defaultClassKey,
           runSpeed: opts.runSpeed ?? helper.defaults.runSpeed,
           walkSpeed: opts.walkSpeed ?? helper.defaults.walkSpeed,
@@ -363,7 +484,7 @@ export default function Npcs(props) {
       } else {
         
         // Spawn
-        npc = state.npc[opts.npcKey] = createNpc({
+        npc = state.npc[opts.npcKey] = new NpcApi({
           key: opts.npcKey,
           uid: takeFirst(state.freeId),
           angle: opts.angle ?? Math.PI/2, // default face along x axis
@@ -373,37 +494,39 @@ export default function Npcs(props) {
         }, w);
         state.idToKey.set(npc.def.uid, opts.npcKey);
 
-        npc.api.initialize(state.gltf[npc.def.classKey]);
+        npc.initialize(state.gltf[npc.def.classKey]);
       }
 
-      state.setActMeta(opts.npcKey, meta.act === true ? meta : null);
+      state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
 
-      if (typeof opts.skin === 'string') {
-        opts.skin = state.resolveSkin(opts.skin);
+      if (typeof opts.as === 'string') {
+        opts.as = state.resolveSkin(opts.as);
       }
 
-      if (opts.skin !== undefined) {
+      if (opts.as !== undefined) {
         // 🔔 opts.skin keys may be brace-expansions (normalized by applySkin)
-        Object.assign(npc.skin, opts.skin);
-        npc.api.applySkin();
+        Object.assign(npc.skin, opts.as);
+        npc.applySkin();
       }
 
-      if (npc.s.spawns === 0) {
+      if (npc.spawns === 0) {
         await new Promise(resolve => {
           npc.resolve.spawn = resolve;
           update();
         });
       }
       
-      const position = toV3(at);
+      const position = toV3(at, precision);
       // 🔔 non-zero height must be set via `meta.y`
       position.y = typeof meta.y === 'number' ? meta.y : 0;
 
       npc.position.copy(position);
-      npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
-      npc.lastTarget.copy(position);
+      npc.point.set(position.x, position.z);
+      npc.rotation.y = npc.getEulerAngle(npc.def.angle);
+      npc.lastTarget.copy(npc.point);
 
-      npc.api.startAnimation(meta); // 🔔 at.meta.y important
+      const forceStartAnim = npc.spawns === 0;
+      npc.startAnimation(meta, forceStartAnim); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
         if (attachAgent === true) {
@@ -424,8 +547,8 @@ export default function Npcs(props) {
         }
       }
       
-      npc.s.spawns++;
-      npc.s.offMesh = null;
+      npc.spawns++;
+      npc.offMesh = null;
       w.events.next({ key: 'spawned', npcKey: npc.key, gmRoomId });
 
       return npc;
@@ -438,7 +561,7 @@ export default function Npcs(props) {
       const groundPoints = opts.points.slice(0, numPermitted);
       const preNpcKeys = groundPoints.map((_, i) => opts.keys?.[i]);
       /** Ground point either has act meta or we assume it is navigable */
-      const actMetas = groundPoints.map(p => p.meta?.act === true && helper.isVectJson(p.meta.actPoint) ? p.meta : null);
+      const doMetas = groundPoints.map(p => p.meta?.do === true && helper.isVectJson(p.meta.doPoint) ? p.meta : null);
       
       const angles = groundPoints.map((p, i) => {
         if (typeof p.meta?.orient === 'number') {
@@ -454,14 +577,14 @@ export default function Npcs(props) {
 
       // initialize all
       for (const [i, preNpcKey] of preNpcKeys.entries()) {
-        const actMeta = actMetas[i];
+        const doMeta = doMetas[i];
         // fallback npcKey uses 1st freeId
         const freeId = takeFirst(state.freeId);
         const npcKey = preNpcKey ?? `${baseKey}_${freeId}`;
         let npc = state.npc[npcKey];
         
         if (npc === undefined) {// spawn
-          npc = state.npc[npcKey] = createNpc({
+          npc = state.npc[npcKey] = new NpcApi({
             key: npcKey,
             uid: freeId,
             angle: angles[i],
@@ -471,17 +594,17 @@ export default function Npcs(props) {
           }, w);
 
           state.idToKey.set(npc.def.uid, npcKey);
-          npc.api.initialize(state.gltf[npc.def.classKey]);
+          npc.initialize(state.gltf[npc.def.classKey]);
         } else {// respawn
           state.freeId.add(freeId); // put it back
-          npc.api.cancel('respawned');
+          npc.cancel('respawned');
           npc.epochMs = Date.now();
-          npc.s.lookAngleDst = null;
+          npc.lookAngleDst = null;
   
           npc.def = {
             key: npcKey,
             uid: npc.def.uid,
-            angle: npc.api.getAngle(), // prev angle fallback
+            angle: npc.getAngle(), // prev angle fallback
             classKey: npc.def.classKey,
             runSpeed: helper.defaults.runSpeed,
             walkSpeed: helper.defaults.walkSpeed,
@@ -492,8 +615,8 @@ export default function Npcs(props) {
           state.npc[npcKey] = npc;
         }
 
-        if (actMeta !== null) {
-          state.setActMeta(npcKey, actMeta);
+        if (doMeta !== null) {
+          state.setDoMeta(npcKey, doMeta);
         }
         npcs.push(npc);
       }
@@ -504,18 +627,20 @@ export default function Npcs(props) {
 
       // finish setup all
       for (const [i, point] of groundPoints.entries()) {
-        const position = toV3(point);
+        const position = toV3(point, precision);
         position.y = typeof point.meta?.y === 'number' ? point.meta.y : 0;
         
         const npc = npcs[i];
         npc.position.copy(position);
-        npc.rotation.y = npc.api.getEulerAngle(npc.def.angle);
-        npc.lastTarget.copy(position);
-        npc.api.startAnimation(point.meta ?? {});
+        npc.point.set(position.x, position.z);
+        npc.rotation.y = npc.getEulerAngle(npc.def.angle);
+        npc.lastTarget.copy(npc.point);
+        const forceStartAnim = npc.spawns === 0;
+        npc.startAnimation(point.meta ?? {}, forceStartAnim);
 
         // attach/detach agents
-        const actMeta = actMetas[i];
-        const attachAgent = actMeta === null;
+        const doMeta = doMetas[i];
+        const attachAgent = doMeta === null;
         if (npc.agent === null) {
           if (attachAgent === true) {
             const agent = state.attachAgent(npc);
@@ -532,8 +657,8 @@ export default function Npcs(props) {
           }
         }
 
-        npc.s.spawns++;
-        npc.s.offMesh = null;
+        npc.spawns++;
+        npc.offMesh = null;
       }
 
       w.events.next({ key: 'spawned-many', npcKeys: npcs.map(npc => npc.key) });
@@ -551,19 +676,19 @@ export default function Npcs(props) {
       w.view.ensureRender();
     },
     update,
-    validateActMeta(actMeta) {
-      if (actMeta === null) {
+    validateDoMeta(doMeta) {
+      if (doMeta === null) {
         return;
       }
 
-      if (!helper.isVectJson(actMeta.actPoint)) {
-        throw Error(`actMeta.actPoint must exist: ${jsStringify(actMeta)}`);
+      if (!helper.isVectJson(doMeta.doPoint)) {
+        throw Error(`doMeta.doPoint must exist: ${jsStringify(doMeta)}`);
       }
 
-      const { actPoint, y } = actMeta;
-      const key = /** @type {const} */ (`${actPoint.x},${y ?? 0},${actPoint.y}`);
-      if (key in state.actToNpc) {
-        throw Error(`actable used by ${state.actToNpc[key]}: ${jsStringify(actMeta.actPoint)} (height ${y})`);
+      const { doPoint, y } = doMeta;
+      const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
+      if (key in state.doToNpc) {
+        throw Error(`actable used by ${state.doToNpc[key]}: ${jsStringify(doMeta.doPoint)} (height ${y})`);
       }
     },
   }), { reset: { showLastNavPath: true } });
@@ -578,12 +703,25 @@ export default function Npcs(props) {
     const cacheBustingQuery = isDevelopment() ? `?hash=${hash}` : '';
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
-  
 
-  React.useEffect(() => {// hot reload each npc
+  React.useEffect(() => {// hot reload npc + raycast
     if (process.env.NODE_ENV === 'development') {
       state.hotReloadNpcs();
     }
+
+    /** @param {MessageEvent<WW.MsgFromPhysicsWorker>} e */
+    function onPhysicsWorkerMessage({ data: msg }) {
+      if (msg.type === 'raycast-result') {
+        state.pendingRaycast[msg.uid]?.resolve(msg);
+        delete state.pendingRaycast[msg.uid];
+      }
+    };
+    w.physics.worker.addEventListener('message', onPhysicsWorkerMessage);
+
+    return () => {
+      w.physics.worker.removeEventListener('message', onPhysicsWorkerMessage);
+    };
+
   }, []);
   
   React.useEffect(() => {// onchange gltf or sheets
@@ -595,7 +733,7 @@ export default function Npcs(props) {
 
       // reinitialize if changed meshes
       if (npc.m.animations !== state.gltf[npc.def.classKey].animations) {
-        npc.api.initialize(state.gltf[npc.def.classKey]);
+        npc.initialize(state.gltf[npc.def.classKey]);
         npc.mixer = emptyAnimationMixer; // overwritten on remount
         npc.epochMs = Date.now(); // invalidate cache
       }
@@ -628,17 +766,19 @@ export default function Npcs(props) {
 
 /**
  * @typedef State
- * @property {Record<`${number},${number},${number}`, string>} actToNpc
- * Act point to current npc or undefined.
- * - `${x},${y},${z}` -> npcKey
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
+ * @property {boolean} dark
+ * @property {Record<`${number},${number},${number}`, string>} doToNpc
+ * Do point to current npc or undefined.
+ * - `${x},${y},${z}` -> npcKey
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
  * @property {THREE.Group} group
  * @property {Record<Key.NpcClass, import("three-stdlib").GLTF & import("@react-three/fiber").ObjectMap>} gltf
- * //@property {{ [npcKey: string]: Npc }} npc
  * @property {{ [npcKey: string]: NPC.NPC }} npc
- * Custom callback to handle npc slow down.
- * We don't use an event because it can happen too often.
+ * @property {{ [uid: string]: {
+ *   resolve(result: WW.RaycastResultResponse): void;
+ *   reject(): void;
+ * }}} pendingRaycast
  * @property {number[]} physicsPositions
  * Format `[npc.bodyUid, npc.position.x, npc.position.y, npc.position.z, ...]`
  * @property {Map<number, string>} idToKey
@@ -665,14 +805,22 @@ export default function Npcs(props) {
  *
  * @property {(npc: NPC.NPC) => NPC.CrowdAgent} attachAgent
  * @property {() => void} setupSkins
- * @property {(src: THREE.Vector3Like, dst: THREE.Vector3Like) => null | THREE.Vector3Like[]} findPath
+ * @property {(point: NPC.GroundPoint) => null | number} findGmIdContaining
+ * @property {(src: NPC.GroundPoint, dst: NPC.GroundPoint) => null | THREE.Vector3Like[]} findPath
+ * @property {(point: MaybeMeta<NPC.GroundPoint>, includeDoors?: boolean) => null | Geomorph.GmRoomId} findRoomContaining
+ * Technically rooms do not include doors,
+ * but sometimes either adjacent room will do.
  * @property {() => void} forceUpdate
- * @property {(npcKey: string) => NPC.NPC} getNpc
+ * @property {(npcKey: string) => NPC.NPC} get
  * @property {() => void} hotReloadNpcs
  * @property {(p: THREE.Vector3, maxDelta?: number) => null | THREE.Vector3} getClosestNavigable
+ * @property {(...points: NPC.GroundPoint[]) => boolean} inSameRoom
  * @property {(input: Geom.VectJson | THREE.Vector3Like) => boolean} isPointInNavmesh
+ * @property {(src: MaybeMeta<NPC.GroundPoint>, dst: MaybeMeta<NPC.GroundPoint>) => Promise<NPC.RaycastResult>} raycast
  * @property {() => void} restore
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onStuckNpc
+ * Custom callback to handle npc slow down.
+ * We don't use an event because it can happen too often.
  * @property {(deltaSecs: number) => void} onTick
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onTickIdleTurn
  * Handle turning of idle npcs e.g. turn towards nearby npcs.
@@ -683,12 +831,12 @@ export default function Npcs(props) {
  * - `base` `soldier-0`, `suit-0` each remap all
  * - `soldier-0,` remaps head and head-overlay
  * - `,,soldier-0,` remaps body and body-overlay
- * @property {(npcKey: string, actMeta: null | Meta) => void} setActMeta
+ * @property {(npcKey: string, doMeta: null | Meta) => void} setDoMeta
  * @property {(opts: NPC.SpawnOpts) => Promise<NPC.NPC>} spawn
  * Examples (js):
  * ```js
  * spawn({ npcKey: "rob", x, y, meta })
- * spawn({ npcKey: "rob", skin: "soldier-0", x, y, z, meta })
+ * spawn({ npcKey: "rob", as: "soldier-0", x, y, z, meta })
  * spawn({ npcKey: "rob", classKey: "human-0", x, y, z, meta })
  * ```
  * @property {(opts: NPC.SpawnManyOpts) => Promise<void>} spawnMany
@@ -699,20 +847,20 @@ export default function Npcs(props) {
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
      avoidable by precomputing labels 
- * @property {(actMeta: null | Meta) => void} validateActMeta
- * Throws if `actMeta` lacks `actPoint` or is in use.
+ * @property {(doMeta: null | Meta) => void} validateDoMeta
+ * Throws if `doMeta` lacks `doPoint` or is in use.
  */
 
 /**
  * @param {NPCProps} props 
  */
 function NPC({ npc }) {
-  const { bones, mesh } = npc.m;
+  const { m: { bones, mesh }, w } = npc;
 
   return (
     <group
       key={npc.key}
-      ref={npc.api.onMount.bind(npc.api)}
+      ref={npc.onMount.bind(npc)}
       scale={npc.m.scale}
       // dispose={null}
     >
@@ -742,15 +890,15 @@ function NPC({ npc }) {
       
         <humanZeroMaterial
           key={HumanZeroMaterial.key}
-          atlas={npc.w.texSkin.tex}
-          aux={npc.w.texNpcAux.tex}
-          globalAux={npc.w.texAux.tex}
+          atlas={w.texSkin.tex}
+          aux={w.texNpcAux.tex}
+          globalAux={w.texAux.tex}
           
-          // diffuse={[1, 1, 1]}
-          diffuse={[0.8, 0.8, 0.8]}
-          label={npc.w.texNpcLabel.tex}
-          labelY={npc.s.labelY}
-          opacity={npc.s.opacity}
+          dark={w.npc.dark}
+          diffuse={npcDiffuse}
+          label={w.texNpcLabel.tex}
+          labelY={npc.labelY}
+          opacity={npc.opacity}
           transparent
           uid={npc.def.uid}
 
@@ -777,3 +925,4 @@ const MemoizedNPC = React.memo(NPC);
 useGLTF.preload(Object.values(npcClassToMeta).map(x => x.modelUrl));
 
 const smallHalfExtent = 0.001;
+const npcDiffuse = /** @type {[number, number, number]} */ ([1, 1, 1]);

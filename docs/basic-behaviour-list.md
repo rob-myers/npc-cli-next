@@ -9,7 +9,7 @@ click | filter meta.nav | take 2 &>> points
 click 2 meta.nav &>> points
 
 # spawn npc granting full access
-spawn npc:rob at:$( click 1 ) grant:.
+spawn npc:rob at:$( click 1 ) granted:.
 
 # note: not much time to turn
 while true; do
@@ -24,7 +24,7 @@ done
 # choose 4 nav points
 click 4 meta.nav &>> points
 # spawn npc with full access
-spawn npc:rob at:$( click 1 ) grant:.
+spawn npc:rob at:$( click 1 ) granted:.
 # take a tour
 tour npc:rob to:"$( points )" 
 ```

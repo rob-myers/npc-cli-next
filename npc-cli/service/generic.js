@@ -1,3 +1,4 @@
+/// <reference path="../types/global.d.ts"/>
 import prettyCompact from "json-stringify-pretty-compact";
 // import safeStableStringify from "safe-stable-stringify";
 import { stringify as javascriptStringify } from 'javascript-stringify';
@@ -369,13 +370,17 @@ export function mapValues(input, transform) {
  * Parse args as a single JavaScript object.
  * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
  * - 'foo:42 bar' -> { "foo": 42, "bar": true }
- * - 🔔 assume keys do not contain double-quote character
+ * 
+ * We assume keys do not contain the double-quote character.
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
  * @param {string[]} args
  * @param {{ [aliasKey: string]: string; }} [alias]
  * Map alias keys to their true keys.
- * @param {{ array?: { [key: string]: true } }} [opts]
+ * @param {{
+ *   array?: { [key: string]: true };
+ * }} [opts]
+ * - `opts.array` if value isn't an array try to convert space-separated js values into one
  * @returns {T}
  */
 export function jsArg(args, alias, opts) {
@@ -386,11 +391,14 @@ export function jsArg(args, alias, opts) {
     } else {
       let key = arg.slice(0, colonIndex);
       key = alias?.[key] ?? key;
-      agg[key] = parseJsArg(arg.slice(colonIndex + 1));
-      if (opts?.array?.[key] === true && Array.isArray(agg[key]) === false) {
-        // try split by spaces instead
-        agg[key] = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
+
+      let value = parseJsArg(arg.slice(colonIndex + 1));
+
+      if (opts?.array?.[key] === true && Array.isArray(value) === false) {
+        value = parseJsArg(`[${arg.slice(colonIndex + 1).split(/\s+/)}]`);
       }
+
+      agg[key] = value;
     }
     return agg;
   }, /** @type {Record<string, any>} */ ({})));

@@ -103,6 +103,11 @@ declare namespace Geomorph {
     segLength: number;
     /** 1st entrance pointed to by `normal` */
     entrances: [Geom.Seg, Geom.Seg];
+    /**
+     * Added to exits (an entrance) to compute "far exit".
+     * They are used to avoid NPCs blocking the door.
+     */
+    farDeltas: [Geom.VectJson, Geom.VectJson];
     /** As wide as door, slightly less deep than doorway. */
     collidePoly: Geom.Poly;
     /** Bounds of `doorway`. */
@@ -349,6 +354,7 @@ declare namespace Geomorph {
     | DecorCuboid
     | DecorPoint
     | DecorQuad
+    | DecorDecal
     | DecorRect
   );
   
@@ -419,6 +425,10 @@ declare namespace Geomorph {
     y3d?: number;
   }
 
+  type DecorDecal = Omit<DecorQuad, 'type'> & {
+    type: 'decal';
+  };
+
   interface DecorRect extends BaseDecor {
     type: 'rect';
     points: Geom.VectJson[];
@@ -460,11 +470,8 @@ declare namespace Geomorph {
     sheetId: number;
   }>;
 
-  /** 🚧 clarify */
-  type DecorCollidable = Geomorph.DecorCircle | Geomorph.DecorRect;
-
   /** `byGrid[x][y]` */
-  type DecorGrid = Set<Geomorph.Decor>[][];
+  type DecorGrid = { [gridKey: `${number},${number}`]: Set<Geomorph.Decor> };
 
   /** Previously we sorted its groups e.g. "points" */
   type RoomDecor = Set<Geomorph.Decor>;
@@ -494,7 +501,6 @@ declare namespace Geomorph {
     /** Maximum over all sheets, for texture array */
     maxObstacleDim: { width: number; height: number; }
 
-    // 🚧 avoid referencing NPC namespace
     glbHash: Record<Key.NpcClass, number>;
     imagesHash: number;
   }
@@ -531,4 +537,5 @@ declare namespace Geomorph {
 
   type GmsData = import('../service/create-gms-data').GmsData;
 
+  type GmIdGrid = { [gridKey in `${number},${number}`]: number };
 }

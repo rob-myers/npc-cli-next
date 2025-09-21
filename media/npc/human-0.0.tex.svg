@@ -383,22 +383,22 @@
     <title>uv-map</title>
     <g transform="matrix(1, 0, 0, 1, 32, 0)" style="filter: url(&quot;#sepia-filter-1&quot;) url(&quot;#hue-rotate-filter-0&quot;);">
       <title>base_head</title>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="512">
+      <rect width="128" height="128" style="stroke-width: 16px;" x="512">
         <title>front</title>
       </rect>
-      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640">
+      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px;" x="640">
         <title>back</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" y="128" x="512">
+      <rect width="128" height="128" style="stroke-width: 16px;" y="128" x="512">
         <title>left</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640" y="128">
+      <rect width="128" height="128" style="stroke-width: 16px;" x="640" y="128">
         <title>right</title>
       </rect>
-      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px; stroke: rgb(255, 255, 255);" x="512" y="256">
+      <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 16px;" x="512" y="256">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="stroke-width: 16px; stroke: rgb(255, 255, 255);" x="640" y="256">
+      <rect width="128" height="128" style="stroke-width: 16px;" x="640" y="256">
         <title>bottom</title>
       </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAArklEQVQYGWWOMQqEMBREJ7AggpXiDTyBB7Cz8gR26XMGj2ErdrY2Xkas0oZYCUGbuJPFLXan+cP78zMRVVX5KIpwnid+J94S8zz7NE3p/7TvO0Rd1/7ZdF0Hwr7vH4SXUgpFUaBpmi9c1xXLsmDbNohhGEIFLxm8rgtaa7A2VPCTUkpM0wRrbXglyzK0bYtxHCHKsvTOOeR5DgYpLowxiOP4EyBMkiRAeoaP46DFDYHSTi35RdCtAAAAAElFTkSuQmCC" width="128" height="128" x="512" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-22&quot;);">
@@ -549,16 +549,16 @@
     </rect>
     <g>
       <title>_default</title>
-      <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="191.999" cy="895.999" r="61.999">
+      <circle style="fill: none; stroke-width: 2px; stroke: rgb(221, 221, 255);" cx="191.999" cy="895.999" r="54">
         <title>selector</title>
       </circle>
-      <circle style="fill: none; stroke-width: 4px; stroke: rgb(170, 170, 170);" cx="191.999" cy="895.999" r="58">
+      <circle style="fill: none; stroke-width: 4px; stroke: rgb(170, 170, 170);" cx="191.999" cy="895.999" r="50">
         <title>selector-inner</title>
       </circle>
-      <circle style="stroke-width: 2.79351px; stroke-opacity: 0.5; stroke: rgb(153, 255, 153); fill-opacity: 0.2;" cx="448" cy="896" r="62">
+      <circle style="stroke-width: 4px; stroke: rgb(0, 0, 0); stroke-opacity: 0.2; fill-opacity: 0.15; vector-effect: non-scaling-stroke;" cx="448" cy="896" r="50">
         <title>outer_breath</title>
       </circle>
-      <circle style="stroke-width: 1.86234px; fill-opacity: 0.4; stroke: rgb(255, 255, 255); stroke-opacity: 0.4;" cx="448" cy="896" r="23.04">
+      <circle style="stroke-width: 1.86234px; stroke-opacity: 0.4; fill-opacity: 0.2; stroke: rgb(0, 0, 0);" cx="448" cy="896" r="28">
         <title>inner_breath</title>
       </circle>
       <text style="fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; white-space: pre;" x="5.428" y="2038.69"><title>label-test-text</title>label-test-text</text>
@@ -703,22 +703,22 @@
     </g>
     <g transform="matrix(1, 0, 0, 1, 864, 0)" style="filter: url(&quot;#saturate-filter-2&quot;);">
       <title>soldier-0_head-overlay</title>
-      <rect width="128" height="128" style="fill: none;" x="512" y="416">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="416">
         <title>front</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="640" y="416">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="416">
         <title>back</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" y="544" x="512">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" y="544" x="512">
         <title>left</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="640" y="544">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="544">
         <title>right</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="512" y="672">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="512" y="672">
         <title>top</title>
       </rect>
-      <rect width="128" height="128" style="fill: none;" x="640" y="672">
+      <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0);" x="640" y="672">
         <title>bottom</title>
       </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAN0lEQVQYGWNkAAJ9K53/IPr3zz8gCg6unb3ByAKThImCBGFsEM0CItB1gsRggAUmia4TpmAw0ADRiBN6IXkVxQAAAABJRU5ErkJggg==" width="128" height="128" x="512" y="416" style="image-rendering: pixelated;">
@@ -954,24 +954,6 @@
     </g>
     <g transform="matrix(1, 0, 0, 1, 866, 1664)">
       <title>medic-0_head</title>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="510">
-        <title>front</title>
-      </rect>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="638">
-        <title>back</title>
-      </rect>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" y="128" x="510">
-        <title>left</title>
-      </rect>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="638" y="128">
-        <title>right</title>
-      </rect>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 8px;" x="510" y="256">
-        <title>top</title>
-      </rect>
-      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; filter: none; stroke-width: 8px;" x="638" y="256">
-        <title>bottom</title>
-      </rect>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAWklEQVQYGWPcleb4nwEPYIHJcQixwZgMP979grMZ/99cjWLC4flzwJK2iSkMu3unMTCAFHgZWP0H0cgYJsYENwsHA8MKdHUETWBZ+t+YQUaMA10jmP/k1Q8GAK5OLpvVY5s4AAAAAElFTkSuQmCC" width="128" height="128" x="510" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-10&quot;);">
         <title>_front</title>
       </image>
@@ -990,6 +972,24 @@
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAACAAAAACVhHtSAAAAV0lEQVQYGWPcleb4nwEPYAHJPfn4DasSGX4uBpbrch5YJUGC14GYKcaMH6cCkBzYCpAKC2sjFIUnjp4D85mwSSKLMRLyBeOSG/f+y4hxoBgP4zx59YMBABOqFc39A0BKAAAAAElFTkSuQmCC" width="128" height="128" x="638" y="256" style="image-rendering: pixelated;">
         <title>_bottom</title>
       </image>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 4px;" x="510">
+        <title>front</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 4px;" x="638">
+        <title>back</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 4px;" y="128" x="510">
+        <title>left</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 4px;" x="638" y="128">
+        <title>right</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 4px;" x="510" y="256">
+        <title>top</title>
+      </rect>
+      <rect width="128" height="128" style="stroke: rgb(0, 0, 0); fill: none; filter: none; stroke-width: 4px;" x="638" y="256">
+        <title>bottom</title>
+      </rect>
     </g>
     <g transform="matrix(1, 0, 0, 1, 1154, 0)">
       <title>medic-0_head-overlay</title>

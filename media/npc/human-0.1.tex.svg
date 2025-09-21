@@ -132,7 +132,7 @@
     </g>
     <g>
       <title>robot-1_body</title>
-      <rect width="128" height="128" style="stroke-width: 16px; fill: rgb(255, 255, 255);" x="128">
+      <rect width="128" height="128" style="stroke-width: 16px; fill: rgb(170, 170, 170);" x="128">
         <title>top</title>
       </rect>
       <rect width="128" height="128" style="fill: rgb(102, 102, 102); stroke-width: 8px;" x="256">

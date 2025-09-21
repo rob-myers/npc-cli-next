@@ -69,7 +69,7 @@ export default function Nav() {
         </MenuItem>
         <SubMenu icon={icon.blog} label="Main">
           <MenuItem component="span">
-            <Link href="/blog/main/multiple-npcs">Many NPCs</Link>
+            <Link href="/blog/main/many-npcs">Many NPCs</Link>
           </MenuItem>
 
           <MenuItem>One</MenuItem>
@@ -106,9 +106,34 @@ const navCss = css`
 
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
-  color: #ddd;
-  font-size: 1rem;
-  letter-spacing: 0.1rem;
+  color: #ccb;
+  font-size: 0.9rem;
+  font-weight: 200;
+  letter-spacing: 0.15em;
+
+  // Nav title
+  .${menuClasses.menuItemRoot}.title {
+    opacity: 1;
+    transition: opacity 500ms;
+    padding-left: 0.75rem;
+    border-bottom: 1px solid #333;
+    font-weight: 200;
+    font-size: 1rem;
+    text-transform: capitalize;
+    letter-spacing: 0.7rem;
+
+    .${menuClasses.button} {
+      pointer-events: none; // ignore clicks outside <a>
+      height: ${view.barSize};
+    }
+    
+    .${menuClasses.label} {
+      a {
+        pointer-events: all;
+        color: #ddd;
+      }
+    }
+  }
 
   // root item height and hover
   a.${menuClasses.button}, span.${menuClasses.button} {
@@ -116,7 +141,6 @@ const navCss = css`
     
     &:hover {
       background-color: transparent;
-      /* text-decoration: underline; */
     }
   }
 
@@ -128,7 +152,7 @@ const navCss = css`
     margin-left: 12px;
     transition: margin-left 300ms;
     svg {
-      color: #fff;
+      color: #ccc;
       padding: 6px;
       background:#aaa4;
       border-radius: 50%;
@@ -137,8 +161,10 @@ const navCss = css`
 
   // sub-menu
   .${menuClasses.subMenuContent} {
-    background-color: #222222;
+    background-color: #222;
     padding-left: 20px;
+    color: #ddd;
+    font-weight: 200;
   }
   .${menuClasses.SubMenuExpandIcon} {
     padding-right: 0.5rem;
@@ -151,28 +177,6 @@ const navCss = css`
     }
     .${menuClasses.SubMenuExpandIcon} {
       display: none;
-    }
-  }
-
-  // Nav title
-  .${menuClasses.menuItemRoot}.title {
-    opacity: 1;
-    transition: opacity 500ms;
-    margin-left: 0.75rem;
-
-    .${menuClasses.button} {
-      pointer-events: none; // ignore clicks outside <a>
-      height: ${view.barSize};
-    }
-    
-    .${menuClasses.label} {
-      text-transform: capitalize;
-      letter-spacing: 0.4rem;
-      a {
-        pointer-events: all;
-        color: #ddd;
-      }
-      font-size: 1.1rem;
     }
   }
 
@@ -233,10 +237,11 @@ const toggleCss = css`
   align-items: center;
   cursor: pointer;
 
-  transform: scale(1);
   filter: invert(1);
   
+  display: none;
   &.collapsed {
+    display: initial;
     border: 1px solid #444;
   }
 `;

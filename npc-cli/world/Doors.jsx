@@ -3,11 +3,12 @@ import * as THREE from "three";
 import { damp } from "maath/easing"
 
 import { Mat, Vect } from "../geom";
-import { doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDepth, instancedMeshName, offMeshConnectionHalfDepth, precision, wallOutset } from "../service/const";
+import { connectorEntranceHalfDepth, doorDepth, doorHeight, doorLockedColor, doorUnlockedColor, hullDoorDepth, instancedMeshName, offMeshConnectionHalfDepth, precision, wallOutset } from "../service/const";
 import * as glsl from "../service/glsl";
 import { getBoxGeometry, getColor, getQuadGeometryXY } from "../service/three";
 import { geomorph } from "../service/geomorph";
 import { helper } from "../service/helper";
+import { geom } from "../service/geom";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
 
@@ -26,7 +27,7 @@ export default function Doors(props) {
     lockSigGeom: getBoxGeometry(`${w.key}-lock-lights`),
     lockSigInst: /** @type {*} */ (null),
     movingDoors: new Map(),
-    opacity: 0.7,
+    opacity: 0.65,
     ready: false,
 
     addCuboidAttributes() {
@@ -92,6 +93,18 @@ export default function Doors(props) {
           // Compute navigable doorway
           // 🔔 align to offMeshConnection depths
           const entrances = door.computeEntrances().map(x => tmpMat1.transformPoint(x).precision(precision).json);
+          const srcEnSeg = { src: entrances[0], dst: entrances[1] };
+          const dstEnSeg = { src: entrances[2], dst: entrances[3] };
+
+          // 🤔 saw roomIds not ready?
+          // far exits follow by adding farDelta{Src,Dst}
+          const smallRooms = door.roomIds.map(roomId => roomId === null ? false : gm.rooms[roomId].meta.small === true);
+          const [srcFarScale, dstFarScale] = smallRooms.map(small => (small === true ? 0 : 0.2) + (hull === true
+            ? (offMeshConnectionHalfDepth.hull - connectorEntranceHalfDepth.hull)
+            : (offMeshConnectionHalfDepth.nonHull - connectorEntranceHalfDepth.nonHull)
+          ));
+          const farDeltaSrc = { x: door.normal.x * srcFarScale, y: door.normal.y * srcFarScale };
+          const farDeltaDst = { x: door.normal.x * dstFarScale, y: door.normal.y * dstFarScale };
           
           state.byKey[gdKey] = state.byPos[posKey] = byGmId[doorId] = {
             gdKey, gmId, doorId,
@@ -115,10 +128,8 @@ export default function Doors(props) {
             dir: { x : Math.cos(radians), y: Math.sin(radians) },
             normal: tmpMat1.transformSansTranslate(door.normal.clone()),
             segLength: u.distanceTo(v),
-            entrances: [
-              { src: entrances[0], dst: entrances[1] },
-              { src: entrances[2], dst: entrances[3] },
-            ],
+            entrances: [srcEnSeg, dstEnSeg],
+            farDeltas: [farDeltaSrc, farDeltaDst],
 
             collidePoly,
             collideRect: collidePoly.rect.precision(precision),
@@ -135,6 +146,19 @@ export default function Doors(props) {
       // if (adjHull !== null) {
       //   state.cancelClose(state.byGmId[adjHull.adjGmId][adjHull.adjDoorId]);
       // }
+    },
+    computeRayDoorIntersect(src, dst, gdKey) {
+      const door = w.d[gdKey];
+      const lambda = geom.getLineSegsIntersection(
+        src,
+        dst,
+        door.src,
+        door.dst,
+      );
+      return lambda === null ? null : geom.precision2d({
+        x: src.x + lambda * (dst.x - src.x),
+        y: src.y + lambda * (dst.y - src.y),
+      }, 2);
     },
     decodeInstance(instanceId) {
       let doorId = instanceId;
@@ -336,6 +360,7 @@ export default function Doors(props) {
         objectPickRed={9}
         side={THREE.DoubleSide} // fix flipped gm
         // transparent opacity={0.6}
+        // quadOutlines
       />}
     </instancedMesh>
   </>;
@@ -364,6 +389,7 @@ export default function Doors(props) {
  * @property {() => void} addUvs
  * @property {() => void} buildLookups
  * @property {(item: Geomorph.DoorState) => void} cancelClose
+ * @property {(src: Geom.VectJson, dst: Geom.VectJson, gmDoorId: Geomorph.GmDoorKey) => null | Geom.VectJson} computeRayDoorIntersect
  * @property {(instanceId: number) => Meta<Geomorph.GmDoorId>} decodeInstance
  * @property {(meta: Geomorph.DoorState) => THREE.Matrix4} getDoorMat
  * @property {(meta: Geomorph.DoorState) => THREE.Matrix4} getLockSigMat

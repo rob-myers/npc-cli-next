@@ -28,13 +28,13 @@
     <title>couch-and-chairs--006--0.4x2</title>
   </image>
   <use width="1" height="1" transform="matrix(-20, 0, 0, 20, 54.5, 184.5)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" xlink:href="#symbol-8">
-    <title>decor act sit sofa</title>
+    <title>decor do sit sofa</title>
   </use>
   <use width="1" height="1" transform="matrix(-20, 0, 0, 20, 54.5, 299.5)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" xlink:href="#symbol-8">
-    <title>decor act sit sofa</title>
+    <title>decor do sit sofa</title>
   </use>
   <use width="1" height="1" transform="matrix(-20, 0, 0, 20, 54.5, 419.5)" style="opacity: 0.5; transform-origin: 0.5px 0.5px;" xlink:href="#symbol-8">
-    <title>decor act sit sofa</title>
+    <title>decor do sit sofa</title>
   </use>
   <rect width="112" height="66.987984" style="fill-opacity: 0.5; fill: rgb(0, 0, 255);" y="15" x="18.597001">
     <title>obstacle surface y=-0.1</title>

@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 
 import { Mat, Vect } from "../geom";
-import { instancedMeshName, wallHeight } from "../service/const";
+import { instancedMeshName, wallHeight, xRayOpacity } from "../service/const";
 import { getQuadGeometryXY } from "../service/three";
 import { InstancedWallsMaterial } from "../service/glsl";
 import { geomorph } from "../service/geomorph";
@@ -18,7 +18,7 @@ export default function Walls(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     inst: /** @type {*} */ (null),
     quad: getQuadGeometryXY(`${w.key}-walls-xy`),
-    opacity: 0.5,
+    opacity: xRayOpacity.walls,
 
     decodeInstanceId(instanceId) {
       // compute gmId, gmData.wallSegs[wallSegsId]
@@ -103,7 +103,7 @@ export default function Walls(props) {
     setOpacity(opacity) {
       state.opacity = Math.min(Math.max(0, opacity), 1);
     },
-  }));
+  }), { reset: { opacity: true }});
 
   w.wall = state;
 
@@ -123,17 +123,18 @@ export default function Walls(props) {
       // ℹ️ for transparency
       renderOrder={transparent ? 2 : undefined}
     >
-      {/* <meshBasicMaterial side={THREE.DoubleSide} color="#866" wireframe /> */}
+      {/* <meshBasicMaterial side={THREE.FrontSide} color="#0f0" wireframe /> */}
       <instancedWallsMaterial
         key={InstancedWallsMaterial.key}
         alphaTest={0}
         // side={THREE.DoubleSide}
         diffuse={[0, 0, 0]}
+        // diffuse={[1, 1, 1]}
         depthWrite={!transparent}
         transparent={transparent}
         opacity={state.opacity}
         opacityCloseDivisor={8}
-        opacityMin={0.5}
+        opacityMin={state.opacity}
       />
     </instancedMesh>
   );

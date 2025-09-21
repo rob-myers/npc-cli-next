@@ -49,6 +49,7 @@ export interface HumanZeroMaterialProps {
   aux: import('three').DataArrayTexture;
   globalAux: import('three').DataArrayTexture;
 
+  dark: boolean;
   diffuse: Vector3Input;
   label: import('three').DataArrayTexture;
   labelY: number;
@@ -93,10 +94,7 @@ export interface InstancedFlatProps {
   objectPickRed?: number;
 }
 
-export interface InstancedFloorProps extends InstancedAtlasProps {
-  lightAtlas: import('three').DataArrayTexture;
-  showLights?: boolean;
-}
+export interface InstancedFloorProps extends InstancedAtlasProps {}
 
 export type InstancedFloorKeys = keyof InstancedFloorProps;
 export type InstancedFloorUniforms = Record<

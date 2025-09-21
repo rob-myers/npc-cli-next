@@ -1,23 +1,10 @@
 import * as htmlparser2 from "htmlparser2";
 import * as THREE from "three";
 
-import { sguToWorldScale, precision, wallOutset, obstacleOutset, hullDoorDepth, doorDepth, decorIconRadius, sguSymbolScaleDown, doorSwitchHeight, doorSwitchDecorImgKey, specialWallMetaKeys, wallHeight, switchDecorQuadScaleUp, connectorEntranceHalfDepth } from "./const";
+import { sguToWorldScale, precision, wallOutset, obstacleOutset, hullDoorDepth, doorDepth, decorIconRadius, sguSymbolScaleDown, doorSwitchHeight, doorSwitchDecorImgKey, specialWallMetaKeys, wallHeight, switchDecorQuadScaleUp, connectorEntranceHalfDepth, decorIconRadiusOutset } from "./const";
 import { Mat, Poly, Rect, Vect } from "../geom";
-import {
-  info,
-  error,
-  warn,
-  debug,
-  safeJsonParse,
-  mapValues,
-  keys,
-  toPrecision,
-  hashJson,
-  tagsToMeta,
-  textToTags,
-  removeDups,
-} from "./generic";
-import { geom, tmpRect1 } from "./geom";
+import { info, error, warn, debug, safeJsonParse, mapValues, keys, toPrecision, hashJson, tagsToMeta, textToTags, removeDups } from "./generic";
+import { geom } from "./geom";
 import { helper } from "./helper";
 
 class GeomorphService {
@@ -326,20 +313,21 @@ class GeomorphService {
       }
       const { baseRect, angle } = geom.polyToAngledRect(poly);
       baseRect.precision(precision);
-      return { type: 'rect', ...base, bounds2d: baseRect.json, points: poly.outline.map(x => x.json), center: poly.center.precision(3).json, angle };
-    } else if (meta.quad === true) {
+      return { type: 'rect', ...base, bounds2d: poly.rect.json, points: poly.outline.map(x => x.json), center: poly.center.precision(3).json, angle };
+    } else if (meta.quad === true || meta.decal === true) {
+      const type = meta.quad === true ? 'quad' : 'decal';
       const polyRect = poly.rect.precision(precision);
       const { transform } = poly.meta;
       delete poly.meta.transform;
 
       const quadMeta = /** @type {Geomorph.DecorQuad['meta']} */ (base.meta);
       if (!helper.isDecorImgKey(quadMeta.img)) {
-        warn(`${'decorFromPoly'}: decor quad meta.img must be in DecorImgKey (using "icon--warn")`);
+        warn(`${'decorFromPoly'}: decor ${type} meta.img must be in DecorImgKey (using "icon--warn")`);
         quadMeta.img = 'icon--warn';
       }
 
       // 🔔 `det` provided on instantiation
-      return { type: 'quad', key: base.key, meta: quadMeta, bounds2d: polyRect.json, transform, center: poly.center.precision(3).json, det: 1 };
+      return { type, key: base.key, meta: quadMeta, bounds2d: polyRect.json, transform, center: poly.center.precision(3).json, det: 1 };
     } else if (meta.cuboid === true) {
       // decor cuboids follow "decor quad approach"
       const polyRect = poly.rect.precision(precision);
@@ -360,7 +348,7 @@ class GeomorphService {
       return { type: 'circle', ...base, bounds2d: polyRect.json, radius, center };
     } else {// 🔔 fallback to decor point
       const center = poly.center.precision(precision);
-      const radius = decorIconRadius + 2;
+      const radius = decorIconRadius + decorIconRadiusOutset;
       const bounds2d = tmpRect1.set(center.x - radius, center.y - radius, 2 * radius, 2 * radius).precision(precision).json;
       /**
        * meta.direction:
@@ -419,7 +407,7 @@ class GeomorphService {
       
       decor: json.decor,
       doors,
-      hullPoly: json.hullPoly.map(x => Poly.from(x)),
+      hullPoly: json.hullPoly.map(Poly.from),
       hullDoors: doors.filter(x => x.meta.hull),
       labels: json.labels,
       obstacles: json.obstacles.map(x => {
@@ -490,8 +478,9 @@ class GeomorphService {
   }
 
   /**
-   * Given decor symbol instance <use>, extract polygon with meta.
-   * Support: cuboid, point, quad.
+   * - Given decor symbol instance <use>, extract polygon with meta.
+   * - Support: cuboid, point, quad.
+   * - All decor should be symbol instances.
    * @private
    * @param {object} opts
    * @param {{ tagName: string; attributes: Record<string, string>; title: string; }} opts.tagMeta
@@ -519,7 +508,7 @@ class GeomorphService {
     // support cuboid/point/quad with point fallback
     if (meta.cuboid === true) {
       meta.transform = matrix.precision(precision).toArray();
-    } else if (meta.quad === true) {
+    } else if (meta.quad === true || meta.decal === true) {
       /**
        * 🔔 SVG symbols with meta.quad should have meta.img
        * 🔔 meta.switch means door switch
@@ -823,14 +812,6 @@ class GeomorphService {
 
   /**
    * @param {Geomorph.Decor} d
-   * @returns {d is Geomorph.DecorCollidable}
-   */
-  isDecorCollidable(d) {
-    return d.type === 'circle' || d.type === 'rect';
-  }
-
-  /**
-   * @param {Geomorph.Decor} d
    * @returns {d is Geomorph.DecorCuboid}
    */
   isDecorCuboid(d) {
@@ -954,7 +935,7 @@ class GeomorphService {
     // info("parseStarshipSymbol", symbolKey, "...");
     const isHull = this.isHullKey(symbolKey);
     const scale = sguToWorldScale * sguSymbolScaleDown;
-    const permittedFolders = { symbols: true, lights: true };
+    const permittedFolders = { symbols: true };
 
     const folderStack = /** @type {string[]} */ ([]);
     /** Matrices of transforms arising from `g.transform`s */
@@ -1022,7 +1003,6 @@ class GeomorphService {
           return; // Only depth 0 permittedFolders supported
         }
 
-        // const ownTags = contents.split(" ");
         const ownTags = textToTags(contents);
 
         // symbol may have folder "symbols"
@@ -1067,17 +1047,6 @@ class GeomorphService {
 
           return;
         }
-        
-        if (folderStack[0] === "lights") {
-          const meta = tagsToMeta(ownTags, {}, metaVarNames, metaVarValues);
-          meta.light = true;
-          const poly = geomorph.extractPoly({ tagMeta: { ...parent, title: contents }, meta });
-
-          if (poly !== null) {
-            unsorted.push(poly);
-          }
-          return;
-        }
 
         const meta = tagsToMeta(ownTags, {}, metaVarNames, metaVarValues);
         // 🔔 "switch" points to last doorId seen
@@ -1087,11 +1056,11 @@ class GeomorphService {
 
         const poly = parent.tagName === "use" && meta.decor === true
           ? geomorph.extractDecorPoly({
-            tagMeta: { ...parent, title: contents },
-            meta,
-            // 🚧 ignore parent transform but warn if present
-            // matrix: matrixStack.length === 0 ? undefined : currentMatrix,
-          })
+              tagMeta: { ...parent, title: contents },
+              meta,
+              // 🚧 ignore parent transform but warn if present
+              // matrix: matrixStack.length === 0 ? undefined : currentMatrix,
+            })
           : geomorph.extractPoly({
               tagMeta: { ...parent, title: contents },
               meta,
@@ -1099,7 +1068,7 @@ class GeomorphService {
               // matrix: matrixStack.length === 0 ? undefined : currentMatrix,
             })
         ;
-        
+
         if (poly === null) {
           return;
         }
@@ -1119,7 +1088,7 @@ class GeomorphService {
           unsorted.push(poly);
         }
 
-        if (meta.obstacle) {// Link to original symbol
+        if (meta.obstacle === true) {// Link to original symbol
           meta.symKey = symbolKey;
           // local id inside SVG symbol
           meta.obsId = obstacles.length - 1;
@@ -1607,9 +1576,10 @@ export class Connector {
   }
 }
 
-const tmpVect1 = new Vect();
 const tmpMat1 = new Mat();
 const tmpMat2 = new Mat();
+const tmpRect1 = new Rect();
+const tmpVect1 = new Vect();
 
 const metaVarNames = ['wallHeight'];
 const metaVarValues = [wallHeight];

@@ -208,9 +208,14 @@ interface SendHistoryLine {
 export interface ExternalMessage {
   key: "external";
   msg: (
-    | { key: 'auto-re-source-file'; absPath: `/etc/${string}`; }
+    | ExternalAutoReSourceFile
     | ExternalMessageProcessLeader
   );
+}
+
+interface ExternalAutoReSourceFile {
+  key: 'auto-re-source-file';
+  absPath: `/etc/${string}`;
 }
 
 /** Only sent when `process.src !== ''`. */
@@ -265,7 +270,7 @@ export class FifoDevice implements Device {
       this.writerResolver = null;
 
       if (exactlyOnce) {
-        if (!isDataChunk(this.buffer[0])) {
+        if (isDataChunk(this.buffer[0]) === false) {
           // Standard case
           return { data: this.buffer.shift() };
         } else if (chunks) {
@@ -333,7 +338,10 @@ export class FifoDevice implements Device {
   public readAll() {
     const contents = [] as any[];
     this.buffer.forEach((x) => {
-      if (isDataChunk(x)) {
+      if (x === undefined) {
+        return; // 🤔 should undefined ever be in buffer?
+      }
+      if (isDataChunk(x) === true) {
         x.items.forEach((y) => contents.push(y));
       } else {
         contents.push(x);

@@ -48,7 +48,6 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 1. Our SVG symbols currently do not support parent transforms
   - e.g. on "symbols" folder
-  - e.g. on "lights" folder
 
 1. npm module `canvas` (a.k.a. node-canvas) loadImage does not handle both `transform` and `transform-box`.
    > https://github.com/Automattic/node-canvas/issues/2507
@@ -66,6 +65,8 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 1. Avoid deep properties `state.foo.bar` inside `useStateRef` e.g. because they won't be reloaded if `foo` stays same name but `bar` changes to `baz`.
 
+2. Choppy framerate can occur when OS hints "Low Power" (e.g. OSX). Can see 60fps in @react-three/drei Stats yet seems choppier. Does not seem to get fixed when stop "Low Power" without hard refresh. Possible Chrome restart too.
+
 ## Development only routes
 
 These are removed in production via next.config output `export`.
@@ -80,7 +81,7 @@ curl --silent -XPOST localhost:3000/api/close-dev-events -d'{ "clientUid": 1234 
 
 ```sh
 c=-1; while c+=1; do
-  spawn npc:"rob_${c}" at:$( click 1 ) grant:.
+  spawn npc:"rob_${c}" at:$( click 1 ) granted:.
 done
 
 # much faster version:
@@ -108,7 +109,7 @@ w n.rob.applySkin
 w n.rob.resetSkin
 
 # pass from Vector3 to Vect for an internal function which only supports the latter
-click | map xz | w n.rob.getLookAngle -
+click -2 | w n.rob.getLookAngle -
 
 w view.controls | assign '{minDistance:1}'
 
@@ -136,15 +137,15 @@ done
 
 # playing with loops
 spawn npc:rob at:$( click 1 )
-spawn npc:kate at:$( click 1 ) skin:medic-0
+spawn npc:kate at:$( click 1 ) as:medic-0
 w e.grantAccess . rob kate
 
 tour npc:rob to:"$( click 2 )" &
 tour npc:kate to:"$( click 2 )" &
 
-spawn npc:kate at:$( click 1 ) skin:soldier-0,,medic-0,
-spawn npc:kate at:$( click 1 ) skin:soldier-0,,,suit-0
-spawn npc:kate at:$( click 1 ) skin:suit-0,,,soldier-0
+spawn npc:kate at:$( click 1 ) as:soldier-0,,medic-0,
+spawn npc:kate at:$( click 1 ) as:soldier-0,,,suit-0
+spawn npc:kate at:$( click 1 ) as:suit-0,,,soldier-0
 
 click 5 &>> points
 # skips to next point if stopped

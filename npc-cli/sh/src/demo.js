@@ -1,8 +1,9 @@
 import { deltaAngle } from "maath/misc";
 import { Mat } from "@/npc-cli/geom";
+import { jsStringify } from "@/npc-cli/service/generic";
 import { helper } from "@/npc-cli/service/helper";
-import { geom } from '@/npc-cli/service/geom';
-
+import { geom } from "@/npc-cli/service/geom";
+import { near } from "./core";
 
 /**
  * @param {NPC.RunArg} ct
@@ -52,12 +53,6 @@ export const demoCameraWASD = ({ w }) => {
   w.view.keyDowns.changeAngle = async (e) => {
     const key = e.key.toLowerCase();
 
-    // if (key === 'w') {
-    //   return await w.view.tween({
-    //     polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/4 : 0
-    //   });
-    // }
-    
     const angle = geom.radRange(w.view.controls.getAzimuthalAngle());
     const delta = Math.PI * 0.5;
     const ratio = angle / delta; // [0..4)
@@ -69,9 +64,10 @@ export const demoCameraWASD = ({ w }) => {
         });
         break;
       }
-      case "a": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
+      case "a": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
       case "s": await w.view.tween({ azimuthal: angle + Math.PI }); break;
-      case "d": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
+      case "d": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
+
     }
   };
 };
@@ -82,14 +78,13 @@ export const demoCameraWASD = ({ w }) => {
  * click meta.floor | demoClickToMove npc:rob
  * ```
  * @param {NPC.ClickOutput} input
- * @param {NPC.RunArg} ctxt
+ * @param {NPC.RunArg} ct
  * @param {{ npcKey: string }} [opts]
  */
 export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
-  const npc = w.npc.getNpc(opts.npcKey);
-  npc.s.run = input.keys?.includes("shift") ?? false;
-  // catch so can override move, also ignores points too far from nav
-  npc.api.move({ to: input, close: 0.5 }).catch(() => {});
+  const npc = w.npc.get(opts.npcKey);
+  // catch permits override and ignores points too far from nav
+  npc.move({ to: input, close: 0.5 }).catch(() => {});
 }
 
 /**
@@ -115,10 +110,42 @@ export async function* demoSelectPolys({ w }) {
   w.debug.selectNavPolys(...polyRefs); // display via debug
 }
 
+/**
+ * Bound to a particular npcKey.
+ * ```sh
+ * events | demoGotoBedChoices npc:rob
+ * ```
+ * @param {NPC.Event} e
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string }} [opts]
+ */
+
+export function demoGotoBedChoices(e, ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+  if (!(
+    e.key === 'stopped-moving'
+    && e.npcKey === opts.npcKey
+    && e.reason.key === 'arrived'
+  )) {
+    return; 
+  }
+
+  const result = near(ct, {
+    to: opts.npcKey,
+    where(meta) { return meta.bed && meta.doPoint },
+  });
+
+  if (result.count > 0) {
+    // 🚧 define Geomorph.DecorMeta
+    // 🚧 log clickable link
+    ct.w.menu.log(...result.items.map(meta => `[goto bed] at ${jsStringify(meta.doPoint)} height ${meta.y}`))
+  }
+}
+
 const tmpMat1 = new Mat();
 
 export const meta = {
   map: {
     demoClickToMove,
+    demoGotoBedChoices,
   },
 };

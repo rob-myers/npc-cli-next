@@ -3,7 +3,7 @@ import { error, testNever, warn } from "../service/generic";
 import type { MessageFromShell, MessageFromXterm, ShellIo } from "./io";
 import { Device, ReadResult, SigEnum } from "./io";
 
-import { ansi, ProcessTag } from "./const";
+import { ansi, ProcessTag, spawnBgPausedDefault } from "./const";
 import { applyPtagUpdates, killError, ProcessError, ShError, ttyError } from "./util";
 import { loadMvdanSh, parseService, srcService } from "./parse";
 import useSession, { type ProcessMeta, ProcessStatus, type Ptags } from "./session.store";
@@ -13,8 +13,10 @@ import { ttyXtermClass } from "./tty.xterm";
 export class ttyShellClass implements Device {
   public key: string;
   public xterm!: ttyXtermClass;
-  /** Suspend processes without process tag 'interactive'? */
-  public suspendNonInteractive = false;
+  /** Is corresponding component `<Tty>` disabled? */
+  public disabled = false;
+  /** While `this.disabled` spawn background processes paused? */
+  public spawnBgPaused = spawnBgPausedDefault;
 
   /** Lines received from a TtyXterm. */
   private inputs = [] as { line: string; resolve: () => void }[];
@@ -198,19 +200,14 @@ export class ttyShellClass implements Device {
   }
 
   /**
-   * 🔔 We run `/etc/foo` in session leader `this.process`,
-   * even if latter is already running. This is a bit of a
-   * hack, but it should be OK if these files only contain shell
-   * function declarations.
+   * 🔔 This runs code `src` in a process whose parent is the session leader.
    * 
-   * @param filename `/etc/foo` which only contains shell function declarations
+   * @param src should only contain shell function declarations
    */
-  async sourceFuncDeclarations(filename: string) {
-    const session = useSession.api.getSession(this.sessionKey);
-    const src = session.etc[filename];
+  async sourceExternal(src: string) {
     const term = parseService.parse(src);
     this.provideContextToParsed(term);
-    await this.spawn(term, { by: 'source-external' });
+    await this.spawn(term, { by: 'source-external' });
   }
 
   /**
@@ -231,7 +228,7 @@ export class ttyShellClass implements Device {
        * - `function` -- invoking shell function.
        * - `root` -- the session leader right after parsing shell code.
        * - `source` -- the builtin `source` in cmd.service.
-       * - `source-external` -- a non-pausable externally triggered "source".
+       * - `source-external` -- an externally triggered "source".
        */
       by: '&' | '|' | '()' | '$()' | 'function' | 'root' | 'source' | 'source-external';
       cleanups?: (() => void)[];
@@ -285,16 +282,18 @@ export class ttyShellClass implements Device {
       }
 
       if (parent.pgid === 0 && opts.by !== 'source-external') {
-        // reset session leader ptags after non-interactive spawn
+        // reset session leader ptags after non-interactive spawn,
+        // except e.g. external sources triggered by hot-module-reload
         this.process.ptags = this.sessionLeaderPtags;
       }
 
-      if (// Represent <Tabs> disabled
-        this.suspendNonInteractive === true
+      if (
+        this.disabled === true
         // processes not tagged with 'always' are paused,
         // except those which are tagged interactive
         && !(ProcessTag.always in process.ptags)
         && !(ProcessTag.interactive in process.ptags)
+        && this.spawnBgPaused === true
       ) {
         process.status = ProcessStatus.Suspended;
       }
@@ -451,7 +450,7 @@ export class ttyShellClass implements Device {
       if (e instanceof ProcessError) {
         semanticsService.handleTopLevelProcessError(e);
       } else {
-        error("unexpected error propagated to tty.shell", e);
+        ttyError("unexpected error propagated to tty.shell", e);
       }
       this.prompt("$");
     } finally {

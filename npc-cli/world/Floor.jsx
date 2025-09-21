@@ -1,10 +1,10 @@
 import React from "react";
 import * as THREE from "three";
 
-import { Mat, Poly } from "../geom";
+import { Mat, Poly, Vect } from "../geom";
 import { geomorphGridMeters, gmFloorExtraScale, instancedMeshName, worldToSguScale } from "../service/const";
 import { pause } from "../service/generic";
-import { getGridPattern, drawPolygons, getContext2d, drawRadialFillCustom, getCanvas } from "../service/dom";
+import { drawCircle, drawPolygons, getGridPattern } from "../service/dom";
 import { geomorph } from "../service/geomorph";
 import { InstancedAtlasMaterial } from "../service/glsl";
 import { getQuadGeometryXZ } from "../service/three";
@@ -18,13 +18,10 @@ export default function Floor(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    dark: false,
+    debug: false, // show decor rects
+    grid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(200, 0, 0, 0.5)'),
     inst: /** @type {*} */ (null),
-    largeGrid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(220, 220, 220, 0.05)'),
-    radialTex: new THREE.CanvasTexture(getCanvas(`${w.key}-floor-radial-1`)),
-    showLights: true,
-    smallGrid: getGridPattern(1/5 * geomorphGridMeters * worldToCanvas, 'rgba(100, 100, 100, 0.05)'),
-    torchData: new THREE.Vector3(3, 1, 1), // 🚧 only radius needed?
-    torchTarget: new THREE.Vector3(),
     quad: getQuadGeometryXZ(`${w.key}-multi-tex-floor-xz`),
 
     addUvs() {
@@ -59,13 +56,9 @@ export default function Floor(props) {
       w.menu.measure('floor.draw');
       for (const [texId, gmKey] of w.gmsData.seenGmKeys.entries()) {
         state.drawGm(gmKey);
-        state.drawGmLight(gmKey);
         w.texFloor.updateIndex(texId);
-        w.texFloorLight.updateIndex(texId);
         await pause();
       }
-      // w.texFloor.update();
-      // w.texFloorLight.update();
       w.menu.measure('floor.draw');
     },
     drawGm(gmKey) {
@@ -76,68 +69,90 @@ export default function Floor(props) {
       ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
-      // floor
-      drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#19191d', null]);
-      // drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#141414', null]);
-      // nav
-      const triangles = gm.navDecomp.tris.map(tri => new Poly(tri.map(i => gm.navDecomp.vs[i])));
-      const navPoly = Poly.union(triangles.concat(gm.doors.map(x => x.computeDoorway())));
-      drawPolygons(ct, navPoly, ['#00000077', '#333f', 0.02]);
+      // hull floor
+      if (state.dark) {
+        drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#111', null]);
+      }
 
-      // grids
-      ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
-      ct.fillStyle = state.smallGrid;
-      ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
-      ct.fillStyle = state.largeGrid;
-      ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
-      ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
+      // // grid
+      // ct.setTransform(1, 0, 0, 1, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
+      // ct.fillStyle = state.grid;
+      // ct.fillRect(0, 0, ct.canvas.width, ct.canvas.height);
+      // ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
-      // drop shadows (avoid doubling e.g. bunk bed, overlapping tables)
+      // drop shadows, avoiding doubling
       const shadowPolys = Poly.union(gm.obstacles.flatMap(x =>
         x.origPoly.meta['no-shadow'] ? [] : x.origPoly.clone().applyMatrix(tmpMat1.setMatrixValue(x.transform))
       ));
-      drawPolygons(ct, shadowPolys, ['#101010', null]);
+      drawPolygons(ct, shadowPolys, ['#0009', null]);
 
-      // walls
-      drawPolygons(ct, gm.walls, ['#000', null]);
-      // 🚧 drawn in front of walls seems visible when lighter
-      // const walls2 =  gm.walls.reduce((agg, x) => (agg[x.meta.broad === true || x.meta.hull === true ? 0 : 1].push(x), agg), /** @type {[Poly[],Poly[]]} */ ([[], []]));
-      // drawPolygons(ct, walls2[0], ['#000', null]);
-      // drawPolygons(ct, walls2[1], ['#444', null]);
-    },
-    drawGmLight(gmKey) {
-      const { ct } = w.texFloorLight;
-      const gm = w.geomorphs.layout[gmKey];
+      // wall bases
+      drawPolygons(ct, gm.walls, ['#0008', null]);
+
+      // draw nav mesh
+      const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
+      ct.lineJoin = 'round';
+      ct.lineWidth = w.touchDevice ? 0.05 : 0.04;
+      const fillStyle = state.dark === true ? '#000' : '#ccc';
+      const strokeStyle = state.dark === true ? '#4448' : '#4448';
       
-      ct.resetTransform();
-      ct.clearRect(0, 0, ct.canvas.width, ct.canvas.height);
+      // 🔔 handle early change to map with new geomorph keys
+      (w.nav.toNavTris[gm.key] ?? []).forEach(([positions, indices]) => {
+        for (const index of indices) {
+          const triVId = index % 3; // 0, 1, 2
+          const vertId = indices[index];
+          triangle.outline[triVId].set(positions[3 * vertId], positions[3 * vertId + 2]);
+          if (triVId === 2) {
+            drawPolygons(ct, [triangle], [fillStyle, strokeStyle]);
+          }
+        }
+      });
 
-      ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
-
-      const { image }  = state.radialTex;
-      const lights = gm.unsorted.filter(x => x.meta.light === true);
-      // ct.globalCompositeOperation = 'exclusion';
-      // ct.globalCompositeOperation = 'difference';
-      for (const light of lights) {
-        const { x, y, width, height } = light.rect;
-        ct.globalAlpha = typeof light.meta.opacity === 'number' ? light.meta.opacity : 1;
-        ct.drawImage(image, x, y, width, height);
+      // draw off mesh connections
+      const normal = tmpVect1;
+      const halfWidth = 0.01;
+      const edgeFillStyle = state.dark === true ? '#333' : '#0009';
+      const nodeFillStyle = state.dark === true ? '#000' : '#fff';
+      const nodeStrokeStyle = state.dark === true ? '#fff4' : '#000';
+      ct.lineWidth = 0.02;
+      for (const { src, dst } of w.nav.toOffMeshEdges[gm.key] ?? []) {
+        normal.set(-(dst.y - src.y), dst.x - src.x);
+        ct.fillStyle = edgeFillStyle;
+        ct.beginPath();
+        ct.moveTo(src.x - normal.x * halfWidth, src.y - normal.y * halfWidth);
+        ct.lineTo(dst.x - normal.x * halfWidth, dst.y - normal.y * halfWidth);
+        ct.lineTo(dst.x + normal.x * halfWidth, dst.y + normal.y * halfWidth);
+        ct.moveTo(src.x + normal.x * halfWidth, src.y + normal.y * halfWidth);
+        ct.fill();
+        drawCircle(ct, src, 0.02, [nodeFillStyle, nodeStrokeStyle]);
+        drawCircle(ct, dst, 0.02, [nodeFillStyle, nodeStrokeStyle]);
       }
-      ct.globalAlpha = 1;
-      ct.globalCompositeOperation = 'source-over';
-    },
-    drawRadialLight() {
-      const canvas = /** @type {HTMLCanvasElement} */ (state.radialTex.image);
-      const ct = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
-      
-      // 🚧 recreate texture onresize ?
-      // canvas.width = canvas.height = 512;
-      canvas.width = canvas.height = 1024;
-      
-      ct.clearRect(0, 0, canvas.width, canvas.height);
-      drawRadialFillCustom(ct);
-      
-      state.radialTex.needsUpdate = true;
+
+      // hull doorways
+      // 🚧 geomorphs are slightly misaligned e.g. 301 vs 101 in small-map-1
+      // drawPolygons(ct, gm.hullDoors.flatMap(x => x.computeDoorway()), ['#000', null]);
+      drawPolygons(ct, gm.hullDoors.flatMap(x => x.poly), ['#0004', null]);
+
+      // decals from gm.decor
+      const { decor } = w.geomorphs.sheet;
+      const decals = gm.decor.filter(x => x.type === 'decal');
+      for (const decal of decals) {
+        const rect = decor[decal.meta.img];
+        // drawPolygons(ct, [Poly.fromRect(decal.bounds2d)], ['#f00', null]);
+        ct.save();
+        ct.transform(...decal.transform);
+        if (state.dark === true) {// 🔔 grayscale decals for invert
+          ct.globalCompositeOperation = 'xor';
+        }
+        ct.drawImage(w.decorImgs[rect.sheetId], rect.x, rect.y, rect.width, rect.height, 0, 0, 1, 1);
+        ct.restore();
+      }
+
+      // debug decor rects
+      if (state.debug === true) {
+        drawPolygons(ct, gm.decor.filter(x => x.type === 'rect').map(x => Poly.fromRect(x.bounds2d)), [null, '#00f']);
+      }
+
     },
     positionInstances() {
       for (const [gmId, gm] of w.gms.entries()) {
@@ -150,17 +165,22 @@ export default function Floor(props) {
       state.inst.instanceMatrix.needsUpdate = true;
       state.inst.computeBoundingSphere();
     },
-
-  }), { reset: { smallGrid: false, largeGrid: false, torchData: true } });
+    async setDark(next = !state.dark) {
+      if (next !== state.dark) {
+        state.dark = next;
+        await state.draw();
+        w.update();
+      }
+    },
+  }), { reset: { grid: false, debug: true } });
 
   w.floor = state;
 
   React.useEffect(() => {
     state.positionInstances();
     state.addUvs();
-    state.drawRadialLight();
     state.draw().then(() => w.update());
-  }, [w.texVs.floor]);
+  }, [w.texVs.floor, w.hash.sheets, w.crowd.navMesh]);
 
   return (
     <instancedMesh
@@ -168,6 +188,7 @@ export default function Floor(props) {
       ref={state.ref('inst')}
       args={[state.quad, undefined, w.gms.length]}
       renderOrder={-3} // 🔔 must render before other transparent e.g. npc drop shadow
+      // visible={false}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
       <instancedFloorMaterial
@@ -178,10 +199,7 @@ export default function Floor(props) {
         depthWrite={false} // fix z-fighting
         diffuse={[1, 1, 1]}
         objectPickRed={2}
-        alphaTest={0.5}
-
-        lightAtlas={w.texFloorLight.tex}
-        showLights={w.crowd !== null && state.showLights === true}
+        alphaTest={0.1}
       />
     </instancedMesh>
   );
@@ -194,22 +212,21 @@ export default function Floor(props) {
 
 /**
  * @typedef State
+ * @property {CanvasPattern} grid
  * @property {THREE.InstancedMesh<THREE.BufferGeometry, THREE.ShaderMaterial>} inst
- * @property {CanvasPattern} smallGrid
- * @property {CanvasPattern} largeGrid
+ * @property {boolean} dark
+ * @property {boolean} debug
+ * navTris[seenGmId][tileIndex] is [positions, indices]
  * @property {THREE.BufferGeometry} quad
- * @property {boolean} showLights Show static lights?
- * @property {THREE.Vector3} torchTarget Torch
- * @property {THREE.Vector3} torchData (radius, intensity, opacity)
- * @property {THREE.CanvasTexture} radialTex
+ 
  *
  * @property {() => void} addUvs
  * @property {() => Promise<void>} draw
  * @property {(gmKey: Key.Geomorph) => void} drawGm
- * @property {(gmKey: Key.Geomorph) => void} drawGmLight
- * @property {() => void} drawRadialLight
+ * @property {(nextInvert: boolean) => Promise<void>} setDark
  * @property {() => void} positionInstances
  */
 
 const tmpMat1 = new Mat();
+const tmpVect1 = new Vect();
 const worldToCanvas = worldToSguScale * gmFloorExtraScale;

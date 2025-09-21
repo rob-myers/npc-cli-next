@@ -1,7 +1,7 @@
 import React from 'react';
 import { init as initRecastNav, importTileCache, Crowd } from "@recast-navigation/core";
 
-import { isDevelopment, warn, debug, testNever, info } from '../service/generic';
+import { isDevelopment, warn, debug } from '../service/generic';
 import { maxNumberOfNpcs } from '../service/const';
 import { parsePhysicsBodyKey } from '../service/rapier';
 import { computeOffMeshConnectionsParams, disposeCrowd, getTileCacheMeshProcess } from '../service/recast-detour';
@@ -20,41 +20,6 @@ export default function WorldWorkers() {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     seenHash: /** @type {*} */ ({}),
-
-    // 🔔 compute each offMeshLookup[i].{srcGrKey,dstGrKey,dstRoomMeta}
-    // 🔔 compute "aligned" i.e. whether normal points towards src
-    postProcessNavResponse(msg) {
-      for (const value of Object.values(msg.offMeshLookup)) {
-        const door = w.door.byKey[value.gdKey];
-        /** Is the transformed door's normal pointing towards `value.src`? */
-        const normalTowardsSrc = (
-          (value.src.x - door.center.x) * door.normal.x +
-          (value.src.z - door.center.y) * door.normal.y > 0
-        );
-
-        if (door.hull === true) {
-          const adj = w.gmGraph.getAdjacentRoomCtxt(value.gmId, value.doorId);
-          if (adj === null) {
-            continue; // unreachable because offMeshConnection doesn't exist
-          } else if (normalTowardsSrc === true) {// hull normal points outwards
-            value.srcGrKey = adj.adjGmRoomKey;
-            value.dstGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
-          } else {
-            value.srcGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
-            value.dstGrKey = adj.adjGmRoomKey;
-          }
-        } else {// 🔔 non-hull doors always have roomIds [number, number] (?)
-          const srcRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 0 : 1]);
-          const dstRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 1 : 0]);
-          value.srcGrKey = `g${value.gmId}r${srcRoomId}`;
-          value.dstGrKey = `g${value.gmId}r${dstRoomId}`;
-        }
-
-        value.aligned = normalTowardsSrc;
-        const { gmId, roomId } = helper.getGmRoomId(value.dstGrKey);
-        value.dstRoomMeta = w.gms[gmId].rooms[roomId].meta;
-      }
-    },
 
     async handleNavWorkerMessage(e) {
       const msg = e.data;
@@ -109,7 +74,7 @@ export default function WorldWorkers() {
       }
     },
 
-    loadTiledMesh({ exportedNavMesh, offMeshLookup }) {
+    loadTiledMesh({ exportedNavMesh, offMeshLookup, toNavTris, toOffMeshEdges }) {
       const tiledCacheResult = /** @type {NPC.TiledCacheResult} */ (
         importTileCache(exportedNavMesh, getTileCacheMeshProcess(w.nav.offMeshDefs))
       );
@@ -120,6 +85,8 @@ export default function WorldWorkers() {
         (agg[v.gdKey] ??= []).push(v);
         return agg;
       }, /** @type {NPC.DoorToOffMeshLookup} */ ({}));
+      w.nav.toNavTris = toNavTris;
+      w.nav.toOffMeshEdges = toOffMeshEdges;
 
       if (w.crowd !== null) {
         disposeCrowd(w.crowd, w.nav.navMesh);
@@ -138,11 +105,56 @@ export default function WorldWorkers() {
       filter.excludeFlags = helper.navPolyFlag.unWalkable;
 
       // 🚧 try modify dtObstacleAvoidanceParams
-      // const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = w.crowd.raw.getObstacleAvoidanceParams(0);
+      const obsAvoidParams = w.crowd.raw.getObstacleAvoidanceParams(0);
+      const { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi } = obsAvoidParams;
       // info('dtObstacleAvoidanceParams', { adaptiveDepth, adaptiveDivs, adaptiveRings, gridSize, horizTime, velBias, weightCurVel, weightSide, weightToi });
-      // const oap = new RecastWasm.dtObstacleAvoidanceParams();
+      obsAvoidParams.adaptiveDepth = 4;
+      obsAvoidParams.adaptiveDivs = 10;
+      obsAvoidParams.adaptiveRings = 2;
+      // obsAvoidParams.gridSize = gridSize;
+      // obsAvoidParams.horizTime = horizTime;
+      obsAvoidParams.velBias = 0.85;
+      // obsAvoidParams.weightCurVel = weightCurVel;
+      // obsAvoidParams.weightSide = 1;
+      // obsAvoidParams.weightToi = 1;
+      w.crowd.raw.setObstacleAvoidanceParams(0, obsAvoidParams);
       
       w.npc?.restore();
+    },
+
+    // 🔔 compute each offMeshLookup[i].{srcGrKey,dstGrKey,dstRoomMeta}
+    // 🔔 compute "aligned" i.e. whether normal points towards src
+    postProcessNavResponse(msg) {
+      for (const value of Object.values(msg.offMeshLookup)) {
+        const door = w.door.byKey[value.gdKey];
+        /** Is the transformed door's normal pointing towards `value.src`? */
+        const normalTowardsSrc = (
+          (value.src.x - door.center.x) * door.normal.x +
+          (value.src.z - door.center.y) * door.normal.y > 0
+        );
+
+        if (door.hull === true) {
+          const adj = w.gmGraph.getAdjacentRoomCtxt(value.gmId, value.doorId);
+          if (adj === null) {
+            continue; // unreachable because offMeshConnection doesn't exist
+          } else if (normalTowardsSrc === true) {// hull normal points outwards
+            value.srcGrKey = adj.adjGmRoomKey;
+            value.dstGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
+          } else {
+            value.srcGrKey = `g${value.gmId}r${/** @type {number} */ (door.door.roomIds[1]) }`;
+            value.dstGrKey = adj.adjGmRoomKey;
+          }
+        } else {// 🔔 non-hull doors always have roomIds [number, number] (?)
+          const srcRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 0 : 1]);
+          const dstRoomId = /** @type {number} */ (door.door.roomIds[normalTowardsSrc === true ? 1 : 0]);
+          value.srcGrKey = `g${value.gmId}r${srcRoomId}`;
+          value.dstGrKey = `g${value.gmId}r${dstRoomId}`;
+        }
+
+        value.aligned = normalTowardsSrc;
+        const { gmId, roomId } = helper.getGmRoomId(value.dstGrKey);
+        value.dstRoomMeta = w.gms[gmId].rooms[roomId].meta;
+      }
     },
   }));
 
@@ -193,12 +205,13 @@ export default function WorldWorkers() {
       || next.mapGmHashes[gmId] !== prev.mapGmHashes[gmId] // geomorph instance changed
     );
     
-    w.nav.offMeshDefs = computeOffMeshConnectionsParams(w);
+    w.nav.offMeshDefs = computeOffMeshConnectionsParams(w.gms, w.gmGraph);
     w.events.next({ key: 'pre-request-nav', changedGmIds });
     w.menu.measure('request-nav');
     w.nav.worker.postMessage({
       type: "request-nav",
       mapKey: w.mapKey,
+      // 🔔 cannot compute in nav.worker because relies on `door.roomIds`
       offMeshDefs: w.nav.offMeshDefs,
       baseUrl: location.href,
     });

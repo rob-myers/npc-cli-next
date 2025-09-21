@@ -14,7 +14,7 @@ declare namespace WW {
 
   interface RequestNavMesh {
     type: "request-nav";
-    mapKey: string;
+    mapKey: Key.Map;
     offMeshDefs: import('recast-navigation').OffMeshConnectionParams[];
     /** Used to fetch public assets from worker */
     baseUrl: string;
@@ -22,9 +22,11 @@ declare namespace WW {
 
   interface NavMeshResponse {
     type: "nav-mesh-response";
-    mapKey: string;
+    mapKey: Key.Map;
     exportedNavMesh: Uint8Array;
     offMeshLookup: NPC.SrcToOffMeshLookup;
+    toNavTris: NPC.FloorNavTris;
+    toOffMeshEdges: NPC.FloorOffMeshEdges;
   }
   
   interface BuildTileResponse {
@@ -48,17 +50,19 @@ declare namespace WW {
   type MsgToPhysicsWorker = (
     | AddNPCs
     | AddColliders
+    | GetDebugData
+    | GetRaycast
     | RemoveBodies
     | RemoveColliders
     | SendNpcPositions
     | SetupPhysicsWorld
-    | { type: 'get-debug-data' }
   );
 
   type MsgFromPhysicsWorker = (
     | WorldSetupResponse
     | NpcCollisionResponse
     | PhysicsDebugDataResponse
+    | RaycastResultResponse
   );
 
   //#region MsgToPhysicsWorker
@@ -106,6 +110,19 @@ declare namespace WW {
     /** Used to fetch public assets from worker */
     baseUrl: string;
   }
+
+  interface GetDebugData {
+    type: 'get-debug-data';
+  }
+
+  interface GetRaycast {
+    type: 'get-raycast';
+    uid: string;
+    src: Geom.VectJson;
+    dst: Geom.VectJson;
+    gmId: number;
+  }
+
   //#endregion
 
   interface WorldSetupResponse {
@@ -117,6 +134,13 @@ declare namespace WW {
     items: PhysicDebugItem[];
     /** [ux, uy, vx, vy, ...] */
     lines: number[];
+  }
+
+  interface RaycastResultResponse {
+    type: 'raycast-result';
+    uid: string;
+    hit: null | Geom.VectJson;
+    gmDoorIds: Geomorph.GmDoorId[];
   }
 
   interface PhysicDebugItem {

@@ -4,14 +4,13 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
-import { EffectComposer, BrightnessContrast, Vignette } from '@react-three/postprocessing'
 
-import { debug, entries, keys } from "../service/generic.js";
+import { debug, entries, keys, testNever } from "../service/generic.js";
 import { helper } from "../service/helper";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB } from "../service/dom.js";
-import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, zIndexWorld } from "../service/const.js";
-import { dampXZ, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, unitXVector3, v3Precision } from "../service/three.js";
+import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, wallHeight, worldViewBgColorCssVar, zIndexWorld } from "../service/const.js";
+import { dampXZ, getTempInstanceMesh, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
 import { WorldContext } from "./world-context.js";
 import useStateRef from "../hooks/use-state-ref.js";
@@ -49,8 +48,6 @@ export default function WorldView(props) {
     ],
     down: null,
     dst: {}, // tween destinations
-    effects: { enabled: false, darkness: 2 },
-    effectComposer: /** @type {*} */ (null),
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
     fov: 30,
     glOpts: {
@@ -126,13 +123,113 @@ export default function WorldView(props) {
       output.applyNormalMatrix(normalMatrix);
       return output;
     },
+    decodeObjectPick(r, g, b, a) {
+      if (r === 1) {// wall
+        const instanceId = (g << 8) + b;
+        const decoded = w.wall.decodeInstanceId(instanceId);
+        return {
+          picked: 'wall',
+          ...decoded,
+          instanceId,
+        };
+      }
+
+      if (r === 2) {// floor
+        const instanceId = (g << 8) + b;
+        return {
+          picked: 'floor',
+          gmId: instanceId,
+          floor: true,
+          instanceId,
+        };
+      }
+
+      if (r === 3) {// ceiling
+        const instanceId = (g << 8) + b;
+        return {
+          picked: 'ceiling',
+          gmId: instanceId,
+          ceiling: true,
+          height: wallHeight,
+          instanceId,
+        };
+      }
+
+      if (r === 4) {// door
+        const instanceId = (g << 8) + b;
+        const decoded = w.door.decodeInstance(instanceId);
+        return {
+          picked: 'door',
+          door: true,
+          ...decoded,
+          instanceId,
+        };
+      }
+
+      if (r === 5) {// decor quad
+        const instanceId = (g << 8) + b;
+        const quad = w.decor.quads[instanceId];
+        return {
+          picked: 'quad',
+          ...quad.meta,
+          instanceId,
+        };
+      }
+
+      if (r === 6) {// obstacle
+        const instanceId = (g << 8) + b;
+        const decoded = w.obs.decodeInstanceId(instanceId);
+        return {
+          picked: 'obstacle',
+          obstacle: true,
+          ...decoded,
+          instanceId,
+        };
+      }
+
+      if (r === 7) {// decor cuboid
+        const instanceId = (g << 8) + b;
+        const cuboid = w.decor.cuboids[instanceId];
+        return {
+          picked: 'cuboid',
+          ...cuboid.meta,
+          instanceId,
+        };
+      }
+
+      if (r === 8) {// npc
+        const npcUid = (g << 8) + b;
+        const npcKey = w.npc.idToKey.get(npcUid);
+        return {
+          picked: 'npc',
+          npcKey,
+          npcUid,
+          npc: true,
+          instanceId: npcUid, // not really an instance
+        };
+      }
+
+      if (r === 9) {// lock-light
+        const instanceId = (g << 8) + b;
+        const decoded = w.door.decodeInstance(instanceId);
+        return {
+          picked: 'lock-light',
+          'lock-light': true,
+          ...decoded,
+          instanceId,
+        };
+      }
+
+      // warn(`${'decodeObjectPick'}: failed to decode: ${JSON.stringify({ r, g, b, a })}`);
+      return null;
+    },
     enableControls(enabled = true) {
       state.controls.enabled = !!enabled;
     },
     ensureRender() {
       if (w.disabled === true) w.r3f.advance(Date.now());
     },
-    followPosition(dst, opts = { smoothTime: 0.3 }) {
+    followPosition(dst, opts = { smoothTime: 1 }) {
       // lock zoom
       state.controls.zoomToConstant = dst;
       /**
@@ -149,6 +246,41 @@ export default function WorldView(props) {
     },
     getNumPointers() {
       return state.down?.pointerIds.length ?? 0;
+    },
+    getRaycastIntersection(e, decoded) {
+      /** @type {THREE.Mesh} */
+      let mesh;
+
+      // handle fractional device pixel ratio e.g. 2.625 on Pixel
+      const glPixelRatio = w.r3f.gl.getPixelRatio();
+      const { left, top } = (/** @type {HTMLElement} */ (e.target)).getBoundingClientRect();
+
+      const normalizedDeviceCoords = new THREE.Vector2(
+        -1 + 2 * (((e.clientX - left) * glPixelRatio) / w.view.canvas.width),
+        +1 - 2 * (((e.clientY - top) * glPixelRatio) / w.view.canvas.height),
+      );
+      w.view.raycaster.setFromCamera(normalizedDeviceCoords, w.r3f.camera);
+
+      switch (decoded.picked) {
+        case 'floor': mesh = getTempInstanceMesh(w.floor.inst, decoded.instanceId); break;
+        case 'wall': mesh = getTempInstanceMesh(w.wall.inst, decoded.instanceId); break;
+        case 'npc': mesh = w.n[decoded.npcKey].m.mesh; break;
+        case 'door': mesh = getTempInstanceMesh(w.door.inst, decoded.instanceId); break;
+        case 'quad': mesh = getTempInstanceMesh(w.decor.quadInst, decoded.instanceId); break;
+        case 'obstacle': mesh = getTempInstanceMesh(w.obs.inst, decoded.instanceId); break;
+        case 'ceiling': mesh = getTempInstanceMesh(w.ceil.inst, decoded.instanceId); break;
+        case 'cuboid': mesh = getTempInstanceMesh(w.decor.cuboidInst, decoded.instanceId); break;
+        case 'lock-light': mesh = getTempInstanceMesh(w.door.lockSigInst, decoded.instanceId); break;
+        default: throw testNever(decoded.picked);
+      }
+
+      const [intersection] = state.raycaster.intersectObject(mesh);
+
+      if (intersection !== undefined) {
+        return { intersection, mesh }; // provide temp mesh
+      } else {
+        return null;
+      }
     },
     getWorldPointerEvent({
       key,
@@ -242,12 +374,12 @@ export default function WorldView(props) {
         w.stopTick();
       }
     },
-    onObjectPickPixel(e, pixel) {// 🔔 references `w.e`
+    onObjectPickPixel(e, pixel) {
       
       state.lastDown = undefined; // overwritten below on successful raycast
       
       const [r, g, b, a] = Array.from(pixel);
-      const decoded = w.e.decodeObjectPick(r, g, b, a);
+      const decoded = state.decodeObjectPick(r, g, b, a);
       debug('picked:', { r, g, b, a }, '\n', decoded);
 
       if (decoded === null) {
@@ -255,7 +387,7 @@ export default function WorldView(props) {
       }
 
       // 🔔 does not account for npc shader translation (on teleport)
-      const res = w.e.getRaycastIntersection(e, decoded);
+      const res = state.getRaycastIntersection(e, decoded);
       
       if (res === null) {
         return;
@@ -280,7 +412,7 @@ export default function WorldView(props) {
       const meta = {
         ...decoded,
         ...pickedTypesInSomeRoom[decoded.picked] === true
-          && w.gmGraph.findRoomContaining(helper.toXZ(position), true),
+          && w.npc.findRoomContaining(position, true),
       };
 
       state.lastDown = {
@@ -508,11 +640,6 @@ export default function WorldView(props) {
       const nextFilter = state.cssFilter.map(({ key, value }) => `${key}(${value})`).join(' ');
       state.canvas.style.filter = nextFilter; // e.g. brightness(50%)
     },
-    showEffects(partial = { enabled: !state.effects.enabled }) {
-      Object.assign(state.effects, partial);
-      update();
-      w.npc.tickOnceDebug();
-    },
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
         delete state.dst.look;
@@ -607,10 +734,6 @@ export default function WorldView(props) {
   w.view = state;
 
   React.useEffect(() => {
-    if (state.controls && !w.crowd) {// 🔔 initially only
-      state.controls.setPolarAngle(Math.PI / 4);
-      state.controls.setAzimuthalAngle(Math.PI / 4);
-    }
     state.pickingScene.onAfterRender = state.renderObjectPickScene;
   }, [state.controls]);
 
@@ -667,16 +790,6 @@ export default function WorldView(props) {
       <ContextMenu/>
 
       <NpcSpeechBubbles/>
-
-      <EffectComposer ref={state.ref('effectComposer')}>
-        {state.effects.enabled === true
-          ? <>
-            <BrightnessContrast brightness={-0.23} />
-            <Vignette eskil={false} offset={0.1} darkness={state.effects.darkness} opacity={0.9} />
-          </>
-          : <></>
-        }
-      </EffectComposer>
     </Canvas>
   );
 }
@@ -699,8 +812,6 @@ export default function WorldView(props) {
  * @property {() => void} clearTweens
  * @property {() => void} clearTargetDamping
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
- * @property {{ enabled: boolean; darkness: number }} effects
- * @property {import('postprocessing').EffectComposer} effectComposer
  * @property {import('three-stdlib').MapControls & {
  *   sphericalDelta: THREE.Spherical;
  *   zoomToConstant: null | THREE.Vector3;
@@ -741,11 +852,13 @@ export default function WorldView(props) {
  * @property {boolean} didTweenPaused Did we start tweening whilst paused?
  * @property {null | { min: number; max: number; current: number }} lockedDistance
  *
+ * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {() => void} ensureRender
  * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
+ * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
  * @property {(e: PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
  * @property {(screenPoint: Geom.VectJson) => void} handlePausedClick
@@ -768,7 +881,6 @@ export default function WorldView(props) {
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
  * @property {(partial: Partial<Record<'brightness'| 'sepia' | 'invert', string>>) => void} setCssFilter
- * @property {(partial?: Partial<State['effects']>) => void} showEffects
  * @property {() => boolean} stopFollowing
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
@@ -778,11 +890,11 @@ export default function WorldView(props) {
  */
 
 const rootCss = css`
-  --world-view-background-color: rgba(0, 0, 0, 1);
-  --world-view-background-color: rgba(30, 30, 30, 1);
+  ${worldViewBgColorCssVar}: rgb(0, 0, 0);
+  transition: background-color 3s;
 
   user-select: none;
-  background-color: var(--world-view-background-color);
+  background-color: var(${worldViewBgColorCssVar});
 
   canvas[data-engine] {
     width: 100%;

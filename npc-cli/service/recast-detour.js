@@ -39,9 +39,12 @@ export function computeGmInstanceMesh(gm) {
 }
 
 /**
- * @param {import('../world/World').State} w
+ * Compute off mesh connection definitions, which we'll send to worker.
+ * @param {Geomorph.LayoutInstance[]} gms
+ * @param {Graph.GmGraph} gmGraph
+ * @returns {import("recast-navigation").OffMeshConnectionParams[]}
  */
-export function computeOffMeshConnectionsParams(w) {
+export function computeOffMeshConnectionsParams(gms, gmGraph) {
   
   /**
    * - ignore isolated hull doors
@@ -50,35 +53,37 @@ export function computeOffMeshConnectionsParams(w) {
   const ignoreGdKeys = /** @type {Set<Geomorph.GmDoorKey>} */ (new Set());
 
   /** `gms[gmId].doors[doorId]` are the metas of the adj rooms */
-  const doorRoomMetas = w.gms.map(gm => {
+  const doorRoomMetas = gms.map(gm => {
     const roomMetas = gm.rooms.map(x => x.meta);
     return gm.doors.map(({ roomIds }) => 
       roomIds.flatMap(roomId => roomId !== null ? roomMetas[roomId] : [])
     );
   });
 
-  return w.gms.flatMap((gm, gmId) => gm.doors.flatMap(/** @returns {import("recast-navigation").OffMeshConnectionParams[]} */
+  return gms.flatMap((gm, gmId) => gm.doors.flatMap(/** @returns {import("recast-navigation").OffMeshConnectionParams[]} */
     ({ center, normal, meta, roomIds }, doorId) => {
 
       if (meta.hull === true) {
-        const adj = w.gmGraph.getAdjacentRoomCtxt(gmId, doorId);
+        const adj = gmGraph.getAdjacentRoomCtxt(gmId, doorId);
         if (ignoreGdKeys.has(`g${gmId}d${doorId}`) === true || adj === null) {
           return [];
         } else {
+          // 🔔 avoid duplicate hull door connections
           ignoreGdKeys.add(`g${adj.adjGmId}d${adj.adjDoorId}`);
         }
       }
 
-      /**
-       * 🔔 saw nav fail in 102 (top right) when many offMeshConnections, which
-       * we fix via room.meta "small" and "narrow-entrances"
-       */
-      const narrowEntrance = meta.hull !== true && doorRoomMetas[gmId][doorId].some(x =>
+      const roomMetas = doorRoomMetas[gmId][doorId];
+      // 🔔 saw nav fail in 102 (top right) when many offMeshConnections, which
+      // we fix via room.meta "small" and "narrow-entrances"
+      const narrowEntrance = meta.hull !== true && roomMetas.some(x =>
         // x.small === true || x['narrow-entrances'] === true
         x['narrow-entrances'] === true
       );
+
       const halfLength = meta.hull === true ? offMeshConnectionHalfDepth.hull : offMeshConnectionHalfDepth.nonHull;
       const offsets = meta.hull === true ? [-0.3, 0.01, 0.3] : narrowEntrance === false ? [-0.25, 0.01, 0.25] : [0.01];
+      // const offsets = meta.hull === true ? [-0.3, 0.01, 0.3] : narrowEntrance === false ? [0.01] : [0.01];
       // const offsets = [0.01];
 
       const src = gm.matrix.transformPoint(center.clone().addScaled(normal, halfLength));
@@ -135,10 +140,11 @@ export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
   // 🔔 spawn at {x:4.5,y:7.5} has weird initial behaviour for various settings
   return {
     /** `cs * tileSize` should be 1.5 i.e. Geomorph grid size (meters) */
-    //cs: 0.15, tileSize: 10,
-    cs: 0.05, tileSize: 30,
+    // cs: 0.15, tileSize: 10,
     // cs: 0.1, tileSize: 15,
-    //cs: 0.075, tileSize: 20,
+    // cs: 0.075, tileSize: 20,
+    cs: 0.05, tileSize: 30,
+    // cs: 0.025, tileSize: 60,
     ch: 0.001,
     borderSize: 0,
     expectedLayersPerTile: 1,
@@ -148,6 +154,81 @@ export function getTileCacheGeneratorConfig(tileCacheMeshProcess) {
     maxSimplificationError: 1.5,
     // maxSimplificationError: 3,
   };
+}
+
+/**
+ * https://github.com/isaac-mason/recast-navigation-js/blob/a5f14a4fd7b5231b4e5c7930f53fa1257f6420b2/packages/recast-navigation-core/src/nav-mesh.ts
+ * @param {import("@recast-navigation/core").DetourMeshTile} tile
+ * @returns {[number[], number[]]}
+ */
+export function getTileTriangles(tile) {
+  const positions = /** @type {number[]} */ ([]);
+  const indices = /** @type {number[]} */ ([]);
+  
+  const tileHeader = tile.header();
+  if (!tileHeader) return [
+    positions,
+    indices,
+  ];
+
+  const tilePolyCount = tileHeader.polyCount();
+  let tri = 0;
+  
+  for (
+    let tilePolyIndex = 0;
+    tilePolyIndex < tilePolyCount;
+    ++tilePolyIndex
+  ) {
+    const poly = tile.polys(tilePolyIndex);
+
+    if (poly.getType() === 1) continue;
+
+    const polyVertCount = poly.vertCount();
+    const polyDetail = tile.detailMeshes(tilePolyIndex);
+    const polyDetailTriBase = polyDetail.triBase();
+    const polyDetailTriCount = polyDetail.triCount();
+
+    for (
+      let polyDetailTriIndex = 0;
+      polyDetailTriIndex < polyDetailTriCount;
+      ++polyDetailTriIndex
+    ) {
+      const detailTrisBaseIndex =
+        (polyDetailTriBase + polyDetailTriIndex) * 4;
+
+      for (let trianglePoint = 0; trianglePoint < 3; ++trianglePoint) {
+        if (
+          tile.detailTris(detailTrisBaseIndex + trianglePoint) < polyVertCount
+        ) {
+          const tileVertsBaseIndex =
+            poly.verts(tile.detailTris(detailTrisBaseIndex + trianglePoint)) *
+            3;
+
+          positions.push(
+            tile.verts(tileVertsBaseIndex),
+            tile.verts(tileVertsBaseIndex + 1),
+            tile.verts(tileVertsBaseIndex + 2),
+          );
+        } else {
+          const tileVertsBaseIndex =
+            (polyDetail.vertBase() +
+              tile.detailTris(detailTrisBaseIndex + trianglePoint) -
+              poly.vertCount()) *
+            3;
+
+          positions.push(
+            tile.detailVerts(tileVertsBaseIndex),
+            tile.detailVerts(tileVertsBaseIndex + 1),
+            tile.detailVerts(tileVertsBaseIndex + 2),
+          );
+        }
+
+        indices.push(tri++);
+      }
+    }
+  }
+
+  return [positions, indices];
 }
 
 /**

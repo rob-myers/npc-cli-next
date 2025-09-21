@@ -109,6 +109,10 @@ export class Rect {
     return new Vect(this.x + this.width, this.y);
   }
 
+  get tuple() {
+    return /** @type {const} */ ([this.x, this.y, this.width, this.height]);
+  }
+
   static get zero() {
     return new Rect(0, 0, 0, 0);
   }
@@ -226,6 +230,11 @@ export class Rect {
       Math.abs(this.cx - (other.x + 0.5 * other.width)) * 2 <= this.width + other.width &&
       Math.abs(this.cy - (other.y + 0.5 * other.height)) * 2 <= this.height + other.height
     );
+    // if (other.x <= this.right && this.x <= other.x + other.width && 
+    //   other.y <= this.bottom && this.y <= other.y + other.height ) {
+    //   return true;
+    // }
+    // return false;
   }
 
   /**
@@ -256,7 +265,10 @@ export class Rect {
     );
   }
 
-  /** @param {any} input */
+  /**
+   * @param {any} input
+   * @returns {input is Geom.RectJson}
+   */
   static isRectJson(input) {
     return input && typeof input.x === 'number' && typeof input.y === 'number' && typeof input.width === 'number' && typeof input.height === 'number';
   }
