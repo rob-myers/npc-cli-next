@@ -361,8 +361,8 @@ export default function World(props) {
             {state.crowd !== null && <>
               <Floor />
               <Ceiling />
-              <Decor />
               <React.Suspense>
+                <Decor />
                 <Npcs />
               </React.Suspense>
               <Debug />
