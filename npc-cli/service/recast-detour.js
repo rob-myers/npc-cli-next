@@ -73,14 +73,17 @@ export function computeOffMeshConnectionsParams(gms, gmGraph) {
         }
       }
 
-      /**
-       * 🔔 saw nav fail in 102 (top right) when many offMeshConnections, which
-       * we fix via room.meta "small" and "narrow-entrances"
-       */
-      const narrowEntrance = meta.hull !== true && doorRoomMetas[gmId][doorId].some(x =>
+      const roomMetas = doorRoomMetas[gmId][doorId];
+      if (roomMetas.some(x => x['no-off-mesh'] === true)) {
+        return [];
+      }
+      // 🔔 saw nav fail in 102 (top right) when many offMeshConnections, which
+      // we fix via room.meta "small" and "narrow-entrances"
+      const narrowEntrance = meta.hull !== true && roomMetas.some(x =>
         // x.small === true || x['narrow-entrances'] === true
         x['narrow-entrances'] === true
       );
+
       const halfLength = meta.hull === true ? offMeshConnectionHalfDepth.hull : offMeshConnectionHalfDepth.nonHull;
       const offsets = meta.hull === true ? [-0.3, 0.01, 0.3] : narrowEntrance === false ? [-0.25, 0.01, 0.25] : [0.01];
       // const offsets = meta.hull === true ? [-0.3, 0.01, 0.3] : narrowEntrance === false ? [0.01] : [0.01];

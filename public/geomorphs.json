@@ -28012,7 +28012,12 @@
         {
           "type": "point",
           "key": "",
-          "meta": {"decor": true, "label": "locker", "y": 0.01},
+          "meta": {
+            "decor": true,
+            "label": "locker",
+            "no-off-mesh": true,
+            "y": 0.01
+          },
           "bounds2d": {"x": 12.575, "y": 5.45, "width": 0.35, "height": 0.35},
           "x": 12.75,
           "y": 5.625,
@@ -28021,7 +28026,12 @@
         {
           "type": "point",
           "key": "",
-          "meta": {"decor": true, "label": "locker", "y": 0.01},
+          "meta": {
+            "decor": true,
+            "label": "locker",
+            "no-off-mesh": true,
+            "y": 0.01
+          },
           "bounds2d": {"x": 17.1, "y": 5.5, "width": 0.35, "height": 0.35},
           "x": 17.275,
           "y": 5.675,
@@ -30580,7 +30590,7 @@
               [12.05, 5.31]
             ]
           ],
-          "meta": {"label": "locker"}
+          "meta": {"label": "locker", "no-off-mesh": true}
         },
         {
           "type": "Polygon",
@@ -30616,7 +30626,7 @@
               [16.555, 5.3055]
             ]
           ],
-          "meta": {"label": "locker"}
+          "meta": {"label": "locker", "no-off-mesh": true}
         },
         {
           "type": "Polygon",
