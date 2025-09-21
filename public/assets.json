@@ -18,7 +18,7 @@
       "obsHashes": [895128349]
     },
     "bridge--042--8x9": {
-      "outputHash": 893265143,
+      "outputHash": 420601452,
       "pngHash": 628461375,
       "obsHashes": [2070750468, -313073530, 1296475642, -1175340879, 1111745293]
     },
@@ -9521,6 +9521,34 @@
             "h": 1.2,
             "color": "#888",
             "transform": [0.9013, 0, 0, 0.7327, 9.9163, 2.2673]
+          }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[4.125, 4], [4.125, 4.5], [3.375, 4.5], [3.375, 4]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "cabinet": true,
+            "nav": true,
+            "h": 1.5,
+            "y": 0,
+            "color": "#444",
+            "transform": [0.75, 0, 0, 0.5, 3.375, 4]
+          }
+        },
+        {
+          "type": "Polygon",
+          "coordinates": [[[8.625, 4], [8.625, 4.5], [7.875, 4.5], [7.875, 4]]],
+          "meta": {
+            "decor": true,
+            "cuboid": true,
+            "cabinet": true,
+            "nav": true,
+            "h": 1.5,
+            "y": 0,
+            "color": "#444",
+            "transform": [0.75, 0, 0, 0.5, 7.875, 4]
           }
         }
       ],
