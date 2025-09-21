@@ -358,15 +358,15 @@ export default function World(props) {
       <WorldView disabled={props.disabled} stats>
         {state.geomorphs && (
           <group>
-            <React.Suspense>
-              {state.crowd !== null && <>
-                <Floor />
-                <Ceiling />
-                <Decor />
+            {state.crowd !== null && <>
+              <Floor />
+              <Ceiling />
+              <Decor />
+              <React.Suspense>
                 <Npcs />
-                <Debug />
-              </>}
-            </React.Suspense>
+              </React.Suspense>
+              <Debug />
+            </>}
             <group visible={state.crowd !== null}>
               <Walls />
               <Doors />
