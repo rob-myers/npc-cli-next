@@ -409,11 +409,6 @@ export class NpcApi {
     this.tint = pending;
   }
 
-  /** @param {NPC.GroundPoint[]} pendingTargets  */
-  extendMove(pendingTargets) {
-    this.pendingTargets.push(...pendingTargets.map(x => Vect.from(x).precision(precision)));
-  }
-
   /**
    * @param {number} [opacityDst] 
    * @param {number} [ms] 
@@ -908,7 +903,7 @@ export class NpcApi {
       });
     }
 
-    this.s.target !== null && this.rejectMove({
+    this.getTarget() !== null && this.rejectMove({
       type: 'stop-reason',
       key: 'move-again',
       rest: this.getRemainingPath(),
@@ -924,7 +919,7 @@ export class NpcApi {
     this.pendingTargets.push(...points.map(x => Vect.from(x).precision(precision)));
     this.setSlowDownRadius();
 
-    // doorway half-depth is 0.3 or 0.4, i.e. ≤ 0.5
+    // doorway half-depth is 0.3 or 0.4, so could set `opts.close` as `0.5`
     const closest = this.w.npc.getClosestNavigable(toV3(to), Math.max(opts.close ?? 0, 0.05));
     if (closest === null) {
       throw new Error(`not navigable: ${jsStringify(to)}`);

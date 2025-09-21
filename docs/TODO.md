@@ -14,62 +14,6 @@
   - 🚧 can move AND when near bed log something
   - use narrator
 
-- ❌ integrate speech bubble select
-  - ✅ speech bubble has select ui
-  - ✅ refactor speech bubble api with options
-  - ✅ move item.visible to bubble.visible
-  - ✅ label should hide before bubble shows (while paused)
-  - ✅ can change options
-    - `w bubble.setOptions rob foo bar baz`
-    - `w bubble.setOptions rob` clears
-  - ✅ can toggle `<select>` visible
-    - `w bubble.setHideOptions rob`
-    - `w bubble.setHideOptions rob true`
-  - ✅ select option triggers event
-    - ✅ do not change current option
-    - ✅ new event type
-  - ✅ can show options without saying anything in logger
-  - ❌ measureText bubble npc.key
-  - ❌ wrapper for `w bubble.setOptions rob`
-
-- 🚧 integrate PopUp over npcKey in NpcSpeechBubble
-  - ✅ implement PopUp UI over npcKey
-  - ✅ can programmatically open PopUp
-    - `w bubble.byKey.rob.popUp.open`
-    - `w b.rob.popUp.open`
-  - ✅ add bubble.thought
-    - e.g. `get in [high bed] or [low bed]` where `[foo]` becomes link
-    - `w b.rob.think bedtime get in '[high bed]' or '[low bed]'`
-    - `w b.rob.forget bedtime`
-  - ✅ handle empty thoughts
-  - ✅ can force popup to be left + bottom
-    - looks better when no speech
-  - ✅ can see thoughts without saying anything
-    - `w e.think rob myThought should I [do] this?`
-    - `w e.forget rob myThought`
-    - `w e.think rob bed '[top bunk]' or '[bottom]' ?`
-    - 🔔 basic parsing e.g. `w e.think rob foo [bar baz]` won't work
-  - ✅ remove bubble.options
-  - ✅ open/close popup fades in/out
-  - ✅ do not auto close popup when `started-moving`, otherwise it will close while paused and about to move
-  - ✅ remove thought fade: use open/close instead
-  - ✅ click thought link causes event `click-thought`
-  - ✅ thoughts can be 'disabled' e.g. to avoid flicking bubble on/off
-  - ✅ disabled thoughts can be deleted
-  - ❌ fade on close bubble e.g. on delete only thought
-  - ✅ on close bubble remove disabled?
-  - test integration with `demoGotoBedChoices`
-    - e.g. only show when arrived near bed, else hide
-
-- 🚧 BUG: if change target while turning around before offMesh then old target used
-
-- Broadcaster -> AsyncIterator inside JS function (not shell)
-
-- ✅ issue when set `foo = () => 42` in chrome devtool and then tried `w bubble.setOptions rob foo bar baz`
-  - cannot fix, but can provide util `globals` which lists the current global variables
-
-- can choose default voice in WorldMenu
-
 ```sh
 import demoClickToMove demoGotoBedChoices from demo
 
@@ -81,12 +25,6 @@ click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
 
 events | demoGotoBedChoices npc:rob
 ```
-
-- ✅ decor.meta has decorKey
-- ✅ `near` only outputs meta
-  - avoids confusion regarding return type and type of `opts.where`
-
-- mobile profiles will include progression via logger ui links
 
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable
@@ -149,6 +87,71 @@ events | demoGotoBedChoices npc:rob
   - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
 
 ### World
+
+- ✅ BUG: if change target while turning around before offMesh then old target used
+
+- Broadcaster -> AsyncIterator inside JS function (not shell)
+
+- can choose default voice in WorldMenu
+  
+- review HMR of skins, model, map, symbols
+  - time box to 1hr
+
+- collapse `npc.s.*` -> `npc.*`
+
+- ❌ integrate speech bubble select
+  - ✅ speech bubble has select ui
+  - ✅ refactor speech bubble api with options
+  - ✅ move item.visible to bubble.visible
+  - ✅ label should hide before bubble shows (while paused)
+  - ✅ can change options
+    - `w bubble.setOptions rob foo bar baz`
+    - `w bubble.setOptions rob` clears
+  - ✅ can toggle `<select>` visible
+    - `w bubble.setHideOptions rob`
+    - `w bubble.setHideOptions rob true`
+  - ✅ select option triggers event
+    - ✅ do not change current option
+    - ✅ new event type
+  - ✅ can show options without saying anything in logger
+  - ❌ measureText bubble npc.key
+  - ❌ wrapper for `w bubble.setOptions rob`
+
+- ✅ integrate PopUp over npcKey in NpcSpeechBubble
+  - ✅ implement PopUp UI over npcKey
+  - ✅ can programmatically open PopUp
+    - `w bubble.byKey.rob.popUp.open`
+    - `w b.rob.popUp.open`
+  - ✅ add bubble.thought
+    - e.g. `get in [high bed] or [low bed]` where `[foo]` becomes link
+    - `w b.rob.think bedtime get in '[high bed]' or '[low bed]'`
+    - `w b.rob.forget bedtime`
+  - ✅ handle empty thoughts
+  - ✅ can force popup to be left + bottom
+    - looks better when no speech
+  - ✅ can see thoughts without saying anything
+    - `w e.think rob myThought should I [do] this?`
+    - `w e.forget rob myThought`
+    - `w e.think rob bed '[top bunk]' or '[bottom]' ?`
+    - 🔔 basic parsing e.g. `w e.think rob foo [bar baz]` won't work
+  - ✅ remove bubble.options
+  - ✅ open/close popup fades in/out
+  - ✅ do not auto close popup when `started-moving`, otherwise it will close while paused and about to move
+  - ✅ remove thought fade: use open/close instead
+  - ✅ click thought link causes event `click-thought`
+  - ✅ thoughts can be 'disabled' e.g. to avoid flicking bubble on/off
+  - ✅ disabled thoughts can be deleted
+  - ❌ fade on close bubble e.g. on delete only thought
+  - ✅ on close bubble remove disabled?
+
+- ✅ issue when set `foo = () => 42` in chrome devtool and then tried `w bubble.setOptions rob foo bar baz`
+  - cannot fix, but can provide util `globals` which lists the current global variables
+
+
+- ✅ decor.meta has decorKey
+- ✅ `near` only outputs meta
+  - avoids confusion regarding return type and type of `opts.where`
+
 
 - ✅ try collapse npc.api and npc.api.base whilst preserving reference across HMR
   - try `Object.setPrototypeOf(npc, Object.getPrototypeOf(npcApiInst))`
