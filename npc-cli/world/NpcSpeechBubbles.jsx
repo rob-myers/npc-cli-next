@@ -23,6 +23,7 @@ export default function NpcSpeechBubbles() {
       for (const npcKey of npcKeys) {
         state.byKey[npcKey]?.dispose();
         delete state.byKey[npcKey];
+        w.n[npcKey]?.showLabel(true);
       }
       update();
     },
@@ -176,7 +177,8 @@ const npcSpeechBubbleCss = css`
 
   position: absolute;
   top: -16px;
-  left: calc(-1/2 * var(--speech-bubble-width));
+  /** 10px seems to align to npc label */
+  left: calc(-1/2 * var(--speech-bubble-width) + 10px);
   transform-origin: 0 0;
   
   pointer-events: none;
@@ -197,15 +199,14 @@ const npcSpeechBubbleCss = css`
 
   .npc-key {
     display: inline-block;
-    font-style: italic;
-    color: #ff9;
+    color: #fff;
   }
 
   .speech {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
 
-    color: rgba(255, 255, 255, 0.8);
+    color: #ff9;
     border: 1px solid rgba(255, 255, 255, 0.3);
     background-color: rgba(0, 0, 0, 0.4);
     line-height: 1.4;
@@ -243,7 +244,7 @@ const popUpCss = css`
     background-color: rgba(0, 0, 0, 0.75);
   }
 
-  ${popUpBubbleArrowColorCssVar}: #0009;
+  ${popUpBubbleArrowColorCssVar}: #99f9;
 `;
 
 const thoughtsCss = css`
