@@ -755,7 +755,7 @@ export default function Decor(props) {
       ref={state.ref('labelInst')}
       args={[state.labelQuad, undefined, labels.length]}
       frustumCulled={false}
-      renderOrder={-4}
+      renderOrder={4}
     >
       {/* <meshBasicMaterial color="red" /> */}
       <instancedLabelsMaterial
@@ -763,7 +763,7 @@ export default function Decor(props) {
         // side={THREE.DoubleSide}
         map={state.label.tex}
         transparent
-        opacity={0.8}
+        opacity={0.5}
         diffuse={new THREE.Vector3(1, 1, 1)}
       />
     </instancedMesh>

@@ -653,9 +653,6 @@ const instancedLabelsShader = {
 
   void main() {
     gl_FragColor = texture2D(map, vUv) * vec4(vColor * diffuse, opacity);
-    if (gl_FragColor.a < 0.5) {// 🔔 avoid pixelation around labels
-      discard;
-    }
     #include <logdepthbuf_fragment>
   }
   `,
