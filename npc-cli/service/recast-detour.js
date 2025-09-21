@@ -74,9 +74,6 @@ export function computeOffMeshConnectionsParams(gms, gmGraph) {
       }
 
       const roomMetas = doorRoomMetas[gmId][doorId];
-      if (roomMetas.some(x => x['no-off-mesh'] === true)) {
-        return [];
-      }
       // 🔔 saw nav fail in 102 (top right) when many offMeshConnections, which
       // we fix via room.meta "small" and "narrow-entrances"
       const narrowEntrance = meta.hull !== true && roomMetas.some(x =>

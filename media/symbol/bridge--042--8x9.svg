@@ -227,10 +227,10 @@
     <title>decor label=bridge</title>
   </rect>
   <rect width="20" height="20" style="fill-opacity: 0.5; fill: rgb(0, 255, 0); stroke: rgb(0, 0, 0);" x="740" y="815">
-    <title>decor label=locker no-off-mesh</title>
+    <title>decor label=locker</title>
   </rect>
   <rect width="20" height="20" style="fill-opacity: 0.5; fill: rgb(0, 255, 0); stroke: rgb(0, 0, 0);" x="1645" y="825">
-    <title>decor label=locker no-off-mesh</title>
+    <title>decor label=locker</title>
   </rect>
   <rect width="20" height="20" style="fill-opacity: 0.5; fill: rgb(0, 255, 0); stroke: rgb(0, 0, 0);" x="293" y="1349">
     <title>decor label=locker</title>

@@ -18,7 +18,7 @@
       "obsHashes": [895128349]
     },
     "bridge--042--8x9": {
-      "outputHash": 420601452,
+      "outputHash": 349168762,
       "pngHash": 628461375,
       "obsHashes": [2070750468, -313073530, 1296475642, -1175340879, 1111745293]
     },
@@ -9062,14 +9062,14 @@
           "coordinates": [
             [[3.8, 4.075], [3.8, 4.175], [3.7, 4.175], [3.7, 4.075]]
           ],
-          "meta": {"decor": true, "label": "locker", "no-off-mesh": true}
+          "meta": {"decor": true, "label": "locker"}
         },
         {
           "type": "Polygon",
           "coordinates": [
             [[8.325, 4.125], [8.325, 4.225], [8.225, 4.225], [8.225, 4.125]]
           ],
-          "meta": {"decor": true, "label": "locker", "no-off-mesh": true}
+          "meta": {"decor": true, "label": "locker"}
         },
         {
           "type": "Polygon",
