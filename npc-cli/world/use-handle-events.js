@@ -776,6 +776,9 @@ export default function useHandleEvents(w) {
 
       w.events.next({ key: 'enter-off-mesh', npcKey: npc.key, offMesh: npc.offMesh });
     },
+    removeBubble(...npcKeys) {
+      w.bubble.delete(...npcKeys);
+    },
     removeFromSensors(...npcKeys) {
       for (const npcKey of npcKeys) {
         const closeDoors = state.npcToDoors[npcKey];
@@ -953,6 +956,8 @@ export default function useHandleEvents(w) {
  * @property {(e: Extract<NPC.Event, { key: 'exit-off-mesh' }>, npc: NPC.NPC) => void} onExitOffMeshConnection
  * @property {(e: NPC.PointerUpEvent) => void} onPointerUpMenuDesktop
  * @property {(e: Extract<NPC.Event, { key: 'try-off-mesh' }>, npc: NPC.NPC) => void} onTryOffMeshConnection
+ * @property {(...npcKeys: string[]) => void} removeBubble
+ * Remove speech bubble(s) from npc(s)
  * @property {(...npcKeys: string[]) => void} removeFromSensors
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
  * @property {(opts: { npcKey: string, words?: string }) => void} say

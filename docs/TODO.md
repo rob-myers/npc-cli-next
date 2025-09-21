@@ -96,6 +96,7 @@ events | demoGotoBedChoices npc:rob
   - `think npc:rob of:bed '[top bunk]' or [bottom] ?`
 - ✅ merge `w.e.forget` into `think`
   - `think npc:rob of:bed` forgets
+- ✅ can `w e.removeBubble rob`
 
 - Broadcaster -> AsyncIterator inside JS function (not shell)
 
