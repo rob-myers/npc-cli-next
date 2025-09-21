@@ -90,14 +90,14 @@ events | demoGotoBedChoices npc:rob
 
 - ✅ BUG: if change target while turning around before offMesh then old target used
 
+- ✅ collapse `npc.s.*` -> `npc.*`
+
 - Broadcaster -> AsyncIterator inside JS function (not shell)
 
 - can choose default voice in WorldMenu
   
 - review HMR of skins, model, map, symbols
   - time box to 1hr
-
-- collapse `npc.s.*` -> `npc.*`
 
 - ❌ integrate speech bubble select
   - ✅ speech bubble has select ui

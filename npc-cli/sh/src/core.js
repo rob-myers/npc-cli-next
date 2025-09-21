@@ -275,7 +275,7 @@ export const make = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
       abortAwaitResume(Error('cancelled'));
     },
     onSuspends(byPtags) {
-      if (!byPtags && npc.s.doMeta !== opts.do.meta) {
+      if (!byPtags && npc.doMeta !== opts.do.meta) {
         npc.rejectMove(Error('manual-pause'));
         npc.rejectFade(Error('manual-pause'));
         npc.rejectTurn(Error('manual-pause'));

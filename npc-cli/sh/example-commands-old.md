@@ -142,7 +142,7 @@ w npc.spawn '{ npcKey: "rob", point: '$( click 1 )' }' >/dev/null
 
 ```sh
 # two agents "rob" and "will" in untransformed 301
-# assume npc.s.run is false for both
+# assume npc.run is false for both
 
 p=$( expr '{"x":1.703,"y":0,"z":3.672,"meta":{"picked":"floor","gmId":0,"floor":true,"instanceId":0,"roomId":1,"grKey":"g0r1","nav":true},"xz":{"x":1.703,"y":3.672}}' )
 q=$( expr '{x:2.298,y:0,z:3.315,meta:{picked:"floor",gmId:0,floor:true,instanceId:0,roomId:1,grKey:"g0r1",nav:true},xz:{x:2.298,y:3.315}}' )

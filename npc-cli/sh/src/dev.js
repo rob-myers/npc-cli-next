@@ -189,7 +189,7 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (!npc) return;
-  if (input.meta.floor === true && !npc.s.doMeta) {
+  if (input.meta.floor === true && !npc.doMeta) {
     npc.look(input).catch(() => {});
   } else {// act or stop acting
     await npc.make({ do: input }).catch(() => {});
@@ -207,7 +207,7 @@ export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, {
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (npc) {
-    npc.s.run = input.keys?.includes("shift") ?? false;
+    npc.run = input.keys?.includes("shift") ?? false;
     npc.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {});
   }
 }
@@ -305,18 +305,18 @@ export const setupOnTickIdleTurn = ({ w, args }) => {
     const nei = agent.raw.get_neis(0);
     const other = w.a[nei.idx];
 
-    if (other.s.target === null) {
+    if (other.target === null) {
       return;
     }
 
-    if (nei.dist <= (other.s.run === true ? 0.8 : 0.6)) {
+    if (nei.dist <= (other.run === true ? 0.8 : 0.6)) {
       // turn towards "closest neighbour" if they have a target
-      npc.s.lookAngleDst = geom.clockwiseFromNorth(
+      npc.lookAngleDst = geom.clockwiseFromNorth(
         other.point.y - npc.point.y,
         other.point.x - npc.point.x
       );
     } else {
-      npc.s.lookAngleDst = null;
+      npc.lookAngleDst = null;
     }
 
   };

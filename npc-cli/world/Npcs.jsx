@@ -42,7 +42,7 @@ export default function Npcs(props) {
       if (npc.agent === null) {
         npc.agent = w.crowd.addAgent(npc.position, {
           ...crowdAgentParams,
-          maxSpeed: npc.s.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
+          maxSpeed: npc.run ? helper.defaults.runSpeed : helper.defaults.walkSpeed,
           queryFilterType: helper.queryFilterType.respectUnwalkable,
         });
         npc.agentAnim = w.crowd.raw.getAgentAnimation(npc.agent.agentIndex);
@@ -131,10 +131,6 @@ export default function Npcs(props) {
         * @type {undefined | {
         *  add: (keyof ClassSansMethods<NPC.NPC>)[];
         *  del: (keyof NPC.NPC)[];
-        *  s: {
-        *    add: (keyof NPC.NPC['s'])[];
-        *    del: (keyof NPC.NPC['s'])[];
-        *  }
         * }}
         **/ (undefined);
 
@@ -148,16 +144,10 @@ export default function Npcs(props) {
           hmrKeys = {
             add: keys({...instance}).filter(x => !(x in npc) && Object.assign(npc, { [x]: instance[x] })),
             del: keys(npc).filter(x => !(x in instance) && delete npc[x]),
-            s: {
-              add: keys(instance.s).filter(x => !(x in npc.s) && Object.assign(npc.s, { [x]: instance.s[x] })),
-              del: keys(npc.s).filter(x => !(x in instance.s) && delete npc.s[x]),
-            },
           };
         } else {
           hmrKeys.add.forEach(x => Object.assign(npc, { [x]: instance[x] }));
           hmrKeys.del.forEach(x => delete npc[x]);
-          hmrKeys.s.add.forEach(x => Object.assign(npc.s, { [x]: instance.s[x] }));
-          hmrKeys.s.del = keys(npc.s).filter(x => !(x in instance.s) && delete npc.s[x])
         }
 
         Object.setPrototypeOf(npc, Object.getPrototypeOf(instance));
@@ -285,7 +275,7 @@ export default function Npcs(props) {
     },
     async restore() {// onchange nav-mesh restore agents
       const npcs = Object.values(state.npc).filter(x => x.agent !== null);
-      const animKeys = npcs.map(x => x.s.anim);
+      const animKeys = npcs.map(x => x.anim);
       npcs.forEach(npc => state.removeAgent(npc));
 
       w.crowd.update(w.timer.getFixedDelta());
@@ -296,7 +286,7 @@ export default function Npcs(props) {
         const closest = state.getClosestNavigable(npc.position);
         if (closest === null) {// Agent outside nav keeps target but `Idle`s 
           npc.startAnimation(animKeys[i]);
-        } else if (npc.s.target !== null) {
+        } else if (npc.target !== null) {
           npc.move({ to: npc.getRemainingPath() });
         } else {// pin them to current position
           agent.requestMoveTarget(npc.position);
@@ -312,8 +302,8 @@ export default function Npcs(props) {
         delete state.npc[npc.key];
         state.freeId.add(npc.def.uid);
         state.idToKey.delete(npc.def.uid);
-        if (npc.s.doMeta !== null) {
-          const { doPoint, y } = npc.s.doMeta;
+        if (npc.doMeta !== null) {
+          const { doPoint, y } = npc.doMeta;
           delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
         }
       }
@@ -326,7 +316,7 @@ export default function Npcs(props) {
         delete state.byAgId[npc.agent.agentIndex];
         npc.agent = null;
         npc.agentAnim = null;
-        npc.s.offMesh = null;
+        npc.offMesh = null;
       }
     },
     resolveSkin(shortcut) {// order: head,head-overlay,body,body-overlay
@@ -346,18 +336,18 @@ export default function Npcs(props) {
     setDoMeta(npcKey, doMeta) {
       const npc = w.n[npcKey];
 
-      if (npc.s.doMeta !== null) {
-        const { doPoint, y } = npc.s.doMeta;
+      if (npc.doMeta !== null) {
+        const { doPoint, y } = npc.doMeta;
         delete state.doToNpc[`${doPoint.x},${y ?? 0},${doPoint.y}`];
       }
 
       if (doMeta === null) {
-        npc.s.doMeta = null;
+        npc.doMeta = null;
       } else {
         const { doPoint, y } = doMeta;
         const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
         state.doToNpc[key] = npcKey;
-        npc.s.doMeta = doMeta;
+        npc.doMeta = doMeta;
       }
     },
     setupSkins() {
@@ -477,7 +467,7 @@ export default function Npcs(props) {
         // Respawn
         npc.cancel('respawned');
         npc.epochMs = Date.now();
-        npc.s.lookAngleDst = null;
+        npc.lookAngleDst = null;
 
         npc.def = {
           key: opts.npcKey,
@@ -519,7 +509,7 @@ export default function Npcs(props) {
         npc.applySkin();
       }
 
-      if (npc.s.spawns === 0) {
+      if (npc.spawns === 0) {
         await new Promise(resolve => {
           npc.resolve.spawn = resolve;
           update();
@@ -535,7 +525,7 @@ export default function Npcs(props) {
       npc.rotation.y = npc.getEulerAngle(npc.def.angle);
       npc.lastTarget.copy(npc.point);
 
-      const forceStartAnim = npc.s.spawns === 0;
+      const forceStartAnim = npc.spawns === 0;
       npc.startAnimation(meta, forceStartAnim); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
@@ -557,8 +547,8 @@ export default function Npcs(props) {
         }
       }
       
-      npc.s.spawns++;
-      npc.s.offMesh = null;
+      npc.spawns++;
+      npc.offMesh = null;
       w.events.next({ key: 'spawned', npcKey: npc.key, gmRoomId });
 
       return npc;
@@ -609,7 +599,7 @@ export default function Npcs(props) {
           state.freeId.add(freeId); // put it back
           npc.cancel('respawned');
           npc.epochMs = Date.now();
-          npc.s.lookAngleDst = null;
+          npc.lookAngleDst = null;
   
           npc.def = {
             key: npcKey,
@@ -645,7 +635,7 @@ export default function Npcs(props) {
         npc.point.set(position.x, position.z);
         npc.rotation.y = npc.getEulerAngle(npc.def.angle);
         npc.lastTarget.copy(npc.point);
-        const forceStartAnim = npc.s.spawns === 0;
+        const forceStartAnim = npc.spawns === 0;
         npc.startAnimation(point.meta ?? {}, forceStartAnim);
 
         // attach/detach agents
@@ -667,8 +657,8 @@ export default function Npcs(props) {
           }
         }
 
-        npc.s.spawns++;
-        npc.s.offMesh = null;
+        npc.spawns++;
+        npc.offMesh = null;
       }
 
       w.events.next({ key: 'spawned-many', npcKeys: npcs.map(npc => npc.key) });
@@ -907,8 +897,8 @@ function NPC({ npc }) {
           dark={w.npc.dark}
           diffuse={npcDiffuse}
           label={w.texNpcLabel.tex}
-          labelY={npc.s.labelY}
-          opacity={npc.s.opacity}
+          labelY={npc.labelY}
+          opacity={npc.opacity}
           transparent
           uid={npc.def.uid}
 

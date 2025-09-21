@@ -71,20 +71,20 @@ export default function useHandleEvents(w) {
       return true;
     },
     clearOffMesh(npc) {
-      // 🔔 offMeshConnection can happen when `npc.s.offMesh === null`
+      // 🔔 offMeshConnection can happen when `npc.offMesh === null`
       // e.g. npc without access near door
       npc.agentAnim?.set_active(false);
       npc.agentAnim?.set_tScale(1);
 
-      if (npc.s.offMesh === null) {
+      if (npc.offMesh === null) {
         return;
       }
 
-      const { orig, seg } = npc.s.offMesh;
-      npc.s.offMesh = null;
+      const { orig, seg } = npc.offMesh;
+      npc.offMesh = null;
 
       if (seg === 0) {// 🔔 throttle `move` to fix repeated offMesh attempts
-        npc.s.offMeshCoolDown = Date.now() + 300;
+        npc.offMeshCoolDown = Date.now() + 300;
       }
       
       state.doorToOffMesh[orig.gdKey] = state.doorToOffMesh[orig.gdKey].filter(x => x.npcKey !== npc.key);
@@ -281,7 +281,7 @@ export default function useHandleEvents(w) {
           const workerNpcs = /** @type {WW.NpcDef[]} */ ([]);
           for (const npcKey of e.npcKeys) {
             const npc = w.n[npcKey];
-            if (npc.s.spawns === 1) {// 1st spawn
+            if (npc.spawns === 1) {// 1st spawn
               const { x, y, z } = npc.position;
               workerNpcs.push({ npcKey, position: { x, y, z } });
               npc.setLabel(npcKey);
@@ -324,7 +324,7 @@ export default function useHandleEvents(w) {
           }
           break;
         case "try-off-mesh": // enter init segment
-          npc.s.slowBegin = null;
+          npc.slowBegin = null;
           state.onTryOffMeshConnection(e, npc);
           break;
         case "enter-off-mesh-main": // enter main segment
@@ -352,7 +352,7 @@ export default function useHandleEvents(w) {
           bubble?.setOpacity(e.opacityDst);
           break;
         case "spawned": {
-          if (npc.s.spawns === 1) {// 1st spawn
+          if (npc.spawns === 1) {// 1st spawn
             const { x, y, z } = npc.position;
             w.physics.worker.postMessage({
               type: 'add-npcs',
@@ -390,7 +390,7 @@ export default function useHandleEvents(w) {
           agent.raw.set_targetReplan(true);
 
           if (e.showNavPath === true) {
-            const path3d = w.npc.findPath(npc.point, /** @type {Geom.Vect} */ (npc.s.target));
+            const path3d = w.npc.findPath(npc.point, /** @type {Geom.Vect} */ (npc.target));
             w.debug.setNavPath(path3d ?? []);
           }
 
@@ -531,7 +531,7 @@ export default function useHandleEvents(w) {
       }
     },
     onEnterOffMeshConnectionMain(e, npc) {// maybe cancel
-      const offMesh = /** @type {NPC.OffMeshState} */ (npc.s.offMesh);
+      const offMesh = /** @type {NPC.OffMeshState} */ (npc.offMesh);
 
       for (const tr of state.doorToOffMesh[offMesh.orig.gdKey] ?? []) {
         if (
@@ -607,7 +607,7 @@ export default function useHandleEvents(w) {
     onExitOffMeshConnection(e, npc) {
       state.clearOffMesh(npc);
       
-      if (npc.agent === null || npc.s.target === null) {
+      if (npc.agent === null || npc.target === null) {
         // e.g. npc without access near door
         // e.g. npc collided near door
         return; 
@@ -641,7 +641,7 @@ export default function useHandleEvents(w) {
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
         npc.stopMoving({ type: 'stop-reason', key: 'locked-door', rest: npc.getRemainingPath() });
-        npc.s.lookAngleDst = npc.getLookAngle(offMesh.dst);
+        npc.lookAngleDst = npc.getLookAngle(offMesh.dst);
         return;
       }
 
@@ -649,7 +649,7 @@ export default function useHandleEvents(w) {
       // 🔔 do not reuse from earlier else yank when other blocks
       // 🚧 avoid computing improved.dst when only need improved.src
       const improved = state.improveOffMeshSrcDst(npc, offMesh);
-      const target = /** @type {Geom.Vect} */ (npc.s.target);
+      const target = /** @type {Geom.Vect} */ (npc.target);
 
       const entryDist = npc.point.distanceTo(improved.src);
       const entryTooFar = entryDist > 0.2;
@@ -672,8 +672,8 @@ export default function useHandleEvents(w) {
         } else {
           npc.exitOffMeshFor(npc.position, false);
           // npc.startAnimation('Idle');
-          npc.s.lookSecs = 0.2;
-          npc.s.lookAngleDst = npc.getLookAngle(
+          npc.lookSecs = 0.2;
+          npc.lookAngleDst = npc.getLookAngle(
             entryDist > 0.05 ? improved.src : improved.dst
           );
         }
@@ -701,7 +701,7 @@ export default function useHandleEvents(w) {
       const nextUnitNull = improved.slowDown;
 
       // register improved traversal
-      npc.s.offMesh = {
+      npc.offMesh = {
         npcKey: e.npcKey,
         orig: offMesh,
         seg: 0,
@@ -721,7 +721,7 @@ export default function useHandleEvents(w) {
           : null,
         tScaleSmoothTime: 0.5,
       };
-      (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.s.offMesh);
+      (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
 
       // force open door (open longer)
@@ -732,7 +732,7 @@ export default function useHandleEvents(w) {
         adj !== null && w.e.toggleDoor(adj.adjGdKey, { open: true, access: true });
       }
 
-      w.events.next({ key: 'enter-off-mesh', npcKey: npc.key, offMesh: npc.s.offMesh });
+      w.events.next({ key: 'enter-off-mesh', npcKey: npc.key, offMesh: npc.offMesh });
     },
     removeFromSensors(...npcKeys) {
       for (const npcKey of npcKeys) {
