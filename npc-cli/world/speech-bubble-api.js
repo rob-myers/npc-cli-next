@@ -57,18 +57,6 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * Forgetting disables the thought, it does not remove it.
-   * @param {string} thoughtKey 
-   */
-  forget(thoughtKey) {
-    const thought = this.thought[thoughtKey];
-    if (thought !== undefined) {
-      thought.disabled = true;
-      this.update();
-    }
-  }
-
-  /**
    * @param {React.WheelEvent} e
    */
   forwardWheelEvents(e) {
@@ -143,22 +131,30 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * Add thought
+   * - Add thought
+   * - Disable extant via empty `parts`
    * @param {string} thoughtKey 
    * @param {...string} parts
    */
   think(thoughtKey, ...parts) {
-    this.thought[thoughtKey] = {
-      key: thoughtKey,
-      def: parts.join(' '),
-      // e.g. ['get in', ['bed'], 'right now']
-      parts: parts.reduce((acc, x) => {
-        if (x.startsWith('[') && x.endsWith(']')) acc.push([x.slice(1, -1)]);
-        else if (typeof acc.at(-1) === 'string') acc[acc.length - 1] += ` ${x}`;
-        else acc.push(x);
-        return acc;
-      }, /** @type {(string | [string])[]} */ ([])),
-    };
+    if (parts.length === 0) {
+      if (thoughtKey in this.thought) {
+        this.thought[thoughtKey].disabled = true;
+      }
+    } else {
+      this.thought[thoughtKey] = {
+        key: thoughtKey,
+        def: parts.join(' '),
+        // e.g. ['get in', ['bed'], 'right now']
+        parts: parts.reduce((acc, x) => {
+          if (x.startsWith('[') && x.endsWith(']')) acc.push([x.slice(1, -1)]);
+          else if (typeof acc.at(-1) === 'string') acc[acc.length - 1] += ` ${x}`;
+          else acc.push(x);
+          return acc;
+        }, /** @type {(string | [string])[]} */ ([])),
+      };
+    }
+
     this.thoughts = Object.values(this.thought);
     this.update();
   }

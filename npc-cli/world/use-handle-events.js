@@ -147,10 +147,6 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       w.view.followPosition(npc.position, { height: helper.defaults.height });
     },
-    forget(npcKey, thoughtKey) {
-      const bubble = w.bubble.byKey[npcKey];
-      bubble?.forget(thoughtKey);
-    },
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
     },
@@ -833,11 +829,6 @@ export default function useHandleEvents(w) {
       const rect2 = tmpRect2.setFromPoints(src, dst).outset(radius);
       return rect1.intersects(rect2) === false;
     },
-    think(npcKey, thoughtKey, ...parts) {
-      const bubble = w.bubble.ensure(npcKey);
-      bubble.think(thoughtKey, ...parts);
-      w.n[npcKey].showLabel(false);
-    },
     toggleDoor(gdKey, opts = {}) {
       const door = w.door.byKey[gdKey];
 
@@ -942,9 +933,6 @@ export default function useHandleEvents(w) {
  * - is very close to main segment of offMesh connection
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
  * @property {(npcKey: string) => void} followNpc
- * @property {(npcKey: string, thoughtKey: string) => void} forget
- * - By default we set thought disabled.
- * - On `force` we delete the thought.
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(gmRoomIds: Geomorph.GmRoomId[], canAccess?: (opts: { gmId: number } & (
  *   | { type: 'door'; doorId: number }
@@ -975,7 +963,6 @@ export default function useHandleEvents(w) {
  * Are these disjoint?
  * - main `offMesh` segment outset by `radius`
  * - (`src`, `dst`) outset by `radius`
- * @property {(npcKey: string, thoughtKey: string, ...parts: string[]) => void} think
  * @property {(gdKey: Geomorph.GmDoorKey, opts?: { npcKey?: string; } & Geomorph.ToggleDoorOpts) => boolean} toggleDoor
  * Returns `true` iff successful.
  * @property {(gdKey: Geomorph.GmDoorKey, opts: { npcKey?: string; point?: Geom.VectJson; } & Geomorph.ToggleLockOpts) => boolean} toggleLock

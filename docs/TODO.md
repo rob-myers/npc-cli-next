@@ -92,6 +92,11 @@ events | demoGotoBedChoices npc:rob
 
 - ✅ collapse `npc.s.*` -> `npc.*`
 
+- ✅ move `w.e.think` to `think` via core.js
+  - `think npc:rob of:bed '[top bunk]' or [bottom] ?`
+- ✅ merge `w.e.forget` into `think`
+  - `think npc:rob of:bed` forgets
+
 - Broadcaster -> AsyncIterator inside JS function (not shell)
 
 - can choose default voice in WorldMenu
@@ -124,7 +129,7 @@ events | demoGotoBedChoices npc:rob
     - `w b.rob.popUp.open`
   - ✅ add bubble.thought
     - e.g. `get in [high bed] or [low bed]` where `[foo]` becomes link
-    - `w b.rob.think bedtime get in '[high bed]' or '[low bed]'`
+    - `think of:bedtime npc:rob get in '[high bed]' or '[low bed]'`
     - `w b.rob.forget bedtime`
   - ✅ handle empty thoughts
   - ✅ can force popup to be left + bottom

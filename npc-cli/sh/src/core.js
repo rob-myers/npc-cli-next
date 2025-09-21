@@ -439,14 +439,17 @@ export async function ray({ api, args, w }, opts = api.jsArg(args, { from: 'src'
 
 /**
  * ```sh
+ * # say something
  * say {1..5} npc:rob
  * say world: 1, rob: 0 npc:rob
  * say words:hello npc:rob
+ * # say nothing
+ * say npc:rob
  * ```
  * @param {NPC.RunArg} ctxt
- * @param {{ npcKey: string; say: string; words?: string; operands?: string[] }} [opts]
+ * @param {{ npcKey: string; say: string; words?: string }} [opts]
  */
-export const say = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) => {
+export function say({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
   const words = opts.words ?? args.filter(x => x in opts).join(' ');
   w.e.say({ npcKey: opts.npcKey, words });
 }
@@ -464,6 +467,22 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'np
   if (typeof opts.granted === 'string') {
     w.e.grantAccess(opts.granted, opts.npcKey);
   }
+}
+
+/**
+ * ```sh
+ * think npc:rob of:bed '[top bunk]' or [bottom] ?
+ * # disable extant thought
+ * think npc:rob of:bed
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string; thoughtKey: string; parts?: string[]; }} [opts]
+ */
+export function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', of: 'thoughtKey' })) {
+  const parts = opts.parts ?? args.filter(x => x in opts);
+  const bubble = w.bubble.ensure(opts.npcKey);
+  bubble.think(opts.thoughtKey, ...parts);
+  w.n[opts.npcKey].showLabel(false);
 }
 
 /**
