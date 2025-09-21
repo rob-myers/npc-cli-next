@@ -232,8 +232,7 @@ export default function useHandleEvents(w) {
           break;
         }
         case "nav-updated": {
-          // const excludeDoorsFilter = w.crowd.getFilter(helper.queryFilterType.excludeDoors);
-          // excludeDoorsFilter.includeFlags = 2 ** 1; // walkable only, not unwalkable
+          // 🚧 clear state.doorToOffMesh
           break;
         }
         case "pointerdown":
@@ -712,7 +711,7 @@ export default function useHandleEvents(w) {
           npc.exitOffMeshFor(newTarget);
         } else {
           npc.exitOffMeshFor(npc.position, false);
-          npc.startAnimation('Idle');
+          // npc.startAnimation('Idle');
           npc.s.lookSecs = 0.2;
           npc.s.lookAngleDst = npc.getLookAngle(
             entryDist > 0.05 ? improved.src : improved.dst

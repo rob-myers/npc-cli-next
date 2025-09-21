@@ -952,9 +952,8 @@ export class NpcApi {
 
     if (this.tryStopOffMesh() === true) {
       agent.teleport(this.position);
-      if (this.s.agentState === 2) {// handle immediate new offMeshConnection
-        this.s.agentState = -1;
-      }
+      // handle immediate new offMeshConnection
+      if (this.s.agentState === 2) this.s.agentState = -1;
     } else if (typeof this.s.offMesh?.tScaleDst === 'number') {
       // speed back up
       this.s.offMesh.tScaleDst = 1;
