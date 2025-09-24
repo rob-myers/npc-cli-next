@@ -26,9 +26,9 @@ export default function WorldMenu(props) {
   const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    bgScale: 12, // [1..20]
+    bgScale: 8, // [1..20]
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
-    dark: false,
+    dark: true,
     defaultLoggerDim: { x: 0, y: 0, width: w.smallViewport ? 300 : 500, height: 100, minWidth: 200, minHeight: 80 },
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
