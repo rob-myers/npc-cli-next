@@ -131,12 +131,15 @@ export class SpeechBubbleApi {
   }
 
   /**
-   * - Add thought
+   * - Add thought, or
    * - Disable extant via empty `parts`
    * @param {string} thoughtKey 
    * @param {...string} parts
    */
   think(thoughtKey, ...parts) {
+    if (thoughtKey === undefined) {
+      throw Error('thoughtKey is required');
+    }
     if (parts.length === 0) {
       if (thoughtKey in this.thought) {
         this.thought[thoughtKey].disabled = true;
