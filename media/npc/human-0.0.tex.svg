@@ -1037,6 +1037,9 @@
         <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAMCAYAAABfnvydAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAACKADAAQAAAABAAAADAAAAABgBN2SAAAAqElEQVQYGWWPMQ7DIAxFTYrUjUNk6UmyMnCAjJyKKdfIGbp2SC7RkSJXVN/UqKiWwN/2w8Z0P8/6LKV67yszy4FGDjVLX4sxUgiBjDEEfbGtNCngnFNJ0I95llgApfEadl1X8bwsJMCbWRJ6vbZNpN33Bmjh19+Oo0G4MSLnTLVWSULr2L5FKaUD0GryBwQpJVkRH4VWE6A11tToZQSWm6bebNQj/x99ALAvQMvDZIKKAAAAAElFTkSuQmCC" width="128" height="192" x="928" y="544" style="image-rendering: pixelated; filter: none;">
           <title>_front-1</title>
         </image>
+        <ellipse style="stroke-width: 1; fill-opacity: 0.2;" cx="992.052" cy="478.615" rx="44" ry="44">
+          <title>_shadow</title>
+        </ellipse>
       </g>
       <image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAMCAYAAACqYHctAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAABaADAAQAAAABAAAADAAAAAByun6AAAAAOUlEQVQIHWM8//TpfwYk8O/bNwYmJD6cycTIyAjnwBhM//+j6AaLY9XOws3CAtMFpj8DSawq6SYIAPAhCqI1S+Z3AAAAAElFTkSuQmCC" width="128" height="307.2" x="800" y="544" style="image-rendering: pixelated; filter: url(&quot;#inner-shadow-filter-12&quot;);" transform="matrix(1, 0, 0, 0.625, 0, 203.999908)">
         <title>_left</title>
