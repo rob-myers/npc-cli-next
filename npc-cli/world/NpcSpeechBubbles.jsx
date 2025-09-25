@@ -105,10 +105,10 @@ function NpcSpeechBubble({ bubble: b }) {
             css={popUpCss}
             deltaArrowLeft={28}
             label={<span className="npc-key">{b.key}</span>}
-            left
+            left={false}
             onWheel={b.forwardWheelEvents.bind(b)}
             onChange={b.onPopUpChange.bind(b)}
-            top={false}
+            top
             width={140}
           >
             <div
@@ -244,7 +244,7 @@ const popUpCss = css`
     background-color: rgba(0, 0, 0, 0.75);
   }
 
-  ${popUpBubbleArrowColorCssVar}: #99f9;
+  ${popUpBubbleArrowColorCssVar}: #fff9;
 `;
 
 const thoughtsCss = css`
