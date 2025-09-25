@@ -111,7 +111,7 @@ export default function useHandleEvents(w) {
           offMesh.src.x, offMesh.src.z,
           offMesh.dst.x, offMesh.dst.z,
           other.point.x, other.point.y,
-          0.25,
+          0.21,
         );
         
         if (otherIntersectsMainSeg === false) {
@@ -719,9 +719,9 @@ export default function useHandleEvents(w) {
         return;
       }
 
+
       const blockingNpcKey = (
         state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
-        // 🚧 maybe do not check if "facing door" rather than "round the corner"
         || state.findOtherBlockingNearDoor(npc, offMesh)
       );
       if (blockingNpcKey !== null) {
