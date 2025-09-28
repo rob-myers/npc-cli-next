@@ -45,7 +45,6 @@ export default function useHandleEvents(w) {
 
       const delta = tmpVect1.copy(newDst).sub(newSrc);
       const tmid = npcPoint.distanceTo(newSrc) / speed;
-      // const tmax = anim.tmid + (delta.length / speed);
       const tmax = tmid + (delta.length / speed);
 
       anim.set_t(0);
@@ -448,8 +447,17 @@ export default function useHandleEvents(w) {
       // - entrance segment (enSrc, enDst)
       // - exit segment (exSrc, exDst)
       // They border the connector joining the rooms.
-      const { src: enSrc, dst: enDst } = door.entrances[offMesh.aligned === true ? 0 : 1];
+      const enSeg = door.entrances[offMesh.aligned === true ? 0 : 1];
       const { src: exSrc, dst: exDst } = door.entrances[offMesh.aligned === true ? 1 : 0];
+      
+      // 🚧 fix mobile jerk by moving src a bit away from nav edge, unless too close
+      const sign = offMesh.aligned === true ? 1 : -1;
+      const enSrc2 = { x: enSeg.src.x + sign * door.normal.x * 0.2, y: enSeg.src.y + sign * door.normal.y * 0.2 };
+      const enDst2 = { x: enSeg.dst.x + sign * door.normal.x * 0.2, y: enSeg.dst.y + sign * door.normal.y * 0.2 };
+      const dp = (offMesh.dst.x - offMesh.src.x) * (enSrc2.x - npcPoint.x) + (offMesh.dst.z - offMesh.src.z) * (enSrc2.y - npcPoint.y);
+      const enSrc = dp < 0 ? enSeg.src : enSrc2;
+      const enDst = dp < 0 ? enSeg.dst : enDst2;
+      
 
       // Compute agent segment i.e. npcPoint --> nextCorner
       // - extend in both directions so intersects with entrance/exit segment

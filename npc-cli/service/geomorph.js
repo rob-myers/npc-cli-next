@@ -280,7 +280,7 @@ class GeomorphService {
    * @returns {Pick<Geomorph.Layout, 'navDecomp' | 'navRects'>}
    */
   decomposeLayoutNav(navPolyWithDoors, doors) {
-    // 🚧 remove all doorways... we'll use offMeshConnections instead
+    // remove all doorways... we'll use offMeshConnections instead
     const navDoorways = doors.map(x => x.computeDoorway().precision(precision).cleanFinalReps());
     const navPolySansDoors = Poly.cutOut(navDoorways, navPolyWithDoors).map(x => x.cleanFinalReps());
     const navDecomp = geom.joinTriangulations(navPolySansDoors.map(poly => poly.qualityTriangulate()));
@@ -1533,7 +1533,10 @@ export class Connector {
    * @returns {[Geom.Vect, Geom.Vect, Geom.Vect, Geom.Vect]} `[srcSeg0, srcSeg1, dstSeg0, dstSeg0]`
    */
   computeEntrances() {
-    const entranceHalfDepth = this.meta.hull ? connectorEntranceHalfDepth.hull : connectorEntranceHalfDepth.nonHull;
+    const entranceHalfDepth = this.meta.hull === true
+      ? connectorEntranceHalfDepth.hull
+      : connectorEntranceHalfDepth.nonHull
+    ;
     const normal = this.normal;
     const delta = tmpVect1.copy(this.seg[1]).sub(this.seg[0]);
     const length = delta.length;

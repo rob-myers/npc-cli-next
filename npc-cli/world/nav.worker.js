@@ -70,7 +70,6 @@ async function onRequestNav(msg) {
   result.navMesh.destroy();
 }
 
-
 /** @param {Geomorph.LayoutInstance[]} gms  */
 async function computeGeomorphMeshes(gms) {
   const meshes = /** @type {THREE.Mesh[]} */ ([]);
