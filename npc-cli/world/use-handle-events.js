@@ -444,20 +444,15 @@ export default function useHandleEvents(w) {
       const nextCorner = npc.getCornerAfterOffMesh(offMesh);
 
       // Entrances are aligned to offMeshConnections
-      // - entrance segment (enSrc, enDst)
-      // - exit segment (exSrc, exDst)
-      // They border the connector joining the rooms.
-      const enSeg = door.entrances[offMesh.aligned === true ? 0 : 1];
-      const { src: exSrc, dst: exDst } = door.entrances[offMesh.aligned === true ? 1 : 0];
+      // - entrance/exit segment en/ex
+      // - they border the connector joining the rooms.
+      let en = door.entrances[offMesh.aligned === true ? 0 : 1];
+      const ex = door.entrances[offMesh.aligned === true ? 1 : 0];
       
-      // 🚧 fix mobile jerk by moving src a bit away from nav edge, unless too close
-      const sign = offMesh.aligned === true ? 1 : -1;
-      const enSrc2 = { x: enSeg.src.x + sign * door.normal.x * 0.2, y: enSeg.src.y + sign * door.normal.y * 0.2 };
-      const enDst2 = { x: enSeg.dst.x + sign * door.normal.x * 0.2, y: enSeg.dst.y + sign * door.normal.y * 0.2 };
-      const dp = (offMesh.dst.x - offMesh.src.x) * (enSrc2.x - npcPoint.x) + (offMesh.dst.z - offMesh.src.z) * (enSrc2.y - npcPoint.y);
-      const enSrc = dp < 0 ? enSeg.src : enSrc2;
-      const enDst = dp < 0 ? enSeg.dst : enDst2;
-      
+      // entrance might be overwritten (moved inwards to avoid jerk)
+      const enClose = door.closeEntrances[offMesh.aligned === true ? 0 : 1];
+      const dp = (offMesh.dst.x - offMesh.src.x) * (enClose.src.x - npcPoint.x) + (offMesh.dst.z - offMesh.src.z) * (enClose.src.y - npcPoint.y);
+      if (dp > 0) en = enClose;
 
       // Compute agent segment i.e. npcPoint --> nextCorner
       // - extend in both directions so intersects with entrance/exit segment
@@ -471,38 +466,38 @@ export default function useHandleEvents(w) {
         y: nextCorner.y + (nextCorner.y - npcPoint.y),
       };
 
-      const enLambda = geom.getClosestOnSegToSeg(enSrc, enDst, agSrc, agDst);
+      const enLambda = geom.getClosestOnSegToSeg(en.src, en.dst, agSrc, agDst);
       let newSrc = {
-        x: enSrc.x + enLambda * (enDst.x - enSrc.x),
-        y: enSrc.y + enLambda * (enDst.y - enSrc.y),
+        x: en.src.x + enLambda * (en.dst.x - en.src.x),
+        y: en.src.y + enLambda * (en.dst.y - en.src.y),
       };
       /** @type {Geom.VectJson} */
       let newDst;
 
       // if newSrc --> corner intersects exit segment, use it (avoid turn)
-      const exIota = geom.getLineSegsIntersection(exSrc, exDst, newSrc, nextCorner);
+      const exIota = geom.getLineSegsIntersection(ex.src, ex.dst, newSrc, nextCorner);
       
       if (exIota === null) {
-        const exLambda = geom.getClosestOnSegToSeg(exSrc, exDst, agSrc, agDst);
+        const exLambda = geom.getClosestOnSegToSeg(ex.src, ex.dst, agSrc, agDst);
         newDst = { 
-          x: exSrc.x + exLambda * (exDst.x - exSrc.x),
-          y: exSrc.y + exLambda * (exDst.y - exSrc.y),
+          x: ex.src.x + exLambda * (ex.dst.x - ex.src.x),
+          y: ex.src.y + exLambda * (ex.dst.y - ex.src.y),
         };
         
         if (exLambda === 0 || exLambda === 1) {// if "turning around corner"
           // if npcPoint --> newDst intersects entrance segment, use it (avoid turn)
-          const enIota = geom.getLineSegsIntersection(enSrc, enDst, npcPoint, newDst);
+          const enIota = geom.getLineSegsIntersection(en.src, en.dst, npcPoint, newDst);
           if (enIota !== null) {
             newSrc = { 
-              x: enSrc.x + enIota * (enDst.x - enSrc.x),
-              y: enSrc.y + enIota * (enDst.y - enSrc.y),
+              x: en.src.x + enIota * (en.dst.x - en.src.x),
+              y: en.src.y + enIota * (en.dst.y - en.src.y),
             };
           }
         }
       } else {
         newDst = { 
-          x: exSrc.x + exIota * (exDst.x - exSrc.x),
-          y: exSrc.y + exIota * (exDst.y - exSrc.y),
+          x: ex.src.x + exIota * (ex.dst.x - ex.src.x),
+          y: ex.src.y + exIota * (ex.dst.y - ex.src.y),
         };
       }
 
