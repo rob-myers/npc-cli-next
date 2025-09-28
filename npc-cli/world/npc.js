@@ -941,7 +941,7 @@ export class NpcApi {
     agent.raw.params.set_collisionQueryRange(defaultAgentUpdateFlags);
     agent.raw.params.set_separationWeight(defaultSeparationWeight);
     agent.raw.params.set_queryFilterType(helper.queryFilterType.respectUnwalkable);
-    agent.raw.params.set_radius((this.run ? 1.5 : 1) * helper.defaults.radius);
+    agent.raw.params.set_radius((this.run === true ? 1.5 : 1) * helper.defaults.radius);
     this.agentAnim?.set_tScale(1);
 
     this.lastStart.copy(this.point);
@@ -1195,8 +1195,6 @@ export class NpcApi {
    * @param {import('@recast-navigation/core').CrowdAgent} agent
    */
   onTickAgent(deltaSecs, agent) {
-    // 🚧 precision 4 dp too low
-    // const position = v3Precision(agent.position());
     const position = agent.position();
     const agentState = agent.state();
 

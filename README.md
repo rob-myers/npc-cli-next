@@ -67,6 +67,18 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 2. Choppy framerate can occur when OS hints "Low Power" (e.g. OSX). Can see 60fps in @react-three/drei Stats yet seems choppier. Does not seem to get fixed when stop "Low Power" without hard refresh. Possible Chrome restart too.
 
+
+### Debug on mobile hotspot
+
+```sh
+yarn dev
+
+# get local ip address for mobile development
+ipconfig getifaddr en0
+
+# navigate to http://${ipAddress}:3000
+```
+
 ## Development only routes
 
 These are removed in production via next.config output `export`.
@@ -238,17 +250,6 @@ but after publishing we should re-comment these paths and use turbopack.
 
 1. Run `npm install`
 
-
-### Debug on mobile hotspot
-
-```sh
-yarn dev
-
-# get local ip address for mobile development
-ipconfig getifaddr en0
-
-# navigate to http://${ipAddress}:3000
-```
 
 ### Fix VSCode push button error
 
