@@ -204,13 +204,13 @@ const npcSpeechBubbleCss = css`
 
   .speech {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.2rem;
 
     color: #ff9;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(0, 0, 0, 0.4);
-    line-height: 1.4;
-    padding: 0px 8px;
+    /* background-color: rgba(0, 0, 0, 0.4); */
+    line-height: 1.2;
+    padding: 4px 8px;
     text-shadow: 2px 0px black;
     
     display: -webkit-box;
