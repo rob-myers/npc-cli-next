@@ -135,8 +135,8 @@ export default function Ceiling(props) {
         diffuse={[0.5, 0.5, 0.5]}
         opacity={state.opacity}
         objectPickRed={3}
-        opacityCloseDivisor={10}
-        opacityMin={state.opacity}
+        // opacityCloseDivisor={10}
+        opacityMin={1}
       />
     </instancedMesh>
   );
