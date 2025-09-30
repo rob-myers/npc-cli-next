@@ -47,7 +47,7 @@ export default function Ceiling(props) {
       const { tops, polyDecals } = w.gmsData[gmKey];
       
       // wall/door tops
-      const nonHullWallsFill = state.dark ? '#444' : '#001';
+      const nonHullWallsFill = state.dark ? '#777' : '#001';
       const nonHullWallsStroke = state.dark ? '#000' : '#888';
       const windowsFill = '#000';
       const broadFill = '#000';
