@@ -108,7 +108,7 @@ function NpcSpeechBubble({ bubble: b }) {
             left={false}
             onWheel={b.forwardWheelEvents.bind(b)}
             onChange={b.onPopUpChange.bind(b)}
-            top
+            top={false}
             width={140}
           >
             <div
@@ -208,7 +208,8 @@ const npcSpeechBubbleCss = css`
 
     color: #ff9;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    /* background-color: rgba(0, 0, 0, 0.4); */
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.2);
     line-height: 1.2;
     padding: 4px 8px;
     text-shadow: 2px 0px black;
@@ -242,6 +243,8 @@ const popUpCss = css`
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 12px;
+    border-top-left-radius: 0;
   }
 
   ${popUpBubbleArrowColorCssVar}: #fff9;
