@@ -18,7 +18,7 @@ export default function Floor(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    dark: true,
+    dark: false,
     debug: false, // show decor rects
     grid: getGridPattern(geomorphGridMeters * worldToCanvas, 'rgba(200, 0, 0, 0.5)'),
     inst: /** @type {*} */ (null),
@@ -93,8 +93,8 @@ export default function Floor(props) {
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
       ct.lineWidth = w.touchDevice ? 0.05 : 0.04;
-      const fillStyle = state.dark === true ? '#000' : '#ccc';
-      const strokeStyle = state.dark === true ? '#4448' : '#4448';
+      const fillStyle = state.dark === true ? '#000' : '#888';
+      const strokeStyle = state.dark === true ? '#4448' : '#3358';
       
       // 🔔 handle early change to map with new geomorph keys
       (w.nav.toNavTris[gm.key] ?? []).forEach(([positions, indices]) => {
