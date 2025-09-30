@@ -659,13 +659,13 @@ export class NpcApi {
       // - slow down if will stop right after doorway
       // - speed up if changed target while slowing down
       // 🔔 scaling up tScaleSmoothTime makes traversal faster
-      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSmoothTime * 1.3, deltaSecs);
+      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSmoothTime * 1.5, deltaSecs);
       anim.set_tScale(offMesh.tScale);
     }
 
     // look further along the path
     // 🔔 with 0.2 saw jerk when two agents through doorway
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.6);
     const dirX = lookAt.x - this.point.x;
     const dirY = lookAt.y - this.point.y;
     const radians = geom.clockwiseFromNorth(dirY, dirX);
