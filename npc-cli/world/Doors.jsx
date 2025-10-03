@@ -103,14 +103,6 @@ export default function Doors(props) {
             ? (offMeshConnectionHalfDepth.hull - connectorEntranceHalfDepth.hull)
             : (offMeshConnectionHalfDepth.nonHull - connectorEntranceHalfDepth.nonHull)
           ));
-          const closeSrcEnSeg = {
-            src: { x: srcEnSeg.src.x + door.normal.x * 0.2, y: srcEnSeg.src.y + door.normal.y * 0.2 },
-            dst: { x: srcEnSeg.dst.x + door.normal.x * 0.2, y: srcEnSeg.dst.y + door.normal.y * 0.2 },
-          };
-          const closeDstEnSeg = {
-            src: { x: dstEnSeg.src.x - door.normal.x * 0.2, y: dstEnSeg.src.y - door.normal.y * 0.2 },
-            dst: { x: dstEnSeg.dst.x - door.normal.x * 0.2, y: dstEnSeg.dst.y - door.normal.y * 0.2 },
-          };
           const farDeltaSrc = { x: door.normal.x * srcFarScale, y: door.normal.y * srcFarScale };
           const farDeltaDst = { x: door.normal.x * dstFarScale, y: door.normal.y * dstFarScale };
           
@@ -137,7 +129,6 @@ export default function Doors(props) {
             normal: tmpMat1.transformSansTranslate(door.normal.clone()),
             segLength: u.distanceTo(v),
             entrances: [srcEnSeg, dstEnSeg],
-            closeEntrances: [closeSrcEnSeg, closeDstEnSeg],
             farDeltas: [farDeltaSrc, farDeltaDst],
 
             collidePoly,

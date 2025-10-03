@@ -104,11 +104,6 @@ declare namespace Geomorph {
     /** 1st entrance pointed to by `normal` */
     entrances: [Geom.Seg, Geom.Seg];
     /**
-     * Entrances moved slightly inward so they're inside the nav mesh.
-     * Avoids jerk on enter off mesh connection, particularly visible when 60fps.
-     */
-    closeEntrances: [Geom.Seg, Geom.Seg];
-    /**
      * Added to exits (a point on a segment door.entrances[i]) to compute "far exit".
      * Used to avoid NPCs blocking the door.
      */

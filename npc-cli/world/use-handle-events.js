@@ -448,11 +448,6 @@ export default function useHandleEvents(w) {
       // - they border the connector joining the rooms.
       let en = door.entrances[offMesh.aligned === true ? 0 : 1];
       const ex = door.entrances[offMesh.aligned === true ? 1 : 0];
-      
-      // entrance might be overwritten (moved inwards to avoid jerk)
-      const enClose = door.closeEntrances[offMesh.aligned === true ? 0 : 1];
-      const dp = (offMesh.dst.x - offMesh.src.x) * (enClose.src.x - npcPoint.x) + (offMesh.dst.z - offMesh.src.z) * (enClose.src.y - npcPoint.y);
-      if (dp > 0) en = enClose;
 
       // Compute agent segment i.e. npcPoint --> nextCorner
       // - extend in both directions so intersects with entrance/exit segment
@@ -499,6 +494,14 @@ export default function useHandleEvents(w) {
           x: ex.src.x + exIota * (ex.dst.x - ex.src.x),
           y: ex.src.y + exIota * (ex.dst.y - ex.src.y),
         };
+      }
+
+      // 🔔 move towards npc to ensure on navmesh (else jerk @60fps)
+      const delta = tmpVect1.copy(newSrc).sub(npc.point);
+      const deltaLen = delta.length;
+      if (deltaLen > 0.2) {
+        newSrc.x -= delta.x * (0.2 / deltaLen);
+        newSrc.y -= delta.y * (0.2 / deltaLen);
       }
 
       // we slow down if final target is close to doorway exit,
