@@ -25,7 +25,7 @@ export default function Npcs(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byAgId: {},
-    dark: true,
+    dark: !w.touchDevice,
     doToNpc: {},
     freeId: new Set(range(maxNumberOfNpcs)),
     gltf: /** @type {*} */ ({}),
