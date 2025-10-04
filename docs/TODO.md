@@ -13,7 +13,8 @@
     - `ray test from:rob to:will`
 
 - 🚧 Example: Narrator sends Player to bed
-  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]' | narrate`
+  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]?.label' | narrate`
+  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]?.label' | while label=$( take 1 ); do narrate Kate entered the ${label}; done`
 
 - 🚧 Example: Player avoids Guard
 
