@@ -191,17 +191,15 @@ export async function* click(ct) {
  * ```sh
  * events | filter 'e => e.npcKey'
  * events | filter /pointerup/
- * events /pointerup/
+ * events /enter-room/
  * ```
  * @param {NPC.RunArg} ctxt
  */
 export async function* events({ api, args, w }) {
-  const filter = args[0] ? api.generateSelector(
-    api.parseFnOrStr(args[0]),
-    [],
-  ) : undefined;
-  
-  // 🔔 independent because we won't synchronously invoke `w.events.next`
+  const filter = args[0]
+    ? api.generateSelector(api.parseFnOrStr(args[0]), [])
+    : undefined
+  ;
   const asyncIterable = api.observableToAsyncIterable(w.events);
   const handlers = api.handleStatus({
     // could not catch asyncIterable.throw?.(api.getKillError())
