@@ -13,7 +13,7 @@
     - `ray test from:rob to:will`
 
 - 🚧 Example: Narrator sends Player to bed
-  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]'`
+  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]' | narrate`
 
 - 🚧 Example: Player avoids Guard
 
@@ -90,6 +90,13 @@ events | demoGotoBedChoices npc:rob
   - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
 
 ### World
+
+- ✅ BUG `narrate` (util.js) goes silent on pause/resume while not speaking
+  - can also happen initially
+  - e.g. `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]' | narrate`
+  - pause then resume again fixes it
+  - reboot process fixes it
+  - cannot Ctrl-C?
 
 - ✅ BUG: if change target while turning around before offMesh then old target used
 

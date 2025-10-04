@@ -481,7 +481,15 @@ export class VoiceDevice implements Device {
    * - `string` from e.g. `echo foo{1..5} >/dev/voice`
    */
   async writeData(input: VoiceCommand | string) {
-    await this.speak((this.command = typeof input === "string" ? { text: input } : input));
+    if (typeof input === 'string') {
+      this.command = { text: input };
+    } else if (typeof input?.text === 'string') {
+      this.command = input;
+    } else {
+      return;
+    }
+
+    await this.speak(this.command);
     this.command = null;
   }
 
@@ -490,13 +498,16 @@ export class VoiceDevice implements Device {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = this.voices.find(({ name }) => name === voice) || this.defaultVoice;
 
-    if (this.speaking) {
+    if (this.speaking === true) {
       await new Promise<void>((resolve) => this.pending.push(resolve));
     }
 
+    // fix blocked speech
+    this.synth.cancel();
+
     this.speaking = true;
     await new Promise<void>((resolve, _) => {
-      utterance.onend = () => setTimeout(() => resolve(), 100);
+      utterance.onend = () => setTimeout(resolve, 100);
       utterance.onerror = (errorEvent) => {
         ttyError(`Utterance '${text}' by '${voice}' failed.`);
         ttyError(errorEvent);
