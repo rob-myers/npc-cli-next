@@ -25,8 +25,9 @@ export default function useHandleEvents(w) {
     npcToDoors: {},
     npcToRoom: new Map(),
     pressMenuPrevent: {},
+    roomMeta: {},
     roomToNpcs: [],
-
+    
     applyImprovedOffMesh(npc, improved) {
       const npcPoint = npc.point;
       const { src: newSrc, dst: newDst } = improved;
@@ -444,7 +445,7 @@ export default function useHandleEvents(w) {
       const nextCorner = npc.getCornerAfterOffMesh(offMesh);
 
       // Entrances are aligned to offMeshConnections
-      // - entrance/exit segment en/ex
+      // - entrance segment (en), exit segment (ex)
       // - they border the connector joining the rooms.
       let en = door.entrances[offMesh.aligned === true ? 0 : 1];
       const ex = door.entrances[offMesh.aligned === true ? 1 : 0];
@@ -765,7 +766,7 @@ export default function useHandleEvents(w) {
         // 🚧 clean
         tScale: 1,
         tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0
-          ? door.hull === true ? 0.25 : 0.2
+          ? door.hull === true ? 0.5 : 0.25
           : null,
         tScaleSmoothTime: 0.5,
       };
@@ -930,6 +931,7 @@ export default function useHandleEvents(w) {
  * Relates `npcKey` to current room, unless in a doorway (offMeshConnection)
  * @property {{ [key: string]: (lastDownMeta: Meta) => boolean}} pressMenuPrevent
  * Prevent ContextMenu on long press if any of these return `true`.
+ * @property {Record<Geomorph.GmRoomKey, Meta<{ label?: string }>>} roomMeta
  * @property {{[roomId: number]: Set<string>}[]} roomToNpcs
  * The "inverse" of npcToRoom i.e. `roomToNpc[gmId][roomId]` is a set of `npcKey`s
  *

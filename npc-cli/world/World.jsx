@@ -180,8 +180,7 @@ export default function World(props) {
       if (dataChanged === true) {
         next.geomorphs = geomorph.deserializeGeomorphs(geomorphsJson);
       }
-      
-      // const mapChanged = dataChanged || state.mapKey !== props.mapKey;
+
       const mapChanged = (
         state.mapKey !== props.mapKey ||
         next.hash.map !== state.hash.map ||
@@ -199,6 +198,7 @@ export default function World(props) {
       
       // 🔔 if this function changes we'll run the whole query
       const queryFnHash = hashText(queryCache.find({ queryKey: [WORLD_QUERY_FIRST_KEY], exact: false })?.options.queryFn?.toString() ?? '');
+
       const { createGmsData: gmsDataChanged, GmGraph: gmGraphChanged, queryFnHash: queryFnHashChanged } = state.trackHmr({
         createGmsData,
         GmGraph,
@@ -246,11 +246,10 @@ export default function World(props) {
         state.gmGraph.dispose();
         state.gmRoomGraph.dispose();
       }
-      // 🔔 only when GmData lookup has been rebuilt
       if (mapChanged === true || gmsDataChanged === true) {
+        // 🔔 only when GmData lookup has been rebuilt
         state.gmsData?.dispose();
       }
-      
       Object.assign(state, next);
 
       debug({
@@ -320,6 +319,11 @@ export default function World(props) {
       state.texNpcLabel.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
 
       state.npc?.forceUpdate(); // violate <MemoizedNPC>
+
+      // useHandleEvents lookups
+      state.gms.forEach(gm => gm.rooms.forEach((room, roomId) =>
+        state.e.roomMeta[`g${gm.gmId}r${roomId}`] = room.meta
+      ));
 
       return true;
     },
