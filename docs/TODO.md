@@ -5,7 +5,7 @@
 ### Site
 
 - ✅ towards start with behaviour/story
-  - ℹ️ rather than abstract spawn,**** move etc.
+  - ℹ️ rather than abstract spawn, move etc.
   - ℹ️ more interactive
   - ✅ detect when npc near bed via `near`
     - `near npc:rob where:bed`
@@ -14,7 +14,9 @@
 
 - 🚧 Example: Narrator sends Player to bed
   - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]?.label' | narrate`
-  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]?.label' | while label=$( take 1 ); do narrate Kate entered the ${label}; done`
+  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]?.label' | while label=$( take 1 ); do narrate "Kate entered the ${label}"; done`
+  - `events /enter-door/ | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' | while label=$( take 1 ); do narrate "Kate entered the ${label}"; done`
+  - restrict to npcKey
 
 - 🚧 Example: Player avoids Guard
 

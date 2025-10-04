@@ -631,6 +631,7 @@ export default function useHandleEvents(w) {
       }
 
       w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(offMesh.orig.srcGrKey) });
+      w.events.next({ key: 'enter-door', npcKey: e.npcKey, ...helper.getGmDoorId(offMesh.orig.gdKey), src: helper.getGmRoomId(offMesh.orig.srcGrKey), dst: helper.getGmRoomId(offMesh.orig.dstGrKey) });
     },
     onExitDoorCollider(e) {// e.type === 'nearby'
       const door = w.door.byKey[e.gdKey];
