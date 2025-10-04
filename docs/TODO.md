@@ -4,15 +4,18 @@
 
 ### Site
 
-- 🚧 towards start with behaviour/story
+- ✅ towards start with behaviour/story
   - ℹ️ rather than abstract spawn,**** move etc.
   - ℹ️ more interactive
   - ✅ detect when npc near bed via `near`
     - `near npc:rob where:bed`
   - ✅ detect when npc can see other via `ray`
     - `ray test from:rob to:will`
-  - 🚧 can move AND when near bed log something
-  - use narrator
+
+- 🚧 Example: Narrator sends Player to bed
+  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]'`
+
+- 🚧 Example: Player avoids Guard
 
 ```sh
 import demoClickToMove demoGotoBedChoices from demo
@@ -48,7 +51,7 @@ events | demoGotoBedChoices npc:rob
     - ✅ show touch points
       - developer options > input > Show taps
 
-- 🚧 strategy subsection
+- ❌ strategy subsection
   - ✅ need `<Code>`
     - ✅ can copy line-by-line
     - ✅ can copy all
