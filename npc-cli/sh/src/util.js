@@ -1,3 +1,4 @@
+import { jsStringify } from '@/npc-cli/service/generic';
 import { ansi } from '../const';
 import { stripAnsi, ttyError } from "../util";
 
@@ -305,8 +306,9 @@ export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voic
     if (api.isTtyAt(0) === false) {
       let datum;
       while ((datum = await api.read()) !== api.eof) {
-        await opts?.onSay?.({ voice, words: `${datum}` });
-        yield { voice, text: `${datum}` };
+        const words = jsStringify(datum);
+        await opts?.onSay?.({ voice, words: words });
+        yield { voice, text: words };
       }
     }
 
