@@ -301,9 +301,7 @@ export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voic
     if (words !== '') {
       await opts?.onSay?.({ voice, words });
       yield { voice, text: words };
-    }
-
-    if (api.isTtyAt(0) === false) {
+    } else if (api.isTtyAt(0) === false) {
       let datum;
       while ((datum = await api.read()) !== api.eof) {
         const text = typeof datum === 'string' ? datum : jsStringify(datum);
