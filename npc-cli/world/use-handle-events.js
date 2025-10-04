@@ -766,7 +766,7 @@ export default function useHandleEvents(w) {
         // 🚧 clean
         tScale: 1,
         tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0
-          ? door.hull === true ? 0.5 : 0.25
+          ? door.hull === true ? 0.5 : 0.35
           : null,
         tScaleSmoothTime: 0.5,
       };
