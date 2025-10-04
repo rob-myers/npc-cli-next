@@ -12,23 +12,25 @@ import { helper } from './helper';
 export default function createGmsData() {
   const gmsData = {
     ...mapValues(helper.toGmNum, (_, gmKey) => ({ ...emptyGmData, gmKey })),
-    /** Total number of doors, each being a single quad (🔔 may change):  */
+    /** Total number of doors, each being a single quad (🔔 may change) */
     doorCount: 0,
     /** Geomorph key to first geomorph instance. Technically only defined for `seenGmKeys` */
     gmKeyToFirst: /** @type {Record<Key.Geomorph, Geomorph.LayoutInstance>} */ ({}),
-    /** Total number of obstacles, each being a single quad:  */
+    /** Total number of obstacles, each being a single quad  */
     obstaclesCount: 0,
     /** This induces the floor/ceil texture array ordering */
     seenGmKeys: /** @type {Key.Geomorph[]} */ ([]),
-    /** Total number of walls, where each wall is a single quad:  */
+    /** Total number of walls, where each wall is a single quad */
     wallCount: 0,
-    /** Per gmId, total number of wall line segments:  */
+    /** Per gmId, total number of wall line segments */
     wallPolySegCounts: /** @type {number[]} */ ([]),
     
     /**
-     * Recomputed (dev only) onchange geomorphs.json or edit create-gms-data
+     * - Populates `gmsData[gm.key]`.
+     * - Mutates `gm.doors` and `gm.windows` i.e. provides `roomIds`.
+     * - Mutates `gm.obstacles` and `gm.decor` i.e. provides `meta.roomId`.
+     * - In development, recomputed onchange geomorphs.json or edit this file.
      * @param {Geomorph.Layout} gm
-     * This is the "incoming" value.
      */
     async computeGmData(gm) {
       const gmData = gmsData[gm.key];
@@ -96,7 +98,6 @@ export default function createGmsData() {
       for (const obstacle of gm.obstacles) {
         obstacle.meta.roomId ??= (gmsData.findRoomIdContaining(gm, obstacle.center) ?? -1);
       }
-
       // 🔔 currently must recompute onchange decor
       for (const decor of gm.decor.concat(gm.labels)) {
         tmpVec1.set(decor.bounds2d.x + decor.bounds2d.width/2, decor.bounds2d.y + decor.bounds2d.height/2);
