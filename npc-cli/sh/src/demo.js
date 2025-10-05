@@ -121,15 +121,26 @@ export async function* demoSelectPolys({ w }) {
 
 export async function *demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   
-  // 🚧
   const { w, api } = ct;
+
+  const currentGrKey = w.e.npcToRoom.get(opts.npcKey)?.grKey;
+  const currentRoom = currentGrKey ? (w.e.roomMeta[currentGrKey].label ?? 'room') : 'room';
+
+  // 🚧 what if move into other room before speech finished
+  // 🚧 what if quickly move between two rooms
+  yield* core.narrate(ct, { words: `${opts.npcKey} was tired... ${
+    currentRoom === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
+  }`});
 
   for await (const e of core.events(ct, {
     /** @returns {e is NPC.EnterDoorEvent} */
     where: (e) => e.key === 'enter-door' && e.npcKey === opts.npcKey
   })) {
     const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
-    yield* core.narrate(ct, { words: `${opts.npcKey} entered the ${roomLabel}` });
+    const words = `${opts.npcKey} entered the ${roomLabel}... ${
+      roomLabel === 'stateroom' ? 'There was a bed' : 'There was no bed.'
+    }`;
+    yield* core.narrate(ct, { words });
   }
 
   // if (!(

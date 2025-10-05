@@ -18,6 +18,8 @@
   - 🚧 on enter branching narration
     - stateroom "...and headed for a bed"
     - else "...which was not a stateroom"
+  - 🚧 improve initial long message (too slow)
+  - 🚧 improve two rooms one-after-another (too slow)
 
 ```sh
 events /enter-door/ | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' | narrate
