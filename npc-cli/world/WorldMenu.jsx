@@ -30,21 +30,26 @@ export default function WorldMenu(props) {
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
     dark: false,
     defaultLoggerDim: { x: 0, y: 0, width: w.smallViewport ? 300 : 500, height: 100, minWidth: 200, minHeight: 80 },
+    defaultVoice: tryLocalStorageGetParsed(`defaultVoice@${w.key}`),
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
     logger: /** @type {*} */ (null),
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
+    voices: window.speechSynthesis.getVoices(),
     xRayEnabled: true,
 
     applyControlsInitValues() {
       /** @param {any} value */
-      const toEvent = (value) => /** @type {React.ChangeEvent<HTMLInputElement>} */ ({ currentTarget: { value, checked: value } });
-      state.onChangeBrightness(toEvent(state.brightness))
-      state.onChangeBgScale(toEvent(state.bgScale));
-      state.onChangeCanTweenPaused(toEvent(w.view.canTweenPaused));
-      state.onChangeDark(toEvent(state.dark));
+      const toInputEvent = (value) => /** @type {React.ChangeEvent<HTMLInputElement>} */ ({ currentTarget: { value, checked: value } });
+      state.onChangeBrightness(toInputEvent(state.brightness))
+      state.onChangeBgScale(toInputEvent(state.bgScale));
+      state.onChangeCanTweenPaused(toInputEvent(w.view.canTweenPaused));
+      state.onChangeDark(toInputEvent(state.dark));
+      /** @param {any} value */
+      const toSelectEvent = (value) => /** @type {React.ChangeEvent<HTMLSelectElement>} */ ({ currentTarget: { value } });
+      state.onChangeDefaultVoice(toSelectEvent(state.defaultVoice));
     },
     log(...lines) {
       for (const line of lines) {
@@ -67,11 +72,16 @@ export default function WorldMenu(props) {
     onChangeBrightness(e) {
       state.brightness = Number(e.currentTarget.value);
       w.view.setCssFilter({ brightness: `${100 + 10 * (state.brightness - 10)}%` });
-      tryLocalStorageSet(`brightness@${w.key}`, `${state.brightness}`);
+      tryLocalStorageSet(`brightness@${w.key}`, JSON.stringify(state.brightness));
+    },
+    onChangeDefaultVoice(e) {
+      const voice = state.voices.find(v => v.name === e.currentTarget.value);
+      state.defaultVoice = voice?.name ?? null;
+      tryLocalStorageSet(`defaultVoice@${w.key}`, JSON.stringify(state.defaultVoice));
     },
     onChangeLoggerLog(e) {
       state.showDebug = e.currentTarget.checked;
-      tryLocalStorageSet(`logger:debug@${w.key}`, `${state.showDebug}`);
+      tryLocalStorageSet(`logger:debug@${w.key}`, JSON.stringify(state.showDebug));
       update();
     },
     onChangeCanTweenPaused(e) {
@@ -166,7 +176,7 @@ export default function WorldMenu(props) {
           width={300}
         >
           <div className="ranges">
-            <label>
+            <label title="background color">
               <input
                 type="range"
                 className="scale-bg-color"
@@ -179,7 +189,7 @@ export default function WorldMenu(props) {
                 ⏰
               </div>
             </label>
-            <label>
+            <label title="brightness">
               <input
                 type="range"
                 className="change-brightness"
@@ -189,6 +199,17 @@ export default function WorldMenu(props) {
                 onChange={state.onChangeBrightness}
               />
               <div>☀️</div>
+            </label>
+            <label title="default voice">
+              <select
+                className="change-default-voice"
+                onChange={state.onChangeDefaultVoice}
+              >
+                {state.voices.map(voice =>
+                  <option key={voice.name} value={voice.name}>{voice.name}</option>
+                )}
+              </select>
+              <div>🤖</div>
             </label>
           </div>
           <div className="checkboxes">
@@ -326,8 +347,12 @@ const popUpCss = css`
         justify-content: center;
         width: 16px;
       }
-      input {
+      input, select {
         width: 60px;
+      }
+      select {
+        background-color: black;
+        color: white;
       }
     }
 
@@ -385,48 +410,12 @@ const popUpCss = css`
   }
 `;
 
-const pausedControlsCss = css`
-  position: absolute;
-  right: 0;
-  top: 64px;
-  z-index: ${zIndexTabs.pausedControls};
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  button {
-    color: #aaa;
-    padding: 12px;
-    background-color: #000;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-    border-width: 1px 0 1px 1px;
-    border-color: #555;
-    font-size: 0.8rem;
-    user-select: none;
-
-    width: 80px;
-    opacity: 0.75;
-
-    &.text-white {
-      color: #fff;
-    }
-    &.text-green {
-      color: #0f0;
-    }
-  }
-
-  transition: filter 1s;
-  &:hover {
-    filter: brightness(2) ;
-  }
-`;
-
 /**
  * @typedef State
  * @property {number} bgScale In [1..20]. For background-color scaling.
  * @property {number} brightness [1..20] inducing percentage `100 + 10 * (b - 10)`
  * @property {import('../components/Draggable').Props['dim']} defaultLoggerDim
+ * @property {null | string} defaultVoice
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys
@@ -434,6 +423,7 @@ const pausedControlsCss = css`
  * @property {import('../terminal/Logger').State} logger
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
+ * @property {SpeechSynthesisVoice[]} voices
  * @property {boolean} xRayEnabled
  *
  * @property {() => void} applyControlsInitValues
@@ -444,6 +434,7 @@ const pausedControlsCss = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeBrightness
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeDark
+ * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onChangeDefaultVoice
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRayEnabled
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink
