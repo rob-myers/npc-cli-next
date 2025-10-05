@@ -192,23 +192,25 @@ export async function* click(ct) {
  * events | filter 'e => e.npcKey'
  * events | filter /pointerup/
  * events /enter-door/
+ * events 'e => e.key === "enter-door"'
+ * events where:'e => e.key === "enter-door"'
  * ```
+ * @template {NPC.Event} [T=NPC.Event]
  * @param {NPC.RunArg} ctxt
+ * @param {{ where?(e: NPC.Event): e is T }} [opts]
  */
-export async function* events({ api, args, w }) {
-  const filter = args[0]
-    ? api.generateSelector(api.parseFnOrStr(args[0]), [])
-    : undefined
-  ;
+export async function* events({ api, args, w }, opts = api.jsArg(args)) {
+  const filter = !args[0] ? undefined : (
+    opts.where ?? api.generateSelector(api.parseFnOrStr(args[0]), [])
+  );
   const asyncIterable = api.observableToAsyncIterable(w.events);
   const handlers = api.handleStatus({
-    // could not catch asyncIterable.throw?.(api.getKillError())
     cleanups() { asyncIterable.return?.() },
   });
 
   for await (const event of asyncIterable) {
-    if (filter === undefined || filter?.(event)) {
-      yield event;
+    if (filter === undefined || filter(event)) {
+      yield /** @type {T} */ (event);
     }
   }
   // get here via ctrl-c or `kill`
