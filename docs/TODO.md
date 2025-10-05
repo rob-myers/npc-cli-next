@@ -13,10 +13,15 @@
     - `ray test from:rob to:will`
 
 - 🚧 Example: Narrator sends Player to bed
-  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]?.label' | narrate`
-  - `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]?.label' | while label=$( take 1 ); do narrate "Kate entered the ${label}"; done`
-  - `events /enter-door/ | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' | while label=$( take 1 ); do narrate "Kate entered the ${label}"; done`
-  - restrict to npcKey
+
+```sh
+events /enter-door/ | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' | narrate
+
+events /enter-door/ | while e=$( take 1 ); do
+  label=$( e | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' )
+  narrate "$( e/npcKey ) entered the ${label}"
+done
+```
 
 - 🚧 Example: Player avoids Guard
 
@@ -96,7 +101,7 @@ events | demoGotoBedChoices npc:rob
 
 - ✅ BUG `narrate` (util.js) goes silent on pause/resume while not speaking
   - can also happen initially
-  - e.g. `events /enter-room/ | map '({ grKey }, { w }) => w.e.roomMeta[grKey]' | narrate`
+  - e.g. `events /exit-door/ | map '({ dst: { grKey } }, { w }) => w.e.roomMeta[grKey]' | narrate`
   - pause then resume again fixes it
   - reboot process fixes it
   - cannot Ctrl-C?

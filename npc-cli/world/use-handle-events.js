@@ -373,15 +373,15 @@ export default function useHandleEvents(w) {
         case "exit-off-mesh": // exit main segment
           state.onExitOffMeshConnection(e, npc);
           break;
-        case "enter-room": {
-          const { npcKey, gmId, roomId, grKey } = e;
-          state.npcToRoom.set(npcKey, { gmId, roomId, grKey });
-          (state.roomToNpcs[gmId][roomId] ??= new Set()).add(npcKey);
+        case "enter-door": {
+          state.npcToRoom.delete(e.npcKey);
+          state.roomToNpcs[e.gmId][e.src.roomId]?.delete(e.npcKey);
           break;
         }
-        case "exit-room": {
-          state.npcToRoom.delete(e.npcKey);
-          state.roomToNpcs[e.gmId][e.roomId]?.delete(e.npcKey);
+        case "exit-door": {
+          const { npcKey, gmId, src: { roomId, grKey } } = e;
+          state.npcToRoom.set(npcKey, { gmId, roomId, grKey });
+          (state.roomToNpcs[gmId][roomId] ??= new Set()).add(npcKey);
           break;
         }
         case "fade-npc":
@@ -632,9 +632,6 @@ export default function useHandleEvents(w) {
         }
       }
 
-      // 🚧 add exit-door
-      // 🚧 remove exit-room enter room
-      w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(offMesh.orig.srcGrKey) });
       w.events.next({
         key: 'enter-door', npcKey: e.npcKey, ...helper.getGmDoorId(offMesh.orig.gdKey),
         src: helper.getGmRoomId(offMesh.orig.srcGrKey),
@@ -678,7 +675,11 @@ export default function useHandleEvents(w) {
         npc.stopMoving({ type: 'stop-reason', key: 'arrived' });
       }
 
-      w.events.next({ key: 'enter-room', npcKey: e.npcKey, ...helper.getGmRoomId(dstGrKey) });
+      w.events.next({
+        key: 'exit-door', npcKey: e.npcKey, ...helper.getGmDoorId(offMesh.orig.gdKey),
+        src: helper.getGmRoomId(offMesh.orig.srcGrKey),
+        dst: helper.getGmRoomId(offMesh.orig.dstGrKey),
+      });
     },
     onPointerUpMenuDesktop(e) {
       if (e.rmb && e.distancePx <= 5) {

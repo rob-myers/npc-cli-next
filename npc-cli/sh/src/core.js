@@ -191,7 +191,7 @@ export async function* click(ct) {
  * ```sh
  * events | filter 'e => e.npcKey'
  * events | filter /pointerup/
- * events /enter-room/
+ * events /enter-door/
  * ```
  * @param {NPC.RunArg} ctxt
  */

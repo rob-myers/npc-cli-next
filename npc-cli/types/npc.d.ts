@@ -128,9 +128,7 @@ declare namespace NPC {
     | { key: "stopped-moving"; npcKey: string; reason: NPC.StopReason }
     | { key: "removed-npcs"; npcKeys: string[] }
     | { key: "enter-door"; npcKey: string; src: Geomorph.GmRoomId; dst: Geomorph.GmRoomId; } & Geomorph.GmDoorId
-    // | { key: "exit-door"; npcKey: string } & Geomorph.GmDoorId
-    | { key: "enter-room"; npcKey: string } & Geomorph.GmRoomId
-    | { key: "exit-room"; npcKey: string } & Geomorph.GmRoomId
+    | { key: "exit-door"; npcKey: string; src: Geomorph.GmRoomId; dst: Geomorph.GmRoomId; } & Geomorph.GmDoorId
     | UpdatedGmDecorEvent
     | { key: "decors-removed"; decors: Geomorph.Decor[] }
     | { key: "decors-added"; decors: Geomorph.Decor[] }
