@@ -13,6 +13,11 @@
     - `ray test from:rob to:will`
 
 - 🚧 Example: Narrator sends Player to bed
+  - ✅ shell examples of narrate on enter room (enter-door)
+  - 🚧 js example of narrate on enter room
+  - on enter branching narration
+    - stateroom "...and headed for a bed"
+    - else "...which was not a stateroom"
 
 ```sh
 events /enter-door/ | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' | narrate
@@ -23,19 +28,19 @@ events /enter-door/ | while e=$( take 1 ); do
 done
 ```
 
-- 🚧 Example: Player avoids Guard
-
 ```sh
-import demoClickToMove demoGotoBedChoices from demo
+import demoClickToMove demoNarratedToBed from demo
 
-spawn npc:rob at:'{x:2.5, y:3*1.5+0.2}' as:soldier-0 granted:.
+spawn npc:rob at:'{x:2.5, y:3*1.5+0.2}' as:soldier-0 granted:. angle:Math.PI
 
 permitMove=true
 click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
   demoClickToMove npc:rob &
 
-events | demoGotoBedChoices npc:rob
+demoNarratedToBed npc:rob
 ```
+
+- 🚧 Example: Player avoids Guard
 
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable

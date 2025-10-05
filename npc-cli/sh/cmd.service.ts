@@ -955,6 +955,7 @@ class cmdServiceClass {
       return safeJsonCompact(x);
     },
 
+    /** 🔔 Use `cleanups() { asyncIterable.return?.() }` to support ctrl-c */
     observableToAsyncIterable,
 
     /** js parse with string fallback */

@@ -113,32 +113,44 @@ export async function* demoSelectPolys({ w }) {
 /**
  * Bound to a particular npcKey.
  * ```sh
- * events | demoGotoBedChoices npc:rob
+ * demoNarratedToBed npc:rob
  * ```
- * @param {NPC.Event} e
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string }} [opts]
  */
 
-export function demoGotoBedChoices(e, ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
-  if (!(
-    e.key === 'stopped-moving'
-    && e.npcKey === opts.npcKey
-    && e.reason.key === 'arrived'
-  )) {
-    return; 
-  }
-
-  const result = near(ct, {
-    to: opts.npcKey,
-    where(meta) { return meta.bed && meta.doPoint },
+export async function demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+  
+  const { w, api } = ct;
+  const events = api.observableToAsyncIterable(w.events);
+  const handlers = api.handleStatus({
+    cleanups() { events.return?.() },
   });
 
-  if (result.count > 0) {
-    // 🚧 define Geomorph.DecorMeta
-    // 🚧 log clickable link
-    ct.w.menu.log(...result.items.map(meta => `[goto bed] at ${jsStringify(meta.doPoint)} height ${meta.y}`))
-  }
+  await (async () => {
+    for await (const e of events) {
+      console.log(e);
+    }
+  })().finally(handlers.dispose);
+
+  // if (!(
+  //   e.key === 'stopped-moving'
+  //   && e.npcKey === opts.npcKey
+  //   && e.reason.key === 'arrived'
+  // )) {
+  //   return; 
+  // }
+
+  // const result = near(ct, {
+  //   to: opts.npcKey,
+  //   where(meta) { return meta.bed && meta.doPoint },
+  // });
+
+  // if (result.count > 0) {
+  //   // 🚧 define Geomorph.DecorMeta
+  //   // 🚧 log clickable link
+  //   ct.w.menu.log(...result.items.map(meta => `[goto bed] at ${jsStringify(meta.doPoint)} height ${meta.y}`))
+  // }
 }
 
 const tmpMat1 = new Mat();
@@ -146,6 +158,5 @@ const tmpMat1 = new Mat();
 export const meta = {
   map: {
     demoClickToMove,
-    demoGotoBedChoices,
   },
 };
