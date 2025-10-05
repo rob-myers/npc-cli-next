@@ -168,7 +168,7 @@ const humanZeroShader = {
     } else {// body=1, breath=2, selector=3
 
       // 🌞 flat shading via vDotProduct
-      float ambientLight = 0.05;
+      float ambientLight = dark ? 0.05 : 0.15;
       tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
 
       // skinning
