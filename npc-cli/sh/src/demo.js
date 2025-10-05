@@ -126,9 +126,8 @@ export async function *demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc:
   const currentGrKey = w.e.npcToRoom.get(opts.npcKey)?.grKey;
   const currentRoom = currentGrKey ? (w.e.roomMeta[currentGrKey].label ?? 'room') : 'room';
 
-  // 🚧 what if move into other room before speech finished
-  // 🚧 what if quickly move between two rooms
-  yield* core.narrate(ct, { words: `${opts.npcKey} was tired... ${
+  
+  core.narrate(ct, { words: `${opts.npcKey} was tired. ${
     currentRoom === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
   }`});
 
@@ -137,10 +136,10 @@ export async function *demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc:
     where: (e) => e.key === 'enter-door' && e.npcKey === opts.npcKey
   })) {
     const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
-    const words = `${opts.npcKey} entered the ${roomLabel}... ${
-      roomLabel === 'stateroom' ? 'There was a bed' : 'There was no bed.'
+    const words = `${opts.npcKey} entered the ${roomLabel}. ${
+      roomLabel === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
     }`;
-    yield* core.narrate(ct, { words });
+    core.narrate(ct, { words });
   }
 
   // if (!(

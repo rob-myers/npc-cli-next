@@ -1,8 +1,8 @@
 import { Subject, Subscription } from "rxjs";
 import { deepClone, last } from "../service/generic";
+import { speak } from "../service/dom";
 import type * as Sh from "./parse";
 import { traverseParsed } from "./parse";
-import { ttyError } from "./util";
 import useSession from "./session.store";
 // 🔔 cmd.service circular import issue
 
@@ -494,9 +494,7 @@ export class VoiceDevice implements Device {
   }
 
   private async speak(command: VoiceCommand) {
-    const { text, voice } = command;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = this.voices.find(({ name }) => name === voice) || this.defaultVoice;
+    const voice = this.voices.find(({ name }) => name === command.voice) || this.defaultVoice;
 
     if (this.speaking === true) {
       await new Promise<void>((resolve) => this.pending.push(resolve));
@@ -504,17 +502,9 @@ export class VoiceDevice implements Device {
 
     // fix blocked speech
     this.synth.cancel();
-
+    
     this.speaking = true;
-    await new Promise<void>((resolve, _) => {
-      utterance.onend = () => setTimeout(resolve, 100);
-      utterance.onerror = (errorEvent) => {
-        ttyError(`Utterance '${text}' by '${voice}' failed.`);
-        ttyError(errorEvent);
-        resolve();
-      };
-      this.synth.speak(utterance);
-    });
+    await speak(command.text, voice);
     this.speaking = false;
 
     this.pending.shift()?.();

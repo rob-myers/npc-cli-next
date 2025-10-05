@@ -1,6 +1,7 @@
 import { jsStringify } from '@/npc-cli/service/generic';
 import { ansi } from '../const';
 import { stripAnsi, ttyError } from "../util";
+import { speak } from '@/npc-cli/service/dom';
 
 /**
  * Execute a javascript function, e.g.
@@ -254,6 +255,7 @@ export async function* mapBasic(ct) {
 }
 
 /**
+ * Avoid using generator so we can override it.
  * ```sh
  * # list available voices (device dependent)
  * narrate list:voices
@@ -263,7 +265,6 @@ export async function* mapBasic(ct) {
  * narrate {1..10} as:'Bad News'
  * narrate {a..z} as:'Google UK English Female'
  * narrate words:"$( echo {1..5} )"
- * echo {1..5} | narrate
  * ```
  * @param {NPC.RunArg} ct
  * @param {{
@@ -273,13 +274,12 @@ export async function* mapBasic(ct) {
  *   onSay?(opts: { words: string; voice?: string; }): void | Promise<void>
  * }} [opts]
  */
-export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voice' })) {
+export async function narrate({ api, args }, opts = api.jsArg(args, { as: 'voice' })) {
   
   if (opts.list === 'voices') {// List available voices
-    yield* window.speechSynthesis.getVoices().map(
-      ({ name, lang }) => `${name} (${ansi.YellowBright}${lang}${ansi.White})`
-    );
-    return;
+    return api.dataChunk(window.speechSynthesis.getVoices().map(({ name, lang }) =>
+      `${name} (${ansi.YellowBright}${lang}${ansi.White})`
+    ));
   }
   
   const handlers = api.handleStatus({
@@ -288,32 +288,25 @@ export async function* narrate({ api, args }, opts = api.jsArg(args, { as: 'voic
     onSuspends() { window.speechSynthesis.pause(); return true; }
   });
   
-  api.redirect({ 1: '/dev/voice' });
-
   try {
     // 🔔 `narrate foo bar words:baz` say "baz"
     const words = opts.words ?? args.filter(x => x in opts).join(' ');
-    const voice = opts.voice;
+    const voice = opts.voice ? window.speechSynthesis.getVoices().find(({ name }) => name === opts.voice) : undefined;
+    
+    window.speechSynthesis.cancel(); // always interrupt?
+    
+    if (words === '') {
+      return;
+    }
 
     // try fix intermittent loss of first word
-    yield { voice, text: ' ' };
-
-    if (words !== '') {
-      await opts?.onSay?.({ voice, words });
-      yield { voice, text: words };
-    } else if (api.isTtyAt(0) === false) {
-      let datum;
-      while ((datum = await api.read()) !== api.eof) {
-        const text = typeof datum === 'string' ? datum : jsStringify(datum);
-        await opts?.onSay?.({ voice, words: text });
-        yield { voice, text };
-      }
-    }
+    await speak(' ');
+    await opts?.onSay?.({ voice: voice?.name, words });
+    await speak(words, voice);
 
   } finally {
     handlers.dispose();
   }
-  
 }
 
 /**
