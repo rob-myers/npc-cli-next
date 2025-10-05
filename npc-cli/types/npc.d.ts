@@ -172,6 +172,8 @@ declare namespace NPC {
     // ...
   );
 
+  type EnterDoorEvent = Extract<NPC.Event, { key: 'enter-door' }>;
+
   type UpdatedGmDecorEvent = { key: "updated-gm-decor" } & (
     | { type: 'partial'; gmIds: number[]; } // partial <=> gmsIds.length did not change
     | { type: 'all' }

@@ -121,25 +121,16 @@ export async function* demoSelectPolys({ w }) {
 
 export async function *demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   
-  const { w, api } = ct;
-  const events = api.observableToAsyncIterable(w.events);
-  const handlers = api.handleStatus({
-    cleanups() { events.return?.() },
-  });
-
   // 🚧
+  const { w, api } = ct;
 
-  try {
-    for await (const e of events) {
-      if (e.key === 'enter-door' && e.npcKey === opts.npcKey) {
-        const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
-        yield* core.narrate(ct, { words: `${opts.npcKey} entered the ${roomLabel}` });
-      }
-    }
-  } finally {
-    handlers.dispose();
+  for await (const e of core.events(ct, {
+    /** @returns {e is NPC.EnterDoorEvent} */
+    where: (e) => e.key === 'enter-door' && e.npcKey === opts.npcKey
+  })) {
+    const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
+    yield* core.narrate(ct, { words: `${opts.npcKey} entered the ${roomLabel}` });
   }
-
 
   // if (!(
   //   e.key === 'stopped-moving'
