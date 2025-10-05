@@ -204,6 +204,7 @@ export default function WorldMenu(props) {
               <select
                 className="change-default-voice"
                 onChange={state.onChangeDefaultVoice}
+                defaultValue={state.defaultVoice ?? undefined}
               >
                 {state.voices.map(voice =>
                   <option key={voice.name} value={voice.name}>{voice.name}</option>
