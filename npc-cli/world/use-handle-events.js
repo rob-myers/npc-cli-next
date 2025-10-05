@@ -108,7 +108,9 @@ export default function useHandleEvents(w) {
         }
 
         const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
-          offMesh.src.x, offMesh.src.z,
+          // try avoid needless blocking
+          // maybe only need to block when npc enters around a corner
+          offMesh.src.x + 0.2 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0.2 * (offMesh.dst.z - offMesh.src.z),
           offMesh.dst.x, offMesh.dst.z,
           other.point.x, other.point.y,
           0.21,
@@ -630,8 +632,14 @@ export default function useHandleEvents(w) {
         }
       }
 
+      // 🚧 add exit-door
+      // 🚧 remove exit-room enter room
       w.events.next({ key: 'exit-room', npcKey: e.npcKey, ...helper.getGmRoomId(offMesh.orig.srcGrKey) });
-      w.events.next({ key: 'enter-door', npcKey: e.npcKey, ...helper.getGmDoorId(offMesh.orig.gdKey), src: helper.getGmRoomId(offMesh.orig.srcGrKey), dst: helper.getGmRoomId(offMesh.orig.dstGrKey) });
+      w.events.next({
+        key: 'enter-door', npcKey: e.npcKey, ...helper.getGmDoorId(offMesh.orig.gdKey),
+        src: helper.getGmRoomId(offMesh.orig.srcGrKey),
+        dst: helper.getGmRoomId(offMesh.orig.dstGrKey),
+      });
     },
     onExitDoorCollider(e) {// e.type === 'nearby'
       const door = w.door.byKey[e.gdKey];
@@ -732,7 +740,7 @@ export default function useHandleEvents(w) {
         state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
         || state.findOtherBlockingNearDoor(npc, offMesh)
       );
-      if (blockingNpcKey !== null) {
+      if (typeof blockingNpcKey === 'string') {
         const lookAngleDst = npc.getLookAngle(improved.src);
         npc.stopMoving({
           type: 'stop-reason', key: 'blocked-doorway', otherNpcKey: blockingNpcKey, rest: npc.getRemainingPath()
@@ -764,10 +772,10 @@ export default function useHandleEvents(w) {
         nextUnit: nextUnitNull === true ? null : tmpVect1.copy(improved.nextCorner).sub(improved.dst).normalize().json,
         tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
 
-        // 🚧 clean
         tScale: 1,
+        // 🔔 slow down in doorway
         tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0
-          ? door.hull === true ? 0.5 : 0.35
+          ? door.hull === true ? 0.5 : 0.3
           : null,
         tScaleSmoothTime: 0.5,
       };
