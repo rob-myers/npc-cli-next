@@ -379,7 +379,7 @@ export default function useHandleEvents(w) {
           break;
         }
         case "exit-door": {
-          const { npcKey, gmId, src: { roomId, grKey } } = e;
+          const { npcKey, gmId, dst: { roomId, grKey } } = e;
           state.npcToRoom.set(npcKey, { gmId, roomId, grKey });
           (state.roomToNpcs[gmId][roomId] ??= new Set()).add(npcKey);
           break;
