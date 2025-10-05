@@ -3,7 +3,7 @@ import { Mat } from "@/npc-cli/geom";
 import { jsStringify } from "@/npc-cli/service/generic";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from "@/npc-cli/service/geom";
-import { near } from "./core";
+import * as core from "./core";
 
 /**
  * @param {NPC.RunArg} ct
@@ -119,7 +119,7 @@ export async function* demoSelectPolys({ w }) {
  * @param {{ npcKey: string }} [opts]
  */
 
-export async function demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+export async function *demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   
   const { w, api } = ct;
   const events = api.observableToAsyncIterable(w.events);
@@ -127,11 +127,19 @@ export async function demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 
     cleanups() { events.return?.() },
   });
 
-  await (async () => {
+  // 🚧
+
+  try {
     for await (const e of events) {
-      console.log(e);
+      if (e.key === 'enter-door' && e.npcKey === opts.npcKey) {
+        const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
+        yield* core.narrate(ct, { words: `${opts.npcKey} entered the ${roomLabel}` });
+      }
     }
-  })().finally(handlers.dispose);
+  } finally {
+    handlers.dispose();
+  }
+
 
   // if (!(
   //   e.key === 'stopped-moving'

@@ -14,8 +14,8 @@
 
 - 🚧 Example: Narrator sends Player to bed
   - ✅ shell examples of narrate on enter room (enter-door)
-  - 🚧 js example of narrate on enter room
-  - on enter branching narration
+  - ✅ js example of narrate on enter room
+  - 🚧 on enter branching narration
     - stateroom "...and headed for a bed"
     - else "...which was not a stateroom"
 
