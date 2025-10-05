@@ -452,11 +452,11 @@ export class VoiceDevice implements Device {
     // https://stackoverflow.com/a/52005323/2917822
     setTimeout(() => {
       this.voices = this.synth.getVoices();
-      // console.log({ voices: this.voices });
-      this.defaultVoice =
-        this.voices.find(({ name }) => name === defaultVoiceName) ||
-        this.voices.find(({ default: isDefault }) => isDefault) ||
-        this.voices[0];
+      this.defaultVoice = (
+       this.voices.find(({ name }) => name === defaultVoiceName) ||
+       this.voices.find(({ default: isDefault }) => isDefault) ||
+       this.voices[0]
+     );
     }, 100);
   }
 
