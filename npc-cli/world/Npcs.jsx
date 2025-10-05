@@ -693,10 +693,6 @@ export default function Npcs(props) {
     },
   }), { reset: { showLastNavPath: true } });
 
-  w.npc = state;
-  w.n = state.npc;
-  w.a = state.byAgId;
-  
   // load meshes
   entries(npcClassToMeta).forEach(([npcClassKey, meta]) => {
     const { [npcClassKey]: hash } = w.geomorphs.sheet.glbHash;
@@ -704,6 +700,11 @@ export default function Npcs(props) {
     state.gltf[npcClassKey] = useGLTF(`${meta.modelUrl}${cacheBustingQuery}`);
   });
 
+  // after load avoids initial error
+  w.npc = state;
+  w.n = state.npc;
+  w.a = state.byAgId;
+  
   React.useEffect(() => {// hot reload npc + raycast
     if (process.env.NODE_ENV === 'development') {
       state.hotReloadNpcs();
@@ -911,7 +912,7 @@ function NPC({ npc }) {
         
       </skinnedMesh>
     </group>
-  )
+  );
 }
 
 /**
