@@ -30,7 +30,7 @@ const generatorConstructorNames = [
   'GeneratorFunction',
 ];
 
-type ModuleMaybeMeta = { meta?: { map: Meta } };
+export type ModuleMaybeMeta = { meta?: { map: Meta } };
 
 // check value since name can be different in build
 function isMapFunc(module: ModuleMaybeMeta, fn: (...args: any[]) => any) {
