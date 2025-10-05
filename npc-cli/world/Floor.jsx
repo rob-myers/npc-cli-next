@@ -180,7 +180,7 @@ export default function Floor(props) {
     state.positionInstances();
     state.addUvs();
     state.draw().then(() => w.update());
-  }, [w.texVs.floor, w.hash.sheets, w.crowd.navMesh]);
+  }, [w.texVs.floor, w.hash.staticSheets, w.crowd.navMesh]);
 
   return (
     <instancedMesh

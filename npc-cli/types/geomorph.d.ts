@@ -27,8 +27,8 @@ declare namespace Geomorph {
   type Assets = AssetsGeneric<Geom.Poly, Geom.Vect, Geom.Rect>;
 
   type GeomorphsHash = PerGeomorphHash & {
-    /** `${maps} ${layouts} ${sheets}` */
-    full: `${number} ${number} ${number}`;
+    /** `${maps} ${layouts} ${staticSheets} ${npcSheets}` */
+    full: `${number} ${number} ${number} ${number}`;
     
     /** Hash of current map i.e. a list of gmKeys and transforms. */
     map: number;
@@ -42,8 +42,8 @@ declare namespace Geomorph {
     /** Hash of all maps */
     maps: number;
     /** Depends on rect lookup, images, and skins */
-    sheets: number;
-
+    staticSheets: number;
+    npcSheets: number;
   }
 
   type PerGeomorphHash = Record<Key.Geomorph, {

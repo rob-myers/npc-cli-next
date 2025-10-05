@@ -104,6 +104,11 @@ demoNarratedToBed npc:rob
 
 ### World
 
+- ✅ BUG decor warns onchange mesh
+  - onchange mesh -> change sheets -> refresh decor, but without running create-gms-data first
+  - this meant e.g. `gm.decor.meta.roomId` was undefined
+  - fixed by splitting the sheets hash into staticSheets and npcSheets
+
 - ✅ BUG `narrate` (util.js) goes silent on pause/resume while not speaking
   - can also happen initially
   - e.g. `events /exit-door/ | map '({ dst: { grKey } }, { w }) => w.e.roomMeta[grKey]' | narrate`

@@ -224,7 +224,10 @@ class GeomorphService {
     // over all maps, layouts, sheets
     const mapsHash = hashJson(geomorphs.map);
     const layoutsHash = hashJson(geomorphs.layout);
-    const sheetsHash = hashJson(geomorphs.sheet);
+    const { glbHash, imagesHash, ...staticSheetHashes } = geomorphs.sheet;
+    const staticSheetsHash = hashJson(staticSheetHashes);
+    // 🚧 separate imagesHash, add skinsHash
+    const npcSheetsHash = hashJson({ glbHash, imagesHash });
 
     /** @type {Geomorph.PerGeomorphHash} */
     const perGmHash = mapValues(geomorphs.layout, value => ({
@@ -235,9 +238,10 @@ class GeomorphService {
 
     return {
       ...perGmHash,
-      full: `${mapsHash} ${layoutsHash} ${sheetsHash}`,
+      full: `${mapsHash} ${layoutsHash} ${staticSheetsHash} ${npcSheetsHash}`,
       maps: mapsHash,
-      sheets: sheetsHash,
+      staticSheets: staticSheetsHash,
+      npcSheets: npcSheetsHash,
       map: mapHash,
       mapGmHashes,
       mapDecor: mapDecorHash,

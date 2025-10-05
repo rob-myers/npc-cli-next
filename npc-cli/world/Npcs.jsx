@@ -741,7 +741,7 @@ export default function Npcs(props) {
     });
 
     update();
-  }, [...Object.values(state.gltf), w.hash.sheets]);
+  }, [...Object.values(state.gltf), w.hash.npcSheets]);
 
   return (
     <group
