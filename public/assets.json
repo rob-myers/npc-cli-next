@@ -18,7 +18,7 @@
       "obsHashes": [895128349]
     },
     "bridge--042--8x9": {
-      "outputHash": 349168762,
+      "outputHash": -898093125,
       "pngHash": 628461375,
       "obsHashes": [2070750468, -313073530, 1296475642, -1175340879, 1111745293]
     },
@@ -9083,7 +9083,7 @@
           "coordinates": [
             [[6.05, 9.275], [6.05, 9.375], [5.95, 9.375], [5.95, 9.275]]
           ],
-          "meta": {"decor": true, "label": "briefing"}
+          "meta": {"decor": true, "label": "briefing room"}
         },
         {
           "type": "Polygon",

@@ -69,7 +69,10 @@ class GeomorphService {
       for (const d of metaDecor) {
         if (room.contains(d.outline[0])) {
           metaDecor.delete(d); // at most 1 room
-          Object.assign(room.meta, d.meta, { decor: undefined, meta: undefined, y: undefined });
+          Object.assign(room.meta, d.meta, {
+            decor: undefined, meta: undefined, y: undefined,
+            label: room.meta.label ?? d.meta.label, // 1st label has priority
+          });
         }
       }
     });

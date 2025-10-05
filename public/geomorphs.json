@@ -8953,7 +8953,7 @@
               [0.1, 0.1]
             ]
           ],
-          "meta": {"label": "fuel"}
+          "meta": {"label": "corridor"}
         },
         {
           "type": "Polygon",
@@ -9051,7 +9051,7 @@
               [0.1, 21.05]
             ]
           ],
-          "meta": {"label": "fuel"}
+          "meta": {"label": "corridor"}
         },
         {
           "type": "Polygon",
@@ -9198,7 +9198,7 @@
               [9.05, 16.55]
             ]
           ],
-          "meta": {"label": "cpu"}
+          "meta": {"label": "office"}
         },
         {
           "type": "Polygon",
@@ -9228,7 +9228,7 @@
               [9.05, 24.05]
             ]
           ],
-          "meta": {"label": "cpu"}
+          "meta": {"label": "office"}
         },
         {
           "type": "Polygon",
@@ -9279,7 +9279,7 @@
               [16.55, 16.55]
             ]
           ],
-          "meta": {"label": "cpu"}
+          "meta": {"label": "office"}
         },
         {
           "type": "Polygon",
@@ -9296,7 +9296,7 @@
               [16.55, 24.05]
             ]
           ],
-          "meta": {"label": "cpu"}
+          "meta": {"label": "office"}
         },
         {
           "type": "Polygon",
@@ -9411,7 +9411,7 @@
               [25.55, 18.05]
             ]
           ],
-          "meta": {"label": "office"}
+          "meta": {"label": "cpu"}
         }
       ],
       "walls": [
@@ -19353,7 +19353,7 @@
               [0.1, 6.05]
             ]
           ],
-          "meta": {"label": "lounge"}
+          "meta": {"label": "corridor"}
         },
         {
           "type": "Polygon",
@@ -28071,7 +28071,7 @@
         {
           "type": "point",
           "key": "",
-          "meta": {"decor": true, "label": "briefing", "y": 0.01},
+          "meta": {"decor": true, "label": "briefing room", "y": 0.01},
           "bounds2d": {"x": 14.825, "y": 10.65, "width": 0.35, "height": 0.35},
           "x": 15,
           "y": 10.825,
@@ -30580,7 +30580,7 @@
               [9.2361, 5.96]
             ]
           ],
-          "meta": {"label": "cpu"}
+          "meta": {"label": "bridge"}
         },
         {
           "type": "Polygon",
@@ -30635,7 +30635,7 @@
               [12.05, 9.065]
             ]
           ],
-          "meta": {"label": "briefing"}
+          "meta": {"label": "briefing room"}
         },
         {
           "type": "Polygon",
@@ -34955,7 +34955,7 @@
               [0.1, 6.05]
             ]
           ],
-          "meta": {"label": "lounge"}
+          "meta": {"label": "corridor"}
         },
         {
           "type": "Polygon",

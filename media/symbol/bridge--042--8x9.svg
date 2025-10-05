@@ -195,7 +195,7 @@
     <use width="75" height="75" transform="matrix(0, -1, 1, 0, 202.5, 1555)" style="transform-box: fill-box; transform-origin: 50% 50%;" href="#symbol-1">
       <title>extra--003--chair--0.25x0.25 y=0.4</title>
     </use>
-    <use width="75" height="75" transform="matrix(0.25881901383399963, 0.9659261703491211, -0.9659261703491211, 0.25881901383399963, 270.84698486328125, 1822.4300537109375)" style="transform-origin: 37.5px 37.5px;" href="#symbol-1">
+    <use width="75" height="75" transform="matrix(0.25881901383399963, 0.9659262299537659, -0.9659262299537659, 0.25881901383399963, 270.84698486328125, 1822.4300537109375)" style="transform-origin: 37.5px 37.5px;" href="#symbol-1">
       <title>extra--003--chair--0.25x0.25 y=0.4</title>
     </use>
     <use width="150" height="300" transform="matrix(0, 1, -1, 0, 165, 1575)" style="transform-box: fill-box; transform-origin: 50% 50%;" href="#symbol-2">
@@ -236,7 +236,7 @@
     <title>decor label=locker</title>
   </rect>
   <rect width="20" height="20" style="fill-opacity: 0.5; fill: rgb(0, 255, 0); stroke: rgb(0, 0, 0);" x="1190" y="1855">
-    <title>decor label=briefing</title>
+    <title>decor label='briefing room'</title>
   </rect>
   <rect width="20" height="20" style="fill-opacity: 0.5; fill: rgb(0, 255, 0); stroke: rgb(0, 0, 0);" x="402" y="2320">
     <title>decor label=fuel</title>
@@ -427,19 +427,19 @@
   <use width="1" height="1" transform="matrix(-30, 0, 0, -30, 1219.5, 912)" style="transform-origin: 0.5px 0.5px;" href="#symbol-9">
     <title>decor quad switch</title>
   </use>
-  <use width="1" height="1" transform="matrix(519.2740478515625, 0.000025000003006425686, -0.0000030000005608599167, 98.55018615722656, 310.8156433105469, 819.4174194335938)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
+  <use width="1" height="1" transform="matrix(519.2740478515625, 0.00002500000482541509, -0.000003000000788233592, 98.55018615722656, 310.8156433105469, 819.4174194335938)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
     <title>decor cuboid table y=0 h=1 color=#888</title>
   </use>
-  <use width="1" height="1" transform="matrix(399.34661865234375, 0.000018000004274654202, -0.0000070000010055082384, 270.47894287109375, 370.6909484863281, 734.739501953125)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
+  <use width="1" height="1" transform="matrix(399.34661865234375, 0.000018000006093643606, -0.000007000001460255589, 270.47894287109375, 370.6909484863281, 734.739501953125)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
     <title>decor cuboid table y=0 h=1 color=#888</title>
   </use>
-  <use width="1" height="1" transform="matrix(180.25485229492188, 0.000008000001798791345, -0.000004000000899395673, 146.53109741210938, 322.10137939453125, 526.2344360351562)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
+  <use width="1" height="1" transform="matrix(180.25485229492188, 0.000008000002708286047, -0.0000040000013541430235, 146.53109741210938, 322.10137939453125, 526.2344360351562)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
     <title>decor cuboid table y=0 h=1 color=#888</title>
   </use>
-  <use width="1" height="1" transform="matrix(399.34661865234375, 0.000018000004274654202, -0.0000070000010055082384, 270.47894287109375, 2030.69091796875, 734.739501953125)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
+  <use width="1" height="1" transform="matrix(399.34661865234375, 0.000018000006093643606, -0.000007000001460255589, 270.47894287109375, 2030.69091796875, 734.739501953125)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
     <title>decor cuboid table y=0 h=1 color=#888</title>
   </use>
-  <use width="1" height="1" transform="matrix(180.25485229492188, 0.000008000001798791345, -0.000004000000899395673, 146.53109741210938, 2072.8837890625, 526.2344360351562)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
+  <use width="1" height="1" transform="matrix(180.25485229492188, 0.000008000002708286047, -0.0000040000013541430235, 146.53109741210938, 2072.8837890625, 526.2344360351562)" style="transform-origin: 0.5px 0.5px;" href="#symbol-11">
     <title>decor cuboid table y=0 h=1.2 color=#888</title>
   </use>
   <use width="1" height="1" transform="matrix(150, 0, 0, 100, 749.5, 849.5)" style="transform-origin: 0.5px 0.5px;" href="#symbol-12">
