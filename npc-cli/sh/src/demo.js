@@ -120,13 +120,12 @@ export async function* demoSelectPolys({ w }) {
  */
 
 export async function *demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
-  
-  const { w, api } = ct;
+  const { w } = ct;
 
   const currentGrKey = w.e.npcToRoom.get(opts.npcKey)?.grKey;
   const currentRoom = currentGrKey ? (w.e.roomMeta[currentGrKey].label ?? 'room') : 'room';
 
-  
+  // do not await so can override
   core.narrate(ct, { words: `${opts.npcKey} was tired. ${
     currentRoom === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
   }`});
