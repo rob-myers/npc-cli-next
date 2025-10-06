@@ -659,7 +659,7 @@ export class NpcApi {
       // - slow down if will stop right after doorway
       // - speed up if changed target while slowing down
       // 🔔 scaling up tScaleSmoothTime makes traversal faster
-      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSmoothTime * 1.5, deltaSecs);
+      damp(offMesh, 'tScale', offMesh.tScaleDst, offMesh.tScaleSmoothTime * 1.3, deltaSecs);
       anim.set_tScale(offMesh.tScale);
     }
 
