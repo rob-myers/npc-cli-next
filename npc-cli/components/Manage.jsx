@@ -22,7 +22,6 @@ export default function Manage(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     createTabEpoch: 0,
-    profileKeys: helper.profileKeys,
     show: {
       create: false,
       created: false,
@@ -186,7 +185,7 @@ export default function Manage(props) {
                       value={def.profileKey}
                       onChange={state.changeTtyProfile}
                     >
-                      {state.profileKeys.map(profileKey =>
+                      {helper.profileKeys.map(profileKey =>
                         <option key={profileKey} value={profileKey}>{profileKey}</option>
                       )}
                     </select>
@@ -254,8 +253,8 @@ export default function Manage(props) {
                 Tty
               </span>
               <span className="tab-def-options">
-                <select data-profile-key defaultValue={state.profileKeys[0]}>
-                  {state.profileKeys.map(profileKey =>
+                <select data-profile-key defaultValue={helper.profileKeys[0]}>
+                  {helper.profileKeys.map(profileKey =>
                     <option key={profileKey} value={profileKey}>{profileKey}</option>
                   )}
                 </select>
@@ -565,7 +564,6 @@ const manageCss = css`
 /**
  * @typedef State
  * @property {number} createTabEpoch
- * @property {Key.Profile[]} profileKeys No `dev_only*` profiles in production
  * @property {{ create: boolean; created: boolean; layout: boolean; }} show
  * @property {OnChangeHandler} changeTtyProfile
  * @property {OnClickHandler} closeTab

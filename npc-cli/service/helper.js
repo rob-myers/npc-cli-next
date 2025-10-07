@@ -1,20 +1,6 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
-import { keys } from "./generic";
-
-/**
- * @type {{ fromProfileKey: Record<Key.Profile, true>, profileKeys: Key.Profile[]}}
- */
-const { fromProfileKey, profileKeys } = (/** @param {Record<Key.Profile, true>} fromProfileKey */
-  (fromProfileKey) => ({
-    fromProfileKey,
-    profileKeys: keys(fromProfileKey),
-  })
-)({
-  default: true, // 1st is default in <select>
-  dev_only: true,
-  empty: true,
-  quickstart: true,
-});
+import { keys, mapValues } from "./generic";
+import * as shProfiles from '../sh/profiles';
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -45,8 +31,8 @@ export const helper = {
   /** Aligned to media/decor/{key}.svg */
   fromDecorImgKey,
 
-  fromProfileKey,
-  profileKeys,
+  fromProfileKey: mapValues(shProfiles, () => true),
+  profileKeys: keys(shProfiles),
 
   ...(/** @param {Record<Key.Map, true>} fromMapKey */
     (fromMapKey) => ({
@@ -84,7 +70,7 @@ export const helper = {
     "empty-layout": [],
 
     // each profile has a basic layout preset
-    ...profileKeys.reduce((agg, profileKey) => {
+    ...keys(shProfiles).reduce((agg, profileKey) => {
       agg[`world-tty-${profileKey}`] = [
         [
           { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" }, weight: 2 },

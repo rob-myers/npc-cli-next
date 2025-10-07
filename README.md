@@ -35,6 +35,14 @@ brew install imagemagick
 brew install pkg-config cairo pango libpng jpeg giflib librsvg
 ```
 
+## Development procedures
+
+### Add a profile
+
+1. Create `npc-cli/sh/src/foo.profile.sh`.
+
+1. Add it in `npc-cli/sh/profiles.js`.
+
 ## Starship Symbols Source PNGs
 
 Symbol PNGs should be unzipped in /media
@@ -71,7 +79,7 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 1. Avoid deep properties `state.foo.bar` inside `useStateRef` e.g. because they won't be reloaded if `foo` stays same name but `bar` changes to `baz`.
 
-2. Choppy framerate can occur when OS hints "Low Power" (e.g. OSX). Can see 60fps in @react-three/drei Stats yet seems choppier. Does not seem to get fixed when stop "Low Power" without hard refresh. Possible Chrome restart too.
+1. Choppy framerate can occur when OS hints "Low Power" (e.g. OSX). Can see 60fps in @react-three/drei Stats yet seems choppier. Does not seem to get fixed when stop "Low Power" without hard refresh. Possible Chrome restart too.
 
 
 ### Debug on mobile hotspot

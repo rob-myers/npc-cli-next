@@ -113,13 +113,13 @@ export async function* demoSelectPolys({ w }) {
 /**
  * Bound to a particular npcKey.
  * ```sh
- * demoNarratedToBed npc:rob
+ * demoNarrateToBed npc:rob
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string }} [opts]
  */
 
-export async function *demoNarratedToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+export async function *demoNarrateToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   const { w } = ct;
 
   const currentGrKey = w.e.npcToRoom.get(opts.npcKey)?.grKey;

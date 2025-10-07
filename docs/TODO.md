@@ -21,6 +21,8 @@
   - ✅ `narrate` should not be a generator (so can override)
     - ✅ improve initial long message (too slow)
     - ✅ improve two rooms one-after-another (too slow)
+  - ✅ narrate_to_bed.profile.sh
+  - 🚧 on stop near bed say something
 
 ```sh
 events /enter-door/ | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' | narrate
@@ -32,7 +34,7 @@ done
 ```
 
 ```sh
-import demoClickToMove demoNarratedToBed from demo
+import demoClickToMove demoNarrateToBed from demo
 
 spawn npc:rob at:'{x:2.5, y:3*1.5+0.2}' as:soldier-0 granted:. angle:Math.PI
 
@@ -40,7 +42,7 @@ permitMove=true
 click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
   demoClickToMove npc:rob &
 
-demoNarratedToBed npc:rob
+demoNarrateToBed npc:rob
 ```
 
 - 🚧 Example: Player avoids Guard
