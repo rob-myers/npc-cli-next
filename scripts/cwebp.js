@@ -1,10 +1,11 @@
 /**
  * Usage
- * - yarn cwebp '{ "files": ["/2d/g-101--multipurpose.floor.png", "/2d/g-301--bridge.floor.png"] }'
- * - yarn --quality=50 cwebp-fast '{ "files": ["/2d/g-101--multipurpose.floor.png", "/2d/g-301--bridge.floor.png"] }'
+ * - npm run cwebp '{ "files": ["/2d/g-101--multipurpose.floor.png", "/2d/g-301--bridge.floor.png"] }'
+ * - npm run --quality=50 cwebp-fast '{ "files": ["/2d/g-101--multipurpose.floor.png", "/2d/g-301--bridge.floor.png"] }'
  * 
  * Paths are relative to repo root.
- * Depends on `cwebp` e.g. `brew install cwebp`.
+ * 
+ * Depends on `cwebp`.
  */
 /// <reference path="./deps.d.ts"/>
 
@@ -24,7 +25,7 @@ const repoRootDir = path.resolve(__dirname, "../..");
 
   const json = /** @type {FilesJson} */ (safeJsonParse(filesJsonStr));
   if (!(json && json.files?.every(item => typeof item === 'string') )) {
-    error(`usage: yarn cwebp '{ files: ["path/to/file1.png"] }'`);
+    error(`usage: npm run cwebp '{ files: ["path/to/file1.png"] }'`);
     process.exit(1);
   }
 

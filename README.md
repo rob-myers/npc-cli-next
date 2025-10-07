@@ -15,11 +15,17 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Development dependencies
 
-```sh
-# cwebp e.g. https://developers.google.com/speed/webp/docs/precompiled
-# must be version 1.5.0 libsharpyuv: 0.4.1
+### cwebp
 
-# ImageMagick
+Must use version 1.6.0 (libsharpyuv: 0.4.2).
+
+- https://developers.google.com/speed/webp/docs/precompiled
+- Check version via `cwebp -version`.
+- `brew install webp` may provide old version depending on your OS version.
+
+### ImageMagick
+
+```sh
 brew install imagemagick
 ```
 
