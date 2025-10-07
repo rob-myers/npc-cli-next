@@ -8,7 +8,6 @@ import { jsStringify, tryLocalStorageGetParsed, tryLocalStorageSet, warn } from 
 import { WorldContext } from "./world-context";
 import useUpdate from "../hooks/use-update";
 import useStateRef from "../hooks/use-state-ref";
-// import { PopUp, popUpContentClassName } from "../components/PopUp";
 import { Html3d, objectScale } from "../components/Html3d";
 import { Draggable } from "../components/Draggable";
 
@@ -25,7 +24,6 @@ export function ContextMenu() {
     html3d: /** @type {*} */ (null),
     innerRoot: /** @type {*} */ (null),
     offset: undefined,
-    // optsPopUp: /** @type {*} */ (null),
     position: new THREE.Vector3(),
     tracked: undefined,
     
@@ -258,32 +256,17 @@ function ContextMenuLinks({ state }) {
       <button
         data-key="toggle-docked"
         onKeyDown={state.onKeyDownButton}
+        className={!state.docked ? 'off' : undefined}
       >
-        {state.docked ? 'docked' : '3d'}
+        docked
       </button>
-
-      {/* <PopUp
-        ref={state.ref('optsPopUp')}
-        css={optsPopUpCss}
-        label="opts"
-        onChange={state.onToggleOptsPopup.bind(state)}
-        width={100}
-      >
-        <button
-          key="toggle-scaled"
-          data-key="toggle-scaled"
-          className={!state.scaled ? 'off' : undefined}
-        >
-          scale
-        </button>
-      </PopUp> */}
 
       {state.docked === false && <button
         key="toggle-scaled"
         data-key="toggle-scaled"
         className={!state.scaled ? 'off' : undefined}
       >
-        scale
+        scaled
       </button>}
 
       {/* <button
@@ -301,7 +284,7 @@ function ContextMenuLinks({ state }) {
         className={!state.pinned ? 'off' : undefined}
         onKeyDown={state.onKeyDownButton}
       >
-        pin
+        pinned
       </button>
 
       <button
@@ -411,7 +394,7 @@ export const contextMenuCss = css`
   .links button {
     text-decoration: underline;
     color: #aaf;
-    padding: 5px 6px;
+    padding: 5px 4px;
   }
   .links button.off {
     filter: brightness(0.7);
