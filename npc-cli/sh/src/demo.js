@@ -125,40 +125,42 @@ export async function *demoNarrateToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 
   const currentGrKey = w.e.npcToRoom.get(opts.npcKey)?.grKey;
   const currentRoom = currentGrKey ? (w.e.roomMeta[currentGrKey].label ?? 'room') : 'room';
 
-  // do not await so can override
   core.narrate(ct, { words: `${opts.npcKey} was tired. ${
     currentRoom === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
-  }`});
+  }`}); // don't await so can override
 
   for await (const e of core.events(ct, {
-    /** @returns {e is NPC.EnterDoorEvent} */
-    where: (e) => e.key === 'enter-door' && e.npcKey === opts.npcKey
+    /** @returns {e is NPC.EnterDoorEvent | NPC.StoppedMovingEvent} */
+    where: (e) => 'npcKey' in e && e.npcKey === opts.npcKey && (
+      e.key === 'enter-door'
+      || (e.key === 'stopped-moving' && e.reason.key === 'arrived')
+    )
   })) {
-    const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
-    const words = `${opts.npcKey} entered the ${roomLabel}. ${
-      roomLabel === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
-    }`;
-    core.narrate(ct, { words });
+
+    if (e.key === 'enter-door') {
+      const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
+      const words = `${opts.npcKey} entered the ${roomLabel}. ${
+        roomLabel === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
+      }`;
+      core.narrate(ct, { words });
+      continue;
+    }
+
+    // stopped-moving
+    const result = core.near(ct, {
+      to: opts.npcKey,
+      where(meta) { return meta.bed && meta.doPoint },
+    });
+
+    if (result.count > 0) {
+      core.narrate(ct, {
+        words: `${opts.npcKey} went over to the bed...`
+      });
+      // 🚧
+      // ct.w.menu.log(...result.items.map(meta => `[goto bed] at ${jsStringify(meta.doPoint)} height ${meta.y}`))
+    }
+
   }
-
-  // if (!(
-  //   e.key === 'stopped-moving'
-  //   && e.npcKey === opts.npcKey
-  //   && e.reason.key === 'arrived'
-  // )) {
-  //   return; 
-  // }
-
-  // const result = near(ct, {
-  //   to: opts.npcKey,
-  //   where(meta) { return meta.bed && meta.doPoint },
-  // });
-
-  // if (result.count > 0) {
-  //   // 🚧 define Geomorph.DecorMeta
-  //   // 🚧 log clickable link
-  //   ct.w.menu.log(...result.items.map(meta => `[goto bed] at ${jsStringify(meta.doPoint)} height ${meta.y}`))
-  // }
 }
 
 const tmpMat1 = new Mat();

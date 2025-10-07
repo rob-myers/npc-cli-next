@@ -24,7 +24,10 @@
   - ✅ narrate_to_bed.profile.sh
   - ✅ move code blocks to example-commands
   - ✅ fix room label onchange map
-  - 🚧 on stop near bed say something
+  - ✅ on stop near bed say something
+  - 🚧 rob thinks something when close to bed
+    - rob can change clothes
+    - rob can get into bed
   - can spawn into arbitrary map?
     - maybe pick point in first room
 
