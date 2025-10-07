@@ -762,12 +762,9 @@ export default function useHandleEvents(w) {
         mainUnit: tmpVect1.set(improved.dst.x - improved.src.x, improved.dst.y - improved.src.y).normalize().json,
         nextUnit: nextUnitNull === true ? null : tmpVect1.copy(improved.nextCorner).sub(improved.dst).normalize().json,
         tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
-
-        tScale: 1,
-        // 🔔 slow down in doorway
-        tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0
-          ? door.hull === true ? 0.5 : 0.3
-          : null,
+        
+        tScale: 1, // 🔔 slow down in doorway if target near offMesh exit
+        tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0 ? 0.5 : null,
         tScaleSmoothTime: 0.5,
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.offMesh);
