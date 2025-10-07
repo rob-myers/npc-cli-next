@@ -261,6 +261,11 @@ export default function World(props) {
         hash: state.hash,
       });
 
+      // useHandleEvents lookups
+      state.gms.forEach(gm => gm.rooms.forEach((room, roomId) =>
+        state.e.roomMeta[`g${gm.gmId}r${roomId}`] = room.meta
+      ));
+
       if (!dataChanged && !queryFnHashChanged) {
         update();
         return true;
@@ -319,11 +324,6 @@ export default function World(props) {
       state.texNpcLabel.tex.anisotropy = state.r3f.gl.capabilities.getMaxAnisotropy();
 
       state.npc?.forceUpdate(); // violate <MemoizedNPC>
-
-      // useHandleEvents lookups
-      state.gms.forEach(gm => gm.rooms.forEach((room, roomId) =>
-        state.e.roomMeta[`g${gm.gmId}r${roomId}`] = room.meta
-      ));
 
       return true;
     },

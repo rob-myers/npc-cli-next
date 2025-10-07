@@ -28,10 +28,28 @@ make npc:rob do:$( click 1 )
 say Zzzzz npc:rob
 ```
 
+
 Scripting:
 
 ```sh
-🚧
+events /enter-door/ | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' | narrate
+
+events /enter-door/ | while e=$( take 1 ); do
+  label=$( e | map '({ dst }, { w }) => w.e.roomMeta[dst.grKey]?.label' )
+  narrate "$( e/npcKey ) entered the ${label}"
+done
+```
+
+```sh
+import demoClickToMove demoNarrateToBed from demo
+
+spawn npc:rob at:'{x:2.5, y:3*1.5+0.2}' as:soldier-0 granted:. angle:Math.PI
+
+permitMove=true
+click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
+  demoClickToMove npc:rob &
+
+demoNarrateToBed npc:rob
 ```
 
 ### Random navigable points
