@@ -690,8 +690,7 @@ export default function useHandleEvents(w) {
       const { offMesh } = e;
       const door = w.d[offMesh.gdKey];
       
-      // cancel if cannot open door
-      if (
+      if (// cancel if cannot open door
         door.open === false &&
         state.toggleDoor(offMesh.gdKey, { open: true, npcKey: e.npcKey }) === false
       ) {
@@ -700,47 +699,38 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      // improve offMesh by aligning src/dst to agent
-      // 🔔 do not reuse from earlier else yank when other blocks
-      // 🚧 avoid computing improved.dst when only need improved.src
-      const improved = state.improveOffMeshSrcDst(npc, offMesh);
-      const target = /** @type {Geom.Vect} */ (npc.target);
-
-      const entryDist = npc.point.distanceTo(improved.src);
-      const entryTooFar = entryDist > 0.2;
-      const angleTooLarge = Math.abs(npc.getAngleTo(improved.dst)) > Math.PI/2 + 0.2;
-
       npc.setRun(false); // do not run through doorways
 
-      if (
-        entryTooFar === true
-        || angleTooLarge === true
-      ) {
+      // improve offMesh by aligning src/dst to agent
+      // 🔔 do not reuse from earlier else yank when other blocks
+      const improved = state.improveOffMeshSrcDst(npc, offMesh);
+      const target = /** @type {Geom.Vect} */ (npc.target);
+      const entryDist = npc.point.distanceTo(improved.src);
 
-        // know either !angleTooLarge or entryTooFar
-        // 🔔 if entryTooFar && angleTooFar don't use improved.src yet
-        const newTarget = angleTooLarge === true ? null : improved.src;
+      if (entryDist > 0.2 === true) {// entry too far
+        const newTarget = improved.src;
         npc.adjustTargets(newTarget, target, ...npc.pendingTargets);
-
-        if (newTarget !== null) {
-          npc.exitOffMeshFor(newTarget);
-        } else {
-          npc.exitOffMeshFor(npc.position, false);
-          // npc.startAnimation('Idle');
-          npc.lookSecs = 0.2;
-          npc.lookAngleDst = npc.getLookAngle(
-            entryDist > 0.05 ? improved.src : improved.dst
-          );
-        }
-
+        npc.exitOffMeshFor(newTarget);
         return;
       }
-
+      
+      if (// too close with angle too large
+        entryDist < 0.1 && (Math.abs(npc.getAngleTo(improved.dst)) > Math.PI/2 + 0.2)
+      ) {
+        const newTarget = null;
+        npc.adjustTargets(newTarget, target, ...npc.pendingTargets);
+        npc.exitOffMeshFor(npc.position, false);
+        // npc.startAnimation('Idle');
+        npc.lookSecs = 0.18;
+        npc.lookAngleDst = npc.getLookAngle(improved.dst);
+        return;
+      }
 
       const blockingNpcKey = (
         state.findOtherBlockingOppositeDir(offMesh, improved.src, improved.dst)
         || state.findOtherBlockingNearDoor(npc, offMesh)
       );
+
       if (typeof blockingNpcKey === 'string') {
         const lookAngleDst = npc.getLookAngle(improved.src);
         npc.stopMoving({
