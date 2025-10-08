@@ -808,6 +808,10 @@ export default function useHandleEvents(w) {
       if (typeof words !== 'string') {
         throw Error('opts.words must be a string');
       }
+      if (words === '') {
+        state.removeBubble(npcKey);
+        return;
+      }
 
       const bubble = w.bubble.ensure(npcKey);
       const speechWithLinks = (words ?? '').trim();
