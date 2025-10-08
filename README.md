@@ -60,6 +60,14 @@ Then you can run the various scripts (as needed) found inside `scripts/get-pngs.
 
 ## Gotchas
 
+1. VSCode integrated push needed (in my case) the following `.bashrc` plus full system restart (see [here](https://stackoverflow.com/a/67738715/2917822)).
+    ```sh
+    # .bashrc
+    if [ -f ~/.bash_profile ]; then
+      source ~/.bash_profile
+    fi
+    ```
+
 1. Our SVG symbols currently do not support parent transforms
   - e.g. on "symbols" folder
 
