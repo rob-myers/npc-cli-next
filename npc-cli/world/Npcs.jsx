@@ -885,7 +885,7 @@ function NPC({ npc }) {
           npc.m.material = /** @type {THREE.ShaderMaterial} */ (skinnedMesh.material);
         }}
         // renderOrder={5}
-        renderOrder={0}
+        renderOrder={3} // above Obstacles else artifacts on bed
       >
         {/* <meshBasicMaterial color="red" /> */}
       
