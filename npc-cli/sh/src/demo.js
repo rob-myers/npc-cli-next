@@ -121,13 +121,17 @@ export async function* demoSelectPolys({ w }) {
 
 export async function *demoNarrateToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   const { w } = ct;
+  
+  function narrateEnterRoom() {
+    const roomLabel = w.e.getNpcMeta(opts.npcKey)?.room?.label;
+    console.log({roomLabel})
+    core.narrate(ct, {
+      words: roomLabel === 'stateroom' ? 'Oh look, a bed' : 'No bed here!'
+      // words: `${opts.npcKey} was tired, ${roomLabel === 'stateroom' ? 'there ' : 'no'}`
+    });
+  }
 
-  const currentGrKey = w.e.npcToRoom.get(opts.npcKey)?.grKey;
-  const currentRoom = currentGrKey ? (w.e.roomMeta[currentGrKey].label ?? 'room') : 'room';
-
-  core.narrate(ct, { words: `${opts.npcKey} was tired. ${
-    currentRoom === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
-  }`}); // don't await so can override
+  narrateEnterRoom();
 
   for await (const e of core.events(ct, {
     /** @returns {e is NPC.EnterDoorEvent | NPC.StoppedMovingEvent} */
@@ -138,24 +142,17 @@ export async function *demoNarrateToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 
   })) {
 
     if (e.key === 'enter-door') {
-      const roomLabel = w.e.roomMeta[e.dst.grKey].label ?? 'room';
-      const words = `${opts.npcKey} entered the ${roomLabel}. ${
-        roomLabel === 'stateroom' ? 'There was a bed.' : 'There was no bed.'
-      }`;
-      core.narrate(ct, { words });
+      narrateEnterRoom();
       continue;
     }
 
     // stopped-moving
-    const result = core.near(ct, {
-      to: opts.npcKey,
+    const result = core.near(ct, { to: opts.npcKey,
       where(meta) { return meta.bed && meta.doPoint },
     });
 
     if (result.count > 0) {
-      core.narrate(ct, {
-        words: `${opts.npcKey} went over to the bed...`
-      });
+      core.narrate(ct, { words: `${opts.npcKey} went over to the bed...` });
       // 🚧
       // ct.w.menu.log(...result.items.map(meta => `[goto bed] at ${jsStringify(meta.doPoint)} height ${meta.y}`))
     }
