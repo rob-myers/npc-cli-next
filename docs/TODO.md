@@ -26,7 +26,7 @@
   - ✅ fix room label onchange map
   - ✅ on stop near bed say something
   - 🚧 rob thinks something when close to bed
-    - change clothes `spawn npc:rob at:$( npc rob point ) skin:,,base,base`
+    - change into bed clothes `spawn npc:rob at:$( npc rob point ) skin:,,base,base`
       - doesn't work whilst `Lie`
     - get into bed `npc rob fadeSpawn $( click 1 )`
   - can spawn into arbitrary map?
@@ -95,6 +95,11 @@
   - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
 
 ### World
+
+- ✅ support respawn syntax `spawn npc:rob as:scientist-0`
+- 🚧 BUG while `Lie` cannot `spawn npc:rob at:$( npc rob point )`
+  - because `{x,y}` doesn't provide `meta.do`
+- function from `{x,y,z}` to `meta.{do,doPoint}`
 
 - ✅ BUG decor warns onchange mesh
   - onchange mesh -> change sheets -> refresh decor, but without running create-gms-data first

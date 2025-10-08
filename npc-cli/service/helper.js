@@ -236,6 +236,18 @@ export const helper = {
   },
 
   /**
+   * @param {Meta} meta 
+   * @returns {null | Key.DoPoint}
+   */
+  getDoPointKey(meta) {
+    if (helper.isVectJson(meta.doPoint) === false) {
+      return null;
+    }
+    const { doPoint: { x, y: z }, y = 0 } = meta;
+    return `${x},${y},${z}`;
+  },
+
+  /**
    * Usage:
    * - `getGmDoorId(gdKey)`
    * - `getGmDoorId(gmId, doorId)`

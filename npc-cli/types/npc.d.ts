@@ -88,7 +88,7 @@ declare namespace NPC {
      * - Navigable points always on ground
      * - Doable points may be above ground via `meta.y`.
      */
-    at: MaybeMeta<NPC.GroundPoint>;
+    at?: MaybeMeta<NPC.GroundPoint>;
     /** Position to look towards (overrides `angle`) */
     facing?: NPC.GroundPoint;
     /** Overrides `at?.meta` e.g. because `meta.doPoint.meta` is not serializable */

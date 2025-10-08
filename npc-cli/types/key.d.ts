@@ -10,6 +10,8 @@ namespace Key {
 
   type ComponentClass = import('../tabs/tab-factory').ComponentClassKey;
 
+  type DoPoint = `${number},${number},${number}`;
+
   type TabClass = ComponentClass | 'Tty';
   type TabClassPrefix = CamelToKebab<TabClass>;
   type TabId = `${Key.TabClassPrefix}-${number}`;

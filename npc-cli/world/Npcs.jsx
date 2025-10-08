@@ -409,7 +409,13 @@ export default function Npcs(props) {
       w.menu.measure(`npc.setupSkins`);
     },
     async spawn(opts) {
-      const { at } = opts;
+      let npc = state.npc[opts.npcKey];
+      let { at } = opts;
+      
+      // can omit `at` when respawning
+      if (npc !== undefined && at === undefined) {
+        at = { x: npc.point.x, y: npc.point.y, meta: npc.doMeta ?? {} };
+      }
 
       if (!(typeof at?.x === 'number' && typeof at.y === 'number')) {
         throw Error(`opts.at must be {x,y} or {x,y,z}`);
@@ -443,10 +449,8 @@ export default function Npcs(props) {
         throw Error(`must be in some room: ${JSON.stringify(at)}`);
       }
 
-      state.validateDoMeta(meta.do === true ? meta : null);
+      state.validateDoMeta(meta.do === true ? meta : null, opts.npcKey);
       
-      let npc = state.npc[opts.npcKey];
-
       if (npc === undefined && state.freeId.size === 0) {
         throw Error(`max npcs reached: ${maxNumberOfNpcs}`);
       }
@@ -676,19 +680,21 @@ export default function Npcs(props) {
       w.view.ensureRender();
     },
     update,
-    validateDoMeta(doMeta) {
+    validateDoMeta(doMeta, npcKey) {
       if (doMeta === null) {
         return;
       }
 
-      if (!helper.isVectJson(doMeta.doPoint)) {
+      const doPointKey = helper.getDoPointKey(doMeta);
+
+      if (doPointKey === null) {
         throw Error(`doMeta.doPoint must exist: ${jsStringify(doMeta)}`);
       }
 
-      const { doPoint, y } = doMeta;
-      const key = /** @type {const} */ (`${doPoint.x},${y ?? 0},${doPoint.y}`);
-      if (key in state.doToNpc) {
-        throw Error(`actable used by ${state.doToNpc[key]}: ${jsStringify(doMeta.doPoint)} (height ${y})`);
+      const otherNpcKey = state.doToNpc[doPointKey];
+
+      if (otherNpcKey !== undefined && otherNpcKey !== npcKey) {
+        throw Error(`doable already used by ${otherNpcKey}: ${jsStringify(doMeta)}`);
       }
     },
   }), { reset: { showLastNavPath: true } });
@@ -769,7 +775,7 @@ export default function Npcs(props) {
  * @typedef State
  * @property {{ [crowdAgentId: number]: NPC.NPC }} byAgId
  * @property {boolean} dark
- * @property {Record<`${number},${number},${number}`, string>} doToNpc
+ * @property {Record<Key.DoPoint, string>} doToNpc
  * Do point to current npc or undefined.
  * - `${x},${y},${z}` -> npcKey
  * @property {Set<number>} freeId Those npc object-pick ids not-currently-used.
@@ -848,8 +854,8 @@ export default function Npcs(props) {
  * - Returns `true` iff the label sprite-sheet had to be updated.
  * - Every npc label may need updating,
      avoidable by precomputing labels 
- * @property {(doMeta: null | Meta) => void} validateDoMeta
- * Throws if `doMeta` lacks `doPoint` or is in use.
+ * @property {(doMeta: null | Meta, npcKey: string) => void} validateDoMeta
+ * Throws if `doMeta` lacks `doPoint` or is in use by other npc.
  */
 
 /**
