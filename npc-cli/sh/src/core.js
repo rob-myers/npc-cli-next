@@ -459,11 +459,13 @@ export function say({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' }))
  * ```sh
  * spawn npc:rob at:$( click 1 )
  * spawn npc:rob at:$( click 1 ) granted:.
+ * spawn npc:rob at:$( click 1 ) as:soldier-0,soldier-0,base,base
+ * spawn npc:rob at:$( click 1 ) skin:,,base,base
  * ```
  * @param {NPC.RunArg} ctxt
  * @param {{ granted?: string } & NPC.SpawnOpts} [opts]
  */
-export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
+export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', skin: 'as' })) {
   await w.npc.spawn(opts);
   if (typeof opts.granted === 'string') {
     w.e.grantAccess(opts.granted, opts.npcKey);

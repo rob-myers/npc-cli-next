@@ -26,8 +26,9 @@
   - ✅ fix room label onchange map
   - ✅ on stop near bed say something
   - 🚧 rob thinks something when close to bed
-    - rob can change clothes
-    - rob can get into bed
+    - change clothes `spawn npc:rob at:$( npc rob point ) skin:,,base,base`
+      - doesn't work whilst `Lie`
+    - get into bed `npc rob fadeSpawn $( click 1 )`
   - can spawn into arbitrary map?
     - maybe pick point in first room
 
