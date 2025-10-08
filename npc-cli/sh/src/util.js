@@ -1,4 +1,3 @@
-import { jsStringify } from '@/npc-cli/service/generic';
 import { ansi } from '../const';
 import { stripAnsi, ttyError } from "../util";
 import { speak } from '@/npc-cli/service/dom';
@@ -291,7 +290,7 @@ export async function narrate({ api, args }, opts = api.jsArg(args, { as: 'voice
   try {
     // 🔔 `narrate foo bar words:baz` say "baz"
     const words = opts.words ?? args.filter(x => x in opts).join(' ');
-    const voice = opts.voice ? window.speechSynthesis.getVoices().find(({ name }) => name === opts.voice) : undefined;
+    const voice = window.speechSynthesis.getVoices().find(({ name }) => name === opts.voice);
     
     window.speechSynthesis.cancel(); // always interrupt?
     

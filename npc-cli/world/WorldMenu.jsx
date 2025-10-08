@@ -76,7 +76,7 @@ export default function WorldMenu(props) {
     },
     onChangeDefaultVoice(e) {
       const voice = state.voices.find(v => v.name === e.currentTarget.value);
-      state.defaultVoice = voice?.name ?? null;
+      state.defaultVoice = voice ?? null;
       tryLocalStorageSet(`defaultVoice@${w.key}`, JSON.stringify(state.defaultVoice));
     },
     onChangeLoggerLog(e) {
@@ -204,7 +204,7 @@ export default function WorldMenu(props) {
               <select
                 className="change-default-voice"
                 onChange={state.onChangeDefaultVoice}
-                defaultValue={state.defaultVoice ?? undefined}
+                defaultValue={state.defaultVoice?.name}
               >
                 {state.voices.map(voice =>
                   <option key={voice.name} value={voice.name}>{voice.name}</option>
@@ -416,7 +416,7 @@ const popUpCss = css`
  * @property {number} bgScale In [1..20]. For background-color scaling.
  * @property {number} brightness [1..20] inducing percentage `100 + 10 * (b - 10)`
  * @property {import('../components/Draggable').Props['dim']} defaultLoggerDim
- * @property {null | string} defaultVoice
+ * @property {null | SpeechSynthesisVoice} defaultVoice
  * @property {import('../components/Draggable').State} draggable Draggable containing Logger
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys

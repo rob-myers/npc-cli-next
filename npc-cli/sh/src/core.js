@@ -359,10 +359,10 @@ export const move = async ({ api, args, w }, opts = api.jsArg(args, { npc: 'npcK
  */
 export async function narrate(ct, opts = ct.api.jsArg(ct.args, { as: 'voice' })) {
   return await util.narrate(ct, {
-    voice: ct.w.menu.defaultVoice?.split('(')[0],
+    voice: ct.w.menu.defaultVoice?.name,
     ...opts,
     async onSay({ voice, words }) {
-      ct.w.menu.say('vo', words); // "vo" means "voice over"
+      ct.w.menu.say('VO', words); // "VO" means "Voice Over"
       opts.onSay?.({ voice, words });
     }
   });
