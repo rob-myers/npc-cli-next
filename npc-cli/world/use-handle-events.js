@@ -152,6 +152,13 @@ export default function useHandleEvents(w) {
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
     },
+    getNpcMeta(npcKey) {
+      const npc = w.n[npcKey];
+      const grId = state.npcToRoom.get(npc.key) ?? null;
+      return {
+        room: grId === null ? null : w.e.roomMeta[grId.grKey],
+      };
+    },
     /**
      * Given ids of rooms in gmGraph, provide "adjacency data".
      * - We do include rooms adjacent via a door or window.
@@ -374,14 +381,15 @@ export default function useHandleEvents(w) {
           state.onExitOffMeshConnection(e, npc);
           break;
         case "enter-door": {
-          state.npcToRoom.delete(e.npcKey);
-          state.roomToNpcs[e.gmId][e.src.roomId]?.delete(e.npcKey);
+          // 🔔 enter room as soon as enter door, so
+          // technically `npc.point` needn't be inside room/geomorph polygon
+          const { npcKey, src, dst } = e;
+          state.roomToNpcs[src.gmId][src.roomId]?.delete(e.npcKey);
+          state.npcToRoom.set(npcKey, {...dst});
+          (state.roomToNpcs[dst.gmId][dst.roomId] ??= new Set()).add(npcKey);
           break;
         }
         case "exit-door": {
-          const { npcKey, gmId, dst: { roomId, grKey } } = e;
-          state.npcToRoom.set(npcKey, { gmId, roomId, grKey });
-          (state.roomToNpcs[gmId][roomId] ??= new Set()).add(npcKey);
           break;
         }
         case "fade-npc":
@@ -942,6 +950,7 @@ export default function useHandleEvents(w) {
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
  * @property {(npcKey: string) => void} followNpc
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
+ * @property {(npcKey: string) => { room: null | Meta<{ label?: string }>  }} getNpcMeta
  * @property {(gmRoomIds: Geomorph.GmRoomId[], canAccess?: (opts: { gmId: number } & (
  *   | { type: 'door'; doorId: number }
  *   | { type: 'window'; windowId: number }
