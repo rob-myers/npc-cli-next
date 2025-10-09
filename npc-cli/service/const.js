@@ -389,7 +389,7 @@ export const npcClassToMeta = {
     modelHeight: 2.2, // 🚧 measure in Blender
     modelRadius: 0.5,
     runSpeed: 4,
-    scale: 0.7,
+    scale: 0.77,
     timeScale: { 'Idle': 0.2, 'Walk': 0.5 },
     walkSpeed: 2.5,
   },
@@ -511,5 +511,5 @@ export const worldViewBgColorCssVar = '--world-view-background-color';
 
 export const xRayOpacity = {
   walls: 0.7,
-  ceiling: 0.7,
+  ceiling: 1,
 };
