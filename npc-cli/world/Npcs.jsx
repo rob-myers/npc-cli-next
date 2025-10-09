@@ -408,7 +408,7 @@ export default function Npcs(props) {
       }
       w.menu.measure(`npc.setupSkins`);
     },
-    async spawn(opts) {
+    async spawn(opts) {// 🚧 should not reference `w.e.`
       
       if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
         throw Error('opts.npcKey must match /^[a-z0-9-_]+$/i');
@@ -441,8 +441,8 @@ export default function Npcs(props) {
       let meta = opts.meta ?? at.meta ?? {};
       // detect navigable if not specified
       const dstNavigable = typeof meta.nav === 'boolean' ? meta.nav : state.isPointInNavmesh(point);
-      // detect doPoint if not navigable
-      meta = dstNavigable === false && w.e.findDoPointUnder(at)?.meta || meta;
+      // detect doPoint if not navigable and not already one
+      meta = (dstNavigable === false && meta.do !== true) && w.e.findDoPointUnder(at)?.meta || meta;
 
       if (dstNavigable === false && meta.do !== true) {
         throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
