@@ -90,6 +90,22 @@ export default function useHandleEvents(w) {
       state.doorToOffMesh[orig.gdKey] = state.doorToOffMesh[orig.gdKey].filter(x => x.npcKey !== npc.key);
       (state.npcToDoors[npc.key] ??= { inside: null, nearby: new Set() }).inside = null;
     },
+    findDoPointUnder(input) {
+      const height = 'z' in input ? input.y : 0.1; // above ground by default
+      const point = helper.toXZ(input);
+      const decors = w.decor.query(point, 0.1).filter(
+        /** @returns {d is Geomorph.DecorPoint} */ d => d.type === 'point' && d.meta.do === true
+      );
+      const closest = { index: -1, diff: Infinity };
+      for (const [index, d] of decors.entries()) {
+        const diff = height - (d.meta.y ?? 0);
+        if (0 < diff && diff < closest.diff) {
+          closest.index = index;
+          closest.diff = diff;
+        }
+      }
+      return decors[closest.index] ?? null;
+    },
     findOtherBlockingNearDoor(npc, offMesh) {
       const npcsNearbyDoor = state.doorToNearbyNpcs[offMesh.gdKey] ?? [];
       const gmRoomId = /** @type {Geomorph.GmRoomId} */ (state.npcToRoom.get(npc.key));
@@ -947,6 +963,7 @@ export default function useHandleEvents(w) {
  * @property {(npc: NPC.NPC, improved: NPC.ImprovedOffMeshSrcDst) => void} applyImprovedOffMesh
  * @property {(door: Geomorph.DoorState) => boolean} canCloseDoor
  * @property {(npc: NPC.NPC) => void} clearOffMesh
+* @property {(input: NPC.GroundPoint) => null | Geomorph.DecorPoint} findDoPointUnder
 * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => null | string} findOtherBlockingNearDoor
  * offMesh early-exit-test i.e. test for some other npc which:
  * - is idle and in the way
