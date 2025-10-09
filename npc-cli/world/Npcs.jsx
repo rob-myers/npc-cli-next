@@ -409,36 +409,42 @@ export default function Npcs(props) {
       w.menu.measure(`npc.setupSkins`);
     },
     async spawn(opts) {
-      let npc = state.npc[opts.npcKey];
-      let { at } = opts;
       
-      // can omit `at` when respawning
+      if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
+        throw Error('opts.npcKey must match /^[a-z0-9-_]+$/i');
+      } else if (opts.npcKey.length > 10) {
+        throw Error('opts.npcKey must have length ≤ 10');
+      }
+      
+      let npc = state.npc[opts.npcKey];
+      
+      if (npc === undefined && state.freeId.size === 0) {
+        throw Error(`max npcs reached: ${maxNumberOfNpcs}`);
+      }
+      
+      let { at } = opts;
+
+      // can omit `at` on respawn
       if (npc !== undefined && at === undefined) {
         at = { x: npc.point.x, y: npc.point.y, meta: npc.doMeta ?? {} };
-      }
-
-      if (!(typeof at?.x === 'number' && typeof at.y === 'number')) {
-        throw Error(`opts.at must be {x,y} or {x,y,z}`);
+      } else if (helper.isVectJson(at) === false) {
+        throw Error('opts.at must extend {x,y} on first spawn');
       }
 
       const point = helper.toXZ(at);
-      const meta = opts.meta ?? at.meta ?? {};
-
-      if (!(typeof opts.npcKey === 'string' && /^[a-z0-9-_]+$/i.test(opts.npcKey))) {
-        throw Error(`opts.npcKey must match /^[a-z0-9-_]+$/i`);
-      } else if (opts.npcKey.length > 10) {
-        throw Error(`opts.npcKey must have length ≤ 10`);
-      }
       
       if (helper.isVectJson(opts.facing) === true) {
         opts.facing = helper.toXZ(opts.facing);
         opts.angle = geom.clockwiseFromNorth(opts.facing.y - point.y, opts.facing.x - point.x);
       }
+      
+      let meta = opts.meta ?? at.meta ?? {};
+      // detect navigable if not specified
+      const dstNavigable = typeof meta.nav === 'boolean' ? meta.nav : state.isPointInNavmesh(point);
+      // detect doPoint if not navigable
+      meta = dstNavigable === false && w.e.findDoPointUnder(at)?.meta || meta;
 
-      const dstNav = meta.nav === true || state.isPointInNavmesh(point);
-      const attachAgent = dstNav;
-
-      if (dstNav === false && meta.do !== true) {
+      if (dstNavigable === false && meta.do !== true) {
         throw Error(`not navigable nor doable: ${jsStringify(point)} (height ${'z' in at ? at.y : 0})`);
       } else if (opts.classKey !== undefined && !helper.isNpcClassKey(opts.classKey)) {
         throw Error(`invalid classKey: ${JSON.stringify(at)}`);
@@ -451,10 +457,6 @@ export default function Npcs(props) {
 
       state.validateDoMeta(meta.do === true ? meta : null, opts.npcKey);
       
-      if (npc === undefined && state.freeId.size === 0) {
-        throw Error(`max npcs reached: ${maxNumberOfNpcs}`);
-      }
-
       // prevent look e.g. if will Lie
       const nextAnimKey = helper.getAnimKeyFromMeta(meta);
       if (helper.canAnimKeyLook(nextAnimKey) === false) {
@@ -485,6 +487,7 @@ export default function Npcs(props) {
         // Reorder keys
         delete state.npc[opts.npcKey];
         state.npc[opts.npcKey] = npc;
+
       } else {
         
         // Spawn
@@ -499,6 +502,7 @@ export default function Npcs(props) {
         state.idToKey.set(npc.def.uid, opts.npcKey);
 
         npc.initialize(state.gltf[npc.def.classKey]);
+
       }
 
       state.setDoMeta(opts.npcKey, meta.do === true ? meta : null);
@@ -520,7 +524,7 @@ export default function Npcs(props) {
         });
       }
       
-      const position = toV3(at, precision);
+      const position = toV3(meta.do === true ? meta.doPoint : at, precision);
       // 🔔 non-zero height must be set via `meta.y`
       position.y = typeof meta.y === 'number' ? meta.y : 0;
 
@@ -533,7 +537,7 @@ export default function Npcs(props) {
       npc.startAnimation(meta, forceStartAnim); // 🔔 at.meta.y important
 
       if (npc.agent === null) {
-        if (attachAgent === true) {
+        if (dstNavigable === true) {
           const agent = state.attachAgent(npc);
           // 🔔 pin to current position
           agent.requestMoveTarget(position);
@@ -542,7 +546,7 @@ export default function Npcs(props) {
           state.byAgId[agent.agentIndex] = npc;
         }
       } else {
-        if (dstNav === false || attachAgent === false) {
+        if (dstNavigable === false) {
           state.removeAgent(npc);
           // must tell physics.worker because not moving
           state.physicsPositions.push(npc.bodyUid, position.x, position.y, position.z);

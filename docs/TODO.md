@@ -97,9 +97,11 @@
 ### World
 
 - ✅ support respawn syntax `spawn npc:rob as:scientist-0`
-- 🚧 BUG while `Lie` cannot `spawn npc:rob at:$( npc rob point )`
-  - because `{x,y}` doesn't provide `meta.do`
-- function from `{x,y,z}` to `meta.{do,doPoint}`
+- ✅ function from `{x,y,z}` to `meta.{do,doPoint}`
+  - `w.e.findDoPointUnder` returns `Geomorph.DecorPoint | null`
+- ✅ auto detect doPoint if spawn non navigable and above doPoint
+- ❌ BUG while `Lie` cannot `spawn npc:rob at:$( npc rob point )`
+  - must be a point above the do point
 
 - ✅ BUG decor warns onchange mesh
   - onchange mesh -> change sheets -> refresh decor, but without running create-gms-data first
