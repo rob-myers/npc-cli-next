@@ -122,7 +122,7 @@ export default function Ceiling(props) {
       ref={state.ref('inst')}
       args={[w.floor.quad, undefined, w.gms.length]} // 🔔 reuse floor quad
       position={[0, wallHeight, 0]}
-      renderOrder={4}
+      renderOrder={6}
     >
       {/* <meshBasicMaterial color="red" side={THREE.DoubleSide} /> */}
       <instancedAtlasMaterial

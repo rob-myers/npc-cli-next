@@ -332,7 +332,7 @@ export default function Doors(props) {
       ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.doorCount]}
       frustumCulled={false}
-      renderOrder={4}
+      renderOrder={5}
       visible={state.ready}
     >
       {state.ready && <instancedAtlasMaterial
