@@ -67,7 +67,7 @@ export default function WorldView(props) {
     },
     pickingScene: new THREE.Scene(),
     raycaster: new THREE.Raycaster(),
-    resizeOpts: { debounce: w.touchDevice === true ? 30 : 0 },
+    resizeOpts: { debounce: 30 },
     resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
