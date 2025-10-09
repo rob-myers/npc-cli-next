@@ -110,10 +110,10 @@ export default function useHandleEvents(w) {
         const otherIntersectsMainSeg = geom.lineSegCoordsIntersectsCircle(
           // try avoid needless blocking
           // maybe only need to block when npc enters around a corner
-          offMesh.src.x + 0.2 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0.2 * (offMesh.dst.z - offMesh.src.z),
+          offMesh.src.x + 0 * (offMesh.dst.x - offMesh.src.x), offMesh.src.z + 0 * (offMesh.dst.z - offMesh.src.z),
           offMesh.dst.x, offMesh.dst.z,
           other.point.x, other.point.y,
-          0.21,
+          0.1,
         );
         
         if (otherIntersectsMainSeg === false) {
