@@ -124,7 +124,6 @@ export async function *demoNarrateToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 
   
   function narrateEnterRoom() {
     const roomLabel = w.e.getNpcMeta(opts.npcKey)?.room?.label;
-    console.log({roomLabel})
     core.narrate(ct, {
       words: roomLabel === 'stateroom' ? 'Oh look, a bed' : 'No bed here!'
       // words: `${opts.npcKey} was tired, ${roomLabel === 'stateroom' ? 'there ' : 'no'}`

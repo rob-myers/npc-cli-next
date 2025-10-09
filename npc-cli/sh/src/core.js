@@ -399,7 +399,7 @@ export function near({ api, args, w }, opts = api.jsArg(args, { npc: 'to' })) {
   }
   
   const defaultRadius = 0.5;
-  const decors = w.decor.query(to, opts.within ?? defaultRadius, gmRoomId.grKey);
+  const decors = w.decor.query(to, opts.within ?? defaultRadius, { grKey: gmRoomId.grKey, reachRect: true });
   const id = /** @param {Geomorph.Decor['meta']} meta */ (meta) => meta;
   const selector = opts.where !== undefined ? api.generateSelector(opts.where) : id;
   const items = decors.map(x => x.meta).filter(selector);

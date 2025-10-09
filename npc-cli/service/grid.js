@@ -109,13 +109,13 @@ function findApplyReachContaining(item, tile) {
 /**
  * - Returns colliders and points intersecting rect
  * - Can filter by room i.e. `grKey`.
- * - Uses larger `d.meta.reachRect` if exists
+ * - Can use larger `d.meta.reachRect` if exists.
  * @param {Geomorph.DecorGrid} grid
  * @param {Geom.RectJson} rect 
- * @param {Geomorph.GmRoomKey} [grKey]
+ * @param {Geomorph.DecorGridQueryOpts} [opts]
  * @returns {Geomorph.Decor[]}
  */
-export function queryDecorGridRect(grid, rect, grKey) {
+export function queryDecorGridRect(grid, rect, { grKey, reachRect } = {}) {
   const decor = /** @type {{ [decorId: string]: Geomorph.Decor }} */ ({});
   const [mx, my] = coordToDecorGrid(rect.x, rect.y);
   const [Mx, My] = coordToDecorGrid(rect.x + rect.width, rect.y + rect.height);
@@ -125,16 +125,16 @@ export function queryDecorGridRect(grid, rect, grKey) {
     for (let j = my; j <= My; j++) {
       grid[`${i},${j}`]?.forEach(d => {
         if (
-          Array.isArray(d.meta.reachRect)
+          reachRect === true && Array.isArray(d.meta.reachRect)
             ? queryRect.intersectsArgs(.../** @type {[number, number, number, number]} */ (d.meta.reachRect))
             : queryRect.intersects(d.bounds2d)
-          ) {
-          decor[d.key] = d
+        ) {
+          decor[d.key] = d;
         }
       });
     }
   }
-  
+
   return grKey === undefined
     ? Object.values(decor)
     : Object.values(decor).filter(({ meta }) => meta.grKey === grKey)

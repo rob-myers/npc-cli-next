@@ -452,7 +452,10 @@ declare namespace NPC {
     labelHeight: number;
   }
 
-  /** Support {x,y} or {x,z} */
+  /**
+   * - Either (a) `{x,y}` or (b) `{x,y,z}` which projects to `{x,z}`
+   * - Sometimes the `y` in `{x,y,z}` might be useful.
+   */
   type GroundPoint = MaybeMeta<(
     | Geom.VectJson
     | import('three').Vector3Like

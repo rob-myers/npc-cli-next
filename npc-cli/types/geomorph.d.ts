@@ -473,6 +473,11 @@ declare namespace Geomorph {
   /** `byGrid[x][y]` */
   type DecorGrid = { [gridKey: `${number},${number}`]: Set<Geomorph.Decor> };
 
+  type DecorGridQueryOpts = {
+    grKey?: Geomorph.GmRoomKey;
+    reachRect?: boolean;
+  };
+
   /** Previously we sorted its groups e.g. "points" */
   type RoomDecor = Set<Geomorph.Decor>;
 

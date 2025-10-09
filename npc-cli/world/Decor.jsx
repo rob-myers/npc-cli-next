@@ -455,13 +455,13 @@ export default function Decor(props) {
       }
       quadInst.computeBoundingSphere();
     },
-    query(center, radius = defaultDecorQueryRadius, grKey) {
+    query(center, radius = defaultDecorQueryRadius, opts) {
       center = helper.toXZ(center);
       const rect = { x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2 };
-      return queryDecorGridRect(state.byGrid, rect, grKey);
+      return queryDecorGridRect(state.byGrid, rect, opts);
     },
-    queryRect(rect, grKey) {
-      return queryDecorGridRect(state.byGrid, rect, grKey);
+    queryRect(rect, opts) {
+      return queryDecorGridRect(state.byGrid, rect, opts);
     },
     register(ds, removeExisting = true) {
       const addable = ds.filter((d) =>
@@ -823,8 +823,8 @@ export default function Decor(props) {
  * @property {() => void} positionInstances
  * @property {() => void} positionLabels
  * @property {() => void} positionQuads
- * @property {(center: NPC.GroundPoint, radius?: number, grKey?: Geomorph.GmRoomKey) => Geomorph.Decor[]} query
- * @property {(rect: Geom.RectJson, grKey?: Geomorph.GmRoomKey) => Geomorph.Decor[]} queryRect
+ * @property {(center: NPC.GroundPoint, radius?: number, opts?: Geomorph.DecorGridQueryOpts) => Geomorph.Decor[]} query
+ * @property {(rect: Geom.RectJson, opts?: Geomorph.DecorGridQueryOpts) => Geomorph.Decor[]} queryRect
  * @property {(groupName: string, ...decorKeys: string[]) => void} rememberInGroup
  * @property {(...decorKeys: string[]) => void} remove
  * @property {() => void} removeAllInstantiated
