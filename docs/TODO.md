@@ -26,7 +26,7 @@
   - ✅ fix room label onchange map
   - ✅ on stop near bed say something
   - 🚧 rob thinks something when close to bed
-    - change into bed clothes `spawn npc:rob at:$( npc rob point ) skin:,,base,base`
+    - change into bed clothes `spawn npc:rob skin:,,base,base`
       - doesn't work whilst `Lie`
     - get into bed `npc rob fadeSpawn $( click 1 )`
   - can spawn into arbitrary map?
@@ -96,6 +96,8 @@
 
 ### World
 
+- ✅ redesign Manage
+
 - ✅ support respawn syntax `spawn npc:rob as:scientist-0`
 - ✅ function from `{x,y,z}` to `meta.{do,doPoint}`
   - `w.e.findDoPointUnder` returns `Geomorph.DecorPoint | null`
@@ -125,9 +127,9 @@
   - `think npc:rob of:bed` forgets
 - ✅ can `w e.removeBubble rob`
 
-- Broadcaster -> AsyncIterator inside JS function (not shell)
+- ❌ Broadcaster -> AsyncIterator inside JS function (not shell)
 
-- can choose default voice in WorldMenu
+- ✅ can choose default voice in WorldMenu
   
 - review HMR of skins, model, map, symbols
   - time box to 1hr
