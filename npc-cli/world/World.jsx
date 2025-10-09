@@ -153,7 +153,7 @@ export default function World(props) {
   const query = useQuery({
     queryKey: [WORLD_QUERY_FIRST_KEY, state.key, props.mapKey],
     queryFn: async () => {
-      if (module.hot?.active === false) {
+      if (import.meta.webpackHot?.active === false) {
         return false; // Avoid query from disposed module
       }
 

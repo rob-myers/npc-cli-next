@@ -611,7 +611,7 @@ export default function Decor(props) {
     ],
 
     async queryFn() {
-      if (module.hot?.active === false) {
+      if (import.meta.webpackHot?.active === false) {
         return false; // Avoid query from disposed module
       }
 

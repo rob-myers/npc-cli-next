@@ -76,7 +76,7 @@ export default function useStateRef(initializer, opts = {}) {
   return state;
 }
 
-module.hot?.decline();
+import.meta.webpackHot?.decline();
 
 /**
  * @template {Record<string, any>} State
