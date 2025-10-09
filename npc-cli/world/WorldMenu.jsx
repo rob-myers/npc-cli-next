@@ -37,7 +37,7 @@ export default function WorldMenu(props) {
     logger: /** @type {*} */ (null),
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
-    voices: window.speechSynthesis.getVoices(),
+    voices: [],
     xRayEnabled: true,
 
     applyControlsInitValues() {
@@ -144,6 +144,18 @@ export default function WorldMenu(props) {
   React.useEffect(() => {
     w.npc !== null && state.applyControlsInitValues();
   }, [w.npc]);
+
+  React.useEffect(() => {// voiceschanged event did not fire
+    function pollForVoices() {
+      state.voices = window.speechSynthesis.getVoices();
+      if (state.voices.length) {
+        update();
+        window.clearInterval(intervalId);
+      }
+    }
+    const intervalId = window.setInterval(pollForVoices, 1000);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   React.useLayoutEffect(() => {
     const showHtml3dsAfter300ms = debounce(() => 
