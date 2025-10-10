@@ -18,12 +18,10 @@ export class CameraControls extends EventDispatcher {
   enabled = true;
   /** "target" sets the location of focus, where the object orbits around */
   target = new THREE.Vector3();
+  // scale = 1;
   /** How far you can dolly in and out ( PerspectiveCamera only ) */
   minDistance = 0;
   maxDistance = Infinity;
-  /** How far you can zoom in and out ( OrthographicCamera only ) */
-  minZoom = 0;
-  maxZoom = Infinity;
   /** How far you can orbit vertically, upper and lower limits.
    * Range is 0 to Math.PI radians. */
   minPolarAngle = 0;
@@ -32,9 +30,6 @@ export class CameraControls extends EventDispatcher {
    * If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI ) */
   minAzimuthAngle = -Infinity;
   maxAzimuthAngle = Infinity;
-  // /** Set to true to enable damping (inertia)
-  //  * If damping is enabled, you must call controls.update() in your animation loop */
-  // enableDamping = true;
   dampingFactor = 0.05;
   /**
    * This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
@@ -169,12 +164,12 @@ export class CameraControls extends EventDispatcher {
 
   /** @param {number} dollyScale */
   dollyIn(dollyScale) {
-    this.scale = this.scale * dollyScale;
+    this.u.scale = this.u.scale * dollyScale;
   }
 
   /** @param {number} dollyScale */
   dollyOut(dollyScale) {
-    this.scale = this.scale / dollyScale;
+    this.u.scale = this.u.scale / dollyScale;
   }
 
   getAzimuthalAngle() {
@@ -379,7 +374,7 @@ export class CameraControls extends EventDispatcher {
   handleZoomToCursor() {
     let newRadius = null;
     const prevRadius = this.u.offset.length();
-    newRadius = this.clampDistance(prevRadius * this.scale);
+    newRadius = this.clampDistance(prevRadius * this.u.scale);
     const radiusDelta = prevRadius - newRadius;
 
     if (this.zoomToConstant !== null) {// 🔔
@@ -463,7 +458,7 @@ export class CameraControls extends EventDispatcher {
   }
 
   /** @param {MouseEvent} event */
-  onMouseMove(event) {
+  onMouseMove(event)  {
     if (this.enabled === false) return;
 
     switch (this.state) {
