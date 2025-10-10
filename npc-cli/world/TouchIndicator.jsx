@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import { css } from "@emotion/react";
 import { getRelativePointer } from '../service/dom';
 import useStateRef from '../hooks/use-state-ref';
@@ -10,26 +11,16 @@ export default function TouchIndicator() {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef( () => ({
-    /** @param {null | HTMLDivElement} x */
-    rootRef(x) {
-      if (x !== null) {
-        state.touchCircle = x;
-        state.touchCircle.style.setProperty('--touch-radius', `${state.touchRadiusPx}px`);
-        state.touchCircle.style.setProperty('--touch-fade-duration', `${state.touchFadeSecs}s`);
-      }
-    },
     touchCircle: /** @type {HTMLDivElement} */ ({}),
-    touchRadiusPx: w.smallViewport ? 70 : 35,
     touchErrorPx: w.smallViewport ? 15 : 5,
-    touchFadeSecs: w.smallViewport ? 2 : 0.2,
   }));
 
   React.useEffect(() => {
 
     /** @param {PointerEvent} e */
     function onPointerDown (e) {
-      state.touchCircle.style.left = `${(e.clientX - state.touchRadiusPx)}px`;
-      state.touchCircle.style.top = `${(e.clientY - state.touchRadiusPx)}px`;
+      state.touchCircle.style.left = `${(e.clientX - touchRadiusPx)}px`;
+      state.touchCircle.style.top = `${(e.clientY - touchRadiusPx)}px`;
       state.touchCircle.classList.add('active');
     }
     /** @param {PointerEvent} e */
@@ -65,44 +56,39 @@ export default function TouchIndicator() {
   return (
     <div
       css={touchIndicatorCss}
-      ref={state.rootRef}
+      className={cx(w.menu.dark && 'dark')}
+      ref={state.ref('touchCircle')}
     >
       <div className="inner-circle" />
     </div>
   );
 }
 
+const touchRadiusPx = 12;
+const touchFadeSecs = 1;
+
 const touchIndicatorCss = css`
   position: fixed;
   z-index: ${zIndexWorld.touchCircle};
-
-  --touch-radius: 0px;
-  --touch-fade-duration: 0s;
-
-  width: calc(2 * var(--touch-radius));
-  height: calc(2 * var(--touch-radius));
-  border: 2px solid white;
-  border-radius: 50%;
+  width: calc(2 * ${touchRadiusPx}px);
+  height: calc(2 * ${touchRadiusPx}px);
   pointer-events:none;
 
   opacity: 0;
   transform: scale(0);
-  transition: opacity var(--touch-fade-duration), transform ease-out var(--touch-fade-duration);
+  transition: opacity ${touchFadeSecs}s, transform ease-out ${touchFadeSecs}s;
   
   &.active {
     transform: scale(1);
     opacity: 0.25;
     transition: opacity 0.3s 0.2s, transform 0.3s 0.2s;
   }
-
-  .inner-circle {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    left: calc(var(--touch-radius) - 10px);
-    top: calc(var(--touch-radius) - 10px);
-    background: #f00;
-    border-radius: 50%;
+  
+  background-color: #fff;
+  border: 4px solid #000;
+  border-radius: 50%;
+  &.dark {
+    border-color: white;
   }
 
 `;
