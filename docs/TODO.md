@@ -99,7 +99,7 @@
 - ✅ fix camera-controls scale speed
 - ✅ original follow camera works (position only)
 - ✅ remove patch
-- 🚧 fix camera tween: polar, look
+- 🚧 fix camera tween polar
 - fix follow cam: handle refocus on drag away
 - follow cam can follow from behind
 

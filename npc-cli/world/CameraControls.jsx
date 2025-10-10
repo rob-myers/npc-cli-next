@@ -1,8 +1,6 @@
 import React from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { shallow } from "zustand/shallow";
-// we've patched drei three-stdlib
-// import { MapControls as MapControlsImpl } from 'node_modules/@react-three/drei/node_modules/three-stdlib'
 import { CameraControls as MapControlsImpl } from '../service/camera-controls'
 import { isTouchDevice } from "../service/dom";
 
@@ -23,11 +21,11 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
     get: s.get,
   }), shallow);
 
-
   /** @type {ControlsImpl} */
-  const controls = React.useMemo(() =>
-    new MapControlsImpl(r3f.camera, /** @type {*} */ ({})
-), [r3f.camera]);
+  const controls = React.useMemo(
+    () => new MapControlsImpl(r3f.camera, /** @type {*} */ ({})),
+    [r3f.camera],
+  );
   const domEl = props.domElement ?? r3f.gl.domElement;
   
   React.useEffect(() => {
