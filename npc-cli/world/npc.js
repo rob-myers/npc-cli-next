@@ -1462,6 +1462,7 @@ export class NpcApi {
       return;
     }
 
+    // 🚧 try weight {Idle,Walk} animation by current speed
     const curr = this.m.toAct[this.anim];
     const next = this.m.toAct[input];
     curr.fadeOut(glbFadeOut[this.anim][input]);

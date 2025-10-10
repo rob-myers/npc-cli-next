@@ -26,9 +26,8 @@
   - ✅ fix room label onchange map
   - ✅ on stop near bed say something
   - 🚧 rob thinks something when close to bed
-    - change into bed clothes `spawn npc:rob skin:,,base,base`
-      - doesn't work whilst `Lie`
-    - get into bed `npc rob fadeSpawn $( click 1 )`
+    - 🚧 change into bed clothes `spawn npc:rob skin:,,base,base`
+    - 🚧 get into bed `npc rob fadeSpawn $( click 1 )`
   - can spawn into arbitrary map?
     - maybe pick point in first room
 
@@ -95,6 +94,11 @@
   - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
 
 ### World
+
+- improve Manage style on mobile
+- connect our own camera-controls.js
+- follow cam follows from behind
+- try weight {Idle,Walk} by speed
 
 - ✅ redesign Manage
 

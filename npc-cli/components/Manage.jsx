@@ -408,7 +408,6 @@ const manageCss = css`
       font-weight: 300;
       letter-spacing: 1px;
       color: #fff;
-      background-color: #555;
       padding: 0 12px;
       border-radius: 6px;
     }
