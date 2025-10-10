@@ -95,7 +95,9 @@
 
 ### World
 
-- connect our own camera-controls.js
+- ✅ connect our own camera-controls.js
+- ✅ fix camera-controls scale speed
+- verify follow camera
 - follow cam follows from behind
 - can rotate camera around selected npc
 - improve Manage style on mobile
