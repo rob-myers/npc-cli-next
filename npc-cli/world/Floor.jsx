@@ -95,8 +95,6 @@ export default function Floor(props) {
       ct.lineWidth = w.touchDevice ? 0.05 : 0.04;
       const fillStyle = state.dark === true ? '#000' : '#fff';
       const strokeStyle = state.dark === true ? '#4448' : '#0007';
-      
-      // 🔔 handle early change to map with new geomorph keys
       (w.nav.toNavTris[gm.key] ?? []).forEach(([positions, indices]) => {
         for (const index of indices) {
           const triVId = index % 3; // 0, 1, 2
