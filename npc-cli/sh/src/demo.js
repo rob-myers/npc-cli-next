@@ -118,7 +118,6 @@ export async function* demoSelectPolys({ w }) {
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string }} [opts]
  */
-
 export async function *demoNarrateToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   const { w } = ct;
   

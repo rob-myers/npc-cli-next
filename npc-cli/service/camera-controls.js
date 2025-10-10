@@ -97,7 +97,6 @@ export class CameraControls extends EventDispatcher {
   pointerPositions = /** @type {{ [key: string]: THREE.Vector2 }} */ ({})
 
   fixedAngle = false;
-  zoomToConstant = /** @type {null | THREE.Vector3} */ (null);
 
   //#region MapControls
   /** if false, pan orthogonal to world-space direction camera.up */
@@ -376,10 +375,6 @@ export class CameraControls extends EventDispatcher {
     const prevRadius = this.u.offset.length();
     newRadius = this.clampDistance(prevRadius * this.u.scale);
     const radiusDelta = prevRadius - newRadius;
-
-    if (this.zoomToConstant !== null) {// 🔔
-      this.u.dollyDirection.copy(this.zoomToConstant).sub(this.object.position).normalize();
-    }
 
     this.object.position.addScaledVector(this.u.dollyDirection, radiusDelta);
     this.object.updateMatrixWorld();

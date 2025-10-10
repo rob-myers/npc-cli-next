@@ -97,9 +97,6 @@ export default function WorldView(props) {
       });
 
       state.syncRenderMode();
-      if (state.dst.look === undefined) {
-        state.controls.zoomToConstant = null;
-      }
       state.clearTargetDamping();
     },
     clearTargetDamping() {
@@ -230,8 +227,6 @@ export default function WorldView(props) {
       if (w.disabled === true) w.r3f.advance(Date.now());
     },
     followPosition(dst, opts = { smoothTime: 1 }) {
-      // lock zoom
-      state.controls.zoomToConstant = dst;
       /**
        * - following amounts to "look tween without resolve/reject"
        * - stop look via @see {state.stopFollowing}
@@ -643,7 +638,6 @@ export default function WorldView(props) {
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
         delete state.dst.look;
-        state.controls.zoomToConstant = null;
         return true;
       } else {
         return false;
@@ -690,26 +684,22 @@ export default function WorldView(props) {
       }
 
       if (opts.look !== undefined) {
-
         state.dst.look = opts.look;
         state.dst.lookOpts = opts.lookOpts;
         promises.push(createPromise('look'));
-
-      } else {// we don't support rotations if looking
+      } 
         
-        if (typeof opts.azimuthal === 'number') {
-          const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
-          state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, opts.azimuthal));
-          state.controls.setAzimuthalAngle(state.dst.azimuthal);
-          promises.push(createPromise('azimuthal'));
-        }
-        if (typeof opts.polar === 'number') {
-          const { minPolarAngle, maxPolarAngle } = state.controls;
-          state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, opts.polar));
-          state.controls.setPolarAngle(state.dst.polar);
-          promises.push(createPromise('polar'));
-        }
-
+      if (typeof opts.azimuthal === 'number') {
+        const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
+        state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, opts.azimuthal));
+        state.controls.setAzimuthalAngle(state.dst.azimuthal);
+        promises.push(createPromise('azimuthal'));
+      }
+      if (typeof opts.polar === 'number') {
+        const { minPolarAngle, maxPolarAngle } = state.controls;
+        state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, opts.polar));
+        state.controls.setPolarAngle(state.dst.polar);
+        promises.push(createPromise('polar'));
       }
 
       if (w.disabled === true && state.canTweenPaused === true) {
@@ -812,10 +802,7 @@ export default function WorldView(props) {
  * @property {() => void} clearTweens
  * @property {() => void} clearTargetDamping
  * @property {(mesh: THREE.Mesh, intersection: THREE.Intersection) => THREE.Vector3} computeNormal
- * @property {import('three-stdlib').MapControls & {
- *   sphericalDelta: THREE.Spherical;
- *   zoomToConstant: null | THREE.Vector3;
- * }} controls
+ * @property {import('../service/camera-controls.js').CameraControls} controls
  * We provide access to `sphericalDelta` via patch.
  * @property {import('@react-three/drei').MapControlsProps} ctrlOpts
  * @property {{ key: 'brightness' | 'sepia' | 'invert'; value: string }[]} cssFilter
