@@ -755,7 +755,7 @@ export default function Decor(props) {
       ref={state.ref('labelInst')}
       args={[state.labelQuad, undefined, labels.length]}
       frustumCulled={false}
-      renderOrder={5}
+      renderOrder={7}
     >
       {/* <meshBasicMaterial color="red" /> */}
       <instancedLabelsMaterial

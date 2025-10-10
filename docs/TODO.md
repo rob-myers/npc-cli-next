@@ -95,10 +95,11 @@
 
 ### World
 
-- improve Manage style on mobile
 - connect our own camera-controls.js
 - follow cam follows from behind
-- try weight {Idle,Walk} by speed
+- can rotate camera around selected npc
+- improve Manage style on mobile
+- ❌ try weight {Idle,Walk} by speed
 
 - ✅ redesign Manage
 
