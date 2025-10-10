@@ -120,10 +120,7 @@ export default function Manage(props) {
     <div css={manageCss}>
       <div className="manage">
         
-        <ul
-          className="extant"
-          data-section="created"
-        >
+        <ul className="extant">
           <li className="title">Tabs</li>
           
           {tabDefs.map((def, i) => {
@@ -131,6 +128,10 @@ export default function Manage(props) {
             const tabMeta = tabsMeta[tabId];
             const disabled = tabMeta?.disabled === true;
             const unmounted = tabMeta === undefined;
+
+            if (def.type === 'component' && def.class === 'Manage') {
+              return null; // ignore manage tabs
+            }
 
             return (
               <li key={tabId} data-tab-id={tabId}>
@@ -198,10 +199,7 @@ export default function Manage(props) {
           })}
         </ul>
 
-        <ul
-          className="create"
-          data-section="create"
-        >
+        <ul className="create">
           <li className="title">Create</li>
 
           <li data-tab-class={helper.toTabClassMeta.World.key}>
@@ -248,7 +246,7 @@ export default function Manage(props) {
             <CreateButton state={state} />
           </li>
 
-          <li style={{maxWidth: '160px'}} data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
+          <li style={{maxWidth: '140px'}} data-tab-class={helper.toTabClassMeta.HelloWorld.key}>
             <span className="tab-create-def">
               <span className="tab-class">
                 HelloWorld
@@ -258,10 +256,7 @@ export default function Manage(props) {
           </li>
         </ul>
 
-        <ul
-          className="layout-actions"
-          data-section="layout"
-        >
+        <ul className="layout-actions">
           <li className="title">Layout</li>
           
           <li>
@@ -358,8 +353,7 @@ const manageCss = css`
     align-items: stretch;
     color: white;
     flex-grow: 1;
-    max-width: 220px;
-
+    max-width: 240px;
 
     .tab-status-and-id {
       display: flex;
