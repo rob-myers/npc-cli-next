@@ -97,8 +97,11 @@
 
 - ✅ connect our own camera-controls.js
 - ✅ fix camera-controls scale speed
-- verify follow camera
+- ✅ original follow camera works (position only)
+- ✅ remove patch
+- 🚧 fix camera tween: polar, look
 - follow cam follows from behind
+
 - can rotate camera around selected npc
 - improve Manage style on mobile
 - ❌ try weight {Idle,Walk} by speed
