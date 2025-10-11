@@ -252,8 +252,10 @@ const cornerCss = css`
   z-index: 100;
   right: 0;
   bottom: 0;
-  border-left: 20px solid transparent;
-  border-bottom: 20px solid #666;
+  width: 20px;
+  height: 20px;
+  // img source https://www.colorzilla.com/en-gb/gradient-editor/
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAE5JREFUeNpi%2Bf%2F%2FPwMxwNvb24GJWIX6%2Bvr7mYhVePHiRUcmYhUCuQeYiFUIxNjdjE0hVjfjUojhZnwKUdxMSCHczcQoBLuZWIUgPkCAAQCFeVrlOKc1%2BgAAAABJRU5ErkJggg%3D%3D) no-repeat 7px 7px;
   cursor: nwse-resize;
   pointer-events: all;
 `;
