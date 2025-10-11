@@ -559,8 +559,9 @@ export default function WorldView(props) {
       if (state.dst.distance !== undefined) {// zoom
         const { minDistance, maxDistance, target } = state.controls;
         const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.dst.distance));
+        // camera should be `targetDistance` away from `target`
         const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
-        if (damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.01) === false) {
+        if (damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001) === false) {
           delete state.dst.distance;
           state.resolve.distance?.();
         }
@@ -664,7 +665,7 @@ export default function WorldView(props) {
       /** @param {Exclude<keyof State['dst'], 'lookOpts'>} key */
       async function createPromise(key) {
         return (new Promise((resolve, reject) =>
-          [state.resolve[key] = resolve, state.reject[key] = reject]
+          [state.resolve[key], state.reject[key]] = [resolve, reject]
         )).finally(() => {
           delete state.dst[key];
           delete state.resolve[key];
