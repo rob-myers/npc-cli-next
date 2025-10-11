@@ -552,8 +552,9 @@ export default function WorldView(props) {
         if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
           state.resolve.look?.();
         }
-        //@ts-ignore see patch i.e. fix azimuth angle
-        state.controls.update(true);
+        state.controls.fixedAngle = true;
+        state.controls.update();
+        state.controls.fixedAngle = false;
       }
 
       if (state.dst.distance !== undefined) {// zoom
@@ -695,6 +696,7 @@ export default function WorldView(props) {
         state.controls.setAzimuthalAngle(state.dst.azimuthal);
         promises.push(createPromise('azimuthal'));
       }
+
       if (typeof opts.polar === 'number') {
         const { minPolarAngle, maxPolarAngle } = state.controls;
         state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, opts.polar));

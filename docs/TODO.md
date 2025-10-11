@@ -102,6 +102,8 @@
 - ✅ fix camera-controls on mobile
 - ✅ fix camera tween polar `w view.tween '{ polar: 0 }'`
 - ✅ fix camera tween azimuthal `w view.tween '{ azimuthal: 0 }'`
+- ✅ look does not change angle as before
+  - ℹ️ angle-changing look is interesting though 
 - 🚧 fix camera keyboard controls
 - fix follow cam: handle refocus on drag away
 - follow cam can follow from behind
