@@ -5,7 +5,6 @@ import { deltaAngle } from "maath/misc";
 
 
 /**
- * 🚧 needs testing
  * Based on:
  * > https://github.com/pmndrs/three-stdlib/blob/main/src/controls/OrbitControls.ts
  */
@@ -132,7 +131,6 @@ export class CameraControls extends EventDispatcher {
   addPointer(event) {
     this.pointers.push(event);
   }
-
 
   /** @param {HTMLElement} domElement */
   connect(domElement) {
@@ -621,9 +619,6 @@ export class CameraControls extends EventDispatcher {
     } else {
       this.state = this.STATE.NONE;
     }
-
-    // 🚧 verify
-    console.log('state', this.state);
   }
 
   /**
@@ -717,7 +712,6 @@ export class CameraControls extends EventDispatcher {
   rotateUp(angle) {
     this.sphericalDelta.phi -= angle;
   }
-
 
   saveState() {
     this.target0.copy(this.target);
