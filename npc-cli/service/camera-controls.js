@@ -579,7 +579,6 @@ export class CameraControls extends EventDispatcher {
     this.trackPointer(event)
 
     if (this.pointers.length === 1) {
-      console.log('touch start 1');
       switch (this.touches.ONE) {
         case TOUCH.ROTATE:
           if (this.enableRotate === true) {
@@ -598,8 +597,6 @@ export class CameraControls extends EventDispatcher {
       
       this.dispatchEvent(startEvent);
     } else if (this.pointers.length === 2) {
-      // 🚧 verify
-      console.log('touch start 2');
       switch (this.touches.TWO) {
         case TOUCH.ROTATE:
           if (this.enableRotate === true) {
@@ -620,6 +617,9 @@ export class CameraControls extends EventDispatcher {
     } else {
       this.state = this.STATE.NONE;
     }
+
+    // 🚧 verify
+    console.log('state', this.state);
   }
 
   /**
