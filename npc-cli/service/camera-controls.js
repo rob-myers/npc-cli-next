@@ -265,7 +265,7 @@ export class CameraControls extends EventDispatcher {
     const position = this.getSecondPointerPosition(event)
     const dx = event.pageX - position.x
     const dy = event.pageY - position.y
-    const distance = Math.sqrt(dx * dx + dy * dy)
+    const distance = Math.hypot(dx, dy)
 
     this.u.dollyEnd.set(0, distance)
     this.u.dollyDelta.set(0, Math.pow(this.u.dollyEnd.y / this.u.dollyStart.y, this.zoomSpeed));
@@ -277,14 +277,14 @@ export class CameraControls extends EventDispatcher {
    * @param {PointerEvent} event 
    */
   handleTouchMoveDollyPan(event) {
-    if (this.enableZoom) this.handleTouchMoveDolly(event)
-    if (this.enablePan) this.handleTouchMovePan(event)
+    if (this.enableZoom === true) this.handleTouchMoveDolly(event)
+    if (this.enablePan === true) this.handleTouchMovePan(event)
   }
 
   /** @param {PointerEvent} event */
   handleTouchMoveDollyRotate(event) {
-    if (this.enableZoom) this.handleTouchMoveDolly(event)
-    if (this.enableRotate) this.handleTouchMoveRotate(event)
+    if (this.enableZoom === true) this.handleTouchMoveDolly(event)
+    if (this.enableRotate === true) this.handleTouchMoveRotate(event)
   }
 
   /** @param {PointerEvent} event */
@@ -579,6 +579,7 @@ export class CameraControls extends EventDispatcher {
     this.trackPointer(event)
 
     if (this.pointers.length === 1) {
+      console.log('touch start 1');
       switch (this.touches.ONE) {
         case TOUCH.ROTATE:
           if (this.enableRotate === true) {
@@ -597,6 +598,8 @@ export class CameraControls extends EventDispatcher {
       
       this.dispatchEvent(startEvent);
     } else if (this.pointers.length === 2) {
+      // 🚧 verify
+      console.log('touch start 2');
       switch (this.touches.TWO) {
         case TOUCH.ROTATE:
           if (this.enableRotate === true) {
