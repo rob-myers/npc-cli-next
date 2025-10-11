@@ -58,7 +58,7 @@ export class CameraControls extends EventDispatcher {
   TILT_LIMIT = Math.cos(70 * (Math.PI / 180));
   EPS = 1e-6;
 
-  STATE = {
+  STATE = /** @type {const} */ ({
     NONE: -1,
     ROTATE: 0,
     DOLLY: 1,
@@ -67,9 +67,11 @@ export class CameraControls extends EventDispatcher {
     TOUCH_PAN: 4,
     TOUCH_DOLLY_PAN: 5,
     TOUCH_DOLLY_ROTATE: 6,
-  };
+  });
 
-  state = this.STATE.NONE;
+  state = /** @type {-1 | 0 | 1 | 2 | 3 | 4 | 5 | 6} */ (
+    this.STATE.NONE
+  );
 
   /** Update state */
   u = {
@@ -103,10 +105,10 @@ export class CameraControls extends EventDispatcher {
   screenSpacePanning = false; // pan orthogonal to world-space direction camera.up
   
   touches = {
-    // ONE: THREE.TOUCH.ROTATE,
-    ONE: THREE.TOUCH.PAN,
-    // TWO: THREE.TOUCH.DOLLY_PAN,
-    TWO: THREE.TOUCH.DOLLY_ROTATE,
+    ONE: THREE.TOUCH.ROTATE,
+    // ONE: THREE.TOUCH.PAN,
+    TWO: THREE.TOUCH.DOLLY_PAN,
+    // TWO: THREE.TOUCH.DOLLY_ROTATE,
   }
   //#endregion
 
