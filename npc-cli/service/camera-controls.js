@@ -98,6 +98,7 @@ export class CameraControls extends EventDispatcher {
   pointers = /** @type {PointerEvent[]} */ ([]);
   pointerPositions = /** @type {{ [key: string]: THREE.Vector2 }} */ ({})
 
+  /** Fix azimuthal and polar angles during `this.update`? */
   fixedAngle = false;
 
   //#region MapControls
@@ -105,10 +106,10 @@ export class CameraControls extends EventDispatcher {
   screenSpacePanning = false; // pan orthogonal to world-space direction camera.up
   
   touches = {
-    ONE: THREE.TOUCH.ROTATE,
-    // ONE: THREE.TOUCH.PAN,
-    TWO: THREE.TOUCH.DOLLY_PAN,
-    // TWO: THREE.TOUCH.DOLLY_ROTATE,
+    // ONE: THREE.TOUCH.ROTATE,
+    ONE: THREE.TOUCH.PAN,
+    // TWO: THREE.TOUCH.DOLLY_PAN,
+    TWO: THREE.TOUCH.DOLLY_ROTATE,
   }
   //#endregion
 
@@ -581,41 +582,42 @@ export class CameraControls extends EventDispatcher {
     this.trackPointer(event)
 
     if (this.pointers.length === 1) {
+
       switch (this.touches.ONE) {
         case TOUCH.ROTATE:
-          if (this.enableRotate === true) {
-            this.handleTouchStartRotate();
-            this.state = this.STATE.TOUCH_ROTATE;
-          }
+          if (this.enableRotate === false) return;
+          this.handleTouchStartRotate();
+          this.state = this.STATE.TOUCH_ROTATE;
           break;
         case TOUCH.PAN:
-          if (this.enablePan === true) {
-            this.handleTouchStartPan();
-            this.state = this.STATE.TOUCH_PAN;
-          }
+          if (this.enablePan === false) return;
+          this.handleTouchStartPan();
+          this.state = this.STATE.TOUCH_PAN;
           break;
         default:
       }
       
       this.dispatchEvent(startEvent);
+
     } else if (this.pointers.length === 2) {
+
       switch (this.touches.TWO) {
-        case TOUCH.ROTATE:
-          if (this.enableRotate === true) {
-            this.handleTouchStartDollyRotate();
-            this.state = this.STATE.TOUCH_DOLLY_ROTATE;
-          }
-          break;
-        case TOUCH.PAN:
-          if (this.enablePan === true) {
-            this.handleTouchStartDollyPan();
-            this.state = this.STATE.TOUCH_DOLLY_PAN;
-          }
+        case TOUCH.DOLLY_PAN:
+          if (this.enableZoom === false && this.enablePan === true) return;
+          this.handleTouchStartDollyPan();
+          this.state = this.STATE.TOUCH_DOLLY_PAN;
+        break;
+        case TOUCH.DOLLY_ROTATE:
+          if (this.enableZoom === false && this.enableRotate === false) return;
+          this.handleTouchStartDollyRotate();
+          this.state = this.STATE.TOUCH_DOLLY_ROTATE;
           break;
         default:
+
       }
 
       this.dispatchEvent(startEvent);
+
     } else {
       this.state = this.STATE.NONE;
     }
