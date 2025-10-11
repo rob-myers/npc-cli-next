@@ -99,13 +99,16 @@
 - ✅ fix camera-controls scale speed
 - ✅ original follow camera works (position only)
 - ✅ remove patch
-- 🚧 fix camera tween polar
+- 🚧 fix camera tween polar `w view.tween '{ polar: 0 }'`
+- 🚧 fix camera tween azimuthal `w view.tween '{ azimuthal: 0 }'`
+- 🚧 fix camera keyboard controls
 - fix follow cam: handle refocus on drag away
 - follow cam can follow from behind
 
-- can rotate camera around selected npc
-- improve Manage style on mobile
 - ❌ try weight {Idle,Walk} by speed
+
+- doorway slow down only happens towards end?
+- improve Manage style on mobile
 
 - ✅ redesign Manage
 

@@ -789,7 +789,7 @@ export default function useHandleEvents(w) {
         
         tScale: 1, // 🔔 slow down in doorway if target near offMesh exit
         tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0 ? 0.5 : null,
-        tScaleSmoothTime: 0.28,
+        tScaleSmoothTime: 0.25,
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;

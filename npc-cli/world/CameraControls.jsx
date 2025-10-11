@@ -2,7 +2,6 @@ import React from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { shallow } from "zustand/shallow";
 import { CameraControls as MapControlsImpl } from '../service/camera-controls'
-import { isTouchDevice } from "../service/dom";
 
 /**
  * Based on:
@@ -54,8 +53,6 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
   }, [controls])
 
   useFrame(() => controls.update(), -1);
-
-  const isTouch = isTouchDevice();
 
   return (
     <primitive
