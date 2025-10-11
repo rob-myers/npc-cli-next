@@ -107,7 +107,7 @@
 
 - ❌ try weight {Idle,Walk} by speed
 
-- doorway slow down only happens towards end?
+- ✅ doorway slow down only happens towards end?
 - improve Manage style on mobile
 
 - ✅ redesign Manage

@@ -655,7 +655,7 @@ export class NpcApi {
       offMesh.seg = 2; // midway in main segment
     }
 
-    if (offMesh.seg >= 1 && offMesh.tScaleDst !== null) {
+    if (offMesh.seg >= 2 && offMesh.tScaleDst !== null) {
       // - slow down if will stop right after doorway
       // - speed up if changed target while slowing down
       // 🔔 scaling up tScaleSmoothTime makes traversal faster
@@ -1268,6 +1268,10 @@ export class NpcApi {
    */
   onTickDetectStuck(deltaSecs, agent) {
     // 🔔 avoid "snap" onenter offMeshConnection at maxSpeed 
+    if (agent.raw.neis.dist > 0.4) {
+      return;
+    }
+    
     // const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
     const smallDist = 0.5 * agent.raw.desiredSpeed * deltaSecs;
 
