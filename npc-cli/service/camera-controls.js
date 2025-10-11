@@ -721,13 +721,13 @@ export class CameraControls extends EventDispatcher {
 
   /** @param {number} angle */
   setAzimuthalAngle(angle) {
-    this.sphericalDelta.phi = deltaAngle(this.spherical.phi, angle);
+    this.sphericalDelta.theta = deltaAngle(this.spherical.theta, angle);
     this.update();
   }
 
   /** @param {number} angle */
   setPolarAngle(angle) {
-    this.sphericalDelta.theta = deltaAngle(this.spherical.theta, angle);
+    this.sphericalDelta.phi = deltaAngle(this.spherical.phi, angle);
     this.update();
   }
 
