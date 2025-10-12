@@ -228,8 +228,8 @@ export default function WorldView(props) {
     },
     followPosition(dst, opts) {
       /**
-       * - following amounts to "look tween without resolve/reject"
-       * - stop look via @see {state.stopFollowing}
+       * - Following means "look tween without resolve/reject"
+       * - Can stop following via @see {state.stopFollowing}
        */
       state.dst.look = dst;
       state.dst.lookOpts = opts;
@@ -552,9 +552,17 @@ export default function WorldView(props) {
 
       if (state.dst.look !== undefined && state.down === null) {// look or follow
         const { look: target, lookOpts = {} } = state.dst;
-        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
+        // 🤔
+        const height = lookOpts.maxDistance === undefined ? (lookOpts.height ?? 0) : undefined;
+        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
           state.resolve.look?.();
+        } else if (lookOpts.maxDistance !== undefined) {
+          const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(lookOpts.maxDistance).add(target);
+          targetCamPos.y = camera.position.y;
+          // damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
+          dampXZ(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
         }
+        
         state.controls.fixedAngle = lookOpts.fixedAngle ?? true;
         state.controls.update();
         state.controls.fixedAngle = false;

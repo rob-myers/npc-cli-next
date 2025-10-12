@@ -519,6 +519,7 @@ declare namespace NPC {
     fixedAngle?: boolean;
     height?: number;
     maxSpeed?: number;
+    maxDistance?: number;
     smoothTime?: number;
   };
 
