@@ -28,7 +28,7 @@ export default function WorldMenu(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     bgScale: 8, // [1..20]
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
-    dark: false,
+    dark: w.touchDevice,
     defaultLoggerDim: {
       x: 0,
       y: 0,
