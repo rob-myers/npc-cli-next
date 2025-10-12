@@ -32,7 +32,7 @@ export default function WorldMenu(props) {
     defaultLoggerDim: {
       x: 0,
       y: 0,
-      width: w.smallViewport ? 300 : 500,
+      width: 300,
       height: 100,
       minWidth: 200,
       minHeight: 48,

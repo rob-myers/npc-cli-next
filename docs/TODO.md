@@ -117,6 +117,8 @@
 - 🚧 avoid follow look snap by tween sphericalDelta
   - e.g. on fadeSpawn to bed
 
+- `w view.stopFollowing` has own command
+
 - ❌ try weight {Idle,Walk} by speed
 
 - ✅ doorway slow down only happens towards end?
