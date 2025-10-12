@@ -189,12 +189,14 @@ export default function createGmsData() {
       return null;
     },
     /**
-     * Two wall segments representing lintels i.e. wall above each door
+     * Two wall segments representing lintels: above door on each side.
+     * - 🔔 drawn in same position to avoid transparent overlap with adjacent wall
      * @param {Geomorph.Connector} connector 
      * @returns {{ seg: [Geom.Vect, Geom.Vect]; meta: Meta }[]}
      */
     getLintelSegs({ seg: [u, v], normal, meta }) {
-      const depths = lintelDepths[meta.hull === true ? 'hull' : 'nonHull'];
+      // const depths = lintelDepths[meta.hull === true ? 'hull' : 'nonHull'];
+      const depths = [0, 0];
       meta = { ...meta, y: doorHeight, h: wallHeight - doorHeight, lintel: true };
       return [
         { seg: /** @type {[Geom.Vect, Geom.Vect]} */ (
