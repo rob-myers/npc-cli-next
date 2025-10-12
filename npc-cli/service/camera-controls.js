@@ -721,13 +721,13 @@ export class CameraControls extends EventDispatcher {
 
   /** @param {number} angle */
   setAzimuthalAngle(angle) {
-    this.sphericalDelta.phi = deltaAngle(this.spherical.phi, angle);
+    this.sphericalDelta.theta = deltaAngle(this.spherical.theta, angle);
     this.update();
   }
 
   /** @param {number} angle */
   setPolarAngle(angle) {
-    this.sphericalDelta.theta = deltaAngle(this.spherical.theta, angle);
+    this.sphericalDelta.phi = deltaAngle(this.spherical.phi, angle);
     this.update();
   }
 
@@ -748,6 +748,9 @@ export class CameraControls extends EventDispatcher {
     const object = this.object;;
     const position = object.position;
 
+    const fixedAzimuth = this.fixedAngle === true ? this.getAzimuthalAngle() : null;
+    const fixedPolar = this.fixedAngle === true ? this.getPolarAngle() : null;
+
     u.offset.copy(position).sub(this.target);
 
     // (x, y, z) -> { r, theta, phi }
@@ -758,8 +761,8 @@ export class CameraControls extends EventDispatcher {
     this.spherical.phi += this.sphericalDelta.phi * this.dampingFactor;
 
     // restrict theta to be between desired limits
-    let min = this.fixedAngle === true ? this.minAzimuthAngle : this.getAzimuthalAngle();
-    let max = this.fixedAngle === true ? this.maxAzimuthAngle : this.getAzimuthalAngle();
+    let min = fixedAzimuth ?? this.minAzimuthAngle;
+    let max = fixedAzimuth ?? this.maxAzimuthAngle;
     if (isFinite(min) && isFinite(max)) {
       if (min < -Math.PI) min += twoPI;
       else if (min > Math.PI) min -= twoPI;
@@ -774,10 +777,7 @@ export class CameraControls extends EventDispatcher {
     }
 
     // restrict phi to be between desired limits
-    this.spherical.phi = this.fixedAngle === false
-      ? Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.spherical.phi))
-      : this.getPolarAngle()
-    ;
+    this.spherical.phi = fixedPolar ?? Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.spherical.phi));
     this.spherical.makeSafe();
 
     this.target.addScaledVector(this.u.panOffset, this.dampingFactor);
