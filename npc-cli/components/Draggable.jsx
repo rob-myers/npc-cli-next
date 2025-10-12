@@ -256,6 +256,7 @@ const cornerCss = css`
   height: 20px;
   // img source https://www.colorzilla.com/en-gb/gradient-editor/
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAE5JREFUeNpi%2Bf%2F%2FPwMxwNvb24GJWIX6%2Bvr7mYhVePHiRUcmYhUCuQeYiFUIxNjdjE0hVjfjUojhZnwKUdxMSCHczcQoBLuZWIUgPkCAAQCFeVrlOKc1%2BgAAAABJRU5ErkJggg%3D%3D) no-repeat 7px 7px;
+  filter: brightness(1.5);
   cursor: nwse-resize;
   pointer-events: all;
 `;
