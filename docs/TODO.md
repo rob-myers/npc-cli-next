@@ -105,8 +105,11 @@
 - ✅ look does not change angle as before
   - ℹ️ angle-changing look is interesting though 
 - ✅ fix camera keyboard controls
-- fix follow cam: handle refocus on drag away
-- follow cam can follow from behind
+
+- ✅ follow cam less tight by default
+- ✅ follow cam opts.smoothTime + opts.fixedAngle
+- 🚧 follow cam opts.minDistance
+- 🚧 follow cam can follow from behind
 
 - ❌ try weight {Idle,Walk} by speed
 

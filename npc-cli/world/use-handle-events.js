@@ -161,9 +161,12 @@ export default function useHandleEvents(w) {
       }
       return null;
     },
-    followNpc(npcKey) {
+    followNpc(npcKey, opts = { fixedAngle: true, smoothTime: 0.4 }) {
       const npc = w.n[npcKey];
-      w.view.followPosition(npc.position, { height: helper.defaults.height });
+      w.view.followPosition(npc.position, {
+        height: helper.defaults.height,
+        ...opts,
+      });
     },
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
@@ -969,7 +972,8 @@ export default function useHandleEvents(w) {
  * - is idle and in the way
  * - is very close to main segment of offMesh connection
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
- * @property {(npcKey: string) => void} followNpc
+ * @property {(npcKey: string, opts?: Pick<NPC.LookAtOpts, 'fixedAngle' | 'smoothTime'>) => void} followNpc
+ * Larger `smoothTime` takes longer to focus on npc
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(npcKey: string) => { room: null | Meta<{ label?: string }>  }} getNpcMeta
  * @property {(gmRoomIds: Geomorph.GmRoomId[], canAccess?: (opts: { gmId: number } & (
@@ -982,7 +986,7 @@ export default function useHandleEvents(w) {
  * @property {(npc: NPC.NPC, offMesh: NPC.OffMeshLookupValue) => NPC.ImprovedOffMeshSrcDst} improveOffMeshSrcDst
  * Compute improved offMeshConnection src/dst, leading to a more natural walking angle.
  * @property {(npcKey: string) => boolean} isFollowingNpc
- * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: import("./WorldView").LookAtOpts) => Promise<void>} lookAt
+ * @property {(input: string | THREE.Vector3 | Vect, lookAtOpts?: NPC.LookAtOpts) => Promise<void>} lookAt
  * @property {(npcKey: string, gdKey: Geomorph.GmDoorKey) => boolean} npcCanAccess
  * @property {(npc: NPC.NPC, otherNpcKey: string) => void} onBlockedDoorway
  * @property {(e: Extract<NPC.Event, { key: 'enter-collider'; type: 'nearby' }>) => void} onEnterDoorCollider

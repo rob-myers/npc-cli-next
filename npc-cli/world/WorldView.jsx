@@ -226,7 +226,7 @@ export default function WorldView(props) {
     ensureRender() {
       if (w.disabled === true) w.r3f.advance(Date.now());
     },
-    followPosition(dst, opts = { smoothTime: 1 }) {
+    followPosition(dst, opts) {
       /**
        * - following amounts to "look tween without resolve/reject"
        * - stop look via @see {state.stopFollowing}
@@ -555,7 +555,7 @@ export default function WorldView(props) {
         if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, lookOpts.height ?? 0, 0.01) === false) {
           state.resolve.look?.();
         }
-        state.controls.fixedAngle = true;
+        state.controls.fixedAngle = lookOpts.fixedAngle ?? true;
         state.controls.update();
         state.controls.fixedAngle = false;
       }
@@ -821,7 +821,7 @@ export default function WorldView(props) {
  *   fov?: number;
  *   polar?: number;
  *   look?: THREE.Vector3;
- *   lookOpts?: LookAtOpts;
+ *   lookOpts?: NPC.LookAtOpts;
  * }} dst
  *
  * @property {{ pickStart: number; pickEnd: number; pointerDown: number; pointerUp: number; }} epoch
@@ -848,7 +848,7 @@ export default function WorldView(props) {
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {() => void} ensureRender
- * @property {(dst: THREE.Vector3, opts?: LookAtOpts) => void} followPosition
+ * @property {(dst: THREE.Vector3, opts?: NPC.LookAtOpts) => void} followPosition
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
  * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
@@ -857,7 +857,7 @@ export default function WorldView(props) {
  * @property {(screenPoint: Geom.VectJson) => void} handlePausedClick
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
  * @property {() => void} lockDistance
- * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: LookAtOpts) => Promise<void>} lookAt
+ * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: NPC.LookAtOpts) => Promise<void>} lookAt
  * @property {(e?: THREE.Event) => void} onChangeControls
  * @property {import('@react-three/fiber').CanvasProps['onCreated']} onCreated
  * @property {() => void} onControlsEnd
@@ -934,14 +934,7 @@ const statsCss = css`
  * @property {THREE.Vector3} [look]
  * @property {number} [azimuthal]
  * @property {number} [polar]
- * @property {LookAtOpts} [lookOpts]
-*/
-
-/**
- * @typedef LookAtOpts
- * @property {number} [height]
- * @property {number} [maxSpeed]
- * @property {number} [smoothTime]
+ * @property {NPC.LookAtOpts} [lookOpts]
 */
 
 const pixelBuffer = new Uint8Array(4);

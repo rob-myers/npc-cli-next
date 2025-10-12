@@ -515,6 +515,13 @@ declare namespace NPC {
     disabled?: boolean;
   }
 
+  type LookAtOpts = {
+    fixedAngle?: boolean;
+    height?: number;
+    maxSpeed?: number;
+    smoothTime?: number;
+  };
+
   //#region sh js
   
   type WorldState = import('../world/World').State;
