@@ -153,7 +153,8 @@ export async function* click(ct) {
         ...e.keys && { keys: e.keys },
         meta: {
           ...e.meta,
-          nav: e.meta.floor === true ? w.npc.isPointInNavmesh(e.point) : false,
+          // nav false <=> on floor outside navmesh, e.g. npc meta.nav is undefined
+          ...e.meta.floor === true && { nav: w.npc.isPointInNavmesh(e.point) },
           // longClick: e.justLongDown,
         },
       };
