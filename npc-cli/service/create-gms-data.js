@@ -195,7 +195,7 @@ export default function createGmsData() {
      */
     getLintelSegs({ seg: [u, v], normal, meta }) {
       const depths = lintelDepths[meta.hull === true ? 'hull' : 'nonHull'];
-      meta = { ...meta, y: doorHeight, h: wallHeight - doorHeight };
+      meta = { ...meta, y: doorHeight, h: wallHeight - doorHeight, lintel: true };
       return [
         { seg: /** @type {[Geom.Vect, Geom.Vect]} */ (
             [v, u].map(p => p.clone().addScaled(normal, +1 * 0.5 * depths[0]))

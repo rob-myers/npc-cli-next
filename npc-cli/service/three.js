@@ -90,7 +90,7 @@ const xyIndices = [2, 1, 0, 0, 3, 2];
 const xyNormals = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
 quadGeometryXY.setAttribute("position", new THREE.BufferAttribute(xyVertices.slice(), 3));
 quadGeometryXY.setAttribute("uv", new THREE.BufferAttribute(xyUvs.slice(), 2));
-quadGeometryXZ.setAttribute( 'normal', new THREE.Float32BufferAttribute( xyNormals.slice(), 3 ) );
+quadGeometryXZ.setAttribute("normal", new THREE.Float32BufferAttribute(xyNormals.slice(), 3 ) );
 quadGeometryXY.setIndex(xyIndices.slice());
 
 const centeredQuadGeometryXY = quadGeometryXY.clone();

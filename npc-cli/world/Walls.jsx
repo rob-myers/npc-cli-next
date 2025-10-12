@@ -82,6 +82,7 @@ export default function Walls(props) {
       const { inst: ws } = state;
       let instanceId = 0;
       const instanceIds = /** @type {number[]} */ ([]);
+      const color = new THREE.Color(0, 0, 0);
 
       w.gms.forEach(({ key: gmKey, transform, determinant }, gmId) =>
         w.gmsData[gmKey].wallSegs.forEach(({ seg, meta }) => {
@@ -92,8 +93,12 @@ export default function Walls(props) {
             typeof meta.h === 'number' ? meta.h : undefined,
             typeof meta.y === 'number' ? meta.y : undefined,
           ));
+          // distinguish lintels by color
+          // 🔔 more could be encoded here
+          color.set(meta.lintel ? 1 : 0, 0, 0);
+          ws.setColorAt(instanceId, color);
           instanceIds.push(instanceId++);
-      }),
+        })
       );
       
       state.quad.setAttribute('instanceIds', new THREE.InstancedBufferAttribute(new Uint32Array(instanceIds), 1));
@@ -120,10 +125,9 @@ export default function Walls(props) {
       ref={state.ref('inst')}
       args={[state.quad, undefined, w.gmsData.wallCount]}
       frustumCulled={false}
-      // ℹ️ for transparency
       renderOrder={transparent ? 4 : undefined}
     >
-      {/* <meshBasicMaterial side={THREE.FrontSide} color="#0f0" wireframe /> */}
+      {/* <meshBasicMaterial color="#f0f" wireframe /> */}
       <instancedWallsMaterial
         key={InstancedWallsMaterial.key}
         alphaTest={0}

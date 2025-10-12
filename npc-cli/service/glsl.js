@@ -168,7 +168,7 @@ const humanZeroShader = {
     } else {// body=1, breath=2, selector=3
 
       // 🌞 flat shading via vDotProduct
-      float ambientLight = dark ? 0.05 : 0.1;
+      float ambientLight = dark ? 0.05 : 0.2;
       tint *= vec4(vec3((ambientLight + 0.8 * vDotProduct) * vHeightShade), 1.0);
 
       // skinning
@@ -672,6 +672,7 @@ export const InstancedLabelsMaterial = shaderMaterial(
 /**
  * - Monochrome instanced walls.
  * - More transparent the closer you get.
+ * - USE_INSTANCING_COLOR
  */
 const instancedWallsShader = {
   Vert: /*glsl*/`
@@ -680,8 +681,9 @@ const instancedWallsShader = {
 
   uniform float opacity;
   uniform float opacityCloseDivisor;
-
+  
   flat varying uint vInstanceId;
+  varying vec3 vColor;
   varying float vOpacityScale;
 
   #include <common>
@@ -689,6 +691,7 @@ const instancedWallsShader = {
 
   void main() {
     vInstanceId = instanceIds;
+    vColor.xyz = instanceColor.xyz;
 
     vec4 modelViewPosition = vec4(position, 1.0);
     modelViewPosition = instanceMatrix * modelViewPosition;
@@ -714,6 +717,7 @@ const instancedWallsShader = {
   uniform float opacityMin;
 
   flat varying uint vInstanceId;
+  varying vec3 vColor;
   varying float vOpacityScale;
 
   #include <common>
@@ -741,7 +745,12 @@ const instancedWallsShader = {
     }
     
     gl_FragColor = vec4(diffuse, opacity == 1.0 ? 1.0 : min(opacity * vOpacityScale, opacityMin));
-    // gl_FragColor = vec4(diffuse, opacity * vOpacityScale);
+
+    // lintels less opaque to mask partial overlap with doorway wall quad
+    if (vColor.x == 1.0) {
+      gl_FragColor.a = min(1.0, gl_FragColor.a + 0.1);
+    }
+
     #include <logdepthbuf_fragment>
   }
   `,
