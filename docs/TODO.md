@@ -114,6 +114,9 @@
   - ❌ can tween azimuthal without using spherical delta?
   - `w e.followNpc rob '{ fixAngle: false, smoothTime: 1, maxDistance: 5, fromBehind: true }'`
 
+- 🚧 avoid follow look snap by tween sphericalDelta
+  - e.g. on fadeSpawn to bed
+
 - ❌ try weight {Idle,Walk} by speed
 
 - ✅ doorway slow down only happens towards end?

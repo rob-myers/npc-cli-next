@@ -1,8 +1,6 @@
-// import { EventDispatcher } from "node_modules/@react-three/drei/node_modules/three-stdlib/controls/EventDispatcher";
 import * as THREE from "three";
 import { EventDispatcher, PerspectiveCamera, TOUCH } from "three";
 import { deltaAngle } from "maath/misc";
-
 
 /**
  * Based on:
