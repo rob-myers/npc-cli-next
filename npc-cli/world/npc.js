@@ -1268,12 +1268,12 @@ export class NpcApi {
    */
   onTickDetectStuck(deltaSecs, agent) {
     // 🔔 avoid "snap" onenter offMeshConnection at maxSpeed 
-    if (agent.raw.neis.dist > 0.4) {
+    if (agent.raw.neis.dist > 0.5) {
       return;
     }
     
-    // const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
-    const smallDist = 0.5 * agent.raw.desiredSpeed * deltaSecs;
+    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
+    // const smallDist = 0.5 * agent.raw.desiredSpeed * deltaSecs;
 
     if (
       Math.abs(this.delta.x) > smallDist
