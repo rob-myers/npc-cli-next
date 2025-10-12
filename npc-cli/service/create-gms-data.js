@@ -195,8 +195,7 @@ export default function createGmsData() {
      * @returns {{ seg: [Geom.Vect, Geom.Vect]; meta: Meta }[]}
      */
     getLintelSegs({ seg: [u, v], normal, meta }) {
-      // const depths = lintelDepths[meta.hull === true ? 'hull' : 'nonHull'];
-      const depths = [0, 0];
+      const depths = lintelDepths[meta.hull === true ? 'hull' : 'nonHull'];
       meta = { ...meta, y: doorHeight, h: wallHeight - doorHeight, lintel: true };
       return [
         { seg: /** @type {[Geom.Vect, Geom.Vect]} */ (
@@ -238,7 +237,8 @@ const lintelDepths = {
    * We lessen the depth to avoid z-fighting adjacent hull door.
    */
   hull: [hullDoorDepth - 0.01, hullDoorDepth],
-  nonHull: [doorDepth, doorDepth],
+  // nonHull: [doorDepth, doorDepth],
+  nonHull: [0, 0],
 };
 
 /** @type {GmData} */
