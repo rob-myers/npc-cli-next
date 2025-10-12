@@ -791,8 +791,8 @@ export default function useHandleEvents(w) {
         tToDist: npc.getMaxSpeed(), // distSoFar / timeSoFar = npc.getMaxSpeed()
         
         tScale: 1, // 🔔 slow down in doorway if target near offMesh exit
-        tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0 ? 0.2 : null,
-        tScaleSmoothTime: 0.25,
+        tScaleDst: nextUnitNull === true && npc.pendingTargets.length === 0 ? 0.25 : null,
+        tScaleSmoothTime: 0.3,
       };
       (state.doorToOffMesh[offMesh.gdKey] ??= []).push(npc.offMesh);
       (state.npcToDoors[e.npcKey] ??= { inside: null, nearby: new Set() }).inside = offMesh.gdKey;
