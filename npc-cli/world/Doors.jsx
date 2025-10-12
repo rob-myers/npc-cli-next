@@ -27,7 +27,7 @@ export default function Doors(props) {
     lockSigGeom: getBoxGeometry(`${w.key}-lock-lights`),
     lockSigInst: /** @type {*} */ (null),
     movingDoors: new Map(),
-    opacity: 0.65,
+    opacity: 0.6,
     ready: false,
 
     addCuboidAttributes() {
@@ -342,7 +342,9 @@ export default function Doors(props) {
         atlas={w.texDecor.tex}
         diffuse={[.3, .3, .3]}
         objectPickRed={4}
-        alphaTest={0.1} opacity={state.opacity} depthWrite={true}
+        alphaTest={0.1}
+        opacity={state.opacity}
+        depthWrite={false}
       />}
     </instancedMesh>
 
