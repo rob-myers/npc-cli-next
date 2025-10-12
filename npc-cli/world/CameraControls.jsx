@@ -20,10 +20,10 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
     get: s.get,
   }), shallow);
 
-  /** @type {ControlsImpl} */
+  // support HMR 🚧 remember position etc.
   const controls = React.useMemo(
     () => new MapControlsImpl(r3f.camera, /** @type {*} */ ({})),
-    [r3f.camera],
+    [r3f.camera, MapControlsImpl],
   );
   const domEl = props.domElement ?? r3f.gl.domElement;
   
