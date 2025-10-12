@@ -560,10 +560,12 @@ export default function WorldView(props) {
         }
         
         if (lookOpts.maxDistance !== undefined) {
-          const targetCamPos = tmpVectThree.copy(camera.position).sub(target.position).setLength(lookOpts.maxDistance).add(target.position);
-          targetCamPos.y = camera.position.y;
-          // damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
-          dampXZ(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
+          const delta = tmpVectThree.copy(camera.position).sub(target.position);
+          if (delta.length() > lookOpts.maxDistance) {
+            const targetCamPos = delta.setLength(lookOpts.maxDistance).add(target.position);
+            targetCamPos.y = camera.position.y;
+            dampXZ(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
+          }
         }
 
         if (lookOpts.fromBehind === true) {// set azimuthal "behind" tracked target
