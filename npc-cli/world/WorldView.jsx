@@ -440,6 +440,9 @@ export default function WorldView(props) {
       }
     },
     onPointerDown(e) {
+      // for keyboard events
+      state.rootEl.focus();
+      
       const sp = getRelativePointer(e);
       state.lastScreenPoint.copy(sp);
       state.epoch.pointerDown = Date.now();

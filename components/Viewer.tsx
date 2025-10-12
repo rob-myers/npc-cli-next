@@ -197,7 +197,8 @@ export default function Viewer() {
       className={cx({ collapsed })}
       data-testid="viewer"
       ref={state.ref('rootEl')}
-      tabIndex={0}
+      
+      tabIndex={-1}
       onKeyDown={state.onKeyDown}
     >
       <ViewerControls api={state} />

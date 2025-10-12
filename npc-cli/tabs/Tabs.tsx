@@ -242,7 +242,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       className="tabs"
       onKeyDown={state.onKeyDown}
       ref={state.ref('rootEl')}
-      tabIndex={0}
+      tabIndex={-1}
     >
       {state.everEnabled === true && (
         <FlexLayout
