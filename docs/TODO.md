@@ -110,7 +110,9 @@
 - ✅ follow cam opts.smoothTime + opts.fixedAngle
 - ✅ follow cam opts.minDistance
   - `w e.followNpc rob '{ fixAngle: false, smoothTime: 1, maxDistance: 5 }' `
-- 🚧 follow cam can follow from behind
+- ✅ follow cam can follow from behind
+  - ❌ can tween azimuthal without using spherical delta?
+  - `w e.followNpc rob '{ fixAngle: false, smoothTime: 1, maxDistance: 5, fromBehind: true }'`
 
 - ❌ try weight {Idle,Walk} by speed
 

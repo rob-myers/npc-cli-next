@@ -163,7 +163,7 @@ export default function useHandleEvents(w) {
     },
     followNpc(npcKey, opts = { fixedAngle: true, smoothTime: 0.4 }) {
       const npc = w.n[npcKey];
-      w.view.followPosition(npc.position, {
+      w.view.followObject3D(npc.m.group, {
         height: helper.defaults.height,
         ...opts,
       });
@@ -557,7 +557,7 @@ export default function useHandleEvents(w) {
     },
     isFollowingNpc(npcKey) {
       const npc = w.n[npcKey];
-      return npc !== undefined && w.view.dst.look === npc.position;
+      return npc !== undefined && w.view.dst.look === npc.m.group;
     },
     async lookAt(input, lookAtOpts = {}) {
       if (typeof input === 'string') {// npcKey

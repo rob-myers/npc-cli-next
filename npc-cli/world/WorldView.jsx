@@ -226,7 +226,7 @@ export default function WorldView(props) {
     ensureRender() {
       if (w.disabled === true) w.r3f.advance(Date.now());
     },
-    followPosition(dst, opts) {
+    followObject3D(dst, opts) {
       /**
        * - Following means "look tween without resolve/reject"
        * - Can stop following via @see {state.stopFollowing}
@@ -550,22 +550,34 @@ export default function WorldView(props) {
         }
       }
 
-      if (state.dst.look !== undefined && state.down === null) {// look or follow
+      // look 👀 or follow 🦶 with optional distance/angle tracking
+      if (state.dst.look !== undefined && state.down === null) {
         const { look: target, lookOpts = {} } = state.dst;
-        // 🤔
-        const height = lookOpts.maxDistance === undefined ? (lookOpts.height ?? 0) : undefined;
-        if (dampXZ(state.controls.target, target, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
+        const height = lookOpts.maxDistance === undefined ? (lookOpts.height ?? 0) : helper.defaults.height;
+        
+        if (dampXZ(state.controls.target, target.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
           state.resolve.look?.();
-        } else if (lookOpts.maxDistance !== undefined) {
-          const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(lookOpts.maxDistance).add(target);
+        }
+        
+        if (lookOpts.maxDistance !== undefined) {
+          const targetCamPos = tmpVectThree.copy(camera.position).sub(target.position).setLength(lookOpts.maxDistance).add(target.position);
           targetCamPos.y = camera.position.y;
           // damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
           dampXZ(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
         }
+
+        if (lookOpts.fromBehind === true) {// set azimuthal "behind" tracked target
+          const targetRotationY = target.rotation.y;
+          const azimuthal = targetRotationY + Math.PI;
+          state.controls.setAzimuthalAngle(azimuthal);
+        }
         
-        state.controls.fixedAngle = lookOpts.fixedAngle ?? true;
+        state.controls.setParams({
+          fixedAngle: lookOpts.fixedAngle,
+          azimuthalDampingFactor: lookOpts.azimuthalDampingFactor
+        });
         state.controls.update();
-        state.controls.fixedAngle = false;
+        state.controls.resetParams();
       }
 
       if (state.dst.distance !== undefined) {// zoom
@@ -697,7 +709,9 @@ export default function WorldView(props) {
       }
 
       if (opts.look !== undefined) {
-        state.dst.look = opts.look;
+        const object = placeholderTrackedObject3D;
+        object.position.copy(opts.look);
+        state.dst.look = object;
         state.dst.lookOpts = opts.lookOpts;
         promises.push(createPromise('look'));
       } 
@@ -828,7 +842,7 @@ export default function WorldView(props) {
  *   distance?: number;
  *   fov?: number;
  *   polar?: number;
- *   look?: THREE.Vector3;
+ *   look?: THREE.Object3D;
  *   lookOpts?: NPC.LookAtOpts;
  * }} dst
  *
@@ -856,7 +870,7 @@ export default function WorldView(props) {
  * @property {(r: number, g: number, b: number, a: number) => null | NPC.DecodedObjectPick} decodeObjectPick
  * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {() => void} ensureRender
- * @property {(dst: THREE.Vector3, opts?: NPC.LookAtOpts) => void} followPosition
+ * @property {(dst: THREE.Object3D, opts?: NPC.LookAtOpts) => void} followObject3D
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
  * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
@@ -947,3 +961,4 @@ const statsCss = css`
 
 const pixelBuffer = new Uint8Array(4);
 const tmpVectThree = new THREE.Vector3();
+const placeholderTrackedObject3D = new THREE.Object3D();

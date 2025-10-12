@@ -29,7 +29,9 @@ export class CameraControls extends EventDispatcher {
    * If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI ) */
   minAzimuthAngle = -Infinity;
   maxAzimuthAngle = Infinity;
-  dampingFactor = 0.05;
+  panDampingFactor = defaultDampingFactor;
+  azimuthalDampingFactor = defaultDampingFactor;
+  polarDampingFactor = defaultDampingFactor;
   /**
    * This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
    * Set to false to disable zooming.
@@ -697,6 +699,10 @@ export class CameraControls extends EventDispatcher {
     this.state = this.STATE.NONE;
   }
 
+  resetParams() {
+    this.setParams();
+  }
+
   /**
    * @param {number} angle
    * @returns {void}
@@ -723,6 +729,12 @@ export class CameraControls extends EventDispatcher {
   setAzimuthalAngle(angle) {
     this.sphericalDelta.theta = deltaAngle(this.spherical.theta, angle);
     this.update();
+  }
+
+  /** @param {Partial<Pick<typeof this, 'fixedAngle' | 'azimuthalDampingFactor'>>} [params] */
+  setParams(params) {
+    this.fixedAngle = params?.fixedAngle ?? defaultFixedAngle;
+    this.azimuthalDampingFactor = params?.azimuthalDampingFactor ?? defaultDampingFactor;
   }
 
   /** @param {number} angle */
@@ -757,8 +769,8 @@ export class CameraControls extends EventDispatcher {
     this.spherical.setFromVector3(u.offset);
     
     // approach target via damped delta
-    this.spherical.theta += this.sphericalDelta.theta * this.dampingFactor;
-    this.spherical.phi += this.sphericalDelta.phi * this.dampingFactor;
+    this.spherical.theta += this.sphericalDelta.theta * this.azimuthalDampingFactor;
+    this.spherical.phi += this.sphericalDelta.phi * this.polarDampingFactor;
 
     // restrict theta to be between desired limits
     let min = fixedAzimuth ?? this.minAzimuthAngle;
@@ -780,7 +792,7 @@ export class CameraControls extends EventDispatcher {
     this.spherical.phi = fixedPolar ?? Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.spherical.phi));
     this.spherical.makeSafe();
 
-    this.target.addScaledVector(this.u.panOffset, this.dampingFactor);
+    this.target.addScaledVector(this.u.panOffset, this.panDampingFactor);
 
     if (this.zoomToCursor === true && this.u.zoomingToCursor === true) {
       this.spherical.radius = this.clampDistance(this.spherical.radius);
@@ -796,9 +808,9 @@ export class CameraControls extends EventDispatcher {
     }
     this.object.lookAt(this.target);
 
-    this.sphericalDelta.theta *= 1 - this.dampingFactor;
-    this.sphericalDelta.phi *= 1 - this.dampingFactor;
-    this.u.panOffset.multiplyScalar(1 - this.dampingFactor);
+    this.sphericalDelta.theta *= 1 - this.azimuthalDampingFactor;
+    this.sphericalDelta.phi *= 1 - this.polarDampingFactor;
+    this.u.panOffset.multiplyScalar(1 - this.panDampingFactor);
 
     if (this.zoomToCursor === true && this.u.zoomingToCursor === true) {
       this.handleZoomToCursor();
@@ -846,6 +858,9 @@ export class CameraControls extends EventDispatcher {
 const startEvent = /** @type {const} */ ({ type: 'start' });
 const endEvent = /** @type {const} */ ({ type: 'end' });
 const changeEvent = /** @type {const} */ ({ type: 'change' });
+
+const defaultDampingFactor = 0.05;
+const defaultFixedAngle = false;
 
 const twoPI = 2 * Math.PI;
 const tempVector3One = new THREE.Vector3();
