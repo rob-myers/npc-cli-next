@@ -510,6 +510,6 @@ export const html3DOpacityCssVar = '--html-3d-opacity';
 export const worldViewBgColorCssVar = '--world-view-background-color';
 
 export const xRayOpacity = {
-  walls: 0.6,
+  walls: 0.7,
   ceiling: 1,
 };
