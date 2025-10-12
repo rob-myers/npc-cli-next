@@ -29,7 +29,14 @@ export default function WorldMenu(props) {
     bgScale: 8, // [1..20]
     brightness: tryLocalStorageGetParsed(`brightness@${w.key}`) ?? 12,
     dark: false,
-    defaultLoggerDim: { x: 0, y: 0, width: w.smallViewport ? 300 : 500, height: 100, minWidth: 200, minHeight: 80 },
+    defaultLoggerDim: {
+      x: 0,
+      y: 0,
+      width: w.smallViewport ? 300 : 500,
+      height: 100,
+      minWidth: 200,
+      minHeight: 48,
+    },
     defaultVoice: tryLocalStorageGetParsed(`defaultVoice@${w.key}`),
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
