@@ -559,7 +559,7 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       return npc !== undefined && w.view.dst.look === npc.m.group;
     },
-    async lookAt(input, lookAtOpts = {}) {
+    async lookAt(input, lookAtOpts = { fixedAngle: true }) {
       if (typeof input === 'string') {// npcKey
         input = w.n[input].position;
         lookAtOpts.height = helper.defaults.height;
