@@ -12,9 +12,8 @@ spawn npc:kate at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' as:medic-0 granted:. angle:Math
 spawn npc:suit at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' as:suit-0 granted:. angle:Math.PI
 spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math.PI
 
-# look at:rob
+# w e.followNpc rob "{ fixedAngle: true, smoothTime: 1, maxDistance: undefined, fromBehind: false }"
 w view.controls.setPolarAngle Math.PI/4
-w e.followNpc rob "{ fixedAngle: true, smoothTime: 1, maxDistance: 10, fromBehind: false }"
 
 permitMove=true
 click '({ meta }, ct) => meta.floor && ct.home.permitMove' |
