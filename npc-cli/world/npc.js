@@ -1272,8 +1272,8 @@ export class NpcApi {
       return;
     }
     
-    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
-    // const smallDist = 0.5 * agent.raw.desiredSpeed * deltaSecs;
+    // const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
+    const smallDist = 0.5 * agent.raw.desiredSpeed * deltaSecs;
 
     if (
       Math.abs(this.delta.x) > smallDist
