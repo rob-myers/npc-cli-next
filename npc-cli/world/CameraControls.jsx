@@ -20,12 +20,13 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
     get: s.get,
   }), shallow);
 
-  // support HMR 🚧 remember position etc.
+  const domEl = props.domElement ?? r3f.gl.domElement;
+  
+  // 🚧 HMR remember position etc.
   const controls = React.useMemo(
     () => new MapControlsImpl(r3f.camera, /** @type {*} */ ({})),
     [r3f.camera, MapControlsImpl],
   );
-  const domEl = props.domElement ?? r3f.gl.domElement;
   
   React.useEffect(() => {
     controls.connect(domEl);
@@ -47,8 +48,7 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
 
   React.useEffect(() => {
     const old = r3f.get().controls;
-    // @ts-ignore https://github.com/three-types/three-ts-types/pull/1398
-    r3f.set({ controls: controls });
+    r3f.set({ controls });
     return () => r3f.set({ controls: old })
   }, [controls])
 
@@ -56,16 +56,16 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
 
   return (
     <primitive
-      ref={ref}
       object={controls}
+      ref={ref}
       enableDamping
+      zoomToCursor
 
       // 🚧 ...
-      zoomToCursor
-      minAzimuthAngle={Math.PI / 4}
-      maxAzimuthAngle={Math.PI / 4}
-      minPolarAngle={Math.PI / 4}
-      maxPolarAngle={Math.PI / 4}
+      minAzimuthAngle={props.minAzimuthAngle}
+      maxAzimuthAngle={props.maxAzimuthAngle}
+      minPolarAngle={props.minPolarAngle}
+      maxPolarAngle={props.maxPolarAngle}
       minDistance={props.minDistance} // target could be ground or npc head
       maxDistance={props.maxDistance}
       panSpeed={2}
@@ -82,9 +82,13 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
  * @property {(e?: import('three').Event) => void} [onChange]
  * @property {() => void} [onEnd]
  * @property {() => void} [onStart]
+ * @property {number} [minAzimuthAngle]
+ * @property {number} [maxAzimuthAngle]
  * @property {number} [minDistance]
- * @property {number} [minPanDistance]
  * @property {number} [maxDistance]
+ * @property {number} [minPanDistance] // 🚧 implement in controls (from patch to make mobile touch more precise)
+ * @property {number} [minPolarAngle]
+ * @property {number} [maxPolarAngle]
  */
 
 /**

@@ -800,8 +800,12 @@ export default function WorldView(props) {
         domElement={state.canvas}
         //see three-stdlib patch
         minDistance={state.ctrlOpts.minDistance}
-        minPanDistance={w.smallViewport ? 0.05 : 0}
         maxDistance={state.ctrlOpts.maxDistance}
+        minPanDistance={w.smallViewport ? 0.05 : 0}
+        minAzimuthAngle={Math.PI / 4}
+        maxAzimuthAngle={Math.PI / 4}
+        minPolarAngle={Math.PI / 4}
+        maxPolarAngle={Math.PI / 4}
         onChange={state.onChangeControls}
         onEnd={state.onControlsEnd}
         onStart={state.onControlsStart}
