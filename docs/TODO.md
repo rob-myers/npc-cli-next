@@ -12,26 +12,10 @@
   - ✅ detect when npc can see other via `ray`
     - `ray test from:rob to:will`
 
-- 🚧 Example: Narrator sends Player to bed
-  - ✅ shell examples of narrate on enter room (enter-door)
-  - ✅ js example of narrate on enter room
-  - ✅ on enter branching narration
-    - stateroom "...and headed for a bed"
-    - else "...which was not a stateroom"
-  - ✅ `narrate` should not be a generator (so can override)
-    - ✅ improve initial long message (too slow)
-    - ✅ improve two rooms one-after-another (too slow)
-  - ✅ narrate_to_bed.profile.sh
-  - ✅ move code blocks to example-commands
-  - ✅ fix room label onchange map
-  - ✅ on stop near bed say something
-  - 🚧 rob thinks something when close to bed
-    - 🚧 change into bed clothes `spawn npc:rob skin:,,base,base`
-    - 🚧 get into bed `npc rob fadeSpawn $( click 1 )`
-  - can spawn into arbitrary map?
-    - maybe pick point in first room
+- Example: Admiral escorted to their quarters
 
-- 🚧 Example: Player avoids Guard
+- Example: Prisoner escapes into another room past two Guards
+  - 1st Guard drugged, 2nd sneaked past
 
 - 🚧 start with videos
   - ℹ️ points in doorways considered not navigable
@@ -54,6 +38,25 @@
     - ℹ️ keep prompt disabled
     - ✅ show touch points
       - developer options > input > Show taps
+
+- ❌ Example: Narrator sends Player to bed
+  - ✅ shell examples of narrate on enter room (enter-door)
+  - ✅ js example of narrate on enter room
+  - ✅ on enter branching narration
+    - stateroom "...and headed for a bed"
+    - else "...which was not a stateroom"
+  - ✅ `narrate` should not be a generator (so can override)
+    - ✅ improve initial long message (too slow)
+    - ✅ improve two rooms one-after-another (too slow)
+  - ✅ narrate_to_bed.profile.sh
+  - ✅ move code blocks to example-commands
+  - ✅ fix room label onchange map
+  - ✅ on stop near bed say something
+  - ❌ rob thinks something when close to bed
+    - change into bed clothes `spawn npc:rob skin:,,base,base`
+    - get into bed `npc rob fadeSpawn $( click 1 )`
+  - ❌ can spawn into arbitrary map?
+    - maybe pick point in first room
 
 - ❌ strategy subsection
   - ✅ need `<Code>`
@@ -95,6 +98,8 @@
 
 ### World
 
+- WorldMenu has "freecam" checkbox
+
 - ✅ connect our own camera-controls.js
 - ✅ fix camera-controls scale speed
 - ✅ original follow camera works (position only)
@@ -114,7 +119,7 @@
   - ❌ can tween azimuthal without using spherical delta?
   - `w e.followNpc rob '{ fixAngle: false, smoothTime: 1, maxDistance: 5, fromBehind: true }'`
 
-- 🚧 avoid follow look snap by tween sphericalDelta
+- ❌ avoid follow look snap by tween sphericalDelta
   - e.g. on fadeSpawn to bed
 
 - `w view.stopFollowing` has own command
