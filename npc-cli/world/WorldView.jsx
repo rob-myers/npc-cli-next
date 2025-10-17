@@ -574,12 +574,7 @@ export default function WorldView(props) {
           state.controls.setAzimuthalAngle(azimuthal);
         }
         
-        state.controls.setParams({
-          fixedAngle: lookOpts.fixedAngle,
-          azimuthalDampingFactor: lookOpts.azimuthalDampingFactor
-        });
         state.controls.update();
-        state.controls.resetParams();
       }
 
       if (state.dst.distance !== undefined) {// zoom

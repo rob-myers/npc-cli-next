@@ -699,10 +699,6 @@ export class CameraControls extends EventDispatcher {
     this.state = this.STATE.NONE;
   }
 
-  resetParams() {
-    this.setParams();
-  }
-
   /**
    * @param {number} angle
    * @returns {void}
@@ -729,12 +725,6 @@ export class CameraControls extends EventDispatcher {
   setAzimuthalAngle(angle) {
     this.sphericalDelta.theta = deltaAngle(this.spherical.theta, angle);
     this.update();
-  }
-
-  /** @param {Partial<Pick<typeof this, 'fixedAngle' | 'azimuthalDampingFactor'>>} [params] */
-  setParams(params) {
-    this.fixedAngle = params?.fixedAngle ?? defaultFixedAngle;
-    this.azimuthalDampingFactor = params?.azimuthalDampingFactor ?? defaultDampingFactor;
   }
 
   /** @param {number} angle */
