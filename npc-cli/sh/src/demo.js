@@ -87,29 +87,6 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 }
 
 /**
- * - Make a single hard-coded polygon non-navigable,
- *   using `w.lib.queryFilterType.respectUnwalkable`
- * - Indicate it via debug polygon in `<Debug />`.
- * 
- * ```sh
- * demoSelectPolys
- * ```
- * @param {NPC.RunArg} ct
- */
-export async function* demoSelectPolys({ w }) {
-  const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
-    { x: 1.5 * 1.5, y: 0, z: 2 * 1.5 },
-    { x: 0.1, y: 0.1, z: 0.1 },
-    { maxPolys: 1 },
-  );
-  console.log({ polyRefs });
-
-  const { navPolyFlag } = helper;
-  polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
-  w.debug.selectNavPolys(...polyRefs); // display via debug
-}
-
-/**
  * Bound to a particular npcKey.
  * ```sh
  * demoNarrateToBed npc:rob
@@ -155,6 +132,29 @@ export async function *demoNarrateToBed(ct, opts = ct.api.jsArg(ct.args, { npc: 
     }
 
   }
+}
+
+/**
+ * - Make a single hard-coded polygon non-navigable,
+ *   using `w.lib.queryFilterType.respectUnwalkable`
+ * - Indicate it via debug polygon in `<Debug />`.
+ * 
+ * ```sh
+ * demoSelectPolys
+ * ```
+ * @param {NPC.RunArg} ct
+ */
+export async function* demoSelectPolys({ w }) {
+  const { polyRefs } = w.crowd.navMeshQuery.queryPolygons(
+    { x: 1.5 * 1.5, y: 0, z: 2 * 1.5 },
+    { x: 0.1, y: 0.1, z: 0.1 },
+    { maxPolys: 1 },
+  );
+  console.log({ polyRefs });
+
+  const { navPolyFlag } = helper;
+  polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
+  w.debug.selectNavPolys(...polyRefs); // display via debug
 }
 
 const tmpMat1 = new Mat();
