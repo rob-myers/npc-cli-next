@@ -41,7 +41,7 @@ export default function WorldMenu(props) {
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
-    freeCamEnabled: false,
+    freeLook: false,
     logger: /** @type {*} */ (null),
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
@@ -109,9 +109,9 @@ export default function WorldMenu(props) {
       ]);
       w.update();
     },
-    onChangeFreeCamEnabled(e) {
-      state.freeCamEnabled = e.currentTarget.checked;
-      w.view.controls.fixedAngle = !state.freeCamEnabled;
+    onChangeFreeLook(e) {
+      state.freeLook = e.currentTarget.checked;
+      w.view.controls.fixedAngle = !state.freeLook;
       w.update();
     },
     onChangeBgScale(e) {
@@ -272,12 +272,12 @@ export default function WorldMenu(props) {
                 checked={state.xRayEnabled}
               />
             </label>
-            <label title="free camera">
-              freecam
+            <label title="free look">
+              free look
               <input
                 type="checkbox"
-                onChange={state.onChangeFreeCamEnabled}
-                checked={state.freeCamEnabled}
+                onChange={state.onChangeFreeLook}
+                checked={state.freeLook}
               />
             </label>
           </div>
@@ -454,7 +454,7 @@ const popUpCss = css`
  * @property {string} [dragClassName] We can restrict Logger dragging to this className
  * @property {{ [durKey: string]: number }} durationKeys
  * @property {boolean} dark
- * @property {boolean} freeCamEnabled
+ * @property {boolean} freeLook
  * @property {import('../terminal/Logger').State} logger
  * @property {boolean} preventDraggable
  * @property {boolean} showDebug
@@ -470,7 +470,7 @@ const popUpCss = css`
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeCanTweenPaused
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeDark
  * @property {(e: React.ChangeEvent<HTMLSelectElement>) => void} onChangeDefaultVoice
- * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeFreeCamEnabled
+ * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeFreeLook
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeLoggerLog
  * @property {(e: React.ChangeEvent<HTMLInputElement>) => void} onChangeXRayEnabled
  * @property {(e: NPC.LoggerLinkEvent) => void} onClickLoggerLink

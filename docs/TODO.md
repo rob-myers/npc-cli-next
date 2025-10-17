@@ -98,7 +98,7 @@
 
 ### World
 
-- WorldMenu has "freecam" checkbox
+- ✅ WorldMenu has "free look" checkbox
 
 - ✅ connect our own camera-controls.js
 - ✅ fix camera-controls scale speed
