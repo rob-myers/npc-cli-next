@@ -97,9 +97,6 @@ export class CameraControls extends EventDispatcher {
   pointers = /** @type {PointerEvent[]} */ ([]);
   pointerPositions = /** @type {{ [key: string]: THREE.Vector2 }} */ ({})
 
-  /** Fix azimuthal and polar angles during `this.update`? */
-  fixedAngle = false;
-
   //#region MapControls
   /** if false, pan orthogonal to world-space direction camera.up */
   screenSpacePanning = false; // pan orthogonal to world-space direction camera.up
@@ -110,6 +107,11 @@ export class CameraControls extends EventDispatcher {
     // TWO: THREE.TOUCH.DOLLY_PAN,
     TWO: THREE.TOUCH.DOLLY_ROTATE,
   }
+  //#endregion
+
+  //#region Custom
+  /** Fix azimuthal and polar angles during `this.update`? */
+  fixedAngle = false;
   //#endregion
 
   /**

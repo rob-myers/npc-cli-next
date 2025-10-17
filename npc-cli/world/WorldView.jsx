@@ -9,7 +9,7 @@ import { debug, entries, keys, testNever } from "../service/generic.js";
 import { helper } from "../service/helper";
 import { Rect, Vect } from "../geom/index.js";
 import { dataUrlToBlobUrl, getModifierKeys, getRelativePointer, isRMB } from "../service/dom.js";
-import { fromXrayInstancedMeshName, longPressMs, pickedTypesInSomeRoom, wallHeight, worldViewBgColorCssVar, zIndexWorld } from "../service/const.js";
+import { fromXrayInstancedMeshName, initialCameraAngle, longPressMs, pickedTypesInSomeRoom, wallHeight, worldViewBgColorCssVar, zIndexWorld } from "../service/const.js";
 import { dampXZ, getTempInstanceMesh, hasObjectPickShaderMaterial, pickingRenderTarget, toV3, unitXVector3, v3Precision } from "../service/three.js";
 import { popUpRootDataAttribute } from "../components/PopUp.jsx";
 import { WorldContext } from "./world-context.js";
@@ -794,18 +794,17 @@ export default function WorldView(props) {
         zoom={1}
       />
 
-
       <CameraControls
         ref={state.ref('controls')}
         domElement={state.canvas}
-        //see three-stdlib patch
+        initialAngle={initialCameraAngle}
         minDistance={state.ctrlOpts.minDistance}
         maxDistance={state.ctrlOpts.maxDistance}
         minPanDistance={w.smallViewport ? 0.05 : 0}
-        minAzimuthAngle={Math.PI / 4}
-        maxAzimuthAngle={Math.PI / 4}
-        minPolarAngle={Math.PI / 4}
-        maxPolarAngle={Math.PI / 4}
+        minAzimuthAngle={-Infinity}
+        maxAzimuthAngle={+Infinity}
+        minPolarAngle={0}
+        maxPolarAngle={Math.PI / 2}
         onChange={state.onChangeControls}
         onEnd={state.onControlsEnd}
         onStart={state.onControlsStart}

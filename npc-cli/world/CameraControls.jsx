@@ -1,6 +1,7 @@
 import React from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { shallow } from "zustand/shallow";
+import * as THREE from "three";
 import { CameraControls as MapControlsImpl } from '../service/camera-controls'
 
 /**
@@ -22,11 +23,22 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
 
   const domEl = props.domElement ?? r3f.gl.domElement;
   
-  // 🚧 HMR remember position etc.
-  const controls = React.useMemo(
-    () => new MapControlsImpl(r3f.camera, /** @type {*} */ ({})),
-    [r3f.camera, MapControlsImpl],
-  );
+  // 🚧 on HMR remember position/angle
+  const controls = React.useMemo(() => {
+    const mc = new MapControlsImpl(r3f.camera, /** @type {*} */ ({}));
+
+    // set initial angle
+    const azimuthal = props.initialAngle?.azimuthal ?? 0;
+    const polar = props.initialAngle?.polar ?? 0;
+    const delta = (new THREE.Vector3()).setFromSphericalCoords(mc.getDistance(), polar, azimuthal);
+    mc.object.position.copy(mc.target).add(delta);
+    mc.update();
+    
+    // fixed angle by default
+    mc.fixedAngle = true;
+    
+    return mc;
+  },[r3f.camera, MapControlsImpl]);
   
   React.useEffect(() => {
     controls.connect(domEl);
@@ -61,13 +73,13 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
       enableDamping
       zoomToCursor
 
-      // 🚧 ...
       minAzimuthAngle={props.minAzimuthAngle}
       maxAzimuthAngle={props.maxAzimuthAngle}
       minPolarAngle={props.minPolarAngle}
       maxPolarAngle={props.maxPolarAngle}
-      minDistance={props.minDistance} // target could be ground or npc head
+      minDistance={props.minDistance}
       maxDistance={props.maxDistance}
+
       panSpeed={2}
       rotateSpeed={0.5}
       zoomSpeed={0.5}
@@ -82,13 +94,14 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
  * @property {(e?: import('three').Event) => void} [onChange]
  * @property {() => void} [onEnd]
  * @property {() => void} [onStart]
+ * @property {{ azimuthal: number; polar: number; }} [initialAngle]
  * @property {number} [minAzimuthAngle]
  * @property {number} [maxAzimuthAngle]
  * @property {number} [minDistance]
  * @property {number} [maxDistance]
- * @property {number} [minPanDistance] // 🚧 implement in controls (from patch to make mobile touch more precise)
  * @property {number} [minPolarAngle]
  * @property {number} [maxPolarAngle]
+ * @property {number} [minPanDistance] // 🚧 implement in controls (from patch to make mobile touch more precise)
  */
 
 /**
