@@ -88,12 +88,19 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
       break;
     } catch (e) {
       if (!helper.isStopReason(e) || !('rest' in e)) {
-        throw e; // e.g. reboot; respawn or remove
+        throw e; // e.g. reboot, respawn, remove
       }
       to = e.rest;
-      // on paused interrupt, avoid resuming twice
-      if (!(e.key === 'move-again' && ct.api.isPaused())) {
-        yield `${ansi.Cyan}${opts.npcKey}${ansi.Reset} awaiting resolution...`;
+
+      // caller can optionally continue/stop, rather than pause
+      const msg = { npcKey: opts.npcKey, reason: e.key,
+        will: /** @type {'pause' | 'continue' | 'stop'} */ ('pause'),
+      };
+      yield msg;
+
+      switch (msg.will) {
+        case 'stop': return;
+        case 'continue': continue;
       }
       ct.api.pause();
       await ct.api.awaitResume();

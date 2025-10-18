@@ -1,9 +1,9 @@
 import { deltaAngle } from "maath/misc";
 import { Mat } from "@/npc-cli/geom";
-import { jsStringify } from "@/npc-cli/service/generic";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from "@/npc-cli/service/geom";
 import * as core from "./core";
+import * as dev from "./dev";
 
 /**
  * @param {NPC.RunArg} ct
@@ -155,6 +155,19 @@ export async function* demoSelectPolys({ w }) {
   const { navPolyFlag } = helper;
   polyRefs.forEach(polyRef => w.nav.navMesh.setPolyFlags(polyRef, navPolyFlag.unWalkable));
   w.debug.selectNavPolys(...polyRefs); // display via debug
+}
+
+/**
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
+ */
+export async function* demoStopDirect(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+  const it = dev.direct(ct, opts);
+
+  for await (const v of it) {
+    v.will = 'stop'; // stop after first obstruction
+    yield v;
+  }
 }
 
 const tmpMat1 = new Mat();
