@@ -110,8 +110,8 @@ export class CameraControls extends EventDispatcher {
   //#endregion
 
   //#region Custom
-  /** Fix azimuthal and polar angles during `this.update`? */
-  fixedAngle = false;
+  params = { fixedPolar: false, fixedAzimuth: false };
+  savedParams = { ...this.params };
   //#endregion
 
   /**
@@ -699,6 +699,10 @@ export class CameraControls extends EventDispatcher {
     this.state = this.STATE.NONE;
   }
 
+  restoreParams() {
+    Object.assign(this.params, this.savedParams);
+  }
+
   /**
    * @param {number} angle
    * @returns {void}
@@ -715,6 +719,15 @@ export class CameraControls extends EventDispatcher {
     this.sphericalDelta.phi -= angle;
   }
 
+  saveParams() {
+    Object.assign(this.savedParams, this.params);
+  }
+
+  /** @param {{ fixedAzimuth: boolean, fixedPolar: boolean }} params */
+  setParams(params) {
+    Object.assign(this.savedParams, params);
+  }
+  
   saveState() {
     this.target0.copy(this.target);
     this.position0.copy(this.object.position);
@@ -750,8 +763,8 @@ export class CameraControls extends EventDispatcher {
     const object = this.object;;
     const position = object.position;
 
-    const fixedAzimuth = this.fixedAngle === true ? this.getAzimuthalAngle() : null;
-    const fixedPolar = this.fixedAngle === true ? this.getPolarAngle() : null;
+    const fixedAzimuth = this.params.fixedAzimuth === true ? this.getAzimuthalAngle() : null;
+    const fixedPolar = this.params.fixedPolar === true ? this.getPolarAngle() : null;
 
     u.offset.copy(position).sub(this.target);
 

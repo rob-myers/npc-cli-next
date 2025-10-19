@@ -112,7 +112,7 @@ export default function WorldMenu(props) {
     },
     onChangeFreeLook(e) {
       state.freeLook = e.currentTarget.checked;
-      w.view.controls.fixedAngle = !state.freeLook;
+      w.view.controls.setParams({ fixedAzimuth: !state.freeLook, fixedPolar: !state.freeLook });
       w.update();
     },
     onChangeBgScale(e) {

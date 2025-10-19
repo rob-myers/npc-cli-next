@@ -516,9 +516,6 @@ declare namespace NPC {
   }
 
   type LookAtOpts = {
-    azimuthalDampingFactor?: number;
-    fixedAngle?: boolean;
-    fromBehind?: boolean;
     height?: number;
     maxDistance?: number;
     maxSpeed?: number;

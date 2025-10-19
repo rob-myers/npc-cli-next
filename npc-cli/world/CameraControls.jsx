@@ -34,9 +34,6 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
     mc.object.position.copy(mc.target).add(delta);
     mc.update();
     
-    // fixed angle by default
-    mc.fixedAngle = true;
-    
     return mc;
   },[r3f.camera, MapControlsImpl]);
   

@@ -327,7 +327,7 @@ export default function WorldView(props) {
       state.ctrlOpts.minDistance = state.ctrlOpts.maxDistance = distance;
       update();
     },
-    async lookAt(point, opts = { smoothTime: 0.4 }) {
+    async lookAt(point, opts = { smoothTime: 0.4, maxDistance: 10 }) {
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
@@ -550,7 +550,7 @@ export default function WorldView(props) {
         }
       }
 
-      // look 👀 or follow 🦶 with optional distance/angle tracking
+      // look 👀 or follow 🦶 with azimuthal angle tracking + optional maxDistance tracking
       if (state.dst.look !== undefined && state.down === null) {
         const { look: target, lookOpts = {} } = state.dst;
         const height = lookOpts.maxDistance === undefined ? (lookOpts.height ?? 0) : helper.defaults.height;
@@ -559,7 +559,7 @@ export default function WorldView(props) {
           state.resolve.look?.();
         }
         
-        if (lookOpts.maxDistance !== undefined) {
+        if (lookOpts.maxDistance !== undefined) {// 🚧 simplify
           const delta = tmpVectThree.copy(camera.position).sub(target.position);
           if (delta.length() > lookOpts.maxDistance) {
             const targetCamPos = delta.setLength(lookOpts.maxDistance).add(target.position);
@@ -567,14 +567,11 @@ export default function WorldView(props) {
             dampXZ(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
           }
         }
-
-        if (lookOpts.fromBehind === true) {// set azimuthal "behind" tracked target
-          const targetRotationY = target.rotation.y;
-          const azimuthal = targetRotationY + Math.PI;
-          state.controls.setAzimuthalAngle(azimuthal);
-        }
         
+        state.controls.saveParams();
+        state.controls.setParams({ fixedPolar: true, fixedAzimuth: false }); // only fix polar
         state.controls.update();
+        state.controls.restoreParams();
       }
 
       if (state.dst.distance !== undefined) {// zoom
