@@ -102,6 +102,10 @@
 - on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
 
+ - improve "follow camera after pan"
+   - e.g. stop following if pan too far
+   - e.g. fix azimuthal angle temporarily
+
 - ✅ command service has `choice`
   - `run '(ct) { yield* ct.api.choice("[ foo ]()"); }'`
 - ✅ can redirect choice answer to variable
