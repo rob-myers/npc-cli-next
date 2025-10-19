@@ -725,7 +725,7 @@ export class CameraControls extends EventDispatcher {
 
   /** @param {{ fixedAzimuth: boolean, fixedPolar: boolean }} params */
   setParams(params) {
-    Object.assign(this.savedParams, params);
+    Object.assign(this.params, params);
   }
   
   saveState() {
