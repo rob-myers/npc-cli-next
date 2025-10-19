@@ -101,11 +101,11 @@ export const helper = {
 
   /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: Key.TabClassPrefix; }>} */
   toTabClassMeta: {
+    World: { key: 'World', tabPrefix: 'world' },
+    Tty: { key: 'Tty', tabPrefix: 'tty' },
+    Ps: { key: 'Ps', tabPrefix: 'ps' },
     HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
     Manage: { key: 'Manage', tabPrefix: 'manage' },
-    Tty: { key: 'Tty', tabPrefix: 'tty' },
-    World: { key: 'World', tabPrefix: 'world' },
-    Ps: { key: 'Ps', tabPrefix: 'ps' },
   },
 
   /** @type {Record<Key.GeomorphNumber, Key.Geomorph>} */
