@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { doorDepth, doorHeight, gmHitTestExtraScale, hitTestRed, hullDoorDepth, wallHeight, worldToSguScale } from "./const";
-import { mapValues, pause, warn } from "./generic";
+import { doorHeight, gmHitTestExtraScale, hitTestRed, hullDoorDepth, wallHeight, worldToSguScale } from "./const";
+import { mapValues, pause } from "./generic";
 import { drawPolygons } from "./dom";
 import { Poly } from '../geom';
 import { geom, tmpVec1 } from "./geom";
@@ -29,7 +29,7 @@ export default function createGmsData() {
      * - Populates `gmsData[gm.key]`.
      * - Mutates `gm.doors` and `gm.windows` i.e. provides `roomIds`.
      * - Mutates `gm.obstacles` and `gm.decor` i.e. provides `meta.roomId`.
-     * - In development, recomputed onchange geomorphs.json or edit this file.
+     * - In development, recomputed onchange geomorphs.json (?) or edit this file.
      * @param {Geomorph.Layout} gm
      */
     async computeGmData(gm) {

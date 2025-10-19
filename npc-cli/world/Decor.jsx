@@ -51,6 +51,10 @@ export default function Decor(props) {
         // Don't re-instantiate explicitly removed
         // .filter(d => !state.rmKeys.has(d.key) && (d.meta.roomId >= 0 ||
         .filter(d => (d.meta.roomId >= 0 ||
+          /**
+           * 🔔 roomIds must be attached in create-gms-data.
+           * Seen issue when changing constants e.g. decor image scale.
+           */
           warn(`decor "${d.key}" cannot be instantiated: not in any room`, d)
         )
       ), false);
@@ -835,3 +839,5 @@ export default function Decor(props) {
  */
 
 const centreUnitQuad = new THREE.Matrix4().makeTranslation(-(-0.5), 0, -(-0.5));
+
+2;

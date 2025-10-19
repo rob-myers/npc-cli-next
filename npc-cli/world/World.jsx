@@ -185,7 +185,8 @@ export default function World(props) {
         state.mapKey !== props.mapKey ||
         next.hash.map !== state.hash.map ||
         next.hash.mapNav !== state.hash.mapNav ||
-        next.hash.mapDecor !== state.hash.mapDecor // 🔔 needed for meta.roomId in computeGmData
+        // needed for meta.roomId in computeGmData
+        next.hash.mapDecor !== state.hash.mapDecor
       );
 
       // also update gms if e.g. unsorted unused polygon added
