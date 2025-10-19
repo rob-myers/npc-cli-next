@@ -23,7 +23,6 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
 
   const domEl = props.domElement ?? r3f.gl.domElement;
   
-  // 🚧 on HMR remember position/angle
   const controls = React.useMemo(() => {
     const mc = new MapControlsImpl(r3f.camera, /** @type {*} */ ({}));
 
@@ -33,9 +32,16 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
     const delta = (new THREE.Vector3()).setFromSphericalCoords(mc.getDistance(), polar, azimuthal);
     mc.object.position.copy(mc.target).add(delta);
     mc.update();
+
+    const prev = r3f.get().controls;
+    if (prev instanceof MapControlsImpl) {
+      // 🚧 restore on HMR
+      mc.setParams(prev.params);
+      mc.target.copy(prev.target);
+    }
     
     return mc;
-  },[r3f.camera, MapControlsImpl]);
+  }, [r3f.camera, MapControlsImpl]);
   
   React.useEffect(() => {
     controls.connect(domEl);
