@@ -121,7 +121,7 @@ export default function Manage(props) {
       <div className="manage">
         
         <ul className="extant">
-          <li className="title">Tabs</li>
+          <li className="title m-2">Tabs</li>
           
           {tabDefs.map((def, i) => {
             const tabId = def.filepath;
@@ -200,7 +200,7 @@ export default function Manage(props) {
         </ul>
 
         <ul className="create">
-          <li className="title">Create</li>
+          <li className="title m-2">Create</li>
 
           <li data-tab-class={helper.toTabClassMeta.World.key}>
             <span className="tab-create-def">
@@ -257,7 +257,7 @@ export default function Manage(props) {
         </ul>
 
         <ul className="layout-actions">
-          <li className="title">Layout</li>
+          <li className="title m-2">Layout</li>
           
           <li>
             <TabsLayoutLink layoutPresetKey="world-tty-default">world + tty (default)</TabsLayoutLink>
@@ -324,7 +324,8 @@ const manageCss = css`
     flex-direction: column;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 8px;
+    padding: 4px 0;
     row-gap: 0;
     font-size: small;
     border: var(--separating-border);

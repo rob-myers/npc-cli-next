@@ -4,6 +4,7 @@ export default {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./npc-cli/components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   darkMode: ['class'],
   safelist: ['dark'],
