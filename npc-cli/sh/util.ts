@@ -1,6 +1,6 @@
 import braces from "braces";
 import { ansi, ProcessTagPreview } from "./const";
-import { debug, last, parseJsArg } from "../service/generic";
+import { debug, last, parseJsonArg } from "../service/generic";
 import { type ProcessMeta, ProcessStatus, type Ptags, type TtyLinkCtxt } from "./session.store";
 import { SigEnum } from "./io";
 import type * as Sh from "./parse";
@@ -298,18 +298,24 @@ export function computeChoiceTtyLinkFactory(text: string, defaultValue: any, ses
           linkStartIndex: 1 + stripAnsi(parts.slice(0, 2 * i + addedZero).join("")).length,
 
           callback() {
-            let value = parseJsArg(
-              match[3] === "" // links [ foo ]() has value "foo"
-                ? match[2] // links [ foo ](-) has value undefined
-                : match[3] === "-"
-                ? undefined
-                : match[3]
-            );
-            if (value === undefined) {
-              value = defaultValue;
+            let value = /** @type {undefined | string} */ (undefined);
+
+            if (match[3] === "") {
+              // links [ foo ]() has value `JSON.parse("foo")` or `"foo"`
+              // e.g. `choice '[ '{1..10}' ]()'` has 10 choices and outputs numbers 1 to 10
+              value = parseJsonArg(match[2]);
+            } else if (match[3] === "-") {
+              // links [ foo ](-) has value `undefined` (nothing emitted)
+              // e.g. "[ click to continue ](-)"
+              value = undefined;
+            } else {
+              // links [ foo ](bar) have value `JSON.parse("bar")` or `"bar"`
+              // e.g. `choice '[ foo ]( [{"bar":"baz"}] )'`
+              // 🔔 parseJsArg would convert e.g. stop -> `window.stop`
+              value = parseJsonArg(match[3]);
             }
 
-            // 🚧 support special actions
+            // 🤔 support special actions
             // if (typeof value === "string") {
             //   if (value.startsWith("href:")) {
             //     // `"href:{navigable}"`
