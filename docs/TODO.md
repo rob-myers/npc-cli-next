@@ -99,6 +99,9 @@
 
 ### World
 
+- on fix both angles, interpret rotation as pan
+  - this will fix "locked rotation bleed into pan"
+
 - ✅ command service has `choice`
   - `run '(ct) { yield* ct.api.choice("[ foo ]()"); }'`
 - ✅ can redirect choice answer to variable
