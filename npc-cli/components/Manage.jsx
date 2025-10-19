@@ -125,7 +125,7 @@ export default function Manage(props) {
     <div css={manageCss} className="manage">
         
       <ul className="extant">
-        <li className="title m-2">Tabs</li>
+        <li className="title m-2">Current</li>
         
         {tabDefs.map((def, i) => {
           const tabId = def.filepath;
@@ -260,7 +260,7 @@ const manageCss = css`
   display: flex;
   flex-direction: column;
   align-content: flex-start;
-  gap: 16px;
+  /* gap: 16px; */
 
   background-color: #111;
   padding: 16px;
@@ -294,6 +294,7 @@ const manageCss = css`
     user-select: none;
     padding: 4px 12px;
     color: #fff;
+    text-align: center;
     font-size: small;
     background-color: #333;
     border-color: rgba(0, 0, 0, 0);
@@ -310,7 +311,7 @@ const manageCss = css`
     justify-content: space-between;
     align-items: stretch;
     color: white;
-    flex-grow: 1;
+    flex-grow: 0.1;
 
     .tab-status-and-id {
       display: flex;
