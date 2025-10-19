@@ -12,7 +12,8 @@
   - ✅ detect when npc can see other via `ray`
     - `ray test from:rob to:will`
 
-- Example: Admiral escorted to their quarters
+- 🚧 Example: Admiral escorted to their quarters, pausing before enter door
+  - 🚧 directed walk can be "handled"
 
 - Example: Prisoner escapes into another room past two Guards
   - 1st Guard drugged, 2nd sneaked past
@@ -97,6 +98,11 @@
   - https://nextjs.org/docs/pages/api-reference/components/link#disable-scrolling-to-the-top-of-the-page
 
 ### World
+
+- ✅ command service has `choice`
+  - `run '(ct) { yield* ct.api.choice("[ foo ]()"); }'`
+- 🚧 demoHandleDirect provides choices stop/continue/pause
+- demoHandleDirect provides choice dodge left/right
 
 - ✅ WorldMenu has "free look" checkbox
 

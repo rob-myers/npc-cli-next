@@ -177,10 +177,10 @@ class cmdServiceClass {
         if (isTtyAt(meta, 0) === true) {
           // `choice {textWithLinks}+` where text may contain newlines
           const text = args.join(" ");
-          yield* this.choice(meta, { text });
+          yield* this.choice(meta, text);
         } else {
           // `choice` expects to read `ChoiceReadValue`s
-          let datum: ChoiceReadValue;
+          let datum: string;
           while ((datum = await read(meta)) !== EOF)
             yield* this.choice(meta, datum);
         }
@@ -758,7 +758,7 @@ class cmdServiceClass {
     }
   }
 
-  private async *choice(meta: Sh.BaseMeta, { text }: ChoiceReadValue) {
+  private async *choice(meta: Sh.BaseMeta, text: string) {
     const lines = text.replace(/\r/g, "").split(/\n/);
     const defaultValue = undefined;
     const parsedLines = lines.map((text) => computeChoiceTtyLinkFactory(text, defaultValue, meta.sessionKey));
@@ -868,6 +868,10 @@ class cmdServiceClass {
 
     async awaitResume(exposeReject?: (reject: (reason?: any) => void) => void) {
       await cmdService.awaitResume(this.meta, exposeReject);
+    },
+
+    async *choice(text: string) {
+      yield* cmdService.choice(this.meta, text);
     },
     
     dataChunk,
@@ -1208,10 +1212,6 @@ async function read(meta: Sh.BaseMeta, chunks = false) {
 }
 
 //#endregion
-
-interface ChoiceReadValue {
-  text: string;
-}
 
 export type ProcessContext = {
   home: Session['var']; // see RunArg['home']
