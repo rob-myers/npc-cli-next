@@ -6,7 +6,7 @@ import { deepGet, keysDeep, generateSelector, testNever, truncateOneLine, jsStri
 import { parseJsArg, parseJsonArg } from "../service/generic";
 import { absPath, addStdinToArgs, computeNormalizedParts, handleProcessError, killError, normalizeAbsParts, computeChoiceTtyLinkFactory, ProcessError, resolveNormalized, resolvePath, ShError, ttyError, getPtagsPreview, applyPtagUpdates } from "./util";
 import type * as Sh from "./parse";
-import { type ReadResult, dataChunk, isProxy, redirectNode, VoiceCommand, isDataChunk, type Device } from "./io";
+import { type ReadResult, dataChunk, isProxy, redirectNode, isDataChunk, type Device, type VarDeviceMode } from "./io";
 import useSession, { type ProcessMeta, ProcessStatus, type Session } from "./session.store";
 import { cloneParsed, getOpts, parseService } from "./parse";
 import { ttyShellClass } from "./tty.shell";
@@ -177,12 +177,12 @@ class cmdServiceClass {
         if (isTtyAt(meta, 0) === true) {
           // `choice {textWithLinks}+` where text may contain newlines
           const text = args.join(" ");
-          yield* this.choice(meta, text);
+          yield* this.choice(node, text);
         } else {
           // `choice` expects to read `ChoiceReadValue`s
           let datum: string;
           while ((datum = await read(meta)) !== EOF)
-            yield* this.choice(meta, datum);
+            yield* this.choice(node, datum);
         }
         break;
       }
@@ -758,10 +758,10 @@ class cmdServiceClass {
     }
   }
 
-  private async *choice(meta: Sh.BaseMeta, text: string) {
+  private async *choice(node: Sh.ParsedSh, text: string, outputVarName?: string) {
     const lines = text.replace(/\r/g, "").split(/\n/);
     const defaultValue = undefined;
-    const parsedLines = lines.map((text) => computeChoiceTtyLinkFactory(text, defaultValue, meta.sessionKey));
+    const parsedLines = lines.map((text) => computeChoiceTtyLinkFactory(text, defaultValue, node.meta.sessionKey));
     for (const { ttyText } of parsedLines) {
       yield ttyText;
     }
@@ -771,22 +771,30 @@ class cmdServiceClass {
     }
     
     let handlers: HandleStatusReturns;
+    const stdoutKey = node.meta.fd[1];
     try {// some link must be clicked to proceed
+      if (outputVarName !== undefined) {// optionally store in variable
+        cmdService.redirectToVar(node, 1, outputVarName);
+      }
+
       yield await new Promise<any>((resolve, reject) => {
-        handlers = cmdService.handleStatus(meta, { cleanups: reject });
+        handlers = cmdService.handleStatus(node.meta, { cleanups: reject });
         parsedLines.forEach(({ ttyTextKey, linkCtxtsFactory }) =>
           linkCtxtsFactory !== undefined && useSession.api.addTtyLineCtxts(
-            meta.sessionKey,
+            node.meta.sessionKey,
             ttyTextKey,
             linkCtxtsFactory(resolve),
           )
         );
       });
     } finally {
+      if (outputVarName !== undefined) {
+        redirectNode(node, { 1: stdoutKey });
+      }
       handlers!.dispose();
       // ℹ️ currently assume one time usage
       parsedLines.forEach(({ ttyTextKey }) =>
-        useSession.api.removeTtyLineCtxts(meta.sessionKey, ttyTextKey)
+        useSession.api.removeTtyLineCtxts(node.meta.sessionKey, ttyTextKey)
       );
     }
   }
@@ -870,8 +878,8 @@ class cmdServiceClass {
       await cmdService.awaitResume(this.meta, exposeReject);
     },
 
-    async *choice(text: string) {
-      yield* cmdService.choice(this.meta, text);
+    async *choice(text: string, varName?: string) {
+      yield* cmdService.choice(this.node, text, varName);
     },
     
     dataChunk,
@@ -999,6 +1007,10 @@ class cmdServiceClass {
       redirectNode(this.node, fdUpdates);
     },
 
+    redirectToVar(fd: number, varPath: string) {
+      cmdService.redirectToVar(this.node, fd, varPath);
+    },
+
     safeJsStringify,
 
     set(varPath: string, varValue: any) {
@@ -1118,6 +1130,20 @@ class cmdServiceClass {
       return data;
     }
     return { eof: true };
+  }
+
+  redirectToVar(
+    node: Sh.ParsedSh,
+    fd: number,
+    varPath: string,
+    varDeviceMode = 'last' satisfies VarDeviceMode as VarDeviceMode,
+  ) {
+    const varDevice = useSession.api.createVarDevice(
+      node.meta,
+      varPath,
+      varDeviceMode,
+    );
+    return redirectNode(node, { [fd]: varDevice.key });
   }
 
   async sleep(meta: Sh.BaseMeta, seconds: number) {

@@ -101,6 +101,10 @@
 
 - ✅ command service has `choice`
   - `run '(ct) { yield* ct.api.choice("[ foo ]()"); }'`
+- ✅ can redirect choice answer to variable
+  - e.g. `run '(ct) { yield* ct.api.choice("[ foo ](bar)", "baz"); }'`
+  - ✅ after clicking link `[ foo ]` the variable `baz` has value `bar`
+
 - 🚧 demoHandleDirect provides choices stop/continue/pause
 - demoHandleDirect provides choice dodge left/right
 

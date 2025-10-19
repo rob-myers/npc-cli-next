@@ -816,15 +816,13 @@ class semanticsServiceClass {
       } else if (value === "/dev/voice") {
         return redirectNode(node.parent!, { [srcFd]: "/dev/voice" });
       } else {
-        const varDevice = useSession.api.createVarDevice(
-          node.meta,
+        cmdService.redirectToVar(
+          node.parent!,
+          srcFd,
           value,
-          node.Op === ">"
-            ? "last"
-            : node.Op === ">>" ? "array" : "fresh-array"
-          ,
+          node.Op === ">" ? "last" : node.Op === ">>" ? "array" : "fresh-array",
         );
-        return redirectNode(node.parent!, { [srcFd]: varDevice.key });
+        return;
       }
     }
 
