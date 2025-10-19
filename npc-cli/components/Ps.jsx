@@ -161,7 +161,7 @@ export default function PsList() {
   const sessionsExist = ttyTabMetas.length > 0;
 
   return (
-    <div css={psListCss}>
+    <div css={psListCss} className="p-2">
 
       <div className="header">
         <h2>
@@ -263,22 +263,20 @@ const psListCss = css`
 
     .session-controls {
       display: flex;
-      align-items: stretch;
+      /* align-items: stretch; */
       
       select {
-        width: 60px;
         padding: 2px 0;
         /* 🔔 fixes safari */
         text-align-last: center;
         font-size: 0.9rem;
         font-family: 'Courier New', Courier, monospace;
-        background: #333;
+        background: #000;
       }
-
+      
       button.refresh {
         padding: 0 8px;
-        border: 1px solid #555;
-        border-bottom: none;
+        background: #222;
       }
     }
   }

@@ -106,12 +106,13 @@
   - ✅ after clicking link `[ foo ]` the variable `baz` has value `bar`
 
 - ✅ demoHandleDirectViaTty provides choices stop/continue/pause
-  ```sh
-  import demoHandleDirectViaTty from demo
-  demoHandleDirectViaTty npc:rob to:$( clicks 2 )
-  ```
-- Manage can open new process tab
-- Manage can open new "Actions registry" tab
+```sh
+import demoHandleDirectViaTty from demo
+demoHandleDirectViaTty npc:rob to:$( clicks 2 )
+```
+
+- ✅ Manage can open new process tab `Ps`
+- 🚧 Manage can open new "Actions registry" tab
 - demoHandleDirect provides choices (+ dodge left/right) via "Actions registry"
 
 - ✅ WorldMenu has "free look" checkbox

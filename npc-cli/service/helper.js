@@ -22,6 +22,7 @@ export const helper = {
     HelloWorld: true,
     Manage: true,
     World: true,
+    Ps: true,
   },
 
   /** Aligned to media/symbol/{key}.svg */
@@ -60,6 +61,7 @@ export const helper = {
     manage: true,
     tty: true,
     world: true,
+    ps: true,
   },
 
   /**
@@ -103,6 +105,7 @@ export const helper = {
     Manage: { key: 'Manage', tabPrefix: 'manage' },
     Tty: { key: 'Tty', tabPrefix: 'tty' },
     World: { key: 'World', tabPrefix: 'world' },
+    Ps: { key: 'Ps', tabPrefix: 'ps' },
   },
 
   /** @type {Record<Key.GeomorphNumber, Key.Geomorph>} */

@@ -72,6 +72,7 @@ export function computeTabDef(
   opts: (
     | { id: `hello-world-${number}`; classKey: 'HelloWorld';  }
     | { id: `manage-${number}`; classKey: 'Manage';  }
+    | { id: `ps-${number}`; classKey: 'Ps'; }
     | { id: `tty-${number}`; classKey: 'Tty'; profileKey?: Key.Profile; env?: Record<string, any> }
     | { id: `world-${number}`; classKey: 'World'; mapKey?: Key.Map }
   )
@@ -94,6 +95,7 @@ export function computeTabDef(
   switch (opts.classKey) {
     case 'HelloWorld':
     case 'Manage':
+    case 'Ps':
       tabDef = {
         type: 'component',
         class: opts.classKey,
