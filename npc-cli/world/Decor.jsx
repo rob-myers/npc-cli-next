@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 
 import { Poly } from "../geom/poly";
-import { decorGridSize, decorIconRadius, decorIconRadiusOutset, defaultDecorQueryRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, spriteSheetDecorExtraScale, spriteSheetLabelExtraScale, wallHeight } from "../service/const";
+import { decorGridSize, decorIconRadius, decorIconRadiusOutset, defaultDecorQueryRadius, fallbackDecorImgKey, gmLabelHeightSgu, instancedMeshName, precision, sguToWorldScale, decorSpriteSheetExtraScale, spriteSheetLabelExtraScale } from "../service/const";
 import { isDevelopment, pause, removeDups, testNever, toPrecision, warn } from "../service/generic";
 import { geom, tmpMat1, tmpRect1, tmpVec1 } from "../service/geom";
 import { getCanvas } from "../service/dom";
@@ -619,7 +619,7 @@ export default function Decor(props) {
       const prev = state.seenHash ?? {};
       const next = w.hash;
       const mapChanged = prev.map !== next.map;
-      const fontHeight = gmLabelHeightSgu * spriteSheetDecorExtraScale * 2;
+      const fontHeight = gmLabelHeightSgu * decorSpriteSheetExtraScale * 2;
 
       state.labels = w.gms.flatMap((gm, gmId) => gm.labels.map(d => state.instantiateDecor(d, gmId, gm)));
       createLabelSpriteSheet(

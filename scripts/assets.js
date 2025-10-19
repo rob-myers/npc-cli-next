@@ -41,7 +41,7 @@ const canvasLib = nodeCanvas;
 
 // relative urls for sucrase-node
 import { Poly } from "../npc-cli/geom";
-import { spriteSheetSymbolExtraScale, worldToSguScale, spriteSheetDecorExtraScale, sguSymbolScaleDown, sguSymbolScaleUp } from "../npc-cli/service/const";
+import { spriteSheetSymbolExtraScale, worldToSguScale, decorSpriteSheetExtraScale, sguSymbolScaleDown, sguSymbolScaleUp } from "../npc-cli/service/const";
 import { hashText, info, keyedItemsToLookup, warn, debug, error, assertNonNull, hashJson, toPrecision, mapValues, range, keys } from "../npc-cli/service/generic";
 import { drawPolygons } from "../npc-cli/service/dom";
 import { geomorph } from "../npc-cli/service/geomorph";
@@ -715,7 +715,7 @@ async function createDecorSheetJson(assets, prev) {
    * Decor is drawn in units `sgu * 5` i.e. same approach as SVG symbols.
    * We further adjust how high-res we want it.
    */
-  const scale = sguSymbolScaleDown * spriteSheetDecorExtraScale;
+  const decorImageScale = sguSymbolScaleDown * decorSpriteSheetExtraScale;
 
   for (const baseName of svgBasenames) {
     const decorImgKey = /** @type {Key.DecorImg} */ (baseName.slice(0, -'.svg'.length));
@@ -725,8 +725,8 @@ async function createDecorSheetJson(assets, prev) {
       const tags = baseName.split('--').slice(0, -1); // ignore e.g. `001.svg`
       const meta = tags.reduce((agg, tag) => { agg[tag] = true; return agg; }, /** @type {Meta} */ ({}));
       imgKeyToRect[decorImgKey] = {
-        width: toPrecision(img.width * scale, 0),
-        height: toPrecision(img.height * scale, 0),
+        width: toPrecision(img.width * decorImageScale, 0),
+        height: toPrecision(img.height * decorImageScale, 0),
         data: { ...meta, decorImgKey, sheetId: -1 },
       };
     } else {

@@ -65,7 +65,7 @@ export const floorTextureDimension = geomorphPngRectWidth * worldToSguScale * gm
 export const spriteSheetSymbolExtraScale = 2.5;
 
 /** Can be any value in `[1, 5]`. */
-export const spriteSheetDecorExtraScale = 3;
+export const decorSpriteSheetExtraScale = 5;
 
 /** Smaller e.g. `1.5` breaks "wall in room" e.g. 102 lab */
 export const gmHitTestExtraScale = 2;
