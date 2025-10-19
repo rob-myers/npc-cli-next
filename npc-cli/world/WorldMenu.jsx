@@ -41,7 +41,7 @@ export default function WorldMenu(props) {
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
-    freeLook: false,
+    freeLook: w.smallViewport ? false : true,
     logger: /** @type {*} */ (null),
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,
@@ -55,6 +55,7 @@ export default function WorldMenu(props) {
       state.onChangeBgScale(toInputEvent(state.bgScale));
       state.onChangeCanTweenPaused(toInputEvent(w.view.canTweenPaused));
       state.onChangeDark(toInputEvent(state.dark));
+      state.onChangeFreeLook(toInputEvent(state.freeLook));
       /** @param {any} value */
       const toSelectEvent = (value) => /** @type {React.ChangeEvent<HTMLSelectElement>} */ ({ currentTarget: { value } });
       state.onChangeDefaultVoice(toSelectEvent(state.defaultVoice));
