@@ -105,8 +105,14 @@
   - e.g. `run '(ct) { yield* ct.api.choice("[ foo ](bar)", "baz"); }'`
   - ✅ after clicking link `[ foo ]` the variable `baz` has value `bar`
 
-- 🚧 demoHandleDirect provides choices stop/continue/pause
-- demoHandleDirect provides choice dodge left/right
+- ✅ demoHandleDirectViaTty provides choices stop/continue/pause
+  ```sh
+  import demoHandleDirectViaTty from demo
+  demoHandleDirectViaTty npc:rob to:$( clicks 2 )
+  ```
+- Manage can open new process tab
+- Manage can open new "Actions registry" tab
+- demoHandleDirect provides choices (+ dodge left/right) via "Actions registry"
 
 - ✅ WorldMenu has "free look" checkbox
 
