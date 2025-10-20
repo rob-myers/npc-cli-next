@@ -564,7 +564,7 @@ export default function WorldView(props) {
           if (delta.length() > lookOpts.maxDistance) {
             const targetCamPos = delta.setLength(lookOpts.maxDistance).add(target.position);
             targetCamPos.y = camera.position.y;
-            dampXZ(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001);
+            dampXZ(camera.position, targetCamPos, 0.4, deltaSecs, undefined, undefined, 0.001);
           }
         }
         
