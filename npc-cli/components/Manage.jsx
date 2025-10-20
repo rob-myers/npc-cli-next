@@ -260,7 +260,6 @@ const manageCss = css`
   display: flex;
   flex-direction: column;
   align-content: flex-start;
-  /* gap: 16px; */
 
   background-color: #111;
   padding: 16px;
@@ -300,10 +299,6 @@ const manageCss = css`
     border-color: rgba(0, 0, 0, 0);
   }
 
-  .extant li {
-    max-width: 240px;
-  }
-
   .extant li, .create li {
     display: flex;
     border: var(--item-border);
@@ -311,7 +306,7 @@ const manageCss = css`
     justify-content: space-between;
     align-items: stretch;
     color: white;
-    flex-grow: 0.1;
+    /* flex-grow: 0.1; */
 
     .tab-status-and-id {
       display: flex;

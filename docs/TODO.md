@@ -99,12 +99,16 @@
 
 ### World
 
+- 🚧 Manage can open "Actions registry" tab 
+
 - on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
 
- - improve "follow camera after pan"
+ - improve "follow camera after pan away"
    - e.g. stop following if pan too far
-   - e.g. fix azimuthal angle temporarily
+
+- Manage tab only shows one current tab at a time
+- Manage tab only shows one tab to create at a time
 
 - ✅ command service has `choice`
   - `run '(ct) { yield* ct.api.choice("[ foo ]()"); }'`
@@ -119,8 +123,6 @@ demoHandleDirectViaTty npc:rob to:$( clicks 2 )
 ```
 
 - ✅ Manage can open new process tab `Ps`
-- 🚧 Manage can open new "Actions registry" tab
-- demoHandleDirect provides choices (+ dodge left/right) via "Actions registry"
 
 - ✅ WorldMenu has "free look" checkbox
 
