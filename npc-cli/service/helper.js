@@ -1,6 +1,7 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
 import { keys, mapValues } from "./generic";
 import * as shProfiles from '../sh/profiles';
+import * as tabsComponents from '../tabs/components';
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -18,12 +19,7 @@ export const helper = {
   },
 
   /** @type {Record<Key.ComponentClass, true>} */
-  fromComponentClass: {
-    HelloWorld: true,
-    Manage: true,
-    World: true,
-    Ps: true,
-  },
+  fromComponentClass: mapValues(tabsComponents, () => true),
 
   /** Aligned to media/symbol/{key}.svg */
   fromSymbolKey,
@@ -400,14 +396,14 @@ export const helper = {
    * @returns {input is Key.TabId}
    */
   isTabId(input) {
-    if (typeof input !== 'string') {
-      return false;
-    } else {
+    if (typeof input === 'string') {
       const matched = input.match(/^(.+)-\d+$/);
       return (
         matched !== null
-        && matched[1] in helper.fromTabPrefix
+        && matched?.[1] in helper.fromTabPrefix
       );
+    } else {
+      return false;
     }
   },
 

@@ -2,9 +2,10 @@ import React from "react";
 import loadable from "@loadable/component";
 import type { IJsonRowNode, IJsonTabNode, TabNode } from "flexlayout-react";
 
-import type ActualTerminal from "../terminal/TtyWithFunctions";
 import type { State as TabsApi } from "./Tabs";
 import { type TabStoreTabMeta } from "./tabs.store";
+import type ActualTerminal from "../terminal/TtyWithFunctions";
+import * as components from "./components";
 import { TabMemo } from "./Tab";
 import { CentredSpinner } from "../components/Spinner";
 
@@ -57,32 +58,16 @@ export interface TabsBaseProps {
   persistLayout?: boolean;
 }
 
-const classToComponent = {
-  HelloWorld: loadableComponentFactory(() => import("../components/HelloWorld")),
-  Manage: loadableComponentFactory(() => import("../components/Manage")),
-  Ps: loadableComponentFactory(() => import("../components/Ps")),
-  World: loadableComponentFactory(() => import("../world/World")),
-};
-
-function loadableComponentFactory<T extends () => Promise<any>>(input: T) {
-  return {
-    loadable: loadable(input),
-    get:(module: Awaited<ReturnType<T>>) =>
-      (props: React.ComponentProps<(typeof module)["default"]>) =>
-        React.createElement(module.default, { disabled: true, ...props }),
-  };
-}
-
 export async function getComponent(componentClassKey: ComponentClassKey, errorIdentifier?: string) {
   return (
-    classToComponent[componentClassKey]?.get(
-      (await classToComponent[componentClassKey].loadable.load()) as any
+    components[componentClassKey]?.get(
+      (await components[componentClassKey].loadable.load()) as any
     ) ?? FallbackComponentFactory(errorIdentifier ?? componentClassKey)
   );
 }
 
 /** Components we can instantiate inside a tab */
-export type ComponentClassKey = keyof typeof classToComponent;
+export type ComponentClassKey = keyof typeof components;
 
 export type TabMetaProps = TabMetaPropsDistributed<ComponentClassKey>;
 
@@ -98,7 +83,7 @@ type TabMetaPropsGeneric<K extends ComponentClassKey> = {
 };
 
 type ComponentClassKeyToProps = {
-  [K in ComponentClassKey]: Parameters<ReturnType<(typeof classToComponent)[K]["get"]>>[0];
+  [K in ComponentClassKey]: Parameters<ReturnType<(typeof components)[K]["get"]>>[0];
 };
 
 export interface BaseTabProps {
