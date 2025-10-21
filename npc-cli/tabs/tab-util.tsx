@@ -1,6 +1,6 @@
 import { type IJsonRowNode, IJsonModel, IJsonTabSetNode } from "flexlayout-react";
-import { TABS_API_KEY } from "../service/const";
-import { deepClone, testNever, tryLocalStorageGetParsed, warn } from "../service/generic";
+import { TABS_API_KEY, tabsComponentsMeta } from "../service/const";
+import { deepClone, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice, isIOS } from "../service/dom";
 import { helper } from "../service/helper";
 import type { CustomIJsonTabNode, ManageTabDef, TabDef, TabsetLayout, TtyTabDef, WorldTabDef } from "./tab-factory";
@@ -69,22 +69,23 @@ export function computeStoredTabsetLookup(): TabsetLayouts {
  * - for `Tty` have fallback for worldKey
  */
 export function computeTabDef(
-  opts: (
-    | { id: `hello-world-${number}`; classKey: 'HelloWorld';  }
-    | { id: `manage-${number}`; classKey: 'Manage';  }
-    | { id: `ps-${number}`; classKey: 'Ps'; }
-    | { id: `tty-${number}`; classKey: 'Tty'; profileKey?: Key.Profile; env?: Record<string, any> }
-    | { id: `world-${number}`; classKey: 'World'; mapKey?: Key.Map }
+  opts: { suffix: number } & (
+    | { classKey: 'HelloWorld'; }
+    | { classKey: 'Manage';  }
+    | { classKey: 'Ps'; }
+    | { classKey: 'Tty'; profileKey?: Key.Profile; env?: Record<string, any> }
+    | { classKey: 'Feedback';}
+    | { classKey: 'World'; mapKey?: Key.Map }
   )
 ): TabDef {
-
+  
   if (opts.classKey === 'Tty') {// 'Tty' is not a Key.ComponentClass
     if (opts.profileKey === undefined || !helper.isProfileKey(opts.profileKey)) {
       opts.profileKey = 'default';
     }
     return {
       type: 'terminal',
-      filepath: opts.id,
+      filepath: `${tabsComponentsMeta[opts.classKey].tabPrefix}-${opts.suffix}`,
       profileKey: opts.profileKey,
       env: opts.env ?? {},
     };
@@ -93,18 +94,8 @@ export function computeTabDef(
   let tabDef: TabDef;
 
   switch (opts.classKey) {
-    case 'HelloWorld':
-    case 'Manage':
-    case 'Ps':
-      tabDef = {
-        type: 'component',
-        class: opts.classKey,
-        filepath: opts.id,
-        props: {},
-      };
-      break;
     case 'World': {
-      const worldKey = opts.id;
+      const worldKey = `${tabsComponentsMeta[opts.classKey].tabPrefix}-${opts.suffix}` as const;
       tabDef = {
         type: 'component',
         class: opts.classKey,
@@ -117,9 +108,14 @@ export function computeTabDef(
       break;
     }
     default:
-      throw testNever(opts);
+      tabDef = {
+        type: 'component',
+        class: opts.classKey,
+        filepath: `${tabsComponentsMeta[opts.classKey].tabPrefix}-${opts.suffix}`,
+        props: {},
+      };
+      break;
   }
-
   return tabDef;
 }
 

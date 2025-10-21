@@ -44,7 +44,7 @@ export default function Manage(props) {
           );
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            id: `world-${nextTabId}`,
+            suffix: nextTabId,
             mapKey: /** @type {Key.Map} */ (mapSelect.value),
           });
           break;
@@ -58,7 +58,7 @@ export default function Manage(props) {
           );
           tabDef = computeTabDef({
             classKey: tabClassKey,
-            id: `tty-${nextTabId}`,
+            suffix: nextTabId,
             profileKey: /** @type {Key.Profile} */ (profileSelect.value),
             env: {// default WORLD_KEY is `world-0`
               WORLD_KEY: `${helper.toTabClassMeta.World.tabPrefix}-${worldKeyInput.value || 0}`,
@@ -67,26 +67,12 @@ export default function Manage(props) {
           });
           break;
         }
-        case 'HelloWorld':
-          tabDef = computeTabDef({
-            classKey: tabClassKey,
-            id: `hello-world-${nextTabId}`,
-          });
-          break;
-        case 'Manage':
-          tabDef = computeTabDef({
-            classKey: tabClassKey,
-            id: `manage-${nextTabId}`,
-          });
-          break;
-        case 'Ps':
-          tabDef = computeTabDef({
-            classKey: tabClassKey,
-            id: `ps-${nextTabId}`,
-          });
-          break;
         default:
-          throw testNever(tabClassKey);
+          tabDef = computeTabDef({
+            classKey: tabClassKey,
+            suffix: nextTabId,
+          });
+          break;
       }
 
       const created = useTabs.api.openTab(tabDef);
@@ -235,11 +221,11 @@ export default function Manage(props) {
         <li><a href={`#/internal/reset-tabs`}>reset current tabset</a></li>
         <li><a href={`#/internal/test-mutate-tabs`}>test mutate current tabset</a></li>
         <li><a href={`#/internal/remember-tabs`}>remember current tabset</a></li>
-        <li><a href={`#/internal/open-tab/HelloWorld?id=hello-world-1`}>open tab hello-world-1</a></li>
-        <li><a href={`#/internal/open-tab/Tty?id=tty-4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"tabs_api_key"}`}>open Tty tab</a></li>
+        <li><a href={`#/internal/open-tab/HelloWorld?idSuffix=1`}>open tab hello-world-1</a></li>
+        <li><a href={`#/internal/open-tab/Tty?idSuffix=4&profileKey=profileAwaitWorldSh&env={WORLD_KEY:"test-world-1",FOO:"BAR",TABS_API_KEY:"tabs_api_key"}`}>open Tty tab</a></li>
         */}
         
-        {/* <li><a href={`#/internal/open-tab/World?id=world-2&mapKey=small-map-1`}>open World tab</a></li>
+        {/* <li><a href={`#/internal/open-tab/World?idSuffix=2&mapKey=small-map-1`}>open World tab</a></li>
         <li><a href={`#/internal/close-tab/hello-world-1`}>close tab hello-world-1</a></li>
         <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"small-map-1"}`}>change "test-world-1" tab props: mapKey=small-map-1 </a></li>
         <li><a href={`#/internal/change-tab/test-world-1?props={mapKey:"demo-map-1"}`}>change "test-world-1" tab props: mapKey=demo-map-1 </a></li> */}
@@ -537,8 +523,10 @@ function CreateTabUi({ state, tabClass }) {
         </li>
       );
       
-    case 'HelloWorld':
-    case 'Ps':
+    case 'Manage':
+      return null;
+      
+    default:
       return (
         <li data-tab-class={tabClass}>
           <span className="tab-create-def">
@@ -549,12 +537,6 @@ function CreateTabUi({ state, tabClass }) {
           <CreateButton state={state} />
         </li>
       );
-
-    case 'Manage':
-      return null;
-
-    default:
-      throw testNever(tabClass);
   }  
 }
 

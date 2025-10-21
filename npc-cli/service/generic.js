@@ -202,6 +202,16 @@ export function entries(record) {
 }
 
 /**
+ * @template {string | number} K
+ * @template {any} V
+ * @param {[K, V][]} pairs
+ * @returns {Record<K, V>}
+ */
+export function fromEntries(pairs) {
+  return /** @type {Record<K, V>} */ (Object.fromEntries(pairs));
+}
+
+/**
  * Convert a function, regexp or string into a 'selector'.
  * - for functions we merely prefix args `extraArgs`
  * - for strings we support e.g.

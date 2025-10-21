@@ -67,7 +67,7 @@ export async function getComponent(componentClassKey: ComponentClassKey, errorId
 }
 
 /** Components we can instantiate inside a tab */
-export type ComponentClassKey = keyof typeof components;
+export type ComponentClassKey = Exclude<keyof typeof components, 'meta'>;
 
 export type TabMetaProps = TabMetaPropsDistributed<ComponentClassKey>;
 

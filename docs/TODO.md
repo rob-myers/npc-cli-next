@@ -99,7 +99,7 @@
 
 ### World
 
-- 🚧 Manage can open "PsReply" tab 
+- 🚧 Manage can open "Feedback" tab 
 
 - support zoomToCursor false
 - on fix both angles, interpret rotation as pan

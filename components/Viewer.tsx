@@ -62,16 +62,17 @@ export default function Viewer() {
       const parsedUrl = new URL(internalApiPath, location.origin);
 
       /**
-       * e.g. `#internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
+       * e.g. `#/internal/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
        * `{ baz: 'qux', env: {WORLD_KEY:'hello'} }`
        */
       const opts = Array.from(parsedUrl.searchParams).reduce(
+        // 🚧 parseJson instead?
         (agg, [k, v]) => (agg[k] = parseJsArg(v), agg),
         {} as Record<string, any>,
       );
 
       /**
-       * e.g. `#internal-api/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
+       * e.g. `#/internal/foo/bar?baz=qux&env={WORLD_KEY:"hello"}` yields
        * `['foo', 'bar']`
        */
       const parts = parsedUrl.pathname.split('/').slice(2);
@@ -96,7 +97,7 @@ export default function Viewer() {
           const tabDef = computeTabDef({
             ...opts,
             classKey,
-            id: opts.id,
+            suffix: Number(opts.idSuffix) || 0,
           });
           useTabs.api.openTab(tabDef);
           break;

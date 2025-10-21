@@ -1,6 +1,8 @@
 import React from "react";
 import loadable from "@loadable/component";
 
+export const Feedback = loadableComponentFactory(() => import("../components/Feedback"));
+
 export const HelloWorld = loadableComponentFactory(() => import("../components/HelloWorld"));
 
 export const Manage = loadableComponentFactory(() => import("../components/Manage"));

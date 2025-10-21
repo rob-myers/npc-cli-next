@@ -518,3 +518,16 @@ export const initialCameraAngle = /** @type {const} */ ({
   azimuthal: Math.PI / 4,
   polar: Math.PI / 4,
 });
+
+/**
+ * @template K
+ * @type {{ [K in Key.TabClass]: { key: K; tabPrefix: CamelToKebab<K> }}}
+ */
+export const tabsComponentsMeta = {
+  World: { key: 'World', tabPrefix: 'world' },
+  Tty: { key: 'Tty', tabPrefix: 'tty' },
+  Ps: { key: 'Ps', tabPrefix: 'ps' },
+  HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
+  Manage: { key: 'Manage', tabPrefix: 'manage' },
+  Feedback: { key: 'Feedback', tabPrefix: 'feedback' },
+};

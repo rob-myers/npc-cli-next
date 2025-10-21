@@ -1,5 +1,5 @@
-import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
-import { keys, mapValues } from "./generic";
+import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY, tabsComponentsMeta} from "./const";
+import { fromEntries, keys, mapValues } from "./generic";
 import * as shProfiles from '../sh/profiles';
 // 🔔 store tabsComponents meta as a const instead
 // import * as tabsComponents from '../tabs/components';
@@ -20,12 +20,7 @@ export const helper = {
   },
 
   /** @type {Record<Key.ComponentClass, true>} */
-  fromComponentClass: {
-    World: true,
-    Ps: true,
-    Manage: true,
-    HelloWorld: true,
-  },
+  fromComponentClass: mapValues(tabsComponentsMeta, () => true),
 
   /** Aligned to media/symbol/{key}.svg */
   fromSymbolKey,
@@ -58,13 +53,7 @@ export const helper = {
   },
 
   /** @type {Record<Key.TabClassPrefix, true>} */
-  fromTabPrefix: {
-    "hello-world": true,
-    manage: true,
-    tty: true,
-    world: true,
-    ps: true,
-  },
+  fromTabPrefix: fromEntries(Object.values(tabsComponentsMeta).map(x => [x.tabPrefix, true])),
 
   /**
    * @type {Record<Key.LayoutPreset, import("../tabs/tab-util").BasicTabsLayout>}
@@ -101,14 +90,7 @@ export const helper = {
     respectUnwalkable: 1,
   }),
 
-  /** @type {Record<Key.TabClass, { key: Key.TabClass; tabPrefix: Key.TabClassPrefix; }>} */
-  toTabClassMeta: {
-    World: { key: 'World', tabPrefix: 'world' },
-    Tty: { key: 'Tty', tabPrefix: 'tty' },
-    Ps: { key: 'Ps', tabPrefix: 'ps' },
-    HelloWorld: { key: 'HelloWorld', tabPrefix: 'hello-world' },
-    Manage: { key: 'Manage', tabPrefix: 'manage' },
-  },
+  toTabClassMeta: tabsComponentsMeta,
 
   /** @type {Record<Key.GeomorphNumber, Key.Geomorph>} */
   toGmKey: {
