@@ -1,7 +1,8 @@
 import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY } from "./const";
 import { keys, mapValues } from "./generic";
 import * as shProfiles from '../sh/profiles';
-import * as tabsComponents from '../tabs/components';
+// 🔔 store tabsComponents meta as a const instead
+// import * as tabsComponents from '../tabs/components';
 
 /**
  * - Use object so can merge into `w.lib`.
@@ -19,7 +20,12 @@ export const helper = {
   },
 
   /** @type {Record<Key.ComponentClass, true>} */
-  fromComponentClass: mapValues(tabsComponents, () => true),
+  fromComponentClass: {
+    World: true,
+    Ps: true,
+    Manage: true,
+    HelloWorld: true,
+  },
 
   /** Aligned to media/symbol/{key}.svg */
   fromSymbolKey,
