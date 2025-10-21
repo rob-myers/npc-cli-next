@@ -99,8 +99,9 @@
 
 ### World
 
-- 🚧 Manage can open "Actions registry" tab 
+- 🚧 Manage can open "PsReply" tab 
 
+- support zoomToCursor false
 - on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
 
