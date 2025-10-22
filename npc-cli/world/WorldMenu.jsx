@@ -33,7 +33,7 @@ export default function WorldMenu(props) {
       x: 0,
       y: 0,
       width: 300,
-      height: 48,
+      height: w.touchDevice ? 48 : 64,
       minWidth: 200,
       minHeight: 48,
     },
