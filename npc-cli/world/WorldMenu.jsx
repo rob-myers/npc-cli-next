@@ -113,7 +113,7 @@ export default function WorldMenu(props) {
     onChangeFreeLook(e) {
       state.freeLook = e.currentTarget.checked;
       // only fix polar (tilt)
-      w.view.controls.setParams({ fixedAzimuth: false, fixedPolar: !state.freeLook });
+      w.view.controls.setParams({ fixedPolar: !state.freeLook });
       w.update();
     },
     onChangeBgScale(e) {
