@@ -33,7 +33,7 @@ export default function WorldMenu(props) {
       x: 0,
       y: 0,
       width: 300,
-      height: 100,
+      height: 48,
       minWidth: 200,
       minHeight: 48,
     },
@@ -339,9 +339,7 @@ const popUpCss = css`
     color: #8888ff;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: #000a;
-    padding: 2px 12px;
-    text-decoration: underline;
-    padding: 0 20px 8px 20px;
+    padding: 4px 8px !important;
   }
   
   @media(min-width: 700px) {
