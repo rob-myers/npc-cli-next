@@ -4,6 +4,7 @@ import cx from 'classnames';
 import { pause } from '../service/generic';
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
+import useClickAway from '../hooks/use-clickaway';
 
 /**
  * @type {React.ForwardRefExoticComponent<React.PropsWithChildren<Props> & React.RefAttributes<State>>}
@@ -91,11 +92,15 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
 
   React.useImperativeHandle(ref, () => state, []);
 
+  const rootRef = React.useRef(null);
+  useClickAway(rootRef, () => props.onClickAway?.(state));
+
   return (
     <div
       css={rootPopupCss}
       className={cx("pop-up", props.className, { open: state.opened })}
       onWheel={props.onWheel}
+      ref={rootRef}
     >
       <button
         ref={state.ref('icon')}
@@ -134,6 +139,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
  * @property {boolean} [top] or bottom
  * @property {number} [width]
  * @property {(willOpen: boolean) => void} [onChange]
+ * @property {(state: State) => void} [onClickAway]
  * @property {(e: React.WheelEvent) => void} [onWheel]
  */
 

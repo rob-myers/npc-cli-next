@@ -201,6 +201,9 @@ export default function WorldMenu(props) {
           label="⋯"
           css={popUpCss}
           width={300}
+          onClickAway={(state) => {
+            state.close();
+          }}
         >
           <div className="ranges">
             <label title="background color">
