@@ -1,6 +1,6 @@
 source /etc/{util,core}.sh
 source /etc/{util,core,dev}.js.sh
-import demoCameraWASD from demo
+import demoCameraWASD demoClickToFollow from demo
 
 awaitWorld
 
@@ -38,3 +38,5 @@ w view.tween '{ polar: Math.PI/4 }'
 
 w e.followNpc rob
 # look at:rob
+
+ptags always; click meta.npcKey | demoClickToFollow &

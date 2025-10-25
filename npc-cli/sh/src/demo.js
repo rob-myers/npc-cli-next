@@ -72,6 +72,19 @@ export const demoCameraWASD = ({ w }) => {
 };
 
 /**
+ * ```sh
+ * click meta.npcKey | demoClickToFollow
+ * ptags always; click meta.npcKey | demoClickToFollow
+ * ```
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ct
+ */
+export function demoClickToFollow(input, { w }) {
+  const npc = w.npc.get(input.meta.npcKey); // verify exists
+  w.e.followNpc(npc.key);
+}
+
+/**
  * Bound to a particular npcKey.
  * ```sh
  * click meta.floor | demoClickToMove npc:rob
@@ -176,6 +189,7 @@ const tmpMat1 = new Mat();
 
 export const meta = {
   map: {
+    demoClickToFollow,
     demoClickToMove,
   },
 };

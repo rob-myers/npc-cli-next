@@ -40,7 +40,7 @@ export default function WorldView(props) {
       panSpeed: 2,
       rotateSpeed: 0.5,
       zoomSpeed: 0.5,
-      zoomToCursor: false,
+      zoomToCursor: true,
     },
     cssFilter: [
       { key: 'brightness', value: '100%'},
@@ -57,7 +57,7 @@ export default function WorldView(props) {
       logarithmicDepthBuffer: true,
       pixelRatio: window.devicePixelRatio,
     },
-    justDownState: -1,
+    prevControlsState: -1, // i.e. `state.controls.STATE.NONE`
     justLongDown: false,
     keyDowns: {},
     lastDown: undefined,
@@ -84,7 +84,7 @@ export default function WorldView(props) {
         state.rootEl = /** @type {HTMLDivElement} */ (canvasEl.parentElement?.parentElement);
       }
     },
-    clearTweens() {// 🔔 does not stop follow
+    clearTweens() {// does not stop follow
 
       // stop looking (not following)
       state.reject.look?.('cancelled look');
@@ -229,14 +229,24 @@ export default function WorldView(props) {
       if (w.disabled === true) w.r3f.advance(Date.now());
     },
     followObject3D(dst, opts) {
-      /**
-       * - Following means "look tween without resolve/reject"
-       * - Can stop following via @see {state.stopFollowing}
-       */
       state.dst.look = dst;
       state.dst.lookOpts = opts;
       state.resolve.look = undefined;
       state.reject.look = undefined;
+
+      // also embodied via fixed/slower zoom
+      state.ctrlOpts.zoomToCursor = false;
+      state.ctrlOpts.zoomSpeed = 0.25;
+
+      if (opts?.distance !== undefined) {
+        state.dst.distance = opts.distance;
+        // distance can be unresolvable too
+        state.resolve.distance = undefined;
+        state.reject.distance = undefined;
+      }
+
+      // state.handlePausedTween();
+      update();
     },
     getDownDistancePx() {
       return state.down?.screenPoint.distanceTo(state.lastScreenPoint) ?? 0;
@@ -316,6 +326,14 @@ export default function WorldView(props) {
         w.npc.tickOnceDebug();
       }
     },
+    handlePausedTween() {
+      if (w.disabled === true && state.canTweenPaused === true) {
+        state.didTweenPaused = true;
+        state.syncRenderMode();
+        w.timer.reset();
+        state.onPausedTick();
+      }
+    },
     isPointerEventDrag(e) {
       return e.distancePx > (e.touch ? 20 : 5);
     },
@@ -329,7 +347,7 @@ export default function WorldView(props) {
       state.ctrlOpts.minDistance = state.ctrlOpts.maxDistance = distance;
       update();
     },
-    async lookAt(point, opts = { smoothTime: 0.4, maxDistance: 10 }) {
+    async lookAt(point, opts = { smoothTime: 0.4, distance: 10 }) {
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
@@ -523,14 +541,14 @@ export default function WorldView(props) {
       state.justLongDown = false;
     },
     onTick(deltaSecs) {
-      if (state.dst.azimuthal !== undefined) {// azimuthal angle
+      if (state.dst.azimuthal !== undefined) {
         if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
           delete state.dst.azimuthal;
           state.resolve.azimuthal?.();
         }
       }
 
-      if (state.dst.polar !== undefined) {// polar angle
+      if (state.dst.polar !== undefined) {
         if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
           delete state.dst.polar;
           state.resolve.polar?.();
@@ -543,7 +561,7 @@ export default function WorldView(props) {
 
       const { camera } = w.r3f;
 
-      if (state.dst.fov !== undefined) {// change fov
+      if (state.dst.fov !== undefined) {
         camera.fov = state.fov;
         camera.updateProjectionMatrix();
         if (damp(state, 'fov', state.dst.fov, 0.4, deltaSecs, undefined, undefined, 0.1) === false) {
@@ -552,34 +570,23 @@ export default function WorldView(props) {
         }
       }
 
-      // look 👀 or follow 🦶 with azimuthal angle tracking + optional maxDistance tracking
+      // look 👀 or follow 🦶 with azimuthal angle tracking
       if (state.dst.look !== undefined && state.down === null) {
 
-        if (state.justDownState === state.controls.STATE.PAN) {
-          console.log('🔔 just stopped pan');
-          // 🚧 project ray from camera to floor, then mutate "pan offset"
-          // state.controls.target.x += state.controls.u.panOffset.x;
-          // state.controls.target.z += state.controls.u.panOffset.z;
-        }
+        const { look: lookObject, lookOpts = {} } = state.dst;
 
-        const { look: target, lookOpts = {} } = state.dst;
-        const height = lookOpts.maxDistance === undefined ? (lookOpts.height ?? 0) : helper.defaults.height;
-        
-        if (dampXZ(state.controls.target, target.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
-          state.resolve.look?.();
-        }
-        
-        if (lookOpts.maxDistance !== undefined) {// 🚧 simplify
-          const delta = tmpVectThree.copy(camera.position).sub(target.position);
-          if (delta.length() > lookOpts.maxDistance) {
-            const targetCamPos = delta.setLength(lookOpts.maxDistance).add(target.position);
-            targetCamPos.y = camera.position.y;
-            dampXZ(camera.position, targetCamPos, 0.4, deltaSecs, undefined, undefined, 0.001);
+        if (state.prevControlsState === state.controls.STATE.PAN) {// just stopped pan
+          if (state.controls.lastPointerDistance > 120) {
+            state.stopFollowing(); // can pan away to stop following
           }
         }
         
-        state.controls.saveParams();
-        state.controls.setParams({ fixedPolar: true, fixedAzimuth: false }); // only fix polar
+        if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, undefined, 0.01) === false) {
+          state.resolve.look?.();
+        }
+        
+        state.controls.saveParams(); // only fix polar angle
+        state.controls.setParams({ fixedPolar: true, fixedAzimuth: false });
         state.controls.update();
         state.controls.restoreParams();
       }
@@ -589,13 +596,15 @@ export default function WorldView(props) {
         const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.dst.distance));
         // camera should be `targetDistance` away from `target`
         const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
-        if (damp3(camera.position, targetCamPos, 0.2, deltaSecs, undefined, undefined, 0.001) === false) {
-          delete state.dst.distance;
-          state.resolve.distance?.();
+        if (damp3(camera.position, targetCamPos, 0.8, deltaSecs, undefined, undefined, 0.001) === false) {
+          if (state.resolve.distance !== undefined) {
+            delete state.dst.distance;
+            state.resolve.distance();
+          }
         }
       }
 
-      state.justDownState = state.controls.state;
+      state.prevControlsState = state.controls.state;
     },
     openSnapshot(type = 'image/webp', quality) {
       window.open(dataUrlToBlobUrl(state.toDataURL(type, quality)), '_blank');
@@ -668,6 +677,10 @@ export default function WorldView(props) {
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
         delete state.dst.look;
+        delete state.dst.distance;
+        state.ctrlOpts.zoomToCursor = true;
+        state.ctrlOpts.zoomSpeed = 0.5;
+        update();
         return true;
       } else {
         return false;
@@ -735,12 +748,7 @@ export default function WorldView(props) {
         promises.push(createPromise('polar'));
       }
 
-      if (w.disabled === true && state.canTweenPaused === true) {
-        state.didTweenPaused = true;
-        state.syncRenderMode();
-        w.timer.reset();
-        state.onPausedTick();
-      }
+      state.handlePausedTween();
 
       await Promise.all(promises);
     },
@@ -801,11 +809,11 @@ export default function WorldView(props) {
         ref={state.ref('controls')}
         domElement={state.canvas}
         initialAngle={initialCameraAngle}
-        {...state.ctrlOpts}
         minPanDistance={w.smallViewport ? 0.05 : 0}
         onChange={state.onChangeControls}
         onEnd={state.onControlsEnd}
         onStart={state.onControlsStart}
+        {...state.ctrlOpts}
       />
 
       <ContextMenu/>
@@ -855,7 +863,7 @@ export default function WorldView(props) {
  * @property {import('@react-three/fiber').RenderProps<HTMLCanvasElement>['gl']} glOpts
  * @property {NPC.DownData} [lastDown]
  * Defined iff last pointer was down over the World.
- * @property {number} justDownState
+ * @property {number} prevControlsState
  * @property {boolean} justLongDown
  * @property {Record<string, (e: KeyboardEvent) => void>} keyDowns
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.
@@ -875,12 +883,15 @@ export default function WorldView(props) {
  * @property {(enabled?: boolean) => void} enableControls Default `true`
  * @property {() => void} ensureRender
  * @property {(dst: THREE.Object3D, opts?: NPC.LookAtOpts) => void} followObject3D
+ * - Following means "look tween without resolve/reject"
+ * - Can stop following via see `state.stopFollowing`
  * @property {() => number} getDownDistancePx
  * @property {() => number} getNumPointers
  * @property {(e: PointerEvent, decoded: NPC.DecodedObjectPick) => null | { intersection: THREE.Intersection; mesh: THREE.Mesh }} getRaycastIntersection
  * @property {(e: PointerEvent, pixel: THREE.TypedArray) => void} onObjectPickPixel
  * @property {(def: WorldPointerEventDef) => NPC.PointerUpEvent | NPC.PointerDownEvent | NPC.LongPointerDownEvent} getWorldPointerEvent
  * @property {(screenPoint: Geom.VectJson) => void} handlePausedClick
+ * @property {() => void} handlePausedTween
  * @property {(e: NPC.PointerUpEvent | NPC.LongPointerDownEvent) => boolean} isPointerEventDrag
  * @property {() => void} lockDistance
  * @property {(input: Geom.VectJson | THREE.Vector3Like, opts?: NPC.LookAtOpts) => Promise<void>} lookAt

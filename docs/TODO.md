@@ -102,13 +102,17 @@
 - Manage can open "Feedback" tab 
 
 - ✅ support zoomToCursor false
-- 🚧 zoomToCursor false when following otherwise true
+- ✅ zoomToCursor false when following, true when stopFollowing
+
+ - ✅ improve follow camera pan/zoom
+  - ✅ fix zoom on followed
+  - ❌ pan changes target by delta
+  - ✅ on pan far enough while follow stop following
+  - ✅ works together with click npc to follow
+  - ✅ can start follow while paused
+
 - on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
-
- - improve follow camera pan/zoom
-   - fix zoom on followed
-   - pan changes target by delta
 
 - Manage tab only shows one current tab at a time
 - Manage tab only shows one tab to create at a time
