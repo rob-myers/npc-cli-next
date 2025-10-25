@@ -111,6 +111,8 @@
   - ✅ works together with click npc to follow
   - ✅ can start follow while paused
 
+- ✅ fix top down discontinuity (polar 0)
+
 - on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
 

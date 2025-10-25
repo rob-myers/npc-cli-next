@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
+damp; damp3; // fix hmr
 
 import { debug, entries, keys, testNever } from "../service/generic.js";
 import { helper } from "../service/helper";
