@@ -34,12 +34,13 @@ export default function WorldView(props) {
       minAzimuthAngle: -Infinity,
       maxAzimuthAngle: +Infinity,
       minPolarAngle: Math.PI * 0,
-      maxPolarAngle: Math.PI * 1/3,
+      maxPolarAngle: Math.PI * 1/2,
       minDistance: 1.5, // target could be ground or npc head
       maxDistance: 35,
       panSpeed: 2,
       rotateSpeed: 0.5,
       zoomSpeed: 0.5,
+      zoomToCursor: false,
     },
     cssFilter: [
       { key: 'brightness', value: '100%'},
@@ -56,6 +57,7 @@ export default function WorldView(props) {
       logarithmicDepthBuffer: true,
       pixelRatio: window.devicePixelRatio,
     },
+    justDownState: -1,
     justLongDown: false,
     keyDowns: {},
     lastDown: undefined,
@@ -552,6 +554,14 @@ export default function WorldView(props) {
 
       // look 👀 or follow 🦶 with azimuthal angle tracking + optional maxDistance tracking
       if (state.dst.look !== undefined && state.down === null) {
+
+        if (state.justDownState === state.controls.STATE.PAN) {
+          console.log('🔔 just stopped pan');
+          // 🚧 project ray from camera to floor, then mutate "pan offset"
+          // state.controls.target.x += state.controls.u.panOffset.x;
+          // state.controls.target.z += state.controls.u.panOffset.z;
+        }
+
         const { look: target, lookOpts = {} } = state.dst;
         const height = lookOpts.maxDistance === undefined ? (lookOpts.height ?? 0) : helper.defaults.height;
         
@@ -585,6 +595,7 @@ export default function WorldView(props) {
         }
       }
 
+      state.justDownState = state.controls.state;
     },
     openSnapshot(type = 'image/webp', quality) {
       window.open(dataUrlToBlobUrl(state.toDataURL(type, quality)), '_blank');
@@ -741,7 +752,7 @@ export default function WorldView(props) {
         update();
       }
     },
-  }), { reset: { ctrlOpts: false } });
+  }), { reset: { ctrlOpts: true } });
 
   w.view = state;
 
@@ -790,13 +801,8 @@ export default function WorldView(props) {
         ref={state.ref('controls')}
         domElement={state.canvas}
         initialAngle={initialCameraAngle}
-        minDistance={state.ctrlOpts.minDistance}
-        maxDistance={state.ctrlOpts.maxDistance}
+        {...state.ctrlOpts}
         minPanDistance={w.smallViewport ? 0.05 : 0}
-        minAzimuthAngle={-Infinity}
-        maxAzimuthAngle={+Infinity}
-        minPolarAngle={0}
-        maxPolarAngle={Math.PI / 2}
         onChange={state.onChangeControls}
         onEnd={state.onControlsEnd}
         onStart={state.onControlsStart}
@@ -849,6 +855,7 @@ export default function WorldView(props) {
  * @property {import('@react-three/fiber').RenderProps<HTMLCanvasElement>['gl']} glOpts
  * @property {NPC.DownData} [lastDown]
  * Defined iff last pointer was down over the World.
+ * @property {number} justDownState
  * @property {boolean} justLongDown
  * @property {Record<string, (e: KeyboardEvent) => void>} keyDowns
  * @property {Geom.Vect} lastScreenPoint Updated `onPointerMove` and `onPointerDown`.

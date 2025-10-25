@@ -99,9 +99,10 @@
 
 ### World
 
-- 🚧 Manage can open "Feedback" tab 
+- Manage can open "Feedback" tab 
 
-- support zoomToCursor false
+- ✅ support zoomToCursor false
+- 🚧 zoomToCursor false when following otherwise true
 - on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
 

@@ -74,19 +74,13 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
       object={controls}
       ref={ref}
       enableDamping
-      zoomToCursor
-
       minAzimuthAngle={props.minAzimuthAngle}
       maxAzimuthAngle={props.maxAzimuthAngle}
       minPolarAngle={props.minPolarAngle}
       maxPolarAngle={props.maxPolarAngle}
       minDistance={props.minDistance}
       maxDistance={props.maxDistance}
-
-      panSpeed={2}
-      rotateSpeed={0.5}
-      zoomSpeed={0.5}
-
+      zoomToCursor={props.zoomToCursor}
     />
   );
 });
@@ -105,6 +99,7 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
  * @property {number} [minPolarAngle]
  * @property {number} [maxPolarAngle]
  * @property {number} [minPanDistance] // 🚧 implement in controls (from patch to make mobile touch more precise)
+ * @property {boolean} [zoomToCursor]
  */
 
 /**
