@@ -83,8 +83,11 @@ export class CameraControls extends EventDispatcher {
     mouse: new THREE.Vector2(),
     offset: new THREE.Vector3(),
     panOffset: new THREE.Vector3(),
+    /** pointer delta */
     panDelta: new THREE.Vector2(),
+    /** pointer end */
     panEnd: new THREE.Vector2(),
+    /** pointer start */
     panStart: new THREE.Vector2(),
     rotateEnd: new THREE.Vector2(),
     rotateDelta: new THREE.Vector2(),
@@ -112,6 +115,12 @@ export class CameraControls extends EventDispatcher {
   //#region Custom
   params = { fixedPolar: false, fixedAzimuth: false };
   savedParams = { ...this.params };
+  /** `(clientX, clientY)` of first pointerdown */
+  pointerFirstDown = { x: 0, y: 0 };
+  /** `(clientX, clientY)` of last pointerup */
+  pointerLastUp = { x: 0, y: 0 };
+  /** Length of "last" `|this.pointerLastUp - this.pointerFirstDown|` */
+  lastPointerDistance = 0;
   //#endregion
 
   /**
@@ -503,6 +512,8 @@ export class CameraControls extends EventDispatcher {
     if (this.pointers.length === 0) {
       this.domElement?.ownerDocument.addEventListener('pointermove', this.onPointerMove)
       this.domElement?.ownerDocument.addEventListener('pointerup', this.onPointerUp)
+      this.pointerFirstDown.x = event.clientX;
+      this.pointerFirstDown.y = event.clientY;
     }
 
     this.addPointer(event);
@@ -537,6 +548,9 @@ export class CameraControls extends EventDispatcher {
       this.domElement.releasePointerCapture(event.pointerId);
       this.domElement.ownerDocument.removeEventListener('pointermove', this.onPointerMove)
       this.domElement.ownerDocument.removeEventListener('pointerup', this.onPointerUp)
+      this.pointerLastUp.x = event.clientX;
+      this.pointerLastUp.y = event.clientY;
+      this.lastPointerDistance = Math.hypot(this.pointerLastUp.x - this.pointerFirstDown.x, this.pointerLastUp.y - this.pointerFirstDown.y);
     }
     
     this.dispatchEvent(endEvent);
@@ -624,27 +638,27 @@ export class CameraControls extends EventDispatcher {
   }
 
   /**
-   * @param {number} deltaX 
-   * @param {number} deltaY 
+   * @param {number} deltaX pointer delta x
+   * @param {number} deltaY pointer delta y
    */
   pan(deltaX, deltaY) {
-    const element = this.domElement
+    const element = this.domElement;
     const offset = tempVector3One;
 
     if (!element) {
       return;
     }
 
-    const position = this.object.position
+    const position = this.object.position;
     offset.copy(position).sub(this.target)
-    let targetDistance = offset.length()
+    let targetDistance = offset.length();
 
     // half of the fov is center to top of screen
-    targetDistance *= Math.tan(((this.object.fov / 2) * Math.PI) / 180.0)
+    targetDistance *= Math.tan(((this.object.fov / 2) * Math.PI) / 180.0);
 
     // we use only clientHeight here so aspect ratio does not distort speed
-    this.panLeft((2 * deltaX * targetDistance) / element.clientHeight, this.object.matrix)
-    this.panUp((2 * deltaY * targetDistance) / element.clientHeight, this.object.matrix)
+    this.panLeft((2 * deltaX * targetDistance) / element.clientHeight, this.object.matrix);
+    this.panUp((2 * deltaY * targetDistance) / element.clientHeight, this.object.matrix);
   }
 
   /**
