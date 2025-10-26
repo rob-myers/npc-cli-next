@@ -34,7 +34,8 @@ export default function WorldView(props) {
     ctrlOpts: {
       minAzimuthAngle: -Infinity,
       maxAzimuthAngle: +Infinity,
-      minPolarAngle: Math.PI * 0,
+      // minPolarAngle: Math.PI * 0,
+      minPolarAngle: Math.PI * 1/8,
       maxPolarAngle: Math.PI * 1/2,
       minDistance: 1.5, // target could be ground or npc head
       maxDistance: 35,
@@ -576,11 +577,11 @@ export default function WorldView(props) {
         state.down === null // allow look briefly for clicks
         || (Date.now() - state.epoch.pointerDown) < 300)
       ) {
-
+        
         const { look: lookObject, lookOpts = {} } = state.dst;
 
         if (state.prevControlsState === state.controls.STATE.PAN) {// just stopped pan
-          if (state.controls.lastPointerDistance > 120) {
+          if (state.controls.lastPointerDistance > 120 && (Date.now() - state.epoch.pointerDown) > 300) {
             // - pan away and release to stop following
             // - `state.down` suppresses look during pan
             state.stopFollowing();

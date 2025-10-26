@@ -4,7 +4,7 @@ import demoCameraWASD demoClickToFollow from demo
 
 awaitWorld
 
-spawn npc:rob at:'{x:6.5, y:5}' as:soldier-0 granted:. angle:Math.PI
+spawn npc:rob at:'{x:6.7, y:7.5}' as:soldier-0 granted:. angle:Math.PI/2
 spawn npc:will at:'{ x: 2.5, y: 3 * 1.5 + 0.2 }' as:scientist-0 granted:. angle:Math.PI
 spawn npc:kate at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' as:medic-0 granted:. angle:Math.PI
 spawn npc:suit at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' as:suit-0 granted:. angle:Math.PI

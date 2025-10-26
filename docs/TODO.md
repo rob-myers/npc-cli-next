@@ -101,6 +101,8 @@
 
 - Manage can open "Feedback" tab 
 
+- ✅ BUG raycast through hull door `ray from:will to:rob` 
+
 - ✅ support zoomToCursor false
 - ✅ zoomToCursor false when following, true when stopFollowing
 
