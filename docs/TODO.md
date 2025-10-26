@@ -99,6 +99,8 @@
 
 ### World
 
+- 🚧 camera supports maxDistance so can zoom to see inside room
+
 - Manage can open "Feedback" tab 
 
 - ✅ BUG raycast through hull door `ray from:will to:rob` 
