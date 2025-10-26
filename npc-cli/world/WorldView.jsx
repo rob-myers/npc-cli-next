@@ -572,13 +572,18 @@ export default function WorldView(props) {
       }
 
       // look 👀 or follow 🦶 with azimuthal angle tracking
-      if (state.dst.look !== undefined && state.down === null) {
+      if (state.dst.look !== undefined && (
+        state.down === null // allow look briefly for clicks
+        || (Date.now() - state.epoch.pointerDown) < 300)
+      ) {
 
         const { look: lookObject, lookOpts = {} } = state.dst;
 
         if (state.prevControlsState === state.controls.STATE.PAN) {// just stopped pan
           if (state.controls.lastPointerDistance > 120) {
-            state.stopFollowing(); // can pan away to stop following
+            // - pan away and release to stop following
+            // - `state.down` suppresses look during pan
+            state.stopFollowing();
           }
         }
         
