@@ -98,11 +98,16 @@ export default function Doors(props) {
 
           // 🤔 saw roomIds not ready?
           // far exits follow by adding farDelta{Src,Dst}
-          const smallRooms = door.roomIds.map(roomId => roomId === null ? false : gm.rooms[roomId].meta.small === true);
-          const [srcFarScale, dstFarScale] = smallRooms.map(small => (small === true ? 0 : 0.2) + (hull === true
-            ? (offMeshConnectionHalfDepth.hull - connectorEntranceHalfDepth.hull)
-            : (offMeshConnectionHalfDepth.nonHull - connectorEntranceHalfDepth.nonHull)
-          ));
+          const [srcFarScale, dstFarScale] = door.roomIds.map(roomId => {
+            const narrowDoorway = roomId === null
+              ? false // door only connected to one room
+              : gm.rooms[roomId].meta.small === true || gm.rooms[roomId].meta['narrow-entrances'] === true
+            ;
+            return (narrowDoorway === true ? 0 : 0.2) + (hull === true
+              ? (offMeshConnectionHalfDepth.hull - connectorEntranceHalfDepth.hull)
+              : (offMeshConnectionHalfDepth.nonHull - connectorEntranceHalfDepth.nonHull)
+            )
+          });
           const farDeltaSrc = { x: door.normal.x * srcFarScale, y: door.normal.y * srcFarScale };
           const farDeltaDst = { x: door.normal.x * dstFarScale, y: door.normal.y * dstFarScale };
           
