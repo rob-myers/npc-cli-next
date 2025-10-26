@@ -262,6 +262,7 @@ export default function Npcs(props) {
 
         // next, start from hull door intersection
         src = hit;
+        hit = null;
         gmId = adjCtxt.adjGmId;
         roomId = adjCtxt.adjRoomId;
       }
