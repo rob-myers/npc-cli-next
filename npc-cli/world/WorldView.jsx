@@ -36,7 +36,8 @@ export default function WorldView(props) {
       maxAzimuthAngle: +Infinity,
       // minPolarAngle: Math.PI * 0,
       minPolarAngle: Math.PI * 1/8,
-      maxPolarAngle: Math.PI * 1/2,
+      // maxPolarAngle: Math.PI * 1/2,
+      maxPolarAngle: Math.PI * 1/2.5,
       minDistance: 1.5, // target could be ground or npc head
       maxDistance: 35,
       panSpeed: 2,
