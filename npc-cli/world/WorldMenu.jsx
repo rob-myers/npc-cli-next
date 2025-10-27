@@ -41,7 +41,7 @@ export default function WorldMenu(props) {
     draggable: /** @type {*} */ (null),
     dragClassName: w.smallViewport ? popUpButtonClassName : undefined,
     durationKeys: {},
-    freeLook: w.smallViewport ? false : true,
+    freeLook: false,
     logger: /** @type {*} */ (null),
     preventDraggable: false,
     showDebug: tryLocalStorageGetParsed(`logger:debug@${w.key}`) ?? false,

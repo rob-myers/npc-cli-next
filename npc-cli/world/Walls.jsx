@@ -133,7 +133,6 @@ export default function Walls(props) {
         alphaTest={0}
         // side={THREE.DoubleSide}
         diffuse={[0, 0, 0]}
-        // diffuse={[1, 1, 1]}
         depthWrite={!transparent}
         transparent={transparent}
         opacity={state.opacity}
