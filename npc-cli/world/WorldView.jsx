@@ -576,7 +576,7 @@ export default function WorldView(props) {
       // look 👀 or follow 🦶 with azimuthal angle tracking
       if (state.dst.look !== undefined && (
         state.down === null // allow look briefly for clicks
-        || (Date.now() - state.epoch.pointerDown) < 300)
+        || (state.epoch.pointerDown === 0 || (Date.now() - state.epoch.pointerDown) < 300))
       ) {
         
         const { look: lookObject, lookOpts = {} } = state.dst;
