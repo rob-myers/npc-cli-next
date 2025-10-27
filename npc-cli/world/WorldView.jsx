@@ -27,7 +27,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 15, 0],
+    camInitPos: [0, 18, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -53,7 +53,7 @@ export default function WorldView(props) {
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 45,
+    fov: 30,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,
@@ -581,27 +581,32 @@ export default function WorldView(props) {
         
         const { look: lookObject, lookOpts = {} } = state.dst;
 
-        if (state.prevControlsState === state.controls.STATE.PAN) {// just stopped pan
-          if (state.controls.lastPointerDistance > 120 && (Date.now() - state.epoch.pointerDown) > 300) {
-            // - pan away and release to stop following
-            // - `state.down` suppresses look during pan
-            state.stopFollowing();
-          }
-        }
+        // if (state.prevControlsState === state.controls.STATE.PAN) {// just stopped pan
+        //   if (state.controls.lastPointerDistance > 120 && (Date.now() - state.epoch.pointerDown) > 300) {
+        //     // - pan away and release to stop following
+        //     // - `state.down` suppresses look during pan
+        //     state.stopFollowing();
+        //   }
+        // }
         
-        if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, undefined, 0.01) === false) {
+        const height = 2;
+        if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
           state.resolve.look?.();
         }
         
         state.controls.saveParams();
-        state.controls.setParams({ fixedPolar: false, fixedAzimuth: true });
+        state.controls.setParams({ fixedPolar: true, fixedAzimuth: true });
         state.controls.update();
         state.controls.restoreParams();
       }
 
       if (state.dst.distance !== undefined) {// zoom
         const { minDistance, maxDistance, target } = state.controls;
-        const targetDistance = Math.min(maxDistance, Math.max(minDistance, state.dst.distance));
+        // 🚧 currently interpreting as maxDistance
+        const targetDistance = Math.min(
+          state.controls.getDistance(),
+          Math.min(maxDistance, Math.max(minDistance, state.dst.distance))
+        );
         // camera should be `targetDistance` away from `target`
         const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
         if (damp3(camera.position, targetCamPos, 0.8, deltaSecs, undefined, undefined, 0.001) === false) {

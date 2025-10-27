@@ -101,6 +101,7 @@
 
 - 🚧 camera supports maxDistance so can zoom to see inside room
 - fix wasd camera controls being overriden by follow cam with fixed angle
+- fix zoomToCursor lapse while follow
 
 - Manage can open "Feedback" tab 
 
