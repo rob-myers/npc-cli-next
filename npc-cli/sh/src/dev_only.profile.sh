@@ -34,9 +34,8 @@ ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
 
-w view.tween '{ polar: Math.PI/4 }'
-
-w e.followNpc rob
+# w view.tween '{ polar: Math.PI/4 }'
 # look at:rob
+w e.followNpc rob
 
 ptags always; click meta.npcKey | demoClickToFollow &

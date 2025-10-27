@@ -593,8 +593,8 @@ export default function WorldView(props) {
           state.resolve.look?.();
         }
         
-        state.controls.saveParams(); // only fix polar angle
-        state.controls.setParams({ fixedPolar: true, fixedAzimuth: false });
+        state.controls.saveParams();
+        state.controls.setParams({ fixedPolar: true, fixedAzimuth: true });
         state.controls.update();
         state.controls.restoreParams();
       }
