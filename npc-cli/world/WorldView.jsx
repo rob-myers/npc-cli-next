@@ -594,7 +594,7 @@ export default function WorldView(props) {
         }
         
         state.controls.saveParams();
-        state.controls.setParams({ fixedPolar: true, fixedAzimuth: true });
+        state.controls.setParams({ fixedPolar: false, fixedAzimuth: true });
         state.controls.update();
         state.controls.restoreParams();
       }

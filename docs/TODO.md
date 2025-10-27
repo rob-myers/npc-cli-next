@@ -100,6 +100,7 @@
 ### World
 
 - 🚧 camera supports maxDistance so can zoom to see inside room
+- fix wasd camera controls being overriden by follow cam with fixed angle
 
 - Manage can open "Feedback" tab 
 

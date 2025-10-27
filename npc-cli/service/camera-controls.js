@@ -782,13 +782,8 @@ export class CameraControls extends EventDispatcher {
 
     u.offset.copy(position).sub(this.target);
     
-    const prevAzimuthal = this.spherical.theta;
     // (x, y, z) -> { r, theta, phi }
     this.spherical.setFromVector3(u.offset);
-    if (Math.abs(this.spherical.phi) < 0.01) {
-      // fix discontinuity at north pole
-      this.spherical.theta = prevAzimuthal;
-    }
 
     // approach target via damped delta
     this.spherical.theta += this.sphericalDelta.theta * this.azimuthalDampingFactor;
