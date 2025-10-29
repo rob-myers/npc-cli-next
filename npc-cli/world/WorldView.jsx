@@ -27,7 +27,7 @@ export default function WorldView(props) {
   const w = React.useContext(WorldContext);
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    camInitPos: [0, 18, 0],
+    camInitPos: [0, 25, 0],
     canvas: /** @type {*} */ (null),
     clickIds: [],
     controls: /** @type {*} */ (null),
@@ -581,13 +581,13 @@ export default function WorldView(props) {
         
         const { look: lookObject, lookOpts = {} } = state.dst;
 
-        if (state.prevControlsState === state.controls.STATE.PAN) {// just stopped pan
-          if (state.controls.lastPointerDistance > 120 && (Date.now() - state.epoch.pointerDown) > 300) {
-            // - pan away and release to stop following
-            // - `state.down` suppresses look during pan
-            state.stopFollowing();
-          }
-        }
+        // if (state.prevControlsState === state.controls.STATE.PAN) {// just stopped pan
+        //   if (state.controls.lastPointerDistance > 120 && (Date.now() - state.epoch.pointerDown) > 300) {
+        //     // - pan away and release to stop following
+        //     // - `state.down` suppresses look during pan
+        //     state.stopFollowing();
+        //   }
+        // }
         
         const height = 2;
         if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
