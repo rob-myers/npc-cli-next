@@ -1035,6 +1035,7 @@ export class NpcApi {
       this.target = this.lastTarget.copy(pendingTarget);
       this.numCorners = 0;
       agent.requestMoveTarget(toV3(this.target));
+      agent.raw.set_targetReplan(true); // fix initial navpath e.g. traverse wrong offmesh
       this.setSlowDownRadius();
       this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath });
     }
