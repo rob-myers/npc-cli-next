@@ -564,28 +564,29 @@ export async function* w(ct) {
   }
 }
 
-/**
- * @param {NPC.RunArg} ctxt
- * @param {{ to: number }} [opts]
- */
-export async function* zoom({ api, args, w }, opts = api.jsArg(args)) {
-  if (typeof opts.to !== 'number') {
-    throw Error(`opts.distance must be numeric`);
-  }
-  const handlers = api.handleStatus({
-    cleanups() { w.view.reject.distance?.('cancelled'); },
-    onSuspends() { w.view.reject.distance?.('pause'); return true; },
-  });
+// If needed bring back w.view.dst.distance with resolve/reject
+// /**
+//  * @param {NPC.RunArg} ctxt
+//  * @param {{ to: number }} [opts]
+//  */
+// export async function* zoom({ api, args, w }, opts = api.jsArg(args)) {
+//   if (typeof opts.to !== 'number') {
+//     throw Error(`opts.distance must be numeric`);
+//   }
+//   const handlers = api.handleStatus({
+//     cleanups() { w.view.reject.distance?.('cancelled'); },
+//     onSuspends() { w.view.reject.distance?.('pause'); return true; },
+//   });
 
-  while (true) {
-    try {
-      return await w.view.tween({ distance: opts.to }).then(handlers.dispose);
-    } catch (e) {
-      if (e !== 'pause') {
-        handlers.dispose();
-        throw e;
-      }
-    }
-    await api.awaitResume();
-  }
-}
+//   while (true) {
+//     try {
+//       return await w.view.tween({ distance: opts.to }).then(handlers.dispose);
+//     } catch (e) {
+//       if (e !== 'pause') {
+//         handlers.dispose();
+//         throw e;
+//       }
+//     }
+//     await api.awaitResume();
+//   }
+// }
