@@ -193,7 +193,7 @@ export default function Manage(props) {
         <li className="title m-2">Create</li>
 
         {keys(helper.toTabClassMeta).map(tabClass =>
-          <CreateTabUi tabClass={tabClass} state={state} />
+          <CreateTabUi key={tabClass} tabClass={tabClass} state={state} />
         )}
 
       </ul>
