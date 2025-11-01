@@ -108,10 +108,10 @@ export default function Manage(props) {
   }));
 
   return (
-    <div css={manageCss} className="manage">
+    <div css={manageCss} className="manage h-full overflow-auto p-4 bg-[#222]">
         
       <ul className="extant">
-        <li className="title m-2">Current</li>
+        <li className="title">Current</li>
         
         {tabDefs.map((def, i) => {
           const tabId = def.filepath;
@@ -190,7 +190,7 @@ export default function Manage(props) {
       </ul>
 
       <ul className="create">
-        <li className="title m-2">Create</li>
+        <li className="title">Create</li>
 
         {keys(helper.toTabClassMeta).map(tabClass =>
           <CreateTabUi key={tabClass} tabClass={tabClass} state={state} />
@@ -199,7 +199,7 @@ export default function Manage(props) {
       </ul>
 
       <ul className="layout-actions">
-        <li className="title m-2">Layout</li>
+        <li className="title">Layout</li>
         
         <li>
           <TabsLayoutLink layoutPresetKey="world-tty-default">world + tty (default)</TabsLayoutLink>
@@ -239,30 +239,11 @@ const manageCss = css`
   --item-border: 1px solid rgba(140, 140, 140, 0.5);
   --select-or-input-color: #f1d092;
 
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-
-  display: flex;
-  flex-direction: column;
-  align-content: flex-start;
-
-  background-color: #111;
-  padding: 16px;
-  padding-bottom: 64px;
-
-  .manage {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
   .create, .extant {
     display: flex;
     flex-direction: column;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px;
     padding: 4px 0;
     row-gap: 0;
     font-size: small;
@@ -277,9 +258,8 @@ const manageCss = css`
     justify-content: center;
     align-items: center;
     user-select: none;
-    padding: 4px 12px;
+    padding: 0;
     color: #fff;
-    text-align: center;
     font-size: small;
     background-color: #333;
     border-color: rgba(0, 0, 0, 0);
