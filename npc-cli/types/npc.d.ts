@@ -534,10 +534,6 @@ declare namespace NPC {
   interface RunArg<Datum = any> {
     api: ProcessApi & {
       getCached(key: '__WORLD_KEY_VALUE__'): WorldState;
-      // seems `feedback-${number}` does not work
-      getCached(key: 'feedback-0'): FeedbackState;
-      getCached(key: 'feedback-1'): FeedbackState;
-      getCached(key: 'feedback-2'): FeedbackState;
     };
     args: string[];
     w: WorldState;

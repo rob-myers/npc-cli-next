@@ -231,6 +231,16 @@ export async function* follow({ api, args, w }, opts = api.jsArg(args, { npc: 'n
 }
 
 /**
+ * @param {NPC.RunArg} ct
+ * @param {{ key: `feedback-${number}` }} [opts]
+ */
+export function getFeedback(ct, opts = ct.api.jsArg(ct.args)) {
+  const feedback = ct.api.getCached(opts.key);
+  if (!feedback) throw Error(`No feedback ${opts.key}`);
+  return /** @type {import('@/npc-cli/components/Feedback').State} */ (feedback);
+}
+
+/**
  * Make the Camera look at a point.
  * @param {NPC.RunArg} ct
  * @param {{ at: string | import('three').Vector3 | Geom.Vect }} [opts]

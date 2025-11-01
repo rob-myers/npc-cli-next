@@ -47,6 +47,7 @@ export const demoAddDecor = (ct) => {
 };
 
 /**
+ * 🚧 try Feedback component instead
  * Click to follow or stop following.
  * ```sh
  * click meta.npcKey | demoClickToFollow
@@ -84,7 +85,9 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
  * @param {{ key?: string }} [opts]
  */
 export function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
-  ct.api.getCached('feedback-0').addItem({
+  const feedback = core.getFeedback(ct, { key: 'feedback-0' });
+  
+  feedback.addItem({
     key: opts.key ?? 'demo-feedback-0',
     message: 'Make a choice...',
     links: [
