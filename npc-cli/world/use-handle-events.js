@@ -861,6 +861,9 @@ export default function useHandleEvents(w) {
     someNpcNearDoor(gdKey) {
       return state.doorToNearbyNpcs[gdKey]?.size > 0;
     },
+    stopFollowing() {
+      w.view.stopFollowing();
+    },
     testOffMeshDisjoint(offMesh1, src, dst, radius = helper.defaults.radius * 0.8) {
       // 🚧 handle diagonal doors
       const rect1 = tmpRect1.setFromPoints(offMesh1.src, offMesh1.dst).outset(radius);
@@ -1003,6 +1006,7 @@ export default function useHandleEvents(w) {
  * @property {() => void} showContextMenu
  * Default context menu, unless clicked on an npc
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor
+ * @property {() => void} stopFollowing
  * @property {(offMesh: NPC.OffMeshState, src: Geom.VectJson, dst: Geom.VectJson, radius?: number) => boolean} testOffMeshDisjoint
  * Are these disjoint?
  * - main `offMesh` segment outset by `radius`

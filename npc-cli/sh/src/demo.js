@@ -72,6 +72,7 @@ export const demoCameraWASD = ({ w }) => {
 };
 
 /**
+ * Click to follow or stop following.
  * ```sh
  * click meta.npcKey | demoClickToFollow
  * ptags always; click meta.npcKey | demoClickToFollow
@@ -80,8 +81,12 @@ export const demoCameraWASD = ({ w }) => {
  * @param {NPC.RunArg} ct
  */
 export function demoClickToFollow(input, { w }) {
-  const npc = w.npc.get(input.meta.npcKey); // verify exists
-  w.e.followNpc(npc.key);
+  const npc = w.n[input.meta.npcKey];
+  if (w.e.isFollowingNpc(npc.key)) {
+    w.e.stopFollowing();
+  } else {
+    w.e.followNpc(npc.key);
+  }
 }
 
 /**
