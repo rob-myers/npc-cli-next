@@ -43,7 +43,7 @@ export class CameraControls extends EventDispatcher {
   enablePan = true;
   panSpeed = 1.0;
   keyPanSpeed = 7.0;
-  zoomToCursor = false;
+  zoomToCursor = true;
 
   target0 = new THREE.Vector3();
   position0 = new THREE.Vector3();

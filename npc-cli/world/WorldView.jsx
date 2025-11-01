@@ -42,8 +42,8 @@ export default function WorldView(props) {
       maxDistance: 35,
       panSpeed: 2,
       rotateSpeed: 0.5,
-      zoomSpeed: 0.9,
-      zoomToCursor: true,
+      zoomSpeed: 0.3,
+      // zoomToCursor: true, // breaks follow zoom on HMR
     },
     cssFilter: [
       { key: 'brightness', value: '100%'},
@@ -580,8 +580,8 @@ export default function WorldView(props) {
         //   }
         // }
         
-        const height = 2;
-        if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
+        const height = 1;
+        if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.001) === false) {
           state.resolve.look?.();
         }
 
