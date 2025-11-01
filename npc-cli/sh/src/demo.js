@@ -81,16 +81,19 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 
 /**
  * @param {NPC.RunArg} ct
+ * @param {{ key?: string }} [opts]
  */
-export function demoFeedback(ct) {
+export function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
   ct.api.getCached('feedback-0').addItem({
-    key: 'demo-feedback-0',
-    message: 'Hello',
+    key: opts.key ?? 'demo-feedback-0',
+    message: 'Make a choice...',
     links: [
-      { label: 'Reply', value: 'reply' },
+      { label: 'foo', value: 'foo' },
+      { label: 'bar', value: 'bar' },
     ],
     resolve(reply) {
       alert(reply);
+      return false; // remove on click
     },
   });
 }
