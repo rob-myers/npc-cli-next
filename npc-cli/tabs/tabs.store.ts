@@ -3,7 +3,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { devtools } from "zustand/middleware";
 import { Model, type IJsonRowNode } from "flexlayout-react";
 
-import { tryLocalStorageGet, tryLocalStorageSet, deepClone, warn, keys } from "../service/generic";
+import { tryLocalStorageGet, tryLocalStorageSet, deepClone, warn, keys, jsStringify } from "../service/generic";
 import { isIOS, isTouchDevice } from "../service/dom";
 import { helper } from "../service/helper";
 import type { TabDef, TabMetaProps, TabsetLayout, TtyTabDef } from "../tabs/tab-factory";
@@ -103,6 +103,10 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       if (found !== undefined) {// exists, so select it
         useTabs.api.selectTab(tabDef.filepath);
         return false;
+      }
+
+      if (!helper.isTabId(tabDef.filepath)) {
+        throw Error(`Invalid tabDef.filepath: ${tabDef.filepath} (${jsStringify(tabDef)})`);
       }
 
       const layout = {...addTabToLayout({ layout: lookup.synced, tabDef })};
