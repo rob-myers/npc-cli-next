@@ -80,6 +80,7 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
       maxPolarAngle={props.maxPolarAngle}
       minDistance={props.minDistance}
       maxDistance={props.maxDistance}
+      panSpeed={props.panSpeed}
       zoomSpeed={props.zoomSpeed}
       zoomToCursor={props.zoomToCursor}
     />
@@ -100,6 +101,7 @@ export const CameraControls = React.forwardRef(function CameraControls(props, re
  * @property {number} [minPolarAngle]
  * @property {number} [maxPolarAngle]
  * @property {number} [minPanDistance] // 🚧 implement in controls (from patch to make mobile touch more precise)
+ * @property {number} [panSpeed]
  * @property {number} [zoomSpeed]
  * @property {boolean} [zoomToCursor]
  */

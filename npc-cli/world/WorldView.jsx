@@ -42,7 +42,7 @@ export default function WorldView(props) {
       maxDistance: 35,
       panSpeed: 2,
       rotateSpeed: 0.5,
-      zoomSpeed: 0.5,
+      zoomSpeed: 0.9,
       zoomToCursor: true,
     },
     cssFilter: [
@@ -239,7 +239,6 @@ export default function WorldView(props) {
 
       // also embodied via fixed/slower zoom
       state.ctrlOpts.zoomToCursor = false;
-      state.ctrlOpts.zoomSpeed = 0.25;
 
       if (opts?.distance !== undefined) {
         state.dst.distance = opts.distance;
@@ -692,7 +691,6 @@ export default function WorldView(props) {
         delete state.dst.look;
         delete state.dst.distance;
         state.ctrlOpts.zoomToCursor = true;
-        state.ctrlOpts.zoomSpeed = 0.5;
         update();
         return true;
       } else {
