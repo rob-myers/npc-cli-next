@@ -1,4 +1,4 @@
-export function Feedback() {
+export default function Feedback() {
   return (
     <div>
       Feedback
