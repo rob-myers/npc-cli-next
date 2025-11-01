@@ -220,6 +220,18 @@ export async function* events({ api, args, w }, opts = api.jsArg(args)) {
 }
 
 /**
+ * ```sh
+ * follow npc:rob
+ * ```
+ * @param {NPC.RunArg} ctxt
+ * @param {{ npcKey: string }} [opts]
+ */
+export async function* follow({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
+  w.e.followNpc(opts.npcKey);
+}
+
+/**
+ * Make the Camera look at a point.
  * @param {NPC.RunArg} ct
  * @param {{ at: string | import('three').Vector3 | Geom.Vect }} [opts]
  */
