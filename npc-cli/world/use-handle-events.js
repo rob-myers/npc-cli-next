@@ -161,7 +161,7 @@ export default function useHandleEvents(w) {
       }
       return null;
     },
-    followNpc(npcKey, opts = { smoothTime: 0.4, distance: 18 }) {
+    followNpc(npcKey, opts = { smoothTime: 0.4, maxDistance: 18 }) {
       const npc = w.n[npcKey];
       w.view.followObject3D(npc.m.group, {
         height: helper.defaults.height,
@@ -559,7 +559,7 @@ export default function useHandleEvents(w) {
       const npc = w.n[npcKey];
       return npc !== undefined && w.view.dst.look === npc.m.group;
     },
-    async lookAt(input, lookAtOpts = { distance: 5 }) {
+    async lookAt(input, lookAtOpts = { maxDistance: 5 }) {
       if (typeof input === 'string') {// npcKey
         input = w.n[input].position;
         lookAtOpts.height = helper.defaults.height;
@@ -975,7 +975,7 @@ export default function useHandleEvents(w) {
  * - is idle and in the way
  * - is very close to main segment of offMesh connection
  * @property {(offMesh: NPC.OffMeshLookupValue, src: Geom.VectJson, dst: Geom.VectJson) => null | string} findOtherBlockingOppositeDir
- * @property {(npcKey: string, opts?: Pick<NPC.LookAtOpts, 'smoothTime' | 'distance'>) => void} followNpc
+ * @property {(npcKey: string, opts?: Pick<NPC.LookAtOpts, 'smoothTime' | 'maxDistance'>) => void} followNpc
  * Larger `smoothTime` takes longer to focus on npc
  * @property {(npcKey: string) => Geomorph.GmRoomKey | undefined} getGrKey
  * @property {(npcKey: string) => { room: null | Meta<{ label?: string }>  }} getNpcMeta

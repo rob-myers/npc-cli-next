@@ -73,8 +73,8 @@ export default function WorldView(props) {
     pickingScene: new THREE.Scene(),
     raycaster: new THREE.Raycaster(),
     resizeOpts: { debounce: 30 },
-    resolve: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
-    reject: { fov: undefined, look: undefined, distance: undefined, polar: undefined, azimuthal: undefined },
+    resolve: { fov: undefined, look: undefined, polar: undefined, azimuthal: undefined },
+    reject: { fov: undefined, look: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
 
     canTweenPaused: true,
@@ -91,7 +91,6 @@ export default function WorldView(props) {
 
       // stop looking (not following)
       state.reject.look?.('cancelled look');
-      state.reject?.distance?.('cancelled distance');
       state.reject?.fov?.('cancelled fov');
       state.reject?.polar?.('cancelled rotation: polar');
       state.reject?.azimuthal?.('cancelled rotation: azimuthal');
@@ -237,15 +236,9 @@ export default function WorldView(props) {
       state.resolve.look = undefined;
       state.reject.look = undefined;
 
-      // also embodied via fixed/slower zoom
+      // also embodied via fixed zoom and maxDistance
       state.ctrlOpts.zoomToCursor = false;
-
-      if (opts?.distance !== undefined) {
-        state.dst.distance = opts.distance;
-        // distance can be unresolvable too
-        state.resolve.distance = undefined;
-        state.reject.distance = undefined;
-      }
+      state.dst.maxDistance ??= opts?.maxDistance;
 
       // state.handlePausedTween();
       update();
@@ -349,7 +342,7 @@ export default function WorldView(props) {
       state.ctrlOpts.minDistance = state.ctrlOpts.maxDistance = distance;
       update();
     },
-    async lookAt(point, opts = { smoothTime: 0.4, distance: 10 }) {
+    async lookAt(point, opts = { smoothTime: 0.4, maxDistance: 10 }) {
       if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
         state.clearTargetDamping(); // needs justification
       }
@@ -368,7 +361,6 @@ export default function WorldView(props) {
       w.events.next({ key: 'controls-start' });
       // 🔔 enabled controls override targetFov, target, targetDistance,
       state.reject.fov?.('cancelled fov change');
-      state.reject.distance?.('cancelled zoom');
       state.reject.look?.('cancelled look');
     },
     onCreated(rootState) {
@@ -599,21 +591,13 @@ export default function WorldView(props) {
         state.controls.restoreParams();
       }
 
-      if (state.dst.distance !== undefined) {// zoom
-        const { minDistance, maxDistance, target } = state.controls;
-        // 🚧 currently interpreting as maxDistance
+      if (state.dst.maxDistance !== undefined) {// zoom back if beyond maxDistance
         const targetDistance = Math.min(
           state.controls.getDistance(),
-          Math.min(maxDistance, Math.max(minDistance, state.dst.distance))
+          Math.min(state.controls.maxDistance, Math.max(state.controls.minDistance, state.dst.maxDistance))
         );
-        // camera should be `targetDistance` away from `target`
-        const targetCamPos = tmpVectThree.copy(camera.position).sub(target).setLength(targetDistance).add(target);
-        if (damp3(camera.position, targetCamPos, 0.8, deltaSecs, undefined, undefined, 0.001) === false) {
-          if (state.resolve.distance !== undefined) {
-            delete state.dst.distance;
-            state.resolve.distance();
-          }
-        }
+        const targetCamPos = tmpVectThree.copy(camera.position).sub(state.controls.target).setLength(targetDistance).add(state.controls.target);
+        damp3(camera.position, targetCamPos, 0.8, deltaSecs, undefined, undefined, 0.001);
       }
 
       state.prevControlsState = state.controls.state;
@@ -689,7 +673,7 @@ export default function WorldView(props) {
     stopFollowing() {
       if (state.dst.look !== undefined && state.resolve.look === undefined) {
         delete state.dst.look;
-        delete state.dst.distance;
+        delete state.dst.maxDistance;
         state.ctrlOpts.zoomToCursor = true;
         update();
         return true;
@@ -715,7 +699,7 @@ export default function WorldView(props) {
     async tween(opts) {
       const promises = /** @type {Promise<void>[]} */ ([]);
 
-      /** @param {Exclude<keyof State['dst'], 'lookOpts'>} key */
+      /** @param {Exclude<keyof State['dst'], 'lookOpts' | 'maxDistance'>} key */
       async function createPromise(key) {
         return (new Promise((resolve, reject) =>
           [state.resolve[key], state.reject[key]] = [resolve, reject]
@@ -730,11 +714,6 @@ export default function WorldView(props) {
       if (typeof opts.fov === 'number') {
         state.dst.fov = opts.fov;
         promises.push(createPromise('fov'));
-      }
-
-      if (typeof opts.distance === 'number') {
-        state.dst.distance = opts.distance;
-        promises.push(createPromise('distance'));
       }
 
       if (opts.look !== undefined) {
@@ -859,14 +838,13 @@ export default function WorldView(props) {
  * @property {{ screenPoint: Geom.Vect; pointerIds: number[]; longTimeoutId: number; } | null} down
  * Non-null iff at least one pointer is down.
  * 
- * @property {{
- *   azimuthal?: number;
- *   distance?: number;
- *   fov?: number;
- *   polar?: number;
- *   look?: THREE.Object3D;
- *   lookOpts?: NPC.LookAtOpts;
- * }} dst
+ * @property {object} dst
+ * @property {number} [dst.azimuthal]
+ * @property {number} [dst.maxDistance]
+ * @property {number} [dst.fov]
+ * @property {number} [dst.polar]
+ * @property {THREE.Object3D} [dst.look]
+ * @property {NPC.LookAtOpts} [dst.lookOpts]
  *
  * @property {{ pickStart: number; pickEnd: number; pointerDown: number; pointerUp: number; }} epoch
  * Each uses Date.now() i.e. milliseconds since epoch
@@ -882,9 +860,9 @@ export default function WorldView(props) {
  * @property {THREE.Scene} pickingScene Empty scene for picking.
  * @property {THREE.Raycaster} raycaster
  * @property {import('react-use-measure').Options} resizeOpts
- * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((value?: any) => void)>} resolve
+ * @property {Record<Exclude<keyof State['dst'], 'lookOpts' | 'maxDistance'>, undefined | ((value?: any) => void)>} resolve
  * - follow has `resolve.look` undefined i.e. never resolves
- * @property {Record<'fov' | 'look' | 'distance' | 'azimuthal' | 'polar', undefined | ((error?: any) => void)>} reject
+ * @property {Record<Exclude<keyof State['dst'], 'lookOpts' | 'maxDistance'>, undefined | ((error?: any) => void)>} reject
  * @property {HTMLDivElement} rootEl
  * @property {boolean} canTweenPaused Can we start tweening whilst paused?
  * @property {boolean} didTweenPaused Did we start tweening whilst paused?

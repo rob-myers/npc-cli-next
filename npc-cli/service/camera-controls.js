@@ -201,7 +201,7 @@ export class CameraControls extends EventDispatcher {
     return this.pointerPositions[pointer.pointerId];
   }
 
-  getZoomScale() {
+  getZoomScale() {// closer to 1 is slower
     return Math.pow(0.95, this.zoomSpeed);
   }
 
@@ -877,7 +877,6 @@ const endEvent = /** @type {const} */ ({ type: 'end' });
 const changeEvent = /** @type {const} */ ({ type: 'change' });
 
 const defaultDampingFactor = 0.05;
-const defaultFixedAngle = false;
 
 const twoPI = 2 * Math.PI;
 const tempVector3One = new THREE.Vector3();

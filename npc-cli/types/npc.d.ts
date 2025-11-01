@@ -518,7 +518,7 @@ declare namespace NPC {
   type LookAtOpts = {
     height?: number;
     /** Try to maintain a certain distance from the target */
-    distance?: number;
+    maxDistance?: number;
     maxSpeed?: number;
     smoothTime?: number;
   };
