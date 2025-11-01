@@ -112,7 +112,9 @@
 - 🚧 Manage can open "Feedback" tab
   - ✅ Feedback component has api in queryCache
   - ✅ process can access via `call '({api}) => api.getCached("feedback-0")'`
-  - process can send link and receive click
+  - ✅ process can send link and receive click
+    - can send link
+    - can receive click
 
 - ✅ BUG raycast through hull door `ray from:will to:rob` 
 

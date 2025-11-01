@@ -80,6 +80,22 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 }
 
 /**
+ * @param {NPC.RunArg} ct
+ */
+export function demoFeedback(ct) {
+  ct.api.getCached('feedback-0').addItem({
+    key: 'demo-feedback-0',
+    message: 'Hello',
+    links: [
+      { label: 'Reply', value: 'reply' },
+    ],
+    resolve(reply) {
+      alert(reply);
+    },
+  });
+}
+
+/**
  * Bound to a particular npcKey.
  * ```sh
  * demoNarrateToBed npc:rob

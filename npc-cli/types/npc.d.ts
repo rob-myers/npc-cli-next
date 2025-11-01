@@ -526,12 +526,19 @@ declare namespace NPC {
   //#region sh js
   
   type WorldState = import('../world/World').State;
+  type FeedbackState = import('../components/Feedback').State;
   type TabsState = import('../tabs/tabs.store').State;
   type ProcessApi = import('../sh/cmd.service').ProcessApi;
   type ProcessContext = import('../sh/cmd.service').ProcessContext;
 
   interface RunArg<Datum = any> {
-    api: ProcessApi & { getCached(key: '__WORLD_KEY_VALUE__'): WorldState; };
+    api: ProcessApi & {
+      getCached(key: '__WORLD_KEY_VALUE__'): WorldState;
+      // seems `feedback-${number}` does not work
+      getCached(key: 'feedback-0'): FeedbackState;
+      getCached(key: 'feedback-1'): FeedbackState;
+      getCached(key: 'feedback-2'): FeedbackState;
+    };
     args: string[];
     w: WorldState;
     tabs: TabsState['api'];
