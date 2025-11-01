@@ -584,7 +584,7 @@ export default function WorldView(props) {
         if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.01) === false) {
           state.resolve.look?.();
         }
-        
+
         state.controls.saveParams();
         state.controls.setParams({ fixedPolar: true, fixedAzimuth: true });
         state.controls.update();
@@ -727,13 +727,15 @@ export default function WorldView(props) {
       if (typeof opts.azimuthal === 'number') {
         const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
         state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, opts.azimuthal));
+        // rely on camera-controls.js damping to animate
         state.controls.setAzimuthalAngle(state.dst.azimuthal);
         promises.push(createPromise('azimuthal'));
       }
-
+      
       if (typeof opts.polar === 'number') {
         const { minPolarAngle, maxPolarAngle } = state.controls;
         state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, opts.polar));
+        // rely on camera-controls.js damping to animate
         state.controls.setPolarAngle(state.dst.polar);
         promises.push(createPromise('polar'));
       }

@@ -1,6 +1,6 @@
 source /etc/{util,core}.sh
 source /etc/{util,core,dev}.js.sh
-import demoCameraWASD demoClickToFollow from demo
+import demoClickToFollow from demo
 
 awaitWorld
 
@@ -26,8 +26,6 @@ preventMenuOnActOrFloor
 click --long | lookActOnLong path:selected &
 
 w decor.showLabels true
-
-demoCameraWASD
 
 setupContextMenu
 ptags always; events | handleContextMenu &

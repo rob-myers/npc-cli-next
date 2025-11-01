@@ -101,10 +101,15 @@
 
 - ✅ camera supports maxDistance so can zoom to see inside room
   - ✅ w.view.dst.distance -> w.view.dst.maxDistance
-- fix wasd camera controls being overridden by follow cam with fixed angle
-- fix zoomToCursor lapse while follow
+- ❌ fix WASD camera controls being overridden by follow cam with fixed angle
+  - ✅ slower azimuthal tween via damping factor in camera-controls.js
+  - ✅ remove WASD controls: combination with camera rotation too complex
 
-- Manage can open "Feedback" tab 
+- fix zoomToCursor lapse while follow
+  - maybe HMR of camera-controls.js
+  - need repro
+
+- 🚧 Manage can open "Feedback" tab 
 
 - ✅ BUG raycast through hull door `ray from:will to:rob` 
 

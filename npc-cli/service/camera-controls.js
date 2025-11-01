@@ -28,7 +28,7 @@ export class CameraControls extends EventDispatcher {
   minAzimuthAngle = -Infinity;
   maxAzimuthAngle = Infinity;
   panDampingFactor = defaultDampingFactor;
-  azimuthalDampingFactor = defaultDampingFactor;
+  azimuthalDampingFactor = defaultDampingFactor * 0.85;
   polarDampingFactor = defaultDampingFactor;
   /**
    * This option actually enables dollying in and out; left as "zoom" for backwards compatibility.

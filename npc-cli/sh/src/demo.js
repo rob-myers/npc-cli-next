@@ -47,31 +47,6 @@ export const demoAddDecor = (ct) => {
 };
 
 /**
- * @param {NPC.RunArg} ct
- */
-export const demoCameraWASD = ({ w }) => {
-  w.view.keyDowns.changeAngle = async (e) => {
-    const key = e.key.toLowerCase();
-
-    const angle = geom.radRange(w.view.controls.getAzimuthalAngle());
-    const delta = Math.PI * 0.5;
-    const ratio = angle / delta; // [0..4)
-    switch (key) {
-      case "w": {
-        await w.view.tween({
-          azimuthal: Math.round(ratio) * delta,
-          polar: Math.abs(deltaAngle(w.view.controls.getPolarAngle(), 0)) < 0.1 ? Math.PI/3 : 0,
-        });
-        break;
-      }
-      case "a": await w.view.tween({ azimuthal: Math.floor(ratio - 0.01) * delta }); break;
-      case "s": await w.view.tween({ azimuthal: angle + Math.PI }); break;
-      case "d": await w.view.tween({ azimuthal: Math.ceil(ratio + 0.01) * delta }); break;
-    }
-  };
-};
-
-/**
  * Click to follow or stop following.
  * ```sh
  * click meta.npcKey | demoClickToFollow
