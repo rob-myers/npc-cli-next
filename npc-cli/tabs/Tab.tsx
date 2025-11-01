@@ -40,6 +40,7 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
     return state.component !== null &&
       React.createElement(state.component as unknown as React.FunctionComponent<BaseTabProps>, {
         disabled: tabState.disabled,
+        tabKey: def.filepath,
         setTabsEnabled: state.setTabsEnabled,
         updateTabMeta: useTabs.api.updateTabMeta,
         ...def.props,
@@ -55,6 +56,7 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
           w: "WORLD_KEY",
           tabs: "TABS_API_KEY",
         }}}
+        tabKey={def.filepath}
         onKey={state.onTerminalKey}
         profileKey={def.profileKey}
         sessionKey={def.filepath}

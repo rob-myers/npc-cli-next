@@ -79,7 +79,7 @@ type TabMetaPropsDistributed<K extends ComponentClassKey> = K extends infer A
 
 type TabMetaPropsGeneric<K extends ComponentClassKey> = {
   class: K;
-  props: Omit<ComponentClassKeyToProps[K], 'setTabsEnabled' | 'updateTabMeta'>;
+  props: Omit<ComponentClassKeyToProps[K], 'setTabsEnabled' | 'updateTabMeta' | 'tabKey'>;
 };
 
 type ComponentClassKeyToProps = {
@@ -87,6 +87,7 @@ type ComponentClassKeyToProps = {
 };
 
 export interface BaseTabProps {
+  tabKey: string;
   /**
    * A Tab is disabled if either:
    * - Tabs disabled (all tabs disabled) 
