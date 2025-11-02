@@ -133,6 +133,9 @@
 - BUG hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab; back to manage tab:
   - Manage still says it is unmounted
 
+- BUG turn set_targetReplan back on without jerk near door entry
+  - this should re-fix pre-existing bug when npc enters wrong offMesh and has to turn back
+
 - ✅ BUG raycast through hull door `ray from:will to:rob` 
 
 - ✅ support zoomToCursor false

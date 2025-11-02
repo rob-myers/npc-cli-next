@@ -665,7 +665,7 @@ export class NpcApi {
 
     // look further along the path
     // 🔔 with 0.2 saw jerk when two agents through doorway
-    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.6);
+    const lookAt = this.getFurtherAlongOffMesh(offMesh, 0.4);
     const dirX = lookAt.x - this.point.x;
     const dirY = lookAt.y - this.point.y;
     const radians = geom.clockwiseFromNorth(dirY, dirX);
@@ -1035,7 +1035,8 @@ export class NpcApi {
       this.target = this.lastTarget.copy(pendingTarget);
       this.numCorners = 0;
       agent.requestMoveTarget(toV3(this.target));
-      agent.raw.set_targetReplan(true); // fix initial navpath e.g. traverse wrong offmesh
+      // 🚧 causing jerky movement when replan just before door
+      // agent.raw.set_targetReplan(true); // fix initial navpath e.g. traverse wrong offmesh
       this.setSlowDownRadius();
       this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath });
     }
