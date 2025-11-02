@@ -122,15 +122,16 @@
   - ✅ use Feedback instead which auto-opens
   - ✅ demoFollowViaFeedback
   - ✅ try demoSelectViaFeedback
-  - 🚧 demoFollowViaFeedback also selects
-
-- BUG with hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab then back to manage tab
-  - Manage still says it is unmounted
+  - 🚧 Feedback supports long press
+  - 🚧 demoFollowViaFeedback also selects on long press
+  - ℹ️ not so interesting but at least independent of "click world ui"
 
 - handle `direct` using Feedback
   - stop, pause, continue
   - try left, try right
 
+- BUG hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab; back to manage tab:
+  - Manage still says it is unmounted
 
 - ✅ BUG raycast through hull door `ray from:will to:rob` 
 

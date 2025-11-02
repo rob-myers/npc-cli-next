@@ -42,7 +42,7 @@ export default function Feedback(props) {
   return (
     <div className="font-sans text-sm flex flex-col h-full p-2 bg-slate-900" onClick={state.onClick}>
       {state.items.map((item) => (
-        <div key={item.key} className="flex gap-2 items-center p-1 border-t-2 last:border-b-2 border-gray-800">
+        <div key={item.key} className="flex gap-2 flex-wrap items-center p-1 border-t-2 last:border-b-2 border-gray-800">
           <div className="text-yellow-200 p-1">
             {item.label}
           </div>
