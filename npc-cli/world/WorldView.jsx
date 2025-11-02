@@ -240,7 +240,7 @@ export default function WorldView(props) {
       state.ctrlOpts.zoomToCursor = false;
       state.dst.maxDistance ??= opts?.maxDistance;
 
-      // state.handlePausedTween();
+      state.handlePausedTween();
       update();
     },
     getDownDistancePx() {
