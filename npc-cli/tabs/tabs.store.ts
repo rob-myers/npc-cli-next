@@ -106,7 +106,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
 
       if (!helper.isTabId(tabDef.filepath)) {
-        throw Error(`Invalid tabDef.filepath: ${tabDef.filepath} (${jsStringify(tabDef)})`);
+        throw Error(`${'openTab'}: invalid tabDef.filepath ${tabDef.filepath} (${jsStringify(tabDef)})`);
       }
 
       const layout = {...addTabToLayout({ layout: lookup.synced, tabDef })};

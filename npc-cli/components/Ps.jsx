@@ -161,7 +161,7 @@ export default function PsList() {
   const sessionsExist = ttyTabMetas.length > 0;
 
   return (
-    <div css={psListCss} className="p-2">
+    <div css={psListCss} className="p-2 h-full overflow-auto">
 
       <div className="header">
         <h2>
