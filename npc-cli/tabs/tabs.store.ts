@@ -96,12 +96,12 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
       }
     },
 
-    openTab(tabDef) {
+    openTab(tabDef, { selectTab = true } = {}) {
       const lookup = useTabs.getState().tabset;
       const found = lookup.tabs.find(x => x.id === tabDef.filepath);
 
       if (found !== undefined) {// exists, so select it
-        useTabs.api.selectTab(tabDef.filepath);
+        selectTab && useTabs.api.selectTab(tabDef.filepath);
         return false;
       }
 
@@ -109,7 +109,7 @@ const initializer: StateCreator<State, [], [["zustand/devtools", never]]> = devt
         throw Error(`${'openTab'}: invalid tabDef.filepath ${tabDef.filepath} (${jsStringify(tabDef)})`);
       }
 
-      const layout = {...addTabToLayout({ layout: lookup.synced, tabDef })};
+      const layout = {...addTabToLayout({ layout: lookup.synced, tabDef, selectTab })};
       const synced = deepClone(layout);
 
       useTabs.setState(({ tabset }) => ({ tabset: { ...tabset,
@@ -310,8 +310,8 @@ export type State = {
     get(): State;
     getNextSuffix(tabClass: Key.TabClass): number;
     initiateBrowser(): void;
-    /** Create a tab (returns `true`), or select it (`false`) */
-    openTab(tabDef: TabDef): boolean;
+    /** Create or ensure a tab, returning true if we created. */
+    openTab(tabDef: TabDef, opts?: {selectTab?: boolean}): boolean;
     rememberCurrentTabs(): void;
     /** Restore layout from localStorage or use fallback */
     restoreLayoutWithFallback(fallbackLayout: Key.LayoutPreset | TabsetLayout, opts?: { preserveRestore?: boolean; }): TabsetLayout;

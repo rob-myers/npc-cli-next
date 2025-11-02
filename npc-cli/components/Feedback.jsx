@@ -9,7 +9,6 @@ import useUpdate from "../hooks/use-update";
  * @param {Props} props
  */
 export default function Feedback(props) {
-
   const state = useStateRef(/** @returns {State} */ () => ({
     items: [],
     addItem(item) {

@@ -7,7 +7,7 @@ import { TABS_API_KEY } from "../service/const";
 import { detectTabPrevNextShortcut } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
 import { type TabDef, type TabsBaseProps, factory } from "./tab-factory";
-import { layoutToModelJson } from './tab-util';
+import { isTabDefMountInBackground, layoutToModelJson } from './tab-util';
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import useTabs from "./tabs.store";
@@ -140,7 +140,7 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
     toggleTabsDisabled(nextDisabled) {
       for (const tabState of Object.values(state.tabsState)) {
         if (nextDisabled === false && tabState.visible === false && tabState.type !== 'terminal') {
-          continue; // do not set background non-tty tabs enabled
+          continue; // do not enable background non-tty tabs
         }
         if (tabState.disabled !== nextDisabled) {
           tabState.disabled = nextDisabled;
@@ -177,22 +177,35 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
       }
       seenTabIds.add(node.getId());
 
-      node.setEventListener("visibility", async ({ visible }) => {
-        // console.log('visibility', key, visible);
-        
-        const [key, tabDef] = [node.getId() as Key.TabId, (node as TabNode).getConfig() as TabDef];
-        const prevDisabled = key in state.tabsState ? state.tabsState[key].disabled : undefined;
-        const tabState = state.tabsState[key] ??= {
+      const [key, tabDef] = [node.getId() as Key.TabId, (node as TabNode).getConfig() as TabDef];
+      
+      if (!state.tabsState[key]) {
+        const mountInBackground = isTabDefMountInBackground(tabDef);
+        state.tabsState[key] = {
           key,
           type: tabDef.type,
           disabled: !state.enabled,
           everUncovered: false,
           justCovered: false,
           visible: false,
+          mountInBackground,
         };
+        if (mountInBackground) {
+          setTimeout(() => {// Cannot update a component (`Tabs`) while rendering a different component
+            useTabs.api.updateTabMeta({ key, disabled: !state.enabled });
+          });
+        }
+      }
+
+      node.setEventListener("visibility", async ({ visible }) => {
+        // console.log('visibility', node.getId(), visible);
+        
+        const [key, tabDef] = [node.getId() as Key.TabId, (node as TabNode).getConfig() as TabDef];
+        const prevDisabled = key in state.tabsState ? state.tabsState[key].disabled : undefined;
+        const tabState = state.tabsState[key];
         
         if (visible) {
-          // 🔔 visible tab enabled iff Tabs is enabled
+          // visible tab enabled iff Tabs is enabled
           tabState.disabled = !state.enabled;
           const maxNode = state.model.getMaximizedTabset()?.getSelectedNode();
           tabState.everUncovered ||= maxNode ? node === maxNode : true;
@@ -200,8 +213,8 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         }
         
         if (!visible && tabDef.type === "component") {
-          // 🔔 invisible tabs of type "component" get disabled in background
-          // 🔔 tabs of type "terminal" stay enabled in background (unless Tabs disabled)
+          // - invisible tabs of type "component" get disabled in background
+          // - tabs of type "terminal" stay enabled in background (unless Tabs disabled)
           tabState.disabled = true;
           setTimeout(update);
         }
@@ -220,7 +233,6 @@ export const Tabs = React.forwardRef<State, Props>(function Tabs(props, ref) {
         delete state.tabsState[tabId];
       }
     }
-    
     
     return output;
   }, [tabsDefChanged, state.resets, props.updates]);
@@ -309,6 +321,8 @@ export interface TabState {
   /** `true` iff was just covered by a maximised tab */
   justCovered: boolean;
   visible: boolean;
+  /** e.g. `Feedback` component opened by a terminal */
+  mountInBackground: boolean;
 }
 
 const tabsCss = css`

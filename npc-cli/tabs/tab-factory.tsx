@@ -11,7 +11,7 @@ import { CentredSpinner } from "../components/Spinner";
 
 export function factory(node: TabNode, api: TabsApi, forceUpdate: boolean) {
   const state = api.tabsState[node.getId()];
-  if (state?.everUncovered) {
+  if (state?.everUncovered || state?.mountInBackground) {
     // console.debug(`rendering "${node.getId()}"`, state.disabled);
     return React.createElement(TabMemo, {
       def: node.getConfig() as TabDef,
@@ -44,6 +44,7 @@ export type TabDef = { weight?: number } & (
     }
 );
 
+export type FeedbackTabDef = Extract<TabDef, TabMetaPropsGeneric<"Feedback">>;
 export type ManageTabDef = Extract<TabDef, TabMetaPropsGeneric<"Manage">>;
 export type TtyTabDef = Extract<TabDef, { type: "terminal" }>;
 export type WorldTabDef = Extract<TabDef, TabMetaPropsGeneric<"World">>;

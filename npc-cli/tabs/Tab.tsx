@@ -51,8 +51,9 @@ export function Tab({ def, api: tabs, state: tabState }: TabProps) {
     return (
       <Terminal
         disabled={tabState.disabled}
-        // 🚧 literal "WORLD_KEY" and "TABS_API_KEY" should be constants
         env={{ ...def.env, CACHE_SHORTCUTS: {
+          // these should be uppercase variable names,
+          // with lowercase values e.g. world-0, tabs_api_key
           w: "WORLD_KEY",
           tabs: "TABS_API_KEY",
         }}}

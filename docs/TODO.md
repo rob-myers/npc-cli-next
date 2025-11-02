@@ -118,7 +118,14 @@
   - ✅ can remove item
   - ✅ improve styling
 
-- 🚧 handle `direct` using Feedback
+- 🚧 UI issue: "follow/unfollow via click" conflicts with "click path to navigate" e.g. `direct`
+  - ✅ Feedback can mount in background
+  - 🚧 use Feedback instead which auto-opens
+
+- BUG with hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab then back to manage tab
+  - Manage still says it is unmounted
+
+- handle `direct` using Feedback
   - stop, pause, continue
   - try left, try right
 

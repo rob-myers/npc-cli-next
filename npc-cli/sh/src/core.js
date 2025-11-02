@@ -234,10 +234,18 @@ export async function* follow({ api, args, w }, opts = api.jsArg(args, { npc: 'n
  * @param {NPC.RunArg} ct
  * @param {{ key: `feedback-${number}` }} [opts]
  */
-export function getFeedback(ct, opts = ct.api.jsArg(ct.args)) {
-  const feedback = ct.api.getCached(opts.key);
-  if (!feedback) throw Error(`No feedback ${opts.key}`);
-  return /** @type {import('@/npc-cli/components/Feedback').State} */ (feedback);
+export async function connectFeedback(ct, opts = ct.api.jsArg(ct.args)) {
+
+  /** @type {import('@/npc-cli/components/Feedback').State | undefined} */
+  let feedback;
+  
+  while ((feedback = ct.api.getCached(opts.key)) === undefined) {
+    // ensure feedback tab (possibly in background)
+    ct.tabs.openTab({ type: 'component', class: 'Feedback', filepath: opts.key, props: {} }, { selectTab: false });
+    await ct.api.sleep(0.3); // wait for mount (hacky)
+  }
+
+  return feedback;
 }
 
 /**

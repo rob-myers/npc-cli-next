@@ -3,7 +3,7 @@ import { TABS_API_KEY, tabsComponentsMeta } from "../service/const";
 import { deepClone, tryLocalStorageGetParsed, warn } from "../service/generic";
 import { isTouchDevice, isIOS } from "../service/dom";
 import { helper } from "../service/helper";
-import type { CustomIJsonTabNode, ManageTabDef, TabDef, TabsetLayout, TtyTabDef, WorldTabDef } from "./tab-factory";
+import type { CustomIJsonTabNode, FeedbackTabDef, ManageTabDef, TabDef, TabsetLayout, TtyTabDef, WorldTabDef } from "./tab-factory";
 
 /**
  * - If tabDef doesn't exist, append to 1st non-active tabset (or only active one).
@@ -211,8 +211,7 @@ export function ensureValidTabsetTabs(layout: IJsonRowNode): IJsonRowNode {
     if (ios === true && isWorldTabDef(tabDef) && !helper.isSmallMap(tabDef.props.mapKey)) {
       tabDef.props.mapKey = 'small-map-1'; // 🔔 ensure "small" map
     }
-    if (isTtyTabDef(tabDef)) {
-      // in case TABS_API_KEY has changed
+    if (isTtyTabDef(tabDef)) {// in case TABS_API_KEY has changed
       tabDef.env.TABS_API_KEY = TABS_API_KEY;
     }
   }
@@ -253,21 +252,32 @@ export function layoutToModelJson(layout: TabsetLayout, rootOrientationVertical?
       enableEdgeDock: true,
       splitterExtra: 12,
       splitterSize: 2,
+
+      // we handle lazy rendering ourselves, and
+      // in some cases we want initially hidden tab to mount
+      tabEnableRenderOnDemand: false,
     },
     layout,
   };
+}
+
+export function isTabDefMountInBackground(def: TabDef) {
+  return (
+    def.type === 'component' && def.class === 'Feedback'
+    // ...
+  );
 }
 
 function isManageTabDef(def: TabDef): def is ManageTabDef {
   return def.type === 'component' && def.class === 'Manage';
 }
 
-function isWorldTabDef(def: TabDef): def is WorldTabDef {
-  return def.type === 'component' && def.class === 'World';
-}
-
 function isTtyTabDef(def: TabDef): def is TtyTabDef {
   return def.type === 'terminal';
+}
+
+function isWorldTabDef(def: TabDef): def is WorldTabDef {
+  return def.type === 'component' && def.class === 'World';
 }
 
 /**
