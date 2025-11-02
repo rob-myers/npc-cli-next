@@ -40,15 +40,15 @@ export default function Feedback(props) {
   const update = useUpdate();
 
   return (
-    <div className="font-sans font-thin text-sm flex flex-col h-full p-2 bg-slate-900" onClick={state.onClick}>
+    <div className="font-sans text-sm flex flex-col h-full p-2 bg-slate-900" onClick={state.onClick}>
       {state.items.map((item) => (
         <div key={item.key} className="flex gap-2 items-center p-1 border-t-2 last:border-b-2 border-gray-800">
-          <div className="text-slate-200 p-1">
+          <div className="text-yellow-200 p-1">
             {item.label}
           </div>
           {item.links.map((link, i) => (
             <button
-              className="bg-gray-800 text-white hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
+              className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
               key={i}
               data-item-key={item.key}
               data-link-label={link.label}

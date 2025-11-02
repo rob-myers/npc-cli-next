@@ -105,9 +105,8 @@
   - ✅ slower azimuthal tween via damping factor in camera-controls.js
   - ✅ remove WASD controls: combination with camera rotation too complex
 
-- fix zoomToCursor lapse while follow
-  - maybe HMR of camera-controls.js
-  - need repro
+- 🚧 fix zoomToCursor lapse while follow
+  - maybe HMR of w.view.ctrlOpts
 
 - ✅ Manage can open "Feedback" tab
   - ✅ Feedback component has api in queryCache
@@ -120,7 +119,10 @@
 
 - 🚧 UI issue: "follow/unfollow via click" conflicts with "click path to navigate" e.g. `direct`
   - ✅ Feedback can mount in background
-  - 🚧 use Feedback instead which auto-opens
+  - ✅ use Feedback instead which auto-opens
+  - ✅ demoFollowViaFeedback
+  - ✅ try demoSelectViaFeedback
+  - 🚧 demoFollowViaFeedback also selects
 
 - BUG with hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab then back to manage tab
   - Manage still says it is unmounted

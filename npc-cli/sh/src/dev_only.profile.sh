@@ -1,6 +1,6 @@
 source /etc/{util,core}.sh
 source /etc/{util,core,dev}.js.sh
-import demoClickToFollow from demo
+import demoFollowViaFeedback from demo
 
 awaitWorld
 
@@ -33,4 +33,5 @@ ptags always; events | handleContextMenu &
 ptags always; events | handleLoggerLinks & 
 
 follow npc:rob
-ptags always; click meta.npcKey | demoClickToFollow &
+
+demoFollowViaFeedback &

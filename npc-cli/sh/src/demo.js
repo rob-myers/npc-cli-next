@@ -48,14 +48,12 @@ export const demoAddDecor = (ct) => {
 
 /**
  * Click to follow or stop following.
- * - 🚧 select and follow?
- * - 🚧 change name
  * ```sh
- * demoClickToFollow
+ * demoFollowViaFeedback
  * ```
  * @param {NPC.RunArg} ct
  */
-export async function demoClickToFollow(ct) {
+export async function demoFollowViaFeedback(ct) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
@@ -76,6 +74,54 @@ export async function demoClickToFollow(ct) {
   };
 
   feedback.addItem(item);
+}
+
+/**
+ * 🚧 merge into `demoFollowViaFeedback`
+ * ```sh
+ * demoSelectViaFeedback path:selected
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ npcKeyPath: string }} [opts]
+ */
+export async function demoSelectViaFeedback(ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const { w } = ct;
+  
+  // 🚧 process must persist to use `ct` on resolve
+  await new Promise((_resolve, reject) => {
+    /** @type {NPC.FeedbackItem<{ act: 'select'; npcKey: string }>} */
+    const item = {
+      key: 'demo-select',
+      label: 'select',
+      links: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: { act: /** @type {const} */ ('select'), npcKey} })),
+      resolve(value) {
+        const [prevNpcKey] = ct.api.get([opts.npcKeyPath]);
+
+        const nextNpcKey = value.npcKey;
+        ct.api.set(opts.npcKeyPath, nextNpcKey);
+        const nextNpc = w.npc.get(nextNpcKey);
+        nextNpc.showSelector(true);
+
+        if (prevNpcKey !== nextNpcKey) {
+          w.n[prevNpcKey]?.showSelector(false);
+        }
+
+        w.view.ensureRender();
+      },
+    };
+  
+    feedback.addItem(item);
+
+    // 🚧
+    ct.api.handleStatus({
+      cleanups() {
+        reject(ct.api.getKillError());
+        feedback.removeItem(item.key);
+      },
+    })
+  });
+
 }
 
 /**
