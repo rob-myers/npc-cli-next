@@ -742,7 +742,7 @@ export default function useHandleEvents(w) {
       }
       
       if (// too close with angle too large
-        entryDist < 0.1 && (Math.abs(npc.getAngleTo(improved.dst)) > Math.PI/2 + 0.2)
+        entryDist < 0.2 && (Math.abs(npc.getAngleTo(improved.dst)) > Math.PI/2 + 0.2)
       ) {
         const newTarget = null;
         npc.adjustTargets(newTarget, target, ...npc.pendingTargets);

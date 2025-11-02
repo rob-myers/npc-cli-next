@@ -47,22 +47,35 @@ export const demoAddDecor = (ct) => {
 };
 
 /**
- * 🚧 try Feedback component instead
  * Click to follow or stop following.
+ * - 🚧 select and follow?
+ * - 🚧 change name
  * ```sh
- * click meta.npcKey | demoClickToFollow
- * ptags always; click meta.npcKey | demoClickToFollow
+ * demoClickToFollow
  * ```
- * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ct
  */
-export function demoClickToFollow(input, { w }) {
-  const npc = w.n[input.meta.npcKey];
-  if (w.e.isFollowingNpc(npc.key)) {
-    w.e.stopFollowing();
-  } else {
-    w.e.followNpc(npc.key);
-  }
+export async function demoClickToFollow(ct) {
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const { w } = ct;
+
+  /** @type {NPC.FeedbackItem<{ act: 'follow'; npcKey: string } | { act: 'unfollow' }>} */
+  const item = {
+    key: 'demo-follow',
+    label: 'follow',
+    links: [
+      { label: 'stop', value: { act: 'unfollow' } },
+      ...Object.keys(w.n).map(npcKey => ({ label: npcKey, value: { act: /** @type {const} */ ('follow'), npcKey} })),
+    ],
+    resolve(value) {
+      switch (value.act) {
+        case 'unfollow': w.e.stopFollowing(); break;
+        case 'follow': w.e.followNpc(value.npcKey); break;
+      }
+    },
+  };
+
+  feedback.addItem(item);
 }
 
 /**
@@ -84,12 +97,12 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
  * @param {NPC.RunArg} ct
  * @param {{ key?: string }} [opts]
  */
-export function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
-  const feedback = core.getFeedback(ct, { key: 'feedback-0' });
+export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   
   feedback.addItem({
     key: opts.key ?? 'demo-feedback-0',
-    message: 'Make a choice...',
+    label: 'Make a choice...',
     links: [
       { label: 'foo', value: 'foo' },
       { label: 'bar', value: 'bar' },
@@ -191,7 +204,6 @@ const tmpMat1 = new Mat();
 
 export const meta = {
   map: {
-    demoClickToFollow,
     demoClickToMove,
   },
 };

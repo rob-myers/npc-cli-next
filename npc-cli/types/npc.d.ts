@@ -546,5 +546,19 @@ declare namespace NPC {
     datum: Datum;
   }
 
+  interface FeedbackItem<T> {
+    key: string;
+    label?: string;
+    resolve(value: T): void | boolean;
+    links: FeedbackItemLink<T>[];
+  }
+
+  /** Distinct links should have distinct label */
+  interface FeedbackItemLink<T> {
+    label: string;
+    value: T;
+  }
+
+
   //#endregion
 }

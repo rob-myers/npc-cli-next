@@ -17,9 +17,10 @@ export default function Feedback(props) {
       update();
     },
     onClick(e) {
-      const { itemKey, linkValue }  = /** @type {HTMLElement} */ (e.target).dataset;
-      const item = /** @type {FeedbackItem} */ (state.items.find(item => item.key === itemKey));
-      const link = /** @type {FeedbackItemLink} */ (item.links.find(link => link.value === linkValue));
+      const { itemKey, linkLabel }  = /** @type {HTMLElement} */ (e.target).dataset;
+      if (!itemKey || !linkLabel) return;
+      const item = /** @type {NPC.FeedbackItem<any>} */ (state.items.find(item => item.key === itemKey));
+      const link = /** @type {NPC.FeedbackItemLink<any>} */ (item.links.find(link => link.label === linkLabel));
       const result = item.resolve(link.value);
       if (result === false) {
         state.removeItem(item.key);
@@ -43,14 +44,14 @@ export default function Feedback(props) {
       {state.items.map((item) => (
         <div key={item.key} className="flex gap-2 items-center p-1 border-t-2 last:border-b-2 border-gray-800">
           <div className="text-slate-200 p-1">
-            {item.message}
+            {item.label}
           </div>
           {item.links.map((link, i) => (
             <button
               className="bg-gray-800 text-white hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
               key={i}
               data-item-key={item.key}
-              data-link-value={link.value}
+              data-link-label={link.label}
             >
               {link.label}
             </button>
@@ -62,27 +63,13 @@ export default function Feedback(props) {
 }
 
 /**
- * @typedef {object} State
- * @property {FeedbackItem[]} items
- * @property {((item: FeedbackItem) => void)} addItem
+ * @typedef State
+ * @property {NPC.FeedbackItem<any>[]} items
+ * @property {(<T>(item: NPC.FeedbackItem<T>) => void)} addItem
  * @property {((itemKey: string) => void)} removeItem
  * @property {((e: React.MouseEvent) => void)} onClick
  */
 
 /**
  * @typedef {import("../tabs/tab-factory").BaseTabProps} Props
- */
-
-/**
- * @typedef FeedbackItem
- * @property {string} key
- * @property {string} [message]
- * @property {((reply: string) => void | boolean)} resolve
- * @property {FeedbackItemLink[]} links
- */
-
-/**
- * @typedef FeedbackItemLink
- * @property {string} label
- * @property {string} value
  */
