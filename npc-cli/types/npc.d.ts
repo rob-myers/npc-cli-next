@@ -471,7 +471,7 @@ declare namespace NPC {
   }
 
   interface DoOpts {
-    do: WithMeta<GroundPoint, { do?: true; doPoint?: Geom.VectJson; y?: number }>;
+    do: MaybeMeta<GroundPoint, { do?: true; doPoint?: Geom.VectJson; y?: number }>;
   }
 
   type StopReason = { type: 'stop-reason'; } & (

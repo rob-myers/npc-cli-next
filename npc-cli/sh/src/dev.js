@@ -187,20 +187,36 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 }
 
 /**
+ * ```sh
+ * lookOrDo to:$( click 1 ) path:selected
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {MaybeMeta<NPC.GroundPoint>} opts.to
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ */
+export async function lookOrDo({api, args, w}, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
+  const [npcKey] = api.get([opts.npcKeyPath]);
+  const npc = w.n[npcKey];
+  if (!npc) return;
+  if (opts.to.meta?.floor === true && !npc.doMeta) {
+    npc.look(opts.to).catch(() => {});
+  } else {// do or stop doing
+    await npc.make({ do: opts.to }).catch(() => {});
+  }
+}
+
+/**
+ * ```sh
+ * click --long | lookOrDoLong to:$( click 1 ) path:selected
+ * ```
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  */
-export async function lookOrDoLong(input, {api, args, w}, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
-  const [npcKey] = api.get([opts.npcKeyPath]);
-  const npc = w.n[npcKey];
-  if (!npc) return;
-  if (input.meta.floor === true && !npc.doMeta) {
-    npc.look(input).catch(() => {});
-  } else {// act or stop acting
-    await npc.make({ do: input }).catch(() => {});
-  }
+export async function lookOrDoLong(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
+  await lookOrDo(ct, { ...opts, to: input });
 }
 
 /**
@@ -225,14 +241,14 @@ export function moveNpc(ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })
 }
 
 /**
- * @param {NPC.ClickOutput} input
+ * @param {MaybeMeta<NPC.GroundPoint> & { keys?: string[] }} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  * @param {number} [opts.close] Max distance from navigable permitted
  */
 export function moveNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
-  moveNpc(ct, { ...opts, to: input });
+  moveNpc(ct, { ...opts, to: input, keys: input.keys });
 }
 
 /**

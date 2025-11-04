@@ -128,7 +128,7 @@
 
 - ✅ selectNpcOnClick uses more generic selectNpc
 - ✅ moveNpcOnClick uses more generic moveNpc
-- 🚧 lookOrDoLong uses more generic lookOrDoNpc
+- ✅ lookOrDoLong uses more generic lookOrDoNpc
 
 - 🚧 Feedback supports generic UI i.e. can provide JSX
   - e.g. can select npcKey, buttons: select, follow
