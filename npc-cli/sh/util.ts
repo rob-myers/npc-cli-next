@@ -163,6 +163,10 @@ export function resolvePath(path: string, root: any, pwd: string) {
 }
 
 export function computeNormalizedParts(varPath: string, pwd: string): string[] {
+  // basic tilde expansion
+  if (varPath === '~') varPath = '/home';
+  if (varPath.startsWith('~/')) varPath = `/home/${varPath.slice(2)}`;
+
   const absParts = varPath.startsWith("/")
     ? varPath.split("/")
     : pwd.split("/").concat(varPath.split("/"));

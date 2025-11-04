@@ -384,12 +384,10 @@ const useStore = create<State>()((set, get): State => ({
        * We support writing to local process variables,
        * e.g. `( cd && echo 'pwn3d!'>PWD && pwd )`
        */
-      const localCtxt =
-        parts[0] in process.localVar
-          ? process.localVar
-          : parts[0] in process.inheritVar
-          ? process.inheritVar
-          : null;
+      const localCtxt = parts[0] in process.localVar
+        ? process.localVar
+        : parts[0] in process.inheritVar ? process.inheritVar : null
+      ;
       if (localCtxt) {
         root = localCtxt;
         normalParts = parts;

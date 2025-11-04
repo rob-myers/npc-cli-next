@@ -811,11 +811,16 @@ class cmdServiceClass {
     const process = getProcess(meta);
 
     const outputs = args.map((arg) => {
+      // basic tilde expansion
+      if (arg === '~') arg = '/home';
+      if (arg.startsWith('~/')) arg = `/home/${arg.slice(2)}`;
+
       const parts = arg.split("/");
       const localCtxt = parts[0] in process.localVar
         ? process.localVar
         : parts[0] in process.inheritVar ? process.inheritVar : null
       ;
+
       return parts[0] && localCtxt !== null
         ? parts.reduce((agg, part) => agg[part], localCtxt)
         : resolvePath(arg, root, pwd)
