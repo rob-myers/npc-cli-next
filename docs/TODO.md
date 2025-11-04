@@ -131,8 +131,9 @@
 - ✅ lookOrDoLong uses more generic lookOrDoNpc
 
 - 🚧 Feedback supports generic UI i.e. can provide JSX
-  - e.g. can select npcKey, buttons: select, follow
+  - e.g. select npcKey with two buttons: select, follow
   - ✅ can use JSX in js files
+  - need to be hot-reloadable
   - change demoFollowViaFeedback
   - change demoSelectViaFeedback
 

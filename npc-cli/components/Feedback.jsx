@@ -32,7 +32,7 @@ export default function Feedback(props) {
     },
   }));
   
-  React.useEffect(() => {// cache world, sync lib
+  React.useEffect(() => {
     setCached([props.tabKey], state);
     return () => removeCached([props.tabKey]);
   }, []);

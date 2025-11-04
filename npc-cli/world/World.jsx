@@ -336,7 +336,7 @@ export default function World(props) {
     networkMode: isDevelopment() ? 'always' : 'online',
   });
 
-  React.useEffect(() => {// cache world, sync lib
+  React.useEffect(() => {// cache world
     setCached([props.worldKey], state);
     return () => removeCached([props.worldKey]);
   }, []);
