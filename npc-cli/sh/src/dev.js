@@ -230,22 +230,41 @@ export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)
 }
 
 /**
- * @param {NPC.ClickOutput} input
- * @param {NPC.RunArg} ctxt
+ * ```sh
+ * # select rob whilst keeping track in ~/selected,
+ * # and unselecting previously tracked
+ * selectNpc npc:rob npcKeyPath:~/selected
+ * ```
+ * @param {NPC.RunArg} ct
  * @param {object} [opts]
+ * @param {string} opts.npcKey
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  */
-export function selectNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
+export function selectNpc({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', path: 'npcKeyPath' })) {
   const [npcKey] = api.get([opts.npcKeyPath]);
-  
-  const nextNpcKey = /** @type {string} */ (input.meta.npcKey); // assume
+
+  const nextNpcKey = opts.npcKey;
   api.set(opts.npcKeyPath, nextNpcKey);
-  const nextNpc = w.npc.get(nextNpcKey); // must
+  const nextNpc = w.npc.get(nextNpcKey);
   nextNpc.showSelector(true);
   
   if (npcKey !== nextNpcKey) {
-    w.n[npcKey]?.showSelector(false); // maybe
+    const prevNpc = w.n[npcKey];
+    prevNpc?.showSelector(false);
   }
+}
+
+/**
+ * ```sh
+ * click | selectNpcOnClick path:~/selected
+ * ```
+ * @param {NPC.ClickOutput} input
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ */
+export function selectNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
+  selectNpc(ct, { npcKey: /** @type {string} */ (input.meta.npcKey), ...opts });
 }
 
 /**

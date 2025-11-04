@@ -126,7 +126,7 @@
   - ❌ demoFollowViaFeedback also selects on long press
   - ℹ️ not so interesting but at least independent of "click world ui"
 
-- 🚧 selectNpcOnClick uses more generic selectNpc
+- ✅ selectNpcOnClick uses more generic selectNpc
 - 🚧 moveNpcOnClick uses more generic moveNpc
 - 🚧 lookActOnLong uses more generic lookOrDoNpc
 
