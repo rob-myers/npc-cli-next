@@ -105,8 +105,8 @@
   - ✅ slower azimuthal tween via damping factor in camera-controls.js
   - ✅ remove WASD controls: combination with camera rotation too complex
 
-- 🚧 fix zoomToCursor lapse while follow
-  - maybe HMR of w.view.ctrlOpts
+- ✅ fix zoomToCursor lapse while follow
+  - HMR of w.view.ctrlOpts
 
 - ✅ Manage can open "Feedback" tab
   - ✅ Feedback component has api in queryCache
@@ -117,14 +117,24 @@
   - ✅ can remove item
   - ✅ improve styling
 
-- 🚧 UI issue: "follow/unfollow via click" conflicts with "click path to navigate" e.g. `direct`
+- ✅ UI issue: "follow/unfollow via click" conflicts with "click path to navigate" e.g. `direct`
   - ✅ Feedback can mount in background
   - ✅ use Feedback instead which auto-opens
   - ✅ demoFollowViaFeedback
   - ✅ try demoSelectViaFeedback
-  - 🚧 Feedback supports long press
-  - 🚧 demoFollowViaFeedback also selects on long press
+  - ❌ Feedback supports long press
+  - ❌ demoFollowViaFeedback also selects on long press
   - ℹ️ not so interesting but at least independent of "click world ui"
+
+- 🚧 selectNpcOnClick uses more generic selectNpc
+- 🚧 moveNpcOnClick uses more generic moveNpc
+- 🚧 lookActOnLong uses more generic lookOrDoNpc
+
+- 🚧 Feedback supports generic UI i.e. can provide JSX
+  - e.g. can select npcKey, buttons: select, follow
+  - ✅ can use JSX in js files
+  - change demoFollowViaFeedback
+  - change demoSelectViaFeedback
 
 - handle `direct` using Feedback
   - stop, pause, continue

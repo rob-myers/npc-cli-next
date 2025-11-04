@@ -47,6 +47,7 @@ export const demoAddDecor = (ct) => {
 };
 
 /**
+ * 🚧 use new approach to Feedback
  * Click to follow or stop following.
  * ```sh
  * demoFollowViaFeedback
@@ -77,7 +78,7 @@ export async function demoFollowViaFeedback(ct) {
 }
 
 /**
- * 🚧 merge into `demoFollowViaFeedback`
+ * 🚧 use new approach to Feedback
  * ```sh
  * demoSelectViaFeedback path:selected
  * ```
@@ -88,7 +89,7 @@ export async function demoSelectViaFeedback(ct, opts = ct.api.jsArg(ct.args, { p
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
   
-  // 🚧 process must persist to use `ct` on resolve
+  // 🔔 process must persist to use `ct` on resolve
   await new Promise((_resolve, reject) => {
     /** @type {NPC.FeedbackItem<{ act: 'select'; npcKey: string }>} */
     const item = {
@@ -113,7 +114,6 @@ export async function demoSelectViaFeedback(ct, opts = ct.api.jsArg(ct.args, { p
   
     feedback.addItem(item);
 
-    // 🚧
     ct.api.handleStatus({
       cleanups() {
         reject(ct.api.getKillError());
