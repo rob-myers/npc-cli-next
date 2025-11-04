@@ -23,7 +23,7 @@ click meta.door | toggleOnDoor &
 
 preventMenuOnActOrFloor
 
-click --long | lookActOnLong path:selected &
+click --long | lookOrDoLong path:selected &
 
 w decor.showLabels true
 

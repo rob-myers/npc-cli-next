@@ -192,7 +192,7 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
  * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  */
-export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
+export async function lookOrDoLong(input, {api, args, w}, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
   const [npcKey] = api.get([opts.npcKeyPath]);
   const npc = w.n[npcKey];
   if (!npc) return;
@@ -204,19 +204,35 @@ export async function lookActOnLong(input, {api, args, w}, opts = api.jsArg(args
 }
 
 /**
+ * Move npc with key at `path` to `to`.
+ * ```sh
+ * moveNpc path:~/selected to:$( click 1 )
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {NPC.MoveOpts['to']} opts.to
+ * @param {string} opts.npcKeyPath Where we store the selected npc key
+ * @param {number} [opts.close] Max distance from navigable permitted
+ * @param {string[]} [opts.keys]
+ */
+export function moveNpc(ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
+  const [npcKey] = ct.api.get([opts.npcKeyPath]);
+  const npc = ct.w.n[npcKey];
+  if (npc) {
+    npc.run = opts.keys?.includes("shift") ?? false;
+    npc.move({ to: opts.to, close: opts.close ?? 0.5 }).catch(() => {});
+  }
+}
+
+/**
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  * @param {number} [opts.close] Max distance from navigable permitted
  */
-export function moveNpcOnClick(input, { api, args, w }, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
-  const [npcKey] = api.get([opts.npcKeyPath]);
-  const npc = w.n[npcKey];
-  if (npc) {
-    npc.run = input.keys?.includes("shift") ?? false;
-    npc.move({ to: input, close: opts.close ?? 0.5 }).catch(() => {});
-  }
+export function moveNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
+  moveNpc(ct, { ...opts, to: input });
 }
 
 /**
@@ -387,7 +403,7 @@ export const meta = {
   map: {
     handleContextMenu,
     handleLoggerLinks,
-    lookActOnLong,
+    lookOrDoLong,
     moveNpcOnClick,
     selectNpcOnClick,
     toggleOnDoor,

@@ -127,8 +127,8 @@
   - ℹ️ not so interesting but at least independent of "click world ui"
 
 - ✅ selectNpcOnClick uses more generic selectNpc
-- 🚧 moveNpcOnClick uses more generic moveNpc
-- 🚧 lookActOnLong uses more generic lookOrDoNpc
+- ✅ moveNpcOnClick uses more generic moveNpc
+- 🚧 lookOrDoLong uses more generic lookOrDoNpc
 
 - 🚧 Feedback supports generic UI i.e. can provide JSX
   - e.g. can select npcKey, buttons: select, follow
