@@ -132,10 +132,12 @@
 
 - 🚧 Feedback supports generic UI i.e. can provide JSX
   - e.g. select npcKey with two buttons: select, follow
-  - ✅ can use JSX in js files
-  - need to be hot-reloadable
-  - change demoFollowViaFeedback
-  - change demoSelectViaFeedback
+  - ❌ use JSX in sh js files
+  - needs to be hot-reloadable
+  - strategy: provide keyed-config (select/button/checkbox) and listen for events
+
+- change demoFollowViaFeedback
+- change demoSelectViaFeedback
 
 - handle `direct` using Feedback
   - stop, pause, continue
