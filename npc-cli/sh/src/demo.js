@@ -58,23 +58,29 @@ export async function demoFollowViaFeedback(ct) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
-  /** @type {NPC.FeedbackItem<{ act: 'follow'; npcKey: string } | { act: 'unfollow' }>} */
+  /** @type {NPC.FeedbackUi} */
   const item = {
     key: 'demo-follow',
-    label: 'follow',
-    links: [
-      { label: 'stop', value: { act: 'unfollow' } },
-      ...Object.keys(w.n).map(npcKey => ({ label: npcKey, value: { act: /** @type {const} */ ('follow'), npcKey} })),
+    label: '😃',
+    inputs: [
+      { type: 'select', key: 'npcKey', options: () => Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
+      { type: 'button', key: 'follow' },
+      { type: 'button', key: 'select' },
     ],
-    resolve(value) {
-      switch (value.act) {
-        case 'unfollow': w.e.stopFollowing(); break;
-        case 'follow': w.e.followNpc(value.npcKey); break;
+    onEvent(event, state) {
+      if (event.type === 'click-button') {
+        const npcKey = state.npcKey;
+        switch (event.uiKey) {
+          case 'follow':
+            if (w.e.isFollowingNpc(npcKey)) w.e.stopFollowing();
+            else w.e.followNpc(npcKey);
+            break;
+        }
       }
     },
   };
 
-  feedback.addItem(item);
+  feedback.addUi(item);
 }
 
 /**
@@ -91,33 +97,36 @@ export async function demoSelectViaFeedback(ct, opts = ct.api.jsArg(ct.args, { p
   
   // 🔔 process must persist to use `ct` on resolve
   await new Promise((_resolve, reject) => {
-    /** @type {NPC.FeedbackItem<{ act: 'select'; npcKey: string }>} */
+    /** @type {NPC.FeedbackUi} */
     const item = {
       key: 'demo-select',
       label: 'select',
-      links: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: { act: /** @type {const} */ ('select'), npcKey} })),
-      resolve(value) {
-        const [prevNpcKey] = ct.api.get([opts.npcKeyPath]);
-
-        const nextNpcKey = value.npcKey;
-        ct.api.set(opts.npcKeyPath, nextNpcKey);
-        const nextNpc = w.npc.get(nextNpcKey);
-        nextNpc.showSelector(true);
-
-        if (prevNpcKey !== nextNpcKey) {
-          w.n[prevNpcKey]?.showSelector(false);
-        }
-
-        w.view.ensureRender();
+      inputs: [
+        // ...
+      ],
+      onEvent(event, state) {
+        // ...
+        // const [prevNpcKey] = ct.api.get([opts.npcKeyPath]);
+  
+        // const nextNpcKey = value.npcKey;
+        // ct.api.set(opts.npcKeyPath, nextNpcKey);
+        // const nextNpc = w.npc.get(nextNpcKey);
+        // nextNpc.showSelector(true);
+  
+        // if (prevNpcKey !== nextNpcKey) {
+        //   w.n[prevNpcKey]?.showSelector(false);
+        // }
+  
+        // w.view.ensureRender();
       },
     };
   
-    feedback.addItem(item);
+    feedback.addUi(item);
 
     ct.api.handleStatus({
       cleanups() {
         reject(ct.api.getKillError());
-        feedback.removeItem(item.key);
+        feedback.removeUi(item.key);
       },
     })
   });
@@ -146,16 +155,14 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   
-  feedback.addItem({
+  feedback.addUi({
     key: opts.key ?? 'demo-feedback-0',
     label: 'Make a choice...',
-    links: [
-      { label: 'foo', value: 'foo' },
-      { label: 'bar', value: 'bar' },
+    inputs: [
+      // ...
     ],
-    resolve(reply) {
-      alert(reply);
-      return false; // remove on click
+    onEvent(event, state) {
+      alert(`${event}: ${JSON.stringify(state)}`);
     },
   });
 }

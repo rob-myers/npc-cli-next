@@ -546,13 +546,35 @@ declare namespace NPC {
     datum: Datum;
   }
 
-  interface FeedbackItem<T> {
+  type FeedbackUi = {
     key: string;
     label?: string;
-    resolve(value: T): void | boolean;
-    links: FeedbackItemLink<T>[];
+    
+    inputs: FeedbackUiInput[];
+    onEvent: (event: FeedbackUiEvent, state: { [uiKey: string]: string }) => void;
   }
+  
+  type FeedbackUiInput = { key: string } & (
+    | { type: 'button'; label?: string; } // label defaults to key
+    | { type: 'text'; default?: string; placeholder?: string; }
+    | { type: 'number'; default?: number; min?: number; max?: number; step?: number; }
+    | { type: 'checkbox'; default?: boolean; }
+    | {
+        type: 'select';
+        options:
+          | { label: string; value: string; }[]
+          | (() => { label: string; value: string; }[])
+        ;
+        default?: string;
+      }
+  );
 
+  type FeedbackUiEvent = (
+    | { type: 'click-button'; uiKey: string; }
+    | { type: 'change-select'; uiKey: string; value: string; }
+  );
+
+  // 🚧 remove
   /** Distinct links should have distinct label */
   interface FeedbackItemLink<T> {
     label: string;
