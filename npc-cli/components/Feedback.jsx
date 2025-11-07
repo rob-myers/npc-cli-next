@@ -35,20 +35,42 @@ export default function Feedback(props) {
     <div
       className="font-sans text-sm p-2 bg-slate-900 flex flex-col v-full overflow-auto"
       onChange={e => {
-        const { dataset: { uiKey, inputKey }, value } = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
+        const el = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
+        const { dataset: { uiKey, inputKey }, value } = el;
         if (!(typeof uiKey === 'string' && typeof inputKey === 'string')) {
           return;
         }
-        // 🚧 send event
+
+        // 🚧 abstract
+        const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
+        const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
+        const uiState = ui.inputs.reduce((agg, input) => {
+          const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
+          if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
+          return agg;
+        }, /** @type {Record<string, string>} */ ({}));
+
         console.log('onChange', { uiKey, inputKey }, value);
+        ui.onEvent({ type: 'change-select', uiKey, value }, uiState);
       }}
       onClick={e => {
-        const { dataset: { uiKey, inputKey }, nodeName } = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
+        const el = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
+        const { dataset: { uiKey, inputKey }, nodeName } = el;
         if (!(nodeName === 'BUTTON' && typeof uiKey === 'string' && typeof inputKey === 'string')) {
           return;
         }
-        // 🚧 send event
+
+        // 🚧 abstract
+        const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
+        const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
+        const uiState = ui.inputs.reduce((agg, input) => {
+          const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
+          if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
+          return agg;
+        }, /** @type {Record<string, string>} */ ({}));
+
         console.log('onClick', { uiKey, inputKey });
+        ui.onEvent({ type: 'click-button', uiKey, inputKey }, uiState);
       }}
     >
       {state.uis.map((ui) => (

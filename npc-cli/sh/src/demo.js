@@ -68,12 +68,16 @@ export async function demoFollowViaFeedback(ct) {
       { type: 'button', key: 'select' },
     ],
     onEvent(event, state) {
+      console.log({event, state})
       if (event.type === 'click-button') {
         const npcKey = state.npcKey;
-        switch (event.uiKey) {
+        switch (event.inputKey) {
           case 'follow':
             if (w.e.isFollowingNpc(npcKey)) w.e.stopFollowing();
             else w.e.followNpc(npcKey);
+            break;
+          case 'select':
+            // 🚧
             break;
         }
       }

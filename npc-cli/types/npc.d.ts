@@ -551,7 +551,7 @@ declare namespace NPC {
     label?: string;
     
     inputs: FeedbackUiInput[];
-    onEvent: (event: FeedbackUiEvent, state: { [uiKey: string]: string }) => void;
+    onEvent: (event: FeedbackUiEvent, uiState: { [uiKey: string]: string }) => void;
   }
   
   type FeedbackUiInput = { key: string } & (
@@ -570,7 +570,7 @@ declare namespace NPC {
   );
 
   type FeedbackUiEvent = (
-    | { type: 'click-button'; uiKey: string; }
+    | { type: 'click-button'; uiKey: string; inputKey: string; }
     | { type: 'change-select'; uiKey: string; value: string; }
   );
 

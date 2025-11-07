@@ -135,6 +135,7 @@
   - ❌ use JSX in sh js files
   - 🚧 needs to be hot-reloadable
   - 🚧 strategy: provide keyed-config (select/button/checkbox) and listen for events
+  - labelled checkbox
 
 - change demoFollowViaFeedback
 - change demoSelectViaFeedback
