@@ -32,7 +32,25 @@ export default function Feedback(props) {
   const update = useUpdate();
 
   return (
-    <div className="font-sans text-sm p-2 bg-slate-900 flex flex-col v-full overflow-auto">
+    <div
+      className="font-sans text-sm p-2 bg-slate-900 flex flex-col v-full overflow-auto"
+      onChange={e => {
+        const { dataset: { uiKey, inputKey }, value } = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
+        if (!(typeof uiKey === 'string' && typeof inputKey === 'string')) {
+          return;
+        }
+        // 🚧 send event
+        console.log('onChange', { uiKey, inputKey }, value);
+      }}
+      onClick={e => {
+        const { dataset: { uiKey, inputKey }, nodeName } = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
+        if (!(nodeName === 'BUTTON' && typeof uiKey === 'string' && typeof inputKey === 'string')) {
+          return;
+        }
+        // 🚧 send event
+        console.log('onClick', { uiKey, inputKey });
+      }}
+    >
       {state.uis.map((ui) => (
         <div key={ui.key} className="flex gap-2 flex-wrap items-center p-1 border-t-2 last:border-b-2 border-gray-800">
           {ui.label && <div>{ui.label}</div>}
