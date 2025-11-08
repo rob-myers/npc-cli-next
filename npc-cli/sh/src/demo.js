@@ -68,53 +68,39 @@ export async function demoFollowViaFeedback(ct) {
       toInput: {
         // 🚧 update select on spawn/remove
         npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
-        follow: { type: 'checkbox', key: 'follow' }, // 🚧 badge
-        select: { type: 'checkbox', key: 'select' }, // 🚧 badge
+        follow: { type: 'checkbox', key: 'follow' },
+        select: { type: 'checkbox', key: 'select' },
         refresh: { type: 'button', key: 'refresh' },
       },
-      // 🚧 move to subscribe which is unsub on process end
-      // onEvent(event, state) {
-      //   console.log({event, state})
-      //   if (event.type === 'click-button') {
-      //     const npcKey = state.npcKey;
-      //     switch (event.inputKey) {
-      //       case 'follow':
-      //         if (w.e.isFollowingNpc(npcKey)) w.e.stopFollowing();
-      //         else w.e.followNpc(npcKey);
-      //         break;
-      //       case 'select':
-      //         // 🚧
-      //         break;
-      //     }
-      //   }
-      // },
     });
 
     const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
       if (!prevUi || !ui) return; // first or last
       const changed = Object.values(ui.toInput).filter((input) => input !== prevUi.toInput[input.key]);
+      
+      // 🚧 other processes should use this npcKey e.g. for move
+      const npcKey = /** @type {string} */ (ui.toInput.npcKey.value);
+      const follow = /** @type {boolean} */ (ui.toInput.follow.value);
+      const select = /** @type {boolean} */ (ui.toInput.select.value);
 
       for (const input of changed) {
         switch (input.type) {
           case 'button': {
-            const npcKey = /** @type {string} */ (ui.toInput.npcKey.value);
-            const follow = /** @type {boolean} */ (ui.toInput.follow.value);
-            const select = /** @type {boolean} */ (ui.toInput.select.value);
-            
-            console.log('clicked refresh', { npcKey, follow, select });
+            // console.log('clicked refresh', { npcKey, follow, select });
+            if (!follow) w.e.stopFollowing();
+            else w.e.followNpc(npcKey);
 
-            // switch (event.inputKey) {
-            //   case 'follow':
-            //     if (w.e.isFollowingNpc(npcKey)) w.e.stopFollowing();
-            //     else w.e.followNpc(npcKey);
-            //     break;
-            //   case 'select':
-            //     // 🚧
-            //     break;
-            // }
+            if (select) {
+              const prevNpcKey = /** @type {string} */ (prevUi.toInput.npcKey.value);
+              w.n[prevNpcKey]?.showSelector(false);
+              w.n[npcKey]?.showSelector(true);
+            } else {
+              w.n[npcKey]?.showSelector(false);
+            }
             break;
           }
           case 'checkbox': {
+            console.log('toggled', { npcKey, follow, select });
             break;
           }
           default: {
