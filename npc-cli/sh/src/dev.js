@@ -362,9 +362,8 @@ export function selectNpc({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKe
  */
 export async function selectNpc2(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey', write: 'writeKey' })) {
 
-  // 🚧 maybe env.FEEDBACK
   // 🚧 maybe await ui too
-  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const feedback = await core.connectFeedback(ct, { key: ct.home.FEEDBACK_KEY });
   const [uiKey, inputKey] = opts.writeKey.split('.');
   const ui = feedback.getUi(uiKey);
   const npcKeyInput = ui?.input[inputKey];

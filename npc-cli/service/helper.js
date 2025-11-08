@@ -1,9 +1,8 @@
-import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY, tabsComponentsMeta} from "./const";
+import { defaultClassKey, fromDecorImgKey, fromSymbolKey, npcClassToMeta, TABS_API_KEY, tabsComponentsMeta, defaultTerminalEnv } from "./const";
 import { fromEntries, keys, mapValues } from "./generic";
 import * as shProfiles from '../sh/profiles';
 // 🔔 store tabsComponents meta as a const instead
 // import * as tabsComponents from '../tabs/components';
-
 /**
  * - Use object so can merge into `w.lib`.
  * - Used in web workers.
@@ -11,8 +10,8 @@ import * as shProfiles from '../sh/profiles';
  */
 export const helper = {
 
-  /** 🚧 by classKey */
   defaults: {
+    /** 🚧 by classKey */
     height: npcClassToMeta[defaultClassKey].modelHeight * npcClassToMeta[defaultClassKey].scale,
     radius: npcClassToMeta[defaultClassKey].modelRadius * npcClassToMeta[defaultClassKey].scale * 0.6,
     runSpeed: npcClassToMeta[defaultClassKey].runSpeed * npcClassToMeta[defaultClassKey].scale * 0.9,
@@ -68,7 +67,7 @@ export const helper = {
           { type: "component", class: "World", filepath: "world-0", props: { worldKey: "world-0", mapKey: "small-map-1" }, weight: 2 },
         ],
         [
-          { type: "terminal", filepath: "tty-0", profileKey, env: { WORLD_KEY: "world-0", TABS_API_KEY }, weight: 1 },
+          { type: "terminal", filepath: "tty-0", profileKey, env: defaultTerminalEnv, weight: 1 },
           { type: "component", class: "Manage", filepath: "manage-0", props: {}, weight: 1 },
         ],
       ];

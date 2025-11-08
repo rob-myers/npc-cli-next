@@ -531,3 +531,9 @@ export const tabsComponentsMeta = {
   Manage: { key: 'Manage', tabPrefix: 'manage' },
   Feedback: { key: 'Feedback', tabPrefix: 'feedback' },
 };
+
+export const defaultTerminalEnv = /** @type {const} */ ({
+  FEEDBACK_KEY: 'feedback-0',
+  TABS_API_KEY,
+  WORLD_KEY: 'world-0',
+});
