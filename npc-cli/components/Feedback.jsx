@@ -30,10 +30,10 @@ export default function Feedback(props) {
   const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    ui: /** @type {State['ui']} */ (create(immer(subscribeWithSelector((get, set) => ({ lookup: {} }))))),
-    add(item) {
+    ui: /** @type {State['ui']} */ (create(immer(subscribeWithSelector((_get, _set) => ({ lookup: {} }))))),
+    add(ui) {
       state.ui.setState(draft => {
-        draft.lookup[item.key] = feedbackUiDefToUi(item);
+        draft.lookup[ui.key] = feedbackUiDefToUi(ui, ui.key);
       });
     },
     getInputByEvent(e) {
@@ -43,17 +43,16 @@ export default function Feedback(props) {
         return null;
       }
       const ui = state.ui.getState().lookup[uiKey];
-      const input = ui.inputs.find(input => input.key === inputKey) ?? null;
-      return input === null ? null : { uiKey, input };
+      return ui.inputs.find(input => input.key === inputKey) ?? null;
     },
-    remove(itemKey) {
-      state.ui.setState(draft => { delete draft.lookup[itemKey]; });
+    remove(uiKey) {
+      state.ui.setState(draft => { delete draft.lookup[uiKey]; });
     },
     update,
   }), { ignore: { ui: true } });
 
-  console.log('Feedback', state.ui.getState());
   useStore(state.ui); // subscribe to ui changes
+  // console.log('Feedback');
   
   React.useEffect(() => {
     setCached([props.tabKey], state);
@@ -64,20 +63,24 @@ export default function Feedback(props) {
     <div
       className="font-sans text-sm text-white p-2 bg-slate-900 flex flex-col v-full overflow-auto"
 
-      // 🚧
       onChange={e => {
-        const result = state.getInputByEvent(e.nativeEvent);
-        if (!result) return;
-        console.log('onChange', result);
-        // 🚧 update store
-      }}
-      onClick={e => {
-        const result = state.getInputByEvent(e.nativeEvent);
-        const input = result?.input;
-        if (!result || input?.type !== 'button') return;
+        const input = state.getInputByEvent(e.nativeEvent);
+        if (input === null || !isOnChangeInput(input)) return;
         
         state.ui.setState(draft => {
-          const ui = draft.lookup[result.uiKey];
+          const ui = draft.lookup[input.uiKey];
+          const index = ui.inputs.findIndex(x => x.key === input.key);
+          /** @type {NPC.FeedbackOnChangeInput} */ (
+            ui.inputs[index]
+          ).value = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target).value;
+        });
+      }}
+      onClick={e => {
+        const input = state.getInputByEvent(e.nativeEvent);
+        if (input?.type !== 'button') return;
+        
+        state.ui.setState(draft => {
+          const ui = draft.lookup[input.uiKey];
           const index = ui.inputs.findIndex(x => x.key === input.key);
           /** @type {typeof input} */ (ui.inputs[index]).value = Date.now();
         });
@@ -102,7 +105,7 @@ export default function Feedback(props) {
  * @typedef State
  * @property {UiStore} ui
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
- * @property {((e: Event) => null | { uiKey: string; input: NPC.FeedbackInput; })} getInputByEvent
+ * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
  * @property {((uiKey: string) => void)} remove
  * @property {(() => void)} update
  */
@@ -146,6 +149,7 @@ function FeedbackUiInput({ ui, input }) {
           data-input-key={input.key}
           defaultValue={input.default}
           value={input.value}
+          onChange={emptyOnChange}
         />
       );
     case 'select':
@@ -173,6 +177,7 @@ function FeedbackUiInput({ ui, input }) {
           placeholder={input.placeholder}
           defaultValue={input.default}
           value={input.value}
+          onChange={emptyOnChange}
         />
       );
   default:
@@ -182,24 +187,25 @@ function FeedbackUiInput({ ui, input }) {
 
 /**
  * @param {NPC.FeedbackUiDef} uiDef 
+ * @param {string} uiKey 
  * @returns {NPC.FeedbackUi}
  */
-function feedbackUiDefToUi(uiDef) {
+function feedbackUiDefToUi(uiDef, uiKey) {
   const { inputs, ...rest } = uiDef;
   return {
     ...rest,
     inputs: inputs.flatMap(input => {
       switch (input.type) {
         case 'button':
-          return {...input, value: 0 }; // last clicked epochMs
+          return {...input, uiKey, value: 0 }; // last clicked epochMs
         case 'checkbox':
-          return {...input, value: Boolean(input.default) };
+          return {...input, uiKey, value: Boolean(input.default) };
         case 'number':
-          return {...input, value: Number(input.default) };
+          return {...input, uiKey, value: Number(input.default) };
         case 'select':
-          return {...input, value: input.default ?? input.options[0]?.value ?? '' };
+          return {...input, uiKey, value: input.default ?? input.options[0]?.value ?? '' };
         case 'text':
-          return {...input, value: input.default ?? '' };
+          return {...input, uiKey, value: input.default ?? '' };
         default:
           warn(`Ignored feedback input with unknown type: ${jsStringify(input)}`);
           return [];
@@ -209,3 +215,18 @@ function feedbackUiDefToUi(uiDef) {
 }
 
 function emptyOnChange() {}
+
+/**
+ * @param {NPC.FeedbackInput} input
+ * @returns {input is NPC.FeedbackOnChangeInput}
+ */
+function isOnChangeInput(input) {
+  return input.type in fromChangeInputType;
+}
+
+const fromChangeInputType = /** @type {const} */ ({
+  checkbox: true,
+  number: true,
+  select: true,
+  text: true,
+});

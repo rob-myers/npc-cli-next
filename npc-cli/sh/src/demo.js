@@ -70,6 +70,9 @@ export async function demoFollowViaFeedback(ct) {
           case 'button':
             console.log('clicked button', input);
             break;
+            default:
+            console.log('changed', input);
+            break;
         }
       }
     });

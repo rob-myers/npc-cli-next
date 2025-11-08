@@ -557,9 +557,11 @@ declare namespace NPC {
     inputs: FeedbackInput[];
   }
   
-  type FeedbackInputDef = Pretty<DistributiveOmit<FeedbackInput, 'value'>>;
+  type FeedbackInputDef = Pretty<DistributiveOmit<FeedbackInput, 'uiKey' | 'value'>>;
 
-  type FeedbackInput = { key: string; } & (
+  type FeedbackOnChangeInput = Extract<NPC.FeedbackInput, { type: 'checkbox' | 'number' | 'select' | 'text' }>;
+  
+  type FeedbackInput = { key: string; uiKey: string; } & (
     | {
         type: 'button';
         label?: string;
