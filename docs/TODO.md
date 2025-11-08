@@ -132,7 +132,7 @@
 
 - 🚧 Feedback supports generic UI i.e. can provide JSX
   - ❌ use JSX in sh js files
-  - 🚧 represent all uis as single zustand store
+  - 🚧 represent all uis as single zustand store i.e. driven by store
   - checkbox ui looks like badge
   - hot-reloadable
   - provide keyed-config, can listen for events, can set state

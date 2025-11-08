@@ -11,10 +11,9 @@ import useUpdate from "../hooks/use-update";
  * @typedef {import("zustand/middleware/immer").WithImmer<T>} WithImmer<T>
  */
 /**
- * @typedef {{ [uiKey: string]: UiState }} UiLookup
+ * @typedef {{ [uiKey: string]: NPC.FeedbackUi }} UiLookup
  */
 /**
- * @typedef {{ key: string; }} UiState
  * @typedef {import("zustand").UseBoundStore<WithImmer<import("zustand").StoreApi<UiLookup>>>} UiStore
  */
 
@@ -25,13 +24,17 @@ import useUpdate from "../hooks/use-update";
 export default function Feedback(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     ui: /** @type {State['ui']} */ (create(immer((get, set) => ({})))),
-    uis: [], // 🚧 remove
-    addUi(item) {// 🚧 migrate
-      state.uis = [...state.uis.filter(other => other.key !== item.key), feedbackUiDefToUi(item)];
+    addUi(item) {
+      state.ui.setState({ [item.key]: feedbackUiDefToUi(item) });
       update();
     },
-    removeUi(itemKey) {// 🚧 migrate
-      state.uis = state.uis.filter(other => other.key !== itemKey);
+    removeUi(itemKey) {
+      state.ui.setState(draft => {
+        delete draft[itemKey];
+      });
+      state.ui.setState(draft => {
+        delete draft[itemKey];
+      });
       update();
     },
   }));
@@ -46,6 +49,8 @@ export default function Feedback(props) {
   return (
     <div
       className="font-sans text-sm p-2 bg-slate-900 flex flex-col v-full overflow-auto"
+
+      // 🚧
       onChange={e => {
         const el = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
         const { dataset: { uiKey, inputKey }, value } = el;
@@ -53,17 +58,17 @@ export default function Feedback(props) {
           return;
         }
 
-        // 🚧 abstract
-        const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
-        const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
-        const uiState = ui.inputs.reduce((agg, input) => {
-          const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
-          if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
-          return agg;
-        }, /** @type {Record<string, string>} */ ({}));
+        // 🚧 migrate
+        // const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
+        // const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
+        // const uiState = ui.inputs.reduce((agg, input) => {
+        //   const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
+        //   if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
+        //   return agg;
+        // }, /** @type {Record<string, string>} */ ({}));
 
         console.log('onChange', { uiKey, inputKey }, value);
-        ui.onEvent({ type: 'change-select', uiKey, value }, uiState);
+        // ui.onEvent({ type: 'change-select', uiKey, value }, uiState);
       }}
       onClick={e => {
         const el = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
@@ -72,20 +77,20 @@ export default function Feedback(props) {
           return;
         }
 
-        // 🚧 abstract
-        const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
-        const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
-        const uiState = ui.inputs.reduce((agg, input) => {
-          const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
-          if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
-          return agg;
-        }, /** @type {Record<string, string>} */ ({}));
+        // 🚧 migrate
+        // const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
+        // const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
+        // const uiState = ui.inputs.reduce((agg, input) => {
+        //   const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
+        //   if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
+        //   return agg;
+        // }, /** @type {Record<string, string>} */ ({}));
 
         console.log('onClick', { uiKey, inputKey });
-        ui.onEvent({ type: 'click-button', uiKey, inputKey }, uiState);
+        // ui.onEvent({ type: 'click-button', uiKey, inputKey }, uiState);
       }}
     >
-      {state.uis.map((ui) => (
+      {Object.values(state.ui.getState()).map((ui) => (
         <div key={ui.key} className="flex gap-2 flex-wrap items-center p-1 border-t-2 last:border-b-2 border-gray-800">
           {ui.label && <div>{ui.label}</div>}
           {ui.inputs.map((input) => (
@@ -101,7 +106,6 @@ export default function Feedback(props) {
 /**
  * @typedef State
  * @property {UiStore} ui
- * @property {NPC.FeedbackUi[]} uis
  * @property {(<T>(ui: NPC.FeedbackUiDef) => void)} addUi
  * @property {((uiKey: string) => void)} removeUi
  */
