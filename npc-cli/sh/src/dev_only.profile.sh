@@ -1,6 +1,6 @@
 source /etc/{util,core}.sh
 source /etc/{util,core,dev}.js.sh
-import demoFollowViaFeedback from demo
+import demoFollowSelectFeedback from demo
 
 awaitWorld
 
@@ -34,4 +34,4 @@ ptags always; events | handleLoggerLinks &
 
 follow npc:rob
 
-demoFollowViaFeedback &
+demoFollowSelectFeedback &

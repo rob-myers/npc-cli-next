@@ -49,11 +49,11 @@ export const demoAddDecor = (ct) => {
 /**
  * Follow/unfollow and select/unselect
  * ```sh
- * demoFollowViaFeedback
+ * demoFollowSelectFeedback
  * ```
  * @param {NPC.RunArg} ct
  */
-export async function demoFollowViaFeedback(ct) {
+export async function demoFollowSelectFeedback(ct) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
@@ -107,56 +107,6 @@ export async function demoFollowViaFeedback(ct) {
       },
     });
   });
-}
-
-/**
- * 🚧 use new approach to Feedback
- * ```sh
- * demoSelectViaFeedback path:selected
- * ```
- * @param {NPC.RunArg} ct
- * @param {{ npcKeyPath: string }} [opts]
- */
-export async function demoSelectViaFeedback(ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
-  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
-  const { w } = ct;
-  
-  // 🔔 process must persist to use `ct` on resolve
-  await new Promise((_resolve, reject) => {
-    /** @type {NPC.FeedbackUiDef} */
-    const item = {
-      key: 'demo-select',
-      label: 'select',
-      toInput: {
-        // ...
-      },
-      // onEvent(event, state) {
-      //   // ...
-      //   // const [prevNpcKey] = ct.api.get([opts.npcKeyPath]);
-  
-      //   // const nextNpcKey = value.npcKey;
-      //   // ct.api.set(opts.npcKeyPath, nextNpcKey);
-      //   // const nextNpc = w.npc.get(nextNpcKey);
-      //   // nextNpc.showSelector(true);
-  
-      //   // if (prevNpcKey !== nextNpcKey) {
-      //   //   w.n[prevNpcKey]?.showSelector(false);
-      //   // }
-  
-      //   // w.view.ensureRender();
-      // },
-    };
-  
-    feedback.add(item);
-
-    ct.api.handleStatus({
-      cleanups() {
-        reject(ct.api.getKillError());
-        feedback.remove(item.key);
-      },
-    })
-  });
-
 }
 
 /**

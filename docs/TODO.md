@@ -120,10 +120,10 @@
 - ✅ UI issue: "follow/unfollow via click" conflicts with "click path to navigate" e.g. `direct`
   - ✅ Feedback can mount in background
   - ✅ use Feedback instead which auto-opens
-  - ✅ demoFollowViaFeedback
+  - ✅ demoFollowSelectFeedback
   - ✅ try demoSelectViaFeedback
   - ❌ Feedback supports long press
-  - ❌ demoFollowViaFeedback also selects on long press
+  - ❌ demoFollowSelectFeedback also selects on long press
   - ℹ️ not so interesting but at least independent of "click world ui"
 
 - ✅ selectNpcOnClick uses more generic selectNpc
@@ -141,9 +141,9 @@
     - demo code can be refreshed (as per usual for processes)
   - ✅ initial ui allows changing selectNpcKey via `<select>` and toggling follow/select via `<input type="checkbox">`
 
+- ✅ remove demoSelectViaFeedback
 - 🚧 migrate `~/selected` to follow ui
-- change demoFollowViaFeedback
-- change demoSelectViaFeedback
+- change demoFollowSelectFeedback
 
 - handle `direct` using Feedback
   - stop, pause, continue
