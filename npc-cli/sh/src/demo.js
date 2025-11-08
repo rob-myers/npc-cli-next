@@ -61,41 +61,17 @@ export async function demoFollowViaFeedback(ct) {
   await new Promise((_resolve, reject) => {
     const uiKey = 'demo-follow';
 
-    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
-      if (!prevUi || !ui) return; // first or last
-      const changed = ui.inputs.filter((input, index) => input !== prevUi.inputs[index]);
-
-      for (const input of changed) {
-        switch (input.type) {
-          case 'button':
-            console.log('clicked button', input);
-            break;
-            default:
-            console.log('changed', input);
-            break;
-        }
-      }
-    });
-
-    ct.api.handleStatus({
-      cleanups() {
-        reject(ct.api.getKillError());
-        unsub();
-        feedback.remove(uiKey); // always remove?
-      },
-    });
-
     feedback.add({
       key: uiKey,
       icon: '@',
       label: 'npc follow/select',
-      inputs: [
+      toInput: {
         // 🚧 update select on spawn/remove
-        { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
-        { type: 'checkbox', key: 'follow' }, // 🚧 badge
-        { type: 'checkbox', key: 'select' }, // 🚧 badge
-        { type: 'button', key: 'refresh' },
-      ],
+        npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
+        follow: { type: 'checkbox', key: 'follow' }, // 🚧 badge
+        select: { type: 'checkbox', key: 'select' }, // 🚧 badge
+        refresh: { type: 'button', key: 'refresh' },
+      },
       // 🚧 move to subscribe which is unsub on process end
       // onEvent(event, state) {
       //   console.log({event, state})
@@ -112,6 +88,49 @@ export async function demoFollowViaFeedback(ct) {
       //     }
       //   }
       // },
+    });
+
+    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
+      if (!prevUi || !ui) return; // first or last
+      const changed = Object.values(ui.toInput).filter((input) => input !== prevUi.toInput[input.key]);
+
+      for (const input of changed) {
+        switch (input.type) {
+          case 'button': {
+            const npcKey = /** @type {string} */ (ui.toInput.npcKey.value);
+            const follow = /** @type {boolean} */ (ui.toInput.follow.value);
+            const select = /** @type {boolean} */ (ui.toInput.select.value);
+            
+            console.log('clicked refresh', { npcKey, follow, select });
+
+            // switch (event.inputKey) {
+            //   case 'follow':
+            //     if (w.e.isFollowingNpc(npcKey)) w.e.stopFollowing();
+            //     else w.e.followNpc(npcKey);
+            //     break;
+            //   case 'select':
+            //     // 🚧
+            //     break;
+            // }
+            break;
+          }
+          case 'checkbox': {
+            break;
+          }
+          default: {
+            console.log('changed', input);
+            break;
+          }
+        }
+      }
+    });
+
+    ct.api.handleStatus({
+      cleanups() {
+        reject(ct.api.getKillError());
+        unsub();
+        feedback.remove(uiKey); // always remove?
+      },
     });
   });
 }
@@ -130,13 +149,13 @@ export async function demoSelectViaFeedback(ct, opts = ct.api.jsArg(ct.args, { p
   
   // 🔔 process must persist to use `ct` on resolve
   await new Promise((_resolve, reject) => {
-    /** @type {NPC.FeedbackUi} */
+    /** @type {NPC.FeedbackUiDef} */
     const item = {
       key: 'demo-select',
       label: 'select',
-      inputs: [
+      toInput: {
         // ...
-      ],
+      },
       // onEvent(event, state) {
       //   // ...
       //   // const [prevNpcKey] = ct.api.get([opts.npcKeyPath]);
@@ -191,9 +210,9 @@ export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
   feedback.add({
     key: opts.key ?? 'demo-feedback-0',
     label: 'Make a choice...',
-    inputs: [
+    toInput: {
       // ...
-    ],
+    },
     // onEvent(event, state) {
     //   alert(`${event}: ${JSON.stringify(state)}`);
     // },

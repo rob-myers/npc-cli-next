@@ -44,7 +44,7 @@ export default function Feedback(props) {
         return null;
       }
       const ui = state.ui.getState().lookup[uiKey];
-      return ui.inputs.find(input => input.key === inputKey) ?? null;
+      return ui.toInput[inputKey] ?? null;
     },
     remove(uiKey) {
       state.ui.setState(draft => { delete draft.lookup[uiKey]; });
@@ -70,16 +70,16 @@ export default function Feedback(props) {
         
         state.ui.setState(draft => {
           const ui = draft.lookup[input.uiKey];
-          const index = ui.inputs.findIndex(x => x.key === input.key);
+          const nextInput = ui.toInput[input.key];
 
           switch (input.type) {
             case 'checkbox':
-              (ui.inputs[index]).value = /** @type {HTMLInputElement} */ (e.target).checked;
+              nextInput.value = /** @type {HTMLInputElement} */ (e.target).checked;
               break;
             case 'number':
             case 'select':
             case 'text':
-              (ui.inputs[index]).value = (/** @type {HTMLInputElement} */ (e.target)).value;
+              nextInput.value = (/** @type {HTMLInputElement} */ (e.target)).value;
               break;
           }
         });
@@ -90,8 +90,7 @@ export default function Feedback(props) {
         
         state.ui.setState(draft => {
           const ui = draft.lookup[input.uiKey];
-          const index = ui.inputs.findIndex(x => x.key === input.key);
-          /** @type {typeof input} */ (ui.inputs[index]).value = Date.now();
+          ui.toInput[input.key].value = Date.now();
         });
       }}
     >
@@ -100,7 +99,7 @@ export default function Feedback(props) {
           <div className="cursor-default" title={ui.label}>
             {ui.icon ?? ui.label}
           </div>
-          {ui.inputs.map((input) => (
+          {Object.values(ui.toInput).map((input) => (
             <FeedbackUiInput key={input.key} ui={ui} input={input} />
           ))}
         </div>
@@ -202,10 +201,11 @@ function FeedbackUiInput({ ui, input }) {
  * @returns {NPC.FeedbackUi}
  */
 function feedbackUiDefToUi(uiDef, uiKey) {
-  const { inputs, ...rest } = uiDef;
+  const { toInput, ...rest } = uiDef;
+
   return {
     ...rest,
-    inputs: inputs.flatMap(input => {
+    toInput: Object.fromEntries(Object.values(toInput).flatMap(input => {
       switch (input.type) {
         case 'button':
           return {...input, uiKey, value: 0 }; // last clicked epochMs
@@ -221,7 +221,7 @@ function feedbackUiDefToUi(uiDef, uiKey) {
           warn(`Ignored feedback input with unknown type: ${jsStringify(input)}`);
           return [];
       }
-    }),
+    }).map(input => [input.key, input])),
   };
 }
 
