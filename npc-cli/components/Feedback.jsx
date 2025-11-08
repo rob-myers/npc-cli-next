@@ -47,6 +47,9 @@ export default function Feedback(props) {
       const ui = state.ui.getState().lookup[uiKey];
       return ui.input[inputKey] ?? null;
     },
+    getUi(uiKey) {
+      return state.ui.getState().lookup[uiKey];
+    },
     remove(uiKey) {
       state.ui.setState(draft => { delete draft.lookup[uiKey]; });
     },
@@ -115,6 +118,7 @@ export default function Feedback(props) {
  * @property {UiStore} ui
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
  * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
+ * @property {((uiKey: string) => null | NPC.FeedbackUi )} getUi
  * @property {((uiKey: string) => void)} remove
  * @property {(() => void)} update
  */

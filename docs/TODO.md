@@ -144,6 +144,10 @@
 - ✅ remove demoSelectViaFeedback
 - ✅ change to demoFollowSelectFeedback
 - 🚧 migrate `~/selected` to follow ui
+  - ✅ selectNpc2
+  - 🚧 moveNpc2
+  - 🚧 lookOrDo2
+  - 🚧 replace all
 
 - handle `direct` using Feedback
   - stop, pause, continue

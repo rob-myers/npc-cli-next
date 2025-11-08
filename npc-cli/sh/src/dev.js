@@ -352,6 +352,42 @@ export function selectNpc({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKe
 
 /**
  * ```sh
+ * # select/unselect rob, keeping track in base.npcKey
+ * selectNpc2 npc:rob write:base.npcKey
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {string} opts.npcKey
+ * @param {`${string}.${string}`} opts.writeKey Where we store the selected npc key
+ */
+export async function selectNpc2(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey', write: 'writeKey' })) {
+
+  // 🚧 maybe env.FEEDBACK
+  // 🚧 maybe await ui too
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const [uiKey, inputKey] = opts.writeKey.split('.');
+  const ui = feedback.getUi(uiKey);
+  const npcKeyInput = ui?.input[inputKey];
+  if (!npcKeyInput) return;
+
+  const prevNpcKey = /** @type {string} */ (npcKeyInput.value);
+  feedback.ui.setState(draft => {
+    draft.lookup[uiKey].input[inputKey].value = opts.npcKey;
+  });
+
+  const nextNpc = ct.w.npc.get(opts.npcKey);
+  nextNpc.showSelector(true);
+
+  if (prevNpcKey !== opts.npcKey) {
+    const prevNpc = ct.w.n[prevNpcKey];
+    prevNpc?.showSelector(false);
+  }
+
+  // 🚧 render whilst paused
+}
+
+/**
+ * ```sh
  * click | selectNpcOnClick path:~/selected
  * ```
  * @param {NPC.ClickOutput} input
