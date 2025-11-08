@@ -1,20 +1,30 @@
 import React from "react";
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 import { removeCached, setCached } from "../service/query-client";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 
-// 🚧 send events instead of invoking resolve
+/**
+ * @template T
+ * @typedef {import("zustand/middleware/immer").WithImmer<T>} WithImmer<T>
+*/
+/**
+ * @typedef {{}} UiState
+ * @typedef {import("zustand").UseBoundStore<WithImmer<import("zustand").StoreApi<UiState>>>} UiStore
+ */
 
 /**
  * Provide feedback to a process.
- * - remove on resolve return `false`
  * @param {Props} props
  */
 export default function Feedback(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
+    ui: create(immer((get, set) => ({
+      // 🚧
+    }))),
     uis: [],
     addUi(item) {
-      // remove extant items containing key
       state.uis = [...state.uis.filter(other => other.key !== item.key), item];
       update();
     },
@@ -88,6 +98,7 @@ export default function Feedback(props) {
 
 /**
  * @typedef State
+ * @property {UiStore} ui
  * @property {NPC.FeedbackUi[]} uis
  * @property {(<T>(ui: NPC.FeedbackUi) => void)} addUi
  * @property {((uiKey: string) => void)} removeUi

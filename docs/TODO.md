@@ -131,11 +131,13 @@
 - ✅ lookOrDoLong uses more generic lookOrDoNpc
 
 - 🚧 Feedback supports generic UI i.e. can provide JSX
-  - e.g. select npcKey with two buttons: select, follow
   - ❌ use JSX in sh js files
-  - 🚧 needs to be hot-reloadable
-  - 🚧 strategy: provide keyed-config (select/button/checkbox) and listen for events
-  - labelled checkbox
+  - 🚧 represent all uis as single zustand store
+  - checkbox ui looks like badge
+  - hot-reloadable
+  - provide keyed-config, can listen for events, can set state
+  - initial ui allows changing selectNpcKey via `<select>` and toggling follow/select via `<input type="checkbox">`
+  - migrate `~/selected` to selectNpcKey
 
 - change demoFollowViaFeedback
 - change demoSelectViaFeedback
