@@ -49,7 +49,7 @@ export default function useStateRef(initializer, opts = {}) {
         // console.log({ key: k })
         const key = /** @type {keyof State} */ (k);
 
-        if (typeof v === "function") {
+        if (typeof v === "function" && opts.ignore?.[key] !== true) {
           state[key] = v;
         } else if (!(k in state)) {
           // console.log({ setting: [k, v] })
@@ -81,8 +81,8 @@ import.meta.webpackHot?.decline();
 /**
  * @template {Record<string, any>} State
  * @typedef Options
- * @property {Partial<Record<keyof State, boolean>>} [reset]
- * Reset field on HMR?
+ * @property {Partial<Record<keyof State, boolean>>} [ignore] Ignore function field(s) on HMR?
+ * @property {Partial<Record<keyof State, boolean>>} [reset] Reset field(s) on HMR?
  * @property {any[]} [deps]
  */
 
