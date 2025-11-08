@@ -142,8 +142,8 @@
   - ✅ initial ui allows changing selectNpcKey via `<select>` and toggling follow/select via `<input type="checkbox">`
 
 - ✅ remove demoSelectViaFeedback
+- ✅ change to demoFollowSelectFeedback
 - 🚧 migrate `~/selected` to follow ui
-- change demoFollowSelectFeedback
 
 - handle `direct` using Feedback
   - stop, pause, continue

@@ -2,6 +2,7 @@ import React from "react";
 import clsx from 'clsx';
 import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { devtools } from "zustand/middleware";
 import { subscribeWithSelector } from "zustand/middleware";
 import { jsStringify, warn } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
@@ -31,7 +32,7 @@ export default function Feedback(props) {
   const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
-    ui: /** @type {State['ui']} */ (create(immer(subscribeWithSelector((_get, _set) => ({ lookup: {} }))))),
+    ui: /** @type {State['ui']} */ (create(devtools(immer(subscribeWithSelector((_get, _set) => ({ lookup: {} }))), { name: props.tabKey }))),
     add(ui) {
       state.ui.setState(draft => {
         draft.lookup[ui.key] = feedbackUiDefToUi(ui, ui.key);

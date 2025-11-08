@@ -2,7 +2,7 @@ import { Mat, Vect } from "@/npc-cli/geom";
 import { helper } from "@/npc-cli/service/helper";
 import { geom } from '@/npc-cli/service/geom';
 import { ansi } from "../const";
-import { move } from "./core";
+import * as core from "./core";
 
 /**
  * @param {NPC.RunArg} ct
@@ -84,7 +84,7 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
   while (true) {
     try {
       const arriveAnim = opts['...'] === true ? false : undefined;
-      await move(ct, { npcKey: opts.npcKey, to, arriveAnim });
+      await core.move(ct, { npcKey: opts.npcKey, to, arriveAnim });
       break;
     } catch (e) {
       if (!helper.isStopReason(e) || !('rest' in e)) {
@@ -106,6 +106,70 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
       await ct.api.awaitResume();
     }
   }
+}
+
+/**
+ * Follow/unfollow and select/unselect
+ * ```sh
+ * followSelectFeedback uiKey:base-ui
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ uiKey?: string; }} [opts]
+ */
+export async function followSelectFeedback(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const { w } = ct;
+
+  await new Promise((_resolve, reject) => {
+    const uiKey = opts.uiKey ?? 'follow-select-ui';
+
+    feedback.add({
+      key: uiKey,
+      icon: '@',
+      label: 'npc follow/select',
+      toInput: {
+        // 🚧 update select on spawn/remove
+        npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
+        follow: { type: 'checkbox', key: 'follow' },
+        select: { type: 'checkbox', key: 'select' },
+        refresh: { type: 'button', key: 'refresh' },
+      },
+    });
+
+    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
+      if (!prevUi || !ui) return; // first or last
+      const changed = Object.values(ui.toInput).filter((input) => input !== prevUi.toInput[input.key]);
+      
+      if (changed.length === 0) return;
+
+      // 🚧 other processes should use this npcKey e.g. for move
+      const npcKey = /** @type {string} */ (ui.toInput.npcKey.value);
+      const follow = /** @type {boolean} */ (ui.toInput.follow.value);
+      const select = /** @type {boolean} */ (ui.toInput.select.value);
+
+      // changing select, the two toggles, or pressing refresh have same effect,
+      // i.e. determined by { npcKey, follow, select }
+
+      if (follow === true) w.e.followNpc(npcKey);
+      else w.e.stopFollowing();
+
+      if (select === true) {
+        const prevNpcKey = /** @type {string} */ (prevUi.toInput.npcKey.value);
+        w.n[prevNpcKey]?.showSelector(false);
+        w.n[npcKey]?.showSelector(true);
+      } else {
+        w.n[npcKey]?.showSelector(false);
+      }
+    });
+
+    ct.api.handleStatus({
+      cleanups() {
+        reject(ct.api.getKillError());
+        unsub();
+        feedback.remove(uiKey); // always remove?
+      },
+    });
+  });
 }
 
 /**

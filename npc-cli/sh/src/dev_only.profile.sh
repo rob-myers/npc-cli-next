@@ -1,6 +1,5 @@
 source /etc/{util,core}.sh
 source /etc/{util,core,dev}.js.sh
-import demoFollowSelectFeedback from demo
 
 awaitWorld
 
@@ -12,6 +11,9 @@ spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math
 
 npc rob showSelector true
 selected="rob"
+
+# provides npcKey for other processes
+followSelectFeedback key:base-ui &
 
 ptags always; click meta.npcKey |
   selectNpcOnClick path:selected &
@@ -33,5 +35,3 @@ ptags always; events | handleContextMenu &
 ptags always; events | handleLoggerLinks & 
 
 follow npc:rob
-
-demoFollowSelectFeedback &
