@@ -160,6 +160,8 @@ export async function followSelectFeedback(ct, opts = ct.api.jsArg(ct.args, { ke
       } else {
         w.n[npcKey]?.showSelector(false);
       }
+
+      w.view.ensureRender();
     });
 
     ct.api.handleStatus({
@@ -395,15 +397,16 @@ export async function selectNpc2(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey
     draft.lookup[uiKey].input[inputKey].value = opts.npcKey;
   });
 
-  const nextNpc = ct.w.npc.get(opts.npcKey);
+  const { w } = ct;
+  const nextNpc = w.npc.get(opts.npcKey);
   nextNpc.showSelector(true);
 
   if (prevNpcKey !== opts.npcKey) {
-    const prevNpc = ct.w.n[prevNpcKey];
+    const prevNpc = w.n[prevNpcKey];
     prevNpc?.showSelector(false);
   }
 
-  // 🚧 render whilst paused
+  w.view.ensureRender();
 }
 
 /**
