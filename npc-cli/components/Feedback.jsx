@@ -63,7 +63,7 @@ export default function Feedback(props) {
   
   return (
     <div
-      className="font-sans text-sm text-white p-2 bg-slate-900 flex flex-col v-full overflow-auto"
+      className="font-sans text-sm text-white bg-slate-900 flex flex-col v-full overflow-auto"
 
       onChange={e => {
         const input = state.getInputByEvent(e.nativeEvent);
@@ -96,7 +96,7 @@ export default function Feedback(props) {
       }}
     >
       {Object.values(state.ui.getState().lookup).map((ui) => (
-        <div key={ui.key} className="flex gap-2 flex-wrap items-center p-1 border-t-2 last:border-b-2 border-gray-800">
+        <div key={ui.key} className="flex gap-2 flex-wrap items-center p-2 border-t-2 last:border-b-2 border-gray-800">
           <div className="cursor-default" title={ui.label}>
             {ui.icon ?? ui.label}
           </div>
