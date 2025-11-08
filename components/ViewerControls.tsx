@@ -268,7 +268,7 @@ const viewerControlsCss = css`
     align-items: center;
     
     font-size: 0.9rem;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: monospace;
     color: #dda;
     letter-spacing: 2px;
     pointer-events: none;
