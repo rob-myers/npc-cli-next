@@ -26,3 +26,8 @@ type CamelToKebab<S extends string> = S extends `${infer T}${infer U}`
 type ClassSansMethods<T> = Pick<T, {
   [Key in keyof T]: T[Key] extends (..._: any) => any ? never : Key
 }[keyof T]>;
+
+/**
+ * node_modules/@emotion/react/dist/declarations/src/types.d.ts
+ */
+type DistributiveOmit<T, U> = T extends any ? Pick<T, Exclude<keyof T, U>> : never;
