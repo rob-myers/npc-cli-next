@@ -79,7 +79,7 @@ export default function Feedback(props) {
             case 'number':
             case 'select':
             case 'text':
-              (ui.inputs[index]).value = Number((/** @type {HTMLInputElement} */ (e.target)).value);
+              (ui.inputs[index]).value = (/** @type {HTMLInputElement} */ (e.target)).value;
               break;
           }
         });
@@ -97,7 +97,7 @@ export default function Feedback(props) {
     >
       {Object.values(state.ui.getState().lookup).map((ui) => (
         <div key={ui.key} className="flex gap-2 flex-wrap items-center p-1 border-t-2 last:border-b-2 border-gray-800">
-          <div className="cursor-pointer" title={ui.label}>
+          <div className="cursor-default" title={ui.label}>
             {ui.icon ?? ui.label}
           </div>
           {ui.inputs.map((input) => (
@@ -132,7 +132,7 @@ function FeedbackUiInput({ ui, input }) {
       return (
         <button
           className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
-          data-ui-key={ui.key}
+          data-ui-key={input.uiKey}
           data-input-key={input.key}
         >
           {input.label ?? input.key}
@@ -145,7 +145,7 @@ function FeedbackUiInput({ ui, input }) {
             {input.label ?? input.key}
           </div>
           <input type="checkbox" className="hidden"
-            data-ui-key={ui.key}
+            data-ui-key={input.uiKey}
             data-input-key={input.key}
             defaultChecked={input.default}
             checked={input.value}
@@ -156,7 +156,7 @@ function FeedbackUiInput({ ui, input }) {
     case 'number':
       return (
         <input type="number"
-          data-ui-key={ui.key}
+          data-ui-key={input.uiKey}
           data-input-key={input.key}
           defaultValue={input.default}
           value={input.value}
@@ -167,7 +167,7 @@ function FeedbackUiInput({ ui, input }) {
       return (
         <select
           className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
-          data-ui-key={ui.key}
+          data-ui-key={input.uiKey}
           data-input-key={input.key}
           value={input.value}
           onChange={emptyOnChange}
@@ -182,7 +182,7 @@ function FeedbackUiInput({ ui, input }) {
     case 'text':
       return (
         <input
-          data-ui-key={ui.key}
+          data-ui-key={input.uiKey}
           data-input-key={input.key}
           type="text"
           placeholder={input.placeholder}
