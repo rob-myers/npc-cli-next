@@ -94,7 +94,7 @@ export async function demoFollowViaFeedback(ct) {
         { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
         { type: 'checkbox', key: 'follow' }, // 🚧 badge
         { type: 'checkbox', key: 'select' }, // 🚧 badge
-        { type: 'button', key: '!' },
+        { type: 'button', key: 'refresh' },
       ],
       // 🚧 move to subscribe which is unsub on process end
       // onEvent(event, state) {

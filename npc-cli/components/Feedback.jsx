@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from 'clsx';
 import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { subscribeWithSelector } from "zustand/middleware";
@@ -70,9 +71,17 @@ export default function Feedback(props) {
         state.ui.setState(draft => {
           const ui = draft.lookup[input.uiKey];
           const index = ui.inputs.findIndex(x => x.key === input.key);
-          /** @type {NPC.FeedbackOnChangeInput} */ (
-            ui.inputs[index]
-          ).value = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target).value;
+
+          switch (input.type) {
+            case 'checkbox':
+              (ui.inputs[index]).value = /** @type {HTMLInputElement} */ (e.target).checked;
+              break;
+            case 'number':
+            case 'select':
+            case 'text':
+              (ui.inputs[index]).value = Number((/** @type {HTMLInputElement} */ (e.target)).value);
+              break;
+          }
         });
       }}
       onClick={e => {
@@ -131,9 +140,11 @@ function FeedbackUiInput({ ui, input }) {
       );
     case 'checkbox':
       return (
-        <label className="flex gap-1">
-          <div>{input.label ?? input.key}</div>
-          <input type="checkbox"
+        <label className="select-none flex gap-1">
+          <div className={clsx("select-none font-normal hover:brightness-150 cursor-pointer rounded-sm px-1 border-2 border-gray-800", input.value ? 'text-white' : 'text-white/50')}>
+            {input.label ?? input.key}
+          </div>
+          <input type="checkbox" className="hidden"
             data-ui-key={ui.key}
             data-input-key={input.key}
             defaultChecked={input.default}
