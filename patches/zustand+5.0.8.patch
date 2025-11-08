@@ -1,0 +1,13 @@
+diff --git a/node_modules/zustand/esm/middleware/immer.d.mts b/node_modules/zustand/esm/middleware/immer.d.mts
+index dd10e1f..d1b287b 100644
+--- a/node_modules/zustand/esm/middleware/immer.d.mts
++++ b/node_modules/zustand/esm/middleware/immer.d.mts
+@@ -15,7 +15,7 @@ type SkipTwo<T> = T extends {
+     length: 0 | 1;
+ } ? [] : T extends [unknown, unknown, ...infer A] ? A : T extends [unknown, unknown?, ...infer A] ? A : T extends [unknown?, unknown?, ...infer A] ? A : never;
+ type SetStateType<T extends unknown[]> = Exclude<T[0], (...args: any[]) => any>;
+-type WithImmer<S> = Write<S, StoreImmer<S>>;
++export type WithImmer<S> = Write<S, StoreImmer<S>>;
+ type StoreImmer<S> = S extends {
+     setState: infer SetState;
+ } ? SetState extends {
