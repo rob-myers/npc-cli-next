@@ -58,12 +58,13 @@ export async function demoFollowViaFeedback(ct) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
-  /** @type {NPC.FeedbackUi} */
+  /** @type {NPC.FeedbackUiDef} */
   const item = {
     key: 'demo-follow',
     label: '😃',
     inputs: [
-      { type: 'select', key: 'npcKey', options: () => Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
+      // 🚧 update select on spawn/remove
+      { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
       { type: 'button', key: 'follow' },
       { type: 'button', key: 'select' },
     ],

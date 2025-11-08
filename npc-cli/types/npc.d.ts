@@ -546,26 +546,30 @@ declare namespace NPC {
     datum: Datum;
   }
 
+  type FeedbackUiDef = Omit<FeedbackUi, 'inputs'> & {
+    inputs: FeedbackInputDef[];
+  };
+  
   type FeedbackUi = {
     key: string;
     label?: string;
-    
-    inputs: FeedbackUiInput[];
+    inputs: FeedbackInput[];
+    // 🚧 remove i.e. subscribe to zustand instead
     onEvent: (event: FeedbackUiEvent, uiState: { [uiKey: string]: string }) => void;
   }
   
-  type FeedbackUiInput = { key: string } & (
-    | { type: 'button'; label?: string; } // label defaults to key
-    | { type: 'text'; default?: string; placeholder?: string; }
-    | { type: 'number'; default?: number; min?: number; max?: number; step?: number; }
-    | { type: 'checkbox'; default?: boolean; }
+  type FeedbackInputDef = Pretty<DistributiveOmit<FeedbackInput, 'value'>>;
+
+  type FeedbackInput = { key: string; } & (
+    | { type: 'button'; label?: string; value: null; } // label defaults to key
+    | { type: 'text'; default?: string; placeholder?: string; value: string; }
+    | { type: 'number'; default?: number; min?: number; max?: number; step?: number; value: number; }
+    | { type: 'checkbox'; label?: string; default?: boolean; value: boolean; } // label defaults to key
     | {
         type: 'select';
-        options:
-          | { label: string; value: string; }[]
-          | (() => { label: string; value: string; }[])
-        ;
+        options: { label: string; value: string; }[];
         default?: string;
+        value: string;
       }
   );
 
@@ -573,14 +577,6 @@ declare namespace NPC {
     | { type: 'click-button'; uiKey: string; inputKey: string; }
     | { type: 'change-select'; uiKey: string; value: string; }
   );
-
-  // 🚧 remove
-  /** Distinct links should have distinct label */
-  interface FeedbackItemLink<T> {
-    label: string;
-    value: T;
-  }
-
 
   //#endregion
 }

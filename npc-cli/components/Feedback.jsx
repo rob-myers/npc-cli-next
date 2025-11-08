@@ -1,6 +1,7 @@
 import React from "react";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { jsStringify, warn } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
@@ -8,10 +9,13 @@ import useUpdate from "../hooks/use-update";
 /**
  * @template T
  * @typedef {import("zustand/middleware/immer").WithImmer<T>} WithImmer<T>
-*/
+ */
 /**
- * @typedef {{}} UiState
- * @typedef {import("zustand").UseBoundStore<WithImmer<import("zustand").StoreApi<UiState>>>} UiStore
+ * @typedef {{ [uiKey: string]: UiState }} UiLookup
+ */
+/**
+ * @typedef {{ key: string; }} UiState
+ * @typedef {import("zustand").UseBoundStore<WithImmer<import("zustand").StoreApi<UiLookup>>>} UiStore
  */
 
 /**
@@ -20,15 +24,13 @@ import useUpdate from "../hooks/use-update";
  */
 export default function Feedback(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
-    ui: create(immer((get, set) => ({
-      // 🚧
-    }))),
-    uis: [],
-    addUi(item) {
-      state.uis = [...state.uis.filter(other => other.key !== item.key), item];
+    ui: /** @type {State['ui']} */ (create(immer((get, set) => ({})))),
+    uis: [], // 🚧 remove
+    addUi(item) {// 🚧 migrate
+      state.uis = [...state.uis.filter(other => other.key !== item.key), feedbackUiDefToUi(item)];
       update();
     },
-    removeUi(itemKey) {
+    removeUi(itemKey) {// 🚧 migrate
       state.uis = state.uis.filter(other => other.key !== itemKey);
       update();
     },
@@ -100,7 +102,7 @@ export default function Feedback(props) {
  * @typedef State
  * @property {UiStore} ui
  * @property {NPC.FeedbackUi[]} uis
- * @property {(<T>(ui: NPC.FeedbackUi) => void)} addUi
+ * @property {(<T>(ui: NPC.FeedbackUiDef) => void)} addUi
  * @property {((uiKey: string) => void)} removeUi
  */
 
@@ -109,7 +111,7 @@ export default function Feedback(props) {
  */
 
 /**
- * @param {{ ui: NPC.FeedbackUi; input: NPC.FeedbackUiInput }} props
+ * @param {{ ui: NPC.FeedbackUi; input: NPC.FeedbackInput }} props
  */
 function FeedbackUiInput({ ui, input }) {
   switch (input.type) {
@@ -146,8 +148,7 @@ function FeedbackUiInput({ ui, input }) {
           data-ui-key={ui.key}
           data-input-key={input.key}
         >
-          {/* invoke-per-render provides a kind of "live" functionality */}
-          {(typeof input.options === 'function' ? input.options() : []).map((option) => (
+          {input.options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -167,4 +168,34 @@ function FeedbackUiInput({ ui, input }) {
   default:
     return null;
   }
+}
+
+/**
+ * @param {NPC.FeedbackUiDef} uiDef 
+ * @returns {NPC.FeedbackUi}
+ */
+function feedbackUiDefToUi(uiDef) {
+  const { key, label, onEvent, inputs } = uiDef;
+  return {
+    key,
+    label,
+    inputs: inputs.flatMap(input => {
+      switch (input.type) {
+        case 'button':
+          return {...input, value: null };
+        case 'checkbox':
+          return {...input, value: Boolean(input.default) };
+        case 'number':
+          return {...input, value: Number(input.default) };
+        case 'select':
+          return {...input, value: input.default ?? input.options[0]?.value ?? '' };
+        case 'text':
+          return {...input, value: input.default ?? '' };
+        default:
+          warn(`Ignored feedback input with unknown type: ${jsStringify(input)}`);
+          return [];
+      }
+    }),
+    onEvent,
+  };
 }
