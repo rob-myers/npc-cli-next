@@ -130,16 +130,18 @@
 - ✅ moveNpcOnClick uses more generic moveNpc
 - ✅ lookOrDoLong uses more generic lookOrDoNpc
 
-- 🚧 Feedback supports generic UI i.e. can provide JSX
+- ✅ Feedback supports generic UI i.e. can provide JSX
   - ❌ use JSX in sh js files
   - ✅ represent all uis as single zustand store i.e. driven by store
   - ✅ some demo function subscribes to store
   - ✅ checkbox ui looks like badge
-  - hot-reloadable
-  - provide keyed-config, can listen for events, can set state
-  - initial ui allows changing selectNpcKey via `<select>` and toggling follow/select via `<input type="checkbox">`
-  - migrate `~/selected` to selectNpcKey
+  - ✅ provide keyed-config, can listen for events, can set state
+  - ✅ hot-reloadable
+    - ui is hot-reloadable
+    - demo code can be refreshed (as per usual for processes)
+  - ✅ initial ui allows changing selectNpcKey via `<select>` and toggling follow/select via `<input type="checkbox">`
 
+- 🚧 migrate `~/selected` to follow ui
 - change demoFollowViaFeedback
 - change demoSelectViaFeedback
 

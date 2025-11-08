@@ -47,8 +47,7 @@ export const demoAddDecor = (ct) => {
 };
 
 /**
- * 🚧 use new approach to Feedback
- * Click to follow or stop following.
+ * Follow/unfollow and select/unselect
  * ```sh
  * demoFollowViaFeedback
  * ```
@@ -78,36 +77,25 @@ export async function demoFollowViaFeedback(ct) {
       if (!prevUi || !ui) return; // first or last
       const changed = Object.values(ui.toInput).filter((input) => input !== prevUi.toInput[input.key]);
       
+      if (changed.length === 0) return;
+
       // 🚧 other processes should use this npcKey e.g. for move
       const npcKey = /** @type {string} */ (ui.toInput.npcKey.value);
       const follow = /** @type {boolean} */ (ui.toInput.follow.value);
       const select = /** @type {boolean} */ (ui.toInput.select.value);
 
-      for (const input of changed) {
-        switch (input.type) {
-          case 'button': {
-            // console.log('clicked refresh', { npcKey, follow, select });
-            if (!follow) w.e.stopFollowing();
-            else w.e.followNpc(npcKey);
+      // changing select, the two toggles, or pressing refresh have same effect,
+      // i.e. determined by { npcKey, follow, select }
 
-            if (select) {
-              const prevNpcKey = /** @type {string} */ (prevUi.toInput.npcKey.value);
-              w.n[prevNpcKey]?.showSelector(false);
-              w.n[npcKey]?.showSelector(true);
-            } else {
-              w.n[npcKey]?.showSelector(false);
-            }
-            break;
-          }
-          case 'checkbox': {
-            console.log('toggled', { npcKey, follow, select });
-            break;
-          }
-          default: {
-            console.log('changed', input);
-            break;
-          }
-        }
+      if (follow === true) w.e.followNpc(npcKey);
+      else w.e.stopFollowing();
+
+      if (select === true) {
+        const prevNpcKey = /** @type {string} */ (prevUi.toInput.npcKey.value);
+        w.n[prevNpcKey]?.showSelector(false);
+        w.n[npcKey]?.showSelector(true);
+      } else {
+        w.n[npcKey]?.showSelector(false);
       }
     });
 
