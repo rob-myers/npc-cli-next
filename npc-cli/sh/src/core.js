@@ -232,20 +232,48 @@ export async function* follow({ api, args, w }, opts = api.jsArg(args, { npc: 'n
 
 /**
  * @param {NPC.RunArg} ct
- * @param {{ key: `feedback-${number}` }} [opts]
+ * @param {object} [opts]
+ * @param {`feedback-${number}`} [opts.key]
  */
 export async function connectFeedback(ct, opts = ct.api.jsArg(ct.args)) {
+  const feedbackKey = opts.key ?? ct.home.FEEDBACK_KEY ?? 'feedback-0';
 
   /** @type {import('@/npc-cli/components/Feedback').State | undefined} */
   let feedback;
   
-  while ((feedback = ct.api.getCached(opts.key)) === undefined) {
+  while ((feedback = ct.api.getCached(feedbackKey)) === undefined) {
     // ensure feedback tab (possibly in background)
-    ct.tabs.openTab({ type: 'component', class: 'Feedback', filepath: opts.key, props: {} }, { selectTab: false });
+    ct.tabs.openTab({ type: 'component', class: 'Feedback', filepath: feedbackKey, props: {} }, { selectTab: false });
     await ct.api.sleep(0.3); // wait for mount (hacky)
   }
 
   return feedback;
+}
+
+/**
+ * @param {NPC.RunArg} ct
+ * @param {object} opts
+ * @param {string} opts.uiKey
+ * @param {`feedback-${number}`} [opts.key]
+ * @returns {Promise<{ feedback: import('@/npc-cli/components/Feedback').State; ui: NPC.FeedbackUi }>}
+ */
+export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args)) {
+  const feedback = await connectFeedback(ct, { key: opts.key });
+
+  return await new Promise((resolve, reject) => {
+    const unsub = feedback.ui.subscribe(x => x, (next) => {
+      const ui = next.lookup[opts.uiKey];
+      if (ui) {
+        resolve({ feedback, ui });
+      }
+    }, { fireImmediately: true });
+    ct.api.handleStatus({
+      cleanups() {
+        unsub();
+        reject(ct.api.getKillError());
+      },
+    });
+  });
 }
 
 /**

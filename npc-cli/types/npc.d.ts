@@ -540,7 +540,9 @@ declare namespace NPC {
     tabs: TabsState['api'];
 
     etc: ProcessContext['etc'];
-    home: ProcessContext['home'];
+    home: ProcessContext['home'] & {
+      FEEDBACK_KEY?: `feedback-${number}`;
+    };
     lib: ProcessContext['lib'];
 
     datum: Datum;

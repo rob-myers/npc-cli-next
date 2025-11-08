@@ -305,6 +305,30 @@ export function moveNpc(ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })
 }
 
 /**
+ * Move npc with key at `readKey` to `to`.
+ * ```sh
+ * moveNpc to:$( click 1 ) read:base.npcKey
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {NPC.MoveOpts['to']} opts.to
+ * @param {string} opts.readKey Where the selected npc key is read from
+ * @param {number} [opts.close] Max distance from navigable permitted
+ * @param {string[]} [opts.keys]
+ */
+export function moveNpc2(ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
+
+  // 🚧 connect to feedback tab AND specific ui
+
+  // const [npcKey] = ct.api.get([opts.npcKeyPath]);
+  // const npc = ct.w.n[npcKey];
+  // if (npc) {
+  //   npc.run = opts.keys?.includes("shift") ?? false;
+  //   npc.move({ to: opts.to, close: opts.close ?? 0.5 }).catch(() => {});
+  // }
+}
+
+/**
  * @param {MaybeMeta<NPC.GroundPoint> & { keys?: string[] }} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
@@ -361,13 +385,10 @@ export function selectNpc({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKe
  * @param {`${string}.${string}`} opts.writeKey Where we store the selected npc key
  */
 export async function selectNpc2(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey', write: 'writeKey' })) {
-
-  // 🚧 maybe await ui too
-  const feedback = await core.connectFeedback(ct, { key: ct.home.FEEDBACK_KEY });
   const [uiKey, inputKey] = opts.writeKey.split('.');
-  const ui = feedback.getUi(uiKey);
-  const npcKeyInput = ui?.input[inputKey];
-  if (!npcKeyInput) return;
+  const { feedback, ui } = await core.connectFeedbackUi(ct, { uiKey });
+  const npcKeyInput = ui.input[inputKey];
+  if (!npcKeyInput) throw Error(`ui ${uiKey} has no input ${inputKey}`);
 
   const prevNpcKey = /** @type {string} */ (npcKeyInput.value);
   feedback.ui.setState(draft => {
