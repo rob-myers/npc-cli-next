@@ -11,3 +11,16 @@ index dd10e1f..d1b287b 100644
  type StoreImmer<S> = S extends {
      setState: infer SetState;
  } ? SetState extends {
+diff --git a/node_modules/zustand/esm/middleware/subscribeWithSelector.d.mts b/node_modules/zustand/esm/middleware/subscribeWithSelector.d.mts
+index afe0f1e..8bf57a2 100644
+--- a/node_modules/zustand/esm/middleware/subscribeWithSelector.d.mts
++++ b/node_modules/zustand/esm/middleware/subscribeWithSelector.d.mts
+@@ -4,7 +4,7 @@ type SubscribeWithSelector = <T, Mps extends [StoreMutatorIdentifier, unknown][]
+     ['zustand/subscribeWithSelector', never]
+ ], Mcs>) => StateCreator<T, Mps, [['zustand/subscribeWithSelector', never], ...Mcs]>;
+ type Write<T, U> = Omit<T, keyof U> & U;
+-type WithSelectorSubscribe<S> = S extends {
++export type WithSelectorSubscribe<S> = S extends {
+     getState: () => infer T;
+ } ? Write<S, StoreSubscribeWithSelector<T>> : never;
+ declare module '../vanilla.mjs' {
