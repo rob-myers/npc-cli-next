@@ -1,5 +1,5 @@
 import React from "react";
-import { create } from "zustand";
+import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { jsStringify, warn } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
@@ -12,8 +12,6 @@ import useUpdate from "../hooks/use-update";
  */
 /**
  * @typedef {{ [uiKey: string]: NPC.FeedbackUi }} UiLookup
- */
-/**
  * @typedef {import("zustand").UseBoundStore<WithImmer<import("zustand").StoreApi<UiLookup>>>} UiStore
  */
 
@@ -22,22 +20,21 @@ import useUpdate from "../hooks/use-update";
  * @param {Props} props
  */
 export default function Feedback(props) {
+
   const state = useStateRef(/** @returns {State} */ () => ({
     ui: /** @type {State['ui']} */ (create(immer((get, set) => ({})))),
     addUi(item) {
       state.ui.setState({ [item.key]: feedbackUiDefToUi(item) });
-      update();
     },
     removeUi(itemKey) {
       state.ui.setState(draft => {
         delete draft[itemKey];
       });
-      state.ui.setState(draft => {
-        delete draft[itemKey];
-      });
-      update();
     },
-  }));
+  }), { ignore: { ui: true } });
+
+  console.log('Feedback', state.ui);
+  useStore(state.ui); // subscribe to ui changes
   
   React.useEffect(() => {
     setCached([props.tabKey], state);
@@ -135,6 +132,7 @@ function FeedbackUiInput({ ui, input }) {
           data-ui-key={ui.key}
           data-input-key={input.key}
           defaultChecked={input.default}
+          checked={input.value}
         />
       );
     case 'number':
@@ -143,6 +141,7 @@ function FeedbackUiInput({ ui, input }) {
           data-ui-key={ui.key}
           data-input-key={input.key}
           defaultValue={input.default}
+          value={input.value}
         />
       );
     case 'select':
@@ -151,6 +150,7 @@ function FeedbackUiInput({ ui, input }) {
           className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
           data-ui-key={ui.key}
           data-input-key={input.key}
+          value={input.value}
         >
           {input.options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -167,6 +167,7 @@ function FeedbackUiInput({ ui, input }) {
           type="text"
           placeholder={input.placeholder}
           defaultValue={input.default}
+          value={input.value}
         />
       );
   default:
