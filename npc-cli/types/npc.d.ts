@@ -546,15 +546,16 @@ declare namespace NPC {
     datum: Datum;
   }
 
-  type FeedbackUiDef = Omit<FeedbackUi, 'toInput'> & {
-    toInput: Record<string, FeedbackInputDef>;
+  type FeedbackUiDef = Omit<FeedbackUi, 'input'> & {
+    input: Record<string, FeedbackInputDef>;
   };
   
   type FeedbackUi = {
     key: string;
     label?: string;
     icon?: React.ReactNode;
-    toInput: Record<string, FeedbackInput>;
+    /** Lookup */
+    input: Record<string, FeedbackInput>;
   }
   
   type FeedbackInputDef = Pretty<DistributiveOmit<FeedbackInput, 'uiKey' | 'value'>>;

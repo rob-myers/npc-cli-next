@@ -111,7 +111,7 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
 /**
  * Follow/unfollow and select/unselect
  * ```sh
- * followSelectFeedback uiKey:base-ui
+ * followSelectFeedback key:base
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ uiKey?: string; }} [opts]
@@ -127,7 +127,7 @@ export async function followSelectFeedback(ct, opts = ct.api.jsArg(ct.args, { ke
       key: uiKey,
       icon: '@',
       label: 'npc follow/select',
-      toInput: {
+      input: {
         // 🚧 update select on spawn/remove
         npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
         follow: { type: 'checkbox', key: 'follow' },
@@ -138,14 +138,14 @@ export async function followSelectFeedback(ct, opts = ct.api.jsArg(ct.args, { ke
 
     const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
       if (!prevUi || !ui) return; // first or last
-      const changed = Object.values(ui.toInput).filter((input) => input !== prevUi.toInput[input.key]);
+      const changed = Object.values(ui.input).filter((input) => input !== prevUi.input[input.key]);
       
       if (changed.length === 0) return;
 
       // 🚧 other processes should use this npcKey e.g. for move
-      const npcKey = /** @type {string} */ (ui.toInput.npcKey.value);
-      const follow = /** @type {boolean} */ (ui.toInput.follow.value);
-      const select = /** @type {boolean} */ (ui.toInput.select.value);
+      const npcKey = /** @type {string} */ (ui.input.npcKey.value);
+      const follow = /** @type {boolean} */ (ui.input.follow.value);
+      const select = /** @type {boolean} */ (ui.input.select.value);
 
       // changing select, the two toggles, or pressing refresh have same effect,
       // i.e. determined by { npcKey, follow, select }
@@ -154,7 +154,7 @@ export async function followSelectFeedback(ct, opts = ct.api.jsArg(ct.args, { ke
       else w.e.stopFollowing();
 
       if (select === true) {
-        const prevNpcKey = /** @type {string} */ (prevUi.toInput.npcKey.value);
+        const prevNpcKey = /** @type {string} */ (prevUi.input.npcKey.value);
         w.n[prevNpcKey]?.showSelector(false);
         w.n[npcKey]?.showSelector(true);
       } else {

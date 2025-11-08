@@ -71,7 +71,7 @@ export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
   feedback.add({
     key: opts.key ?? 'demo-feedback-0',
     label: 'Make a choice...',
-    toInput: {
+    input: {
       // ...
     },
     // onEvent(event, state) {

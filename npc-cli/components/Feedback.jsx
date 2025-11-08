@@ -45,7 +45,7 @@ export default function Feedback(props) {
         return null;
       }
       const ui = state.ui.getState().lookup[uiKey];
-      return ui.toInput[inputKey] ?? null;
+      return ui.input[inputKey] ?? null;
     },
     remove(uiKey) {
       state.ui.setState(draft => { delete draft.lookup[uiKey]; });
@@ -71,7 +71,7 @@ export default function Feedback(props) {
         
         state.ui.setState(draft => {
           const ui = draft.lookup[input.uiKey];
-          const nextInput = ui.toInput[input.key];
+          const nextInput = ui.input[input.key];
 
           switch (input.type) {
             case 'checkbox':
@@ -91,7 +91,7 @@ export default function Feedback(props) {
         
         state.ui.setState(draft => {
           const ui = draft.lookup[input.uiKey];
-          ui.toInput[input.key].value = Date.now();
+          ui.input[input.key].value = Date.now();
         });
       }}
     >
@@ -100,7 +100,7 @@ export default function Feedback(props) {
           <div className="cursor-default" title={ui.label}>
             {ui.icon ?? ui.label}
           </div>
-          {Object.values(ui.toInput).map((input) => (
+          {Object.values(ui.input).map((input) => (
             <FeedbackUiInput key={input.key} ui={ui} input={input} />
           ))}
         </div>
@@ -202,11 +202,11 @@ function FeedbackUiInput({ ui, input }) {
  * @returns {NPC.FeedbackUi}
  */
 function feedbackUiDefToUi(uiDef, uiKey) {
-  const { toInput, ...rest } = uiDef;
+  const { input: lookup, ...rest } = uiDef;
 
   return {
     ...rest,
-    toInput: Object.fromEntries(Object.values(toInput).flatMap(input => {
+    input: Object.fromEntries(Object.values(lookup).flatMap(input => {
       switch (input.type) {
         case 'button':
           return {...input, uiKey, value: 0 }; // last clicked epochMs
