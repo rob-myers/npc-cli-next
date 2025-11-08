@@ -63,8 +63,15 @@ export async function demoFollowViaFeedback(ct) {
 
     const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
       if (!prevUi || !ui) return; // first or last
-      const changedInputs = ui.inputs.filter((input, index) => input !== prevUi.inputs[index]);
-      console.log('🚧 changes...', changedInputs);
+      const changed = ui.inputs.filter((input, index) => input !== prevUi.inputs[index]);
+
+      for (const input of changed) {
+        switch (input.type) {
+          case 'button':
+            console.log('clicked button', input);
+            break;
+        }
+      }
     });
 
     ct.api.handleStatus({
@@ -77,12 +84,14 @@ export async function demoFollowViaFeedback(ct) {
 
     feedback.add({
       key: uiKey,
-      label: '😃',
+      icon: '@',
+      label: 'npc follow/select',
       inputs: [
         // 🚧 update select on spawn/remove
         { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
-        { type: 'button', key: 'follow' },
-        { type: 'button', key: 'select' },
+        { type: 'checkbox', key: 'follow' }, // 🚧 badge
+        { type: 'checkbox', key: 'select' }, // 🚧 badge
+        { type: 'button', key: '!' },
       ],
       // 🚧 move to subscribe which is unsub on process end
       // onEvent(event, state) {

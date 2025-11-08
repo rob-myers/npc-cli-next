@@ -553,6 +553,7 @@ declare namespace NPC {
   type FeedbackUi = {
     key: string;
     label?: string;
+    icon?: React.ReactNode;
     inputs: FeedbackInput[];
   }
   

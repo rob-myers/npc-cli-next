@@ -62,7 +62,7 @@ export default function Feedback(props) {
   
   return (
     <div
-      className="font-sans text-sm p-2 bg-slate-900 flex flex-col v-full overflow-auto"
+      className="font-sans text-sm text-white p-2 bg-slate-900 flex flex-col v-full overflow-auto"
 
       // 🚧
       onChange={e => {
@@ -76,19 +76,18 @@ export default function Feedback(props) {
         const input = result?.input;
         if (!result || input?.type !== 'button') return;
         
-        // 🚧 update store i.e. lastClicked time
         state.ui.setState(draft => {
           const ui = draft.lookup[result.uiKey];
           const index = ui.inputs.findIndex(x => x.key === input.key);
           /** @type {typeof input} */ (ui.inputs[index]).value = Date.now();
         });
-
-        console.log('onClick', result);
       }}
     >
       {Object.values(state.ui.getState().lookup).map((ui) => (
         <div key={ui.key} className="flex gap-2 flex-wrap items-center p-1 border-t-2 last:border-b-2 border-gray-800">
-          {ui.label && <div>{ui.label}</div>}
+          <div className="cursor-pointer" title={ui.label}>
+            {ui.icon ?? ui.label}
+          </div>
           {ui.inputs.map((input) => (
             <FeedbackUiInput key={input.key} ui={ui} input={input} />
           ))}
@@ -129,12 +128,16 @@ function FeedbackUiInput({ ui, input }) {
       );
     case 'checkbox':
       return (
-        <input type="checkbox"
-          data-ui-key={ui.key}
-          data-input-key={input.key}
-          defaultChecked={input.default}
-          checked={input.value}
-        />
+        <label className="flex gap-1">
+          <div>{input.label ?? input.key}</div>
+          <input type="checkbox"
+            data-ui-key={ui.key}
+            data-input-key={input.key}
+            defaultChecked={input.default}
+            checked={input.value}
+            onChange={emptyOnChange}
+          />
+        </label>
       );
     case 'number':
       return (
@@ -152,7 +155,7 @@ function FeedbackUiInput({ ui, input }) {
           data-ui-key={ui.key}
           data-input-key={input.key}
           value={input.value}
-          onChange={() => {}}
+          onChange={emptyOnChange}
         >
           {input.options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -182,10 +185,9 @@ function FeedbackUiInput({ ui, input }) {
  * @returns {NPC.FeedbackUi}
  */
 function feedbackUiDefToUi(uiDef) {
-  const { key, label, inputs } = uiDef;
+  const { inputs, ...rest } = uiDef;
   return {
-    key,
-    label,
+    ...rest,
     inputs: inputs.flatMap(input => {
       switch (input.type) {
         case 'button':
@@ -205,3 +207,5 @@ function feedbackUiDefToUi(uiDef) {
     }),
   };
 }
+
+function emptyOnChange() {}
