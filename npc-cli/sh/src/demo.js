@@ -58,34 +58,50 @@ export async function demoFollowViaFeedback(ct) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
-  /** @type {NPC.FeedbackUiDef} */
-  const item = {
-    key: 'demo-follow',
-    label: '😃',
-    inputs: [
-      // 🚧 update select on spawn/remove
-      { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
-      { type: 'button', key: 'follow' },
-      { type: 'button', key: 'select' },
-    ],
-    onEvent(event, state) {
-      console.log({event, state})
-      if (event.type === 'click-button') {
-        const npcKey = state.npcKey;
-        switch (event.inputKey) {
-          case 'follow':
-            if (w.e.isFollowingNpc(npcKey)) w.e.stopFollowing();
-            else w.e.followNpc(npcKey);
-            break;
-          case 'select':
-            // 🚧
-            break;
-        }
-      }
-    },
-  };
+  await new Promise((_resolve, reject) => {
+    const uiKey = 'demo-follow';
 
-  feedback.addUi(item);
+    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
+      if (!prevUi || !ui) return; // first or last
+      const changedInputs = ui.inputs.filter((input, index) => input !== prevUi.inputs[index]);
+      console.log('🚧 changes...', changedInputs);
+    });
+
+    ct.api.handleStatus({
+      cleanups() {
+        reject(ct.api.getKillError());
+        unsub();
+        feedback.remove(uiKey); // always remove?
+      },
+    });
+
+    feedback.add({
+      key: uiKey,
+      label: '😃',
+      inputs: [
+        // 🚧 update select on spawn/remove
+        { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
+        { type: 'button', key: 'follow' },
+        { type: 'button', key: 'select' },
+      ],
+      // 🚧 move to subscribe which is unsub on process end
+      // onEvent(event, state) {
+      //   console.log({event, state})
+      //   if (event.type === 'click-button') {
+      //     const npcKey = state.npcKey;
+      //     switch (event.inputKey) {
+      //       case 'follow':
+      //         if (w.e.isFollowingNpc(npcKey)) w.e.stopFollowing();
+      //         else w.e.followNpc(npcKey);
+      //         break;
+      //       case 'select':
+      //         // 🚧
+      //         break;
+      //     }
+      //   }
+      // },
+    });
+  });
 }
 
 /**
@@ -109,29 +125,29 @@ export async function demoSelectViaFeedback(ct, opts = ct.api.jsArg(ct.args, { p
       inputs: [
         // ...
       ],
-      onEvent(event, state) {
-        // ...
-        // const [prevNpcKey] = ct.api.get([opts.npcKeyPath]);
+      // onEvent(event, state) {
+      //   // ...
+      //   // const [prevNpcKey] = ct.api.get([opts.npcKeyPath]);
   
-        // const nextNpcKey = value.npcKey;
-        // ct.api.set(opts.npcKeyPath, nextNpcKey);
-        // const nextNpc = w.npc.get(nextNpcKey);
-        // nextNpc.showSelector(true);
+      //   // const nextNpcKey = value.npcKey;
+      //   // ct.api.set(opts.npcKeyPath, nextNpcKey);
+      //   // const nextNpc = w.npc.get(nextNpcKey);
+      //   // nextNpc.showSelector(true);
   
-        // if (prevNpcKey !== nextNpcKey) {
-        //   w.n[prevNpcKey]?.showSelector(false);
-        // }
+      //   // if (prevNpcKey !== nextNpcKey) {
+      //   //   w.n[prevNpcKey]?.showSelector(false);
+      //   // }
   
-        // w.view.ensureRender();
-      },
+      //   // w.view.ensureRender();
+      // },
     };
   
-    feedback.addUi(item);
+    feedback.add(item);
 
     ct.api.handleStatus({
       cleanups() {
         reject(ct.api.getKillError());
-        feedback.removeUi(item.key);
+        feedback.remove(item.key);
       },
     })
   });
@@ -160,15 +176,15 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   
-  feedback.addUi({
+  feedback.add({
     key: opts.key ?? 'demo-feedback-0',
     label: 'Make a choice...',
     inputs: [
       // ...
     ],
-    onEvent(event, state) {
-      alert(`${event}: ${JSON.stringify(state)}`);
-    },
+    // onEvent(event, state) {
+    //   alert(`${event}: ${JSON.stringify(state)}`);
+    // },
   });
 }
 

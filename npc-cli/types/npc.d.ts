@@ -554,14 +554,17 @@ declare namespace NPC {
     key: string;
     label?: string;
     inputs: FeedbackInput[];
-    // 🚧 remove i.e. subscribe to zustand instead
-    onEvent: (event: FeedbackUiEvent, uiState: { [uiKey: string]: string }) => void;
   }
   
   type FeedbackInputDef = Pretty<DistributiveOmit<FeedbackInput, 'value'>>;
 
   type FeedbackInput = { key: string; } & (
-    | { type: 'button'; label?: string; value: null; } // label defaults to key
+    | {
+        type: 'button';
+        label?: string;
+        /** Last clicked epochMs */
+        value: number;
+      } // label defaults to key
     | { type: 'text'; default?: string; placeholder?: string; value: string; }
     | { type: 'number'; default?: number; min?: number; max?: number; step?: number; value: number; }
     | { type: 'checkbox'; label?: string; default?: boolean; value: boolean; } // label defaults to key

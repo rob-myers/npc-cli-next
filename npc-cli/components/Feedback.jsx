@@ -1,6 +1,7 @@
 import React from "react";
 import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { subscribeWithSelector } from "zustand/middleware";
 import { jsStringify, warn } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
 import useStateRef from "../hooks/use-state-ref";
@@ -11,8 +12,13 @@ import useUpdate from "../hooks/use-update";
  * @typedef {import("zustand/middleware/immer").WithImmer<T>} WithImmer<T>
  */
 /**
- * @typedef {{ [uiKey: string]: NPC.FeedbackUi }} UiLookup
- * @typedef {import("zustand").UseBoundStore<WithImmer<import("zustand").StoreApi<UiLookup>>>} UiStore
+ * @template T
+ * @typedef {import("zustand/middleware/subscribeWithSelector").WithSelectorSubscribe<T>} WithSelectorSubscribe<T>
+ */
+/**
+ * @typedef {{ lookup: { [uiKey: string]: NPC.FeedbackUi } }} UiState
+ * Lookup cannot be top-level because zustand delete doesn't work.
+ * @typedef {import("zustand").UseBoundStore<WithImmer<WithSelectorSubscribe<import("zustand").StoreApi<UiState>>>>} UiStore
  */
 
 /**
@@ -21,19 +27,32 @@ import useUpdate from "../hooks/use-update";
  */
 export default function Feedback(props) {
 
+  const update = useUpdate();
+
   const state = useStateRef(/** @returns {State} */ () => ({
-    ui: /** @type {State['ui']} */ (create(immer((get, set) => ({})))),
-    addUi(item) {
-      state.ui.setState({ [item.key]: feedbackUiDefToUi(item) });
-    },
-    removeUi(itemKey) {
+    ui: /** @type {State['ui']} */ (create(immer(subscribeWithSelector((get, set) => ({ lookup: {} }))))),
+    add(item) {
       state.ui.setState(draft => {
-        delete draft[itemKey];
+        draft.lookup[item.key] = feedbackUiDefToUi(item);
       });
     },
+    getInputByEvent(e) {
+      const el = /** @type {HTMLElement} */ (e.target);
+      const { uiKey, inputKey } = el.dataset;
+      if (!(typeof uiKey === 'string' && typeof inputKey === 'string')) {
+        return null;
+      }
+      const ui = state.ui.getState().lookup[uiKey];
+      const input = ui.inputs.find(input => input.key === inputKey) ?? null;
+      return input === null ? null : { uiKey, input };
+    },
+    remove(itemKey) {
+      state.ui.setState(draft => { delete draft.lookup[itemKey]; });
+    },
+    update,
   }), { ignore: { ui: true } });
 
-  console.log('Feedback', state.ui);
+  console.log('Feedback', state.ui.getState());
   useStore(state.ui); // subscribe to ui changes
   
   React.useEffect(() => {
@@ -41,53 +60,33 @@ export default function Feedback(props) {
     return () => removeCached([props.tabKey]);
   }, []);
   
-  const update = useUpdate();
-
   return (
     <div
       className="font-sans text-sm p-2 bg-slate-900 flex flex-col v-full overflow-auto"
 
       // 🚧
       onChange={e => {
-        const el = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
-        const { dataset: { uiKey, inputKey }, value } = el;
-        if (!(typeof uiKey === 'string' && typeof inputKey === 'string')) {
-          return;
-        }
-
-        // 🚧 migrate
-        // const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
-        // const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
-        // const uiState = ui.inputs.reduce((agg, input) => {
-        //   const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
-        //   if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
-        //   return agg;
-        // }, /** @type {Record<string, string>} */ ({}));
-
-        console.log('onChange', { uiKey, inputKey }, value);
-        // ui.onEvent({ type: 'change-select', uiKey, value }, uiState);
+        const result = state.getInputByEvent(e.nativeEvent);
+        if (!result) return;
+        console.log('onChange', result);
+        // 🚧 update store
       }}
       onClick={e => {
-        const el = /** @type {HTMLInputElement | HTMLSelectElement} */ (e.target);
-        const { dataset: { uiKey, inputKey }, nodeName } = el;
-        if (!(nodeName === 'BUTTON' && typeof uiKey === 'string' && typeof inputKey === 'string')) {
-          return;
-        }
+        const result = state.getInputByEvent(e.nativeEvent);
+        const input = result?.input;
+        if (!result || input?.type !== 'button') return;
+        
+        // 🚧 update store i.e. lastClicked time
+        state.ui.setState(draft => {
+          const ui = draft.lookup[result.uiKey];
+          const index = ui.inputs.findIndex(x => x.key === input.key);
+          /** @type {typeof input} */ (ui.inputs[index]).value = Date.now();
+        });
 
-        // 🚧 migrate
-        // const ui = /** @type {NPC.FeedbackUi} */ (state.uis.find(({ key }) => key === uiKey ));
-        // const parentEl = /** @type {HTMLElement} */ (el.parentElement); // assume contains all inputs
-        // const uiState = ui.inputs.reduce((agg, input) => {
-        //   const el = parentEl.querySelector(`[data-input-key="${input.key}"]`);
-        //   if (el && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) agg[input.key] = el.value;
-        //   return agg;
-        // }, /** @type {Record<string, string>} */ ({}));
-
-        console.log('onClick', { uiKey, inputKey });
-        // ui.onEvent({ type: 'click-button', uiKey, inputKey }, uiState);
+        console.log('onClick', result);
       }}
     >
-      {Object.values(state.ui.getState()).map((ui) => (
+      {Object.values(state.ui.getState().lookup).map((ui) => (
         <div key={ui.key} className="flex gap-2 flex-wrap items-center p-1 border-t-2 last:border-b-2 border-gray-800">
           {ui.label && <div>{ui.label}</div>}
           {ui.inputs.map((input) => (
@@ -103,8 +102,10 @@ export default function Feedback(props) {
 /**
  * @typedef State
  * @property {UiStore} ui
- * @property {(<T>(ui: NPC.FeedbackUiDef) => void)} addUi
- * @property {((uiKey: string) => void)} removeUi
+ * @property {((ui: NPC.FeedbackUiDef) => void)} add
+ * @property {((e: Event) => null | { uiKey: string; input: NPC.FeedbackInput; })} getInputByEvent
+ * @property {((uiKey: string) => void)} remove
+ * @property {(() => void)} update
  */
 
 /**
@@ -151,6 +152,7 @@ function FeedbackUiInput({ ui, input }) {
           data-ui-key={ui.key}
           data-input-key={input.key}
           value={input.value}
+          onChange={() => {}}
         >
           {input.options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -180,14 +182,14 @@ function FeedbackUiInput({ ui, input }) {
  * @returns {NPC.FeedbackUi}
  */
 function feedbackUiDefToUi(uiDef) {
-  const { key, label, onEvent, inputs } = uiDef;
+  const { key, label, inputs } = uiDef;
   return {
     key,
     label,
     inputs: inputs.flatMap(input => {
       switch (input.type) {
         case 'button':
-          return {...input, value: null };
+          return {...input, value: 0 }; // last clicked epochMs
         case 'checkbox':
           return {...input, value: Boolean(input.default) };
         case 'number':
@@ -201,6 +203,5 @@ function feedbackUiDefToUi(uiDef) {
           return [];
       }
     }),
-    onEvent,
   };
 }
