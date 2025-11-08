@@ -63,21 +63,36 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 
 /**
  * @param {NPC.RunArg} ct
- * @param {{ key?: string }} [opts]
+ * @param {{ uiKey?: string }} [opts]
  */
-export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args)) {
+export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const uiKey = opts?.uiKey ?? 'demo-feedback-0';
   
-  feedback.add({
-    key: opts.key ?? 'demo-feedback-0',
-    label: 'Make a choice...',
-    input: {
-      // ...
-    },
-    // onEvent(event, state) {
-    //   alert(`${event}: ${JSON.stringify(state)}`);
-    // },
+  await new Promise((_resolve, reject) => {
+
+    feedback.add({
+      key: uiKey,
+      label: 'Make a choice...',
+      input: {
+        choice: { type: 'select', key: 'choice', options: [{ label: 'foo', value: 'foo' }, { label: 'bar', value: 'bar' }] }
+      },
+    });
+
+    const unsub = feedback.ui.subscribe((next, prev) => {
+      if (!prev || !next) return; // first or last
+      alert(next.lookup[uiKey].input.choice.value);
+    });
+
+    ct.api.handleStatus({
+      cleanups() {
+        reject(ct.api.getKillError());
+        unsub();
+        feedback.remove(uiKey);
+      },
+    })
   });
+
 }
 
 /**
