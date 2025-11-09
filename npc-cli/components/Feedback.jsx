@@ -119,17 +119,17 @@ export default function Feedback(props) {
 
       {state.pending.length > 0 && <div
         className={clsx(
-          "absolute top-2 rounded-l right-0 size-6",
+          "absolute top-2 rounded-l right-0 size-7 overflow-auto",
           "flex justify-center items-center text-xs p-2 text-yellow-200 bg-black border-[1px] border-gray-600 cursor-pointer select-none",
-          "transition-[width_300ms,height_300ms]",
-          state.pendingShown && "w-full h-[calc(min(64px,calc(100%-2*2*4px)))]",
+          "transition-[width,height] duration-500",
+          state.pendingShown && "w-[calc(100%-2*4px)] h-[calc(min(64px,calc(100%-2*2*4px)))]",
         )}
         onClick={state.showPending.bind(null, !state.pendingShown)}
       >
         <AnimatePresence initial>
           {state.pendingShown
             ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5 } }} key="pending">
-                {state.pending.map(item => <div key={item.pid}>{JSON.stringify(item)}</div>)}
+                {state.pending.map(item => <div key={item.pid} className="line-clamp-1 overflow-auto text-ellipsis">{JSON.stringify(item)}</div>)}
               </motion.div>
             : <motion.div key="icon">⚠️</motion.div>
           }
