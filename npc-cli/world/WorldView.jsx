@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera, Stats } from "@react-three/drei";
 import { damp, damp3 } from "maath/easing";
+import { deltaAngle } from "maath/misc";
 damp; damp3; // fix hmr
 
 import { debug, entries, keys, testNever } from "../service/generic.js";
@@ -536,14 +537,18 @@ export default function WorldView(props) {
     },
     onTick(deltaSecs) {
       if (state.dst.azimuthal !== undefined) {
-        if (Math.abs(state.controls.sphericalDelta.theta) < 0.01) {
+        const nextDeltaTheta = deltaAngle(state.controls.spherical.theta, state.dst.azimuthal);
+        state.controls.sphericalDelta.theta = nextDeltaTheta;
+        if (Math.abs(nextDeltaTheta) < 0.01) {
           delete state.dst.azimuthal;
           state.resolve.azimuthal?.();
         }
       }
 
       if (state.dst.polar !== undefined) {
-        if (Math.abs(state.controls.sphericalDelta.phi) < 0.01) {
+        const nextDeltaPhi = deltaAngle(state.controls.spherical.phi, state.dst.polar);
+        state.controls.sphericalDelta.phi = nextDeltaPhi;
+        if (Math.abs(nextDeltaPhi) < 0.01) {
           delete state.dst.polar;
           state.resolve.polar?.();
         }
@@ -727,16 +732,12 @@ export default function WorldView(props) {
       if (typeof opts.azimuthal === 'number') {
         const { minAzimuthAngle, maxAzimuthAngle } = state.controls;
         state.dst.azimuthal = Math.min(maxAzimuthAngle, Math.max(minAzimuthAngle, opts.azimuthal));
-        // rely on camera-controls.js damping to animate
-        state.controls.setAzimuthalAngle(state.dst.azimuthal);
         promises.push(createPromise('azimuthal'));
       }
       
       if (typeof opts.polar === 'number') {
         const { minPolarAngle, maxPolarAngle } = state.controls;
         state.dst.polar = Math.min(maxPolarAngle, Math.max(minPolarAngle, opts.polar));
-        // rely on camera-controls.js damping to animate
-        state.controls.setPolarAngle(state.dst.polar);
         promises.push(createPromise('polar'));
       }
 
