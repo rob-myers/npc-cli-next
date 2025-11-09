@@ -109,72 +109,6 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
 }
 
 /**
- * Follow/unfollow and select/unselect
- * ```sh
- * uiFollowSelect key:base
- * ```
- * @param {NPC.RunArg} ct
- * @param {{ uiKey?: string; }} [opts]
- */
-export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
-  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
-  const { w } = ct;
-
-  await new Promise((_resolve, reject) => {
-    const uiKey = opts.uiKey ?? 'follow-select-ui';
-
-    feedback.add({
-      key: uiKey,
-      icon: '@',
-      label: 'npc follow/select',
-      input: {
-        // 🚧 update select on spawn/remove
-        npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
-        follow: { type: 'checkbox', key: 'follow' },
-        select: { type: 'checkbox', key: 'select' },
-        refresh: { type: 'button', key: 'refresh' },
-      },
-    });
-
-    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
-      if (!prevUi || !ui) return; // first or last
-      const changed = Object.values(ui.input).filter((input) => input !== prevUi.input[input.key]);
-      
-      if (changed.length === 0) return;
-
-      // 🚧 other processes should use this npcKey e.g. for move
-      const npcKey = /** @type {string} */ (ui.input.npcKey.value);
-      const follow = /** @type {boolean} */ (ui.input.follow.value);
-      const select = /** @type {boolean} */ (ui.input.select.value);
-
-      // changing select, the two toggles, or pressing refresh have same effect,
-      // i.e. determined by { npcKey, follow, select }
-
-      if (follow === true) w.e.followNpc(npcKey);
-      else w.e.stopFollowing();
-
-      if (select === true) {
-        const prevNpcKey = /** @type {string} */ (prevUi.input.npcKey.value);
-        w.n[prevNpcKey]?.showSelector(false);
-        w.n[npcKey]?.showSelector(true);
-      } else {
-        w.n[npcKey]?.showSelector(false);
-      }
-
-      w.view.ensureRender();
-    });
-
-    ct.api.handleStatus({
-      cleanups() {
-        reject(ct.api.getKillError());
-        unsub();
-        feedback.remove(uiKey); // always remove?
-      },
-    });
-  });
-}
-
-/**
  * ```sh
  * events | handleContextMenu
  * ```
@@ -378,35 +312,31 @@ export function selectNpc({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKe
 
 /**
  * ```sh
- * # select/unselect rob, keeping track in base.npcKey
  * selectNpc2 npc:rob write:base.npcKey
  * ```
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {string} opts.npcKey
- * @param {`${string}.${string}`} opts.writeKey Where we store the selected npc key
+ * @param {`${string}.${string}`} [opts.writeKey] Where we store the selected npc key
  */
 export async function selectNpc2(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey', write: 'writeKey' })) {
-  const [uiKey, inputKey] = opts.writeKey.split('.');
-  const { feedback, ui } = await core.connectFeedbackUi(ct, { uiKey });
-  const npcKeyInput = ui.input[inputKey];
-  if (!npcKeyInput) throw Error(`ui ${uiKey} has no input ${inputKey}`);
-
-  const prevNpcKey = /** @type {string} */ (npcKeyInput.value);
-  feedback.ui.setState(draft => {
-    draft.lookup[uiKey].input[inputKey].value = opts.npcKey;
-  });
-
-  const { w } = ct;
-  const nextNpc = w.npc.get(opts.npcKey);
+  const nextNpc = ct.w.npc.get(opts.npcKey);
   nextNpc.showSelector(true);
-
-  if (prevNpcKey !== opts.npcKey) {
-    const prevNpc = w.n[prevNpcKey];
-    prevNpc?.showSelector(false);
+  
+  if (opts.writeKey) {
+    const [uiKey, inputKey] = opts.writeKey.split('.');
+    const { feedback, ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
+    
+    feedback.ui.setState(draft => { draft.lookup[uiKey].input[inputKey].value = opts.npcKey; });
+    
+    const prevNpcKey = /** @type {string} */ (ui.input[inputKey].value);
+    if (prevNpcKey !== opts.npcKey) {
+      const prevNpc = ct.w.n[prevNpcKey];
+      prevNpc?.showSelector(false);
+    }
   }
-
-  w.view.ensureRender();
+  
+  ct.w.view.ensureRender();
 }
 
 /**
@@ -533,6 +463,72 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, 
     yield* direct(ct, { npcKey: opts.npcKey, to });
     await ct.api.sleep(opts.pause);
   }
+}
+
+/**
+ * Follow/unfollow and select/unselect
+ * ```sh
+ * uiFollowSelect key:base
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ uiKey?: string; }} [opts]
+ */
+export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const { w } = ct;
+
+  await new Promise((_resolve, reject) => {
+    const uiKey = opts.uiKey ?? 'follow-select-ui';
+
+    feedback.add({
+      key: uiKey,
+      icon: '@',
+      label: 'npc follow/select',
+      input: {
+        // 🚧 update select on spawn/remove
+        npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
+        follow: { type: 'checkbox', key: 'follow' },
+        select: { type: 'checkbox', key: 'select' },
+        refresh: { type: 'button', key: 'refresh' },
+      },
+    });
+
+    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
+      if (!prevUi || !ui) return; // first or last
+      const changed = Object.values(ui.input).filter((input) => input !== prevUi.input[input.key]);
+      
+      if (changed.length === 0) return;
+
+      // 🚧 other processes should use this npcKey e.g. for move
+      const npcKey = /** @type {string} */ (ui.input.npcKey.value);
+      const follow = /** @type {boolean} */ (ui.input.follow.value);
+      const select = /** @type {boolean} */ (ui.input.select.value);
+
+      // changing select, the two toggles, or pressing refresh have same effect,
+      // i.e. determined by { npcKey, follow, select }
+
+      if (follow === true) w.e.followNpc(npcKey);
+      else w.e.stopFollowing();
+
+      if (select === true) {
+        const prevNpcKey = /** @type {string} */ (prevUi.input.npcKey.value);
+        w.n[prevNpcKey]?.showSelector(false);
+        w.n[npcKey]?.showSelector(true);
+      } else {
+        w.n[npcKey]?.showSelector(false);
+      }
+
+      w.view.ensureRender();
+    });
+
+    ct.api.handleStatus({
+      cleanups() {
+        reject(ct.api.getKillError());
+        unsub();
+        feedback.remove(uiKey); // always remove?
+      },
+    });
+  });
 }
 
 const tmpVect1 = new Vect();

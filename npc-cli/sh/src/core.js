@@ -253,9 +253,13 @@ export async function connectFeedback(ct, opts = ct.api.jsArg(ct.args)) {
 /**
  * @param {NPC.RunArg} ct
  * @param {object} opts
- * @param {string} opts.uiKey
  * @param {`feedback-${number}`} [opts.key]
- * @returns {Promise<{ feedback: import('@/npc-cli/components/Feedback').State; ui: NPC.FeedbackUi }>}
+ * @param {string} opts.uiKey Required uiKey
+ * @param {string[]} [opts.inputKeys] Optional required inputs
+ * @returns {Promise<{
+ *   feedback: import('@/npc-cli/components/Feedback').State;
+ *   ui: NPC.FeedbackUi;
+ * }>}
  */
 export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args)) {
   const feedback = await connectFeedback(ct, { key: opts.key });
@@ -263,10 +267,13 @@ export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args)) {
   return await new Promise((resolve, reject) => {
     const unsub = feedback.ui.subscribe(x => x, (next) => {
       const ui = next.lookup[opts.uiKey];
-      if (ui) {
+      if (ui && (opts.inputKeys ?? []).every(inputKey => inputKey in ui.input)) {
         resolve({ feedback, ui });
+      } else {
+        // 🚧 debounced message to feedback i.e. we're pending
       }
     }, { fireImmediately: true });
+
     ct.api.handleStatus({
       cleanups() {
         unsub();
