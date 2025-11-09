@@ -63,7 +63,7 @@ export default function Feedback(props) {
   
   return (
     <div
-      className="font-sans text-sm text-white bg-slate-900 flex flex-col v-full overflow-auto"
+      className="font-sans text-sm text-white bg-slate-900 flex flex-col h-full overflow-auto"
 
       onChange={e => {
         const input = state.getInputByEvent(e.nativeEvent);
