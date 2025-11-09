@@ -19,7 +19,7 @@ ptags always; click meta.npcKey |
   selectNpcOnClick path:selected &
 
 ptags always; click meta.floor |
-  moveNpcOnClick path:selected &
+  moveNpcOnClick read:base.npcKey &
 
 click meta.door | toggleOnDoor &
 

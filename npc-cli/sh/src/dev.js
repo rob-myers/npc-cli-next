@@ -223,27 +223,6 @@ export async function lookOrDoTracked(ct, opts = ct.api.jsArg(ct.args, { read: '
 }
 
 /**
- * Move npc with key at `path` to `to`.
- * ```sh
- * moveNpc path:~/selected to:$( click 1 )
- * ```
- * @param {NPC.RunArg} ct
- * @param {object} [opts]
- * @param {NPC.MoveOpts['to']} opts.to
- * @param {string} opts.npcKeyPath Where we store the selected npc key
- * @param {number} [opts.close] Max distance from navigable permitted
- * @param {string[]} [opts.keys]
- */
-export function moveNpc(ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
-  const [npcKey] = ct.api.get([opts.npcKeyPath]);
-  const npc = ct.w.n[npcKey];
-  if (npc) {
-    npc.run = opts.keys?.includes("shift") ?? false;
-    npc.move({ to: opts.to, close: opts.close ?? 0.5 }).catch(() => {});
-  }
-}
-
-/**
  * ```sh
  * moveTrackedNpc to:$( click 1 ) read:base.npcKey
  * ```
@@ -269,11 +248,11 @@ export async function moveTrackedNpc(ct, opts = ct.api.jsArg(ct.args, { read: 'r
  * @param {MaybeMeta<NPC.GroundPoint> & { keys?: string[] }} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
- * @param {string} opts.npcKeyPath Where we store the selected npc key
- * @param {number} [opts.close] Max distance from navigable permitted
+ * @param {string} opts.readKey
+ * @param {number} [opts.maxDistance] Max distance from navigable permitted
  */
-export function moveNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
-  moveNpc(ct, { ...opts, to: input, keys: input.keys });
+export function moveNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
+  moveTrackedNpc(ct, { ...opts, to: input, keys: input.keys });
 }
 
 /**
