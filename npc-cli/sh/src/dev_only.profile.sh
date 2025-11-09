@@ -25,7 +25,7 @@ click meta.door | toggleOnDoor &
 
 preventMenuOnActOrFloor
 
-click --long | lookOrDoOnClick path:selected &
+click --long | lookOrDoOnClick read:base.npcKey &
 
 w decor.showLabels true
 

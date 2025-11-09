@@ -188,22 +188,15 @@ export async function* handleLoggerLinks({ api, datum: e, w }) {
 
 /**
  * ```sh
- * lookOrDo to:$( click 1 ) path:selected
+ * click --long | lookOrDoOnClick read:base.npcKey
  * ```
+ * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
- * @param {MaybeMeta<NPC.GroundPoint>} opts.to
- * @param {string} opts.npcKeyPath Where we store the selected npc key
+ * @param {string} opts.readKey
  */
-export async function lookOrDo({api, args, w}, opts = api.jsArg(args, { path: 'npcKeyPath' })) {
-  const [npcKey] = api.get([opts.npcKeyPath]);
-  const npc = w.n[npcKey];
-  if (!npc) return;
-  if (opts.to.meta?.floor === true && !npc.doMeta) {
-    npc.look(opts.to).catch(() => {});
-  } else {// do or stop doing
-    await npc.make({ do: opts.to }).catch(() => {});
-  }
+export async function lookOrDoOnClick(input, ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
+  await lookOrDoTracked(ct, { ...opts, to: input });
 }
 
 /**
@@ -227,19 +220,6 @@ export async function lookOrDoTracked(ct, opts = ct.api.jsArg(ct.args, { read: '
   } else {// do or stop doing
     await npc.make({ do: opts.to }).catch(() => {});
   }
-}
-
-/**
- * ```sh
- * click --long | lookOrDoOnClick to:$( click 1 ) path:selected
- * ```
- * @param {NPC.ClickOutput} input
- * @param {NPC.RunArg} ct
- * @param {object} [opts]
- * @param {string} opts.npcKeyPath Where we store the selected npc key
- */
-export async function lookOrDoOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
-  await lookOrDo(ct, { ...opts, to: input });
 }
 
 /**
