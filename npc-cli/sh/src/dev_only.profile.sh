@@ -25,7 +25,7 @@ click meta.door | toggleOnDoor &
 
 preventMenuOnActOrFloor
 
-click --long | lookOrDoLong path:selected &
+click --long | lookOrDoOnClick path:selected &
 
 w decor.showLabels true
 

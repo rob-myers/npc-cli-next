@@ -231,14 +231,14 @@ export async function lookOrDoTracked(ct, opts = ct.api.jsArg(ct.args, { read: '
 
 /**
  * ```sh
- * click --long | lookOrDoLong to:$( click 1 ) path:selected
+ * click --long | lookOrDoOnClick to:$( click 1 ) path:selected
  * ```
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {string} opts.npcKeyPath Where we store the selected npc key
  */
-export async function lookOrDoLong(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
+export async function lookOrDoOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
   await lookOrDo(ct, { ...opts, to: input });
 }
 
@@ -558,7 +558,7 @@ export const meta = {
   map: {
     handleContextMenu,
     handleLoggerLinks,
-    lookOrDoLong,
+    lookOrDoOnClick,
     moveNpcOnClick,
     selectNpcOnClick,
     toggleOnDoor,
