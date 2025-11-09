@@ -537,7 +537,7 @@ export default function WorldView(props) {
     },
     onTick(deltaSecs) {
       if (state.dst.azimuthal !== undefined) {
-        const nextDeltaTheta = deltaAngle(state.controls.spherical.theta, state.dst.azimuthal);
+        const nextDeltaTheta = deltaAngle(state.controls.spherical.theta, state.dst.azimuthal) / 1.5;
         state.controls.sphericalDelta.theta = nextDeltaTheta;
         if (Math.abs(nextDeltaTheta) < 0.01) {
           delete state.dst.azimuthal;
