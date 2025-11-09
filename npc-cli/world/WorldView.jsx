@@ -580,7 +580,7 @@ export default function WorldView(props) {
         //   }
         // }
         
-        const height = 1;
+        const height = 2;
         if (dampXZ(state.controls.target, lookObject.position, lookOpts.smoothTime, deltaSecs, lookOpts.maxSpeed, height, 0.001) === false) {
           state.resolve.look?.();
         }
