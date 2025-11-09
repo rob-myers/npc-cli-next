@@ -18,7 +18,7 @@ export const nav = {
 
 export const view = {
   /** Small viewport: height; Large viewport: width */
-  barSize: "4rem",
+  barSize: "3rem",
   /** Small viewport: width; Large viewport: height */
   iconSize: "3.5rem",
 } as const;

@@ -189,7 +189,7 @@ export default function ViewerControls({ api }: Props) {
     >
       <div className="left-or-bottom-group">
         <div className="drag-indicator">
-          <FontAwesomeIcon icon={faGrip} size="1x" />
+          <FontAwesomeIcon icon={faGrip} size="sm" />
         </div>
         
         <div className={clsx("status-text", api.tabs.everEnabled && api.tabs.enabled ? 'text-[#dfd]' : 'text-[#aaa]')}>
@@ -204,7 +204,7 @@ export default function ViewerControls({ api }: Props) {
         onClick={state.onClickEnabledOrPause}
         className="top-level"
       >
-        <FontAwesomeIcon icon={api.tabs.enabled ? faCirclePauseThin : faCirclePlay} size="1x" />
+        <FontAwesomeIcon icon={api.tabs.enabled ? faCirclePauseThin : faCirclePlay} size="sm" />
       </button>
 
       <div className={cx("reset-container", { showReset: state.showReset })}>
@@ -214,7 +214,7 @@ export default function ViewerControls({ api }: Props) {
           onClick={state.onClickReset}
           /* disabled={api.tabs.everEnabled === false} */
         >
-          <FontAwesomeIcon icon={faRefreshThin} size="1x" />
+          <FontAwesomeIcon icon={faRefreshThin} size="sm" />
         </button>
         <button
           className="confirm-reset"
@@ -230,7 +230,7 @@ export default function ViewerControls({ api }: Props) {
         title="maximise tabs"
         onClick={state.onClickMaximize}
       >
-        <FontAwesomeIcon icon={faExpandThin} size="1x" />
+        <FontAwesomeIcon icon={faExpandThin} size="sm" />
       </button>
 
       <button
@@ -240,7 +240,7 @@ export default function ViewerControls({ api }: Props) {
       >
         <FontAwesomeIcon
           icon={faChevronRight}
-          size="1x"
+          size="sm"
           flip={!site.viewOpen ? "horizontal" : undefined}
         />
       </button>
@@ -262,20 +262,6 @@ const viewerControlsCss = css`
   touch-action: none;
   border-top: 1px solid #555;
 
-  .status-text {    
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    margin-bottom: 4px;
-    
-    font-size: 0.9rem;
-    font-weight: 200;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    letter-spacing: 4px;
-    pointer-events: none;
-    user-select: none;
-  }
-
   .left-or-bottom-group {
     flex: 1;
     display: flex;
@@ -293,6 +279,20 @@ const viewerControlsCss = css`
       opacity: var(${viewerCssVar.internalApiSpinnerOpacity});
     }
   }
+
+  .status-text {    
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    
+    font-size: 0.9rem;
+    font-weight: 200;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    letter-spacing: 4px;
+    pointer-events: none;
+    user-select: none;
+  }
+
 
   @media (min-width: ${afterBreakpoint}) {
     width: var(${viewerCssVar.barSize});
@@ -325,7 +325,6 @@ const viewerControlsCss = css`
     .status-text {
       height: 100%;
       padding-right: 12px;
-      margin-top: 2px;
       user-select: none;
     }
   }
