@@ -187,7 +187,7 @@ export default function ViewerControls({ api }: Props) {
         zIndex: site.navOpen ? zIndexSite.belowMainFadeOverlay : zIndexSite.aboveMainFadeOverlay,
       }}
     >
-      <div className="left-or-bottom-group flex-1 flex items-center gap-0 px-2 py-4 pointer-events-none">
+      <div className="left-or-bottom-group flex-1 flex items-center gap-0 px-4 py-4 pointer-events-none">
         <div className="flex gap-4 items-center">
           <div className="drag-indicator">
             <FontAwesomeIcon icon={faGrip} size="sm" />
