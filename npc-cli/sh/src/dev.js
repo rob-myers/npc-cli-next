@@ -245,6 +245,9 @@ export async function moveTrackedNpc(ct, opts = ct.api.jsArg(ct.args, { read: 'r
 }
 
 /**
+ * ```sh
+ * click | moveNpcOnClick read:base.npcKey
+ * ```
  * @param {MaybeMeta<NPC.GroundPoint> & { keys?: string[] }} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
@@ -263,31 +266,6 @@ export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)
   w.e.pressMenuPrevent.preventMenuOnActOrFloor = (meta) => (
     meta.do === true || meta.floor === true
   );
-}
-
-/**
- * ```sh
- * # select rob whilst keeping track in ~/selected,
- * # and unselecting previously tracked
- * selectNpc npc:rob npcKeyPath:~/selected
- * ```
- * @param {NPC.RunArg} ct
- * @param {object} [opts]
- * @param {string} opts.npcKey
- * @param {string} opts.npcKeyPath Where we store the selected npc key
- */
-export function selectNpc({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', path: 'npcKeyPath' })) {
-  const [npcKey] = api.get([opts.npcKeyPath]);
-
-  const nextNpcKey = opts.npcKey;
-  api.set(opts.npcKeyPath, nextNpcKey);
-  const nextNpc = w.npc.get(nextNpcKey);
-  nextNpc.showSelector(true);
-  
-  if (npcKey !== nextNpcKey) {
-    const prevNpc = w.n[npcKey];
-    prevNpc?.showSelector(false);
-  }
 }
 
 /**
@@ -320,15 +298,15 @@ export async function selectTrackedNpc(ct, opts = ct.api.jsArg(ct.args, { npc: '
 
 /**
  * ```sh
- * click | selectNpcOnClick path:~/selected
+ * click | selectNpcOnClick write:base.npcKey
  * ```
  * @param {NPC.ClickOutput} input
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
- * @param {string} opts.npcKeyPath Where we store the selected npc key
+ * @param {`${string}.${string}`} opts.writeKey
  */
-export function selectNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })) {
-  selectNpc(ct, { npcKey: /** @type {string} */ (input.meta.npcKey), ...opts });
+export function selectNpcOnClick(input, ct, opts = ct.api.jsArg(ct.args, { write: 'writeKey' })) {
+  selectTrackedNpc(ct, { npcKey: /** @type {string} */ (input.meta.npcKey), ...opts });
 }
 
 /**

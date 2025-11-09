@@ -12,11 +12,11 @@ spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math
 npc rob showSelector true
 selected="rob"
 
-# provide base.input.npcKey
+# provide base.npcKey
 uiFollowSelect key:base &
 
 ptags always; click meta.npcKey |
-  selectNpcOnClick path:selected &
+  selectNpcOnClick write:base.npcKey &
 
 ptags always; click meta.floor |
   moveNpcOnClick read:base.npcKey &

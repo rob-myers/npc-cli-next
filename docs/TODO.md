@@ -143,11 +143,11 @@
 
 - ✅ remove demoSelectViaFeedback
 - ✅ change to demoFollowSelectFeedback
-- 🚧 migrate `~/selected` to follow ui
+- ✅ migrate `~/selected` to follow ui
   - ✅ selectTrackedNpc
   - ✅ moveTrackedNpc
   - ✅ lookDoTrackedNpc
-  - 🚧 replace all
+  - ✅ replace all
 
 - Feedback shows message when ui pending
 - on Feedback tab close throw pending (?)
