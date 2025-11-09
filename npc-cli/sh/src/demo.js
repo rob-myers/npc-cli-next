@@ -62,10 +62,13 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 }
 
 /**
+ * ```sh
+ * demoUi key:base
+ * ```
  * @param {NPC.RunArg} ct
  * @param {{ uiKey?: string }} [opts]
  */
-export async function demoFeedback(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
+export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const uiKey = opts?.uiKey ?? 'demo-feedback-0';
   

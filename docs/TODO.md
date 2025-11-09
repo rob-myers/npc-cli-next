@@ -149,8 +149,9 @@
   - ✅ lookDoTrackedNpc
   - ✅ replace all
 
-- Feedback shows message when ui pending
-- on Feedback tab close throw pending (?)
+- 🚧 Feedback shows message when ui pending
+- 🚧 on Feedback tab close throw pending (?)
+- initial follow `follow npc:rob` should be synced with ui
 
 - handle `direct` using Feedback
   - stop, pause, continue

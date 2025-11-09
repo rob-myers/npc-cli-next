@@ -251,18 +251,24 @@ export async function connectFeedback(ct, opts = ct.api.jsArg(ct.args)) {
 }
 
 /**
+ * ```sh
+ * import demoUi from demo
+ * demoUi key:base &
+ * connectFeedbackUi key:base >/dev/null
+ * connectFeedbackUi key:base inputs:'["npcKey"]'
+ * ```
  * @param {NPC.RunArg} ct
  * @param {object} opts
- * @param {`feedback-${number}`} [opts.key]
  * @param {string} opts.uiKey Required uiKey
+ * @param {`feedback-${number}`} [opts.feedbackKey] Defaults to env.PROFILE_KEY or feedback-0
  * @param {string[]} [opts.inputKeys] Optional required inputs
  * @returns {Promise<{
  *   feedback: import('@/npc-cli/components/Feedback').State;
  *   ui: NPC.FeedbackUi;
  * }>}
  */
-export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args)) {
-  const feedback = await connectFeedback(ct, { key: opts.key });
+export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', inputs: 'inputKeys' } )) {
+  const feedback = await connectFeedback(ct, { key: opts.feedbackKey });
 
   return await new Promise((resolve, reject) => {
     const unsub = feedback.ui.subscribe(x => x, (next) => {
@@ -271,6 +277,7 @@ export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args)) {
         resolve({ feedback, ui });
       } else {
         // 🚧 debounced message to feedback i.e. we're pending
+        console.warn(`awaiting feedback ui ${JSON.stringify(opts.uiKey)} inputs ${JSON.stringify(opts.inputKeys)}`);
       }
     }, { fireImmediately: true });
 
