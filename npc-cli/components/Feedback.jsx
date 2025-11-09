@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from 'clsx';
 import debounce from "debounce";
+import { motion, AnimatePresence } from "motion/react";
 import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { devtools } from "zustand/middleware";
@@ -116,8 +117,6 @@ export default function Feedback(props) {
         </div>
       ))}
 
-      {/* 🚧 use mount animation <motion.div> */}
-
       {state.pending.length > 0 && <div
         className={clsx(
           "absolute top-2 rounded-l right-0 size-6",
@@ -127,8 +126,12 @@ export default function Feedback(props) {
         )}
         onClick={state.showPending.bind(null, !state.pendingShown)}
       >
-        {/* 🚧 */}
-        {state.pendingShown ? JSON.stringify(state.pending) : '⚠️'}
+        <AnimatePresence initial>
+          {state.pendingShown
+            ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5 } }} key="pending">{JSON.stringify(state.pending)}</motion.div>
+            : <motion.div key="icon">⚠️</motion.div>
+          }
+        </AnimatePresence>
       </div>}
     </div>
   );
