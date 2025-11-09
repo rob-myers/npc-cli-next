@@ -150,7 +150,8 @@
   - ✅ replace all
 
 - 🚧 Feedback shows message when ui pending
-- 🚧 on Feedback tab close throw pending (?)
+- on Feedback tab close throw pending (?)
+  - e.g. `demoUi &` and close tab, then what?
 - initial follow `follow npc:rob` should be synced with ui
 
 - handle `direct` using Feedback

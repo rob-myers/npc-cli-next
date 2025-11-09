@@ -277,7 +277,11 @@ export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args, { key: 
         resolve({ feedback, ui });
       } else {
         // 🚧 debounced message to feedback i.e. we're pending
-        console.warn(`awaiting feedback ui ${JSON.stringify(opts.uiKey)} inputs ${JSON.stringify(opts.inputKeys)}`);
+        // console.warn(`awaiting feedback ui ${JSON.stringify(opts.uiKey)} inputs ${JSON.stringify(opts.inputKeys)}`);
+        feedback.notify({
+          pid: ct.api.meta.pid,
+          message: `awaiting feedback ui ${JSON.stringify(opts.uiKey)} inputs ${JSON.stringify(opts.inputKeys)}` },
+        );
       }
     }, { fireImmediately: true });
 

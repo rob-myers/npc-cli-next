@@ -1,5 +1,6 @@
 import React from "react";
 import clsx from 'clsx';
+import debounce from "debounce";
 import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { devtools } from "zustand/middleware";
@@ -32,6 +33,9 @@ export default function Feedback(props) {
   const update = useUpdate();
 
   const state = useStateRef(/** @returns {State} */ () => ({
+    // 🚧 keyed to avoid dups
+    pending: [],
+    pendingShown: false,
     ui: /** @type {State['ui']} */ (create(devtools(immer(subscribeWithSelector((_get, _set) => ({ lookup: {} }))), { name: props.tabKey }))),
     add(ui) {
       state.ui.setState(draft => {
@@ -47,14 +51,20 @@ export default function Feedback(props) {
       const ui = state.ui.getState().lookup[uiKey];
       return ui.input[inputKey] ?? null;
     },
+    notify: debounce(/** @param {PendingNotification} item */ (item) => {
+      state.pending.push(item);
+      update();
+    }, 300),
     remove(uiKey) {
       state.ui.setState(draft => { delete draft.lookup[uiKey]; });
     },
-    update,
-  }), { ignore: { ui: true } });
+    showPending: (next = !state.pendingShown) => {
+      state.pendingShown = next;
+      update();
+    },
+  }), { ignore: { ui: true }, reset: { pending: false } });
 
   useStore(state.ui); // subscribe to ui changes
-  // console.log('Feedback');
   
   React.useEffect(() => {
     setCached([props.tabKey], state);
@@ -63,7 +73,7 @@ export default function Feedback(props) {
   
   return (
     <div
-      className="font-sans text-sm text-white bg-slate-900 flex flex-col h-full overflow-auto"
+      className="relative font-sans text-sm text-white bg-slate-900 flex flex-col h-full overflow-auto"
 
       onChange={e => {
         const input = state.getInputByEvent(e.nativeEvent);
@@ -101,22 +111,43 @@ export default function Feedback(props) {
             {ui.icon ?? ui.label}
           </div>
           {Object.values(ui.input).map((input) => (
-            <FeedbackUiInput key={input.key} ui={ui} input={input} />
+            <FeedbackUiInput key={input.key} input={input} />
           ))}
         </div>
       ))}
-          
+
+      {/* 🚧 use mount animation <motion.div> */}
+
+      {state.pending.length > 0 && <div
+        className={clsx(
+          "absolute top-2 rounded-l right-0 size-6",
+          "flex justify-center items-center text-xs p-2 text-yellow-200 bg-black border-[1px] border-gray-600 cursor-pointer select-none",
+          "transition-[width_300ms,height_300ms]",
+          state.pendingShown && "w-full h-[calc(min(64px,calc(100%-2*2*4px)))]",
+        )}
+        onClick={state.showPending.bind(null, !state.pendingShown)}
+      >
+        {/* 🚧 */}
+        {state.pendingShown ? JSON.stringify(state.pending) : '⚠️'}
+      </div>}
     </div>
   );
 }
 
 /**
  * @typedef State
+ * @property {boolean} pendingShown
+ * @property {PendingNotification[]} pending Pending processes
  * @property {UiStore} ui
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
  * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
+ * @property {((item: PendingNotification) => void)} notify
  * @property {((uiKey: string) => void)} remove
- * @property {(() => void)} update
+ * @property {((next?: boolean) => void)} showPending Toggles by default
+ */
+
+/**
+ * @typedef {{ pid: number; message: string }} PendingNotification
  */
 
 /**
@@ -124,9 +155,9 @@ export default function Feedback(props) {
  */
 
 /**
- * @param {{ ui: NPC.FeedbackUi; input: NPC.FeedbackInput }} props
+ * @param {{ input: NPC.FeedbackInput }} props
  */
-function FeedbackUiInput({ ui, input }) {
+function FeedbackUiInput({ input }) {
   switch (input.type) {
     case 'button':
       return (
