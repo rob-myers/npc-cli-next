@@ -144,9 +144,9 @@
 - ✅ remove demoSelectViaFeedback
 - ✅ change to demoFollowSelectFeedback
 - 🚧 migrate `~/selected` to follow ui
-  - ✅ selectNpc2
-  - 🚧 moveNpc2
-  - 🚧 lookOrDo2
+  - ✅ selectTrackedNpc
+  - ✅ moveTrackedNpc
+  - ✅ lookDoTrackedNpc
   - 🚧 replace all
 
 - Feedback shows message when ui pending

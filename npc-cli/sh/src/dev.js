@@ -208,6 +208,29 @@ export async function lookOrDo({api, args, w}, opts = api.jsArg(args, { path: 'n
 
 /**
  * ```sh
+ * lookOrDoTracked to:$( click 1 ) read:base.npcKey
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {MaybeMeta<NPC.GroundPoint>} opts.to
+ * @param {string} opts.readKey
+ */
+export async function lookOrDoTracked(ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
+  const [uiKey, inputKey] = opts.readKey.split('.');
+  const { ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
+
+  const npcKey = /** @type {string} */ (ui.input[inputKey].value);
+  const npc = ct.w.npc.get(npcKey);
+  
+  if (opts.to.meta?.floor === true && !npc.doMeta) {
+    npc.look(opts.to).catch(() => {});
+  } else {// do or stop doing
+    await npc.make({ do: opts.to }).catch(() => {});
+  }
+}
+
+/**
+ * ```sh
  * click --long | lookOrDoLong to:$( click 1 ) path:selected
  * ```
  * @param {NPC.ClickOutput} input
@@ -241,27 +264,25 @@ export function moveNpc(ct, opts = ct.api.jsArg(ct.args, { path: 'npcKeyPath' })
 }
 
 /**
- * Move npc with key at `readKey` to `to`.
  * ```sh
- * moveNpc to:$( click 1 ) read:base.npcKey
+ * moveTrackedNpc to:$( click 1 ) read:base.npcKey
  * ```
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {NPC.MoveOpts['to']} opts.to
  * @param {string} opts.readKey Where the selected npc key is read from
- * @param {number} [opts.close] Max distance from navigable permitted
- * @param {string[]} [opts.keys]
+ * @param {number} [opts.maxDistance] Max distance from navigable permitted
+ * @param {string[]} [opts.keys] clarify 🚧
  */
-export function moveNpc2(ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
+export async function moveTrackedNpc(ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
+  const [uiKey, inputKey] = opts.readKey.split('.');
+  const { ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
 
-  // 🚧 connect to feedback tab AND specific ui
-
-  // const [npcKey] = ct.api.get([opts.npcKeyPath]);
-  // const npc = ct.w.n[npcKey];
-  // if (npc) {
-  //   npc.run = opts.keys?.includes("shift") ?? false;
-  //   npc.move({ to: opts.to, close: opts.close ?? 0.5 }).catch(() => {});
-  // }
+  const npcKey = /** @type {string} */ (ui.input[inputKey].value);
+  const npc = ct.w.n[npcKey];
+  if (!npc) return;
+  npc.run = opts.keys?.includes("shift") ?? false;
+  npc.move({ to: opts.to, close: opts.maxDistance ?? 0.5 }).catch(() => {});
 }
 
 /**
@@ -311,29 +332,28 @@ export function selectNpc({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKe
 }
 
 /**
+ * Select specific npc, keeping track via `opts.writeKey`.
  * ```sh
- * selectNpc2 npc:rob write:base.npcKey
+ * selectTrackedNpc npc:rob write:base.npcKey
  * ```
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {string} opts.npcKey
- * @param {`${string}.${string}`} [opts.writeKey] Where we store the selected npc key
+ * @param {`${string}.${string}`} opts.writeKey Where we store the selected npc key
  */
-export async function selectNpc2(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey', write: 'writeKey' })) {
+export async function selectTrackedNpc(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey', write: 'writeKey' })) {
+  const [uiKey, inputKey] = opts.writeKey.split('.');
+  const { feedback, ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
+  
+  feedback.ui.setState(draft => { draft.lookup[uiKey].input[inputKey].value = opts.npcKey; });
+
   const nextNpc = ct.w.npc.get(opts.npcKey);
   nextNpc.showSelector(true);
   
-  if (opts.writeKey) {
-    const [uiKey, inputKey] = opts.writeKey.split('.');
-    const { feedback, ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
-    
-    feedback.ui.setState(draft => { draft.lookup[uiKey].input[inputKey].value = opts.npcKey; });
-    
-    const prevNpcKey = /** @type {string} */ (ui.input[inputKey].value);
-    if (prevNpcKey !== opts.npcKey) {
-      const prevNpc = ct.w.n[prevNpcKey];
-      prevNpc?.showSelector(false);
-    }
+  const prevNpcKey = /** @type {string} */ (ui.input[inputKey].value);
+  if (prevNpcKey !== opts.npcKey) {
+    const prevNpc = ct.w.n[prevNpcKey];
+    prevNpc?.showSelector(false);
   }
   
   ct.w.view.ensureRender();
