@@ -3,6 +3,7 @@ import cx from "classnames";
 import { css } from "@emotion/react";
 import { shallow } from "zustand/shallow";
 import debounce from "debounce";
+import clsx from "clsx";
 
 import useSite from "./site.store";
 import { afterBreakpoint, breakpoint, nav, view, viewerCssVar, zIndexSite } from "./const";
@@ -190,13 +191,12 @@ export default function ViewerControls({ api }: Props) {
         <div className="drag-indicator">
           <FontAwesomeIcon icon={faGrip} size="1x" />
         </div>
-        <Spinner className="internal-api-spinner" size={18} color="#ff9" />
-      </div>
+        
+        <div className={clsx("status-text", api.tabs.everEnabled && api.tabs.enabled ? 'text-[#dfd]' : 'text-[#aaa]')}>
+          {api.tabs.everEnabled ? (api.tabs.enabled ? 'active' : 'paused') : 'idle'}
+        </div>
 
-      <div className="status-text">
-        {api.tabs.everEnabled
-          ? api.tabs.enabled ? 'active' : 'paused'
-          : 'idle'}
+          <Spinner className="internal-api-spinner" size={18} color="#ff9" />
       </div>
 
       <button
@@ -262,15 +262,16 @@ const viewerControlsCss = css`
   touch-action: none;
   border-top: 1px solid #555;
 
-  > .status-text {    
+  .status-text {    
     display: flex;
     justify-content: start;
     align-items: center;
+    margin-bottom: 4px;
     
     font-size: 0.9rem;
-    font-family: monospace;
-    color: #dda;
-    letter-spacing: 2px;
+    font-weight: 200;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    letter-spacing: 4px;
     pointer-events: none;
     user-select: none;
   }
@@ -302,7 +303,7 @@ const viewerControlsCss = css`
     border-right: 1px solid #444;
     font-size: 1rem;
 
-    > .status-text {
+    .status-text {
       writing-mode: vertical-rl;
       text-orientation: upright;
       padding-top: 32px;
@@ -320,7 +321,7 @@ const viewerControlsCss = css`
     cursor: row-resize;
     border-bottom: 1px solid #444;
 
-    > .status-text {
+    .status-text {
       height: 100%;
       padding-right: 12px;
       margin-top: 2px;
