@@ -187,16 +187,17 @@ export default function ViewerControls({ api }: Props) {
         zIndex: site.navOpen ? zIndexSite.belowMainFadeOverlay : zIndexSite.aboveMainFadeOverlay,
       }}
     >
-      <div className="left-or-bottom-group">
-        <div className="drag-indicator">
-          <FontAwesomeIcon icon={faGrip} size="sm" />
-        </div>
-        
-        <div className={clsx("status-text", api.tabs.everEnabled && api.tabs.enabled ? 'text-[#dfd]' : 'text-[#aaa]')}>
-          {api.tabs.everEnabled ? (api.tabs.enabled ? 'active' : 'paused') : 'idle'}
+      <div className="left-or-bottom-group flex-1 flex items-center gap-0 px-2 py-4 pointer-events-none">
+        <div className="flex gap-4 items-center">
+          <div className="drag-indicator">
+            <FontAwesomeIcon icon={faGrip} size="sm" />
+          </div>
+          <div className={clsx("status-text", api.tabs.everEnabled && api.tabs.enabled ? 'text-[#dfd]' : 'text-[#aaa]')}>
+            {api.tabs.everEnabled ? (api.tabs.enabled ? 'active' : 'paused') : 'idle'}
+          </div>
         </div>
 
-          <Spinner className="internal-api-spinner" size={18} color="#ff9" />
+        <Spinner className="internal-api-spinner" size={12} color="#ff9" />
       </div>
 
       <button
@@ -263,14 +264,6 @@ const viewerControlsCss = css`
   border-top: 1px solid #555;
 
   .left-or-bottom-group {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-
-    padding: 12px 16px;
-    pointer-events: none;
-
     .drag-indicator {
       color: #666;
     }
@@ -285,9 +278,9 @@ const viewerControlsCss = css`
     justify-content: start;
     align-items: center;
     
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     font-weight: 200;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: sans-serif;
     letter-spacing: 4px;
     pointer-events: none;
     user-select: none;
@@ -312,6 +305,7 @@ const viewerControlsCss = css`
     .left-or-bottom-group {
       flex-direction: column-reverse;
       align-items: end;
+      gap: 4px;
     }
   }
 
