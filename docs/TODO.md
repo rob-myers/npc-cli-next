@@ -149,6 +149,9 @@
   - 🚧 lookOrDo2
   - 🚧 replace all
 
+- Feedback shows message when ui pending
+- on Feedback tab close throw pending (?)
+
 - handle `direct` using Feedback
   - stop, pause, continue
   - try left, try right

@@ -111,12 +111,12 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
 /**
  * Follow/unfollow and select/unselect
  * ```sh
- * followSelectFeedback key:base
+ * uiFollowSelect key:base
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ uiKey?: string; }} [opts]
  */
-export async function followSelectFeedback(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
+export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
