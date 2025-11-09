@@ -307,6 +307,7 @@ const viewerControlsCss = css`
       writing-mode: vertical-rl;
       text-orientation: upright;
       padding-top: 32px;
+      display: none;
     }
     .left-or-bottom-group {
       flex-direction: column-reverse;
