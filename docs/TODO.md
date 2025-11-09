@@ -149,7 +149,8 @@
   - ✅ lookDoTrackedNpc
   - ✅ replace all
 
-- 🚧 Feedback shows message when ui pending
+- ✅ Feedback shows message when ui pending
+- 🚧 Feedback removes message when ui no longer pending
 - on Feedback tab close throw pending (?)
   - e.g. `demoUi &` and close tab, then what?
 - initial follow `follow npc:rob` should be synced with ui

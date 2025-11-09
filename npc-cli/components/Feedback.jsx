@@ -128,7 +128,9 @@ export default function Feedback(props) {
       >
         <AnimatePresence initial>
           {state.pendingShown
-            ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5 } }} key="pending">{JSON.stringify(state.pending)}</motion.div>
+            ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5 } }} key="pending">
+                {state.pending.map(item => <div key={item.pid}>{JSON.stringify(item)}</div>)}
+              </motion.div>
             : <motion.div key="icon">⚠️</motion.div>
           }
         </AnimatePresence>
