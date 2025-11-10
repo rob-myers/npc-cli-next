@@ -35,7 +35,7 @@ export default function Feedback(props) {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     pending: new Map(),
-    pendingShown: false,
+    pendingMode: 'none',
     ui: /** @type {State['ui']} */ (create(devtools(immer(subscribeWithSelector((_get, _set) => ({ lookup: {} }))), { name: props.tabKey }))),
     add(ui) {
       state.ui.setState(draft => {
@@ -53,18 +53,24 @@ export default function Feedback(props) {
     },
     registerPending: debounce(/** @param {PendingNotification} item */ (item) => {
       state.pending.set(item.pid, item);
+      state.pendingMode = state.pendingMode === 'open' ? 'closed' : 'open';
       update();
     }, 300),
     removePending(pid) {
       state.pending.delete(pid);
+      state.pendingMode = state.pending.size === 0 ? 'none' : state.pendingMode;
       update();
     },
     removeUi(uiKey) {
       state.ui.setState(draft => { delete draft.lookup[uiKey]; });
     },
-    showPending: (next = !state.pendingShown) => {
-      state.pendingShown = next;
+    setPendingMode: (next) => {
+      state.pendingMode = next;
       update();
+    },
+    togglePendingMode: () => {
+      if (state.pendingMode === 'none') return;
+      state.setPendingMode(state.pendingMode === 'closed' ? 'open' : 'closed');
     },
   }), { ignore: { ui: true }, reset: { pending: false } });
 
@@ -120,37 +126,39 @@ export default function Feedback(props) {
         </div>
       ))}
 
-      {state.pending.size > 0 && <div
+      <div
         className={clsx(
           "absolute top-2 rounded-l right-0 size-7",
-          "flex items-center text-xs pl-2 pt-1 bg-black border-[1px] border-r-0 border-gray-600 cursor-pointer select-none",
-          "transition-[width,height] duration-500",
-          state.pendingShown && "w-[calc(100%-2*8px)] h-[calc(min(64px,calc(100%-2*2*4px)))]",
+          "flex items-center text-xs pl-2 py-1 bg-black border-[1px] border-r-0 border-gray-600 cursor-pointer select-none",
+          "transition-[width,height,right] duration-300",
+          state.pendingMode === 'open' && "w-[calc(100%-2*8px)]",
+          state.pendingMode === 'none' && "w-0 right-[-12px]",
         )}
-        onClick={state.showPending.bind(null, !state.pendingShown)}
+        onClick={state.togglePendingMode}
       >
-        <div className="overflow-auto h-full">
+        <div className="overflow-auto flex items-center">
         <AnimatePresence initial>
-          {state.pendingShown
+          {state.pendingMode === 'open'
             ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5, delay: 0.25 } }} key="pending">
                 {Array.from(state.pending.values()).map(item =>
-                  <div key={item.pid} className="flex justify-between gap-2 pl-1">
+                  <div key={item.pid} className="flex justify-between gap-2 pl-1 w-full">
                     <div className="text-green-300">{item.pid}</div>
-                    <div className="text-yellow-200 whitespace-nowrap line-clamp-1 text-ellipsis">{item.message}</div>
+                    <div className="text-yellow-200 whitespace-nowrap">{item.message}</div>
                   </div>)}
               </motion.div>
+              
             : <motion.div key="icon">⚠️</motion.div>
           }
         </AnimatePresence>
         </div>
-      </div>}
+      </div>
     </div>
   );
 }
 
 /**
  * @typedef State
- * @property {boolean} pendingShown
+ * @property {'none' | 'closed' | 'open'} pendingMode
  * @property {Map<number, PendingNotification>} pending Pending processes
  * @property {UiStore} ui
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
@@ -158,7 +166,8 @@ export default function Feedback(props) {
  * @property {((item: PendingNotification) => void)} registerPending
  * @property {((pid: number) => void)} removePending
  * @property {((uiKey: string) => void)} removeUi
- * @property {((next?: boolean) => void)} showPending Toggles by default
+ * @property {((next: State['pendingMode']) => void)} setPendingMode
+ * @property {(() => void)} togglePendingMode
  */
 
 /**

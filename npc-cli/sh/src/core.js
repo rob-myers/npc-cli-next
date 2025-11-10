@@ -289,6 +289,7 @@ export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args, { key: 
     ct.api.handleStatus({
       cleanups() {
         unsub();
+        feedback.removePending(ct.api.meta.pid);
         reject(ct.api.getKillError());
       },
     });
