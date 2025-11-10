@@ -151,8 +151,11 @@
 
 - ✅ Feedback shows message when ui pending
 - 🚧 Feedback removes message when ui no longer pending
-- on Feedback tab close throw pending (?)
-  - e.g. `demoUi &` and close tab, then what?
+- 🚧 connectFeedbackUi removes pending on kill
+- on Feedback tab close
+  - pending should re-request
+  - connected should throw
+  - e.g. `demoUi &` and close tab
 - initial follow `follow npc:rob` should be synced with ui
 
 - handle `direct` using Feedback

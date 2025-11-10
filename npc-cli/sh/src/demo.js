@@ -91,7 +91,7 @@ export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' }))
       cleanups() {
         reject(ct.api.getKillError());
         unsub();
-        feedback.remove(uiKey);
+        feedback.removeUi(uiKey);
       },
     })
   });

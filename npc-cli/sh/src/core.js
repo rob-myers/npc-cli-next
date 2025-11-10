@@ -275,10 +275,11 @@ export async function connectFeedbackUi(ct, opts = ct.api.jsArg(ct.args, { key: 
       const ui = next.lookup[opts.uiKey];
       if (ui && (opts.inputKeys ?? []).every(inputKey => inputKey in ui.input)) {
         resolve({ feedback, ui });
+        feedback.removePending(ct.api.meta.pid);
       } else {
         // 🚧 debounced message to feedback i.e. we're pending
         // console.warn(`awaiting feedback ui ${JSON.stringify(opts.uiKey)} inputs ${JSON.stringify(opts.inputKeys)}`);
-        feedback.notify({
+        feedback.registerPending({
           pid: ct.api.meta.pid,
           message: `awaiting feedback ui ${JSON.stringify(opts.uiKey)} inputs ${JSON.stringify(opts.inputKeys)}` },
         );
