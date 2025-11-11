@@ -9,9 +9,6 @@ spawn npc:kate at:'{ x: 4.5 * 1.5, y: 7 * 1.5 }' as:medic-0 granted:. angle:Math
 spawn npc:suit at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' as:suit-0 granted:. angle:Math.PI
 spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math.PI
 
-npc rob showSelector true
-selected="rob"
-
 # provide base.npcKey
 uiFollowSelect key:base &
 
@@ -34,4 +31,6 @@ ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
 
+# 🚧 use base ui instead
+npc rob showSelector true
 follow npc:rob
