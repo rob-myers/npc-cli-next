@@ -231,7 +231,7 @@ export default function ViewerControls({ api }: Props) {
         title="maximise tabs"
         onClick={state.onClickMaximize}
       >
-        <FontAwesomeIcon icon={faExpandThin} size="sm" />
+        <FontAwesomeIcon icon={faExpandThin} size="xs" />
       </button>
 
       <button
