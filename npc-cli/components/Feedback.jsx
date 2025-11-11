@@ -128,10 +128,10 @@ export default function Feedback(props) {
 
       <div
         className={clsx(
-          "absolute bottom-2 rounded-l right-0 size-7 max-w-fit max-h-16 overflow-auto",
+          "absolute bottom-2 rounded-l right-0 size-8 max-w-fit max-h-16 h-fit overflow-auto",
           "text-xs pl-2 py-1 bg-black border-[1px] border-r-0 border-gray-600 cursor-pointer select-none",
-          "transition-[width,height,right] duration-300",
-          state.pendingMode === 'open' && "w-[calc(100%-2*8px)] h-fit",
+          // "transition-[width,height,right] duration-300",
+          state.pendingMode === 'open' && "w-[calc(100%-2*8px)]",
           state.pendingMode === 'none' && "w-0 right-[-12px]",
         )}
         onClick={state.togglePendingMode}
@@ -146,7 +146,7 @@ export default function Feedback(props) {
                   </div>)}
               </motion.div>
               
-            : <motion.div key="icon">⚠️</motion.div>
+            : <motion.div key="icon" className="mr-2">⚠️</motion.div>
           }
         </AnimatePresence>
       </div>
