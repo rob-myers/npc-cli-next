@@ -76,7 +76,7 @@ export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' }))
 
     feedback.add({
       key: uiKey,
-      label: 'Make a choice...',
+      title: 'Make a choice...',
       input: {
         choice: { type: 'select', key: 'choice', options: [{ label: 'foo', value: 'foo' }, { label: 'bar', value: 'bar' }] }
       },

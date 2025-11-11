@@ -439,14 +439,13 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
 
     feedback.add({
       key: uiKey,
-      icon: '@',
-      label: 'npc follow',
+      title: 'npc follow',
       input: {
-        // 🚧 update select on spawn/remove
+        // 🚧 update `options` on spawn/remove
         npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
         follow: { type: 'checkbox', key: 'follow' },
         selector: { type: 'checkbox', key: 'selector' },
-        refresh: { type: 'button', key: 're' },
+        refresh: { type: 'button', key: 'sync' },
       },
     });
 
@@ -456,12 +455,11 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
       
       if (changed.length === 0) return;
 
-      // 🚧 other processes should use this npcKey e.g. for move
       const npcKey = /** @type {string} */ (ui.input.npcKey.value);
       const follow = /** @type {boolean} */ (ui.input.follow.value);
       const selector = /** @type {boolean} */ (ui.input.selector.value);
 
-      // changing select, the two toggles, or pressing refresh have same effect,
+      // changing select, the two toggles, or pressing sync have same effect,
       // i.e. determined by { npcKey, follow, select }
 
       if (follow === true) w.e.followNpc(npcKey);

@@ -83,7 +83,7 @@ export default function Feedback(props) {
 
   return (
     <div
-      className="relative font-sans text-sm text-white bg-slate-900 flex flex-col h-full overflow-auto"
+      className="font-sans text-xs text-white bg-slate-900 flex items-start flex-wrap h-full overflow-auto"
 
       onChange={e => {
         const input = state.getInputByEvent(e.nativeEvent);
@@ -116,9 +116,9 @@ export default function Feedback(props) {
       }}
     >
       {Object.values(state.ui.getState().lookup).map((ui) => (
-        <div key={ui.key} className="flex gap-2 flex-wrap items-center p-2 border-t-2 last:border-b-2 border-gray-800">
-          <div className="cursor-default" title={ui.label}>
-            {ui.icon ?? ui.label}
+        <div key={ui.key} className="flex gap-1 flex-wrap items-center p-2 border-[1px] border-white/50 rounded-md">
+          <div className="cursor-default font-mono text-blue-200" title={ui.title}>
+            {ui.key}
           </div>
           {Object.values(ui.input).map((input) => (
             <FeedbackUiInput key={input.key} input={input} />
@@ -186,7 +186,7 @@ function FeedbackUiInput({ input }) {
     case 'button':
       return (
         <button
-          className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
+          className="bg-gray-800 text-white font-thin hover:brightness-150 hover:bg-green-900 cursor-pointer rounded-md px-1 border-2 border-indigo-500/50"
           data-ui-key={input.uiKey}
           data-input-key={input.key}
         >
@@ -196,7 +196,10 @@ function FeedbackUiInput({ input }) {
     case 'checkbox':
       return (
         <label className="select-none flex gap-1">
-          <div className={clsx("select-none font-normal hover:brightness-150 cursor-pointer rounded-sm px-1 border-2 border-gray-800", input.value ? 'text-white' : 'text-white/50')}>
+          <div className={clsx(
+            "select-none font-normal bg-black hover:brightness-150 cursor-pointer rounded-sm px-1 border-2 border-gray-800",
+            input.value ? 'text-white' : 'text-white/50')
+          }>
             {input.label ?? input.key}
           </div>
           <input type="checkbox" className="hidden"
