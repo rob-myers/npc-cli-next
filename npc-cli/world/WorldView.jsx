@@ -39,7 +39,8 @@ export default function WorldView(props) {
       minPolarAngle: Math.PI * 1/8,
       // maxPolarAngle: Math.PI * 1/2,
       maxPolarAngle: Math.PI * 1/2.5,
-      minDistance: 1.5, // target could be ground or npc head
+      // minDistance: 1.5, // target could be ground or npc head
+      minDistance: 15, // target could be ground or npc head
       maxDistance: 35,
       panSpeed: 2,
       rotateSpeed: 0.5,
