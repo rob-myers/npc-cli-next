@@ -128,10 +128,10 @@ export default function Feedback(props) {
 
       <div
         className={clsx(
-          "absolute bottom-2 rounded-l right-0 size-7 overflow-auto",
+          "absolute bottom-2 rounded-l right-0 size-7 max-w-fit max-h-16 overflow-auto",
           "text-xs pl-2 py-1 bg-black border-[1px] border-r-0 border-gray-600 cursor-pointer select-none",
           "transition-[width,height,right] duration-300",
-          state.pendingMode === 'open' && "w-[calc(100%-2*8px)] min-h-16",
+          state.pendingMode === 'open' && "w-[calc(100%-2*8px)] h-fit",
           state.pendingMode === 'none' && "w-0 right-[-12px]",
         )}
         onClick={state.togglePendingMode}
@@ -140,7 +140,7 @@ export default function Feedback(props) {
           {state.pendingMode === 'open'
             ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5, delay: 0.25 } }} key="pending">
                 {Array.from(state.pending.values()).map(item =>
-                  <div key={item.pid} className="flex justify-between gap-2 pl-1 w-full">
+                  <div key={item.pid} className="flex gap-2 pl-1 w-full">
                     <div className="text-green-300">{item.pid}</div>
                     <div className="text-yellow-200 whitespace-nowrap">{item.message}</div>
                   </div>)}
