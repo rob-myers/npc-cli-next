@@ -53,7 +53,7 @@ export default function Feedback(props) {
     },
     registerPending: debounce(/** @param {PendingNotification} item */ (item) => {
       state.pending.set(item.pid, item);
-      state.pendingMode = state.pendingMode === 'open' ? 'closed' : 'open';
+      state.pendingMode = state.pendingMode === 'none' ? 'closed' : state.pendingMode;
       update();
     }, 300),
     removePending(pid) {
@@ -128,15 +128,14 @@ export default function Feedback(props) {
 
       <div
         className={clsx(
-          "absolute top-2 rounded-l right-0 size-7",
-          "flex items-center text-xs pl-2 py-1 bg-black border-[1px] border-r-0 border-gray-600 cursor-pointer select-none",
+          "absolute bottom-2 rounded-l right-0 size-7 overflow-auto",
+          "text-xs pl-2 py-1 bg-black border-[1px] border-r-0 border-gray-600 cursor-pointer select-none",
           "transition-[width,height,right] duration-300",
-          state.pendingMode === 'open' && "w-[calc(100%-2*8px)]",
+          state.pendingMode === 'open' && "w-[calc(100%-2*8px)] min-h-16",
           state.pendingMode === 'none' && "w-0 right-[-12px]",
         )}
         onClick={state.togglePendingMode}
       >
-        <div className="overflow-auto flex items-center">
         <AnimatePresence initial>
           {state.pendingMode === 'open'
             ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5, delay: 0.25 } }} key="pending">
@@ -150,7 +149,6 @@ export default function Feedback(props) {
             : <motion.div key="icon">⚠️</motion.div>
           }
         </AnimatePresence>
-        </div>
       </div>
     </div>
   );
