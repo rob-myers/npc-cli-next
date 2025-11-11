@@ -1389,7 +1389,7 @@ export class NpcApi {
     // permits 10 chars on OSX Chrome
     const fontHeight = 32 * skinsLabelScale;
     ct.strokeStyle = 'rgba(20, 20, 20, 1)';
-    ct.fillStyle = 'rgba(200, 200, 200, 1)';
+    ct.fillStyle = 'rgba(100, 100, 100, 1)';
     ct.lineWidth = strokeWidth;
     ct.font = `${fontHeight}px sans-serif`;
     ct.textBaseline = 'top';
