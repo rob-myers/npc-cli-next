@@ -151,7 +151,7 @@
 
 - ✅ Feedback shows message when ui pending
 - 🚧 Feedback removes message when ui no longer pending
-- 🚧 connectFeedbackUi removes pending on kill
+- 🚧 connectUi removes pending on kill
 - on Feedback tab close
   - pending should re-request
   - connected should throw

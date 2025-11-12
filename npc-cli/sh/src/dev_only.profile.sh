@@ -31,6 +31,5 @@ ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
 
-# 🚧 use base ui instead
-npc rob showSelector true
-follow npc:rob
+# 🚧 mutate base ui
+

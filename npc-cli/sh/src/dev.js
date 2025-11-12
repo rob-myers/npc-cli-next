@@ -210,7 +210,7 @@ export async function lookOrDoOnClick(input, ct, opts = ct.api.jsArg(ct.args, { 
  */
 export async function lookOrDoTracked(ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
   const [uiKey, inputKey] = opts.readKey.split('.');
-  const { ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
+  const { ui } = await core.connectUi(ct, { uiKey, inputKeys: [inputKey] });
 
   const npcKey = /** @type {string} */ (ui.input[inputKey].value);
   const npc = ct.w.npc.get(npcKey);
@@ -235,7 +235,7 @@ export async function lookOrDoTracked(ct, opts = ct.api.jsArg(ct.args, { read: '
  */
 export async function moveTrackedNpc(ct, opts = ct.api.jsArg(ct.args, { read: 'readKey' })) {
   const [uiKey, inputKey] = opts.readKey.split('.');
-  const { ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
+  const { ui } = await core.connectUi(ct, { uiKey, inputKeys: [inputKey] });
 
   const npcKey = /** @type {string} */ (ui.input[inputKey].value);
   const npc = ct.w.n[npcKey];
@@ -280,7 +280,7 @@ export const preventMenuOnActOrFloor = ({ api, args, w }, opts = api.jsArg(args)
  */
 export async function selectTrackedNpc(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey', write: 'writeKey' })) {
   const [uiKey, inputKey] = opts.writeKey.split('.');
-  const { feedback, ui } = await core.connectFeedbackUi(ct, { uiKey, inputKeys: [inputKey] });
+  const { feedback, ui } = await core.connectUi(ct, { uiKey, inputKeys: [inputKey] });
   
   feedback.ui.setState(draft => { draft.lookup[uiKey].input[inputKey].value = opts.npcKey; });
 
