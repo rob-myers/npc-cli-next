@@ -31,5 +31,5 @@ ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
 
-# 🚧 mutate base ui
-
+# 🚧 better way
+connectFeedback | map 'feedback => feedback.changeUi("base", { selector: true, follow: true })'

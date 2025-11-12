@@ -231,6 +231,9 @@ export async function* follow({ api, args, w }, opts = api.jsArg(args, { npc: 'n
 }
 
 /**
+ * ```sh
+ * connectFeedback
+ * ```
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
  * @param {`feedback-${number}`} [opts.key]

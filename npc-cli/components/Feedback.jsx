@@ -42,6 +42,14 @@ export default function Feedback(props) {
         draft.lookup[ui.key] = feedbackUiDefToUi(ui, ui.key);
       });
     },
+    changeUi(uiKey, partial) {
+      state.ui.setState(draft => {// assumes type correctness
+        const inputLookup = draft.lookup[uiKey].input;
+        Object.entries(partial).forEach(([inputKey, value]) => {
+          inputLookup[inputKey].value = value;
+        });
+      });
+    },
     getInputByEvent(e) {
       const el = /** @type {HTMLElement} */ (e.target);
       const { uiKey, inputKey } = el.dataset;
@@ -160,6 +168,7 @@ export default function Feedback(props) {
  * @property {Map<number, PendingNotification>} pending Pending processes
  * @property {UiStore} ui
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
+ * @property {((uiKey: string, partial: { [inputKey: string]: string | number | boolean }) => void)} changeUi
  * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
  * @property {((item: PendingNotification) => void)} registerPending
  * @property {((pid: number) => void)} removePending
