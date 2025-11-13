@@ -441,7 +441,6 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
       key: uiKey,
       title: 'npc follow',
       input: {
-        // 🚧 update `options` on spawn/remove
         npcKey: { type: 'select', key: 'npcKey', options: Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey })) },
         follow: { type: 'checkbox', key: 'follow' },
         selector: { type: 'checkbox', key: 'selector' },
@@ -449,18 +448,16 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
       },
     });
 
-    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
+    const unSubUi = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
       if (!prevUi || !ui) return; // first or last
-      const changed = Object.values(ui.input).filter((input) => input !== prevUi.input[input.key]);
       
+      const changed = Object.values(ui.input).filter((input) => input !== prevUi.input[input.key]);
       if (changed.length === 0) return;
 
+      // action is determined by { npcKey, follow, selector }
       const npcKey = /** @type {string} */ (ui.input.npcKey.value);
       const follow = /** @type {boolean} */ (ui.input.follow.value);
       const selector = /** @type {boolean} */ (ui.input.selector.value);
-
-      // changing select, the two toggles, or pressing sync have same effect,
-      // i.e. determined by { npcKey, follow, select }
 
       if (follow === true) w.e.followNpc(npcKey);
       else w.e.stopFollowing();
@@ -476,10 +473,25 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
       w.view.ensureRender();
     });
 
+    // update `options` on spawn/remove
+    // 🚧 debounce
+    const { unsubscribe: unSubEvents } = w.events.subscribe({
+      next(event) {
+        if (event.key === 'spawned' || event.key === 'spawned-many' || event.key === 'removed-npcs') {
+          feedback.ui.setState(draft => {
+            /** @type {Extract<NPC.FeedbackInput, { type: 'select' }>} */ (
+              draft.lookup[uiKey].input.npcKey
+            ).options = Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey }));
+          });
+        }
+      },
+    });
+
     ct.api.handleStatus({
       cleanups() {
         reject(ct.api.getKillError());
-        unsub();
+        unSubUi();
+        unSubEvents();
         feedback.removeUi(uiKey); // always remove?
       },
     });
