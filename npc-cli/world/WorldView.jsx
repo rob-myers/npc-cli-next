@@ -40,7 +40,7 @@ export default function WorldView(props) {
       // maxPolarAngle: Math.PI * 1/2,
       maxPolarAngle: Math.PI * 1/2.5,
       // minDistance: 1.5, // target could be ground or npc head
-      minDistance: 15, // target could be ground or npc head
+      minDistance: 10, // target could be ground or npc head
       maxDistance: 35,
       panSpeed: 2,
       rotateSpeed: 0.5,
@@ -55,7 +55,7 @@ export default function WorldView(props) {
     down: null,
     dst: {}, // tween destinations
     epoch: { pickStart: 0, pickEnd: 0, pointerDown: 0, pointerUp: 0 },
-    fov: 30,
+    fov: 20,
     glOpts: {
       toneMapping: 3,
       toneMappingExposure: 1,

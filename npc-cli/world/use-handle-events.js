@@ -161,7 +161,7 @@ export default function useHandleEvents(w) {
       }
       return null;
     },
-    followNpc(npcKey, opts = { smoothTime: 0.4, maxDistance: 18 }) {
+    followNpc(npcKey, opts = { smoothTime: 0.4, maxDistance: 30 }) {
       const npc = w.n[npcKey];
       w.view.followObject3D(npc.m.group, {
         height: helper.defaults.height,
