@@ -158,6 +158,9 @@
   - e.g. `demoUi &` and close tab
 - initial follow `follow npc:rob` should be synced with ui
 
+- fix remove npc e.g. `remove foo`
+  - maybe `remove npc:foo` also supported
+
 - handle `direct` using Feedback
   - stop, pause, continue
   - try left, try right
