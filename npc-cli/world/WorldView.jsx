@@ -760,6 +760,14 @@ export default function WorldView(props) {
 
   React.useEffect(() => {
     state.pickingScene.onAfterRender = state.renderObjectPickScene;
+
+    // fade for small height relative to width
+    const obs = new ResizeObserver(([{ contentRect: { height, width } }]) => 
+      state.rootEl.style.filter = `brightness(${ height < width/3 ? height / (width/3) : 1})`
+    );
+    obs.observe(w.view.rootEl);
+    return () => obs.disconnect();
+
   }, [state.controls]);
 
   const update = useUpdate();
@@ -919,11 +927,12 @@ const rootCss = css`
   user-select: none;
   background-color: var(${worldViewBgColorCssVar});
 
+  /* max-width: 500px; */
+  margin: 0 auto;
+
   canvas[data-engine] {
     width: 100%;
     height: 100%;
-    /* 🔔 invert would lag behind npc shader invert */
-    /* transition: filter 300ms; */
   }
 
   /* center canvas during resize */
