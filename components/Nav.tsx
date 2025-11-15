@@ -160,9 +160,9 @@ const navCss = css`
 
   // sub-menu
   .${menuClasses.subMenuContent} {
-    background-color: #222;
+    background-color: #111;
     padding-left: 20px;
-    color: #ddd;
+    color: #aaa;
     font-weight: 200;
   }
   .${menuClasses.SubMenuExpandIcon} {

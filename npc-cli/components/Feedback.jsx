@@ -91,7 +91,7 @@ export default function Feedback(props) {
 
   return (
     <div
-      className="font-sans text-xs text-white bg-gray-900/80 flex items-start flex-wrap h-full overflow-auto"
+      className="font-sans text-xs text-white bg-gray-900/50 flex items-start flex-wrap h-full overflow-auto"
 
       onChange={e => {
         const input = state.getInputByEvent(e.nativeEvent);
