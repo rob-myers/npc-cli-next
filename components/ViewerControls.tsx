@@ -294,7 +294,8 @@ const viewerControlsCss = css`
     flex-direction: column-reverse;
 
     cursor: col-resize;
-    border-right: 1px solid #444;
+    border-left: 1px solid #222;
+    border-right: 1px solid #222;
     font-size: 1rem;
 
     .status-text {
