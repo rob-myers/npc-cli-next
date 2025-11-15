@@ -62,7 +62,7 @@ export default function Nav() {
       </button>
 
       <Menu onClick={state.onClickMenu}>
-        <MenuItem className="title" component="span" tabIndex={-1}>
+        <MenuItem className="title h-16 flex justify-center items-center" component="span" tabIndex={-1}>
           <Link href="/blog/index" tabIndex={-1}>
             NPC CLI
           </Link>
@@ -115,7 +115,7 @@ const navCss = css`
   .${menuClasses.menuItemRoot}.title {
     opacity: 1;
     transition: opacity 500ms;
-    padding-left: 0.75rem;
+    /* padding-left: 0.75rem; */
     border-bottom: 1px solid #333;
     font-weight: 200;
     font-size: 0.9rem;
