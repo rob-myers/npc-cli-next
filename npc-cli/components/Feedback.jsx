@@ -124,7 +124,7 @@ export default function Feedback(props) {
       }}
     >
       {Object.values(state.ui.getState().lookup).map((ui) => (
-        <div key={ui.key} className="flex gap-1 flex-wrap items-center p-2 border-[1px] border-white/50 rounded-md">
+        <div key={ui.key} className="flex gap-1 flex-wrap items-center p-2 border-[1px] border-white/20 rounded-md">
           <div className="cursor-default font-mono text-blue-200" title={ui.title}>
             {ui.key}
           </div>
