@@ -103,7 +103,7 @@ const mainHeaderCss = css`
 
   color: #444;
 
-  border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+  border-bottom: 1px solid rgba(100, 100, 100, 0.5);
   font-size: 1.2rem;
   letter-spacing: 1.5rem;
 
