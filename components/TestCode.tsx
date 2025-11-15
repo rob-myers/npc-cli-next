@@ -19,7 +19,7 @@ export default function TestCode() {
         .use(remarkParse)
         .use(remarkRehype)
         .use(rehypePrettyCode, {
-          theme: 'github-light-default',
+          theme: 'github-dark-default',
         })
         .use(rehypeStringify)
         .process(code);

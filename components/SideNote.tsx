@@ -147,8 +147,8 @@ const iconTriggerCss = css`
   margin-left: 2px;
   border-radius: 10px;
   border: 1px solid #aaaaaa;
-  background-color: white;
-  color: black;
+  background-color: #333;
+  color: #aaa;
   font-size: 0.95rem;
   font-style: normal;
 `;

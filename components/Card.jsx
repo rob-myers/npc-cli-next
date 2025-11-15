@@ -25,7 +25,7 @@ export default function Card(props) {
 const rootCss = css`
   margin: 32px 0;
   padding: 4px 48px;
-  border-left: 4px solid #dde;
+  border-left: 4px solid #667;
   position: relative;
   
   @media(max-width: ${breakpoint}) {

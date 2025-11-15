@@ -45,7 +45,7 @@ export default function Comments(props: Props) {
           // Emits message with data `{ giscus: { discussion, message } }` to window
           emitMetadata="1"
           inputPosition="top"
-          theme="light"
+          theme="dark"
           lang="en"
           loading="lazy"
         />

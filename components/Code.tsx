@@ -149,7 +149,6 @@ const codeContainerCss = css`
     margin-bottom: 0;
     border: 1px solid #ddd;
     border-bottom: none;
-    color: #333;
     height: 60px;
     font-size: large;
   }

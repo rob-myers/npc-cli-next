@@ -71,6 +71,7 @@ const mainCss = css`
   > section {
     --tw-prose-headings: #606060;
     --tw-prose-body: #a0a0a0;
+    --tw-prose-bold: #a0a0a0;
   }
 
   @media (max-width: ${breakpoint}) {
