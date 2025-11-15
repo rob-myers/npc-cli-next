@@ -34,7 +34,7 @@ export default function Main(props: React.PropsWithChildren) {
       ref={rootRef}
     >
       <section
-        className="prose max-w-screen-lg prose-headings:font-light dark:prose-invert"
+        className="prose prose-invert max-w-screen-lg prose-headings:font-light"
         data-testid="main"
         {...{ [sideNoteRootDataAttribute]: true }}
       >
@@ -45,7 +45,7 @@ export default function Main(props: React.PropsWithChildren) {
           <Link href="/blog/index">NPC CLI</Link>
         </header>
 
-        <main css={mainMainCss}>
+        <main css={mainMainCss} className="pt-[2rem] text-lg">
           {props.children}
         </main>
 
@@ -66,6 +66,11 @@ const mainCss = css`
   overflow: scroll;
   &.draggingView {
     pointer-events: none;
+  }
+
+  > section {
+    --tw-prose-headings: #606060;
+    --tw-prose-body: #a0a0a0;
   }
 
   @media (max-width: ${breakpoint}) {
@@ -95,7 +100,6 @@ const mainHeaderCss = css`
   justify-content: right;
   align-items: center;
 
-  background-color: rgba(255, 255, 255, 0.25);
   color: #444;
 
   border-bottom: 1px solid rgba(200, 200, 200, 0.5);
@@ -106,9 +110,9 @@ const mainHeaderCss = css`
   
   a {
     transition: opacity 300ms;
-    color: #444;
+    color: #000;
     text-decoration: none;
-    text-shadow: 0 1px #fff, -0 -1px #fff, 1px 0 #fff, -1px 0 #fff;
+    text-shadow: 0 1px #aaa, -0 -1px #aaa, 1px 0 #aaa, -1px 0 #aaa;
     pointer-events: all;
   }
   
@@ -125,7 +129,6 @@ const mainHeaderCss = css`
     padding-left: 2rem;
 
     pointer-events: all;
-    background-color: #fff;
     a {
       opacity: 1 !important;
     pointer-events: all !important;
@@ -134,10 +137,6 @@ const mainHeaderCss = css`
 `;
 
 const mainMainCss = css`
-  background-color: #fff;
-  padding-top: 2rem;
-  font-size: large;
-
   @media (min-width: ${afterBreakpoint}) {
     flex: 1;
     min-width: var(--main-min-width-desktop);

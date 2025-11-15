@@ -3,12 +3,11 @@
 import { usePathname } from "next/navigation";
 import React from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { css } from "@emotion/react";
 import { useBeforeunload } from "react-beforeunload";
 
 import { queryClient } from '@/npc-cli/service/query-client';
-import { afterBreakpoint, breakpoint } from "./const";
+import { breakpoint } from "./const";
 import useSite from "./site.store";
 import useTabs from "@/npc-cli/tabs/tabs.store";
 import useOnResize from "@/npc-cli/hooks/use-on-resize";
@@ -53,11 +52,6 @@ export default function Root({ children }: React.PropsWithChildren) {
           <Viewer />
         </div>
       </div>
-      {/* 🔔 comment out for screenshots */}
-      {/* <ReactQueryDevtools
-        initialIsOpen={false}
-        buttonPosition="bottom-right"
-      /> */}
     </QueryClientProvider>
   );
 }
@@ -81,9 +75,5 @@ const rootContentCss = css`
   
   @media (max-width: ${breakpoint}) {
     flex-direction: column;
-  }
-  @media (min-width: ${afterBreakpoint}) {
-    /* 🚧 dark mode issue */
-    background-color: #ccc;
   }
 `;
