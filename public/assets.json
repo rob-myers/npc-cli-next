@@ -78,7 +78,7 @@
       "obsHashes": [-446494730]
     },
     "console--051--0.4x0.6": {
-      "outputHash": 415943351,
+      "outputHash": 447918016,
       "pngHash": -282089648,
       "obsHashes": [-1250375694]
     },
@@ -10705,6 +10705,7 @@
             "h": 0.2,
             "y": -0.2,
             "outline": 0.5,
+            "color": "#777",
             "apply-reach": true,
             "transform": [0.6849, 0, 0, 0.5678, 0.0385, 0.0917]
           }
