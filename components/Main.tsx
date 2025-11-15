@@ -109,9 +109,8 @@ const mainHeaderCss = css`
   
   a {
     transition: opacity 300ms;
-    color: #000;
+    color: #aaa;
     text-decoration: none;
-    text-shadow: 0 1px #aaa, -0 -1px #aaa, 1px 0 #aaa, -1px 0 #aaa;
     pointer-events: all;
   }
   

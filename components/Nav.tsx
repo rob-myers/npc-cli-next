@@ -242,6 +242,6 @@ const toggleCss = css`
   display: none;
   &.collapsed {
     display: initial;
-    border: 1px solid #444;
+    border: 1px solid #bbb;
   }
 `;
