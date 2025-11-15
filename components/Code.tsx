@@ -147,7 +147,7 @@ const codeContainerCss = css`
     padding: 1rem;
     margin-top: 0;
     margin-bottom: 0;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     border-bottom: none;
     height: 60px;
     font-size: large;
@@ -158,7 +158,7 @@ const codeContainerCss = css`
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     border-top: none;
   }
   pre {
