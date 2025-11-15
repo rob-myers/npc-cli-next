@@ -69,26 +69,24 @@ const mainCss = css`
   }
 
   > section {
-    --tw-prose-headings: #606060;
+    /* 🔔 override tailwind vars */
+    --tw-prose-headings: #707070;
     --tw-prose-body: #a0a0a0;
     --tw-prose-bold: #a0a0a0;
-  }
-
-  @media (max-width: ${breakpoint}) {
-    > section {
+    
+    @media (max-width: ${breakpoint}) {
+      filter: contrast(1.5);
       max-width: unset !important;
       padding: 0 12px;
     }
-  }
-  
-  @media (min-width: ${afterBreakpoint}) {
-    > section {
+    @media (min-width: ${afterBreakpoint}) {
       width: 100%;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
     }
   }
+  
 `;
 
 const mainHeaderCss = css`
