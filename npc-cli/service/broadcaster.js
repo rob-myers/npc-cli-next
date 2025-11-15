@@ -1,3 +1,5 @@
+import debounce from "debounce";
+
 /**
  * Basic `Subject` replacement with notion of "internal" listeners:
  *  - Internal listeners may invoke `next`
@@ -36,12 +38,16 @@ export class Broadcaster {
    * @param {((value: T) => void)} observer.next
    * @param {((value: T) => void)} [observer.error]
    * @param {((value: T) => void)} [observer.complete]
-   * @param {{ internal?: boolean }} [opts]
+   * @param {object} [opts]
+   * @param {boolean} [opts.internal]
+   * @param {number} [opts.debounceMs]
    * @returns {BasicSubscription}
    */
-  subscribe({ next, error, complete}, opts = {}) {
-    const key = opts.internal ? 'internals' : 'listeners';
-    this[key].push(next);
+  subscribe({ next, error: _error, complete: _complete }, opts = {}) {
+    const key = opts.internal === true ? 'internals' : 'listeners';
+    this[key].push(
+      typeof opts.debounceMs === 'number' ? debounce(next, opts.debounceMs) : next
+    );
     const tearDowns = /** @type {(() => void)[]} */ ([]);
     return {
       unsubscribe: () => {

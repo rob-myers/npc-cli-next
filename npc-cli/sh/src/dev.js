@@ -474,7 +474,6 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
     });
 
     // update `options` on spawn/remove
-    // 🚧 debounce
     const { unsubscribe: unSubEvents } = w.events.subscribe({
       next(event) {
         if (event.key === 'spawned' || event.key === 'spawned-many' || event.key === 'removed-npcs') {
@@ -485,7 +484,7 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
           });
         }
       },
-    });
+    }, { debounceMs: 500 });
 
     ct.api.handleStatus({
       cleanups() {
