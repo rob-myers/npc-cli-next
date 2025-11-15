@@ -106,10 +106,13 @@ const navCss = css`
 
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
-  color: #998;
   font-size: 0.8rem;
   font-weight: 200;
   letter-spacing: 0.15em;
+  color: #998;
+  @media (max-width: ${breakpoint}) {
+    color: #ccb;
+  }
 
   // Nav title
   .${menuClasses.menuItemRoot}.title {
@@ -130,7 +133,7 @@ const navCss = css`
     .${menuClasses.label} {
       a {
         pointer-events: all;
-        color: #998;
+
       }
     }
   }
