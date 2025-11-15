@@ -516,7 +516,7 @@ export const xRayOpacity = {
 
 export const initialCameraAngle = /** @type {const} */ ({
   azimuthal: Math.PI / 4,
-  polar: Math.PI / 4,
+  polar: Math.PI / 3.5,
 });
 
 /**
