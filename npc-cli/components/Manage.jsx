@@ -109,7 +109,7 @@ export default function Manage(props) {
   }));
 
   return (
-    <div css={manageCss} className="manage h-full overflow-auto p-4 bg-[#222]">
+    <div css={manageCss} className="manage h-full overflow-auto p-4 bg-[#111]">
         
       <ul className="extant">
         <li className="title">Current</li>
@@ -249,7 +249,6 @@ const manageCss = css`
     row-gap: 0;
     font-size: small;
     border: var(--separating-border);
-    background-color: #222;
   }
   
   ul li.title {
@@ -262,14 +261,13 @@ const manageCss = css`
     padding: 0;
     color: #fff;
     font-size: small;
-    background-color: #333;
+    background-color: #222;
     border-color: rgba(0, 0, 0, 0);
   }
 
   .extant li, .create li {
     display: flex;
     border: var(--item-border);
-    background-color: #111;
     justify-content: space-between;
     align-items: stretch;
     color: white;
@@ -374,14 +372,12 @@ const manageCss = css`
     gap: 4px;
     row-gap: 0;
     border: var(--separating-border);
-    background-color: #222;
 
     li {
       display: flex;
       align-items: center;
       padding: 4px 8px;
       border: var(--item-border);
-      background-color: #111;
       padding: 8px;
     }
     a {
