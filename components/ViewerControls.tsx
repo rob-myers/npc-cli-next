@@ -261,7 +261,7 @@ const viewerControlsCss = css`
 
   background-color: #000;
   touch-action: none;
-  border-top: 1px solid #555;
+  border-top: 1px solid #333;
 
   .left-or-bottom-group {
     .drag-indicator {
@@ -314,7 +314,7 @@ const viewerControlsCss = css`
     flex-direction: row;
 
     cursor: row-resize;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #333;
 
     .status-text {
       height: 100%;
