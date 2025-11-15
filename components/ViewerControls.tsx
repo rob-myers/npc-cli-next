@@ -192,12 +192,13 @@ export default function ViewerControls({ api }: Props) {
           <div className="drag-indicator">
             <FontAwesomeIcon icon={faGrip} size="sm" />
           </div>
-          <div className={clsx("status-text", api.tabs.everEnabled && api.tabs.enabled ? 'text-[#dfd]' : 'text-[#aaa]')}>
-            {api.tabs.everEnabled ? (api.tabs.enabled ? 'active' : 'paused') : 'idle'}
-          </div>
         </div>
 
         <Spinner className="internal-api-spinner" size={12} color="#ff9" />
+      </div>
+
+      <div className={clsx("status-text", api.tabs.everEnabled && api.tabs.enabled ? 'text-[#dfd]' : 'text-[#aaa]')}>
+        {api.tabs.everEnabled ? (api.tabs.enabled ? 'active' : 'paused') : 'idle'}
       </div>
 
       <button

@@ -12,7 +12,7 @@ export const nav = {
   expandedRem: 15,
   expandedWidth: `${12}rem`,
   menuItemRem: 3.5,
-  menuItem: `${4}rem`,
+  menuItem: `${3}rem`,
   titleMarginTop: `${0.5}rem`,
 } as const;
 

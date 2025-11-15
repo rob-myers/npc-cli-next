@@ -106,8 +106,8 @@ const navCss = css`
 
   border-right: 1px solid #444 !important;
   text-transform: lowercase;
-  color: #ccb;
-  font-size: 0.9rem;
+  color: #998;
+  font-size: 0.8rem;
   font-weight: 200;
   letter-spacing: 0.15em;
 
@@ -118,7 +118,7 @@ const navCss = css`
     padding-left: 0.75rem;
     border-bottom: 1px solid #333;
     font-weight: 200;
-    font-size: 1rem;
+    font-size: 0.9rem;
     text-transform: capitalize;
     letter-spacing: 0.7rem;
 
@@ -130,7 +130,7 @@ const navCss = css`
     .${menuClasses.label} {
       a {
         pointer-events: all;
-        color: #ddd;
+        color: #998;
       }
     }
   }
@@ -154,7 +154,6 @@ const navCss = css`
     svg {
       color: #ccc;
       padding: 6px;
-      background:#aaa4;
       border-radius: 50%;
     }
   }
