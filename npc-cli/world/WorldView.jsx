@@ -74,7 +74,7 @@ export default function WorldView(props) {
     },
     pickingScene: new THREE.Scene(),
     raycaster: new THREE.Raycaster(),
-    resizeOpts: { debounce: 30 },
+    resizeOpts: { debounce: 0 },
     resolve: { fov: undefined, look: undefined, polar: undefined, azimuthal: undefined },
     reject: { fov: undefined, look: undefined, polar: undefined, azimuthal: undefined },
     rootEl: /** @type {*} */ (null),
@@ -760,14 +760,6 @@ export default function WorldView(props) {
 
   React.useEffect(() => {
     state.pickingScene.onAfterRender = state.renderObjectPickScene;
-
-    // fade for small height relative to width
-    const obs = new ResizeObserver(([{ contentRect: { height, width } }]) => 
-      state.rootEl.style.filter = `brightness(${ height < width/3 ? height / (width/3) : 1})`
-    );
-    obs.observe(w.view.rootEl);
-    return () => obs.disconnect();
-
   }, [state.controls]);
 
   const update = useUpdate();
