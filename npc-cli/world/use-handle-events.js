@@ -692,7 +692,6 @@ export default function useHandleEvents(w) {
       }
 
       const offMesh = e.offMesh;
-      const { dstGrKey } = offMesh.orig;
 
       if (
         offMesh.nextUnit === null // target too close to offMesh.dst
@@ -734,7 +733,9 @@ export default function useHandleEvents(w) {
       const target = /** @type {Geom.Vect} */ (npc.target);
       const entryDist = npc.point.distanceTo(improved.src);
 
-      if (entryDist > 0.2 === true) {// entry too far
+      // if too small (0.2) can jerk when replan near door (replan avoids bad paths after door)
+      // if too large the agent is less flexible near door because already entered offMesh
+      if (entryDist > 0.5) {// entry too far
         const newTarget = improved.src;
         npc.adjustTargets(newTarget, target, ...npc.pendingTargets);
         npc.exitOffMeshFor(newTarget);

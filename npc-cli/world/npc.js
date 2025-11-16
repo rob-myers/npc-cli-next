@@ -1030,16 +1030,16 @@ export class NpcApi {
         // only finish look when move a short distance
         this.lastStart.distanceTo(this.point) < 0.5 ? this.lookAngleDst : null
       );
-    } else {
-      this.lastStart.copy(this.point);
-      this.target = this.lastTarget.copy(pendingTarget);
-      this.numCorners = 0;
-      agent.requestMoveTarget(toV3(this.target));
-      // 🚧 causing jerky movement when replan just before door
-      // agent.raw.set_targetReplan(true); // fix initial navpath e.g. traverse wrong offmesh
-      this.setSlowDownRadius();
-      this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath });
+      return;
     }
+
+    this.lastStart.copy(this.point);
+    this.target = this.lastTarget.copy(pendingTarget);
+    this.numCorners = 0;
+    this.setSlowDownRadius();
+    agent.requestMoveTarget(toV3(this.target));
+    agent.raw.set_targetReplan(true); // fix bad initial path
+    this.w.events.next({ key: 'continued-moving', npcKey: this.key, showNavPath: this.w.npc.showLastNavPath });
   }
 
   /**
