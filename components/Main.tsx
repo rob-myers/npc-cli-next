@@ -70,9 +70,10 @@ const mainCss = css`
 
   > section {
     /* 🔔 override tailwind vars */
-    --tw-prose-headings: #707070;
+    --tw-prose-headings: #777777;
     --tw-prose-body: #a0a0a0;
     --tw-prose-bold: #a0a0a0;
+    --tw-prose-counters: #808080;
     
     @media (max-width: ${breakpoint}) {
       filter: contrast(1.5);
