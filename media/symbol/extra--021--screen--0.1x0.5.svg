@@ -28,10 +28,10 @@
       </defs>
     </pattern>
   </defs>
-  <use width="1" height="1" style="" href="#symbol-0" transform="matrix(25, 0, 0, 150, 2.729542, 0.000001)">
-    <title>decor cuboid screen nav h=0.75 color=#999</title>
+  <use width="1" height="1" style="" href="#symbol-0" transform="matrix(25, 0, 0, 150, 2.7295420169830322, 0.0000010000001111620804)">
+    <title>decor cuboid screen nav h=0.75 color=#555</title>
   </use>
-  <use width="1" height="1" transform="matrix(0.006535, 150, -149.999878, 0.189485, 28.506758, 74.5)" style="transform-origin: 0.497029px 0.499996px;" href="#symbol-0">
+  <use width="1" height="1" transform="matrix(0.006535000167787075, 150, -149.9998779296875, 0.18948502838611603, 28.506757736206055, 74.5)" style="transform-origin: 0.497029px 0.499996px;" href="#symbol-0">
     <title>decor quad tilt img=screen--1x1 y=0.375</title>
   </use>
 </svg>

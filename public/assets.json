@@ -219,7 +219,7 @@
       "pngHash": 906794356,
       "obsHashes": [-877033108]
     },
-    "extra--021--screen--0.1x0.5": {"outputHash": 421572440, "pngHash": 0},
+    "extra--021--screen--0.1x0.5": {"outputHash": 480901844, "pngHash": 0},
     "fresher--002--0.4x0.6": {
       "outputHash": 1400761609,
       "pngHash": -1792259774,
@@ -1457,7 +1457,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 2045011229},
-    "imagesHash": -623509606
+    "imagesHash": -2117213478
   },
   "skin": {
     "numSheets": {"human-0": 2},
@@ -13159,7 +13159,7 @@
             "screen": true,
             "nav": true,
             "h": 0.75,
-            "color": "#999",
+            "color": "#555",
             "transform": [0.125, 0, 0, 0.75, 0.0136, 0]
           }
         },

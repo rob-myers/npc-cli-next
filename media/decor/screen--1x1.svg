@@ -13,22 +13,29 @@
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
-    <filter id="filter-1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%" bx:preset="inner-shadow 1 0 0 21 0.68 rgba(0,0,0,0.7)">
+    <filter id="filter-1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%" bx:preset="inner-shadow 1 0 0 33 0.72 rgba(0,0,0,0.7)">
       <feOffset dx="0" dy="0"/>
-      <feGaussianBlur stdDeviation="21"/>
+      <feGaussianBlur stdDeviation="33"/>
       <feComposite operator="out" in="SourceGraphic"/>
       <feComponentTransfer result="choke">
-        <feFuncA type="linear" slope="1.36"/>
+        <feFuncA type="linear" slope="1.44"/>
       </feComponentTransfer>
       <feFlood flood-color="rgba(0,0,0,0.7)" result="color"/>
       <feComposite operator="in" in="color" in2="choke" result="shadow"/>
       <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
     </filter>
+    <filter id="brightness-filter-0" bx:preset="brightness 1 0.57" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="0.57"/>
+        <feFuncG type="linear" slope="0.57"/>
+        <feFuncB type="linear" slope="0.57"/>
+      </feComponentTransfer>
+    </filter>
   </defs>
   <path d="M 200 0 L 200 199.004 L 0 199.004 L 0 0 L 200 0 Z" style="fill: rgb(34, 34, 34); stroke-width: 4px; filter: url(&quot;#inner-shadow-filter-0&quot;);">
     <title>bg</title>
   </path>
-  <path d="M 179.995 168.007 C 179.865 174.762 177.315 179.888 168.745 180 L 31.25 180 C 22.68 179.888 20.13 174.762 20 168.007 L 20 31.993 C 20.13 25.238 22.68 20.112 31.25 20 L 168.745 20 C 177.315 20.112 179.865 25.238 179.995 31.993 Z" style="stroke-width: 4px; fill: rgb(153, 153, 153); filter: url(&quot;#filter-1&quot;);">
+  <path d="M 179.995 168.007 C 179.865 174.762 177.315 179.888 168.745 180 L 31.25 180 C 22.68 179.888 20.13 174.762 20 168.007 L 20 31.993 C 20.13 25.238 22.68 20.112 31.25 20 L 168.745 20 C 177.315 20.112 179.865 25.238 179.995 31.993 Z" style="fill: rgb(153, 153, 153); filter: url(&quot;#filter-1&quot;) url(&quot;#brightness-filter-0&quot;); stroke: rgb(102, 102, 102); stroke-width: 12px;">
     <title>screen</title>
   </path>
 </svg>

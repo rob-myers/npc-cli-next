@@ -27321,7 +27321,7 @@
             "screen": true,
             "nav": true,
             "h": 0.75,
-            "color": "#999",
+            "color": "#555",
             "y": 1.01
           },
           "bounds2d": {"x": 7.89, "y": 6.0136, "width": 0.75, "height": 0.125},
@@ -27352,7 +27352,7 @@
             "screen": true,
             "nav": true,
             "h": 0.75,
-            "color": "#999",
+            "color": "#555",
             "y": 0.61
           },
           "bounds2d": {"x": 6.2036, "y": 8.99, "width": 0.125, "height": 0.75},
@@ -46184,7 +46184,7 @@
     "obstacleDims": [{"width": 2367, "height": 2206}],
     "maxObstacleDim": {"width": 2367, "height": 2206},
     "glbHash": {"human-0": 2045011229},
-    "imagesHash": -623509606
+    "imagesHash": -2117213478
   },
   "skin": {
     "numSheets": {"human-0": 2},
