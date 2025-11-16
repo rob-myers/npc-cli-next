@@ -138,8 +138,12 @@ export async function* handleContextMenu(ct) {
         break;
       case "follow": {
         if (typeof meta.npcKey === "string") {
-          const { feedback } = await core.connectUi(ct, { uiKey: 'base' });
-          feedback.change('base', { npcKey: meta.npcKey, follow: true });
+          if (w.e.isFollowingNpc(meta.npcKey) === true) {
+            w.e.stopFollowing();
+          } else {
+            w.e.followNpc(meta.npcKey);
+          }
+          w.cm.update();
         }
         break;
       }
@@ -425,12 +429,12 @@ export async function* tour(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }, 
 /**
  * Follow/unfollow and select/unselect
  * ```sh
- * uiFollowSelect key:base
+ * createFollowUi key:base
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ uiKey?: string; }} [opts]
  */
-export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
+export async function createFollowUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
@@ -478,13 +482,23 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
       next(event) {
         if (event.key === 'spawned' || event.key === 'spawned-many' || event.key === 'removed-npcs') {
           feedback.ui.setState(draft => {
-            /** @type {Extract<NPC.FeedbackInput, { type: 'select' }>} */ (
+            const input = /** @type {Extract<NPC.FeedbackInput, { type: 'select' }>} */ (
               draft.lookup[uiKey].input.npcKey
-            ).options = Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey }));
+            );
+            input.options = Object.keys(w.n).map(npcKey => ({ label: npcKey, value: npcKey }));
+          });
+        } else if (event.key === 'stopped-following') {
+          feedback.ui.setState(draft => {
+            draft.lookup[uiKey].input.follow.value = false;
+          });
+        } else if (event.key === 'started-following') {
+          feedback.ui.setState(draft => {
+            draft.lookup[uiKey].input.npcKey.value = event.npcKey;
+            draft.lookup[uiKey].input.follow.value = true;
           });
         }
       },
-    }, { debounceMs: 500 });
+    }, { debounceMs: 300 });
 
     ct.api.handleStatus({
       cleanups() {

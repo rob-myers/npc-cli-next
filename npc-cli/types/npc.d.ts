@@ -169,6 +169,8 @@ declare namespace NPC {
     | { key: 'controls-end' }
     | { key: 'fade-npc'; npcKey: string; opacityDst: number }
     | { key: 'click-thought'; npcKey: string; thoughtKey: string; buttonKey: string; }
+    | { key: 'started-following'; npcKey: string; }
+    | { key: 'stopped-following'; npcKey: string; }
     // ...
   );
 

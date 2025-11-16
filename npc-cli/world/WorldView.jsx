@@ -345,11 +345,11 @@ export default function WorldView(props) {
       update();
     },
     async lookAt(point, opts = { smoothTime: 0.4, maxDistance: 10 }) {
-      if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
-        state.clearTargetDamping(); // needs justification
-      }
-      const dst = toV3(point);
-      await state.tween({ look: dst, lookOpts: opts });
+      // if (w.disabled === true && state.dst.look !== undefined && w.reqAnimId === 0) {
+      //   state.clearTargetDamping(); // needs justification
+      // }
+      state.stopFollowing();
+      await state.tween({ look: toV3(point), lookOpts: opts });
     },
     onChangeControls(_e) {
       // const zoomState = state.controls.getDistance() > 20 ? 'far' : 'near';
@@ -682,9 +682,6 @@ export default function WorldView(props) {
         delete state.dst.maxDistance;
         state.ctrlOpts.zoomToCursor = true;
         update();
-        return true;
-      } else {
-        return false;
       }
     },
     syncRenderMode() {
@@ -904,7 +901,7 @@ export default function WorldView(props) {
  * @property {(gl: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, ri: THREE.RenderItem & { material: THREE.ShaderMaterial }) => void} renderObjectPickItem
  * @property {() => void} renderObjectPickScene
  * @property {(partial: Partial<Record<'brightness'| 'sepia' | 'invert', string>>) => void} setCssFilter
- * @property {() => boolean} stopFollowing
+ * @property {() => void} stopFollowing
  * @property {() => import("@react-three/fiber").RootState['frameloop']} syncRenderMode
  * @property {HTMLCanvasElement['toDataURL']} toDataURL
  * Canvas only e.g. no ContextMenu

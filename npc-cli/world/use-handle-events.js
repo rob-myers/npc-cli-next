@@ -21,6 +21,7 @@ export default function useHandleEvents(w) {
     doorToNearbyNpcs: {},
     doorToOffMesh: {},
     externalNpcs: new Set(),
+    followedNpcKey: null,
     npcToAccess: {},
     npcToDoors: {},
     npcToRoom: new Map(),
@@ -163,10 +164,9 @@ export default function useHandleEvents(w) {
     },
     followNpc(npcKey, opts = { smoothTime: 0.4, maxDistance: undefined }) {
       const npc = w.n[npcKey];
-      w.view.followObject3D(npc.m.group, {
-        height: helper.defaults.height,
-        ...opts,
-      });
+      w.view.followObject3D(npc.m.group, { height: helper.defaults.height, ...opts });
+      state.followedNpcKey = npcKey;
+      w.events.next({ key: 'started-following', npcKey });
     },
     getGrKey(npcKey) {
       return state.npcToRoom.get(npcKey)?.grKey;
@@ -337,6 +337,10 @@ export default function useHandleEvents(w) {
             }
   
             w.bubble.delete(npcKey);
+
+            if (state.followedNpcKey === npcKey) {
+              state.stopFollowing();
+            }
           }
 
           w.update();
@@ -863,7 +867,11 @@ export default function useHandleEvents(w) {
       return state.doorToNearbyNpcs[gdKey]?.size > 0;
     },
     stopFollowing() {
+      const npcKey = state.followedNpcKey;
+      if (npcKey === null) return;
+      state.followedNpcKey = null;
       w.view.stopFollowing();
+      w.events.next({ key: 'stopped-following', npcKey });
     },
     testOffMeshDisjoint(offMesh1, src, dst, radius = helper.defaults.radius * 0.8) {
       // 🚧 handle diagonal doors
@@ -954,6 +962,7 @@ export default function useHandleEvents(w) {
  * @property {{ [gdKey: Geomorph.GmDoorKey]: NPC.OffMeshState[] }} doorToOffMesh
  * Mapping from doors to in-progress offMeshConnection traversals.
  * @property {Set<string>} externalNpcs
+ * @property {null | string} followedNpcKey
  * `npcKey`s not inside any room
  * @property {{ [npcKey: string]: Set<string> }} npcToAccess
  * Relates `npcKey` to strings defining RegExp's matching `Geomorph.GmDoorKey`s
