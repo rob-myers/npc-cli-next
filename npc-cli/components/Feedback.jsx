@@ -201,7 +201,7 @@ function FeedbackUiInput({ input }) {
       return (
         <label className="select-none flex gap-1">
           <div className={clsx(
-            "select-none font-normal bg-black hover:brightness-150 cursor-pointer rounded-sm px-1 border-2 border-gray-800",
+            "select-none font-[200] bg-black hover:brightness-150 cursor-pointer rounded-sm px-1 border-2 border-gray-800",
             input.value ? 'text-white' : 'text-white/50')
           }>
             {input.label ?? input.key}

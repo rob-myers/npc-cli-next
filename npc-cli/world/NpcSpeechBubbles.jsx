@@ -247,7 +247,7 @@ const popUpCss = css`
     border-top-left-radius: 0;
   }
 
-  ${popUpBubbleArrowColorCssVar}: #fff9;
+  ${popUpBubbleArrowColorCssVar}: #dda;
 `;
 
 const thoughtsCss = css`
