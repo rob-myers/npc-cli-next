@@ -144,7 +144,7 @@
 - ✅ remove demoSelectViaFeedback
 - ✅ change to demoFollowSelectFeedback
 - ✅ migrate `~/selected` to follow ui
-  - ✅ selectTrackedNpc
+  - ✅ setUiNpc
   - ✅ moveTrackedNpc
   - ✅ lookDoTrackedNpc
   - ✅ replace all
@@ -152,8 +152,9 @@
 - ✅ Feedback shows message when ui pending
 
 - 🚧 `ui` command, e.g.
-  - `ui key:base set:'{selector:true}'` (default feedback)
-  - `ui parent:feedback-2 key:base set:'{selector:true}'`
+  - `ui key:base selector:true` (default feedback)
+    - must avoid name collisions
+  - `ui parent:feedback-2 key:base selector:true`
   - `ui rm:base`
   - `ui` (list uis)
 
