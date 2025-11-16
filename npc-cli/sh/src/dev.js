@@ -109,12 +109,15 @@ export async function* direct(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' }
 }
 
 /**
+ * 🔔 uses ui base
  * ```sh
  * events | handleContextMenu
  * ```
- * @param {NPC.RunArg<NPC.Event>} ct
+ * @param {NPC.RunArg} ct
  */
-export async function* handleContextMenu({ api, w, datum: e }) {
+export async function* handleContextMenu(ct) {
+  const { api, w } = ct;
+  /** @type {NPC.Event} */ let e;
   while ((e = await api.read()) !== api.eof) {
     if (e.key !== "contextmenu-link") {
       continue;
@@ -133,16 +136,13 @@ export async function* handleContextMenu({ api, w, datum: e }) {
         }
         w.cm.update(); // Might have stopped follow
         break;
-      case "follow":
+      case "follow": {
         if (typeof meta.npcKey === "string") {
-          if (w.e.isFollowingNpc(meta.npcKey)) {
-            w.view.stopFollowing();
-          } else {
-            w.e.followNpc(meta.npcKey);
-          }
-          w.cm.update();
+          const { feedback } = await core.connectUi(ct, { uiKey: 'base' });
+          feedback.change('base', { npcKey: meta.npcKey, follow: true });
         }
         break;
+      }
       case "open":
       case "close":
         w.e.toggleDoor(meta.gdKey, {
