@@ -41,7 +41,7 @@ export default function Feedback(props) {
         draft.lookup[ui.key] = feedbackUiDefToUi(ui, ui.key);
       });
     },
-    changeUi(uiKey, partial) {
+    change(uiKey, partial) {
       state.ui.setState(draft => {// assumes type correctness
         const inputLookup = draft.lookup[uiKey].input;
         Object.entries(partial).forEach(([inputKey, value]) => {
@@ -68,7 +68,7 @@ export default function Feedback(props) {
       state.pendingMode = state.pending.size === 0 ? 'none' : state.pendingMode;
       update();
     },
-    removeUi(uiKey) {
+    remove(uiKey) {
       state.ui.setState(draft => { delete draft.lookup[uiKey]; });
     },
     setPendingMode: (next) => {
@@ -165,11 +165,11 @@ export default function Feedback(props) {
  * @property {Map<number, PendingNotification>} pending Pending processes
  * @property {UiStore} ui
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
- * @property {((uiKey: string, partial: { [inputKey: string]: string | number | boolean }) => void)} changeUi
+ * @property {((uiKey: string, partial: { [inputKey: string]: string | number | boolean }) => void)} change
  * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
  * @property {((item: PendingNotification) => void)} registerPending
  * @property {((pid: number) => void)} removePending
- * @property {((uiKey: string) => void)} removeUi
+ * @property {((uiKey: string) => void)} remove
  * @property {((next: State['pendingMode']) => void)} setPendingMode
  * @property {(() => void)} togglePendingMode
  */

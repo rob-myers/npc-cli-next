@@ -491,7 +491,7 @@ export async function uiFollowSelect(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
         reject(ct.api.getKillError());
         unSubUi();
         unSubEvents();
-        feedback.removeUi(uiKey); // always remove?
+        feedback.remove(uiKey); // always remove?
       },
     });
   });

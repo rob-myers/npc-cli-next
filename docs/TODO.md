@@ -150,6 +150,11 @@
   - ✅ replace all
 
 - ✅ Feedback shows message when ui pending
+- 🚧 `ui` command, e.g.
+  - `ui key:base set:'{selector:true}'` (default feedback)
+  - `ui parent:feedback-2 key:base set:'{selector:true}'`
+  - `ui rm:base`
+  - `ui` (list uis)
 - 🚧 Feedback removes message when ui no longer pending
 - 🚧 connectUi removes pending on kill
 - on Feedback tab close
