@@ -568,6 +568,7 @@ export default function useHandleEvents(w) {
         input = w.n[input].position;
         lookAtOpts.height = helper.defaults.height;
       }
+      w.e.stopFollowing();
       await w.view.lookAt(toV3(input), lookAtOpts);
     },
     npcCanAccess(npcKey, gdKey) {
