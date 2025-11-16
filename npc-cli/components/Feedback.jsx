@@ -1,7 +1,6 @@
 import React from "react";
 import clsx from 'clsx';
 import debounce from "debounce";
-import { motion, AnimatePresence } from "motion/react";
 import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { devtools } from "zustand/middleware";
@@ -144,19 +143,17 @@ export default function Feedback(props) {
         )}
         onClick={state.togglePendingMode}
       >
-        <AnimatePresence initial>
-          {state.pendingMode === 'open'
-            ? <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { duration: 0.5, delay: 0.25 } }} key="pending">
-                {Array.from(state.pending.values()).map(item =>
-                  <div key={item.pid} className="flex gap-2 pl-1 w-full">
-                    <div className="text-green-300">{item.pid}</div>
-                    <div className="text-yellow-200 whitespace-nowrap">{item.message}</div>
-                  </div>)}
-              </motion.div>
-              
-            : <motion.div key="icon" className="mr-2">⚠️</motion.div>
-          }
-        </AnimatePresence>
+        {state.pendingMode === 'open'
+          ? <div>
+              {Array.from(state.pending.values()).map(item =>
+                <div key={item.pid} className="flex gap-2 pl-1 w-full">
+                  <div className="text-green-300">{item.pid}</div>
+                  <div className="text-yellow-200 whitespace-nowrap">{item.message}</div>
+                </div>)}
+            </div>
+            
+          : <div className="mr-2">⚠️</div>
+        }
       </div>
     </div>
   );
