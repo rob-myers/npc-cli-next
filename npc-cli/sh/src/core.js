@@ -571,6 +571,25 @@ export function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', 
 }
 
 /**
+ * ```sh
+ * # list uis for default feedback
+ * ui
+ * # 🚧
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ uiKey?: string; parentKey?: string; apply?: { [inputKey: string]: boolean | number | string } }} [opts]
+ */
+export async function* ui(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', parent: 'parentKey' })) {
+  const feedback = await connectFeedback(ct);
+  for (const ui of Object.values(feedback.ui.getState().lookup)) {
+    yield { [ui.key]: Object.values(ui.input)
+      .map(({ key, value }) => ({ [key]: value }))
+      .reduce((acc, obj) => ({ ...acc, ...obj }), {})
+    };
+  }
+}
+
+/**
  * Usage:
  * ```sh
  * w

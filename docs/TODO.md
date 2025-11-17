@@ -152,14 +152,14 @@
 - ✅ Feedback shows message when ui pending
 
 - 🚧 `ui` command, e.g.
+  - ✅ `ui` (list uis)
   - `ui key:base selector:true` (default feedback)
     - must avoid name collisions
   - `ui parent:feedback-2 key:base selector:true`
   - `ui rm:base`
-  - `ui` (list uis)
 
 - ✅ handleContextMenu follow uses ui base
-- 🚧 handleContextMenu look is breaking follow ui...
+- ✅ handleContextMenu look is breaking follow ui
 
 - 🚧 Feedback removes message when ui no longer pending
 - 🚧 connectUi removes pending on kill
