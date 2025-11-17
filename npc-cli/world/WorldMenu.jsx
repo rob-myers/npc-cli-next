@@ -134,7 +134,7 @@ export default function WorldMenu(props) {
       }
     },
     onConnect(connectorKey) {
-      state.logger.xterm.writeln(`[${ansi.Blue}${connectorKey}${ansi.Reset}] connected`);
+      state.logger.xterm.writeln(`[${ansi.BlueBold}${connectorKey}${ansi.Reset}] connected`);
     },
     onOverlayPointerUp() {
       props.setTabsEnabled(true);
@@ -143,7 +143,7 @@ export default function WorldMenu(props) {
       const line = parts.join(' ');
       state.logger.xterm.writeln(
         `${ansi.GreenBright}[${ansi.YellowBright}${ansi.Bold}${name}${ansi.GreenBright}${ansi.BoldReset}]${ansi.Reset} ${
-          line.replace(globalLoggerLinksRegex, `${ansi.GreenDark}[${ansi.Blue}$1${ansi.Reset}${ansi.GreenDark}]${ansi.Reset}`)
+          line.replace(globalLoggerLinksRegex, `${ansi.GreenDark}[${ansi.BlueBold}$1${ansi.Reset}${ansi.GreenDark}]${ansi.Reset}`)
         }${ansi.Reset}`
       );
       state.logger.xterm.scrollToBottom();

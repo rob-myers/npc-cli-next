@@ -183,7 +183,7 @@ export class ttyShellClass implements Device {
       this.xterm.historyEnabled = false;
       useSession.api.writeMsg(
         this.sessionKey,
-        `${ansi.Blue}${this.sessionKey}${ansi.White} running ${ansi.Blue}/home/PROFILE${ansi.Reset}`,
+        `${ansi.BlueBold}${this.sessionKey}${ansi.White} running ${ansi.BlueBold}/home/PROFILE${ansi.Reset}`,
         "info"
       );
       

@@ -32,7 +32,7 @@ function getCharsFromToken([type, value]: [number, string]) {
     //   return ansi.White + value
     case 7: // sign
       // return ansi.Grey + value
-      return ansi.Blue + value + ansi.BoldReset;
+      return ansi.BlueBold + value + ansi.BoldReset;
     // case 8: // comment
     //   return ansi.DarkGrey + value
     default:

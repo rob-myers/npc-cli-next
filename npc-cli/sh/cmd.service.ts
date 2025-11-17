@@ -221,7 +221,7 @@ class cmdServiceClass {
         if (showVars) {
           for (const [key, value] of Object.entries(vars)) {
             if (prefixes && !prefixes.some((x) => key.startsWith(x))) continue;
-            yield `${ansi.Blue}${key}${ansi.Reset}=${
+            yield `${ansi.BlueBold}${key}${ansi.Reset}=${
               typeof value === "string" ? ansi.White : ansi.YellowBright
             }${jsStringify(value).slice(-xterm.maxStringifyLength)}${ansi.Reset}`;
           }
@@ -235,7 +235,7 @@ class cmdServiceClass {
             if (prefixes && !prefixes.some((x) => key.startsWith(x))) continue;
             if (exactMatch && key !== exactMatch) continue;
             const lines =
-              `${ansi.Blue}${key}${ansi.White} ()${ansi.BoldReset} ${src}${ansi.Reset}`.split(
+              `${ansi.BlueBold}${key}${ansi.White} ()${ansi.BoldReset} ${src}${ansi.Reset}`.split(
                 /\r?\n/
               );
             yield* lines;
@@ -280,9 +280,9 @@ class cmdServiceClass {
         const commands = cliColumns(Object.keys(commandKeys), {
           width: ttyShell.xterm.xterm.cols,
         }).split(/\r?\n/);
-        for (const line of commands) yield `${ansi.Blue}${line}`;
+        for (const line of commands) yield `${ansi.BlueBold}${line}`;
         // yield `Traverse context via \`ls\` or \`ls -l var.foo.bar\` (Object.keys).`
-        yield `\n\rView shell functions via ${ansi.Blue}declare -F${ansi.Reset}.`;
+        yield `\n\rView shell functions via ${ansi.BlueBold}declare -F${ansi.Reset}.`;
         // yield `Use Ctrl-c to interrupt and Ctrl-l to clear screen.`
         // yield `View history via up/down or \`history\`.`
         // yield `Traverse input using Option-left/right and Ctrl-{a,e}.`
@@ -423,7 +423,7 @@ class cmdServiceClass {
             continue;
           }
 
-          if (roots.length > 1) yield `${ansi.Blue}${queries[i]}:`;
+          if (roots.length > 1) yield `${ansi.BlueBold}${queries[i]}:`;
           let keys = (opts.r ? keysDeep(obj) : Object.keys(obj)).sort();
           let items = [] as string[];
           if (pwd === "/home" && !opts.a) {
@@ -486,7 +486,7 @@ class cmdServiceClass {
         }
 
         const title = ["pid", "ppid", "pgid"].map((x) => x.padEnd(5)).join(" ");
-        yield `${ansi.Blue}${title}${ansi.Reset}`;
+        yield `${ansi.BlueBold}${title}${ansi.Reset}`;
 
         for (const process of Object.values(processes)) {
           yield getProcessLine(process);

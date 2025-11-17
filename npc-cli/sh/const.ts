@@ -1,7 +1,8 @@
 export const ansi = {
   Black: "\x1b[30m",
   /** Light but bold */
-  Blue: "\x1b[1;34m",
+  BlueBold: "\x1b[1;34m",
+  Blue: "\x1b[34m",
   Cyan: "\x1b[96m",
   GreenBgBright: "\x1b[102m\x1b[30m",
   GreenBright: "\x1b[92m",
