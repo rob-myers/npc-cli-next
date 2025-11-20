@@ -153,10 +153,10 @@
 
 - 🚧 `ui` command, e.g.
   - ✅ `ui` (list uis)
-  - `ui key:base selector:true` (default feedback)
-    - must avoid name collisions
-  - `ui parent:feedback-2 key:base selector:true`
-  - `ui rm:base`
+  - ✅ `ui rm:base`
+  - 🚧 `ui key:base @selector:true` (assign selector true)
+  - 🚧 `ui parent:feedback-2 key:base selector:true`
+  - use in profile after spawn
 
 - ✅ handleContextMenu follow uses ui base
 - ✅ handleContextMenu look is breaking follow ui

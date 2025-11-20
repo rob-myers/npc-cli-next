@@ -571,22 +571,36 @@ export function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', 
 }
 
 /**
+ * Intended for shell usage.
  * ```sh
  * # list uis for default feedback
  * ui
+ * ui rm:base
  * # 🚧
  * ```
  * @param {NPC.RunArg} ct
- * @param {{ uiKey?: string; parentKey?: string; apply?: { [inputKey: string]: boolean | number | string } }} [opts]
+ * @param {object} [opts]
+ * @param {string} [opts.rmKeys] Space-separated
+ * @param {string} [opts.uiKey]
+ * @param {string} [opts.parentKey]
+ * @param {{ [inputKey: string]: boolean | number | string }} [opts.apply]
  */
-export async function* ui(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', parent: 'parentKey' })) {
+export async function* ui(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', parent: 'parentKey', rm: 'rmKeys' })) {
   const feedback = await connectFeedback(ct);
-  for (const ui of Object.values(feedback.ui.getState().lookup)) {
-    yield { [ui.key]: Object.values(ui.input)
-      .map(({ key, value }) => ({ [key]: value }))
-      .reduce((acc, obj) => ({ ...acc, ...obj }), {})
-    };
+
+  if (ct.args.length === 0) {
+    for (const ui of Object.values(feedback.ui.getState().lookup)) {
+      yield { [ui.key]: Object.values(ui.input)
+        .map(({ key, value }) => ({ [key]: value }))
+        .reduce((acc, obj) => ({ ...acc, ...obj }), {})
+      };
+    }
   }
+
+  if (ct.args.length === 1 && typeof opts.rmKeys === 'string') {
+    opts.rmKeys.split(' ').forEach(rmKey => feedback.remove(rmKey));
+  }
+
 }
 
 /**
