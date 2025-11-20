@@ -58,6 +58,9 @@ export default function Feedback(props) {
       const ui = state.ui.getState().lookup[uiKey];
       return ui.input[inputKey] ?? null;
     },
+    getUi(uiKey) {
+      return state.ui.getState().lookup[uiKey] ?? null;
+    },
     registerPending: debounce(/** @param {PendingNotification} item */ (item) => {
       state.pending.set(item.pid, item);
       state.pendingMode = state.pendingMode === 'none' ? 'closed' : state.pendingMode;
@@ -167,6 +170,7 @@ export default function Feedback(props) {
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
  * @property {((uiKey: string, partial: { [inputKey: string]: string | number | boolean }) => void)} change
  * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
+ * @property {((uiKey: string) => null | NPC.FeedbackUi )} getUi
  * @property {((item: PendingNotification) => void)} registerPending
  * @property {((pid: number) => void)} removePending
  * @property {((uiKey: string) => void)} remove

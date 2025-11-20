@@ -154,9 +154,9 @@
 - 🚧 `ui` command, e.g.
   - ✅ `ui` (list uis)
   - ✅ `ui rm:base`
-  - 🚧 `ui key:base @selector:true` (assign selector true)
-  - 🚧 `ui parent:feedback-2 key:base selector:true`
-  - use in profile after spawn
+  - ✅ `ui key:base set:{selector:true}` (assign selector true)
+  - ✅ `ui parent:feedback-2 key:base set:{selector:true}`
+  - 🚧 use in profile after spawn
 
 - ✅ handleContextMenu follow uses ui base
 - ✅ handleContextMenu look is breaking follow ui

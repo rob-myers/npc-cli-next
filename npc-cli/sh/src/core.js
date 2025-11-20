@@ -582,11 +582,11 @@ export function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', 
  * @param {object} [opts]
  * @param {string} [opts.rmKeys] Space-separated
  * @param {string} [opts.uiKey]
- * @param {string} [opts.parentKey]
- * @param {{ [inputKey: string]: boolean | number | string }} [opts.apply]
+ * @param {`feedback-${number}`} [opts.parentKey]
+ * @param {{ [inputKey: string]: boolean | number | string }} [opts.set]
  */
 export async function* ui(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', parent: 'parentKey', rm: 'rmKeys' })) {
-  const feedback = await connectFeedback(ct);
+  const feedback = await connectFeedback(ct, { key: opts.parentKey });
 
   if (ct.args.length === 0) {
     for (const ui of Object.values(feedback.ui.getState().lookup)) {
@@ -595,10 +595,17 @@ export async function* ui(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', paren
         .reduce((acc, obj) => ({ ...acc, ...obj }), {})
       };
     }
+    return;
   }
-
+  
   if (ct.args.length === 1 && typeof opts.rmKeys === 'string') {
     opts.rmKeys.split(' ').forEach(rmKey => feedback.remove(rmKey));
+    return;
+  }
+  
+  if (opts.uiKey && opts.set) {
+    feedback.change(opts.uiKey, opts.set);
+    return;
   }
 
 }
