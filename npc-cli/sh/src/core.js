@@ -575,8 +575,11 @@ export function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', 
  * ```sh
  * # list uis for default feedback
  * ui
+ * # remove ui(s)
  * ui rm:base
- * # 🚧
+ * ui remove:'base other-ui'
+ * # set ui inputs
+ * ui key:base set:{selector:true}
  * ```
  * @param {NPC.RunArg} ct
  * @param {object} [opts]
@@ -585,7 +588,7 @@ export function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', 
  * @param {`feedback-${number}`} [opts.parentKey]
  * @param {{ [inputKey: string]: boolean | number | string }} [opts.set]
  */
-export async function* ui(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', parent: 'parentKey', rm: 'rmKeys' })) {
+export async function* ui(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', parent: 'parentKey', rm: 'rmKeys', remove: 'rmKeys' })) {
   const feedback = await connectFeedback(ct, { key: opts.parentKey });
 
   if (ct.args.length === 0) {

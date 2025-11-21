@@ -11,6 +11,7 @@ spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math
 
 # provide base.npcKey
 createFollowUi key:base &
+ui key:base set:'{ selector: true, follow: true }'
 
 ptags always; click meta.npcKey |
   selectNpcOnClick write:base.npcKey &
@@ -30,7 +31,3 @@ setupContextMenu
 ptags always; events | handleContextMenu &
 
 ptags always; events | handleLoggerLinks & 
-
-# 🚧 better way
-connectFeedback | map 'feedback => feedback.change("base", { selector: true, follow: true })'
-# ui key:base apply:'{ selector: true, follow: true }'

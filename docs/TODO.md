@@ -151,18 +151,18 @@
 
 - ✅ Feedback shows message when ui pending
 
-- 🚧 `ui` command, e.g.
+- ✅ `ui` command, e.g.
   - ✅ `ui` (list uis)
   - ✅ `ui rm:base`
   - ✅ `ui key:base set:{selector:true}` (assign selector true)
   - ✅ `ui parent:feedback-2 key:base set:{selector:true}`
-  - 🚧 use in profile after spawn
+  - ✅ use in profile after spawn
 
 - ✅ handleContextMenu follow uses ui base
 - ✅ handleContextMenu look is breaking follow ui
 
-- 🚧 Feedback removes message when ui no longer pending
-- 🚧 connectUi removes pending on kill
+- ✅ Feedback removes message when ui no longer pending
+- ✅ connectUi removes pending on kill
 - on Feedback tab close
   - pending should re-request
   - connected should throw
