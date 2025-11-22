@@ -1,7 +1,6 @@
 import { isStringInt, removeFirst } from '@/npc-cli/service/generic';
 import { helper } from '@/npc-cli/service/helper';
 import * as util from './util';
-import { createDecorNumber } from './dev';
 
 /**
  * @param {NPC.RunArg} ctxt
@@ -86,8 +85,10 @@ export async function* click(ct) {
   const clickId = isStringInt(operands[0]) || opts.block === true ? api.getUid() : undefined;
   const blocking = clickId !== undefined;
 
-  const colors = { red: '#c00', green: '#0c0', blue: '#00c',  black: '#999' };
-  const color = opts.red === true ? colors.red : opts.blue === true ? colors.blue : opts.green === true ? colors.green : colors.black;
+  const colors = { red: '#f00', green: '#0d0', blue: '#00f', white: '#ddd' };
+  const color = opts.red === true
+    ? colors.red
+    : opts.blue === true ? colors.blue : opts.green === true ? colors.green : colors.white;
   const clickGroup = `click-${color}`;
   const decorOffset = opts.keep === true ? w.decor.group[clickGroup]?.length ?? 0 : 0;
 
@@ -185,6 +186,39 @@ export async function* click(ct) {
   } finally {
     handlers.dispose();
   }
+}
+
+/**
+ * Creates floor icon for numbers 0 ... 10, afterwards we use an empty circle.
+ * @param {NPC.RunArg} ct
+ * @param {{
+ *   at: NPC.GroundPoint;
+ *   number: number;
+ *   decorKey?: string;
+ *   meta?: Meta;
+ *   y?: number;
+ * }} [opts]
+ */
+export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
+  const at = helper.toXZ(opts.at);
+  const number = opts.number;
+  const decorKey = opts.decorKey ?? `#${number}-${at.x},${at.y}`;
+  
+  /** @type {Key.DecorImg} */
+  const img = Number.isInteger(number) && number >= 0 && number <= 10
+    ? `icon--#${/** @type {0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10} */ (number)}`
+    : 'icon--white-circle'
+  ;
+
+  ct.w.decor.create({
+    type: 'point',
+    key: decorKey,
+    x: at.x,
+    y: at.y,
+    img,
+    meta: opts.meta,
+    y3d: (opts.y ?? 0) + 0.001, // below npc selector
+  });
 }
 
 /**
