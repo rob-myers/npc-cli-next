@@ -82,9 +82,9 @@ export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' }))
       },
     });
 
-    const unsub = feedback.ui.subscribe((next, prev) => {
-      if (!prev || !next) return; // first or last
-      alert(next.lookup[uiKey].input.choice.value);
+    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prev) => {
+      if (!prev || !ui) return; // first or last
+      alert(ui.input.choice.value);
     });
 
     ct.api.handleStatus({

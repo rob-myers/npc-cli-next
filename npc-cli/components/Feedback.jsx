@@ -9,20 +9,7 @@ import { jsStringify, warn } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
-
-/**
- * @template T
- * @typedef {import("zustand/middleware/immer").WithImmer<T>} WithImmer<T>
- */
-/**
- * @template T
- * @typedef {import("zustand/middleware/subscribeWithSelector").WithSelectorSubscribe<T>} WithSelectorSubscribe<T>
- */
-/**
- * @typedef {{ lookup: { [uiKey: string]: NPC.FeedbackUi } }} UiState
- * Lookup cannot be top-level because zustand delete doesn't work.
- * @typedef {import("zustand").UseBoundStore<WithImmer<WithSelectorSubscribe<import("zustand").StoreApi<UiState>>>>} UiStore
- */
+import useTabs from "../tabs/tabs.store";
 
 /**
  * Provide feedback to a process.
@@ -74,6 +61,14 @@ export default function Feedback(props) {
     remove(uiKey) {
       state.ui.setState(draft => { delete draft.lookup[uiKey]; });
     },
+    removeUiOnClose() {
+      const closingTab = !useTabs.getState().tabset.tabs.some(tab => tab.id === props.tabKey);
+      if (!closingTab) return;
+
+      state.ui.setState(draft => {
+        Object.keys(draft.lookup).forEach(uiKey => delete draft.lookup[uiKey]);
+      });
+    },
     setPendingMode: (next) => {
       state.pendingMode = next;
       update();
@@ -88,7 +83,10 @@ export default function Feedback(props) {
   
   React.useEffect(() => {
     setCached([props.tabKey], state);
-    return () => removeCached([props.tabKey]);
+    return () => {
+      removeCached([props.tabKey]);
+      state.removeUiOnClose();
+    };
   }, []);
 
   return (
@@ -173,6 +171,7 @@ export default function Feedback(props) {
  * @property {UiStore} ui
  * @property {((ui: NPC.FeedbackUiDef) => void)} add
  * @property {((uiKey: string, partial: { [inputKey: string]: string | number | boolean }) => void)} change
+ * @property {(() => void)} removeUiOnClose
  * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
  * @property {((uiKey: string) => null | NPC.FeedbackUi )} getUi
  * @property {((item: PendingNotification) => void)} registerPending
@@ -181,6 +180,21 @@ export default function Feedback(props) {
  * @property {((next: State['pendingMode']) => void)} setPendingMode
  * @property {(() => void)} togglePendingMode
  */
+
+/**
+ * @template T
+ * @typedef {import("zustand/middleware/immer").WithImmer<T>} WithImmer<T>
+ */
+/**
+ * @template T
+ * @typedef {import("zustand/middleware/subscribeWithSelector").WithSelectorSubscribe<T>} WithSelectorSubscribe<T>
+ */
+/**
+ * @typedef {{ lookup: { [uiKey: string]: NPC.FeedbackUi } }} UiState
+ * Lookup cannot be top-level because zustand delete doesn't work.
+ * @typedef {import("zustand").UseBoundStore<WithImmer<WithSelectorSubscribe<import("zustand").StoreApi<UiState>>>>} UiStore
+ */
+
 
 /**
  * @typedef {{ pid: number; message: string }} PendingNotification

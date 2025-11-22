@@ -79,6 +79,7 @@ export async function createFollowUi(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 
+  // keep running until killed
   await new Promise((_resolve, reject) => {
     const uiKey = opts.uiKey ?? 'follow-select-ui';
 
@@ -94,8 +95,13 @@ export async function createFollowUi(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
     });
 
     const unSubUi = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prevUi) => {
-      if (!prevUi || !ui) return; // first or last
+      if (!prevUi) return; // first
       
+      if (!ui) {// last e.g. on close Feedback tab
+        reject(new Error(`removed ui "${uiKey}"`));
+        return;
+      }
+
       const changed = Object.values(ui.input).filter((input) => input !== prevUi.input[input.key]);
       if (changed.length === 0) return;
 
@@ -114,11 +120,10 @@ export async function createFollowUi(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
       } else {
         w.n[npcKey]?.showSelector(false);
       }
-
       w.view.ensureRender();
     });
 
-    // update `options` on spawn/remove
+    // update <select> on spawn/remove
     const { unsubscribe: unSubEvents } = w.events.subscribe({
       next(event) {
         if (event.key === 'spawned' || event.key === 'spawned-many' || event.key === 'removed-npcs') {
@@ -143,9 +148,9 @@ export async function createFollowUi(ct, opts = ct.api.jsArg(ct.args, { key: 'ui
 
     ct.api.handleStatus({
       cleanups() {
-        reject(ct.api.getKillError());
-        unSubUi();
         unSubEvents();
+        unSubUi();
+        reject(ct.api.getKillError());
         feedback.remove(uiKey); // always remove?
       },
     });

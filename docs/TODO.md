@@ -165,10 +165,10 @@
 - ✅ connectUi removes pending on kill
 - ✅ initial follow `follow npc:rob` should be synced with ui
 
-- 🚧 on Feedback tab close
-  - 🚧 connected should throw: triggers event which causes throw
-  - pending should re-request
-  - e.g. `import demoUi from demo; demoUi &` and close tab
+- ✅ on Feedback tab close
+  - ✅ `createFollowUi` should throw
+  - ✅ `demoUi` should not
+  - ❌ pending should re-request
 
 - fix remove npc e.g. `remove foo`
   - maybe `remove npc:foo` also supported
