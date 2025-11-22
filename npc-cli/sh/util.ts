@@ -261,7 +261,7 @@ export function getPtagsPreview(ptags: Ptags) {
  * - The relationship between `foo` and `bar` is stored in a `TtyLinkCtxt`.
  * - We need `sessionKey` for special actions e.g. `href:#somewhere else`.
  */
-export function computeChoiceTtyLinkFactory(text: string, defaultValue: any, sessionKey: string): {
+export function computeChoiceTtyLinkFactory(text: string): {
   ttyText: string;
   /** `ttyText` with ansi colours stripped */
   ttyTextKey: string;

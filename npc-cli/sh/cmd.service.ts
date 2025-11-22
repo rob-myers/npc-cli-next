@@ -760,8 +760,7 @@ class cmdServiceClass {
 
   private async *choice(node: Sh.ParsedSh, text: string, outputVarName?: string) {
     const lines = text.replace(/\r/g, "").split(/\n/);
-    const defaultValue = undefined;
-    const parsedLines = lines.map((text) => computeChoiceTtyLinkFactory(text, defaultValue, node.meta.sessionKey));
+    const parsedLines = lines.map((text) => computeChoiceTtyLinkFactory(text));
     for (const { ttyText } of parsedLines) {
       yield ttyText;
     }

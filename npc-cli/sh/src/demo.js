@@ -171,7 +171,11 @@ export async function* demoSelectPolys({ w }) {
 
 /**
  * Expose basic choices via TTY.
- * But repeated UI looks a bit crap.
+ * 🤔 But repeated UI looks a bit crap.
+ * ```sh
+ * import demoHandleDirectViaTty from demo
+ * demoHandleDirectViaTty npc:rob to:$( clicks 3 )
+ * ```
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
  */

@@ -66,7 +66,6 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
   });
 }
 
-
 /**
  * Ensure ui for selecting and following an npc
  * ```sh
