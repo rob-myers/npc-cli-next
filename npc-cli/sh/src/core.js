@@ -256,9 +256,9 @@ export async function connectFeedback(ct, opts = ct.api.jsArg(ct.args)) {
 /**
  * ```sh
  * import demoUi from demo
- * demoUi key:base &
- * connectUi key:base >/dev/null
- * connectUi key:base inputs:'["npcKey"]'
+ * demoUi ui:base &
+ * connectUi ui:base >/dev/null
+ * connectUi ui:base inputs:'["npcKey"]'
  * ```
  * @param {NPC.RunArg} ct
  * @param {object} opts
@@ -270,7 +270,7 @@ export async function connectFeedback(ct, opts = ct.api.jsArg(ct.args)) {
  *   ui: NPC.FeedbackUi;
  * }>}
  */
-export async function connectUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey', inputs: 'inputKeys' } )) {
+export async function connectUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey', inputs: 'inputKeys' } )) {
   const feedback = await connectFeedback(ct, { key: opts.feedbackKey });
 
   return await new Promise((resolve, reject) => {

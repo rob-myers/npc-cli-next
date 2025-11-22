@@ -69,12 +69,12 @@ export const createDecorNumber = (ct, opts = ct.api.jsArg(ct.args)) => {
 /**
  * Ensure ui for selecting and following an npc
  * ```sh
- * createFollowUi key:base
+ * createFollowUi ui:base
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ uiKey?: string; }} [opts]
  */
-export async function createFollowUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
+export async function createFollowUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey' })) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const { w } = ct;
 

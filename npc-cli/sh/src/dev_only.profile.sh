@@ -10,7 +10,7 @@ spawn npc:suit at:'{ x: 0.5 * 1.5, y: 5 * 1.5 }' as:suit-0 granted:. angle:Math.
 spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math.PI
 
 # provide base.npcKey
-createFollowUi key:base &
+createFollowUi ui:base &
 ui key:base set:'{ selector: true, follow: true }'
 
 ptags always; click meta.npcKey |

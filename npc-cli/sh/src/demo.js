@@ -62,43 +62,6 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
 }
 
 /**
- * ```sh
- * demoUi key:base
- * ```
- * @param {NPC.RunArg} ct
- * @param {{ uiKey?: string }} [opts]
- */
-export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
-  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
-  const uiKey = opts?.uiKey ?? 'demo-0';
-  
-  await new Promise((_resolve, reject) => {
-
-    feedback.add({
-      key: uiKey,
-      title: 'Make a choice...',
-      input: {
-        choice: { type: 'select', key: 'choice', options: [{ label: 'foo', value: 'foo' }, { label: 'bar', value: 'bar' }] }
-      },
-    });
-
-    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prev) => {
-      if (!prev || !ui) return; // first or last
-      alert(ui.input.choice.value);
-    });
-
-    ct.api.handleStatus({
-      cleanups() {
-        reject(ct.api.getKillError());
-        unsub();
-        feedback.remove(uiKey);
-      },
-    })
-  });
-
-}
-
-/**
  * Bound to a particular npcKey.
  * ```sh
  * demoNarrateToBed npc:rob
@@ -171,7 +134,7 @@ export async function* demoSelectPolys({ w }) {
 
 /**
  * Expose basic choices via TTY.
- * 🤔 But repeated UI looks a bit crap.
+ * 🤔 Repeated UI looks a bit crap...
  * ```sh
  * import demoHandleDirectViaTty from demo
  * demoHandleDirectViaTty npc:rob to:$( clicks 3 )
@@ -186,6 +149,64 @@ export async function* demoHandleDirectViaTty(ct, opts = ct.api.jsArg(ct.args, {
     const output = /** @type {typeof v['will']} */ (ct.home.handleDirectChoice);
     v.will = output; // send message back to `direct`
   }
+}
+
+/**
+ * Expose basic choices via UI.
+ * ```sh
+ * import demoHandleDirectViaTty from demo
+ * demoHandleDirectViaTty npc:rob to:$( clicks 3 )
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ uiKey: string; npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
+ */
+export async function* demoHandleDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey', npc: 'npcKey' })) {
+  const { feedback, ui } = await core.connectUi(ct, { uiKey: opts?.uiKey ?? 'demo-0' });
+
+
+  const it = dev.direct(ct, opts);
+  // for await (const v of it) {
+  //   yield* ct.api.choice('[ stop ]() [ pause ]() [ continue ]()', 'handleDirectChoice');
+  //   const output = /** @type {typeof v['will']} */ (ct.home.handleDirectChoice);
+  //   v.will = output; // send message back to `direct`
+  // }
+}
+
+/**
+ * ```sh
+ * demoUi ui:base
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {{ uiKey?: string }} [opts]
+ */
+export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'key' })) {
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const uiKey = opts?.uiKey ?? 'demo-0';
+  
+  await new Promise((_resolve, reject) => {
+
+    feedback.add({
+      key: uiKey,
+      title: 'Make a choice...',
+      input: {
+        choice: { type: 'select', key: 'choice', options: [{ label: 'foo', value: 'foo' }, { label: 'bar', value: 'bar' }] }
+      },
+    });
+
+    const unsub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui, prev) => {
+      if (!prev || !ui) return; // first or last
+      alert(ui.input.choice.value);
+    });
+
+    ct.api.handleStatus({
+      cleanups() {
+        reject(ct.api.getKillError());
+        unsub();
+        feedback.remove(uiKey);
+      },
+    })
+  });
+
 }
 
 const tmpMat1 = new Mat();
