@@ -381,7 +381,9 @@ export function mapValues(input, transform) {
  * - 'foo:bar baz:qux' -> { "foo": "bar", "baz": "qux" }
  * - 'foo:42 bar' -> { "foo": 42, "bar": true }
  * 
- * We assume keys do not contain the double-quote character.
+ * We assume
+ * - keys do not contain the double-quote character.
+ * - keys should not begin with single character '{'.
  * 
  * @template {Record<string, any>} [T=Record<string, any>]
  * @param {string[]} args
@@ -400,6 +402,10 @@ export function jsArg(args, alias, opts) {
       agg[arg] = true;
     } else {
       let key = arg.slice(0, colonIndex);
+      if (key.startsWith('{')) {
+        throw Error(`${key}: bad key (try quotes)`);
+      }
+
       key = alias?.[key] ?? key;
 
       let value = parseJsArg(arg.slice(colonIndex + 1));
