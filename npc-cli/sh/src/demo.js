@@ -70,7 +70,7 @@ export function demoClickToMove(input, { api, args, w }, opts = api.jsArg(args, 
  */
 export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { key: 'uiKey' })) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
-  const uiKey = opts?.uiKey ?? 'demo-feedback-0';
+  const uiKey = opts?.uiKey ?? 'demo-0';
   
   await new Promise((_resolve, reject) => {
 
