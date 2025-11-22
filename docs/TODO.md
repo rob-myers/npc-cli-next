@@ -163,11 +163,12 @@
 
 - ✅ Feedback removes message when ui no longer pending
 - ✅ connectUi removes pending on kill
-- on Feedback tab close
-  - pending should re-request
+- ✅ initial follow `follow npc:rob` should be synced with ui
+
+- 🚧 on Feedback tab close
   - connected should throw
-  - e.g. `demoUi &` and close tab
-- initial follow `follow npc:rob` should be synced with ui
+  - pending should re-request
+  - e.g. `import demoUi from demo; demoUi &` and close tab
 
 - fix remove npc e.g. `remove foo`
   - maybe `remove npc:foo` also supported
@@ -179,7 +180,7 @@
 - BUG hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab; back to manage tab:
   - Manage still says it is unmounted
 
-- BUG turn set_targetReplan back on without jerk near door entry
+- ✅ BUG turn set_targetReplan back on without jerk near door entry
   - this should re-fix pre-existing bug when npc enters wrong offMesh and has to turn back
 
 - ✅ BUG raycast through hull door `ray from:will to:rob` 
@@ -196,7 +197,7 @@
 
 - ✅ fix top down discontinuity (polar 0)
 
-- on fix both angles, interpret rotation as pan
+- ❌ on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
 
 - Manage tab only shows one current tab at a time

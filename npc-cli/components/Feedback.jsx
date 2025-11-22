@@ -127,7 +127,7 @@ export default function Feedback(props) {
     >
       {Object.values(state.ui.getState().lookup).map((ui) => (
         <div key={ui.key} className="flex gap-1 flex-wrap items-center p-2 border-[1px] border-white/20 rounded-md">
-          <div className="cursor-default font-mono text-blue-200" title={ui.title}>
+          <div className="cursor-default font-mono text-yellow-300 text-[1rem] p-1 rounded-lg" title={ui.title}>
             {ui.key}
           </div>
           {Object.values(ui.input).map((input) => (
@@ -194,7 +194,7 @@ function FeedbackUiInput({ input }) {
     case 'button':
       return (
         <button
-          className="bg-gray-800 text-white font-thin hover:brightness-150 hover:bg-green-900 cursor-pointer rounded-md px-1 border-2 border-indigo-500/50"
+          className="bg-gray-800 text-white font-thin hover:brightness-150 hover:bg-green-900 cursor-pointer rounded-md p-1 border-2 border-indigo-500/50"
           data-ui-key={input.uiKey}
           data-input-key={input.key}
         >
@@ -205,8 +205,8 @@ function FeedbackUiInput({ input }) {
       return (
         <label className="select-none flex gap-1">
           <div className={clsx(
-            "select-none font-[200] bg-black hover:brightness-150 cursor-pointer rounded-sm px-1 border-2 border-gray-800",
-            input.value ? 'text-white' : 'text-white/50')
+            "select-none font-[500] rounded-lg bg-black hover:brightness-150 cursor-pointer rounded-sm p-1 border-2 border-gray-500",
+            input.value ? 'text-black bg-gray-400' : 'text-white/50')
           }>
             {input.label ?? input.key}
           </div>
@@ -232,7 +232,7 @@ function FeedbackUiInput({ input }) {
     case 'select':
       return (
         <select
-          className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md px-1 border-2 border-indigo-800/50"
+          className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md p-1 border-2 border-indigo-800/50"
           data-ui-key={input.uiKey}
           data-input-key={input.key}
           value={input.value}
