@@ -166,7 +166,7 @@
 - ✅ initial follow `follow npc:rob` should be synced with ui
 
 - 🚧 on Feedback tab close
-  - connected should throw
+  - 🚧 connected should throw: triggers event which causes throw
   - pending should re-request
   - e.g. `import demoUi from demo; demoUi &` and close tab
 

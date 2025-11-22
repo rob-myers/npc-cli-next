@@ -125,16 +125,20 @@ export default function Feedback(props) {
         });
       }}
     >
+      <div className="flex flex-wrap p-2">
       {Object.values(state.ui.getState().lookup).map((ui) => (
-        <div key={ui.key} className="flex gap-1 flex-wrap items-center p-2 border-[1px] border-white/20 rounded-md">
-          <div className="cursor-default font-mono text-yellow-300 text-[1rem] p-1 rounded-lg" title={ui.title}>
+        <>
+          <div key={ui.key} className="flex items-center bg-slate-900 p-1 cursor-default font-mono text-yellow-200 text-[0.9rem]" title={ui.title}>
             {ui.key}
           </div>
           {Object.values(ui.input).map((input) => (
-            <FeedbackUiInput key={input.key} input={input} />
+            <div key={input.key} className="bg-slate-900 p-1">
+              <FeedbackUiInput key={input.key} input={input} />
+            </div>
           ))}
-        </div>
+        </>
       ))}
+      </div>
 
       <div
         className={clsx(
@@ -205,8 +209,8 @@ function FeedbackUiInput({ input }) {
       return (
         <label className="select-none flex gap-1">
           <div className={clsx(
-            "select-none font-[500] rounded-lg bg-black hover:brightness-150 cursor-pointer rounded-sm p-1 border-2 border-gray-500",
-            input.value ? 'text-black bg-gray-400' : 'text-white/50')
+            "select-none font-[500] rounded-lg bg-black cursor-pointer rounded-sm p-1 border-2 border-gray-600",
+            input.value ? 'text-black bg-gray-400 hover:border-black' : 'text-white/50 hover:brightness-150')
           }>
             {input.label ?? input.key}
           </div>
