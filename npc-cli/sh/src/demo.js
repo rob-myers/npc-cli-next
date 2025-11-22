@@ -152,24 +152,30 @@ export async function* demoHandleDirectViaTty(ct, opts = ct.api.jsArg(ct.args, {
 }
 
 /**
+ * 🚧
  * Expose basic choices via UI.
  * ```sh
- * import demoHandleDirectViaTty from demo
- * demoHandleDirectViaTty npc:rob to:$( clicks 3 )
+ * import demoHandleDirectViaUi from demo
+ * demoHandleDirectViaUi npc:rob to:$( clicks 3 )
  * ```
  * @param {NPC.RunArg} ct
- * @param {{ uiKey: string; npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
+ * @param {{ uiKey?: string; npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
  */
 export async function* demoHandleDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey', npc: 'npcKey' })) {
-  const { feedback, ui } = await core.connectUi(ct, { uiKey: opts?.uiKey ?? 'demo-0' });
-
-
+  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const it = dev.direct(ct, opts);
-  // for await (const v of it) {
-  //   yield* ct.api.choice('[ stop ]() [ pause ]() [ continue ]()', 'handleDirectChoice');
-  //   const output = /** @type {typeof v['will']} */ (ct.home.handleDirectChoice);
-  //   v.will = output; // send message back to `direct`
-  // }
+  for await (const v of it) {
+    feedback.add({
+      key: opts.uiKey ?? `${opts.npcKey}?`,
+      title: `${opts.npcKey}?`,
+      input: {
+        stop: { type: 'button', key: 'stop' },
+        continue: { type: 'button', key: 'continue' },
+        pause: { type: 'button', key: 'pause' },
+      },
+    });
+    // 🚧
+  }
 }
 
 /**
