@@ -26,8 +26,3 @@ npc() {
   w n.$npcKey | map "$selector" "$@"
   w update # sometimes needed
 }
-
-# remove npc(s)
-remove() {
-  w npc.remove "$@"
-}

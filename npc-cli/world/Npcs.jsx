@@ -836,7 +836,7 @@ export default function Npcs(props) {
  * @property {(deltaSecs: number) => void} onTick
  * @property {null | ((npc: NPC.NPC, agent: NPC.CrowdAgent) => void)} onTickIdleTurn
  * Handle turning of idle npcs e.g. turn towards nearby npcs.
- * @property {(npcKey: string) => void} remove
+ * @property {(...npcKeys: string[]) => void} remove
  * @property {(npc: NPC.NPC) => void} removeAgent
  * @property {(shortcut: string) => Record<string, NPC.SkinReMapValue>} resolveSkin
  * Examples:

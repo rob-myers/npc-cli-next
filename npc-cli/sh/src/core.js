@@ -522,6 +522,20 @@ export async function ray({ api, args, w }, opts = api.jsArg(args, { from: 'src'
 
 /**
  * ```sh
+ * remove npc:rob
+ * remove rob will
+ * ```
+ * @param {NPC.RunArg} ct
+ * @param {object} [opts]
+ * @param {string} [opts.npcKey]
+ */
+export async function remove({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
+  const npcKeys = opts.npcKey ? [opts.npcKey] : args;
+  w.npc.remove(...npcKeys);
+}
+
+/**
+ * ```sh
  * # say something
  * say {1..5} npc:rob
  * say world: 1, rob: 0 npc:rob

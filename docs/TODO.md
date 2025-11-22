@@ -170,11 +170,11 @@
   - ✅ `demoUi` should not
   - ❌ pending should re-request
 
-- fix remove npc e.g. `remove foo`
-  - maybe `remove npc:foo` also supported
+- ✅ fix remove npc e.g. `remove foo`
+  - ✅ `remove npc:foo` also supported
 
-- handle `direct` using Feedback
-  - stop, pause, continue
+- 🚧 handle `direct` using Feedback
+  - 🚧 stop, pause, continue
   - try left, try right
 
 - BUG hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab; back to manage tab:
