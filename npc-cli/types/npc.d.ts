@@ -550,7 +550,7 @@ declare namespace NPC {
     datum: Datum;
   }
 
-  type FeedbackUiDef = Omit<FeedbackUi, 'input'> & {
+  type FeedbackUiDef = Omit<FeedbackUi, 'input' | 'lastButton'> & {
     input: Record<string, FeedbackInputDef>;
   };
   
@@ -559,6 +559,7 @@ declare namespace NPC {
     title?: string;
     /** Lookup */
     input: Record<string, FeedbackInput>;
+    lastButton: null | string;
   }
   
   type FeedbackInputDef = Pretty<DistributiveOmit<FeedbackInput, 'uiKey' | 'value'>>;

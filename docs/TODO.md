@@ -173,11 +173,11 @@
 - ✅ fix remove npc e.g. `remove foo`
   - ✅ `remove npc:foo` also supported
 
-- 🚧 handle `direct` using Feedback
-  - 🚧 stop, pause, continue
-  - try left, try right
+- ✅ handle `direct` using Feedback
+  - ✅ stop, pause, continue
+  - 🚧 try left, try right
 
-- BUG hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab; back to manage tab:
+- ❌ BUG hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab; back to manage tab:
   - Manage still says it is unmounted
 
 - ✅ BUG turn set_targetReplan back on without jerk near door entry

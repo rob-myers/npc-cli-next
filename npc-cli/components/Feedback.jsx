@@ -120,6 +120,7 @@ export default function Feedback(props) {
         state.ui.setState(draft => {
           const ui = draft.lookup[input.uiKey];
           ui.input[input.key].value = Date.now();
+          ui.lastButton = input.key;
         });
       }}
     >
@@ -169,7 +170,7 @@ export default function Feedback(props) {
  * @property {'none' | 'closed' | 'open'} pendingMode
  * @property {Map<number, PendingNotification>} pending Pending processes
  * @property {UiStore} ui
- * @property {((ui: NPC.FeedbackUiDef) => void)} add
+ * @property {((ui: Omit<NPC.FeedbackUiDef, 'lastButton'>) => void)} add
  * @property {((uiKey: string, partial: { [inputKey: string]: string | number | boolean }) => void)} change
  * @property {(() => void)} removeUiOnClose
  * @property {((e: Event) => null | NPC.FeedbackInput )} getInputByEvent
@@ -307,6 +308,7 @@ function feedbackUiDefToUi(uiDef, uiKey) {
           return [];
       }
     }).map(input => [input.key, input])),
+    lastButton: null,
   };
 }
 

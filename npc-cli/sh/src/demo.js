@@ -162,11 +162,13 @@ export async function* demoHandleDirectViaTty(ct, opts = ct.api.jsArg(ct.args, {
  * @param {{ uiKey?: string; npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
  */
 export async function* demoHandleDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey', npc: 'npcKey' })) {
-  const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
+  const feedback = await core.connectFeedback(ct);
+  
   const it = dev.direct(ct, opts);
   for await (const v of it) {
+    const uiKey = opts.uiKey ?? `${opts.npcKey}?`;
     feedback.add({
-      key: opts.uiKey ?? `${opts.npcKey}?`,
+      key: uiKey,
       title: `${opts.npcKey}?`,
       input: {
         stop: { type: 'button', key: 'stop' },
@@ -174,7 +176,25 @@ export async function* demoHandleDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { 
         pause: { type: 'button', key: 'pause' },
       },
     });
-    // 🚧
+
+    // wait until a button pressed
+    await /** @type {Promise<void>} */ (new Promise((resolve, reject) => {
+      const unSub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], ({ lastButton }) => {
+        if (lastButton === 'stop' || lastButton === 'continue' || lastButton === 'pause') {
+          v.will = lastButton;
+          resolve();
+        }
+      });
+      
+      ct.api.handleStatus({
+        cleanups() {
+          unSub();
+          reject(ct.api.getKillError());
+          feedback.remove(uiKey);
+        },
+      });
+    }));
+
   }
 }
 
