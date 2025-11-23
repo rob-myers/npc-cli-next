@@ -15,6 +15,7 @@ export class SpeechBubbleApi {
   html3d = /** @type {*} */ (null);
   /** @type {import('../components/PopUp').State} */
   popUp = /** @type {*} */ (null);
+  uiRootEl = /** @type {null | HTMLDivElement} */ (null);
   
   position = new THREE.Vector3();
   tracked = /** @type {null | import('../components/Html3d').TrackedObject3D} */ (null);
@@ -24,7 +25,7 @@ export class SpeechBubbleApi {
   thought = /** @type {{ [key: string]: NPC.BubbleThought }} */ ({});
   /** `Object.values(this.thought)` */
   thoughts = /** @type {NPC.BubbleThought[]} */ ([]);
-  
+
   /**
    * @param {string} key
    * @param {import('./World').State} w
@@ -160,6 +161,15 @@ export class SpeechBubbleApi {
 
     this.thoughts = Object.values(this.thought);
     this.update();
+  }
+
+  /** @param {null | HTMLDivElement} uiRootEl */
+  thoughtUiRef(uiRootEl) {
+    if (uiRootEl !== null) {
+      this.uiRootEl = uiRootEl;
+    } else {// @ts-ignore
+      delete this.uiRootEl;
+    }
   }
 
   update = noop

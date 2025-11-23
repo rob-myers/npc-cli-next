@@ -18,7 +18,7 @@ export default function NpcSpeechBubbles() {
 
   const state = useStateRef(/** @returns {State} */ () => ({
     byKey: {},
-    lastFront: '',
+    lastFront: '',    
     delete(...npcKeys) {
       for (const npcKey of npcKeys) {
         state.byKey[npcKey]?.dispose();
@@ -112,7 +112,7 @@ function NpcSpeechBubble({ bubble: b }) {
             width={140}
           >
             <div
-              className="flex flex-col gap-2 p-2 text-[1rem] "
+              className="flex flex-col gap-2 p-1 text-[1rem]"
               onClick={b.onClickThoughts.bind(b)}
             >
               {b.thoughts.map((thought) =>
@@ -120,6 +120,9 @@ function NpcSpeechBubble({ bubble: b }) {
               )}
               {b.thoughts.length === 0 && <>...</>}
             </div>
+
+            <div ref={b.thoughtUiRef.bind(b)} />
+
           </PopUp>
 
           {b.key}
@@ -134,7 +137,7 @@ function NpcSpeechBubble({ bubble: b }) {
 /** @param {{ thought: NPC.BubbleThought }} props */
 function Thought({ thought }) {
   return (
-    <p className={clsx(thought.disabled && 'flex items-center gap-2 text-[#999]' )}>
+    <p className={clsx('flex items-start gap-1', thought.disabled && 'text-[#999]' )}>
       {thought.parts.map(part =>
         Array.isArray(part)
           ? <button
@@ -142,7 +145,7 @@ function Thought({ thought }) {
               data-thought-key={thought.key}
               data-button-key={part[1] ?? part[0]}
               disabled={thought.disabled}
-              className="inline-block text-[#99f] underline whitespace-nowrap py-1 disabled:text-[#999]"
+              className="inline-block text-[#99f] underline whitespace-nowrap disabled:text-[#999]"
             >
               {part[0]}
             </button>
@@ -151,7 +154,7 @@ function Thought({ thought }) {
       {thought.disabled === true && (
         <button
           data-delete-thought-key={thought.key}
-          className="text-sm text-[#f99] no-underline whitespace-nowrap"
+          className="text-[0.7rem] text-[#f99] no-underline whitespace-nowrap"
         >
           x
         </button>
@@ -241,6 +244,7 @@ const popUpCss = css`
 
   .${popUpContentClassName} {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.75);

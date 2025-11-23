@@ -126,7 +126,7 @@ export function* globals() {
  */
 export async function* log({ api, args, datum }) {
   args.forEach(arg => console.log(arg))
-  if (api.isTtyAt(0)) return
+  if (api.isTtyAt(0)) return;
   while ((datum = await api.read(true)) !== api.eof) {
     if (api.isDataChunk(datum) && datum.items.length <= 1000) {
       datum.items.forEach(x => console.log(x));
