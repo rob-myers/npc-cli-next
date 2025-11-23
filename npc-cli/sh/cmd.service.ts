@@ -298,38 +298,51 @@ class cmdServiceClass {
         break;
       }
       case "import": {
-        const moduleKey = args.pop();
-        const from = args.pop();
-        if (!moduleKey || from !== 'from') {
-          throw Error('format: import foo bar:baz from qux');
-        }
-
+        
         const session = useSession.api.getSession(meta.sessionKey);
         const { modules } = session;
+        const moduleKey = args.pop();
+        if (typeof moduleKey !== 'string') {
+          throw Error(`format: import moduleName; import fn fn1:alias from moduleName`);
+        }
+        const module = modules[moduleKey as keyof typeof modules];
 
-        if (!(moduleKey in modules)) {
+        if (!module) {
           throw Error(`unknown module: ${moduleKey}`);
         }
 
-        const module = modules[moduleKey as keyof typeof modules];
-        const names = jsArg(args);
-        const namedFuncs = {} as Record<string, (...args: any[]) => any>;
-        for (const [key, value] of Object.entries(names)) {
-          if (value === true) namedFuncs[key] = module[key as keyof typeof module];
-          else namedFuncs[value] = module[key as keyof typeof module];
-          if (namedFuncs[key] === undefined) {
-            throw Error(`unknown function: ${key} from ${moduleKey}`);
+        const namesOrNamesAndAliases: Record<string, any> = (() => {
+          if (args.length === 0) {// import qux
+  
+            return Object.fromEntries(Object.keys(module).map((key) => [key, true]));
+
+          } else {// import moduleName moduleName1:moduleAlias from qux
+  
+            const from = args.pop();
+            if (from !== 'from') {
+              throw Error(`format: import moduleName; import fn fn1:alias from moduleName`);
+            }
+  
+            return jsArg(args);
           }
-        }
+        })();
         
-        const shellFuncs = Object.entries(namedFuncs).map(([fnKey, fn]) =>
-          jsFunctionToShellFunction({
-            modules,
-            moduleKey,
-            fnKey,
-            fn,
-          })
-        );
+        const shellFuncs = [] as string[];
+        for (const [fnName, fnAlias] of Object.entries(namesOrNamesAndAliases)) {
+          const jsFunc = module[fnName as keyof typeof module];
+          if (jsFunc === undefined) {
+            throw Error(`unknown function: ${fnName} from ${moduleKey}`);
+          }
+          shellFuncs.push(
+            jsFunctionToShellFunction({
+              modules,
+              moduleKey,
+              fnKey: fnName,
+              fnAliasKey: fnAlias !== true ? fnAlias : undefined,
+              fn: jsFunc,
+            })
+          );
+        }
         
         // source functions
         const src = shellFuncs.join('\n\n');
@@ -832,7 +845,9 @@ class cmdServiceClass {
   handleStatus(meta: Pick<Sh.BaseMeta, 'sessionKey' | 'pid'>, handlers: HandleStatusHandlers) {
     const process = getProcess(meta);
     const handlerEntries = entries(handlers);
-    for (const [key, fn] of handlerEntries) process[key].push(fn as any);
+    for (const [key, fn] of handlerEntries) {
+      process[key].push(fn as any);
+    }
     return Object.assign(handlers, {
       dispose() {
         for (const [key, fn] of handlerEntries) removeLast(process[key], fn);
@@ -1013,6 +1028,13 @@ class cmdServiceClass {
 
     redirectToVar(fd: number, varPath: string) {
       cmdService.redirectToVar(this.node, fd, varPath);
+    },
+
+    resume() {
+      useSession.api.kill(this.meta.sessionKey, [this.meta.pgid], {
+        CONT: true,
+        GROUP: true, // already follows because [pgid]
+      });
     },
 
     safeJsStringify,

@@ -2,12 +2,13 @@ export default function jsFunctionToShellFunction(opts: {
   modules: Record<string, any>;
   moduleKey: string;
   fnKey: string;
+  fnAliasKey?: string;
   fn(...args: any[]): any,
 }) {
 
   const module = opts.modules[opts.moduleKey] as ModuleMaybeMeta;
 
-  return `${opts.fnKey}() ${
+  return `${opts.fnAliasKey ?? opts.fnKey}() ${
     generatorConstructorNames.includes(opts.fn.constructor.name)
       // function* foo { bar }
       // async function* foo { bar }
