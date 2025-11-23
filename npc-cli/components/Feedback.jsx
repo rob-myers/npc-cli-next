@@ -126,16 +126,17 @@ export default function Feedback(props) {
     >
       <div className="flex flex-wrap p-2">
       {Object.values(state.ui.getState().lookup).map((ui) => (
-        <>
+        [
           <div key={ui.key} className="flex items-center bg-slate-900 p-1 cursor-default font-[200 text-yellow-200" title={ui.title}>
             {ui.key}
           </div>
-          {Object.values(ui.input).map((input) => (
+          ,
+          Object.values(ui.input).map((input) => (
             <div key={input.key} className="bg-slate-900 p-1">
               <FeedbackUiInput key={input.key} input={input} />
             </div>
-          ))}
-        </>
+          ))
+        ]
       ))}
       </div>
 
