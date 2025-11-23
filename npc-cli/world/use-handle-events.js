@@ -564,8 +564,11 @@ export default function useHandleEvents(w) {
       return npc !== undefined && w.view.dst.look === npc.m.group;
     },
     async lookAt(input, lookAtOpts = { maxDistance: 5 }) {
-      if (typeof input === 'string') {// npcKey
-        input = w.n[input].position;
+      if (typeof input === 'string') {
+        const npcKey = input;
+        // 🚧 look is independent of follow and overrides it
+        if (w.e.isFollowingNpc(npcKey)) return;
+        input = w.n[npcKey].position;
         lookAtOpts.height = helper.defaults.height;
       }
       w.e.stopFollowing();

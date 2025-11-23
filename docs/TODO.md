@@ -99,6 +99,12 @@
 
 ### World
 
+- npc-specific Feedback UI can also be rendered in npc thought bubble
+
+- look independent of follow and overrides it
+  - keep following when look at npc including followed
+  - can look at followed npc while paused
+
 - ✅ camera supports maxDistance so can zoom to see inside room
   - ✅ w.view.dst.distance -> w.view.dst.maxDistance
 - ❌ fix WASD camera controls being overridden by follow cam with fixed angle
