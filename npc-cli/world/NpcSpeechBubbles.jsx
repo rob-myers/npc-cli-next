@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "@emotion/react";
-import cx from "classnames";
+import clsx from "clsx";
 
 import { zIndexWorld } from "../service/const";
 import { WorldContext } from "./world-context";
@@ -112,7 +112,7 @@ function NpcSpeechBubble({ bubble: b }) {
             width={140}
           >
             <div
-              css={thoughtsCss}
+              className="flex flex-col gap-2 p-2 text-[1rem] "
               onClick={b.onClickThoughts.bind(b)}
             >
               {b.thoughts.map((thought) =>
@@ -134,7 +134,7 @@ function NpcSpeechBubble({ bubble: b }) {
 /** @param {{ thought: NPC.BubbleThought }} props */
 function Thought({ thought }) {
   return (
-    <p className={cx("thought", thought.disabled ? 'disabled' : undefined )}>
+    <p className={clsx(thought.disabled && 'flex items-center gap-2 text-[#999]' )}>
       {thought.parts.map(part =>
         Array.isArray(part)
           ? <button
@@ -142,6 +142,7 @@ function Thought({ thought }) {
               data-thought-key={thought.key}
               data-button-key={part[1] ?? part[0]}
               disabled={thought.disabled}
+              className="inline-block text-[#99f] underline whitespace-nowrap py-1 disabled:text-[#999]"
             >
               {part[0]}
             </button>
@@ -150,7 +151,7 @@ function Thought({ thought }) {
       {thought.disabled === true && (
         <button
           data-delete-thought-key={thought.key}
-          className="delete"
+          className="text-sm text-[#f99] no-underline whitespace-nowrap"
         >
           x
         </button>
@@ -248,30 +249,4 @@ const popUpCss = css`
   }
 
   ${popUpBubbleArrowColorCssVar}: #dda;
-`;
-
-const thoughtsCss = css`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px;
-  font-size: 1rem;
-
-  .thought button {
-    display: inline-block;
-    color: #99f;
-    text-decoration: underline;
-    white-space: nowrap;
-    padding: 0 4px;
-  }
-  .thought.disabled {
-    color: #999;
-    button {
-      color: #999;
-    }
-    button.delete {
-      color: #f99;
-      text-decoration: none;
-    }
-  }
 `;
