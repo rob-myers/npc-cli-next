@@ -323,6 +323,7 @@ const useStore = create<State>()((set, get): State => ({
 
     removeProcess(pid, sessionKey) {
       const processes = get().session[sessionKey].process;
+      killProcess(processes[pid]);
       delete processes[pid];
     },
 
@@ -560,8 +561,10 @@ export interface ProcessMeta {
   /** Source of code defining this process. */
   src: string;
   /**
-   * Executed on Ctrl-C or `kill` or reboot builtin.
-   * May contain `() => reject(killError(meta))` ...
+   * Executed:
+   * - on process finished
+   * - on Ctrl-C or `kill` 
+   * - on reboot builtin
    */
   cleanups: ((SIGINT?: boolean) => void)[];
   /**
