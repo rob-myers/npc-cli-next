@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import clsx from 'clsx';
 import debounce from "debounce";
 import { create, useStore } from "zustand";
@@ -91,8 +92,7 @@ export default function Feedback(props) {
 
   return (
     <div
-      className="font-sans text-xs text-white bg-gray-900/50 flex items-start flex-wrap h-full overflow-auto"
-
+      className="font-sans text-xs text-white bg-gray-900/50 flex items-start flex-wrap h-full overflow-auto px-2 py-3"
       onChange={e => {
         const input = state.getInputByEvent(e.nativeEvent);
         if (input === null || !isOnChangeInput(input)) return;
@@ -124,20 +124,28 @@ export default function Feedback(props) {
         });
       }}
     >
-      <div className="flex flex-wrap p-2">
-      {Object.values(state.ui.getState().lookup).map((ui) => (
-        [
-          <div key={ui.key} className="flex items-center bg-slate-900 p-1 cursor-default font-[200 text-yellow-200" title={ui.title}>
-            {ui.key}
-          </div>
-          ,
-          Object.values(ui.input).map((input) => (
-            <div key={input.key} className="bg-slate-900 p-1">
-              <FeedbackUiInput key={input.key} input={input} />
+      <div className="flex flex-wrap p-1">
+        {Object.values(state.ui.getState().lookup).map((ui) => {
+          const inputs = (
+            Object.values(ui.input).map((input) => (
+              <div key={input.key}>
+                <FeedbackUiInput key={input.key} input={input} />
+              </div>
+            ))
+          );
+
+          // 🚧 don't use id
+          const portalParent = ui.npcKey ? document.getElementById(`npc-ui-${ui.npcKey}`) : null;
+
+          return [
+            <div key={ui.key} className="flex items-center p-1 cursor-default font-[200 text-yellow-200" title={ui.title}>
+              {ui.key}
             </div>
-          ))
-        ]
-      ))}
+            ,
+            inputs,
+            portalParent ? createPortal(inputs, portalParent) : null,
+          ];
+        })}
       </div>
 
       <div
@@ -214,7 +222,7 @@ function FeedbackUiInput({ input }) {
     case 'button':
       return (
         <button
-          className="bg-gray-800 text-white font-thin hover:brightness-150 hover:bg-green-900 cursor-pointer rounded-md p-1 border-2 border-indigo-500/50"
+          className=" text-white font-thin hover:brightness-150 hover:bg-green-900/30 cursor-pointer rounded-md p-1 border-2 border-indigo-500/50 h-full"
           data-ui-key={input.uiKey}
           data-input-key={input.key}
         >
@@ -225,7 +233,7 @@ function FeedbackUiInput({ input }) {
       return (
         <label className="select-none flex gap-1">
           <div className={clsx(
-            "select-none font-[500] rounded-lg bg-black cursor-pointer rounded-sm p-1 border-2 border-gray-600",
+            "select-none font-[500] bg-black cursor-pointer rounded-sm p-1 border-2 border-gray-600",
             input.value ? 'text-black bg-gray-400 hover:border-black' : 'text-white/50 hover:brightness-150')
           }>
             {input.label ?? input.key}
@@ -252,7 +260,7 @@ function FeedbackUiInput({ input }) {
     case 'select':
       return (
         <select
-          className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md p-1 border-2 border-indigo-800/50"
+          className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md p-1 h-full"
           data-ui-key={input.uiKey}
           data-input-key={input.key}
           value={input.value}

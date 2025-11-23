@@ -557,8 +557,11 @@ declare namespace NPC {
   type FeedbackUi = {
     key: string;
     title?: string;
-    /** Lookup */
+    /** If defined, also show ui in npc thought bubble */
+    npcKey?: string;
+    /** <input>, <select> and <button> value lookup */
     input: Record<string, FeedbackInput>;
+    /** Last pressed button */
     lastButton: null | string;
   }
   

@@ -99,7 +99,10 @@
 
 ### World
 
-- npc-specific Feedback UI can also be rendered in npc thought bubble
+- 🚧 npc-specific Feedback UI can also be rendered in npc thought bubble
+  - ✅ can test using `say npc:rob ?; demoUi npc:rob`
+  - ✅ first approximation using `id`
+  - 🚧 stop using `id`
 
 - look independent of follow and overrides it
   - keep following when look at npc including followed

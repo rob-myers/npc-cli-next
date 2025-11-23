@@ -164,11 +164,13 @@ export async function* demoHandleDirectViaTty(ct, opts = ct.api.jsArg(ct.args, {
 export async function* demoDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey', npc: 'npcKey' })) {
   const feedback = await core.connectFeedback(ct);
   const it = dev.direct(ct, opts);
+  
   for await (const v of it) {
     const uiKey = opts.uiKey ?? `${opts.npcKey}?`;
     feedback.add({
       key: uiKey,
       title: `${opts.npcKey}?`,
+      npcKey: opts.npcKey,
       input: {
         stop: { type: 'button', key: 'stop' },
         continue: { type: 'button', key: 'continue' },
@@ -204,9 +206,9 @@ export async function* demoDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'u
  * demoUi ui:base
  * ```
  * @param {NPC.RunArg} ct
- * @param {{ uiKey?: string }} [opts]
+ * @param {{ uiKey?: string; npcKey?: string }} [opts]
  */
-export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'key' })) {
+export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'key', npc: 'npcKey' })) {
   const feedback = await core.connectFeedback(ct, { key: 'feedback-0' });
   const uiKey = opts?.uiKey ?? 'demo-0';
   
@@ -215,6 +217,7 @@ export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'key' })) {
     feedback.add({
       key: uiKey,
       title: 'Make a choice...',
+      npcKey: opts?.npcKey,
       input: {
         choice: { type: 'select', key: 'choice', options: [{ label: 'foo', value: 'foo' }, { label: 'bar', value: 'bar' }] }
       },

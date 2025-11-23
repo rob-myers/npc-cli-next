@@ -106,22 +106,25 @@ function NpcSpeechBubble({ bubble: b }) {
             deltaArrowLeft={28}
             label={<span className="npc-key">{b.key}</span>}
             left={false}
-            onWheel={b.forwardWheelEvents.bind(b)}
-            onChange={b.onPopUpChange.bind(b)}
             top={false}
             width={140}
+            onWheel={b.forwardWheelEvents.bind(b)}
+            onChange={b.onPopUpChange.bind(b)}
           >
             <div
               className="flex flex-col gap-2 p-1 text-[1rem]"
               onClick={b.onClickThoughts.bind(b)}
             >
+              {b.thoughts.length === 0 && '⋯'}
               {b.thoughts.map((thought) =>
                 <Thought key={thought.key} thought={thought} />
               )}
-              {b.thoughts.length === 0 && <>...</>}
             </div>
 
-            <div ref={b.thoughtUiRef.bind(b)} />
+            <div
+              id={`npc-ui-${b.key}`} // 🚧 don't use id
+              ref={b.thoughtUiRef.bind(b)}
+            />
 
           </PopUp>
 
@@ -137,7 +140,7 @@ function NpcSpeechBubble({ bubble: b }) {
 /** @param {{ thought: NPC.BubbleThought }} props */
 function Thought({ thought }) {
   return (
-    <p className={clsx('flex items-start gap-1', thought.disabled && 'text-[#999]' )}>
+    <p className={clsx('flex items-start gap-1 text-[0.9rem]', thought.disabled && 'text-[#999]' )}>
       {thought.parts.map(part =>
         Array.isArray(part)
           ? <button
