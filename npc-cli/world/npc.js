@@ -1270,7 +1270,8 @@ export class NpcApi {
    */
   onTickDetectStuck(deltaSecs, agent) {
     // 🔔 avoid "snap" onenter offMeshConnection at maxSpeed 
-    if (agent.raw.neis.dist > 0.5) {
+    // if (agent.raw.neis.dist > 0.5) {
+    if (agent.raw.neis.dist > 0.3) {
       return;
     }
     
