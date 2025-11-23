@@ -1,10 +1,12 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./npc-cli/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./npc-cli/world/*.jsx",
   ],
   darkMode: ['class'],
   safelist: ['dark'],
