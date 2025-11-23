@@ -109,7 +109,7 @@ export default function Manage(props) {
   }));
 
   return (
-    <div css={manageCss} className="manage h-full overflow-auto p-4 bg-[#111]">
+    <div css={manageCss} className="manage h-full overflow-auto p-4 bg-[#111] text-xs">
         
       <ul className="extant">
         <li className="title">Current</li>
@@ -247,7 +247,6 @@ const manageCss = css`
     flex-wrap: wrap;
     padding: 4px 0;
     row-gap: 0;
-    font-size: small;
     border: var(--separating-border);
   }
   
@@ -260,7 +259,6 @@ const manageCss = css`
     user-select: none;
     padding: 0;
     color: #fff;
-    font-size: small;
     background-color: #222;
     border-color: rgba(0, 0, 0, 0);
   }
@@ -316,7 +314,6 @@ const manageCss = css`
       align-items: center;
       user-select: none;
       font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-      font-size: 0.9rem;
       font-weight: 300;
       letter-spacing: 1px;
       color: #fff;
@@ -326,7 +323,6 @@ const manageCss = css`
     .close-tab {
       cursor: pointer;
       font-family: monospace;
-      font-size: large;
       user-select: none;
       padding: 10px;
       border-left: var(--separating-border);
@@ -350,7 +346,6 @@ const manageCss = css`
       .world-key {
         display: flex;
         align-items: center;
-        font-size: small;
         
         input {
           width: 20px;
@@ -397,7 +392,6 @@ const manageCss = css`
     border: 1px solid #444;
     border-width: 0 1px;
     color: var(--select-or-input-color);
-    font-size: small;
     text-align: center;
     cursor: pointer;
   }
