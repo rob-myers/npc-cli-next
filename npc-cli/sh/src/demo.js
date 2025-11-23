@@ -155,15 +155,14 @@ export async function* demoHandleDirectViaTty(ct, opts = ct.api.jsArg(ct.args, {
  * 🚧
  * Expose basic choices via UI.
  * ```sh
- * import demoHandleDirectViaUi from demo
- * demoHandleDirectViaUi npc:rob to:$( clicks 3 )
+ * import demoDirectViaUi from demo
+ * demoDirectViaUi npc:rob to:$( clicks 3 )
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ uiKey?: string; npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
  */
-export async function* demoHandleDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey', npc: 'npcKey' })) {
+export async function* demoDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'uiKey', npc: 'npcKey' })) {
   const feedback = await core.connectFeedback(ct);
-  
   const it = dev.direct(ct, opts);
   for await (const v of it) {
     const uiKey = opts.uiKey ?? `${opts.npcKey}?`;
@@ -179,13 +178,15 @@ export async function* demoHandleDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { 
 
     // wait until a button pressed
     await /** @type {Promise<void>} */ (new Promise((resolve, reject) => {
-      const unSub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], ({ lastButton }) => {
-        if (lastButton === 'stop' || lastButton === 'continue' || lastButton === 'pause') {
-          v.will = lastButton;
+      const unSub = feedback.ui.subscribe(({ lookup }) => lookup[uiKey], (ui) => {
+        if (ui && (ui.lastButton === 'stop' || ui.lastButton === 'continue' || ui.lastButton === 'pause')) {
+          v.will = ui.lastButton;
+          // after "pause" pressing "continue" should resume
+          if (ui.lastButton === 'continue') ct.api.resume();
           resolve();
         }
       });
-      
+
       ct.api.handleStatus({
         cleanups() {
           unSub();
