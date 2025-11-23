@@ -11,7 +11,8 @@ spawn npc:rada at:'{ x: 1.5 * 1.5, y: 5 * 1.5 }' as:robot-1 granted:. angle:Math
 
 # provide base.npcKey
 createFollowUi ui:base &
-ui key:base set:'{ selector: true, follow: true }'
+ui key:base set:'{ selector: true, follow: false }'
+look at:rob
 
 ptags always; click meta.npcKey |
   selectNpcOnClick write:base.npcKey &
