@@ -220,7 +220,7 @@ function FeedbackUiInput({ input }) {
     case 'button':
       return (
         <button
-          className=" text-white font-thin hover:brightness-150 hover:bg-green-900/30 cursor-pointer rounded-md p-1 border-2 border-indigo-500/50 h-full"
+          className="text-white font-thin hover:brightness-150 hover:bg-green-900/30 cursor-pointer rounded-md p-1 border-2 border-indigo-500/50 h-full"
           data-ui-key={input.uiKey}
           data-input-key={input.key}
         >

@@ -155,7 +155,7 @@ export async function* demoDirectViaTty(ct, opts = ct.api.jsArg(ct.args, { npc: 
  * 🚧
  * Expose basic choices via UI.
  * ```sh
- * import demoDirectViaUi from demo
+ * import demo
  * demoDirectViaUi npc:rob to:$( clicks 3 )
  * ```
  * @param {NPC.RunArg} ct
