@@ -111,7 +111,7 @@ export default function Manage(props) {
   return (
     <div css={manageCss} className="manage h-full overflow-auto p-4 bg-[#111] text-xs">
         
-      <ul className="extant">
+      <ul className="extant overflow-auto">
         <li className="title">Current</li>
         
         {tabDefs.map((def, i) => {
