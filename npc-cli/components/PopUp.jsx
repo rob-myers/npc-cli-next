@@ -1,6 +1,7 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import cx from 'classnames';
+import clsx from 'clsx';
 import { pause } from '../service/generic';
 import useStateRef from '../hooks/use-state-ref';
 import useUpdate from '../hooks/use-update';
@@ -122,7 +123,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
         })}
       >
         <div className="arrow"/>
-        <div className={popUpContentClassName}>
+        <div className={clsx(popUpContentClassName, 'absolute p-1 invisible opacity-0 transition-[opacity_300ms] whitespace-nowrap bg-black text-white')}>
           {props.children}
         </div>
       </div>
@@ -248,19 +249,8 @@ const rootPopupCss = css`
   }
 
   .${popUpContentClassName} {
-    /* min-height: 60px; */
-    position: absolute;
     width: var(--bubble-width);
-
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 300ms;
-    white-space: normal;
-  
-    background-color: black;
-    color: white;
     border: 1px solid var(--bubble-border-color);
-  
     a {
       color: #dd0;
     }

@@ -128,13 +128,12 @@ export default function Feedback(props) {
     >
       <div className="flex flex-wrap p-1">
         {Object.values(state.ui.getState().lookup).map((ui) => {
-          const inputs = (
-            Object.values(ui.input).map((input) => (
-              <div key={input.key}>
-                <FeedbackUiInput key={input.key} input={input} />
-              </div>
-            ))
-          );
+
+          const inputs = Object.values(ui.input).map((input) => (
+            <div key={input.key} className="w-full">
+              <FeedbackUiInput key={input.key} input={input} />
+            </div>
+          ));
 
           const portalParent = ui.portalParent?.(); // 🚧
           return portalParent
@@ -261,7 +260,7 @@ function FeedbackUiInput({ input }) {
     case 'select':
       return (
         <select
-          className="bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md p-1 h-full"
+          className="w-full bg-gray-800 text-white font-thin hover:brightness-150 cursor-pointer rounded-md p-1 h-full"
           data-ui-key={input.uiKey}
           data-input-key={input.key}
           value={input.value}

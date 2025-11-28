@@ -106,8 +106,8 @@
     - WHY? else dup invokes in case we have same UI in two places e.g. both `Feedback` and an npc speech bubble,
   - ✅ do not permit ui to exist both in Feedback in a speech bubble i.e. now xor
   - ✅ ui can provide htmlelement `portalParent`
+  - ✅ stop using `id` by reading `w.bubble.byKey[npcKey].uiRootEl` inside `<Feedback>`
   - 🚧 try avoid `() => portalParent` (immer fix)
-  - 🚧 stop using `id` by reading `w.bubble.byKey[npcKey].uiRootEl` inside `<Feedback>`
   - 🚧 improve layout a bit
 ```sh
 say npc:rob ?

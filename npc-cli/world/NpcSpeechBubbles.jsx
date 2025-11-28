@@ -121,7 +121,7 @@ function NpcSpeechBubble({ bubble: b }) {
               )}
             </div>
 
-            <div ref={b.thoughtUiRef.bind(b)} />
+            <div ref={b.thoughtUiRef.bind(b)} className="w-full" />
 
           </PopUp>
 
