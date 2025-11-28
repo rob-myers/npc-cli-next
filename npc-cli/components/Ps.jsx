@@ -15,7 +15,7 @@ import { faRefresh, faPause, faPlay, faClose, FontAwesomeIcon, faRefreshThin } f
 export default function PsList() {
 
   const ttyTabMetas = useTabs(({ tabsMeta }) =>
-    Object.values(tabsMeta).filter(x => x.key.startsWith('tty-')),
+    Object.values(tabsMeta).filter(tabMeta => tabMeta.key.startsWith('tty-')),
     shallow,
   );
 
