@@ -107,7 +107,7 @@
   - ✅ do not permit ui to exist both in Feedback in a speech bubble i.e. now xor
   - ✅ ui can provide htmlelement `portalParent`
   - ✅ stop using `id` by reading `w.bubble.byKey[npcKey].uiRootEl` inside `<Feedback>`
-  - 🚧 try avoid `() => portalParent` (immer fix)
+  - ✅ try avoid `() => portalParent` (immer fix)
   - 🚧 improve layout a bit
 ```sh
 say npc:rob ?

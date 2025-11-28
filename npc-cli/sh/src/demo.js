@@ -170,7 +170,7 @@ export async function* demoDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'u
     feedback.add({
       key: uiKey,
       title: `${opts.npcKey}?`,
-      portalParent: () => ct.w.bubble.byKey[opts.npcKey].uiRootEl,
+      portalParent: ct.w.bubble.byKey[opts.npcKey].uiRootEl,
       input: {
         stop: { type: 'button', key: 'stop' },
         continue: { type: 'button', key: 'continue' },
@@ -218,7 +218,7 @@ export async function demoUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'key', npc: 
     feedback.add({
       key: uiKey,
       title: 'Make a choice...',
-      portalParent: npcKey ? () => ct.w.bubble.byKey[npcKey].uiRootEl : undefined,
+      portalParent: npcKey ? ct.w.bubble.byKey[npcKey].uiRootEl : undefined,
       input: {
         choice: { type: 'select', key: 'choice', options: [{ label: 'foo', value: 'foo' }, { label: 'bar', value: 'bar' }] }
       },

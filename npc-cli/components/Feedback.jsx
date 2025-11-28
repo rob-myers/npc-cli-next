@@ -4,15 +4,13 @@ import clsx from 'clsx';
 import debounce from "debounce";
 import { create, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { devtools } from "zustand/middleware";
 import { subscribeWithSelector } from "zustand/middleware";
+import { castDraft } from "immer";
 import { jsStringify, warn } from "../service/generic";
 import { removeCached, setCached } from "../service/query-client";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import useTabs from "../tabs/tabs.store";
-
-// 🚧 bound to a particular WORLD_KEY
 
 /**
  * Provide feedback to a process.
@@ -25,10 +23,11 @@ export default function Feedback(props) {
   const state = useStateRef(/** @returns {State} */ () => ({
     pending: new Map(),
     pendingMode: 'none',
-    ui: /** @type {State['ui']} */ (create(devtools(immer(subscribeWithSelector((_get, _set) => ({ lookup: {} }))), { name: props.tabKey }))),
+    // devtools middleware crashed due to htmlelement in store
+    ui: /** @type {State['ui']} */ (create(immer(subscribeWithSelector((_get, _set) => ({ lookup: {} }))))),
     add(ui) {
       state.ui.setState(draft => {
-        draft.lookup[ui.key] = feedbackUiDefToUi(ui, ui.key);
+        draft.lookup[ui.key] = castDraft(feedbackUiDefToUi(ui, ui.key));
       });
     },
     change(uiKey, partial) {
@@ -130,14 +129,13 @@ export default function Feedback(props) {
         {Object.values(state.ui.getState().lookup).map((ui) => {
 
           const inputs = Object.values(ui.input).map((input) => (
-            <div key={input.key} className="w-full">
+            <div key={input.key}>
               <FeedbackUiInput key={input.key} input={input} />
             </div>
           ));
 
-          const portalParent = ui.portalParent?.(); // 🚧
-          return portalParent
-            ? createPortal(inputs, portalParent)
+          return ui.portalParent
+            ? createPortal(inputs, ui.portalParent)
             : [
               <div key={ui.key} className="flex items-center p-1 cursor-default font-[200 text-yellow-200" title={ui.title}>
                 {ui.key}
