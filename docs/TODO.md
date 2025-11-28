@@ -102,7 +102,16 @@
 - 🚧 npc-specific Feedback UI can also be rendered in npc thought bubble
   - ✅ can test using `say npc:rob ?; demoUi npc:rob`
   - ✅ first approximation using `id`
-  - 🚧 stop using `id`
+  - ❌ do not react directly to zustand store (via subscribe)
+    - WHY? else dup invokes in case we have same UI in two places e.g. both `Feedback` and an npc speech bubble,
+  - ✅ do not permit ui to exist both in Feedback in a speech bubble i.e. now xor
+  - 🚧 stop using `id` by reading `w.bubble.byKey[npcKey].uiRootEl` inside `<Feedback>`
+  - 🚧 improve layout a bit
+```sh
+say npc:rob ?
+import demo
+demoUi npc:rob
+```
 
 - look independent of follow and overrides it
   - keep following when look at npc including followed

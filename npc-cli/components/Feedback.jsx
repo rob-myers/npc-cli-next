@@ -12,6 +12,8 @@ import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import useTabs from "../tabs/tabs.store";
 
+// 🚧 bound to a particular WORLD_KEY
+
 /**
  * Provide feedback to a process.
  * @param {Props} props
@@ -137,14 +139,15 @@ export default function Feedback(props) {
           // 🚧 don't use id
           const portalParent = ui.npcKey ? document.getElementById(`npc-ui-${ui.npcKey}`) : null;
 
-          return [
-            <div key={ui.key} className="flex items-center p-1 cursor-default font-[200 text-yellow-200" title={ui.title}>
-              {ui.key}
-            </div>
-            ,
-            inputs,
-            portalParent ? createPortal(inputs, portalParent) : null,
-          ];
+          return portalParent
+            ? createPortal(inputs, portalParent)
+            : [
+              <div key={ui.key} className="flex items-center p-1 cursor-default font-[200 text-yellow-200" title={ui.title}>
+                {ui.key}
+              </div>
+              ,
+              inputs,
+            ];
         })}
       </div>
 
