@@ -1270,8 +1270,8 @@ export class NpcApi {
    */
   onTickDetectStuck(deltaSecs, agent) {
     // 🔔 avoid "snap" onenter offMeshConnection at maxSpeed 
-    // if (agent.raw.neis.dist > 0.5) {
-    if (agent.raw.neis.dist > 0.3) {
+    // if (agent.raw.neis.dist > 0.3) {
+    if (agent.raw.neis.dist > 0.5) {
       return;
     }
     
@@ -1569,7 +1569,7 @@ export class NpcApi {
     
     // Label in model is half below ground with total height `labelHeight`.
     // We'll move it 2.5 * labelHeight above npc's current height.
-    const offsetY = 0.05 + animHeights[act] + (0.5 + 2.5) * labelHeight;
+    const offsetY = 0.05 + animHeights[act] + (0.5 + 1.5) * labelHeight;
     
     // for speech bubble
     this.offsetSpeech.y = offsetY;
