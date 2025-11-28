@@ -136,13 +136,13 @@ export async function* demoSelectPolys({ w }) {
  * Expose basic choices via TTY.
  * 🤔 Repeated UI looks a bit crap...
  * ```sh
- * import demoHandleDirectViaTty from demo
- * demoHandleDirectViaTty npc:rob to:$( clicks 3 )
+ * import demoDirectViaTty from demo
+ * demoDirectViaTty npc:rob to:$( clicks 3 )
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ npcKey: string; to: NPC.MoveOpts['to']; '...'?: true; }} [opts]
  */
-export async function* demoHandleDirectViaTty(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
+export async function* demoDirectViaTty(ct, opts = ct.api.jsArg(ct.args, { npc: 'npcKey' })) {
   const it = dev.direct(ct, opts);
   for await (const v of it) {
     yield* ct.api.choice('[ stop ]() [ pause ]() [ continue ]()', 'handleDirectChoice');
@@ -203,7 +203,9 @@ export async function* demoDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'u
 
 /**
  * ```sh
+ * demoUi
  * demoUi ui:base
+ * demoUi npc:rob
  * ```
  * @param {NPC.RunArg} ct
  * @param {{ uiKey?: string; npcKey?: string }} [opts]

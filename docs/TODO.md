@@ -229,10 +229,10 @@ demoUi npc:rob
   - e.g. `run '(ct) { yield* ct.api.choice("[ foo ](bar)", "baz"); }'`
   - ✅ after clicking link `[ foo ]` the variable `baz` has value `bar`
 
-- ✅ demoHandleDirectViaTty provides choices stop/continue/pause
+- ✅ demoDirectViaTty provides choices stop/continue/pause
 ```sh
-import demoHandleDirectViaTty from demo
-demoHandleDirectViaTty npc:rob to:$( clicks 2 )
+import demoDirectViaTty from demo
+demoDirectViaTty npc:rob to:$( clicks 2 )
 ```
 
 - ✅ Manage can open new process tab `Ps`
