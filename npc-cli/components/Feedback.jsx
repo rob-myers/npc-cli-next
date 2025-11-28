@@ -136,9 +136,7 @@ export default function Feedback(props) {
             ))
           );
 
-          // 🚧 don't use id
-          const portalParent = ui.npcKey ? document.getElementById(`npc-ui-${ui.npcKey}`) : null;
-
+          const portalParent = ui.portalParent?.(); // 🚧
           return portalParent
             ? createPortal(inputs, portalParent)
             : [
@@ -151,7 +149,7 @@ export default function Feedback(props) {
         })}
       </div>
 
-      <div
+      <div // Pending notifications
         className={clsx(
           "absolute bottom-2 rounded-l right-0 size-8 max-w-fit max-h-16 h-fit overflow-auto",
           "text-xs pl-2 py-1 bg-black border-[1px] border-r-0 border-gray-600 cursor-pointer select-none",

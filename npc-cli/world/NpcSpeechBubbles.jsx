@@ -122,7 +122,8 @@ function NpcSpeechBubble({ bubble: b }) {
             </div>
 
             <div
-              id={`npc-ui-${b.key}`} // 🚧 don't use id
+              // 🚧 don't use id
+              id={`npc-ui-${b.key}`}
               ref={b.thoughtUiRef.bind(b)}
             />
 

@@ -557,8 +557,9 @@ declare namespace NPC {
   type FeedbackUi = {
     key: string;
     title?: string;
-    /** If defined, also show ui in npc thought bubble */
-    npcKey?: string;
+    /** e.g. show ui in npc thought bubble */
+    // 🚧 try function to overcome issue with zustand and immer
+    portalParent?: () => HTMLElement | null;
     /** <input>, <select> and <button> value lookup */
     input: Record<string, FeedbackInput>;
     /** Last pressed button */
