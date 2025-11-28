@@ -621,7 +621,7 @@ export class ttyXtermClass {
         } else if (other instanceof HTMLElement) {
           this.queueCommands([{
             key: "line",
-            line: `<${other.tagName.toLowerCase()}>`,
+            line: `${ansi.Yellow}<${other.tagName.toLowerCase()}>${ansi.Reset}`,
           }]);
         } else {
           const stringifiedTail = jsStringify(other).slice(-this.maxStringifyLength);
