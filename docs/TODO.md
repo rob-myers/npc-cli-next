@@ -99,7 +99,11 @@
 
 ### World
 
-- 🚧 npc-specific Feedback UI can also be rendered in npc thought bubble
+- 🚧 handle `direct` using Feedback
+  - 🚧 stop, pause, continue
+  - 🚧 try left, try right
+
+- ✅ npc-specific Feedback UI can also be rendered in npc thought bubble
   - ✅ can test using `say npc:rob ?; demoUi npc:rob`
   - ✅ first approximation using `id`
   - ❌ do not react directly to zustand store (via subscribe)
@@ -108,7 +112,7 @@
   - ✅ ui can provide htmlelement `portalParent`
   - ✅ stop using `id` by reading `w.bubble.byKey[npcKey].uiRootEl` inside `<Feedback>`
   - ✅ try avoid `() => portalParent` (immer fix)
-  - 🚧 improve layout a bit
+  - ✅ improve layout a bit
 ```sh
 say npc:rob ?
 import demo
@@ -193,10 +197,6 @@ demoUi npc:rob
 - ✅ fix remove npc e.g. `remove foo`
   - ✅ `remove npc:foo` also supported
 
-- ✅ handle `direct` using Feedback
-  - ✅ stop, pause, continue
-  - 🚧 try left, try right
-
 - ❌ BUG hello-world-0 tab initially hidden, while paused, switch to hello-world-0 tab; back to manage tab:
   - Manage still says it is unmounted
 
@@ -208,20 +208,20 @@ demoUi npc:rob
 - ✅ support zoomToCursor false
 - ✅ zoomToCursor false when following, true when stopFollowing
 
- - ✅ improve follow camera pan/zoom
-  - ✅ fix zoom on followed
-  - ❌ pan changes target by delta
-  - ✅ on pan far enough while follow stop following
-  - ✅ works together with click npc to follow
-  - ✅ can start follow while paused
+- ✅ improve follow camera pan/zoom
+- ✅ fix zoom on followed
+- ❌ pan changes target by delta
+- ✅ on pan far enough while follow stop following
+- ✅ works together with click npc to follow
+- ✅ can start follow while paused
 
 - ✅ fix top down discontinuity (polar 0)
 
 - ❌ on fix both angles, interpret rotation as pan
   - this will fix "locked rotation bleed into pan"
 
-- Manage tab only shows one current tab at a time
-- Manage tab only shows one tab to create at a time
+- ❌ Manage tab only shows one current tab at a time
+- ❌ Manage tab only shows one tab to create at a time
 
 - ✅ command service has `choice`
   - `run '(ct) { yield* ct.api.choice("[ foo ]()"); }'`
