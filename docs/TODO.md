@@ -99,8 +99,12 @@
 
 ### World
 
+- ✅ transition from non-idle animation when slowing down near target
+  - avoid transition to idle after stopping
+
 - 🚧 handle `direct` using Feedback
   - 🚧 stop, pause, continue
+    - improve ui
   - 🚧 try left, try right
 
 - ✅ npc-specific Feedback UI can also be rendered in npc thought bubble

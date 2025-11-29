@@ -6,7 +6,7 @@ import braces from "braces";
 
 import { Rect, Vect } from '../geom';
 import { defaultAgentUpdateFlags, geomorphGridMeters, glbFadeIn, glbFadeOut, npcClassToMeta, npcLabelMaxChars, defaultNpcArriveDistance, skinsLabelsTextureHeight, skinsLabelsTextureWidth, nearTargetDistance, precision, skinsLabelScale } from '../service/const';
-import { debug, error, jsStringify, keys, warn } from '../service/generic';
+import { debug, error, jsStringify, keys, mapValues, warn } from '../service/generic';
 import { geom } from '../service/geom';
 import { buildObject3DLookup, emptyAnimationMixer, emptyGroup, emptyShaderMaterial, emptySkinnedMesh, getRootBones, tmpEulerThree, tmpVectThree1, toV3, v3Precision } from '../service/three';
 import { helper } from '../service/helper';
@@ -109,6 +109,8 @@ export class NpcApi {
   slowBegin = /** @type {null | number} */ (null);
   /** Number of spawns, where more than 1 means we have re-spawned. */
   spawns = 0;
+  /** Arrive early so transition to idle before stop */
+  arrivingEarly = false;
   /** Target during move. */
   target = /** @type {null | Geom.Vect} */ (null);
 
@@ -983,6 +985,7 @@ export class NpcApi {
       this.setSlowDownRadius(true);
       this.tryStopOffMesh(); // when turnBeforeMove
       this.numCorners = 0;
+      this.arrivingEarly = false;
     }
   }
 
@@ -1237,6 +1240,11 @@ export class NpcApi {
     if (distance <= arriveDist) {// Reached target
       this.onArriveTarget();
       return;
+    }
+
+    if (this.arrivingEarly === false && distance <= 2 * arriveDist) {
+      this.arrivingEarly = true;
+      this.startAnimation('Idle');
     }
     
     // avoid fast final turn
