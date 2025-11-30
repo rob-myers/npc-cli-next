@@ -167,10 +167,12 @@ export async function* demoDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'u
   
   for await (const v of it) {
     const uiKey = opts.uiKey ?? `${opts.npcKey}?`;
+    const bubble = await ct.w.bubble.ensure(opts.npcKey);
+
     feedback.add({
       key: uiKey,
       title: `${opts.npcKey}?`,
-      portalParent: ct.w.bubble.byKey[opts.npcKey].uiRootEl,
+      portalParent: bubble.uiRootEl,
       input: {
         stop: { type: 'button', key: 'stop' },
         continue: { type: 'button', key: 'continue' },

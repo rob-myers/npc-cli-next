@@ -580,9 +580,9 @@ export async function remove({ api, args, w }, opts = api.jsArg(args, { npc: 'np
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string; say: string; words?: string }} [opts]
  */
-export function say({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
+export async function say({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey' })) {
   const words = opts.words ?? args.filter(x => x in opts).join(' ');
-  w.e.say({ npcKey: opts.npcKey, words });
+  await w.e.say({ npcKey: opts.npcKey, words });
 }
 
 /**
@@ -611,9 +611,9 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'np
  * @param {NPC.RunArg} ctxt
  * @param {{ npcKey: string; thoughtKey: string; parts?: string[]; }} [opts]
  */
-export function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', of: 'thoughtKey' })) {
+export async function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', of: 'thoughtKey' })) {
   const parts = opts.parts ?? args.filter(x => x in opts);
-  const bubble = w.bubble.ensure(opts.npcKey);
+  const bubble = await w.bubble.ensure(opts.npcKey);
   bubble.think(opts.thoughtKey, ...parts);
   w.n[opts.npcKey].showLabel(false);
 }

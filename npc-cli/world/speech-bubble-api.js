@@ -21,6 +21,7 @@ export class SpeechBubbleApi {
   tracked = /** @type {null | import('../components/Html3d').TrackedObject3D} */ (null);
   offset = { x: 0, y: 0, z: 0 };
 
+  resolveOnMount = noop; 
   speech = /** @type {string | null} */ (null);
   thought = /** @type {{ [key: string]: NPC.BubbleThought }} */ ({});
   /** `Object.values(this.thought)` */
@@ -72,6 +73,10 @@ export class SpeechBubbleApi {
     } else {// @ts-ignore
       delete this.html3d;
     }
+  }
+
+  isMounted() {
+    return this.uiRootEl !== null;
   }
 
   /**

@@ -832,7 +832,7 @@ export default function useHandleEvents(w) {
     revokeAccess(regexDef, npcKey) {
       (state.npcToAccess[npcKey] ??= new Set()).delete(regexDef);
     },
-    say({ npcKey, words }) {
+    async say({ npcKey, words }) {
       if (typeof words !== 'string') {
         throw Error('opts.words must be a string');
       }
@@ -841,7 +841,7 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      const bubble = w.bubble.ensure(npcKey);
+      const bubble = await w.bubble.ensure(npcKey);
       const speechWithLinks = (words ?? '').trim();
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
       bubble.setSpeech(speechSansLinks || null);
@@ -1016,7 +1016,7 @@ export default function useHandleEvents(w) {
  * Remove speech bubble(s) from npc(s)
  * @property {(...npcKeys: string[]) => void} removeFromSensors
  * @property {(regexDef: string, npcKey: string) => void} revokeAccess
- * @property {(opts: { npcKey: string, words?: string }) => void} say
+ * @property {(opts: { npcKey: string, words?: string }) => Promise<void>} say
  * @property {() => void} showContextMenu
  * Default context menu, unless clicked on an npc
  * @property {(gdKey: Geomorph.GmDoorKey) => boolean} someNpcNearDoor

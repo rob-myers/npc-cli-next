@@ -27,11 +27,19 @@ export default function NpcSpeechBubbles() {
       }
       update();
     },
-    ensure(npcKey) {// ensure exists and is tracking npc
+    async ensure(npcKey) {// ensure exists/mounted and is tracking npc
       const npc = w.npc.get(npcKey);
       const bubble = state.byKey[npcKey] ??= new SpeechBubbleApi(npcKey, w);
       bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
-      update();
+
+      if (bubble.isMounted()) {
+        return bubble;
+      }
+
+      await /** @type {Promise<void>} */ (new Promise(resolve => {
+        bubble.resolveOnMount = resolve;
+        update();
+      }));
       return bubble;
     },
     toFront(npcKey) {
@@ -71,7 +79,7 @@ export default function NpcSpeechBubbles() {
  * @typedef State
  * @property {string} lastFront npcKey
  * @property {(...npcKeys: string[]) => void} delete
- * @property {(npcKey: string) => SpeechBubbleApi} ensure
+ * @property {(npcKey: string) => Promise<SpeechBubbleApi>} ensure
  * @property {{ [npcKey: string]: SpeechBubbleApi }} byKey
  * @property {(npcKey: string) => void} toFront
  */
@@ -84,7 +92,10 @@ function NpcSpeechBubble({ bubble: b }) {
   b.update = useUpdate();
 
   React.useEffect(() => {
-    setTimeout(b.update); // Extra render e.g. for speak while paused
+    setTimeout(() => {
+      b.update(); // Extra render e.g. for speak while paused
+      b.resolveOnMount(); // Resolve after 30ms else uiRootEl n/a
+    }, 30);
   }, []);
 
   return (
