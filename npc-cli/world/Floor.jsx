@@ -70,7 +70,7 @@ export default function Floor(props) {
       ct.setTransform(worldToCanvas, 0, 0, worldToCanvas, -gm.pngRect.x * worldToCanvas, -gm.pngRect.y * worldToCanvas);
 
       // hull floor
-      if (state.dark) {
+      if (state.dark === true) {
         drawPolygons(ct, gm.hullPoly.map(x => x.clone().removeHoles()), ['#111', null]);
       }
 
@@ -93,7 +93,7 @@ export default function Floor(props) {
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
       ct.lineWidth = w.touchDevice ? 0.05 : 0.04;
-      const fillStyle = state.dark === true ? '#000' : '#fff';
+      const fillStyle = state.dark === true ? '#000' : '#665';
       const strokeStyle = state.dark === true ? '#4448' : '#0007';
       (w.nav.toNavTris[gm.key] ?? []).forEach(([positions, indices]) => {
         for (const index of indices) {
