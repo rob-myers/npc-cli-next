@@ -8,7 +8,7 @@ import { SpeechBubbleApi } from "./speech-bubble-api";
 import useStateRef from "../hooks/use-state-ref";
 import useUpdate from "../hooks/use-update";
 import { Html3d } from "../components/Html3d";
-import { PopUp, popUpBubbleArrowColorCssVar, popUpButtonClassName, popUpContentClassName } from "../components/PopUp";
+import { PopUp, popUpBubbleArrowColorCssVar, popUpButtonClassName } from "../components/PopUp";
 
 export default function NpcSpeechBubbles() {
 
@@ -100,28 +100,29 @@ function NpcSpeechBubble({ bubble: b }) {
     >
       <div className="speech">
         <div className="npc-key">
-          <PopUp // invisible but clickable
+          <PopUp
             ref={b.popUpRef.bind(b)}
             css={popUpCss}
             deltaArrowLeft={28}
             label={<span className="npc-key">{b.key}</span>}
             left={false}
             top={false}
-            width={140}
+            width={100}
             onWheel={b.forwardWheelEvents.bind(b)}
             onChange={b.onPopUpChange.bind(b)}
           >
             <div
-              className="flex flex-col gap-2 p-1 text-[1rem]"
+              className="flex flex-col items-center"
               onClick={b.onClickThoughts.bind(b)}
             >
-              {b.thoughts.length === 0 && '⋯'}
-              {b.thoughts.map((thought) =>
+              {b.thoughts.length === 0 ? '⋯' : b.thoughts.map((thought) =>
                 <Thought key={thought.key} thought={thought} />
               )}
+              <div
+                ref={b.thoughtUiRef.bind(b)}
+                className="w-full text-[0.6rem] flex flex-wrap justify-center [&>*]:py-1"
+              />
             </div>
-
-            <div ref={b.thoughtUiRef.bind(b)} className="w-full" />
 
           </PopUp>
 
@@ -137,7 +138,7 @@ function NpcSpeechBubble({ bubble: b }) {
 /** @param {{ thought: NPC.BubbleThought }} props */
 function Thought({ thought }) {
   return (
-    <p className={clsx('flex items-start gap-1 text-[0.9rem]', thought.disabled && 'text-[#999]' )}>
+    <p className={clsx('flex flex-wrap py-0.5 justify-center gap-x-1 gap-y-0 text-[0.7rem]', thought.disabled && 'text-[#999]' )}>
       {thought.parts.map(part =>
         Array.isArray(part)
           ? <button
@@ -180,6 +181,7 @@ const npcSpeechBubbleCss = css`
   --speech-bubble-width: 300px;
 
   position: absolute;
+  z-index: ${zIndexWorld.baseSpeechBubble};
   top: -16px;
   /** 10px seems to align to npc label */
   left: calc(-1/2 * var(--speech-bubble-width) + 10px);
@@ -233,24 +235,13 @@ const popUpCss = css`
   position: absolute;
   pointer-events: all;
   
-  /* border: 1px solid red; */
   .npc-key {
     visibility: hidden;
   }
   
-  .${popUpButtonClassName} {
+  /* .${popUpButtonClassName} {
     outline: none;
-  }
+  } */
 
-  .${popUpContentClassName} {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.75);
-    border-radius: 12px;
-    border-top-left-radius: 0;
-  }
-
-  ${popUpBubbleArrowColorCssVar}: #dda;
+  ${popUpBubbleArrowColorCssVar}: #dda0;
 `;

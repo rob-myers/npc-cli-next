@@ -104,7 +104,7 @@
 
 - 🚧 handle `direct` using Feedback
   - 🚧 stop, pause, continue
-    - improve ui
+    - ✅ improve ui
   - 🚧 try left, try right
 
 - ✅ npc-specific Feedback UI can also be rendered in npc thought bubble
