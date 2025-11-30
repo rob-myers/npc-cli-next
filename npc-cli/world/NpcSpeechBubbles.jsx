@@ -109,7 +109,7 @@ function NpcSpeechBubble({ bubble: b }) {
       tracked={b.tracked}
       visible
     >
-      <div className="speech">
+      <div className="line-clamp-2 font-extralight text-[1.1rem] text-[#ff9] border-[1px] rounded-[12px] leading-[1.2] border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] py-1 px-2">
         <div className="npc-key">
           <PopUp
             ref={b.popUpRef.bind(b)}
@@ -149,7 +149,7 @@ function NpcSpeechBubble({ bubble: b }) {
 /** @param {{ thought: NPC.BubbleThought }} props */
 function Thought({ thought }) {
   return (
-    <p className={clsx('flex flex-wrap py-0.5 justify-center gap-x-1 gap-y-0 text-[0.7rem]', thought.disabled && 'text-[#999]' )}>
+    <p className={clsx('flex flex-wrap py-0.5 justify-center gap-x-1 gap-y-0 whitespace-break-spaces text-center text-[0.7rem]', thought.disabled && 'text-[#999]' )}>
       {thought.parts.map(part =>
         Array.isArray(part)
           ? <button
@@ -189,7 +189,7 @@ export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
 const npcSpeechBubbleCss = css`
   
-  --speech-bubble-width: 300px;
+  --speech-bubble-width: 250px;
 
   position: absolute;
   z-index: ${zIndexWorld.baseSpeechBubble};
@@ -218,28 +218,6 @@ const npcSpeechBubbleCss = css`
     display: inline-block;
     color: #fff;
   }
-
-  .speech {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-size: 1.2rem;
-
-    color: #ff9;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-    background-color: rgba(0, 0, 0, 0.2);
-    line-height: 1.2;
-    padding: 4px 8px;
-    text-shadow: 2px 0px black;
-    
-    display: -webkit-box;
-    justify-content: center;
-    /* -webkit-line-clamp: 1; */
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; 
-    overflow: hidden;
-    
-    text-align: center;
-  }
 `;
 
 const popUpCss = css`
@@ -254,5 +232,5 @@ const popUpCss = css`
     outline: none;
   } */
 
-  ${popUpBubbleArrowColorCssVar}: #dda0;
+  ${popUpBubbleArrowColorCssVar}: #99a;
 `;
