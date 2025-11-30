@@ -75,6 +75,10 @@ export class SpeechBubbleApi {
     }
   }
 
+  isThoughtBubbleEmpty() {
+    return this.thoughts.length === 0 && this.uiRootEl?.childElementCount === 0;
+  }
+
   isMounted() {
     return this.uiRootEl !== null;
   }

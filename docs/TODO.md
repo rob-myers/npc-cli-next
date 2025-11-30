@@ -107,7 +107,7 @@
     - ✅ improve ui
   - 🚧 try left, try right
 
-- 🚧 should `say npc:rob` also hide thoughts?
+- ✅ `say npc:rob` does not hide existing thoughts/ui
 
 - ✅ npc-specific Feedback UI can also be rendered in npc thought bubble
   - ✅ can test using `say npc:rob ?; demoUi npc:rob`

@@ -836,8 +836,16 @@ export default function useHandleEvents(w) {
       if (typeof words !== 'string') {
         throw Error('opts.words must be a string');
       }
+
       if (words === '') {
-        state.removeBubble(npcKey);
+        const bubble = w.bubble.byKey[npcKey];
+        if (bubble === undefined) {
+          // NOOP
+        } else if (bubble.isThoughtBubbleEmpty() === false) {
+          bubble.setSpeech(null);
+        } else {
+          state.removeBubble(npcKey);
+        }
         return;
       }
 
