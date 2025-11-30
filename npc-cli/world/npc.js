@@ -65,6 +65,8 @@ export class NpcApi {
   /** Shortcut to `this.w.npc.gltfAux[this.def.classKey]` */
   gltfAux = /** @type {NPC.GltfAux} */ ({});
 
+  /** Arrive early so transition to idle before stop */
+  arrivingEarly = false;
   /** Driven by CrowdAgent.state */
   agentState = /** @type {null | number} */ (null);
   /** Current animation key. */
@@ -109,8 +111,6 @@ export class NpcApi {
   slowBegin = /** @type {null | number} */ (null);
   /** Number of spawns, where more than 1 means we have re-spawned. */
   spawns = 0;
-  /** Arrive early so transition to idle before stop */
-  arrivingEarly = false;
   /** Target during move. */
   target = /** @type {null | Geom.Vect} */ (null);
 
@@ -1242,15 +1242,23 @@ export class NpcApi {
       return;
     }
 
-    if (this.arrivingEarly === false && distance <= 2 * arriveDist) {
-      this.arrivingEarly = true;
-      this.startAnimation('Idle');
+    if (this.pendingTargets.length === 0) {
+      if (
+        this.arrivingEarly === false
+        && distance <= 2.5 * arriveDist
+        && this.point.distanceTo(this.lastStart) > 4 * arriveDist
+      ) {
+        // early Idle animation for smoother transition
+        this.arrivingEarly = true;
+        this.startAnimation('Idle');
+      }
+      
+      if (distance <= 5 * arriveDist) {
+        // avoid fast final turn
+        this.lookSecs = 0.5;
+      }
     }
-    
-    // avoid fast final turn
-    if (this.pendingTargets.length === 0 && this.anim !== 'Idle' && distance <= 5 * arriveDist) {
-      this.lookSecs = 0.5;
-    }
+
 
     this.onTickDetectStuck(deltaSecs, agent);
   }
@@ -1283,8 +1291,8 @@ export class NpcApi {
       return;
     }
     
-    // const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
-    const smallDist = 0.5 * agent.raw.desiredSpeed * deltaSecs;
+    const smallDist = 0.3 * agent.raw.desiredSpeed * deltaSecs;
+    // const smallDist = 0.5 * agent.raw.desiredSpeed * deltaSecs;
 
     if (
       Math.abs(this.delta.x) > smallDist
