@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import debounce from "debounce";
 
 import { debug, tryLocalStorageGetParsed, tryLocalStorageSet } from "../service/generic";
-import { html3DOpacityCssVar, xRayOpacity, worldViewBgColorCssVar, zIndexTabs, zIndexWorld } from "../service/const";
+import { html3DOpacityCssVar, xRayOpacity, worldViewBgColorCssVar, zIndexWorld } from "../service/const";
 import { ansi } from "../sh/const";
 import { WorldContext } from "./world-context";
 import useStateRef from "../hooks/use-state-ref";
@@ -102,6 +102,8 @@ export default function WorldMenu(props) {
     },
     async onChangeDark(e) {
       state.dark = e.currentTarget.checked;
+      state.updateBgColor();
+
       w.npc.dark = state.dark;
       w.npc.forceUpdate();
       await Promise.all([// redraw
@@ -118,8 +120,7 @@ export default function WorldMenu(props) {
     },
     onChangeBgScale(e) {
       state.bgScale = Number(e.currentTarget.value); // [1..20]
-      const scale = state.bgScale / 20;
-      w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${255 * scale}, ${255 * scale}, ${255 * scale})`);
+      state.updateBgColor();
     },
     onChangeXRayEnabled(e) {
       state.xRayEnabled = e.currentTarget.checked;
@@ -151,6 +152,10 @@ export default function WorldMenu(props) {
     setPreventDraggable(shouldPrevent) {
       state.preventDraggable = !!shouldPrevent;
       update();
+    },
+    updateBgColor() {
+      const scale = state.bgScale / 40;
+      w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${255 * scale}, ${255 * scale}, ${255 * scale})`);
     },
   }));
 
@@ -482,4 +487,5 @@ const popUpCss = css`
  * @property {(name: string, line: string) => void} say
  * `name` could be an `npcKey` or "narrator"
  * @property {(shouldPrevent: boolean) => void} setPreventDraggable
+ * @property {() => void} updateBgColor
  */

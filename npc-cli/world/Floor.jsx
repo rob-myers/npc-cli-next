@@ -92,8 +92,8 @@ export default function Floor(props) {
       // draw nav mesh
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
-      ct.lineWidth = w.touchDevice ? 0.05 : 0.04;
-      const fillStyle = state.dark === true ? '#000' : '#665';
+      ct.lineWidth = w.touchDevice ? 0.05 : state.dark ? 0.04 : 0.06;
+      const fillStyle = state.dark === true ? '#000' : '#555';
       const strokeStyle = state.dark === true ? '#4448' : '#0007';
       (w.nav.toNavTris[gm.key] ?? []).forEach(([positions, indices]) => {
         for (const index of indices) {
@@ -109,9 +109,9 @@ export default function Floor(props) {
       // draw off mesh connections
       const normal = tmpVect1;
       const halfWidth = 0.01;
-      const edgeFillStyle = state.dark === true ? '#333' : '#0009';
-      const nodeFillStyle = state.dark === true ? '#000' : '#fff';
-      const nodeStrokeStyle = state.dark === true ? '#fff4' : '#000';
+      const edgeFillStyle = state.dark === true ? '#333' : '#9975';
+      const nodeFillStyle = state.dark === true ? '#000' : '#9977';
+      const nodeStrokeStyle = state.dark === true ? '#fff4' : '#fff0';
       ct.lineWidth = 0.02;
       for (const { src, dst } of w.nav.toOffMeshEdges[gm.key] ?? []) {
         normal.set(-(dst.y - src.y), dst.x - src.x);

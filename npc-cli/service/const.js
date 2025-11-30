@@ -537,3 +537,4 @@ export const defaultTerminalEnv = /** @type {const} */ ({
   TABS_API_KEY,
   WORLD_KEY: 'world-0',
 });
+
