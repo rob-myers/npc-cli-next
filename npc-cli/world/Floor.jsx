@@ -93,7 +93,7 @@ export default function Floor(props) {
       const triangle = new Poly([new Vect(), new Vect(), new Vect()]);
       ct.lineJoin = 'round';
       ct.lineWidth = w.touchDevice ? 0.05 : state.dark ? 0.04 : 0.06;
-      const fillStyle = state.dark === true ? '#000' : '#555';
+      const fillStyle = state.dark === true ? '#000' : '#444';
       const strokeStyle = state.dark === true ? '#4448' : '#0007';
       (w.nav.toNavTris[gm.key] ?? []).forEach(([positions, indices]) => {
         for (const index of indices) {
