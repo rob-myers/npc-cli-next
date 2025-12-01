@@ -123,7 +123,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
         })}
       >
         <div className="arrow"/>
-        <div className={clsx(popUpContentClassName, 'absolute p-1 invisible opacity-0 transition-[opacity_300ms] whitespace-nowrap bg-black text-white')}>
+        <div className={clsx(popUpContentClassName, 'absolute p-1 invisible opacity-0 whitespace-nowrap bg-black text-white')}>
           {props.children}
         </div>
       </div>
@@ -250,6 +250,8 @@ const rootPopupCss = css`
 
   .${popUpContentClassName} {
     width: var(--bubble-width);
+    /* 🔔 tailwind transition caused width to animate? */
+    transition: opacity 300ms;
     border: 1px solid var(--bubble-border-color);
     a {
       color: #dd0;
