@@ -154,7 +154,7 @@ export default function WorldMenu(props) {
       update();
     },
     updateBgColor() {
-      const scale = state.bgScale / 40;
+      const scale = state.bgScale * (state.dark === true ? 1 / 40: 1 / 80);
       w.view.rootEl.style.setProperty(worldViewBgColorCssVar, `rgb(${255 * scale}, ${255 * scale}, ${255 * scale})`);
     },
   }));
