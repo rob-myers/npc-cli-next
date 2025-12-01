@@ -27,7 +27,7 @@ export default function NpcSpeechBubbles() {
       }
       update();
     },
-    async ensure(npcKey) {// ensure exists/mounted and is tracking npc
+    async ensure(npcKey, waitForMount = false) {// ensure exists/mounted and is tracking npc
       const npc = w.npc.get(npcKey);
       const bubble = state.byKey[npcKey] ??= new SpeechBubbleApi(npcKey, w);
       bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
@@ -36,10 +36,15 @@ export default function NpcSpeechBubbles() {
         return bubble;
       }
 
-      await /** @type {Promise<void>} */ (new Promise(resolve => {
-        bubble.resolveOnMount = resolve;
+      if (waitForMount) {
+        await /** @type {Promise<void>} */ (new Promise(resolve => {
+          bubble.resolveOnMount = resolve;
+          update();
+        }));
+      } else {
         update();
-      }));
+      }
+
       return bubble;
     },
     toFront(npcKey) {
@@ -79,7 +84,7 @@ export default function NpcSpeechBubbles() {
  * @typedef State
  * @property {string} lastFront npcKey
  * @property {(...npcKeys: string[]) => void} delete
- * @property {(npcKey: string) => Promise<SpeechBubbleApi>} ensure
+ * @property {(npcKey: string, waitForMount?: boolean) => Promise<SpeechBubbleApi>} ensure
  * @property {{ [npcKey: string]: SpeechBubbleApi }} byKey
  * @property {(npcKey: string) => void} toFront
  */
