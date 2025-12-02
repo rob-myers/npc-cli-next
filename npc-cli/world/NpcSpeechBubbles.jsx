@@ -110,6 +110,7 @@ function NpcSpeechBubble({ bubble: b }) {
     <Html3d
       ref={b.html3dRef.bind(b)}
       css={npcSpeechBubbleCss}
+      className="absolute top-[-16px] left-[calc(-1/2_*_var(--speech-bubble-width)_+_10px)] pointer-events-none [&>div]:flex [&>div]:justify-center"
       baseScale={speechBubbleBaseScale}
       offset={b.offset}
       position={b.position}
@@ -197,28 +198,10 @@ export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
 // 🚧 eliminate
 const npcSpeechBubbleCss = css`
-  
   --speech-bubble-width: 250px;
 
-  position: absolute;
-  z-index: ${zIndexWorld.baseSpeechBubble};
-  top: -16px;
-  /** 10px seems to align to npc label */
-  left: calc(-1/2 * var(--speech-bubble-width) + 10px);
-  transform-origin: 0 0;
-  
-  pointer-events: none;
-  background: transparent !important;
-
   > div {
-    /* transform-origin: calc(+1/2 * var(--speech-bubble-width)) 0; */
     width: var(--speech-bubble-width);
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    
     opacity: var(${npcSpeechBubbleOpacityCssVar});
     transition: opacity 300ms;
   }

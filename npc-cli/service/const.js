@@ -23,7 +23,7 @@ export const zIndexWorld = /** @type {const} */ ({
   /** Inside ContextMenu */
   popUpInContextMenu: 1,
 
-  baseSpeechBubble: 70,
+  baseSpeechBubble: 20,
 });
 
 /** @type {import('@xterm/xterm').ITheme} */
