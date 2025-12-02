@@ -27,24 +27,25 @@ export default function NpcSpeechBubbles() {
       }
       update();
     },
-    async ensure(npcKey, waitForMount = false) {// ensure exists/mounted and is tracking npc
-      const npc = w.npc.get(npcKey);
-      const bubble = state.byKey[npcKey] ??= new SpeechBubbleApi(npcKey, w);
-      bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
-
-      if (bubble.isMounted()) {
-        return bubble;
-      }
-
-      if (waitForMount) {
-        await /** @type {Promise<void>} */ (new Promise(resolve => {
-          bubble.resolveOnMount = resolve;
-          update();
-        }));
-      } else {
+    ensure(npcKey) {
+      let bubble = state.byKey[npcKey];
+      if (!bubble) {
+        bubble = state.byKey[npcKey] = new SpeechBubbleApi(npcKey, w);
+        const npc = w.npc.get(npcKey);
+        bubble.setTracked({ object: npc.m.group, offset: npc.offsetSpeech });
         update();
       }
-
+      return bubble;
+    },
+    async ensureMounted(npcKey) {
+      const bubble = state.ensure(npcKey);
+      if (!bubble.isMounted()) {
+        await /** @type {Promise<void>} */ (new Promise(resolve => {
+          bubble.resolveOnMount = resolve;
+          bubble.epochMs = Date.now();
+          update();
+        }));
+      }
       return bubble;
     },
     toFront(npcKey) {
@@ -84,7 +85,9 @@ export default function NpcSpeechBubbles() {
  * @typedef State
  * @property {string} lastFront npcKey
  * @property {(...npcKeys: string[]) => void} delete
- * @property {(npcKey: string, waitForMount?: boolean) => Promise<SpeechBubbleApi>} ensure
+ * @property {(npcKey: string) => SpeechBubbleApi} ensure
+ * @property {(npcKey: string) => Promise<SpeechBubbleApi>} ensureMounted
+ * Sometimes we want to await mount e.g. thoughts need htmlelement portalParent
  * @property {{ [npcKey: string]: SpeechBubbleApi }} byKey
  * @property {(npcKey: string) => void} toFront
  */
@@ -192,6 +195,7 @@ export const speechBubbleBaseScale = 4;
 
 export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
+// 🚧 eliminate
 const npcSpeechBubbleCss = css`
   
   --speech-bubble-width: 250px;

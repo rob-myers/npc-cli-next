@@ -167,7 +167,7 @@ export async function* demoDirectViaUi(ct, opts = ct.api.jsArg(ct.args, { ui: 'u
   
   for await (const v of it) {
     const uiKey = opts.uiKey ?? `${opts.npcKey}?`;
-    const bubble = await ct.w.bubble.ensure(opts.npcKey);
+    const bubble = await ct.w.bubble.ensureMounted(opts.npcKey);
 
     feedback.add({
       key: uiKey,

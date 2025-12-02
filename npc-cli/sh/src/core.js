@@ -613,7 +613,7 @@ export async function* spawn({ api, args, w }, opts = api.jsArg(args, { npc: 'np
  */
 export async function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npcKey', of: 'thoughtKey' })) {
   const parts = opts.parts ?? args.filter(x => x in opts);
-  const bubble = await w.bubble.ensure(opts.npcKey, true); // waitForMount
+  const bubble = await w.bubble.ensureMounted(opts.npcKey);
   bubble.think(opts.thoughtKey, ...parts);
   w.n[opts.npcKey].showLabel(false);
 }

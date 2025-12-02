@@ -849,7 +849,7 @@ export default function useHandleEvents(w) {
         return;
       }
 
-      const bubble = await w.bubble.ensure(npcKey);
+      const bubble = w.bubble.ensure(npcKey);
       const speechWithLinks = (words ?? '').trim();
       const speechSansLinks = speechWithLinks.replace(globalLoggerLinksRegex, '$1');
       bubble.setSpeech(speechSansLinks || null);
