@@ -1245,7 +1245,7 @@ export class NpcApi {
     if (this.pendingTargets.length === 0) {
       if (
         this.arrivingEarly === false
-        && distance <= 2.5 * arriveDist
+        && distance <= 2 * arriveDist
         && this.point.distanceTo(this.lastStart) > 4 * arriveDist
       ) {
         // early Idle animation for smoother transition
