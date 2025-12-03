@@ -118,7 +118,7 @@ function NpcSpeechBubble({ bubble: b }) {
       tracked={b.tracked}
       visible
     >
-      <div className="line-clamp-2 font-extralight text-[1.1rem] text-[#ff9] border-[1px] rounded-[12px] leading-[1.2] border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] py-1 px-2">
+      <div className="line-clamp-2 font-extralight text-[2rem] text-[#ff9] border-[1px] rounded-[12px] leading-[1.2] border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] py-1 px-2">
         <div className="npc-key">
           <PopUp
             ref={b.popUpRef.bind(b)}
