@@ -118,13 +118,13 @@ function NpcSpeechBubble({ bubble: b }) {
       tracked={b.tracked}
       visible
     >
-      <div className="line-clamp-2 font-extralight text-[2rem] text-[#ff9] border-[1px] rounded-[12px] leading-[1.2] border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] py-1 px-2">
-        <div className="inline-block text-white">
+      <div className="flex line-clamp-2 font-extralight text-[2rem] text-[#ff9] border-[1px] rounded-[4px] leading-[1.2] border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)]">
+        <div className="flex text-white">
           <PopUp
             ref={b.popUpRef.bind(b)}
-            className="absolute pointer-events-auto"
+            className="h-[calc(100%-2px)] absolute pointer-events-auto"
             deltaArrowLeft={28}
-            label={<span className="invisible">{b.key}</span>}
+            label={<NpcKeyUi npcKey={b.key} className="invisible" />}
             left={false}
             top={false}
             width={100}
@@ -146,12 +146,21 @@ function NpcSpeechBubble({ bubble: b }) {
 
           </PopUp>
 
-          {b.key}
+          <NpcKeyUi npcKey={b.key} />
         </div>
         
         {b.speech ? <>&nbsp;{b.speech}</> : undefined}
       </div>
     </Html3d>
+  );
+}
+
+/** @param {{ npcKey: string; className?: string }} props */
+function NpcKeyUi({ npcKey, className }) {
+  return (
+    <div className={clsx(className, 'flex items-center px-1.5 text-[1.2rem]')}>
+      {npcKey}
+    </div>
   );
 }
 

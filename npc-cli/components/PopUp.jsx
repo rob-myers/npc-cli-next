@@ -99,13 +99,13 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
   return (
     <div
       css={rootPopupCss}
-      className={cx("pop-up", props.className, { open: state.opened })}
+      className={cx("pop-up flex", props.className, { open: state.opened })}
       onWheel={props.onWheel}
       ref={rootRef}
     >
       <button
         ref={state.ref('icon')}
-        className={popUpButtonClassName}
+        className={clsx('cursor-pointer outline-black', popUpButtonClassName)}
         onKeyDown={state.onKeyDown}
         onPointerDown={state.onPointerDownIcon}
         onPointerUp={state.onPointerUpIcon}
@@ -115,7 +115,7 @@ export const PopUp = React.forwardRef(function PopUp(props, ref) {
       </button>
       <div
         ref={state.ref('bubble')}
-        className={cx("pop-up-bubble", {
+        className={cx("pop-up-bubble self-center", {
           left: state.left,
           right: !state.left,
           top: state.top,
@@ -185,11 +185,6 @@ const rootPopupCss = css`
   --bubble-arrow-height: 20px;
   --bubble-border-color: #ffffff55;
   --bubble-width: ${defaultInfoWidthPx}px;
-
-  .${popUpButtonClassName} {
-    cursor: pointer;
-    white-space: nowrap;
-  }
 
   .${popUpBubbleClassName} {
     position: relative;
