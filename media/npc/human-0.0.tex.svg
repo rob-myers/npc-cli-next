@@ -396,6 +396,18 @@
         <feFuncB type="linear" slope="0.9"/>
       </feComponentTransfer>
     </filter>
+    <filter id="gaussian-blur-filter-0" bx:preset="gaussian-blur 1 3.1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.1 3.1" edgeMode="none"/>
+    </filter>
+    <filter id="filter-8" bx:preset="gaussian-blur 1 3.1" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.1 3.1" edgeMode="none"/>
+    </filter>
+    <filter id="gaussian-blur-filter-1" bx:preset="gaussian-blur 1 5" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5 5" edgeMode="none"/>
+    </filter>
+    <filter id="gaussian-blur-filter-2" bx:preset="gaussian-blur 1 2.5" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5 2.5" edgeMode="none"/>
+    </filter>
   </defs>
   <g style="">
     <title>uv-map</title>
@@ -1225,7 +1237,7 @@
         <title>_back</title>
       </image>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 1152, 1248)">
+    <g transform="matrix(1, 0, 0, 1, 1152, 1248)" style="filter: url(&quot;#gaussian-blur-filter-1&quot;);">
       <title>robot-0_head</title>
       <rect width="128" height="128" style="fill: none; stroke: rgb(0, 0, 0); stroke-width: 2px;" x="512">
         <title>front</title>
@@ -1273,7 +1285,7 @@
         <title>_top</title>
       </image>
     </g>
-    <g transform="matrix(1, 0, 0, 1, 1152, 1664)">
+    <g transform="matrix(1, 0, 0, 1, 1152, 1664)" style="filter: url(&quot;#gaussian-blur-filter-2&quot;);">
       <title>robot-0_head-overlay</title>
       <rect width="128" height="128" style="fill: none; stroke-width: 2px;" x="512">
         <title>front</title>
@@ -1363,8 +1375,17 @@
         <title>_trousers</title>
       </rect>
       <rect y="544" width="128" height="192" style="stroke: rgb(0, 0, 0); fill: rgb(170, 170, 170); filter: url(&quot;#filter-4&quot;);" x="128">
-        <title>_right</title>
+        <title>_front</title>
       </rect>
+      <rect y="584.364" width="74.182" height="151.46" style="stroke: rgb(0, 0, 0); filter: none; fill: rgb(51, 51, 51);" x="154.909">
+        <title>_front</title>
+      </rect>
+      <path d="M 45.792 544.961 L 82.208 544.961 L 82.208 627.041 L 127.114 735.303 L 0.885 734.951 L 45.792 627.041 L 45.792 544.961 Z M 54.6 640.696 L 62.825 640.696 L 73.4 640.696 L 73.4 560.306 L 54.6 560.306 L 54.6 640.696 Z" style="stroke: rgb(0, 0, 0); filter: url(&quot;#gaussian-blur-filter-0&quot;); fill: rgb(51, 51, 51);">
+        <title>_left</title>
+      </path>
+      <path d="M 305.792 544.961 L 342.208 544.961 L 342.208 627.041 L 387.114 735.303 L 260.885 734.951 L 305.792 627.041 L 305.792 544.961 Z M 314.6 640.696 L 322.825 640.696 L 333.4 640.696 L 333.4 560.306 L 314.6 560.306 L 314.6 640.696 Z" style="stroke: rgb(0, 0, 0); filter: url(&quot;#filter-8&quot;); fill: rgb(51, 51, 51);">
+        <title>_right</title>
+      </path>
     </g>
   </g>
 </svg>

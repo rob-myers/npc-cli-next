@@ -99,6 +99,10 @@
 
 ### World
 
+- 🚧 improve skins
+  - ✅ tweak robot-0
+  - replace base skin
+
 - ✅ transition from non-idle animation when slowing down near target
   - avoid transition to idle after stopping
 
