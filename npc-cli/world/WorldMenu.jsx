@@ -351,7 +351,7 @@ const popUpCss = css`
   .${popUpButtonClassName} {
     color: #8888ff;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    background: #000a;
+    background: #000f;
     padding: 4px 8px !important;
   }
   

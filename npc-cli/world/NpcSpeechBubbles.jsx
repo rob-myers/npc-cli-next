@@ -118,13 +118,13 @@ function NpcSpeechBubble({ bubble: b }) {
       tracked={b.tracked}
       visible
     >
-      <div className="flex line-clamp-2 font-extralight text-[2rem] text-[#ff9] border-[1px] rounded-[4px] leading-[1.2] border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)]">
-        <div className="flex text-white">
+      <div className="flex text-[#ff9] leading-[1.2]">
+        <div className="flex flex-wrap text-white">
           <PopUp
             ref={b.popUpRef.bind(b)}
-            className="h-[calc(100%-2px)] absolute pointer-events-auto"
+            className="pointer-events-auto"
             deltaArrowLeft={28}
-            label={<NpcKeyUi npcKey={b.key} className="invisible" />}
+            label={<NpcKeyUi npcKey={b.key} />}
             left={false}
             top={false}
             width={100}
@@ -145,11 +145,11 @@ function NpcSpeechBubble({ bubble: b }) {
             </div>
 
           </PopUp>
-
-          <NpcKeyUi npcKey={b.key} />
         </div>
         
-        {b.speech ? <>&nbsp;{b.speech}</> : undefined}
+        {b.speech && <div className="flex items-center line-clamp-2 py-1 px-1 ml-1 text-[1.2rem] border-[1px] rounded-[4px] border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] ">
+          {b.speech}
+        </div>}
       </div>
     </Html3d>
   );
@@ -157,8 +157,8 @@ function NpcSpeechBubble({ bubble: b }) {
 
 /** @param {{ npcKey: string; className?: string }} props */
 function NpcKeyUi({ npcKey, className }) {
-  return (
-    <div className={clsx(className, 'flex items-center px-1.5 text-[1.2rem]')}>
+  return (  
+    <div className={clsx(className, 'flex justify-center h-full w-[64px] max-w-[64px] break-all items-center px-1.5 py-1 text-[1rem] font-normal rounded-[16px] text-black bg-[#fff6]')}>
       {npcKey}
     </div>
   );
@@ -206,7 +206,7 @@ export const speechBubbleBaseScale = 4;
 export const npcSpeechBubbleOpacityCssVar = '--npc-speech-bubble-opacity';
 
 const npcSpeechBubbleCss = css`
-  --speech-bubble-width: 250px;
+  --speech-bubble-width: 280px;
 
   > div {
     width: var(--speech-bubble-width);
