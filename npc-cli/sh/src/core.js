@@ -615,7 +615,7 @@ export async function think({ api, args, w }, opts = api.jsArg(args, { npc: 'npc
   const parts = opts.parts ?? args.filter(x => x in opts);
   const bubble = await w.bubble.ensureMounted(opts.npcKey);
   bubble.think(opts.thoughtKey, ...parts);
-  bubble.popUp.open();
+  if (bubble.popUp.opened === false) bubble.popUp.open();
   w.n[opts.npcKey].showLabel(false);
 }
 
